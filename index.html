@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Smart Money">
+<meta name="theme-color" content="#060810">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<title>Smart Money Pro</title>
+<!-- BUILD: v2-cloudflare-worker -->
+<style>
+:root{--bg:#060810;--bg2:#0B0E18;--bg3:#111525;--border:#1A2035;--sharp:#FF3B5C;--value:#00FF87;--warn:#FFD600;--info:#00D4FF;--purple:#A855F7;--text:#F0F2F7;--muted:#5A6785;--sub:#8896AA}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;overflow-x:hidden}
+body{display:flex;flex-direction:column;max-width:480px;margin:0 auto}
+
+/* HEADER */
+#hdr{background:#0B0F1E;border-bottom:1px solid var(--border);padding:12px 14px 8px;flex-shrink:0;position:sticky;top:0;z-index:100}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.logo{font-size:18px;font-weight:900;background:linear-gradient(90deg,var(--sharp),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-b{font-size:10px;color:var(--muted);font-weight:700;-webkit-text-fill-color:var(--muted);margin-left:3px}
+#pulse{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);font-weight:700}
+.pdot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex-shrink:0}
+.pdot.live{background:var(--value);animation:blink 1.2s infinite}
+.pdot.loading{background:var(--info);animation:blink .5s infinite}
+.pdot.error{background:var(--sharp)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+#tbar{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+#tfill{height:100%;background:linear-gradient(90deg,var(--info),var(--purple));border-radius:2px;width:100%;transition:width 1s linear}
+
+/* NAV */
+#nav{display:flex;border-bottom:1px solid var(--border);background:var(--bg);flex-shrink:0;overflow-x:auto;scrollbar-width:none}
+#nav::-webkit-scrollbar{display:none}
+.ntab{flex:1;min-width:52px;padding:9px 4px 8px;font-size:10px;font-weight:800;color:var(--muted);border:none;background:none;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;transition:color .2s}
+.ntab.on{color:var(--sharp);border-bottom-color:var(--sharp)}
+.ntab .tic{display:block;font-size:16px;margin-bottom:2px}
+.nbadge{background:var(--sharp);color:#fff;font-size:9px;font-weight:900;border-radius:8px;padding:1px 5px;margin-left:2px;vertical-align:middle}
+
+/* MAIN */
+#main{flex:1;overflow-y:auto;padding:12px 12px 90px;-webkit-overflow-scrolling:touch}
+
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:13px 14px;margin-bottom:10px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px}
+.cs::before{background:linear-gradient(90deg,var(--sharp),var(--purple))}
+.cv::before{background:linear-gradient(90deg,var(--value),var(--info))}
+.cw::before{background:linear-gradient(90deg,var(--warn),var(--sharp))}
+.ci::before{background:linear-gradient(90deg,var(--info),var(--purple))}
+.cp::before{background:linear-gradient(90deg,var(--purple),var(--sharp))}
+.cn::before{background:var(--border)}
+
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.5px;padding:3px 8px;border-radius:6px;margin-bottom:6px}
+.bs{background:rgba(255,59,92,.12);color:var(--sharp);border:1px solid rgba(255,59,92,.3)}
+.bv{background:rgba(0,255,135,.1);color:var(--value);border:1px solid rgba(0,255,135,.25)}
+.bw{background:rgba(255,214,0,.1);color:var(--warn);border:1px solid rgba(255,214,0,.25)}
+.bi{background:rgba(0,212,255,.1);color:var(--info);border:1px solid rgba(0,212,255,.25)}
+.bp{background:rgba(168,85,247,.1);color:var(--purple);border:1px solid rgba(168,85,247,.25)}
+
+.mt{font-size:15px;font-weight:800;color:var(--text);margin-bottom:3px;line-height:1.3}
+.ms{font-size:11px;color:var(--muted);margin-bottom:9px}
+
+.orow{display:flex;gap:7px;margin-bottom:9px}
+.obox{flex:1;background:var(--bg3);border-radius:9px;padding:8px 10px;text-align:center;border:1px solid var(--border)}
+.olbl{font-size:9px;font-weight:700;letter-spacing:.5px;margin-bottom:3px}
+.oval{font-size:23px;font-weight:900;letter-spacing:-1px;line-height:1}
+
+.chip{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:7px;font-size:12px;font-weight:900}
+.chip-d{background:rgba(255,59,92,.15);color:var(--sharp);border:1px solid rgba(255,59,92,.3)}
+.chip-u{background:rgba(0,255,135,.12);color:var(--value);border:1px solid rgba(0,255,135,.25)}
+
+.evpill{display:inline-flex;align-items:center;background:rgba(0,255,135,.1);border:1.5px solid rgba(0,255,135,.3);color:var(--value);font-size:17px;font-weight:900;border-radius:9px;padding:5px 12px}
+
+.bot{background:#060A0E;border-left:3px solid var(--value);border-radius:0 9px 9px 0;padding:9px 12px;margin-top:8px}
+.bot-l{font-size:9px;color:var(--value);font-weight:800;letter-spacing:.6px;margin-bottom:3px}
+.bot-t{font-size:12px;color:#C0CCE0;line-height:1.65;font-weight:600}
+
+.shdr{font-size:10px;color:var(--muted);font-weight:800;letter-spacing:1px;margin:14px 0 8px;display:flex;align-items:center;gap:8px}
+.shdr::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.spin{display:inline-block;width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--info);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loadbox{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:10px;color:var(--sub);font-size:13px;font-weight:700}
+
+.empty{text-align:center;padding:36px 16px;color:var(--muted)}
+.empty .ei{font-size:38px;margin-bottom:10px}
+.empty h3{font-size:15px;font-weight:800;color:var(--sub);margin-bottom:6px}
+.empty p{font-size:12px;line-height:1.65}
+
+.btn-p{width:100%;padding:13px;border-radius:12px;border:none;background:linear-gradient(90deg,var(--sharp),var(--purple));color:#fff;font-size:14px;font-weight:800;cursor:pointer;margin-top:8px}
+.btn-s{width:100%;padding:11px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--sub);font-size:13px;font-weight:700;cursor:pointer;margin-top:6px}
+
+/* LEGEND CARDS (tipsters) */
+.legend-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;gap:11px;align-items:flex-start}
+.legend-rank{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;flex-shrink:0;margin-top:2px}
+.legend-info{flex:1;min-width:0}
+.legend-name{font-size:13px;font-weight:800;color:var(--text)}
+.legend-method{font-size:11px;color:var(--muted);margin-top:2px}
+.legend-stat{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.stat-chip{font-size:10px;font-weight:800;border-radius:5px;padding:2px 7px}
+
+/* INFO BOX */
+.ibox{background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.2);border-radius:11px;padding:12px 14px;margin-bottom:10px}
+
+/* API row */
+.api-card{background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:11px 13px;margin-bottom:8px}
+.api-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.api-name{font-size:13px;font-weight:800}
+.api-st{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.dok{background:var(--value)}
+.dw{background:var(--warn)}
+.de{background:var(--sharp)}
+.rbar{height:4px;background:var(--border);border-radius:2px;margin-top:7px;overflow:hidden}
+.rfill{height:100%;border-radius:2px;transition:width .5s}
+</style>
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "aedeb0de-7c97-43d3-ab09-880f13f3b44e",
+      safari_web_id: "",
+      notifyButton: { enable: false },
+      allowLocalhostAsSecureOrigin: true,
+    });
+    window._oneSignalReady = true;
+  });
+</script>
+</head>
+<body>
+
+<div id="hdr">
+  <div class="hdr-top">
+    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v23</span></div>
+    <div id="pulse"><div class="pdot" id="pdot"></div><span id="ptxt">Iniciando...</span></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;font-size:11px;color:var(--muted)">
+    <span>💰 Banca:</span>
+    <input id="bankroll-input" type="number" inputmode="decimal" value="350"
+      style="background:var(--bg3);border:1px solid var(--border);border-radius:7px;color:var(--value);font-weight:800;font-size:12px;padding:4px 8px;width:70px"
+      onchange="setBankroll(this.value)">
+    <span>€ · Kelly 25% (seguro)</span>
+  </div>
+  <div id="tbar"><div id="tfill"></div></div>
+</div>
+
+<div id="nav">
+  <button class="ntab on" data-p="alerts"  onclick="go('alerts')"><span class="tic">🚨</span>Alertas<span class="nbadge" id="ab">0</span></button>
+  <button class="ntab" data-p="sharp"   onclick="go('sharp')"><span class="tic">💰</span>Sharp$</button>
+  <button class="ntab" data-p="value"   onclick="go('value')"><span class="tic">📊</span>EV+</button>
+  <button class="ntab" data-p="arb"     onclick="go('arb')"><span class="tic">🎯</span>Arbitraje</button>
+  <button class="ntab" data-p="history" onclick="go('history')"><span class="tic">📈</span>Historial</button>
+  <button class="ntab" data-p="config"  onclick="go('config')"><span class="tic">⚙️</span>APIs</button>
+</div>
+
+<div id="main"></div>
+
+<script>
+// ============================================================
+// SMART MONEY PRO
+// Las 4 secciones explicadas:
+//
+// 🚨 ALERTAS: Resumen. Cuando Sharp$ o EV+ detectan algo
+//    importante, aparece aquí. Primer sitio que mirar.
+//
+// 💰 SHARP$: Detecta caídas de cuota bruscas sin noticia
+//    pública. Si Haaland bajó de 2.40 a 1.70 = alguien con
+//    mucho dinero apostó antes que tú. Actúa antes de que
+//    baje más.
+//
+// 📊 EV+: Compara Bet365 vs Pinnacle. Pinnacle es el libro
+//    sharp del mundo — los profesionales apuestan allí.
+//    Cuando Bet365 paga más que Pinnacle = la casa está
+//    equivocada = beneficio matemático real.
+//
+// 🏆 LEYENDAS: Los mejores apostadores del mundo, sus
+//    métodos reales, y cómo imitar sus señales.
+//
+// Arquitectura: Claude API como proxy seguro para CORS.
+// Browser → Claude → 4 APIs de cuotas → señales procesadas
+// ============================================================
+
+var KEYS = {
+  theOdds:  '49bc62d5f1f075bf1a2c5ecec6365b9d',
+  oddsApi:  '54a869df6080c65fd4230946cb8db844f34fd41a3db8c4',
+  oddsPapi: 'b5ae6e53-9afe-4aed-9c62-a1bd753d17ab',
+  sgo:      'c02d82ba7268186e9f7fce8bdd0d5da1',
+};
+
+var REQ = JSON.parse(localStorage.getItem('smp_req')||'{"theOdds":0,"oddsApi":0,"oddsPapi":0,"sgo":0,"scanCount":0,"lastScan":0}');
+
+// ── BANKROLL (gestión de stake) ───────────────────────────
+var BANKROLL = parseFloat(localStorage.getItem('smp_bankroll')) || 350;
+var KELLY_FRACTION = 0.25; // Kelly fraccionado al 25% — mucho más seguro que Kelly completo
+
+function setBankroll(val) {
+  val = parseFloat(val);
+  if (!val || val<=0) return;
+  BANKROLL = val;
+  try { localStorage.setItem('smp_bankroll', BANKROLL); } catch(e){}
+  renderPage();
+}
+
+// Kelly Criterion: f* = (bp - q) / b
+// b = cuota decimal - 1 (ganancia neta por unidad apostada)
+// p = probabilidad real estimada de ganar (derivada de la cuota de Pinnacle, la sharp)
+// q = 1 - p
+function calcStake(oddsBet365, oddsPinnacle) {
+  if (!oddsBet365 || !oddsPinnacle || oddsBet365<=1 || oddsPinnacle<=1) return null;
+  var pTrue = 1 / oddsPinnacle; // Pinnacle como estimación de probabilidad real (sin margen propio, aproximado)
+  var b = oddsBet365 - 1;
+  var q = 1 - pTrue;
+  var kelly = (b*pTrue - q) / b;
+  if (kelly <= 0) return null;
+  var fraction = kelly * KELLY_FRACTION;
+  var stake = BANKROLL * fraction;
+  // Cap de seguridad: nunca más del 5% de la banca en una sola apuesta, ni menos de 1€
+  stake = Math.min(stake, BANKROLL*0.05);
+  stake = Math.max(stake, 1);
+  return {stake: stake, pct: (stake/BANKROLL*100), kellyFull: kelly*100};
+}
+
+function saveReq(){ try{localStorage.setItem('smp_req',JSON.stringify(REQ));}catch(e){} }
+
+var INTERVALS = {theOdds:7200000, oddsApi:50000, oddsPapi:14400000, sgo:65000};
+var lastFetch  = {theOdds:0, oddsApi:0, oddsPapi:0, sgo:0};
+var apiStatus  = {theOdds:'idle', oddsApi:'idle', oddsPapi:'idle', sgo:'idle'};
+
+var PAGE    = 'alerts';
+var ALERTS  = [];
+var SHARP   = [];
+var VALUEB  = [];
+var ARB     = [];
+var MONITOR = [];
+var HISTORY = {};
+
+// ── REGISTRO HISTÓRICO DE PICKS (para Closing Line Value real) ──
+// Esto es lo que las herramientas profesionales (OddsJam, RebelBetting) tienen
+// y nosotros no teníamos: memoria de cada pick mostrado, para poder demostrar
+// con datos propios si el sistema realmente genera valor a largo plazo.
+var PICK_LOG = JSON.parse(localStorage.getItem('smp_picklog')||'[]');
+function savePickLog() {
+  try {
+    // Limitar a 500 picks más recientes para no saturar localStorage
+    if (PICK_LOG.length > 500) PICK_LOG = PICK_LOG.slice(-500);
+    localStorage.setItem('smp_picklog', JSON.stringify(PICK_LOG));
+  } catch(e) {}
+}
+
+// Registra un pick EV+ la primera vez que se ve, con su cuota inicial.
+// Si ya existe (mismo key), actualiza la "última cuota vista" para poder
+// calcular CLV cuando el evento empiece (closing line = última cuota antes del K.O.)
+function logPick(pickKey, data) {
+  var existing = PICK_LOG.find(function(p){ return p.key===pickKey; });
+  if (existing) {
+    existing.lastOdds = data.odds;
+    existing.lastSeen = Date.now();
+    existing.timesSeen = (existing.timesSeen||1) + 1;
+  } else {
+    PICK_LOG.push({
+      key: pickKey, sport: data.sport, match: data.match, market: data.market,
+      book: data.book, openOdds: data.odds, lastOdds: data.odds, pinnacleAtOpen: data.pinnacle,
+      evAtOpen: data.ev, ko: data.ko, firstSeen: Date.now(), lastSeen: Date.now(), timesSeen: 1
+    });
+  }
+  savePickLog();
+}
+
+// Calcula el CLV real de un pick: ¿la cuota subió o bajó desde que lo vimos
+// hasta la última vez que tuvimos datos? Si bajó (para el lado que apostarías),
+// significa que el mercado confirmó que tu pick tenía razón.
+function calcCLV(pick) {
+  if (!pick.openOdds || !pick.lastOdds || pick.openOdds===pick.lastOdds) return null;
+  var clv = ((pick.openOdds - pick.lastOdds) / pick.openOdds) * 100;
+  return clv; // positivo = la cuota bajó tras detectarlo = el mercado confirmó tu valor
+}
+
+var LOADING = false;
+var LAST_UP = 0;
+var ERRORS  = [];
+var FETCH_RUNNING = false;
+
+// ── CORS PROXY ────────────────────────────────────────────
+// Tu Cloudflare Worker personal — 100k req/día gratis, fiable
+// Reemplaza YOUR-WORKER-URL con la URL que te dé Cloudflare
+var WORKER_URL = 'https://smart-money-pro.k8mwkbp68y.workers.dev/';
+
+// Fallback proxies por si el worker no está configurado aún
+var FALLBACK_PROXIES = [
+  function(u){ return 'https://corsproxy.io/?'+encodeURIComponent(u); },
+  function(u){ return 'https://api.allorigins.win/raw?url='+encodeURIComponent(u); },
+];
+
+var DIAG = [];
+function addDiag(msg) {
+  var ts = new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  DIAG.unshift('['+ts+'] '+msg);
+  DIAG = DIAG.slice(0,20);
+  var el = document.getElementById('diag-panel');
+  if (el) el.innerHTML = DIAG.map(function(d){
+    var col = d.includes('✓')?'#00FF87':d.includes('✗')?'#FF3B5C':'#8896AA';
+    return '<div style="font-size:10px;color:'+col+';padding:2px 0;border-bottom:1px solid #1A2035">'+d+'</div>';
+  }).join('');
+}
+
+async function fetchWithTimeout(url, ms) {
+  var ctrl = new AbortController();
+  var tid = setTimeout(function(){ctrl.abort();}, ms||15000);
+  try {
+    var r = await fetch(url, {signal: ctrl.signal, mode:'cors'});
+    clearTimeout(tid);
+    return r;
+  } catch(e) { clearTimeout(tid); throw e; }
+}
+
+async function proxyFetch(targetUrl, label, apiKeyForHeader) {
+  addDiag('→ '+label);
+
+  // Try Cloudflare Worker first (if configured)
+  if (WORKER_URL && WORKER_URL !== 'YOUR-WORKER-URL') {
+    try {
+      var fullUrl = WORKER_URL+'?url='+encodeURIComponent(targetUrl);
+      if (apiKeyForHeader) fullUrl += '&apikeyheader='+encodeURIComponent(apiKeyForHeader);
+      var r = await fetchWithTimeout(fullUrl, 15000);
+      if (r.ok) {
+        var txt = await r.text();
+        if (txt && txt.length > 2) {
+          try {
+            var j=JSON.parse(txt);
+            addDiag('✓ '+label+' ('+txt.length+'b)');
+            return j;
+          } catch(e){
+            addDiag('  Worker dio texto no-JSON: '+txt.substring(0,60));
+          }
+        } else {
+          addDiag('  Worker respuesta vacía');
+        }
+      } else {
+        var errTxt = '';
+        try { errTxt = await r.text(); } catch(e){}
+        addDiag('  Worker HTTP '+r.status+': '+errTxt.substring(0,70));
+      }
+    } catch(e) { addDiag('  Worker: '+(e.name==='AbortError'?'timeout':e.message.substring(0,40))); }
+  }
+
+  // Fallback to public proxies
+  for (var i=0; i<FALLBACK_PROXIES.length; i++) {
+    var pName = i===0?'corsproxy.io':'AllOrigins';
+    try {
+      var proxied = FALLBACK_PROXIES[i](targetUrl);
+      addDiag('  via '+pName+'...');
+      var r2 = await fetchWithTimeout(proxied, 15000);
+      if (!r2.ok) { addDiag('  ✗ '+pName+' HTTP '+r2.status); ERRORS.push({src:label,code:r2.status,msg:pName,t:Date.now()}); continue; }
+      var txt2 = await r2.text();
+      if (!txt2||txt2.length<3) { addDiag('  ✗ '+pName+' vacío'); continue; }
+      try {
+        var j2 = JSON.parse(txt2);
+        if (j2.contents !== undefined) { try{j2=JSON.parse(j2.contents);}catch(e){j2=j2.contents;} }
+        addDiag('✓ '+label+' ('+pName+')');
+        return j2;
+      } catch(e) { addDiag('  ✗ JSON error: '+e.message.substring(0,30)); ERRORS.push({src:label,msg:'JSON:'+e.message.substring(0,40),t:Date.now()}); }
+    } catch(e) {
+      var em=e.name==='AbortError'?'timeout 15s':e.message.substring(0,35);
+      addDiag('  ✗ '+pName+': '+em);
+      ERRORS.push({src:label,msg:pName+': '+em,t:Date.now()});
+    }
+  }
+  addDiag('✗ '+label+' — todos los proxies fallaron');
+  return null;
+}
+
+// ── DIRECT API CALLS (via CORS proxy) ──────────────────────
+async function fetchTheOdds() {
+  // Step 1: get active sports (free, no quota cost) - cache it
+  if (!window._cachedSports || Date.now() - (window._sportsCacheTime||0) > 86400000) {
+    var sportsUrl = 'https://api.the-odds-api.com/v4/sports/?apiKey=' + KEYS.theOdds;
+    var sportsData = await proxyFetch(sportsUrl, 'The Odds API (sports list)');
+    if (sportsData && Array.isArray(sportsData)) {
+      window._cachedSports = sportsData.filter(function(s){return s.active;}).map(function(s){return s.key;});
+      window._sportsCacheTime = Date.now();
+      addDiag('  Deportes activos detectados: '+window._cachedSports.length);
+    }
+  }
+  var all = window._cachedSports || [];
+
+  // En vez de elegir SOLO 1 liga por categoría, tomamos VARIAS de cada una.
+  // Así si la NBA está fuera de temporada, aún consultamos WNBA, EuroLiga, etc.
+  var soccerKeys = all.filter(function(k){
+    return k.indexOf('soccer_')===0 && (
+      k.includes('epl') || k.includes('la_liga') || k.includes('serie_a') ||
+      k.includes('bundesliga') || k.includes('ligue_one') || k.includes('world_cup_winner')===false && k.includes('world_cup') ||
+      k.includes('uefa_champs_league') || k.includes('uefa_europa_league') || k.includes('mls')
+    );
+  }).slice(0,6);
+  var basketKeys = all.filter(function(k){return k.indexOf('basketball_')===0;}).slice(0,4);
+  var tennisKeys = all.filter(function(k){return k.indexOf('tennis_')===0;}).slice(0,4);
+  var hockeyKeys = all.filter(function(k){return k.indexOf('icehockey_')===0;}).slice(0,3);
+  var baseballKeys = all.filter(function(k){return k.indexOf('baseball_')===0;}).slice(0,2);
+  var amFootballKeys = all.filter(function(k){return k.indexOf('americanfootball_')===0;}).slice(0,2);
+  var mmaKeys = all.filter(function(k){return k.indexOf('mma_')===0;}).slice(0,2);
+
+  var targets = soccerKeys.concat(basketKeys, tennisKeys, hockeyKeys, baseballKeys, amFootballKeys, mmaKeys);
+  if (!targets.length) targets = all.slice(0,10); // fallback: lo que sea que esté activo
+  addDiag('  Ligas a consultar: '+targets.length+' ('+targets.slice(0,5).join(', ')+(targets.length>5?'...':'')+')');
+
+  var allResults = [];
+  for (var i=0; i<targets.length; i++) {
+    var sportKey = targets[i];
+    var sportIcon = sportKey.indexOf('soccer')===0?'⚽' : sportKey.indexOf('basketball')===0?'🏀' : sportKey.indexOf('tennis')===0?'🎾' : sportKey.indexOf('icehockey')===0?'🏒' : sportKey.indexOf('baseball')===0?'⚾' : sportKey.indexOf('americanfootball')===0?'🏈' : sportKey.indexOf('mma')===0?'🥊' : '🏆';
+
+    var now = new Date();
+    var future = new Date(now.getTime() + 5*24*60*60*1000); // próximos 5 días
+    var url = 'https://api.the-odds-api.com/v4/sports/' + sportKey + '/odds/?apiKey='
+      + KEYS.theOdds + '&regions=eu,uk,fr&markets=h2h&oddsFormat=decimal'
+      + '&commenceTimeTo=' + future.toISOString().split('.')[0] + 'Z';
+    var data = await proxyFetch(url, 'The Odds API ('+sportKey+')');
+    if (!data || !Array.isArray(data)) continue;
+    apiStatus.theOdds = 'ok';
+
+    data.forEach(function(ev) {
+      var b365={}, winamax={}, pin={}, points={};
+      (ev.bookmakers||[]).forEach(function(bm) {
+        var n=(bm.key||'').toLowerCase();
+        var tgt = n.includes('pinnacle') ? pin : n.includes('winamax') ? winamax : n.includes('bet365') ? b365 : null;
+        if (!tgt) return; // skip bookmakers we don't track (keeps data relevant to user's actual books)
+        (bm.markets||[]).forEach(function(mkt) {
+          (mkt.outcomes||[]).forEach(function(o) {
+            var k = (mkt.key||'h2h')+'_'+(o.name||'');
+            if (tgt[k]===undefined) tgt[k] = parseFloat(o.price||0);
+            // Guardar el punto/línea (ej: 2.5 en "Over 2.5") para detectar middles después
+            if (o.point!==undefined && !points[k]) points[k] = {point:o.point, book: n.includes('winamax')?'Winamax':n.includes('bet365')?'Bet365':n.includes('pinnacle')?'Pinnacle':n};
+          });
+        });
+      });
+      if (Object.keys(b365).length>0 || Object.keys(winamax).length>0 || Object.keys(pin).length>0) {
+        allResults.push({id:ev.id, sport:sportIcon, match:(ev.home_team||'')+' vs '+(ev.away_team||''), comp:ev.sport_title||sportKey, ko:ev.commence_time, b365:b365, winamax:winamax, pin:pin, points:points, src:'TheOddsAPI'});
+      }
+    });
+  }
+  return allResults;
+}
+
+async function fetchOddsApiIo() {
+  // Per official docs: /v3/events requires sport + league (slug), not just sport.
+  // Step 1: get available leagues for football to find an active slug
+  var leaguesUrl = 'https://api.odds-api.io/v3/leagues?apiKey=' + KEYS.oddsApi + '&sport=football&all=true';
+  var leagues = await proxyFetch(leaguesUrl, 'Odds-API.io (leagues)');
+  if (!leagues || !Array.isArray(leagues) || !leagues.length) return [];
+
+  // Prefer well-known major leagues with live event counts if present
+  var preferred = ['england-premier-league','spain-la-liga','world-cup','uefa-champions-league','italy-serie-a'];
+  var league = leagues.find(function(l){ return preferred.includes(l.slug) && (l.eventCount===undefined || l.eventCount>0); })
+            || leagues.find(function(l){ return l.eventCount>0; })
+            || leagues[0];
+  if (!league || !league.slug) return [];
+
+  // Step 2: get events for that league
+  var eventsUrl = 'https://api.odds-api.io/v3/events?apiKey=' + KEYS.oddsApi
+    + '&sport=football&league=' + league.slug + '&status=pending&bookmaker=Bet365';
+  var events = await proxyFetch(eventsUrl, 'Odds-API.io (events)');
+  if (!events || !Array.isArray(events) || !events.length) return [];
+  apiStatus.oddsApi = 'ok';
+
+  var results = [];
+  var toFetch = events.slice(0, 5);
+  for (var i = 0; i < toFetch.length; i++) {
+    var ev = toFetch[i];
+    var oddsUrl = 'https://api.odds-api.io/v3/odds?apiKey=' + KEYS.oddsApi
+      + '&eventId=' + ev.id + '&bookmakers=Bet365,Pinnacle';
+    var oddsData = await proxyFetch(oddsUrl, 'Odds-API.io (odds)');
+    if (!oddsData) continue;
+
+    var b365={}, pin={};
+    var bms = oddsData.bookmakers || oddsData;
+    if (Array.isArray(bms)) {
+      bms.forEach(function(bm) {
+        var n=(bm.name||bm.bookmaker||'').toLowerCase();
+        var tgt = n.includes('bet365')?b365 : n.includes('pinnacle')?pin : null;
+        if (!tgt) return;
+        (bm.markets||bm.odds||[]).forEach(function(mkt) {
+          if (mkt.outcomes) {
+            mkt.outcomes.forEach(function(o){ tgt['h2h_'+(o.name||'')] = parseFloat(o.price||o.odds||0); });
+          } else if (mkt.home !== undefined) {
+            tgt['h2h_home']=parseFloat(mkt.home||0); tgt['h2h_away']=parseFloat(mkt.away||0);
+            if (mkt.draw) tgt['h2h_draw']=parseFloat(mkt.draw);
+          }
+        });
+      });
+    }
+    if (Object.keys(b365).length || Object.keys(pin).length) {
+      results.push({id:ev.id, sport:'⚽', match:(ev.home||'')+' vs '+(ev.away||''), ko:ev.starts||ev.startTime, b365:b365, pin:pin, src:'OddsAPI.io'});
+    }
+  }
+  return results;
+}
+
+async function fetchSGO() {
+  // Use X-Api-Key header (query param apiKey was rejected). Expand to many sports/leagues.
+  var url = 'https://api.sportsgameodds.com/v2/events?leagueID=NBA,NFL,MLB,NHL,WNBA,UFC&oddsAvailable=true&limit=20';
+  var data = await proxyFetch(url, 'SportsGameOdds', KEYS.sgo);
+  if (!data || data.success===false) return [];
+  apiStatus.sgo = 'ok';
+  var events = data.data || data.events || (Array.isArray(data)?data:[]);
+  if (!Array.isArray(events)) { addDiag('  SGO: estructura inesperada, keys: '+Object.keys(data||{}).join(',')); return []; }
+  addDiag('  SGO: '+events.length+' eventos crudos recibidos');
+
+  return events.slice(0,15).map(function(ev) {
+    var b365={}, pin={};
+    var homeT = (ev.teams && ev.teams.home && ev.teams.home.names) ? ev.teams.home.names.medium : (ev.homeTeam||'Home');
+    var awayT = (ev.teams && ev.teams.away && ev.teams.away.names) ? ev.teams.away.names.medium : (ev.awayTeam||'Away');
+
+    if (ev.odds) {
+      Object.keys(ev.odds).forEach(function(oddID) {
+        var isML = oddID.toLowerCase().indexOf('ml-home')>-1 || oddID.toLowerCase().indexOf('ml-away')>-1 || oddID.toLowerCase().indexOf('moneyline')>-1;
+        if (!isML) return;
+        var byBk = ev.odds[oddID].byBookmaker || {};
+        var side = oddID.toLowerCase().indexOf('home')>-1 ? 'home' : 'away';
+        Object.keys(byBk).forEach(function(bkName) {
+          var bk = byBk[bkName];
+          if (!bk || bk.odds===undefined) return;
+          var bkLower = bkName.toLowerCase();
+          var tgt = bkLower.includes('pinnacle') ? pin : b365;
+          if (tgt['h2h_'+side]===undefined) tgt['h2h_'+side] = parseFloat(bk.odds);
+        });
+      });
+    }
+
+    var lg = ev.leagueID || '';
+    var sp = ['NBA','WNBA'].includes(lg)?'🏀' : ['NFL'].includes(lg)?'🏈' : ['MLB'].includes(lg)?'⚾' : ['NHL'].includes(lg)?'🏒' : ['ATP','WTA'].includes(lg)?'🎾' : ['UFC'].includes(lg)?'🥊' : '⚽';
+    return {id:ev.eventID||ev.id, sport:sp, match:homeT+' vs '+awayT, comp:lg, ko:(ev.status&&ev.status.startsTime)||ev.startTime, b365:b365, pin:pin, src:'SGO'};
+  }).filter(function(e){return Object.keys(e.b365).length>0 || Object.keys(e.pin).length>0;});
+}
+
+async function fetchOddsPapi() {
+  // Correct domain: api.oddspapi.io (not .com). sportId=10 is football/soccer.
+  // Step 1: get fixtures for soccer
+  var fixturesUrl = 'https://api.oddspapi.io/v4/fixtures?sportId=10&apiKey=' + KEYS.oddsPapi;
+  var fixtures = await proxyFetch(fixturesUrl, 'OddsPapi (fixtures)');
+  if (!fixtures || !Array.isArray(fixtures) || !fixtures.length) return [];
+  apiStatus.oddsPapi = 'ok';
+
+  var tournamentIds = [...new Set(fixtures.slice(0,10).map(function(f){return f.tournamentId;}).filter(Boolean))].slice(0,3);
+  if (!tournamentIds.length) return [];
+
+  // Step 2: get Pinnacle odds for those tournaments
+  var oddsUrl = 'https://api.oddspapi.io/v4/odds-by-tournaments?bookmaker=pinnacle&tournamentIds='
+    + tournamentIds.join(',') + '&apiKey=' + KEYS.oddsPapi;
+  var oddsData = await proxyFetch(oddsUrl, 'OddsPapi (odds)');
+  if (!oddsData || !Array.isArray(oddsData)) return [];
+
+  return oddsData.slice(0,15).map(function(fx) {
+    var pin = {};
+    var pinData = fx.bookmakerOdds && fx.bookmakerOdds.pinnacle;
+    if (pinData && pinData.markets) {
+      // Market 101 is typically 1X2 in OddsPapi's schema; extract home/draw/away prices
+      var mkt1x2 = pinData.markets['101'];
+      if (mkt1x2 && mkt1x2.outcomes) {
+        var o = mkt1x2.outcomes;
+        if (o['101'] && o['101'].players && o['101'].players['0']) pin['h2h_home'] = parseFloat(o['101'].players['0'].price||0);
+        if (o['102'] && o['102'].players && o['102'].players['0']) pin['h2h_draw'] = parseFloat(o['102'].players['0'].price||0);
+        if (o['103'] && o['103'].players && o['103'].players['0']) pin['h2h_away'] = parseFloat(o['103'].players['0'].price||0);
+      }
+    }
+    return {id:fx.fixtureId, match:'fixture_'+fx.fixtureId, ko:fx.startTime, pin:pin};
+  }).filter(function(e){return Object.keys(e.pin).length>0;});
+}
+
+function shouldFetch(api) { return Date.now()-lastFetch[api] >= INTERVALS[api]; }
+
+async function runFetch() {
+  if (FETCH_RUNNING) { addDiag('Ya hay un escaneo en curso...'); return; }
+  FETCH_RUNNING = true;
+  LOADING = true;
+  setPulse('loading');
+  renderPage();
+
+  try {
+    var apis = ['theOdds','oddsApi','sgo','oddsPapi'].filter(shouldFetch);
+    if (!apis.length) {
+      addDiag('Nada que actualizar todavía (esperando intervalos)');
+      LOADING=false; FETCH_RUNNING=false; setPulse('live'); renderPage(); return;
+    }
+    addDiag('Escaneando: '+apis.join(', '));
+
+    var results = {};
+    var jobs = [];
+    if (apis.includes('theOdds'))  jobs.push(fetchTheOdds().then(function(r){results.theOdds=r||[]; lastFetch.theOdds=Date.now(); REQ.theOdds=(REQ.theOdds||0)+1;}).catch(function(e){addDiag('✗ theOdds: '+e.message.substring(0,40)); apiStatus.theOdds='error';}));
+    if (apis.includes('oddsApi'))  jobs.push(fetchOddsApiIo().then(function(r){results.oddsApi=r||[]; lastFetch.oddsApi=Date.now(); REQ.oddsApi=(REQ.oddsApi||0)+1;}).catch(function(e){addDiag('✗ oddsApi: '+e.message.substring(0,40)); apiStatus.oddsApi='error';}));
+    if (apis.includes('sgo'))      jobs.push(fetchSGO().then(function(r){results.sgo=r||[]; lastFetch.sgo=Date.now(); REQ.sgo=(REQ.sgo||0)+1;}).catch(function(e){addDiag('✗ sgo: '+e.message.substring(0,40)); apiStatus.sgo='error';}));
+    if (apis.includes('oddsPapi')) jobs.push(fetchOddsPapi().then(function(r){results.oddsPapi=r||[]; lastFetch.oddsPapi=Date.now(); REQ.oddsPapi=(REQ.oddsPapi||0)+1;}).catch(function(e){addDiag('✗ oddsPapi: '+e.message.substring(0,40)); apiStatus.oddsPapi='error';}));
+
+    await Promise.allSettled(jobs);
+    saveReq();
+
+    processDirectResults(results);
+    LAST_UP = Date.now();
+    REQ.lastScan = LAST_UP;
+    REQ.scanCount = (REQ.scanCount||0)+1;
+    saveReq();
+    addDiag('✓ Escaneo completo · '+MONITOR.length+' eventos · '+ALERTS.length+' alertas');
+    setPulse('live');
+
+  } catch(e) {
+    addDiag('✗ Error general: '+e.message.substring(0,60));
+    ERRORS.push({src:'runFetch', msg:e.message, t:Date.now()});
+    setPulse('error');
+  }
+
+  LOADING = false;
+  FETCH_RUNNING = false;
+  renderPage();
+  updateBadge();
+}
+
+function processDirectResults(results) {
+  var newAlerts=[], newSharp=[], newValue=[], newMon=[], newArb=[];
+  var totalRaw = 0;
+
+  ['theOdds','oddsApi','sgo'].forEach(function(src) {
+    totalRaw += (results[src]||[]).length;
+    (results[src]||[]).forEach(function(ev) {
+      if (!ev || !ev.id) return;
+      var pinMatch = (results.oddsPapi||[]).find(function(p){return p.id===ev.id;});
+      var pin = (ev.pin && Object.keys(ev.pin).length) ? ev.pin : (pinMatch ? pinMatch.pin : {});
+      var b365 = ev.b365 || {};
+      var winamax = ev.winamax || {};
+      var points = ev.points || {};
+      var hasAny = Object.keys(b365).length>0 || Object.keys(winamax).length>0 || Object.keys(pin).length>0;
+
+      if (hasAny) {
+        newMon.push({sport:ev.sport||'⚽', match:ev.match, comp:ev.comp||'', ko:ev.ko||'', b365:b365, winamax:winamax, pin:pin, src:ev.src});
+        if (Object.keys(b365).length>0 || Object.keys(winamax).length>0) {
+          detectEV(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, pin, newValue, newAlerts);
+          detectSharp(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, newSharp, newAlerts);
+          detectSuspension(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, newAlerts);
+          detectArbitrage(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, newArb, newAlerts);
+          detectMiddles(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, points, newArb, newAlerts);
+          HISTORY[ev.id] = {b365: Object.assign({}, b365), winamax: Object.assign({}, winamax), t: Date.now()};
+        }
+      }
+    });
+  });
+
+  addDiag('Procesado: '+totalRaw+' eventos crudos → '+newMon.length+' con cuotas'+(newArb.length?' · '+newArb.length+' arbitrajes':''));
+
+  newAlerts.forEach(function(a) { if(!ALERTS.find(function(x){return x.key===a.key;})) ALERTS.unshift(a); });
+  var priorityRank = {highvolume:-1, extreme:0, high:1, normal:2, undefined:2};
+  ALERTS.sort(function(a,b){
+    var pa = priorityRank[a.priority]!==undefined ? priorityRank[a.priority] : 2;
+    var pb = priorityRank[b.priority]!==undefined ? priorityRank[b.priority] : 2;
+    if (pa !== pb) return pa - pb;
+    return (b.t||0) - (a.t||0);
+  });
+  ALERTS=ALERTS.slice(0,50);
+  newSharp.forEach(function(s) { if(!SHARP.find(function(x){return x.key===s.key;})) SHARP.unshift(s); });
+  SHARP=SHARP.slice(0,30);
+  VALUEB=newValue.sort(function(a,b){return b.evNum-a.evNum;}).slice(0,20);
+  ARB=newArb.sort(function(a,b){return b.profitPct-a.profitPct;}).slice(0,15);
+  MONITOR=newMon.slice(0,30);
+}
+
+// ── DETECTORS ─────────────────────────────────────────────
+// Compara TUS dos casas (Bet365 y Winamax) contra Pinnacle (referencia sharp).
+// Para cada mercado, usa la MEJOR cuota entre tus dos casas.
+function buildMarketLabel(mktKey, sport) {
+  // mktKey examples: "h2h_Taylor Fritz", "totals_Over", "totals_Under", "h2h_Draw"
+  var parts = mktKey.split('_');
+  var marketType = parts[0]; // h2h | totals | spreads
+  var outcome = parts.slice(1).join('_').trim();
+
+  if (marketType === 'h2h') {
+    if (outcome.toLowerCase() === 'draw' || outcome.toLowerCase() === 'empate') return 'Empate';
+    return 'Victoria de ' + outcome;
+  }
+  if (marketType === 'totals') {
+    if (outcome.toLowerCase().includes('over')) return 'Más de goles/puntos (Over)';
+    if (outcome.toLowerCase().includes('under')) return 'Menos de goles/puntos (Under)';
+    return 'Total: ' + outcome;
+  }
+  if (marketType === 'spreads') return 'Hándicap: ' + outcome;
+  return outcome || mktKey;
+}
+
+// ── ARBITRAJE: beneficio garantizado entre Bet365 y Winamax ──
+// A diferencia del EV+, esto NO depende de estimar la probabilidad real con
+// Pinnacle. Si la suma de probabilidades implícitas de dos resultados
+// excluyentes en TUS dos casas es <100%, puedes apostar a ambos lados y
+// ganar dinero seguro sin importar el resultado. Es la categoría que toda
+// herramienta profesional (OddsJam, RebelBetting) ofrece y que nos faltaba.
+function detectArbitrage(id,sport,match,ko,b365,winamax,outArb,outA) {
+  if (!b365 || !winamax) return;
+  // Agrupar por tipo de mercado (h2h, totals, spreads) para comparar resultados opuestos
+  var groups = {};
+  Object.keys(b365).concat(Object.keys(winamax)).forEach(function(mkt) {
+    var marketType = mkt.split('_')[0];
+    if (!groups[marketType]) groups[marketType] = new Set();
+    groups[marketType].add(mkt);
+  });
+
+  Object.keys(groups).forEach(function(marketType) {
+    var outcomes = Array.from(groups[marketType]);
+    if (outcomes.length < 2) return; // necesita al menos 2 resultados excluyentes
+
+    // Para cada resultado, usar la MEJOR cuota disponible entre tus 2 casas
+    var bestPerOutcome = outcomes.map(function(mkt) {
+      var bVal = parseFloat((b365||{})[mkt]) || 0;
+      var wVal = parseFloat((winamax||{})[mkt]) || 0;
+      if (wVal > bVal) return {mkt:mkt, odds:wVal, book:'Winamax'};
+      return {mkt:mkt, odds:bVal, book:'Bet365'};
+    }).filter(function(o){ return o.odds > 1.01; });
+
+    if (bestPerOutcome.length < 2) return;
+
+    // Solo evaluar combinaciones de exactamente 2 resultados opuestos (h2h: ganador A vs B; totals: over vs under)
+    // Para h2h con 3 resultados (incluye empate) evaluamos pares, no la tripleta completa (más simple y más fiable con datos limitados)
+    for (var i=0; i<bestPerOutcome.length; i++) {
+      for (var j=i+1; j<bestPerOutcome.length; j++) {
+        var a = bestPerOutcome[i], b = bestPerOutcome[j];
+        if (a.book===b.book) continue; // arbitraje real requiere usar TUS DOS casas, no la misma
+        var impliedSum = (1/a.odds) + (1/b.odds);
+        if (impliedSum >= 1) continue; // no hay arbitraje, suma debe ser <100%
+        var profitPct = (1/impliedSum - 1) * 100;
+        if (profitPct < 0.5) continue; // ignorar márgenes insignificantes (probable error de datos)
+
+        var nameA = buildMarketLabel(a.mkt, sport);
+        var nameB = buildMarketLabel(b.mkt, sport);
+        var key = id+'_arb_'+a.mkt+'_'+b.mkt;
+
+        outArb.push({key:key, sport:sport, match:match, ko:ko,
+          outcomeA:nameA, bookA:a.book, oddsA:a.odds,
+          outcomeB:nameB, bookB:b.book, oddsB:b.odds,
+          profitPct:profitPct});
+
+        if (profitPct >= 1) outA.push({key:'arb_'+key, type:'arb', sport:sport, match:match, ko:ko, priority: profitPct>=3?'extreme':'high',
+          signal:'🎯 ARBITRAJE '+profitPct.toFixed(1)+'% GARANTIZADO',
+          detail:'Apostando a "'+nameA+'" en '+a.book+' ('+a.odds.toFixed(2)+') Y a "'+nameB+'" en '+b.book+' ('+b.odds.toFixed(2)+') al mismo tiempo, ganas dinero seguro sin importar el resultado del evento. Esto no es una predicción — es matemática garantizada mientras ambas cuotas se mantengan.',
+          arbDetails:{outcomeA:nameA, bookA:a.book, oddsA:a.odds, outcomeB:nameB, bookB:b.book, oddsB:b.odds, profitPct:profitPct},
+          t:Date.now()});
+      }
+    }
+  });
+}
+
+// ── MIDDLES: cuando hay un "hueco" entre las líneas de Bet365 y Winamax ──
+// Ejemplo: Bet365 ofrece "Over 2.5" y Winamax ofrece "Under 3.5" en el mismo
+// partido. Si el resultado final es exactamente 3 goles, GANAS LAS DOS apuestas
+// (no solo no pierdes — ganas el doble). Si cae fuera de ese rango, pierdes solo
+// una de las dos como en una apuesta normal. Requiere el valor de línea (point),
+// que solo The Odds API nos da de momento.
+function detectMiddles(id,sport,match,ko,b365,winamax,points,outArb,outA) {
+  // NOTA DE DISEÑO: los middles solo se envían a outA (Alertas), NUNCA a outArb
+  // (pestaña Arbitraje), a propósito. Mezclar "riesgo limitado" con "beneficio
+  // garantizado" en la misma lista sería confuso y potencialmente peligroso.
+  if (!points || !Object.keys(points).length) return;
+  // Agrupar puntos por tipo de mercado (totals_Over, totals_Under, etc.)
+  var totalsKeys = Object.keys(points).filter(function(k){ return k.indexOf('totals_')===0; });
+  var overKeys = totalsKeys.filter(function(k){ return k.toLowerCase().includes('over'); });
+  var underKeys = totalsKeys.filter(function(k){ return k.toLowerCase().includes('under'); });
+
+  overKeys.forEach(function(overK) {
+    underKeys.forEach(function(underK) {
+      var overInfo = points[overK], underInfo = points[underK];
+      if (!overInfo || !underInfo) return;
+      if (overInfo.book === underInfo.book) return; // necesita ser de casas distintas (la misma casa no genera middle, son sus 2 caras del mismo mercado)
+
+      var overPoint = overInfo.point, underPoint = underInfo.point;
+      // Middle real: la línea de "Under" debe ser MAYOR que la de "Over" para crear un hueco
+      var gap = underPoint - overPoint;
+      if (gap <= 0) return; // no hay hueco, son líneas normales sin oportunidad
+
+      var overOdds = overInfo.book==='Bet365' ? parseFloat(b365[overK]||0) : parseFloat(winamax[overK]||0);
+      var underOdds = underInfo.book==='Bet365' ? parseFloat(b365[underK]||0) : parseFloat(winamax[underK]||0);
+      if (overOdds<=1.01 || underOdds<=1.01) return;
+
+      var key = id+'_middle_'+overK+'_'+underK;
+      var winningNumbers = gap - 1; // ej: gap de 1.0 (2.5 a 3.5) = 1 resultado exacto (3) gana ambas
+      if (winningNumbers < 0.5) return; // hueco demasiado pequeño para ser relevante
+
+      outA.push({key:'mid_'+key, type:'arb', sport:sport, match:match, ko:ko, priority:'high',
+        signal:'🎯 MIDDLE — hueco de '+gap.toFixed(1)+' entre líneas',
+        detail:'Apostando "Más de '+overPoint+'" en '+overInfo.book+' ('+overOdds.toFixed(2)+') Y "Menos de '+underPoint+'" en '+underInfo.book+' ('+underOdds.toFixed(2)+'), si el resultado cae justo en el medio ganas AMBAS apuestas. Si cae fuera, pierdes solo una como en una apuesta normal — el riesgo es limitado y la recompensa puede ser doble.',
+        arbDetails:{outcomeA:'Más de '+overPoint, bookA:overInfo.book, oddsA:overOdds, outcomeB:'Menos de '+underPoint, bookB:underInfo.book, oddsB:underOdds, profitPct:0, isMiddle:true},
+        t:Date.now()});
+    });
+  });
+}
+
+function detectEV(id,sport,match,ko,b365,winamax,pin,outV,outA) {
+  if (!pin || !Object.keys(pin).length) return;
+  var allMarkets = new Set(Object.keys(b365||{}).concat(Object.keys(winamax||{})));
+  allMarkets.forEach(function(mkt) {
+    var p = parseFloat(pin[mkt]);
+    if (!p || p<=1.01) return;
+    var name = buildMarketLabel(mkt, sport);
+
+    var bVal = parseFloat((b365||{})[mkt]) || 0;
+    var wVal = parseFloat((winamax||{})[mkt]) || 0;
+    if (bVal<=1.01 && wVal<=1.01) return;
+
+    var bEv = bVal>1.01 ? ((bVal/p)-1)*100 : null;
+    var wEv = wVal>1.01 ? ((wVal/p)-1)*100 : null;
+
+    // Mostrar SIEMPRE ambas casas juntas si al menos una tiene EV+ >=5%, para poder comparar
+    var qualifies = (bEv!==null && bEv>=5) || (wEv!==null && wEv>=5);
+    if (!qualifies) return;
+
+    var bestEv = Math.max(bEv||-999, wEv||-999);
+    var key=id+'_'+mkt;
+    outV.push({key:key,sport:sport,match:match,ko:ko,market:name,
+      b365odds: bVal||null, b365ev: bEv,
+      winamaxOdds: wVal||null, winamaxEv: wEv,
+      pinnacle:p, ev:bestEv.toFixed(1), evNum:bestEv});
+
+    // Registro automático para CLV: cada pick que cumple el umbral se guarda con su
+    // cuota de apertura, sin que el usuario tenga que marcar nada manualmente.
+    if (bEv!==null && bEv>=5) logPick(key+'_Bet365', {sport:sport, match:match, market:name, book:'Bet365', odds:bVal, pinnacle:p, ev:bEv.toFixed(1), ko:ko});
+    if (wEv!==null && wEv>=5) logPick(key+'_Winamax', {sport:sport, match:match, market:name, book:'Winamax', odds:wVal, pinnacle:p, ev:wEv.toFixed(1), ko:ko});
+
+    if (bestEv>6) {
+      var bestBook = (wEv||-999) > (bEv||-999) ? 'Winamax' : 'Bet365';
+      var bestOdds = bestBook==='Winamax' ? wVal : bVal;
+      outA.push({key:'ev_'+key,type:'value',sport:sport,match:match,ko:ko,
+        signal:'EV+'+bestEv.toFixed(1)+'% — '+name+' ('+bestBook+')',
+        detail:'Apuesta: "'+name+'". '+bestBook+' paga '+bestOdds.toFixed(2)+' cuando Pinnacle lo tiene a '+p.toFixed(2)+'. La casa está equivocada. Ventana de valor abierta — actúa antes de que corrija.',
+        from:p.toFixed(2),to:bestOdds.toFixed(2),bestBook:bestBook,market:name,ev:bestEv.toFixed(1),t:Date.now()});
+    }
+  });
+}
+
+// Sharp money: detecta movimiento en CUALQUIERA de tus dos casas
+function detectSharp(id,sport,match,ko,b365,winamax,outS,outA) {
+  var prev=HISTORY[id]; if (!prev) return;
+  var minsSincePrev = prev.t ? (Date.now()-prev.t)/60000 : null;
+  var movesThisEvent = {}; // mkt -> {Bet365: chg, Winamax: chg} para detectar coordinación
+
+  [{curr:b365, prevB:prev.b365, book:'Bet365'}, {curr:winamax, prevB:prev.winamax, book:'Winamax'}].forEach(function(pair) {
+    if (!pair.curr || !pair.prevB) return;
+    Object.keys(pair.curr).forEach(function(mkt) {
+      var c=parseFloat(pair.curr[mkt]); var o=parseFloat(pair.prevB[mkt]);
+      if (!c||!o||c<=1.01||o<=1.01) return;
+      var chg=((o-c)/o)*100; if (Math.abs(chg)<5) return;
+      var dir=chg>0?'BAJADA':'SUBIDA';
+      var name=mkt.replace(/_/g,' ').replace(/^h2h /,'').trim();
+      var key=id+'_'+mkt+'_'+dir+'_'+pair.book;
+      var absChg = Math.abs(chg);
+      // Velocidad: % de cambio por minuto. Un mismo % en 3 min es mucho más
+      // raro estadísticamente que en 90 min — es la señal más cercana a
+      // "una sola apuesta enorme de golpe" que se puede inferir públicamente.
+      var ratePerMin = (minsSincePrev && minsSincePrev>0) ? absChg/minsSincePrev : null;
+      var isFast = ratePerMin!==null && ratePerMin>=3 && minsSincePrev<=15;
+      // Magnitud del movimiento = proxy de tamaño de la apuesta que lo causó.
+      var priority = absChg>=20 ? 'extreme' : absChg>=10 ? 'high' : 'normal';
+      // Perfil de alto volumen: magnitud alta Y rápida. Es inferencia estadística,
+      // NUNCA identificación de quién apostó — eso no es posible con datos públicos.
+      var highVolumeProfile = (priority==='extreme' || priority==='high') && isFast;
+      if (highVolumeProfile) priority = 'highvolume';
+
+      if (!movesThisEvent[mkt]) movesThisEvent[mkt] = {};
+      movesThisEvent[mkt][pair.book] = {chg:chg, dir:dir, from:o, to:c, name:name, isFast:isFast};
+
+      outS.push({key:key,sport:sport,match:match,ko:ko,market:name,book:pair.book,from:o.toFixed(2),to:c.toFixed(2),chg:absChg.toFixed(1),dir:dir,priority:priority,t:Date.now()});
+      if (absChg>4) {
+        var sig = highVolumeProfile ? '🏆 PERFIL ALTO VOLUMEN — ' : (priority==='extreme'?'🚨 MOVIMIENTO MASIVO — ':'');
+        var det = highVolumeProfile
+          ? 'Movimiento de '+absChg.toFixed(1)+'% en solo '+minsSincePrev.toFixed(0)+' min en '+pair.book+'. Esta combinación de magnitud y velocidad es estadísticamente rara en apuestas normales acumuladas — el patrón es compatible con una operación de alto volumen. Importante: esto es una inferencia estadística sobre el PATRÓN del movimiento, no una identificación de quién apostó; esa información no es pública en ningún sitio. '
+          : (priority==='extreme'?'Movimiento de esta magnitud en una sola actualización es propio de apuestas muy grandes (cinco-seis cifras), del tipo que mueven los sindicatos profesionales. ':'');
+        outA.push({key:'sh_'+key,type:'sharp',sport:sport,match:match,ko:ko,market:name,priority:priority,
+          signal:sig+dir+' '+absChg.toFixed(1)+'% en '+pair.book+' — '+name,
+          detail:det+'Cuota de '+pair.book+' movida de '+o.toFixed(2)+' a '+c.toFixed(2)+'. Sin noticia pública que lo justifique = dinero entrando con fuerza. Actúa antes de que baje más.',
+          from:o.toFixed(2),to:c.toFixed(2),book:pair.book,chg:absChg.toFixed(1),dir:dir,t:Date.now()});
+      }
+    });
+  });
+
+  // ── SEÑAL COORDINADA: ambas casas se mueven en la misma dirección ──
+  // Esto es más fiable que un movimiento aislado — indica que el mercado
+  // global está corrigiendo, no solo una casa concreta. Si además es rápida
+  // y de magnitud extrema, es la inferencia más fuerte posible con datos públicos.
+  Object.keys(movesThisEvent).forEach(function(mkt) {
+    var m = movesThisEvent[mkt];
+    if (m.Bet365 && m.Winamax && m.Bet365.dir === m.Winamax.dir) {
+      var avgChg = (Math.abs(m.Bet365.chg) + Math.abs(m.Winamax.chg)) / 2;
+      var dir = m.Bet365.dir;
+      var name = m.Bet365.name;
+      var bothFast = m.Bet365.isFast && m.Winamax.isFast;
+      var coordPriority = avgChg>=15 ? 'extreme' : avgChg>=8 ? 'high' : 'normal';
+      if (bothFast && (coordPriority==='extreme'||coordPriority==='high')) coordPriority = 'highvolume';
+      var sig = coordPriority==='highvolume' ? '🏆🔥 PERFIL ALTO VOLUMEN COORDINADO — ' : (coordPriority==='extreme'?'🚨🔥 INVERSIÓN MASIVA COORDINADA — ':'🔥 SEÑAL COORDINADA — ');
+      var det = coordPriority==='highvolume'
+        ? 'Ambas casas se mueven a la vez Y muy rápido ('+minsSincePrev.toFixed(0)+' min). Es el patrón público más cercano a una operación de alto volumen coordinada en varios libros — pero sigue siendo inferencia estadística sobre el patrón, no identificación de quién está detrás. '
+        : (coordPriority==='extreme'?'Esto es lo más cercano a confirmar que hay dinero grande moviendo el mercado ahora mismo: ':'');
+      outA.push({key:'coord_'+id+'_'+mkt+'_'+dir, type:'sharp', sport:sport, match:match, ko:ko, market:name, priority:coordPriority,
+        signal:sig+dir+' en Bet365 Y Winamax — '+name,
+        detail:det+'Ambas casas se mueven en la misma dirección a la vez: Bet365 '+Math.abs(m.Bet365.chg).toFixed(1)+'%, Winamax '+Math.abs(m.Winamax.chg).toFixed(1)+'%. Esto indica que el mercado en general está corrigiendo, no solo una casa — señal mucho más fiable que un movimiento aislado.',
+        from:m.Bet365.from.toFixed(2), to:m.Bet365.to.toFixed(2), chg:avgChg.toFixed(1), dir:dir, coordinated:true, t:Date.now()});
+    }
+  });
+}
+
+// ── DETECCIÓN DE SUSPENSIÓN DE MERCADO ─────────────────────
+// Cuando un mercado que existía en el escaneo anterior desaparece del
+// actual, suele indicar que la casa lo ha suspendido temporalmente para
+// recalcular tras una apuesta grande — señal fuerte según método Walters.
+function detectSuspension(id,sport,match,ko,b365,winamax,outA) {
+  var prev=HISTORY[id]; if (!prev) return;
+  [{curr:b365, prevB:prev.b365, book:'Bet365'}, {curr:winamax, prevB:prev.winamax, book:'Winamax'}].forEach(function(pair) {
+    if (!pair.prevB) return;
+    // Evitar falso positivo: si esta casa no devolvió NINGÚN mercado en este escaneo,
+    // probablemente es un fallo de red nuestro, no una suspensión real de la casa.
+    var bookRespondedThisScan = pair.curr && Object.keys(pair.curr).length > 0;
+    if (!bookRespondedThisScan) return;
+    Object.keys(pair.prevB).forEach(function(mkt) {
+      var hadBefore = parseFloat(pair.prevB[mkt]) > 1.01;
+      var hasNow = parseFloat(pair.curr[mkt]) > 1.01;
+      if (hadBefore && !hasNow) {
+        var name=mkt.replace(/_/g,' ').replace(/^h2h /,'').trim();
+        outA.push({key:'susp_'+id+'_'+mkt+'_'+pair.book, type:'sharp', sport:sport, match:match, ko:ko, market:name,
+          signal:'⏸️ MERCADO SUSPENDIDO en '+pair.book+' — '+name,
+          detail:pair.book+' ha retirado temporalmente esta cuota concreta (estaba en '+parseFloat(pair.prevB[mkt]).toFixed(2)+'), mientras otros mercados de la misma casa siguen activos. Las casas suspenden mercados cuando reciben una apuesta grande y necesitan recalcular el precio. Vigila si reaparece con una cuota distinta.',
+          from:parseFloat(pair.prevB[mkt]).toFixed(2), to:'suspendido', book:pair.book, suspended:true, t:Date.now()});
+      }
+    });
+  });
+}
+
+// ── RENDER ─────────────────────────────────────────────────
+function go(pg) {
+  PAGE=pg;
+  document.querySelectorAll('.ntab').forEach(function(b){b.classList.toggle('on',b.dataset.p===pg);});
+  renderPage();
+}
+function renderPage() {
+  var m=document.getElementById('main'); if(!m) return;
+  var fn={alerts:pgAlerts,sharp:pgSharp,value:pgValue,arb:pgArb,history:pgHistory,config:pgConfig,legendsview:pgLegends};
+  m.innerHTML=(fn[PAGE]||pgAlerts)();
+  m.scrollTop=0;
+}
+function ago(ts) {
+  if(!ts) return ''; var s=Math.floor((Date.now()-ts)/1000);
+  if(s<60) return 'hace '+s+'s'; if(s<3600) return 'hace '+Math.floor(s/60)+'min'; return 'hace '+Math.floor(s/3600)+'h';
+}
+function fko(iso) { if(!iso) return ''; try{var d=new Date(iso);return d.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})+'h';}catch(e){return '';} }
+
+// ── PAGE ALERTS ────────────────────────────────────────────
+function pgAlerts() {
+  var h='<div class="card cs" style="margin-bottom:14px">'
+    +'<div style="font-size:11px;color:var(--sharp);font-weight:800;letter-spacing:.8px;margin-bottom:4px">🚨 ALERTAS EN TIEMPO REAL</div>'
+    +'<div style="font-size:12px;color:var(--sub)">El resumen ejecutivo. Cuando Sharp$ o EV+ detectan algo importante aparece aquí primero.</div>'
+    +'<div style="display:flex;justify-content:space-between;margin-top:6px">'
+    +'<div style="font-size:11px;color:var(--muted)">4 APIs · 700+ casas</div>'
+    +'<div style="font-size:11px;color:var(--muted)">'+(LAST_UP?ago(LAST_UP):'nunca')+'</div>'
+    +'</div></div>';
+
+  if (LOADING&&!ALERTS.length) {
+    var diagHtml = DIAG.length ? '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:10px;margin-bottom:10px"><div style="font-size:10px;color:var(--info);font-weight:800;margin-bottom:6px">🔍 DIAGNÓSTICO</div>'+DIAG.slice(0,15).map(function(d){return '<div style="font-size:10px;color:var(--sub);padding:1px 0">'+d+'</div>';}).join('')+'</div>' : '';
+    return h+'<div class="loadbox"><div class="spin"></div>Consultando APIs...</div>'+diagHtml+howItWorks();
+  }
+  if (!ALERTS.length) return h+howItWorks()+'<div class="empty"><div class="ei">🔍</div><h3>Escaneando el mercado...</h3><p>Las alertas aparecerán aquí en cuanto se detecte un movimiento de cuota anómalo o un EV+ entre Bet365 y Pinnacle.</p></div>';
+
+  var sharp=ALERTS.filter(function(a){return a.type==='sharp';});
+  var value=ALERTS.filter(function(a){return a.type==='value';});
+  if(sharp.length){h+='<div class="shdr">💰 SHARP MONEY · '+sharp.length+'</div>'; sharp.slice(0,5).forEach(function(a){h+=aCard(a);});}
+  if(value.length){h+='<div class="shdr">📊 EV+ DETECTADO · '+value.length+'</div>'; value.slice(0,5).forEach(function(a){h+=aCard(a);});}
+  return h;
+}
+
+function howItWorks() {
+  return '<div class="card cn" style="margin-bottom:12px">'
+    +'<div style="font-size:10px;color:var(--muted);font-weight:800;letter-spacing:.8px;margin-bottom:8px">🧠 CÓMO DETECTAMOS SEÑALES (MÉTODO BILLY WALTERS)</div>'
+    +'<div style="display:flex;flex-direction:column;gap:7px">'
+    +'<div style="font-size:12px;color:var(--sub)">📉 <strong style="color:var(--text)">Caída >5% sin noticia</strong> → alguien apostó antes que tú</div>'
+    +'<div style="font-size:12px;color:var(--sub)">📊 <strong style="color:var(--text)">Bet365 paga más que Pinnacle</strong> → la casa está equivocada</div>'
+    +'<div style="font-size:12px;color:var(--sub)">⚡ <strong style="color:var(--text)">Velocidad</strong> → actúa antes de que la cuota corrija</div>'
+    +'</div></div>';
+}
+
+function badgeTxtCoord(isExtreme) { return isExtreme ? '🚨🔥 INVERSIÓN MASIVA COORDINADA' : '🔥 SEÑAL COORDINADA'; }
+
+function aCard(a) {
+  var isS=a.type==='sharp'; var isArb=a.type==='arb' && !(a.arbDetails&&a.arbDetails.isMiddle);
+  var isMiddle=a.type==='arb' && a.arbDetails&&a.arbDetails.isMiddle;
+  var col=isS?'var(--sharp)':(isArb||isMiddle)?'#00FF87':'var(--value)';
+  var isHighVol = a.priority === 'highvolume';
+  var isExtreme = a.priority === 'extreme';
+  var badgeTxt = a.suspended ? '⏸️ MERCADO SUSPENDIDO'
+    : isMiddle ? '🎯 MIDDLE — riesgo limitado'
+    : isArb ? '🎯 ARBITRAJE GARANTIZADO'
+    : a.coordinated ? (isHighVol ? '🏆🔥 PERFIL ALTO VOLUMEN COORDINADO' : badgeTxtCoord(isExtreme))
+    : isS ? (isHighVol ? '🏆 PERFIL ALTO VOLUMEN' : isExtreme?'🚨 MOVIMIENTO MASIVO':'💰 SHARP MONEY')
+    : '📊 EV+ DETECTADO';
+  var cardStyle = (isArb||isMiddle) ? 'style="border:2px solid #00FF87;box-shadow:0 0 16px rgba(0,255,135,.25)"'
+    : isHighVol ? 'style="border:2px solid #00FF87;box-shadow:0 0 20px rgba(0,255,135,.3)"'
+    : isExtreme ? 'style="border:2px solid #FFD600;box-shadow:0 0 16px rgba(255,214,0,.25)"'
+    : (a.coordinated ? 'style="border:2px solid var(--sharp)"' : '');
+  return '<div class="card '+(isS?'cs':'cv')+'" '+cardStyle+'>'
+    +(isMiddle?'<div style="font-size:10px;font-weight:900;color:var(--warn);margin-bottom:6px;letter-spacing:.5px">⚠️ RIESGO LIMITADO — no es beneficio garantizado</div>':'')
+    +(isArb?'<div style="font-size:10px;font-weight:900;color:#00FF87;margin-bottom:6px;letter-spacing:.5px">💎 SIN RIESGO — apuesta a ambos lados</div>':'')
+    +(isHighVol?'<div style="font-size:10px;font-weight:900;color:#00FF87;margin-bottom:6px;letter-spacing:.5px">🏆 PATRÓN DE ALTO VOLUMEN — magnitud + velocidad inusuales</div>':'')
+    +(isExtreme&&!isHighVol?'<div style="font-size:10px;font-weight:900;color:#FFD600;margin-bottom:6px;letter-spacing:.5px">⚡ PRIORIDAD MÁXIMA — INVESTIGAR AHORA</div>':'')
+    +'<div class="badge '+(isS?'bs':'bv')+'">'+badgeTxt+'</div>'
+    +'<div class="mt">'+(a.sport||'')+' '+(a.match||'').replace('vs',' vs ')+'</div>'
+    +'<div class="ms">'+(a.ko?fko(a.ko)+' · ':'')+( a.t?ago(a.t):'')+'</div>'
+    +'<div style="background:var(--bg3);border-left:3px solid '+col+';border-radius:0 8px 8px 0;padding:9px 12px;margin-bottom:9px">'
+    +'<div style="font-size:11px;color:'+col+';font-weight:700;margin-bottom:3px">📡 '+(a.signal||'')+'</div>'
+    +'<div style="font-size:12px;color:var(--sub);line-height:1.6">'+(a.detail||'')+'</div>'
+    +'</div>'
+    +((isArb||isMiddle)&&a.arbDetails?'<div class="orow">'
+      +'<div class="obox" style="border-color:var(--value);border-width:2px"><div class="olbl" style="color:var(--info)">'+a.arbDetails.bookA.toUpperCase()+'</div><div class="oval" style="color:var(--value)">'+a.arbDetails.oddsA.toFixed(2)+'</div></div>'
+      +'<div class="obox" style="border-color:var(--value);border-width:2px"><div class="olbl" style="color:#FF8800">'+a.arbDetails.bookB.toUpperCase()+'</div><div class="oval" style="color:var(--value)">'+a.arbDetails.oddsB.toFixed(2)+'</div></div>'
+      +'</div>':'')
+    +(a.from&&a.to&&!a.suspended&&!isArb&&!isMiddle?'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">'
+      +'<span style="font-size:15px;font-weight:900;color:var(--sub)">'+a.from+'</span>'
+      +'<span style="color:var(--muted)">→</span>'
+      +'<span style="font-size:15px;font-weight:900;color:'+col+'">'+a.to+'</span>'
+      +(a.chg?'<span class="chip chip-d">▼'+a.chg+'%</span>':a.ev?'<span class="chip chip-u">EV+'+a.ev+'%</span>':'')
+      +((a.book||a.bestBook)?'<span style="font-size:10px;color:var(--muted);font-weight:700;background:var(--bg3);padding:3px 8px;border-radius:6px">'+(a.book||a.bestBook)+'</span>':'')
+      +'</div>':'')
+    +(a.suspended?'<div style="margin-bottom:8px"><span style="font-size:13px;color:var(--muted)">Última cuota antes de suspender: <strong style="color:var(--text)">'+a.from+'</strong></span></div>':'')
+    +'<div class="bot" style="border-left-color:'+col+'">'
+    +'<div class="bot-l" style="color:'+col+'">🤖 DECISIÓN</div>'
+    +'<div class="bot-t">'+botTxt(a)+'</div>'
+    +'</div></div>';
+}
+
+function botTxt(a) {
+  if(a.type==='arb' && a.arbDetails){
+    var d = a.arbDetails;
+    if (d.isMiddle) {
+      var equalStake = (BANKROLL*0.05); // 5% banca repartido a partes iguales, riesgo real
+      return 'CONSIDERAR — Apuesta <strong style="color:var(--value)">'+(equalStake/2).toFixed(2)+'€</strong> en '+d.bookA+' a "'+d.outcomeA+'" y <strong style="color:var(--value)">'+(equalStake/2).toFixed(2)+'€</strong> en '+d.bookB+' a "'+d.outcomeB+'". Si el resultado cae en el hueco, ganas el doble. Si no, pierdes solo una de las dos — <strong>esto NO es beneficio garantizado</strong>, es una apuesta de riesgo limitado con recompensa extra.';
+    }
+    var stakes = calcArbStakes(d.oddsA, d.oddsB, BANKROLL*0.1);
+    return 'EJECUTAR — Apuesta <strong style="color:var(--value)">'+stakes.stakeA.toFixed(2)+'€</strong> en '+d.bookA+' a "'+d.outcomeA+'" y <strong style="color:var(--value)">'+stakes.stakeB.toFixed(2)+'€</strong> en '+d.bookB+' a "'+d.outcomeB+'". Ganas <strong style="color:var(--value)">'+stakes.profit.toFixed(2)+'€</strong> sin importar el resultado. Actúa rápido, estas discrepancias se corrigen en minutos.';
+  }
+  if(a.suspended){
+    return 'VIGILAR — '+a.book+' ha retirado esta cuota temporalmente. No se puede apostar hasta que reaparezca. Cuando vuelva, compara la nueva cuota con la anterior ('+a.from+') para ver si subió o bajó — eso te dirá hacia qué lado se movió el dinero grande.';
+  }
+  if(a.type==='sharp'){var c=parseFloat(a.chg||0);
+    var bookName = a.coordinated ? 'Bet365 Y Winamax' : (a.book || 'tu casa');
+    var stakeInfo = calcStake(parseFloat(a.to), parseFloat(a.to)*0.95);
+    var stakeTxt = stakeInfo ? ' <strong style="color:var(--value)">Apuesta sugerida: '+stakeInfo.stake.toFixed(0)+'€</strong> ('+stakeInfo.pct.toFixed(1)+'% de tu banca) en '+bookName+'.' : '';
+    if(a.coordinated) return 'EJECUTAR AHORA — Movimiento coordinado del '+c.toFixed(1)+'% en ambas casas a la vez. Esto es más fiable que un movimiento aislado: indica que el mercado entero está corrigiendo, no solo una casa.'+stakeTxt;
+    if(c>15) return 'EJECUTAR AHORA — Caída del '+c+'% en '+bookName+' es señal sharp muy fuerte. Como haría Walters: actúa inmediatamente antes de que la cuota siga bajando.'+stakeTxt;
+    if(c>8) return 'EJECUTAR — Movimiento del '+c+'% en '+bookName+'. Dinero profesional confirmado. Cuota '+a.to+' todavía con valor.'+stakeTxt;
+    return 'VIGILAR — Movimiento del '+c+'% en '+bookName+'. Monitorizar si continúa la tendencia. Esperar confirmación antes de actuar.';}
+  var e=parseFloat(a.ev||0);
+  var bookName2 = a.bestBook || 'Bet365';
+  var bestOdds = parseFloat(a.to);
+  var pinOdds = parseFloat(a.from);
+  var marketTxt = a.market ? '<strong style="color:var(--text)">'+a.market+'</strong>' : 'esta cuota';
+  var stakeInfo2 = calcStake(bestOdds, pinOdds);
+  var stakeTxt2 = stakeInfo2 ? ' <strong style="color:var(--value)">Apuesta sugerida: '+stakeInfo2.stake.toFixed(0)+'€</strong> ('+stakeInfo2.pct.toFixed(1)+'% de tu banca, Kelly 25%) en '+bookName2+'.' : ' No se puede calcular stake con estos datos.';
+  if(e>20) return 'EJECUTAR AHORA — Apuesta a '+marketTxt+'. EV+'+e.toFixed(1)+'% es enorme. '+bookName2+' paga '+a.to+' vs Pinnacle a '+a.from+'. Bill Benter apostó toda su vida a este tipo de ineficiencias.'+stakeTxt2;
+  if(e>12) return 'EJECUTAR — Apuesta a '+marketTxt+'. EV+'+e.toFixed(1)+'% matemáticamente positivo en '+bookName2+'. A largo plazo esta cuota genera beneficio constante.'+stakeTxt2;
+  return 'CONSIDERAR — Apuesta a '+marketTxt+'. EV+'+e.toFixed(1)+'% en '+bookName2+'. Valor real pero moderado.'+stakeTxt2;
+}
+
+// ── PAGE SHARP ─────────────────────────────────────────────
+function pgSharp() {
+  var h='<div class="card cp" style="margin-bottom:12px">'
+    +'<div style="font-size:11px;color:var(--purple);font-weight:800;letter-spacing:.8px;margin-bottom:5px">💰 SHARP MONEY — QUÉ ES Y CÓMO USARLO</div>'
+    +'<div style="font-size:12px;color:var(--sub);line-height:1.65">'
+    +'Cuando una cuota cae bruscamente sin que haya una noticia que lo explique, es porque alguien con mucho dinero ha apostado. Billy Walters ganó $200M haciendo exactamente esto: <strong style="color:var(--text)">detectar el movimiento y actuar antes de que la cuota baje más.</strong>'
+    +'</div>'
+    +'<div style="margin-top:8px;font-size:11px;color:var(--muted)">Detectamos caídas >5% entre consultas · Tus casas: Bet365 + Winamax</div>'
+    +'</div>';
+
+  if(LOADING&&!SHARP.length) return h+'<div class="loadbox"><div class="spin"></div>Analizando movimientos de línea...</div>';
+  if(!SHARP.length) return h+'<div class="empty"><div class="ei">📡</div><h3>Sin movimientos detectados aún</h3><p>La app compara cada actualización con la anterior. En cuanto una cuota baje >5% sin noticia pública, aparecerá aquí con la alerta y la decisión del bot.</p></div>';
+
+  SHARP.forEach(function(s) {
+    var isD=s.dir==='BAJADA'; var col=isD?'var(--sharp)':'var(--value)';
+    h+='<div class="card '+(isD?'cs':'cv')+'">'
+      +'<div class="badge '+(isD?'bs':'bv')+'">'+(isD?'▼ CUOTA BAJA '+s.chg+'%':'▲ CUOTA SUBE '+s.chg+'%')+' · '+(s.book||'')+'</div>'
+      +'<div class="mt">'+(s.sport||'')+' '+(s.match||'').replace('vs',' vs ')+'</div>'
+      +'<div class="ms">'+(fko(s.ko)||'')+(s.t?' · '+ago(s.t):'')+'</div>'
+      +'<div style="font-size:11px;color:var(--muted);margin-bottom:9px">Mercado: <strong style="color:var(--text)">'+s.market+'</strong> en <strong style="color:var(--text)">'+(s.book||'')+'</strong></div>'
+      +'<div style="display:flex;gap:8px;align-items:center;margin-bottom:9px">'
+      +'<div style="flex:1;text-align:center;background:var(--bg3);border-radius:9px;padding:9px">'
+      +'<div style="font-size:9px;color:var(--muted);font-weight:700;margin-bottom:4px">ANTES</div>'
+      +'<div style="font-size:24px;font-weight:900;color:var(--sub)">'+s.from+'</div>'
+      +'</div>'
+      +'<div style="font-size:20px;color:var(--muted)">→</div>'
+      +'<div style="flex:1;text-align:center;background:var(--bg3);border:2px solid '+col+';border-radius:9px;padding:9px">'
+      +'<div style="font-size:9px;color:'+col+';font-weight:700;margin-bottom:4px">AHORA</div>'
+      +'<div style="font-size:24px;font-weight:900;color:'+col+'">'+s.to+'</div>'
+      +'</div>'
+      +'<span class="chip '+(isD?'chip-d':'chip-u')+'" style="font-size:13px">'+(isD?'▼':'▲')+s.chg+'%</span>'
+      +'</div>'
+      +'<div class="bot" style="border-left-color:'+col+'">'
+      +'<div class="bot-l" style="color:'+col+'">🤖 DECISIÓN</div>'
+      +'<div class="bot-t">'+(function(){
+        var si = calcStake(parseFloat(s.to), parseFloat(s.to)*0.95);
+        var st = si ? ' <strong style="color:var(--value)">Apuesta sugerida: '+si.stake.toFixed(0)+'€</strong> ('+si.pct.toFixed(1)+'%) en '+(s.book||'')+'.' : '';
+        if (isD&&parseFloat(s.chg)>10) return 'EJECUTAR — Caída del '+s.chg+'% en '+(s.book||'')+' = sharp money confirmado. Actúa en cuota '+s.to+' ahora antes de que siga bajando.'+st;
+        if (isD) return 'VIGILAR — Caída del '+s.chg+'% en '+(s.book||'')+'. Si continúa en la próxima actualización, ejecutar.';
+        return 'ANALIZAR — Subida del '+s.chg+'% en '+(s.book||'')+'. Puede indicar dinero saliendo o corrección. No ejecutar todavía.';
+      })()
+      +'</div></div></div>';
+  });
+  return h;
+}
+
+// ── PAGE VALUE (EV+) ───────────────────────────────────────
+function pgValue() {
+  var pinAgeMs = lastFetch.oddsPapi ? (Date.now() - lastFetch.oddsPapi) : null;
+  var pinAgeH = pinAgeMs ? (pinAgeMs/3600000) : null;
+  var freshnessColor = pinAgeH===null ? 'var(--muted)' : pinAgeH<2 ? 'var(--value)' : pinAgeH<5 ? 'var(--warn)' : 'var(--sharp)';
+  var freshnessTxt = pinAgeH===null ? 'Pinnacle aún no se ha actualizado en esta sesión' : 'Pinnacle actualizado hace '+(pinAgeH<1?Math.round(pinAgeMs/60000)+' min':pinAgeH.toFixed(1)+'h');
+
+  var h='<div class="card cv" style="margin-bottom:12px">'
+    +'<div style="font-size:11px;color:var(--value);font-weight:800;letter-spacing:.8px;margin-bottom:5px">📊 EV+ — QUÉ ES Y POR QUÉ FUNCIONA</div>'
+    +'<div style="font-size:12px;color:var(--sub);line-height:1.65">'
+    +'<strong style="color:var(--text)">Pinnacle</strong> es el libro de apuestas de referencia mundial. Los profesionales apuestan allí porque no limita. Sus cuotas son las más eficientes. Cuando Bet365 paga <em>más</em> que Pinnacle para el mismo evento, Bet365 está equivocada. Ese es el valor. <strong style="color:var(--value)">Bill Benter construyó un algoritmo para hacer esto exactamente y ganó $118M en un solo día.</strong>'
+    +'</div>'
+    +'<div style="margin-top:8px;font-size:11px;color:var(--muted)">EV+ = (Bet365/Pinnacle - 1) × 100. Umbral mínimo: 5%</div>'
+    +'<div style="margin-top:6px;font-size:11px;color:'+freshnessColor+';font-weight:700">🕐 '+freshnessTxt+(pinAgeH!==null&&pinAgeH>=3?' — cuota de referencia algo desactualizada, el EV+ real puede haber cambiado':'')+'</div>'
+    +'</div>';
+
+  if(LOADING&&!VALUEB.length) return h+'<div class="loadbox"><div class="spin"></div>Calculando EV+ entre tus casas y Pinnacle...</div>';
+  if(!VALUEB.length) return h+'<div class="empty"><div class="ei">💎</div><h3>Buscando valor...</h3><p>Comparamos Bet365 y Winamax vs Pinnacle en tiempo real. Verás ambas cuotas juntas para que decidas dónde apostar.</p></div>';
+
+  VALUEB.forEach(function(v) {
+    var ev=parseFloat(v.ev); var col=ev>20?'var(--sharp)':ev>12?'var(--warn)':'var(--value)';
+    var grade=ev>20?'🔥 ENORME':ev>12?'⭐ BUENO':'✓ VÁLIDO';
+    var bHasEv = v.b365ev!==null && v.b365ev>=5;
+    var wHasEv = v.winamaxEv!==null && v.winamaxEv>=5;
+    h+='<div class="card cv">'
+      +'<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px">'
+      +'<div style="flex:1;min-width:0">'
+      +'<div class="badge bv">'+grade+' · EV+'+ev.toFixed(1)+'%</div>'
+      +'<div class="mt">'+(v.sport||'')+' '+(v.match||'').replace('vs',' vs ')+'</div>'
+      +'<div class="ms">'+(v.ko?fko(v.ko):'')+'</div>'
+      +'<div style="font-size:13px;color:var(--value);font-weight:800;margin-top:4px">🎯 Apuesta: '+v.market+'</div>'
+      +'</div>'
+      +'<div class="evpill">+'+ev.toFixed(1)+'%</div>'
+      +'</div>'
+      +'<div class="orow">'
+      +'<div class="obox" style="border-color:'+(bHasEv?'var(--value)':'rgba(0,212,255,.3)')+(bHasEv?';border-width:2px':'')+'">'
+      +'<div class="olbl" style="color:var(--info)">BET365'+(bHasEv?' ✓':'')+'</div>'
+      +'<div class="oval" style="color:'+(bHasEv?'var(--value)':'var(--muted)')+'">'+(v.b365odds?v.b365odds.toFixed(2):'—')+'</div>'
+      +(v.b365ev!==null?'<div style="font-size:9px;color:'+(bHasEv?'var(--value)':'var(--muted)')+';margin-top:2px">EV'+(v.b365ev>=0?'+':'')+v.b365ev.toFixed(1)+'%</div>':'')
+      +'</div>'
+      +'<div class="obox" style="border-color:'+(wHasEv?'var(--value)':'rgba(255,136,0,.3)')+(wHasEv?';border-width:2px':'')+'">'
+      +'<div class="olbl" style="color:#FF8800">WINAMAX'+(wHasEv?' ✓':'')+'</div>'
+      +'<div class="oval" style="color:'+(wHasEv?'var(--value)':'var(--muted)')+'">'+(v.winamaxOdds?v.winamaxOdds.toFixed(2):'—')+'</div>'
+      +(v.winamaxEv!==null?'<div style="font-size:9px;color:'+(wHasEv?'var(--value)':'var(--muted)')+';margin-top:2px">EV'+(v.winamaxEv>=0?'+':'')+v.winamaxEv.toFixed(1)+'%</div>':'')
+      +'</div>'
+      +'<div class="obox" style="border-color:rgba(168,85,247,.3)">'
+      +'<div class="olbl" style="color:var(--purple)">PINNACLE</div>'
+      +'<div class="oval" style="color:var(--sub)">'+parseFloat(v.pinnacle).toFixed(2)+'</div>'
+      +'<div style="font-size:9px;color:var(--muted);margin-top:2px">referencia</div>'
+      +'</div>'
+      +'</div>'
+      +'<div class="bot"><div class="bot-l">🤖 ACCIÓN</div><div class="bot-t">'+(function(){
+        var best = (v.winamaxEv||-999) > (v.b365ev||-999) ? {book:'Winamax',odds:v.winamaxOdds,evv:v.winamaxEv} : {book:'Bet365',odds:v.b365odds,evv:v.b365ev};
+        return botTxt({type:'value',ev:best.evv.toFixed(1),from:v.pinnacle,to:best.odds,bestBook:best.book,market:v.market});
+      })()+'</div></div>'
+      +'</div>';
+  });
+  return h;
+}
+
+// ── PAGE LEGENDS ───────────────────────────────────────────
+// Calcula cómo repartir tu banca entre las dos apuestas de arbitraje para que
+// el beneficio sea EXACTAMENTE el mismo sin importar qué resultado ocurra.
+function calcArbStakes(oddsA, oddsB, totalStake) {
+  // Stake en A proporcional a 1/oddsA respecto a la suma de probabilidades implícitas
+  var impliedA = 1/oddsA, impliedB = 1/oddsB;
+  var sum = impliedA + impliedB;
+  var stakeA = totalStake * (impliedA/sum);
+  var stakeB = totalStake * (impliedB/sum);
+  var profitIfA = stakeA*oddsA - totalStake;
+  var profitIfB = stakeB*oddsB - totalStake;
+  return {stakeA:stakeA, stakeB:stakeB, profit:(profitIfA+profitIfB)/2};
+}
+
+function pgArb() {
+  var h='<div class="card cv" style="margin-bottom:12px">'
+    +'<div style="font-size:11px;color:var(--value);font-weight:800;letter-spacing:.8px;margin-bottom:5px">🎯 ARBITRAJE — BENEFICIO GARANTIZADO</div>'
+    +'<div style="font-size:12px;color:var(--sub);line-height:1.65">'
+    +'A diferencia del EV+, esto <strong style="color:var(--text)">no depende de ninguna estimación</strong>. Si Bet365 y Winamax discrepan lo suficiente en un mismo evento, apostando a ambos lados a la vez ganas dinero seguro sin importar el resultado. Es pura matemática, no predicción.'
+    +'</div>'
+    +'<div style="margin-top:8px;font-size:11px;color:var(--muted)">⚠️ Las casas pueden limitar cuentas que detectan arbitraje frecuente. Úsalo con moderación.</div>'
+    +'</div>';
+
+  if(LOADING&&!ARB.length) return h+'<div class="loadbox"><div class="spin"></div>Buscando discrepancias entre tus casas...</div>';
+  if(!ARB.length) return h+'<div class="empty"><div class="ei">🎯</div><h3>Sin arbitrajes ahora mismo</h3><p>Son más raros que el EV+ porque requieren que Bet365 y Winamax discrepen mucho entre sí. Cuando aparezcan, el beneficio está garantizado.</p></div>';
+
+  ARB.forEach(function(a) {
+    var stakes = calcArbStakes(a.oddsA, a.oddsB, BANKROLL*0.1); // usar 10% de banca como base de ejemplo
+    h+='<div class="card cv">'
+      +'<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px">'
+      +'<div style="flex:1"><div class="badge bv">🎯 ARBITRAJE +'+a.profitPct.toFixed(1)+'%</div>'
+      +'<div class="mt">'+(a.sport||'')+' '+(a.match||'').replace('vs',' vs ')+'</div>'
+      +'<div class="ms">'+(a.ko?fko(a.ko):'')+'</div></div>'
+      +'<div class="evpill" style="background:linear-gradient(135deg,#00FF87,#00D4FF)">+'+a.profitPct.toFixed(1)+'%</div>'
+      +'</div>'
+      +'<div class="orow">'
+      +'<div class="obox" style="border-color:var(--value);border-width:2px">'
+      +'<div class="olbl" style="color:var(--info)">'+a.bookA.toUpperCase()+'</div>'
+      +'<div class="oval" style="color:var(--value)">'+a.oddsA.toFixed(2)+'</div>'
+      +'<div style="font-size:9px;color:var(--muted);margin-top:2px">'+a.outcomeA+'</div>'
+      +'</div>'
+      +'<div class="obox" style="border-color:var(--value);border-width:2px">'
+      +'<div class="olbl" style="color:#FF8800">'+a.bookB.toUpperCase()+'</div>'
+      +'<div class="oval" style="color:var(--value)">'+a.oddsB.toFixed(2)+'</div>'
+      +'<div style="font-size:9px;color:var(--muted);margin-top:2px">'+a.outcomeB+'</div>'
+      +'</div>'
+      +'</div>'
+      +'<div class="bot"><div class="bot-l">🤖 CÓMO REPARTIR (con '+(BANKROLL*0.1).toFixed(0)+'€ de ejemplo)</div>'
+      +'<div class="bot-t">Apuesta <strong style="color:var(--value)">'+stakes.stakeA.toFixed(2)+'€</strong> en '+a.bookA+' a "'+a.outcomeA+'" Y <strong style="color:var(--value)">'+stakes.stakeB.toFixed(2)+'€</strong> en '+a.bookB+' a "'+a.outcomeB+'". Ganas <strong style="color:var(--value)">'+stakes.profit.toFixed(2)+'€</strong> seguro, pase lo que pase.</div></div>'
+      +'</div>';
+  });
+  return h;
+}
+
+function pgHistory() {
+  var h='<div class="card cv" style="margin-bottom:12px">'
+    +'<div style="font-size:11px;color:var(--value);font-weight:800;letter-spacing:.8px;margin-bottom:5px">📈 HISTORIAL — ¿FUNCIONA DE VERDAD?</div>'
+    +'<div style="font-size:12px;color:var(--sub);line-height:1.65">'
+    +'Las herramientas profesionales (OddsJam, RebelBetting) llevan un registro de cada pick mostrado y miden el <strong style="color:var(--text)">Closing Line Value (CLV)</strong>: si la cuota bajó después de detectar el pick, el mercado confirmó que tenía valor real. Esto es la prueba más fiable de si el sistema funciona a largo plazo — más que cualquier resultado puntual.'
+    +'</div></div>';
+
+  if (!PICK_LOG.length) {
+    return h+'<div class="empty"><div class="ei">📊</div><h3>Aún sin historial</h3><p>Cada pick de EV+ que aparezca se registrará automáticamente aquí con su cuota inicial. Vuelve en unas horas para ver las primeras estadísticas reales.</p></div>';
+  }
+
+  // Calcular CLV de cada pick que tenga suficiente diferencia entre apertura y última vista
+  var withCLV = PICK_LOG.map(function(p){ return Object.assign({}, p, {clv: calcCLV(p)}); }).filter(function(p){ return p.clv!==null; });
+  var positiveCLV = withCLV.filter(function(p){ return p.clv>0; });
+  var avgCLV = withCLV.length ? (withCLV.reduce(function(s,p){return s+p.clv;},0)/withCLV.length) : 0;
+  var hitRate = withCLV.length ? (positiveCLV.length/withCLV.length*100) : 0;
+
+  h+='<div class="card cv" style="margin-bottom:12px">'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+    +'<div style="text-align:center"><div style="font-size:24px;font-weight:900;color:var(--value)">'+PICK_LOG.length+'</div><div style="font-size:10px;color:var(--muted)">Picks registrados</div></div>'
+    +'<div style="text-align:center"><div style="font-size:24px;font-weight:900;color:'+(hitRate>=50?'var(--value)':'var(--sharp)')+'">'+hitRate.toFixed(0)+'%</div><div style="font-size:10px;color:var(--muted)">CLV positivo</div></div>'
+    +'<div style="text-align:center"><div style="font-size:24px;font-weight:900;color:'+(avgCLV>=0?'var(--value)':'var(--sharp)')+'">'+(avgCLV>=0?'+':'')+avgCLV.toFixed(1)+'%</div><div style="font-size:10px;color:var(--muted)">CLV promedio</div></div>'
+    +'<div style="text-align:center"><div style="font-size:24px;font-weight:900;color:var(--info)">'+withCLV.length+'</div><div style="font-size:10px;color:var(--muted)">Con CLV medible</div></div>'
+    +'</div>'
+    +(withCLV.length<10?'<div style="margin-top:10px;font-size:11px;color:var(--warn);text-align:center">⚠️ Con menos de 10 datos, estas cifras no son estadísticamente fiables todavía. Necesitamos volumen.</div>':'')
+    +'</div>';
+
+  var recent = PICK_LOG.slice(-15).reverse();
+  recent.forEach(function(p) {
+    var clv = calcCLV(p);
+    var clvTxt = clv===null ? 'Sin cambio aún' : (clv>0?'+':'')+clv.toFixed(1)+'% CLV';
+    var clvColor = clv===null ? 'var(--muted)' : clv>0 ? 'var(--value)' : 'var(--sharp)';
+    h+='<div class="card cv" style="padding:12px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+      +'<div><div class="mt" style="font-size:13px">'+(p.sport||'')+' '+(p.match||'')+'</div>'
+      +'<div style="font-size:11px;color:var(--muted)">'+p.market+' · '+p.book+' · vista '+p.timesSeen+'x</div></div>'
+      +'<div style="text-align:right"><div style="font-weight:900;color:'+clvColor+';font-size:13px">'+clvTxt+'</div>'
+      +'<div style="font-size:10px;color:var(--muted)">'+p.openOdds.toFixed(2)+' → '+p.lastOdds.toFixed(2)+'</div></div>'
+      +'</div></div>';
+  });
+  return h;
+}
+
+function pgLegends() {
+  var legends = [
+    {rank:1, icon:'👑', name:'Bill Benter', nat:'🇺🇸', col:'#FFD600',
+     method:'Algoritmo matemático de 130 variables. Ganó $118M en un solo día en Hong Kong.',
+     roi:'ROI histórico: infinito (monopolizó el mercado de caballos HK durante 20 años)',
+     signal:'Caballos · Análisis de variables ocultas · Pari-mutuel pools',
+     lesson:'El mercado siempre tiene ineficiencias. Un modelo con suficientes variables puede explotarlas sistemáticamente.',
+     sports:['🏇','📊']},
+    {rank:2, icon:'🎰', name:'Billy Walters', nat:'🇺🇸', col:'#FF3B5C',
+     method:'Computer Group — el primer sindicato algorítmico de la historia. $200M ganados en 30 años con una sola temporada perdedora.',
+     roi:'30+ años de beneficios · Solo 1 temporada perdedora · $20M apostados en un fin de semana',
+     signal:'NFL, NBA, MLB · Líneas con 0.5 puntos de error · Información de lesiones antes que el mercado',
+     lesson:'Actúa cuando la línea se desvía 0.5 puntos de tu modelo. No cuando se desvía 3 puntos — ya es tarde.',
+     sports:['🏈','⚾','🏀']},
+    {rank:3, icon:'🏀', name:'Bob Voulgaris (Haralabos)', nat:'🇨🇦', col:'#A855F7',
+     method:'Explotó que los libros dividían el marcador final por la mitad para los totales de descanso. $1M/día apostado en NBA hasta que cerraron el mercado.',
+     roi:'+$50M en NBA · Director de investigación cuantitativa de Dallas Mavericks · Dueño de CD Castellón',
+     signal:'NBA · Totales de cuarto · Patrones de sustitución de entrenadores · Líneas de descanso',
+     lesson:'Los mercados nicho tienen más ineficiencias. Un mercado pequeño (total del cuarto) tiene menos atención y más errores.',
+     sports:['🏀']},
+    {rank:4, icon:'⚽', name:'Tony Bloom (Starlizard)', nat:'🇬🇧', col:'#00FF87',
+     method:'Starlizard: el fondo de inversión de apuestas más grande del mundo. Modelos propietarios de fútbol. Dueño del Brighton FC.',
+     roi:'Starlizard procesa millones de apuestas al año · Brighton construido con beneficios del sindicato',
+     signal:'Fútbol europeo · Serie A · La Liga · Premier League · Mercados de hándicap asiático',
+     lesson:'El fútbol es el mercado más grande del mundo. Hay ineficiencias en mercados secundarios que los libros ignoran.',
+     sports:['⚽']},
+    {rank:5, icon:'🐎', name:'Zeljko Ranogajec', nat:'🇦🇺', col:'#00D4FF',
+     method:'El mayor apostador de caballos del mundo. Usa cuentas en 16 países. Apostó $1.5 trillones AUD a lo largo de su carrera.',
+     roi:'$1.5 trillones AUD apostados en vida · Vetado en prácticamente todos los hipódromos del mundo',
+     signal:'Caballos · Tote pools · Arbitraje entre mercados mundiales · Pari-mutuel sistemas',
+     lesson:'El tamaño del bet importa. Con suficiente capital puedes mover el mercado a tu favor antes de que otros reaccionen.',
+     sports:['🏇']},
+    {rank:6, icon:'🎾', name:'Pinnacle / Sharp Books', nat:'🌍', col:'#FF6B00',
+     method:'No es una persona — es el libro de referencia. Las líneas de Pinnacle son el benchmark de todos los apostadores profesionales. Cuando Pinnacle mueve, el mercado sigue.',
+     roi:'Las cuotas de Pinnacle son el precio más eficiente del mercado. EV+ existe cuando otros libros discrepan.',
+     signal:'Cualquier deporte · Cualquier mercado · Cuando Pinnacle mueve una línea = sharp action confirmada',
+     lesson:'Monitoriza siempre a Pinnacle primero. Si Pinnacle tiene 1.80 y Bet365 tiene 1.95 para lo mismo = apuesta en Bet365.',
+     sports:['⚽','🏀','🎾','🏈','🏇']},
+  ];
+
+  var h='<button onclick="PAGE=&quot;config&quot;;renderPage()" style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 14px;color:var(--sub);font-size:12px;margin-bottom:12px;cursor:pointer">← Volver a APIs</button>'
+    +'<div class="card cp" style="margin-bottom:14px">'
+    +'<div style="font-size:11px;color:var(--purple);font-weight:800;letter-spacing:.8px;margin-bottom:5px">🏆 LEYENDAS DEL SHARP BETTING</div>'
+    +'<div style="font-size:12px;color:var(--sub);line-height:1.65">Los mejores apostadores del mundo, sus métodos reales y qué podemos imitar. <strong style="color:var(--text)">Sus métodos son exactamente lo que detecta esta app en tiempo real.</strong></div>'
+    +'</div>';
+
+  legends.forEach(function(l) {
+    h+='<div class="legend-card">'
+      +'<div class="legend-rank" style="background:'+l.col+'22;color:'+l.col+';border:2px solid '+l.col+'">'+l.icon+'</div>'
+      +'<div class="legend-info">'
+      +'<div class="legend-name">'+l.nat+' '+l.name+'</div>'
+      +'<div class="legend-stat">'
+      +l.sports.map(function(s){return'<span class="stat-chip" style="background:'+l.col+'15;color:'+l.col+';border:1px solid '+l.col+'44">'+s+'</span>';}).join('')
+      +'</div>'
+      +'<div style="font-size:11px;color:var(--sub);margin-top:6px;line-height:1.6"><strong style="color:var(--text)">Método:</strong> '+l.method+'</div>'
+      +'<div style="font-size:11px;color:'+l.col+';margin-top:5px;font-weight:700">'+l.roi+'</div>'
+      +'<div style="font-size:11px;color:var(--sub);margin-top:5px;line-height:1.6">🎯 <strong style="color:var(--text)">Señal clave:</strong> '+l.signal+'</div>'
+      +'<div style="background:var(--bg3);border-left:3px solid '+l.col+';border-radius:0 8px 8px 0;padding:8px 11px;margin-top:8px">'
+      +'<div style="font-size:10px;color:'+l.col+';font-weight:800;margin-bottom:3px">💡 LECCIÓN APLICABLE HOY</div>'
+      +'<div style="font-size:12px;color:#C0CCE0;line-height:1.6">'+l.lesson+'</div>'
+      +'</div>'
+      +'</div></div>';
+  });
+
+  h+='<div class="ibox" style="margin-top:6px">'
+    +'<div style="font-size:10px;color:var(--info);font-weight:800;letter-spacing:.8px;margin-bottom:7px">📱 CÓMO USA ESTA APP SUS MÉTODOS</div>'
+    +'<div style="font-size:12px;color:var(--sub);line-height:1.75">'
+    +'• <strong style="color:var(--text)">Sharp$</strong> = método Walters. Detecta movimientos de línea antes que nadie.<br>'
+    +'• <strong style="color:var(--text)">EV+</strong> = método Benter/Pinnacle. Cuota Bet365 > Pinnacle = valor matemático real.<br>'
+    +'• <strong style="color:var(--text)">Alertas</strong> = combinación de ambos. Actúa rápido cuando aparezca.<br>'
+    +'• <strong style="color:var(--text)">Velocidad</strong> = el factor clave. Los profesionales actúan en segundos.'
+    +'</div></div>';
+
+  return h;
+}
+
+// ── PAGE CONFIG ────────────────────────────────────────────
+function pgConfig() {
+  var apis=[
+    {k:'theOdds',  name:'The Odds API',    col:'var(--info)',   lim:500,    per:'mes',     iv:'2h',  cv:'40+ casas EU'},
+    {k:'oddsApi',  name:'Odds-API.io',     col:'var(--value)',  lim:100,    per:'hora',    iv:'45s', cv:'250+ casas'},
+    {k:'oddsPapi', name:'OddsPapi (Pinnacle)',col:'var(--purple)',lim:250,  per:'mes',     iv:'4h',  cv:'Pinnacle sharp'},
+    {k:'sgo',      name:'SportsGameOdds',  col:'var(--warn)',   lim:999999, per:'ilimitado',iv:'60s', cv:'NBA/NFL/MLB'},
+  ];
+
+  var h='<div class="card ci" style="margin-bottom:12px">'
+    +'<div style="font-size:11px;color:var(--value);font-weight:800;letter-spacing:.8px;margin-bottom:6px">🔔 NOTIFICACIONES PUSH</div>'
+    +'<div style="font-size:12px;color:var(--sub);margin-bottom:10px">Recibe un aviso en tu iPhone cuando aparezca un movimiento masivo o arbitraje, sin tener la app abierta.</div>'
+    +'<button onclick="activarNotificaciones()" style="width:100%;background:linear-gradient(135deg,#00FF87,#00D4FF);border:none;border-radius:10px;padding:12px;color:#000;font-weight:800;font-size:13px;cursor:pointer">🔔 Activar notificaciones</button>'
+    +'<div id="notifStatus" style="margin-top:8px;font-size:11px;color:var(--muted);text-align:center"></div>'
+    +'</div><div class="card ci" style="margin-bottom:12px">'
+    +'<button onclick="PAGE=&quot;legendsview&quot;;renderPage()" style="width:100%;background:linear-gradient(135deg,#FFD600,#FF8800);border:none;border-radius:10px;padding:12px;color:#000;font-weight:800;font-size:13px;cursor:pointer">🏆 Ver Leyendas de las apuestas profesionales</button>'
+    +'</div><div class="card ci" style="margin-bottom:12px">'
+    +'<div style="font-size:11px;color:var(--info);font-weight:800;letter-spacing:.8px;margin-bottom:4px">⚙️ ESTADO DE LAS 4 APIS</div>'
+    +'<div style="font-size:12px;color:var(--sub)">700+ casas · Escaneos realizados: '+(REQ.scanCount||0)+' · Última: '+(LAST_UP?ago(LAST_UP):'nunca')+'</div>'
+    +'</div>';
+
+  apis.forEach(function(api) {
+    var used=REQ[api.k]||0; var pct=api.lim<9999?Math.min(100,(used/api.lim)*100):Math.min(100,used/10);
+    var st=apiStatus[api.k]; var dotC=st==='ok'?'dok':st==='idle'?'dw':'de';
+    var stT=st==='ok'?'Conectado':st==='idle'?'En espera':'Error';
+    var nextMs=lastFetch[api.k]?Math.max(0,lastFetch[api.k]+INTERVALS[api.k]-Date.now()):0;
+    var nextStr=nextMs>3600000?Math.ceil(nextMs/3600000)+'h':nextMs>60000?Math.ceil(nextMs/60000)+'min':Math.ceil(nextMs/1000)+'s';
+
+    h+='<div class="api-card">'
+      +'<div class="api-top">'
+      +'<div class="api-name" style="color:'+api.col+'">'+api.name+'</div>'
+      +'<div class="api-st"><div class="dot '+dotC+'"></div>'+stT+'</div>'
+      +'</div>'
+      +'<div style="font-size:11px;color:var(--muted)">'+used+' / '+(api.lim<9999?api.lim:'∞')+' req · '+api.per+(nextMs>0?' · próxima: '+nextStr:'')+'</div>'
+      +'<div style="font-size:10px;color:var(--muted);margin-top:3px">Refresh: '+api.iv+' · '+api.cv+'</div>'
+      +'<div class="rbar"><div class="rfill" style="width:'+Math.min(100,pct)+'%;background:'+(pct>80?'var(--sharp)':pct>50?'var(--warn)':api.col)+'"></div></div>'
+      +'</div>';
+  });
+
+  h+='<button class="btn-p" onclick="forceRefresh()">🔄 Actualizar ahora</button>';
+  h+='<button class="btn-s" onclick="resetCounters()">🗑 Resetear contadores (inicio de mes)</button>';
+
+  h+='<div style="background:rgba(0,255,135,.06);border:1px solid rgba(0,255,135,.2);border-radius:11px;padding:12px 14px;margin-top:10px">'
+    +'<div style="font-size:10px;color:var(--value);font-weight:800;letter-spacing:.8px;margin-bottom:7px">💡 ESTRATEGIA PARA DURAR TODO EL MES 24/7</div>'
+    +'<div style="font-size:11px;color:var(--sub);line-height:1.75">'
+    +'• <strong style="color:var(--text)">Odds-API.io:</strong> cada 45s → 80 req/h de 100 permitidas ✅<br>'
+    +'• <strong style="color:var(--text)">SportsGameOdds:</strong> cada 60s → ilimitado ✅<br>'
+    +'• <strong style="color:var(--text)">The Odds API:</strong> cada 2h → ~360 req/mes de 500 ✅<br>'
+    +'• <strong style="color:var(--text)">OddsPapi Pinnacle:</strong> cada 4h → ~180 req/mes de 250 ✅<br>'
+    +'<br><strong style="color:var(--value)">Activa las 24h · 7 días · sin agotar límites.</strong>'
+    +'</div></div>';
+
+  if (ERRORS.length) {
+    h+='<div class="shdr">⚠️ ERRORES RECIENTES</div>';
+    ERRORS.slice(-5).reverse().forEach(function(e) {
+      h+='<div style="background:rgba(255,59,92,.06);border:1px solid rgba(255,59,92,.2);border-radius:9px;padding:9px 11px;margin-bottom:6px">'
+        +'<div style="font-size:11px;color:var(--sharp)">'+(e.src||'')+(e.code?' · HTTP '+e.code:'')+'</div>'
+        +'<div style="font-size:11px;color:var(--muted)">'+(e.msg||'Sin detalle')+' · '+ago(e.t)+'</div></div>';
+    });
+  }
+  // Diagnostic panel
+  h += '<div class="shdr">🔍 DIAGNÓSTICO EN VIVO</div>';
+  h += '<div id="diag-panel" style="background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:10px 12px;font-family:monospace">';
+  h += DIAG.length ? DIAG.map(function(d){return '<div style="font-size:10px;color:var(--sub);padding:2px 0;border-bottom:1px solid var(--border)">'+d+'</div>';}).join('') : '<div style="font-size:11px;color:var(--muted)">Sin actividad aún. Pulsa "Actualizar ahora".</div>';
+  h += '</div>';
+  return h;
+}
+
+// ── CONTROLS ──────────────────────────────────────────────
+function forceRefresh() {
+  addDiag('Manual refresh triggered');
+  FETCH_RUNNING = false;
+  LOADING = false;
+  Object.keys(lastFetch).forEach(function(k){lastFetch[k]=0;});
+  setPulse('loading');
+  renderPage();
+  setTimeout(runFetch, 100);
+}
+function resetCounters() {
+  if (confirm('¿Resetear contadores? Solo al inicio del mes.')) {
+    Object.keys(REQ).forEach(function(k){REQ[k]=0;}); saveReq(); renderPage();
+  }
+}
+
+// ── PULSE + TIMER ─────────────────────────────────────────
+function setPulse(state) {
+  var dot=document.getElementById('pdot'); var txt=document.getElementById('ptxt');
+  if(!dot||!txt) return;
+  dot.className='pdot '+state;
+  if(state==='live') txt.textContent='En vivo · '+new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  else if(state==='loading') txt.textContent='Actualizando...';
+  else {
+    var le=ERRORS.length?ERRORS[ERRORS.length-1]:null;
+    txt.textContent=le&&le.code?'Error HTTP '+le.code:le&&le.msg?'Error: '+le.msg.substring(0,20):'Error de conexión';
+  }
+}
+function updateBadge() {
+  var el=document.getElementById('ab'); if(el) el.textContent=ALERTS.length;
+  // Badge API: pone un número en el icono de la app en pantalla de inicio (solo PWA instalada)
+  if ('setAppBadge' in navigator) {
+    try {
+      if (ALERTS.length > 0) navigator.setAppBadge(ALERTS.length).catch(function(){});
+      else navigator.clearAppBadge().catch(function(){});
+    } catch(e) {}
+  }
+}
+
+var T_START=Date.now(); var T_INT=50000;
+setInterval(function() {
+  var el=Date.now()-T_START;
+  var fill=document.getElementById('tfill');
+  if(fill) fill.style.width=Math.max(0,100-(el/T_INT)*100)+'%';
+  var txt=document.getElementById('ptxt');
+  if(txt&&LAST_UP&&document.getElementById('pdot').classList.contains('live'))
+    txt.textContent='En vivo · '+new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  if(el>=T_INT){ T_START=Date.now(); runFetch(); }
+}, 1000);
+
+// ── INIT ──────────────────────────────────────────────────
+async function activarNotificaciones() {
+  var statusEl = document.getElementById('notifStatus');
+  if (!statusEl) return;
+
+  // Comprobación 1: ¿está la app instalada en pantalla de inicio? (requisito de Apple)
+  var isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+  if (!isStandalone) {
+    statusEl.innerHTML = '⚠️ Primero añade esta app a tu pantalla de inicio (Compartir → Añadir a pantalla de inicio) y ábrela desde ahí. iOS lo exige antes de poder activar notificaciones.';
+    statusEl.style.color = 'var(--warn)';
+    return;
+  }
+
+  if (typeof OneSignal === 'undefined' || !window._oneSignalReady) {
+    statusEl.innerHTML = '⏳ Cargando sistema de notificaciones, espera unos segundos y vuelve a tocar el botón...';
+    statusEl.style.color = 'var(--muted)';
+    return;
+  }
+
+  try {
+    await OneSignal.User.PushSubscription.optIn();
+    var isSubscribed = OneSignal.User.PushSubscription.optedIn;
+    if (isSubscribed) {
+      statusEl.innerHTML = '✅ Notificaciones activadas. Recibirás avisos de movimientos masivos y arbitrajes.';
+      statusEl.style.color = 'var(--value)';
+    } else {
+      statusEl.innerHTML = '❌ Permiso denegado. Ve a Ajustes del iPhone → Smart Money → Notificaciones para activarlo manualmente.';
+      statusEl.style.color = 'var(--sharp)';
+    }
+  } catch(e) {
+    statusEl.innerHTML = '❌ Error: '+e.message.substring(0,80);
+    statusEl.style.color = 'var(--sharp)';
+  }
+}
+
+function init() {
+  addDiag('App iniciada · '+new Date().toLocaleTimeString('es-ES'));
+  addDiag('Worker: '+(WORKER_URL && WORKER_URL!=='YOUR-WORKER-URL' ? WORKER_URL : 'NO CONFIGURADO'));
+  var bi = document.getElementById('bankroll-input');
+  if (bi) bi.value = BANKROLL;
+  renderPage();
+  setTimeout(function() {
+    runFetch();
+  }, 500);
+}
+
+// Fire on both events to handle iOS Safari quirks
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  // Already loaded
+  init();
+}
+</script>
+</body>
+</html>
