@@ -133,7 +133,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto}
 
 <div id="hdr">
   <div class="hdr-top">
-    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v24</span></div>
+    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v25</span></div>
     <div id="pulse"><div class="pdot" id="pdot"></div><span id="ptxt">Iniciando...</span></div>
   </div>
   <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;font-size:11px;color:var(--muted)">
@@ -182,12 +182,34 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto}
 // Browser → Claude → 4 APIs de cuotas → señales procesadas
 // ============================================================
 
-var KEYS = {
+var DEFAULT_KEYS = {
   theOdds:  '49bc62d5f1f075bf1a2c5ecec6365b9d',
   oddsApi:  '54a869df6080c65fd4230946cb8db844f34fd41a3db8c4',
   oddsPapi: 'b5ae6e53-9afe-4aed-9c62-a1bd753d17ab',
   sgo:      'c02d82ba7268186e9f7fce8bdd0d5da1',
 };
+var DEFAULT_WORKER_URL = 'https://smart-money-pro.k8mwkbp68y.workers.dev/';
+
+// Cada persona que use esta app puede tener sus propias claves y su propio
+// Worker, guardados en su propio dispositivo (localStorage). Así varias
+// personas pueden compartir el mismo enlace sin compartir cuota.
+function loadKeys() {
+  try {
+    var saved = JSON.parse(localStorage.getItem('smp_keys')||'null');
+    return saved || Object.assign({}, DEFAULT_KEYS);
+  } catch(e) { return Object.assign({}, DEFAULT_KEYS); }
+}
+function saveKeys(keys) {
+  try { localStorage.setItem('smp_keys', JSON.stringify(keys)); } catch(e) {}
+}
+function loadWorkerUrl() {
+  try { return localStorage.getItem('smp_worker_url') || DEFAULT_WORKER_URL; } catch(e) { return DEFAULT_WORKER_URL; }
+}
+function saveWorkerUrl(url) {
+  try { localStorage.setItem('smp_worker_url', url); } catch(e) {}
+}
+
+var KEYS = loadKeys();
 
 var REQ = JSON.parse(localStorage.getItem('smp_req')||'{"theOdds":0,"oddsApi":0,"oddsPapi":0,"sgo":0,"scanCount":0,"lastScan":0}');
 
@@ -285,7 +307,7 @@ var FETCH_RUNNING = false;
 // ── CORS PROXY ────────────────────────────────────────────
 // Tu Cloudflare Worker personal — 100k req/día gratis, fiable
 // Reemplaza YOUR-WORKER-URL con la URL que te dé Cloudflare
-var WORKER_URL = 'https://smart-money-pro.k8mwkbp68y.workers.dev/';
+var WORKER_URL = loadWorkerUrl();
 
 // Fallback proxies por si el worker no está configurado aún
 var FALLBACK_PROXIES = [
@@ -1346,6 +1368,21 @@ function pgConfig() {
   ];
 
   var h='<div class="card ci" style="margin-bottom:12px">'
+    +'<div style="font-size:11px;color:var(--purple);font-weight:800;letter-spacing:.8px;margin-bottom:6px">🔑 MIS CLAVES (PARA NO COMPARTIR CUOTA)</div>'
+    +'<div style="font-size:12px;color:var(--sub);margin-bottom:10px">Si varias personas usan este enlace, cada una debería poner sus propias claves gratuitas aquí para no agotar la cuota de los demás. Se guardan solo en este dispositivo.</div>'
+    +'<div style="margin-bottom:8px"><label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px">Mi Cloudflare Worker URL</label>'
+    +'<input id="cfgWorker" type="text" value="'+WORKER_URL+'" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px;color:var(--text);font-size:12px"></div>'
+    +'<div style="margin-bottom:8px"><label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px">The Odds API key</label>'
+    +'<input id="cfgTheOdds" type="text" value="'+KEYS.theOdds+'" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px;color:var(--text);font-size:12px"></div>'
+    +'<div style="margin-bottom:8px"><label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px">Odds-API.io key</label>'
+    +'<input id="cfgOddsApi" type="text" value="'+KEYS.oddsApi+'" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px;color:var(--text);font-size:12px"></div>'
+    +'<div style="margin-bottom:8px"><label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px">OddsPapi (Pinnacle) key</label>'
+    +'<input id="cfgOddsPapi" type="text" value="'+KEYS.oddsPapi+'" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px;color:var(--text);font-size:12px"></div>'
+    +'<div style="margin-bottom:10px"><label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px">SportsGameOdds key</label>'
+    +'<input id="cfgSgo" type="text" value="'+KEYS.sgo+'" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px;color:var(--text);font-size:12px"></div>'
+    +'<button onclick="guardarClavesPropias()" style="width:100%;background:linear-gradient(135deg,#A855F7,#6366F1);border:none;border-radius:10px;padding:12px;color:#fff;font-weight:800;font-size:13px;cursor:pointer">💾 Guardar mis claves</button>'
+    +'<div id="keysStatus" style="margin-top:8px;font-size:11px;color:var(--muted);text-align:center"></div>'
+    +'</div><div class="card ci" style="margin-bottom:12px">'
     +'<div style="font-size:11px;color:var(--value);font-weight:800;letter-spacing:.8px;margin-bottom:6px">🔔 NOTIFICACIONES PUSH</div>'
     +'<div style="font-size:12px;color:var(--sub);margin-bottom:10px">Recibe un aviso en tu iPhone cuando aparezca un movimiento masivo o arbitraje, sin tener la app abierta.</div>'
     +'<button onclick="activarNotificaciones()" style="width:100%;background:linear-gradient(135deg,#00FF87,#00D4FF);border:none;border-radius:10px;padding:12px;color:#000;font-weight:800;font-size:13px;cursor:pointer">🔔 Activar notificaciones</button>'
@@ -1455,6 +1492,27 @@ setInterval(function() {
 }, 1000);
 
 // ── INIT ──────────────────────────────────────────────────
+function guardarClavesPropias() {
+  var statusEl = document.getElementById('keysStatus');
+  var newKeys = {
+    theOdds:  document.getElementById('cfgTheOdds').value.trim(),
+    oddsApi:  document.getElementById('cfgOddsApi').value.trim(),
+    oddsPapi: document.getElementById('cfgOddsPapi').value.trim(),
+    sgo:      document.getElementById('cfgSgo').value.trim(),
+  };
+  var newWorkerUrl = document.getElementById('cfgWorker').value.trim();
+
+  if (!newWorkerUrl || !newKeys.theOdds || !newKeys.oddsApi || !newKeys.oddsPapi || !newKeys.sgo) {
+    if (statusEl) { statusEl.innerHTML = '⚠️ Todos los campos son obligatorios.'; statusEl.style.color = 'var(--warn)'; }
+    return;
+  }
+
+  saveKeys(newKeys);
+  saveWorkerUrl(newWorkerUrl);
+  if (statusEl) { statusEl.innerHTML = '✅ Guardado. Recargando para aplicar tus claves...'; statusEl.style.color = 'var(--value)'; }
+  setTimeout(function(){ location.reload(); }, 1200);
+}
+
 async function activarNotificaciones() {
   var statusEl = document.getElementById('notifStatus');
   if (!statusEl) return;
