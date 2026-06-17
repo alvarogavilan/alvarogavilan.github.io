@@ -122,7 +122,6 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto}
   OneSignalDeferred.push(async function(OneSignal) {
     await OneSignal.init({
       appId: "aedeb0de-7c97-43d3-ab09-880f13f3b44e",
-      safari_web_id: "",
       notifyButton: { enable: false },
       allowLocalhostAsSecureOrigin: true,
     });
@@ -134,7 +133,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto}
 
 <div id="hdr">
   <div class="hdr-top">
-    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v23</span></div>
+    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v24</span></div>
     <div id="pulse"><div class="pdot" id="pdot"></div><span id="ptxt">Iniciando...</span></div>
   </div>
   <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;font-size:11px;color:var(--muted)">
@@ -1468,10 +1467,26 @@ async function activarNotificaciones() {
     return;
   }
 
-  if (typeof OneSignal === 'undefined' || !window._oneSignalReady) {
-    statusEl.innerHTML = '⏳ Cargando sistema de notificaciones, espera unos segundos y vuelve a tocar el botón...';
-    statusEl.style.color = 'var(--muted)';
+  if (typeof OneSignal === 'undefined') {
+    statusEl.innerHTML = '❌ El script de OneSignal no ha cargado. Revisa tu conexión a internet y vuelve a intentarlo. Si persiste tras varios intentos, puede ser un bloqueo de red.';
+    statusEl.style.color = 'var(--sharp)';
     return;
+  }
+
+  if (!window._oneSignalReady) {
+    // Damos una segunda oportunidad esperando hasta 8s antes de reportar fallo real
+    statusEl.innerHTML = '⏳ Inicializando, espera 8 segundos...';
+    statusEl.style.color = 'var(--muted)';
+    var waited = 0;
+    while (!window._oneSignalReady && waited < 8000) {
+      await new Promise(function(r){ setTimeout(r, 500); });
+      waited += 500;
+    }
+    if (!window._oneSignalReady) {
+      statusEl.innerHTML = '❌ El sistema de notificaciones no terminó de inicializar tras 8s. Esto suele indicar un problema con el Service Worker (archivo OneSignalSDKWorker.js) o con la cuenta de OneSignal. Vuelve a intentarlo o avísame con este mensaje.';
+      statusEl.style.color = 'var(--sharp)';
+      return;
+    }
   }
 
   try {
