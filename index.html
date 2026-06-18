@@ -133,7 +133,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto}
 
 <div id="hdr">
   <div class="hdr-top">
-    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v34</span></div>
+    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v35</span></div>
     <div id="pulse"><div class="pdot" id="pdot"></div><span id="ptxt">Iniciando...</span></div>
   </div>
   <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;font-size:11px;color:var(--muted)">
@@ -485,9 +485,16 @@ async function fetchOddsApiIo() {
     if (!leagues || !Array.isArray(leagues) || !leagues.length) continue;
 
     var preferred = ['england-premier-league','spain-la-liga','world-cup','uefa-champions-league','italy-serie-a','nba','atp','wta'];
-    var league = leagues.find(function(l){ return preferred.includes(l.slug) && (l.eventCount===undefined || l.eventCount>0); })
-              || leagues.find(function(l){ return l.eventCount>0; })
-              || leagues[0];
+    var league = leagues.find(function(l){ return preferred.includes(l.slug) && (l.eventsCount===undefined || l.eventsCount>0); });
+    if (!league) {
+      // En vez de coger la primera liga con algún evento (a menudo una con
+      // 1-2 partidos sueltos), ordenamos por número de eventos y cogemos la
+      // que tiene más — mucha más probabilidad real de tener cobertura de
+      // Bet365 y partidos pendientes de verdad.
+      var withEvents = leagues.filter(function(l){ return (l.eventsCount||0) > 0; });
+      withEvents.sort(function(a,b){ return (b.eventsCount||0) - (a.eventsCount||0); });
+      league = withEvents[0] || leagues[0];
+    }
     if (!league || !league.slug) continue;
 
     var eventsUrl = 'https://api.odds-api.io/v3/events?apiKey=' + KEYS.oddsApi
