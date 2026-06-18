@@ -133,7 +133,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto}
 
 <div id="hdr">
   <div class="hdr-top">
-    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v25</span></div>
+    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v31</span></div>
     <div id="pulse"><div class="pdot" id="pdot"></div><span id="ptxt">Iniciando...</span></div>
   </div>
   <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;font-size:11px;color:var(--muted)">
@@ -187,6 +187,7 @@ var DEFAULT_KEYS = {
   oddsApi:  '54a869df6080c65fd4230946cb8db844f34fd41a3db8c4',
   oddsPapi: 'b5ae6e53-9afe-4aed-9c62-a1bd753d17ab',
   sgo:      'c02d82ba7268186e9f7fce8bdd0d5da1',
+  sharpApi: '', // vacío por defecto — requiere registro propio en sharpapi.io, no es un servicio que yo pueda generar por el usuario
 };
 var DEFAULT_WORKER_URL = 'https://smart-money-pro.k8mwkbp68y.workers.dev/';
 
@@ -246,8 +247,8 @@ function calcStake(oddsBet365, oddsPinnacle) {
 
 function saveReq(){ try{localStorage.setItem('smp_req',JSON.stringify(REQ));}catch(e){} }
 
-var INTERVALS = {theOdds:7200000, oddsApi:50000, oddsPapi:14400000, sgo:65000};
-var lastFetch  = {theOdds:0, oddsApi:0, oddsPapi:0, sgo:0};
+var INTERVALS = {theOdds:28800000, oddsApi:50000, oddsPapi:48960000, sgo:65000, sharpApi:90000, oddsPapiEsports:122040000};
+var lastFetch  = {theOdds:0, oddsApi:0, oddsPapi:0, sgo:0, sharpApi:0, oddsPapiEsports:0};
 var apiStatus  = {theOdds:'idle', oddsApi:'idle', oddsPapi:'idle', sgo:'idle'};
 
 var PAGE    = 'alerts';
@@ -409,22 +410,24 @@ async function fetchTheOdds() {
 
   // En vez de elegir SOLO 1 liga por categoría, tomamos VARIAS de cada una.
   // Así si la NBA está fuera de temporada, aún consultamos WNBA, EuroLiga, etc.
+  // PRESUPUESTO REAL: 500 peticiones/mes ÷ refresco cada 8h (≈90 escaneos/mes)
+  // = máximo ~5 ligas por escaneo para no agotar la cuota antes de fin de mes.
+  // Antes esto pedía 23 ligas por escaneo, lo que agotaba la cuota mensual
+  // en menos de 2 días de uso real. Priorizamos las ligas de mayor volumen.
   var soccerKeys = all.filter(function(k){
     return k.indexOf('soccer_')===0 && (
-      k.includes('epl') || k.includes('la_liga') || k.includes('serie_a') ||
-      k.includes('bundesliga') || k.includes('ligue_one') || k.includes('world_cup_winner')===false && k.includes('world_cup') ||
-      k.includes('uefa_champs_league') || k.includes('uefa_europa_league') || k.includes('mls')
+      k.includes('epl') || k.includes('la_liga')
     );
-  }).slice(0,6);
-  var basketKeys = all.filter(function(k){return k.indexOf('basketball_')===0;}).slice(0,4);
-  var tennisKeys = all.filter(function(k){return k.indexOf('tennis_')===0;}).slice(0,4);
-  var hockeyKeys = all.filter(function(k){return k.indexOf('icehockey_')===0;}).slice(0,3);
-  var baseballKeys = all.filter(function(k){return k.indexOf('baseball_')===0;}).slice(0,2);
-  var amFootballKeys = all.filter(function(k){return k.indexOf('americanfootball_')===0;}).slice(0,2);
-  var mmaKeys = all.filter(function(k){return k.indexOf('mma_')===0;}).slice(0,2);
+  }).slice(0,2);
+  var basketKeys = all.filter(function(k){return k.indexOf('basketball_')===0;}).slice(0,1);
+  var tennisKeys = all.filter(function(k){return k.indexOf('tennis_')===0;}).slice(0,1);
+  var hockeyKeys = [];
+  var baseballKeys = [];
+  var amFootballKeys = all.filter(function(k){return k.indexOf('americanfootball_')===0;}).slice(0,1);
+  var mmaKeys = [];
 
   var targets = soccerKeys.concat(basketKeys, tennisKeys, hockeyKeys, baseballKeys, amFootballKeys, mmaKeys);
-  if (!targets.length) targets = all.slice(0,10); // fallback: lo que sea que esté activo
+  if (!targets.length) targets = all.slice(0,5); // fallback: lo que sea que esté activo
   addDiag('  Ligas a consultar: '+targets.length+' ('+targets.slice(0,5).join(', ')+(targets.length>5?'...':'')+')');
 
   var allResults = [];
@@ -465,57 +468,65 @@ async function fetchTheOdds() {
 }
 
 async function fetchOddsApiIo() {
-  // Per official docs: /v3/events requires sport + league (slug), not just sport.
-  // Step 1: get available leagues for football to find an active slug
-  var leaguesUrl = 'https://api.odds-api.io/v3/leagues?apiKey=' + KEYS.oddsApi + '&sport=football&all=true';
-  var leagues = await proxyFetch(leaguesUrl, 'Odds-API.io (leagues)');
-  if (!leagues || !Array.isArray(leagues) || !leagues.length) return [];
+  // Plan gratis real: 5.000 peticiones/HORA (no por mes) — mucho margen para
+  // cubrir varios deportes, no solo fútbol como antes. Ampliamos a los
+  // deportes de mayor volumen + un hueco para los que pidió el usuario
+  // (hockey, esports). Tenis de mesa/vóley no están confirmados en su
+  // catálogo público, así que no los forzamos para evitar peticiones vacías.
+  var SPORTS_TARGET = ['football', 'basketball', 'tennis', 'icehockey'];
+  var allResults = [];
 
-  // Prefer well-known major leagues with live event counts if present
-  var preferred = ['england-premier-league','spain-la-liga','world-cup','uefa-champions-league','italy-serie-a'];
-  var league = leagues.find(function(l){ return preferred.includes(l.slug) && (l.eventCount===undefined || l.eventCount>0); })
-            || leagues.find(function(l){ return l.eventCount>0; })
-            || leagues[0];
-  if (!league || !league.slug) return [];
+  for (var s = 0; s < SPORTS_TARGET.length; s++) {
+    var sport = SPORTS_TARGET[s];
+    var sportIcon = sport==='football'?'⚽' : sport==='basketball'?'🏀' : sport==='tennis'?'🎾' : sport==='icehockey'?'🏒' : '🏆';
 
-  // Step 2: get events for that league
-  var eventsUrl = 'https://api.odds-api.io/v3/events?apiKey=' + KEYS.oddsApi
-    + '&sport=football&league=' + league.slug + '&status=pending&bookmaker=Bet365';
-  var events = await proxyFetch(eventsUrl, 'Odds-API.io (events)');
-  if (!events || !Array.isArray(events) || !events.length) return [];
-  apiStatus.oddsApi = 'ok';
+    var leaguesUrl = 'https://api.odds-api.io/v3/leagues?apiKey=' + KEYS.oddsApi + '&sport=' + sport + '&all=true';
+    var leagues = await proxyFetch(leaguesUrl, 'Odds-API.io (leagues '+sport+')');
+    if (!leagues || !Array.isArray(leagues) || !leagues.length) continue;
 
-  var results = [];
-  var toFetch = events.slice(0, 5);
-  for (var i = 0; i < toFetch.length; i++) {
-    var ev = toFetch[i];
-    var oddsUrl = 'https://api.odds-api.io/v3/odds?apiKey=' + KEYS.oddsApi
-      + '&eventId=' + ev.id + '&bookmakers=Bet365,Pinnacle';
-    var oddsData = await proxyFetch(oddsUrl, 'Odds-API.io (odds)');
-    if (!oddsData) continue;
+    var preferred = ['england-premier-league','spain-la-liga','world-cup','uefa-champions-league','italy-serie-a','nba','atp','wta'];
+    var league = leagues.find(function(l){ return preferred.includes(l.slug) && (l.eventCount===undefined || l.eventCount>0); })
+              || leagues.find(function(l){ return l.eventCount>0; })
+              || leagues[0];
+    if (!league || !league.slug) continue;
 
-    var b365={}, pin={};
-    var bms = oddsData.bookmakers || oddsData;
-    if (Array.isArray(bms)) {
-      bms.forEach(function(bm) {
-        var n=(bm.name||bm.bookmaker||'').toLowerCase();
-        var tgt = n.includes('bet365')?b365 : n.includes('pinnacle')?pin : null;
-        if (!tgt) return;
-        (bm.markets||bm.odds||[]).forEach(function(mkt) {
-          if (mkt.outcomes) {
-            mkt.outcomes.forEach(function(o){ tgt['h2h_'+(o.name||'')] = parseFloat(o.price||o.odds||0); });
-          } else if (mkt.home !== undefined) {
-            tgt['h2h_home']=parseFloat(mkt.home||0); tgt['h2h_away']=parseFloat(mkt.away||0);
-            if (mkt.draw) tgt['h2h_draw']=parseFloat(mkt.draw);
-          }
+    var eventsUrl = 'https://api.odds-api.io/v3/events?apiKey=' + KEYS.oddsApi
+      + '&sport=' + sport + '&league=' + league.slug + '&status=pending&bookmaker=Bet365';
+    var events = await proxyFetch(eventsUrl, 'Odds-API.io (events '+sport+')');
+    if (!events || !Array.isArray(events) || !events.length) continue;
+    apiStatus.oddsApi = 'ok';
+
+    var toFetch = events.slice(0, 3); // 3 eventos por deporte para repartir bien la cuota
+    for (var i = 0; i < toFetch.length; i++) {
+      var ev = toFetch[i];
+      var oddsUrl = 'https://api.odds-api.io/v3/odds?apiKey=' + KEYS.oddsApi
+        + '&eventId=' + ev.id + '&bookmakers=Bet365,Pinnacle';
+      var oddsData = await proxyFetch(oddsUrl, 'Odds-API.io (odds '+sport+')');
+      if (!oddsData) continue;
+
+      var b365={}, pin={};
+      var bms = oddsData.bookmakers || oddsData;
+      if (Array.isArray(bms)) {
+        bms.forEach(function(bm) {
+          var n=(bm.name||bm.bookmaker||'').toLowerCase();
+          var tgt = n.includes('bet365')?b365 : n.includes('pinnacle')?pin : null;
+          if (!tgt) return;
+          (bm.markets||bm.odds||[]).forEach(function(mkt) {
+            if (mkt.outcomes) {
+              mkt.outcomes.forEach(function(o){ tgt['h2h_'+(o.name||'')] = parseFloat(o.price||o.odds||0); });
+            } else if (mkt.home !== undefined) {
+              tgt['h2h_home']=parseFloat(mkt.home||0); tgt['h2h_away']=parseFloat(mkt.away||0);
+              if (mkt.draw) tgt['h2h_draw']=parseFloat(mkt.draw);
+            }
+          });
         });
-      });
-    }
-    if (Object.keys(b365).length || Object.keys(pin).length) {
-      results.push({id:ev.id, sport:'⚽', match:(ev.home||'')+' vs '+(ev.away||''), ko:ev.starts||ev.startTime, b365:b365, pin:pin, src:'OddsAPI.io'});
+      }
+      if (Object.keys(b365).length || Object.keys(pin).length) {
+        allResults.push({id:ev.id, sport:sportIcon, match:(ev.home||'')+' vs '+(ev.away||''), comp:league.name||'', ko:ev.starts||ev.startTime, b365:b365, pin:pin, src:'OddsAPI.io'});
+      }
     }
   }
-  return results;
+  return allResults;
 }
 
 async function fetchSGO() {
@@ -553,6 +564,92 @@ async function fetchSGO() {
     var sp = ['NBA','WNBA'].includes(lg)?'🏀' : ['NFL'].includes(lg)?'🏈' : ['MLB'].includes(lg)?'⚾' : ['NHL'].includes(lg)?'🏒' : ['ATP','WTA'].includes(lg)?'🎾' : ['UFC'].includes(lg)?'🥊' : '⚽';
     return {id:ev.eventID||ev.id, sport:sp, match:homeT+' vs '+awayT, comp:lg, ko:(ev.status&&ev.status.startsTime)||ev.startTime, b365:b365, pin:pin, src:'SGO'};
   }).filter(function(e){return Object.keys(e.b365).length>0 || Object.keys(e.pin).length>0;});
+}
+
+// ── SharpAPI: cobertura adicional de deportes USA (NBA/NFL/MLB/NHL) ──
+// Cuota mucho más generosa (12 req/min = ~17.280/día) que las otras 4 fuentes,
+// pero solo 2 sportsbooks genéricos de EEUU en el plan gratis — NO son Bet365
+// ni Winamax. Se etiquetan honestamente como "SharpAPI Book A/B" para no
+// confundirlos con las casas reales del usuario.
+async function fetchSharpApi() {
+  if (!KEYS.sharpApi) return []; // desactivado hasta que el usuario ponga su propia clave
+  var url = 'https://api.sharpapi.io/api/v1/odds?league=NBA';
+  var data = await proxyFetch(url, 'SharpAPI', KEYS.sharpApi);
+  if (!data || !data.data) return [];
+  apiStatus.sharpApi = 'ok';
+
+  var grouped = {};
+  data.data.forEach(function(item) {
+    var key = item.event_id || (item.home_team+'_'+item.away_team);
+    if (!grouped[key]) grouped[key] = {home:item.home_team, away:item.away_team, ko:item.start_time, books:{}};
+    grouped[key].books[item.sportsbook] = item;
+  });
+
+  return Object.keys(grouped).map(function(key) {
+    var g = grouped[key];
+    var bookNames = Object.keys(g.books);
+    var b365 = {}, winamax = {};
+    if (bookNames[0]) { var b1 = g.books[bookNames[0]]; if (b1.selection && b1.odds_decimal) b365['h2h_'+b1.selection] = parseFloat(b1.odds_decimal); }
+    if (bookNames[1]) { var b2 = g.books[bookNames[1]]; if (b2.selection && b2.odds_decimal) winamax['h2h_'+b2.selection] = parseFloat(b2.odds_decimal); }
+    return {id:'sharp_'+key, sport:'🏀', match:g.home+' vs '+g.away, comp:'NBA (SharpAPI)', ko:g.ko, b365:b365, winamax:winamax, pin:{}, src:'SharpAPI'};
+  }).filter(function(e){return Object.keys(e.b365).length>0;});
+}
+
+// ── ESPORTS via OddsPapi (CS2, LoL, Dota 2, Valorant) ──────
+// Misma API que ya usamos para Pinnacle fútbol, mismo plan gratis (250/mes),
+// sin coste adicional. Verificado: sportId 17=CS2, 18=LoL, 16=Dota2, 61=Valorant.
+// Market 171 = Match Winner. Pinnacle Y Bet365 vienen en la misma respuesta,
+// lo que permite calcular EV+ real para esports, no solo mostrar datos sueltos.
+async function fetchOddsPapiEsports() {
+  // CS2 (mayor volumen, 2 partidos/escaneo) + LoL (segundo título, 1 partido/escaneo)
+  // Presupuesto recalculado: fútbol 50%, CS2 30%, LoL 20% de la cuota compartida.
+  var ESPORT_CONFIG = [
+    {id:17, icon:'🎯 CS2', maxFixtures:2},
+    {id:18, icon:'🎮 LoL', maxFixtures:1}
+  ];
+  var allResults = [];
+
+  for (var c=0; c<ESPORT_CONFIG.length; c++) {
+    var cfg = ESPORT_CONFIG[c];
+    var today = new Date().toISOString().split('T')[0];
+    var weekOut = new Date(Date.now() + 7*24*60*60*1000).toISOString().split('T')[0];
+    var fixturesUrl = 'https://api.oddspapi.io/v4/fixtures?sportId='+cfg.id+'&from='+today+'&to='+weekOut+'&hasOdds=true&apiKey=' + KEYS.oddsPapi;
+    var fixtures = await proxyFetch(fixturesUrl, 'OddsPapi Esports ('+cfg.icon+')');
+    if (!fixtures || !Array.isArray(fixtures) || !fixtures.length) continue;
+
+    fixtures.slice(0,cfg.maxFixtures).forEach(function(fx) { fx._sportIcon = cfg.icon; });
+    allResults = allResults.concat(fixtures.slice(0,cfg.maxFixtures));
+  }
+  if (!allResults.length) return [];
+  apiStatus.oddsPapiEsports = 'ok';
+
+  var out = [];
+  for (var i=0; i<allResults.length; i++) {
+    var fx = allResults[i];
+    var oddsUrl = 'https://api.oddspapi.io/v4/odds?fixtureId='+fx.fixtureId+'&apiKey=' + KEYS.oddsPapi;
+    var data = await proxyFetch(oddsUrl, 'OddsPapi Esports odds');
+    if (!data || !data.bookmakerOdds) continue;
+
+    var b365 = {}, pin = {};
+    Object.keys(data.bookmakerOdds).forEach(function(slug) {
+      var bk = data.bookmakerOdds[slug];
+      var markets = bk.markets || {};
+      var mw = markets['171']; // Match Winner
+      if (!mw || !mw.outcomes) return;
+      var p1 = mw.outcomes['171'] && mw.outcomes['171'].players && mw.outcomes['171'].players['0'];
+      var p2 = mw.outcomes['172'] && mw.outcomes['172'].players && mw.outcomes['172'].players['0'];
+      if (!p1 || !p2) return;
+      var tgt = slug==='pinnacle' ? pin : slug==='bet365' ? b365 : null;
+      if (!tgt) return; // solo nos interesan Pinnacle (referencia) y Bet365 (tu casa real)
+      tgt['h2h_'+(fx.participant1Name||'Team1')] = parseFloat(p1.price||0);
+      tgt['h2h_'+(fx.participant2Name||'Team2')] = parseFloat(p2.price||0);
+    });
+
+    if (Object.keys(b365).length || Object.keys(pin).length) {
+      out.push({id:'esport_'+fx.fixtureId, sport:fx._sportIcon, match:(fx.participant1Name||'')+' vs '+(fx.participant2Name||''), comp:fx.tournamentName||'', ko:fx.startTime, b365:b365, winamax:{}, pin:pin, src:'OddsPapiEsports'});
+    }
+  }
+  return out;
 }
 
 async function fetchOddsPapi() {
@@ -599,7 +696,7 @@ async function runFetch() {
   renderPage();
 
   try {
-    var apis = ['theOdds','oddsApi','sgo','oddsPapi'].filter(shouldFetch);
+    var apis = ['theOdds','oddsApi','sgo','oddsPapi','sharpApi','oddsPapiEsports'].filter(shouldFetch);
     if (!apis.length) {
       addDiag('Nada que actualizar todavía (esperando intervalos)');
       LOADING=false; FETCH_RUNNING=false; setPulse('live'); renderPage(); return;
@@ -611,7 +708,9 @@ async function runFetch() {
     if (apis.includes('theOdds'))  jobs.push(fetchTheOdds().then(function(r){results.theOdds=r||[]; lastFetch.theOdds=Date.now(); REQ.theOdds=(REQ.theOdds||0)+1;}).catch(function(e){addDiag('✗ theOdds: '+e.message.substring(0,40)); apiStatus.theOdds='error';}));
     if (apis.includes('oddsApi'))  jobs.push(fetchOddsApiIo().then(function(r){results.oddsApi=r||[]; lastFetch.oddsApi=Date.now(); REQ.oddsApi=(REQ.oddsApi||0)+1;}).catch(function(e){addDiag('✗ oddsApi: '+e.message.substring(0,40)); apiStatus.oddsApi='error';}));
     if (apis.includes('sgo'))      jobs.push(fetchSGO().then(function(r){results.sgo=r||[]; lastFetch.sgo=Date.now(); REQ.sgo=(REQ.sgo||0)+1;}).catch(function(e){addDiag('✗ sgo: '+e.message.substring(0,40)); apiStatus.sgo='error';}));
+    if (apis.includes('sharpApi'))  jobs.push(fetchSharpApi().then(function(r){results.sharpApi=r||[]; lastFetch.sharpApi=Date.now(); REQ.sharpApi=(REQ.sharpApi||0)+1;}).catch(function(e){addDiag('✗ sharpApi: '+e.message.substring(0,40)); apiStatus.sharpApi='error';}));
     if (apis.includes('oddsPapi')) jobs.push(fetchOddsPapi().then(function(r){results.oddsPapi=r||[]; lastFetch.oddsPapi=Date.now(); REQ.oddsPapi=(REQ.oddsPapi||0)+1;}).catch(function(e){addDiag('✗ oddsPapi: '+e.message.substring(0,40)); apiStatus.oddsPapi='error';}));
+    if (apis.includes('oddsPapiEsports')) jobs.push(fetchOddsPapiEsports().then(function(r){results.oddsPapiEsports=r||[]; lastFetch.oddsPapiEsports=Date.now(); REQ.oddsPapiEsports=(REQ.oddsPapiEsports||0)+1;}).catch(function(e){addDiag('✗ esports: '+e.message.substring(0,40)); apiStatus.oddsPapiEsports='error';}));
 
     await Promise.allSettled(jobs);
     saveReq();
@@ -640,7 +739,7 @@ function processDirectResults(results) {
   var newAlerts=[], newSharp=[], newValue=[], newMon=[], newArb=[];
   var totalRaw = 0;
 
-  ['theOdds','oddsApi','sgo'].forEach(function(src) {
+  ['theOdds','oddsApi','sgo','sharpApi','oddsPapiEsports'].forEach(function(src) {
     totalRaw += (results[src]||[]).length;
     (results[src]||[]).forEach(function(ev) {
       if (!ev || !ev.id) return;
@@ -809,8 +908,36 @@ function detectMiddles(id,sport,match,ko,b365,winamax,points,outArb,outA) {
   });
 }
 
+// Quita el margen (vig) de un mercado de 2 o 3 resultados, devolviendo la
+// probabilidad "justa" de cada lado. Esto es lo que hace cualquier apostador
+// profesional serio antes de comparar cuotas — comparar cuotas crudas sin
+// quitar el vig de la casa de referencia (aunque sea Pinnacle, que tiene vig
+// bajo pero no cero) puede dar señales de valor falsas o infladas.
+function noVigProb(pinMarketOdds) {
+  // pinMarketOdds: objeto con las cuotas de Pinnacle para TODOS los resultados
+  // de un mismo mercado (ej. {h2h_home:2.1, h2h_draw:3.4, h2h_away:3.2})
+  var keys = Object.keys(pinMarketOdds);
+  var impliedSum = 0;
+  var implied = {};
+  keys.forEach(function(k) {
+    var o = parseFloat(pinMarketOdds[k]);
+    if (!o || o<=1.01) return;
+    implied[k] = 1/o;
+    impliedSum += implied[k];
+  });
+  if (impliedSum <= 0) return null;
+  var fair = {};
+  keys.forEach(function(k) { if (implied[k]!==undefined) fair[k] = implied[k]/impliedSum; });
+  return fair; // probabilidad justa de cada resultado, vig ya descontado
+}
+
 function detectEV(id,sport,match,ko,b365,winamax,pin,outV,outA) {
   if (!pin || !Object.keys(pin).length) return;
+  // Agrupamos las claves de Pinnacle por "familia" de mercado (todo lo que
+  // empiece igual hasta el último _) para poder calcular el no-vig junto.
+  // Para mercados simples de 1 sola línea (sin pareja), usamos la cuota cruda
+  // como fallback, igual que antes — mejor tener una señal aproximada que ninguna.
+  var pinFair = noVigProb(pin) || pin;
   var allMarkets = new Set(Object.keys(b365||{}).concat(Object.keys(winamax||{})));
   allMarkets.forEach(function(mkt) {
     var p = parseFloat(pin[mkt]);
@@ -821,8 +948,14 @@ function detectEV(id,sport,match,ko,b365,winamax,pin,outV,outA) {
     var wVal = parseFloat((winamax||{})[mkt]) || 0;
     if (bVal<=1.01 && wVal<=1.01) return;
 
-    var bEv = bVal>1.01 ? ((bVal/p)-1)*100 : null;
-    var wEv = wVal>1.01 ? ((wVal/p)-1)*100 : null;
+    // Probabilidad justa de Pinnacle para este resultado concreto (vig fuera).
+    // Si no pudimos calcular el no-vig (ej. solo 1 resultado disponible),
+    // usamos 1/cuota cruda como aproximación, igual que el método anterior.
+    var pFairProb = (pinFair[mkt]!==undefined) ? pinFair[mkt] : (1/p);
+    var pFairOdds = 1/pFairProb; // cuota "justa" equivalente, para mostrar igual que antes
+
+    var bEv = bVal>1.01 ? ((bVal*pFairProb)-1)*100 : null;
+    var wEv = wVal>1.01 ? ((wVal*pFairProb)-1)*100 : null;
 
     // Mostrar SIEMPRE ambas casas juntas si al menos una tiene EV+ >=5%, para poder comparar
     var qualifies = (bEv!==null && bEv>=5) || (wEv!==null && wEv>=5);
@@ -1361,10 +1494,12 @@ function pgLegends() {
 // ── PAGE CONFIG ────────────────────────────────────────────
 function pgConfig() {
   var apis=[
-    {k:'theOdds',  name:'The Odds API',    col:'var(--info)',   lim:500,    per:'mes',     iv:'2h',  cv:'40+ casas EU'},
-    {k:'oddsApi',  name:'Odds-API.io',     col:'var(--value)',  lim:100,    per:'hora',    iv:'45s', cv:'250+ casas'},
+    {k:'theOdds',  name:'The Odds API',    col:'var(--info)',   lim:500,    per:'mes',     iv:'8h',  cv:'5 ligas top'},
+    {k:'oddsApi',  name:'Odds-API.io',     col:'var(--value)',  lim:5000,   per:'hora',    iv:'45s', cv:'Fut/Bask/Tenis/Hockey'},
     {k:'oddsPapi', name:'OddsPapi (Pinnacle)',col:'var(--purple)',lim:250,  per:'mes',     iv:'4h',  cv:'Pinnacle sharp'},
     {k:'sgo',      name:'SportsGameOdds',  col:'var(--warn)',   lim:999999, per:'ilimitado',iv:'60s', cv:'NBA/NFL/MLB'},
+    {k:'sharpApi', name:'SharpAPI'+(KEYS.sharpApi?'':' (sin clave)'), col:'#06b6d4', lim:17280, per:'día', iv:'90s', cv:'NBA/NFL/MLB/NHL extra'},
+    {k:'oddsPapiEsports', name:'OddsPapi Esports (CS2+LoL)', col:'#FF6B35', lim:250, per:'mes (compartida c/fútbol)', iv:'34h', cv:'CS2+LoL vs Pinnacle/Bet365'},
   ];
 
   var h='<div class="card ci" style="margin-bottom:12px">'
@@ -1380,6 +1515,8 @@ function pgConfig() {
     +'<input id="cfgOddsPapi" type="text" value="'+KEYS.oddsPapi+'" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px;color:var(--text);font-size:12px"></div>'
     +'<div style="margin-bottom:10px"><label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px">SportsGameOdds key</label>'
     +'<input id="cfgSgo" type="text" value="'+KEYS.sgo+'" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px;color:var(--text);font-size:12px"></div>'
+    +'<div style="margin-bottom:10px"><label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px">SharpAPI key (opcional — añade NBA/NFL/MLB/NHL extra de EEUU, regístrate gratis en sharpapi.io)</label>'
+    +'<input id="cfgSharpApi" type="text" value="'+(KEYS.sharpApi||'')+'" placeholder="Déjalo vacío si no la usas" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px;color:var(--text);font-size:12px"></div>'
     +'<button onclick="guardarClavesPropias()" style="width:100%;background:linear-gradient(135deg,#A855F7,#6366F1);border:none;border-radius:10px;padding:12px;color:#fff;font-weight:800;font-size:13px;cursor:pointer">💾 Guardar mis claves</button>'
     +'<div id="keysStatus" style="margin-top:8px;font-size:11px;color:var(--muted);text-align:center"></div>'
     +'</div><div class="card ci" style="margin-bottom:12px">'
@@ -1499,11 +1636,12 @@ function guardarClavesPropias() {
     oddsApi:  document.getElementById('cfgOddsApi').value.trim(),
     oddsPapi: document.getElementById('cfgOddsPapi').value.trim(),
     sgo:      document.getElementById('cfgSgo').value.trim(),
+    sharpApi: document.getElementById('cfgSharpApi').value.trim(), // opcional, puede quedar vacío
   };
   var newWorkerUrl = document.getElementById('cfgWorker').value.trim();
 
   if (!newWorkerUrl || !newKeys.theOdds || !newKeys.oddsApi || !newKeys.oddsPapi || !newKeys.sgo) {
-    if (statusEl) { statusEl.innerHTML = '⚠️ Todos los campos son obligatorios.'; statusEl.style.color = 'var(--warn)'; }
+    if (statusEl) { statusEl.innerHTML = '⚠️ Los 4 campos principales son obligatorios (SharpAPI es opcional).'; statusEl.style.color = 'var(--warn)'; }
     return;
   }
 
