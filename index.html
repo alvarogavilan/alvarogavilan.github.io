@@ -133,7 +133,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto}
 
 <div id="hdr">
   <div class="hdr-top">
-    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v32</span></div>
+    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v33</span></div>
     <div id="pulse"><div class="pdot" id="pdot"></div><span id="ptxt">Iniciando...</span></div>
   </div>
   <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;font-size:11px;color:var(--muted)">
@@ -473,12 +473,12 @@ async function fetchOddsApiIo() {
   // deportes de mayor volumen + un hueco para los que pidió el usuario
   // (hockey, esports). Tenis de mesa/vóley no están confirmados en su
   // catálogo público, así que no los forzamos para evitar peticiones vacías.
-  var SPORTS_TARGET = ['football', 'basketball', 'tennis', 'icehockey'];
+  var SPORTS_TARGET = ['football', 'basketball', 'tennis', 'ice-hockey', 'volleyball', 'table-tennis'];
   var allResults = [];
 
   for (var s = 0; s < SPORTS_TARGET.length; s++) {
     var sport = SPORTS_TARGET[s];
-    var sportIcon = sport==='football'?'⚽' : sport==='basketball'?'🏀' : sport==='tennis'?'🎾' : sport==='icehockey'?'🏒' : '🏆';
+    var sportIcon = sport==='football'?'⚽' : sport==='basketball'?'🏀' : sport==='tennis'?'🎾' : sport==='ice-hockey'?'🏒' : sport==='volleyball'?'🏐' : sport==='table-tennis'?'🏓' : '🏆';
 
     var leaguesUrl = 'https://api.odds-api.io/v3/leagues?apiKey=' + KEYS.oddsApi + '&sport=' + sport + '&all=true';
     var leagues = await proxyFetch(leaguesUrl, 'Odds-API.io (leagues '+sport+')');
@@ -1495,7 +1495,7 @@ function pgLegends() {
 function pgConfig() {
   var apis=[
     {k:'theOdds',  name:'The Odds API',    col:'var(--info)',   lim:500,    per:'mes',     iv:'8h',  cv:'5 ligas top'},
-    {k:'oddsApi',  name:'Odds-API.io',     col:'var(--value)',  lim:5000,   per:'hora',    iv:'45s', cv:'Fut/Bask/Tenis/Hockey'},
+    {k:'oddsApi',  name:'Odds-API.io',     col:'var(--value)',  lim:5000,   per:'hora',    iv:'45s', cv:'Fút/Bask/Tenis/Hockey/Vóley/T.Mesa'},
     {k:'oddsPapi', name:'OddsPapi (Pinnacle)',col:'var(--purple)',lim:250,  per:'mes',     iv:'4h',  cv:'Pinnacle sharp'},
     {k:'sgo',      name:'SportsGameOdds',  col:'var(--warn)',   lim:999999, per:'ilimitado',iv:'60s', cv:'NBA/NFL/MLB'},
     {k:'sharpApi', name:'SharpAPI'+(KEYS.sharpApi?'':' (sin clave)'), col:'#06b6d4', lim:17280, per:'día', iv:'90s', cv:'NBA/NFL/MLB/NHL extra'},
