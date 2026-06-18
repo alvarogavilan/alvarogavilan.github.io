@@ -309,6 +309,7 @@ var FETCH_RUNNING = false;
 // Tu Cloudflare Worker personal — 100k req/día gratis, fiable
 // Reemplaza YOUR-WORKER-URL con la URL que te dé Cloudflare
 var WORKER_URL = loadWorkerUrl();
+var WORKER_URL_BACKUP = 'https://smart-money-proxy-backup.alvarogavilanart.workers.dev';
 
 // Fallback proxies por si el worker no está configurado aún
 var FALLBACK_PROXIES = [
@@ -341,10 +342,15 @@ async function fetchWithTimeout(url, ms) {
 async function proxyFetch(targetUrl, label, apiKeyForHeader) {
   addDiag('→ '+label);
 
-  // Try Cloudflare Worker first (if configured)
-  if (WORKER_URL && WORKER_URL !== 'YOUR-WORKER-URL') {
+  // Try Cloudflare Workers (principal + backup automático)
+  var workersToTry = [];
+  if (WORKER_URL && WORKER_URL !== 'YOUR-WORKER-URL') workersToTry.push({url: WORKER_URL, name: 'Worker principal'});
+  workersToTry.push({url: WORKER_URL_BACKUP, name: 'Worker backup'});
+
+  for (var wi = 0; wi < workersToTry.length; wi++) {
+    var workerEntry = workersToTry[wi];
     try {
-      var fullUrl = WORKER_URL+'?url='+encodeURIComponent(targetUrl);
+      var fullUrl = workerEntry.url+'?url='+encodeURIComponent(targetUrl);
       if (apiKeyForHeader) fullUrl += '&apikeyheader='+encodeURIComponent(apiKeyForHeader);
       var r = await fetchWithTimeout(fullUrl, 15000);
       if (r.ok) {
@@ -352,20 +358,20 @@ async function proxyFetch(targetUrl, label, apiKeyForHeader) {
         if (txt && txt.length > 2) {
           try {
             var j=JSON.parse(txt);
-            addDiag('✓ '+label+' ('+txt.length+'b)');
+            addDiag('✓ '+label+' ('+workerEntry.name+', '+txt.length+'b)');
             return j;
           } catch(e){
-            addDiag('  Worker dio texto no-JSON: '+txt.substring(0,60));
+            addDiag('  '+workerEntry.name+' texto no-JSON: '+txt.substring(0,60));
           }
         } else {
-          addDiag('  Worker respuesta vacía');
+          addDiag('  '+workerEntry.name+' respuesta vacía');
         }
       } else {
         var errTxt = '';
         try { errTxt = await r.text(); } catch(e){}
-        addDiag('  Worker HTTP '+r.status+': '+errTxt.substring(0,70));
+        addDiag('  '+workerEntry.name+' HTTP '+r.status+': '+errTxt.substring(0,70));
       }
-    } catch(e) { addDiag('  Worker: '+(e.name==='AbortError'?'timeout':e.message.substring(0,40))); }
+    } catch(e) { addDiag('  '+workerEntry.name+': '+(e.name==='AbortError'?'timeout':e.message.substring(0,40))); }
   }
 
   // Fallback to public proxies
