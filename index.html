@@ -133,7 +133,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto}
 
 <div id="hdr">
   <div class="hdr-top">
-    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v33</span></div>
+    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v34</span></div>
     <div id="pulse"><div class="pdot" id="pdot"></div><span id="ptxt">Iniciando...</span></div>
   </div>
   <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;font-size:11px;color:var(--muted)">
@@ -500,16 +500,16 @@ async function fetchOddsApiIo() {
     for (var i = 0; i < toFetch.length; i++) {
       var ev = toFetch[i];
       var oddsUrl = 'https://api.odds-api.io/v3/odds?apiKey=' + KEYS.oddsApi
-        + '&eventId=' + ev.id + '&bookmakers=Bet365,Pinnacle';
+        + '&eventId=' + ev.id + '&bookmakers=Bet365,Winamax FR';
       var oddsData = await proxyFetch(oddsUrl, 'Odds-API.io (odds '+sport+')');
       if (!oddsData) continue;
 
-      var b365={}, pin={};
+      var b365={}, winamax={};
       var bms = oddsData.bookmakers || oddsData;
       if (Array.isArray(bms)) {
         bms.forEach(function(bm) {
           var n=(bm.name||bm.bookmaker||'').toLowerCase();
-          var tgt = n.includes('bet365')?b365 : n.includes('pinnacle')?pin : null;
+          var tgt = n.includes('bet365')?b365 : n.includes('winamax')?winamax : null;
           if (!tgt) return;
           (bm.markets||bm.odds||[]).forEach(function(mkt) {
             if (mkt.outcomes) {
@@ -521,8 +521,11 @@ async function fetchOddsApiIo() {
           });
         });
       }
-      if (Object.keys(b365).length || Object.keys(pin).length) {
-        allResults.push({id:ev.id, sport:sportIcon, match:(ev.home||'')+' vs '+(ev.away||''), comp:league.name||'', ko:ev.starts||ev.startTime, b365:b365, pin:pin, src:'OddsAPI.io'});
+      if (Object.keys(b365).length || Object.keys(winamax).length) {
+        // Nota: esta fuente no tiene Pinnacle (confirmado vía /v3/bookmakers),
+        // así que no aporta referencia sharp para EV+. Se usa para comparación
+        // directa Bet365 vs Winamax (arbitraje/middles), no para detectEV.
+        allResults.push({id:ev.id, sport:sportIcon, match:(ev.home||'')+' vs '+(ev.away||''), comp:league.name||'', ko:ev.starts||ev.startTime, b365:b365, winamax:winamax, pin:null, src:'OddsAPI.io'});
       }
     }
   }
