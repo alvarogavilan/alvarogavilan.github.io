@@ -133,7 +133,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto}
 
 <div id="hdr">
   <div class="hdr-top">
-    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v35</span></div>
+    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v36</span></div>
     <div id="pulse"><div class="pdot" id="pdot"></div><span id="ptxt">Iniciando...</span></div>
   </div>
   <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;font-size:11px;color:var(--muted)">
@@ -247,7 +247,7 @@ function calcStake(oddsBet365, oddsPinnacle) {
 
 function saveReq(){ try{localStorage.setItem('smp_req',JSON.stringify(REQ));}catch(e){} }
 
-var INTERVALS = {theOdds:28800000, oddsApi:50000, oddsPapi:48960000, sgo:65000, sharpApi:90000, oddsPapiEsports:122040000};
+var INTERVALS = {theOdds:28800000, oddsApi:508000, oddsPapi:48960000, sgo:65000, sharpApi:90000, oddsPapiEsports:122040000};
 var lastFetch  = {theOdds:0, oddsApi:0, oddsPapi:0, sgo:0, sharpApi:0, oddsPapiEsports:0};
 var apiStatus  = {theOdds:'idle', oddsApi:'idle', oddsPapi:'idle', sgo:'idle'};
 
@@ -473,12 +473,16 @@ async function fetchOddsApiIo() {
   // deportes de mayor volumen + un hueco para los que pidió el usuario
   // (hockey, esports). Tenis de mesa/vóley no están confirmados en su
   // catálogo público, así que no los forzamos para evitar peticiones vacías.
-  var SPORTS_TARGET = ['football', 'basketball', 'tennis', 'ice-hockey', 'volleyball', 'table-tennis'];
+  // CORREGIDO: el plan gratis real es 100 peticiones/HORA (no 5000 — eso es
+  // solo para planes de pago, confirmado tras el error 429 real del usuario).
+  // Con ese límite real, cubrir 6 deportes obligaría a un intervalo de ~21min,
+  // demasiado lento. Reducimos a los 3 deportes de mayor volumen/liquidez.
+  var SPORTS_TARGET = ['football', 'basketball', 'tennis'];
   var allResults = [];
 
   for (var s = 0; s < SPORTS_TARGET.length; s++) {
     var sport = SPORTS_TARGET[s];
-    var sportIcon = sport==='football'?'⚽' : sport==='basketball'?'🏀' : sport==='tennis'?'🎾' : sport==='ice-hockey'?'🏒' : sport==='volleyball'?'🏐' : sport==='table-tennis'?'🏓' : '🏆';
+    var sportIcon = sport==='football'?'⚽' : sport==='basketball'?'🏀' : sport==='tennis'?'🎾' : '🏆';
 
     var leaguesUrl = 'https://api.odds-api.io/v3/leagues?apiKey=' + KEYS.oddsApi + '&sport=' + sport + '&all=true';
     var leagues = await proxyFetch(leaguesUrl, 'Odds-API.io (leagues '+sport+')');
@@ -503,7 +507,7 @@ async function fetchOddsApiIo() {
     if (!events || !Array.isArray(events) || !events.length) continue;
     apiStatus.oddsApi = 'ok';
 
-    var toFetch = events.slice(0, 3); // 3 eventos por deporte para repartir bien la cuota
+    var toFetch = events.slice(0, 2); // 2 eventos por deporte — ajustado al límite real de 100 req/hora
     for (var i = 0; i < toFetch.length; i++) {
       var ev = toFetch[i];
       var oddsUrl = 'https://api.odds-api.io/v3/odds?apiKey=' + KEYS.oddsApi
@@ -1505,7 +1509,7 @@ function pgLegends() {
 function pgConfig() {
   var apis=[
     {k:'theOdds',  name:'The Odds API',    col:'var(--info)',   lim:500,    per:'mes',     iv:'8h',  cv:'5 ligas top'},
-    {k:'oddsApi',  name:'Odds-API.io',     col:'var(--value)',  lim:5000,   per:'hora',    iv:'45s', cv:'Fút/Bask/Tenis/Hockey/Vóley/T.Mesa'},
+    {k:'oddsApi',  name:'Odds-API.io',     col:'var(--value)',  lim:100,    per:'hora',    iv:'8.5min', cv:'Fútbol/Baloncesto/Tenis'},
     {k:'oddsPapi', name:'OddsPapi (Pinnacle)',col:'var(--purple)',lim:250,  per:'mes',     iv:'4h',  cv:'Pinnacle sharp'},
     {k:'sgo',      name:'SportsGameOdds',  col:'var(--warn)',   lim:999999, per:'ilimitado',iv:'60s', cv:'NBA/NFL/MLB'},
     {k:'sharpApi', name:'SharpAPI'+(KEYS.sharpApi?'':' (sin clave)'), col:'#06b6d4', lim:17280, per:'día', iv:'90s', cv:'NBA/NFL/MLB/NHL extra'},
