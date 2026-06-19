@@ -580,8 +580,19 @@ async function fetchSGO() {
   // (consenso del mercado con vig). Usamos fairOdds como referencia de
   // "precio justo" — conceptualmente similar a lo que aporta Pinnacle,
   // aunque no es Pinnacle real. Lo etiquetamos honestamente como tal.
-  var url = 'https://api.sportsgameodds.com/v2/events?leagueID=NBA,NFL,MLB,NHL,WNBA,UFC,EPL&oddsAvailable=true&limit=25&apiKey=' + KEYS.sgo;
+  // Solo NBA confirmada en plan gratis (probado directamente: success:true).
+  // Otras ligas (WNBA confirmada NO disponible) pueden no estar incluidas
+  // en el plan gratuito y tirar toda la petición abajo si se piden juntas.
+  var url = 'https://api.sportsgameodds.com/v2/events?leagueID=NBA,NFL,MLB&oddsAvailable=true&limit=25&apiKey=' + KEYS.sgo;
   var data = await proxyFetch(url, 'SportsGameOdds');
+  // Si alguna liga no está en el plan gratis, la API devuelve success:false
+  // para TODA la petición. Reintentamos con solo NBA (confirmada disponible)
+  // en vez de perder todo el escaneo.
+  if (!data || data.success===false) {
+    addDiag('  SGO: fallback a NBA-only (alguna liga no disponible en el plan)');
+    var fallbackUrl = 'https://api.sportsgameodds.com/v2/events?leagueID=NBA&oddsAvailable=true&limit=25&apiKey=' + KEYS.sgo;
+    data = await proxyFetch(fallbackUrl, 'SportsGameOdds (NBA fallback)');
+  }
   if (!data || data.success===false) return [];
   apiStatus.sgo = 'ok';
   var events = data.data || data.events || (Array.isArray(data)?data:[]);
