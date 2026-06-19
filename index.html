@@ -859,8 +859,12 @@ function processDirectResults(results) {
   });
 
   addDiag('Procesado: '+totalRaw+' eventos crudos → '+newMon.length+' con cuotas'+(newArb.length?' · '+newArb.length+' arbitrajes':''));
-  var withPinCount = newMon.filter(function(m){return m.pin && Object.keys(m.pin).length>0;}).length;
-  addDiag('  Pinnacle: '+pinnacleList.length+' eventos disponibles, '+withPinCount+' cruzados con éxito');
+  if (pinnacleList.length === 0) {
+    addDiag('  Pinnacle: 0 eventos en este escaneo (OddsPapi no respondió o sin partidos) — sin cruces nuevos posibles');
+  } else {
+    var withPinCount = newMon.filter(function(m){return m.pin && Object.keys(m.pin).length>0;}).length;
+    addDiag('  Pinnacle: '+pinnacleList.length+' eventos disponibles, '+withPinCount+' cruzados con éxito');
+  }
 
   newAlerts.forEach(function(a) { if(!ALERTS.find(function(x){return x.key===a.key;})) ALERTS.unshift(a); });
   var priorityRank = {highvolume:-1, extreme:0, high:1, normal:2, undefined:2};
