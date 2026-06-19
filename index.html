@@ -428,20 +428,26 @@ async function fetchTheOdds() {
   // = máximo ~5 ligas por escaneo para no agotar la cuota antes de fin de mes.
   // Antes esto pedía 23 ligas por escaneo, lo que agotaba la cuota mensual
   // en menos de 2 días de uso real. Priorizamos las ligas de mayor volumen.
+  //
+  // IMPORTANTE: OddsPapi (nuestra única fuente de Pinnacle) SOLO cubre fútbol.
+  // Baloncesto, tenis y fútbol americano de The Odds API nunca tendrán EV+
+  // porque no hay cuota de Pinnacle con la que compararlos. Priorizamos
+  // fútbol (4 ligas) para maximizar el solapamiento real con Pinnacle.
   var soccerKeys = all.filter(function(k){
     return k.indexOf('soccer_')===0 && (
-      k.includes('epl') || k.includes('la_liga')
+      k.includes('epl') || k.includes('la_liga') || k.includes('serie_a') ||
+      k.includes('bundesliga') || k.includes('ligue_one') || k.includes('uefa')
     );
-  }).slice(0,2);
-  var basketKeys = all.filter(function(k){return k.indexOf('basketball_')===0;}).slice(0,1);
-  var tennisKeys = all.filter(function(k){return k.indexOf('tennis_')===0;}).slice(0,1);
+  }).slice(0,4);
+  var basketKeys = [];
+  var tennisKeys = [];
   var hockeyKeys = [];
   var baseballKeys = [];
-  var amFootballKeys = all.filter(function(k){return k.indexOf('americanfootball_')===0;}).slice(0,1);
+  var amFootballKeys = [];
   var mmaKeys = [];
 
   var targets = soccerKeys.concat(basketKeys, tennisKeys, hockeyKeys, baseballKeys, amFootballKeys, mmaKeys);
-  if (!targets.length) targets = all.slice(0,5); // fallback: lo que sea que esté activo
+  if (!targets.length) targets = all.filter(function(k){return k.indexOf('soccer_')===0;}).slice(0,5); // fallback: cualquier fútbol activo
   addDiag('  Ligas a consultar: '+targets.length+' ('+targets.slice(0,5).join(', ')+(targets.length>5?'...':'')+')');
 
   var allResults = [];
