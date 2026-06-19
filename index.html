@@ -606,7 +606,15 @@ async function fetchSGO() {
 
     if (ev.odds) {
       Object.keys(ev.odds).forEach(function(oddID) {
-        var isML = oddID.toLowerCase().indexOf('ml-home')>-1 || oddID.toLowerCase().indexOf('ml-away')>-1 || oddID.toLowerCase().indexOf('moneyline')>-1;
+        // CRÍTICO: solo el mercado "points-...-game-ml-home/away" es el
+        // resultado real del partido (Moneyline). Otros mercados como
+        // "firstToScore-...-ml-home" o "lastToScore-...-ml-away" también
+        // contienen "ml-home"/"ml-away" en su oddID pero son apuestas de
+        // prop totalmente distintas, con cuotas extremas (+5000, +11300)
+        // que NO representan la victoria del equipo. Por eso aparecían
+        // cuotas absurdas antes — eran props, no el resultado del partido.
+        var oddIdLower = oddID.toLowerCase();
+        var isML = oddIdLower.indexOf('points-home-game-ml-home')===0 || oddIdLower.indexOf('points-away-game-ml-away')===0;
         if (!isML) return;
         var oddData = ev.odds[oddID];
         var sideRaw = oddID.toLowerCase().indexOf('home')>-1 ? 'home' : 'away';
