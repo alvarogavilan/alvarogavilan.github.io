@@ -185,7 +185,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto}
 var DEFAULT_KEYS = {
   theOdds:  '43f37f6e5c3435ddc2c2ef5c4d71eb09',
   oddsApi:  '54a869df6080c65fd4230946cb8db844f34fd41a3db8c48602864eacf5a22af3',
-  oddsPapi: 'b5ae6e53-9afe-4aed-9c62-a1bd753d17ab',
+  oddsPapi: '65ab6c8d-b4da-4a60-8a40-17c6b40de9fe',
   sgo:      'c02d82ba7268186e9f7fce8bdd0d5da1',
   sharpApi: 'sk_live_GM2sZ6KuXyw4FdngDLgpq2', // clave personal del usuario, confirmada directamente en su dashboard de sharpapi.io
 };
@@ -564,8 +564,11 @@ async function fetchOddsApiIo() {
 }
 
 async function fetchSGO() {
-  // Use X-Api-Key header (query param apiKey was rejected). Expand to many sports/leagues.
-  var url = 'https://api.sportsgameodds.com/v2/events?leagueID=NBA,NFL,MLB,NHL,WNBA,UFC&oddsAvailable=true&limit=20';
+  // Incluye EPL (fútbol) además de deportes US — SGO sí tiene Pinnacle real,
+  // a diferencia de OddsPapi que tiene el endpoint /fixtures caído desde
+  // el 10 de junio (confirmado en oddspapi.instatus.com). SGO es ahora
+  // nuestra fuente principal y fiable de Pinnacle.
+  var url = 'https://api.sportsgameodds.com/v2/events?leagueID=NBA,NFL,MLB,NHL,WNBA,UFC,EPL&oddsAvailable=true&limit=25';
   var data = await proxyFetch(url, 'SportsGameOdds', KEYS.sgo);
   if (!data || data.success===false) return [];
   apiStatus.sgo = 'ok';
@@ -695,9 +698,11 @@ async function fetchOddsPapi() {
   ];
 
   var allOut = [];
+  var todayPapi = new Date().toISOString().split('.')[0]+'Z';
+  var hoursOutPapi = new Date(Date.now() + 40*60*60*1000).toISOString().split('.')[0]+'Z'; // 40h, bajo el límite de 48h sin tournamentId
   for (var si=0; si<SPORT_CONFIG.length; si++) {
     var sc = SPORT_CONFIG[si];
-    var fixturesUrl = 'https://api.oddspapi.io/v4/fixtures?sportId='+sc.id+'&apiKey=' + KEYS.oddsPapi;
+    var fixturesUrl = 'https://api.oddspapi.io/v4/fixtures?sportId='+sc.id+'&from='+todayPapi+'&to='+hoursOutPapi+'&hasOdds=true&apiKey=' + KEYS.oddsPapi;
     var fixtures = await proxyFetch(fixturesUrl, 'OddsPapi (fixtures '+sc.icon+')');
     if (!fixtures || !Array.isArray(fixtures) || !fixtures.length) continue;
     apiStatus.oddsPapi = 'ok';
@@ -741,7 +746,7 @@ async function runFetch() {
   renderPage();
 
   try {
-    var apis = ['theOdds','oddsApi','oddsPapi','sharpApi'].filter(shouldFetch);
+    var apis = ['theOdds','oddsApi','sgo','sharpApi'].filter(shouldFetch);
     if (!apis.length) {
       addDiag('Nada que actualizar todavía (esperando intervalos)');
       LOADING=false; FETCH_RUNNING=false; setPulse('live'); renderPage(); return;
@@ -831,7 +836,9 @@ function matchPinnacleEvent(ev, pinnacleList) {
 function processDirectResults(results) {
   var newAlerts=[], newSharp=[], newValue=[], newMon=[], newArb=[];
   var totalRaw = 0;
-  var pinnacleList = results.oddsPapi || [];
+  var pinnacleList = (results.oddsPapi || []).concat(
+    (results.sgo || []).filter(function(s){ return s.pin && Object.keys(s.pin).length>0; })
+  );
 
   ['theOdds','oddsApi','sgo','sharpApi','oddsPapiEsports'].forEach(function(src) {
     totalRaw += (results[src]||[]).length;
