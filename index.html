@@ -183,7 +183,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto}
 // ============================================================
 
 var DEFAULT_KEYS = {
-  theOdds:  '49bc62d5f1f075bf1a2c5ecec6365b9d',
+  theOdds:  '43f37f6e5c3435ddc2c2ef5c4d71eb09',
   oddsApi:  '54a869df6080c65fd4230946cb8db844f34fd41a3db8c48602864eacf5a22af3',
   oddsPapi: 'b5ae6e53-9afe-4aed-9c62-a1bd753d17ab',
   sgo:      'c02d82ba7268186e9f7fce8bdd0d5da1',
@@ -194,6 +194,14 @@ var DEFAULT_WORKER_URL = 'https://smart-money-pro.k8mwkbp68y.workers.dev/';
 // Cada persona que use esta app puede tener sus propias claves y su propio
 // Worker, guardados en su propio dispositivo (localStorage). Así varias
 // personas pueden compartir el mismo enlace sin compartir cuota.
+// Forzar limpieza de claves antiguas una sola vez (BETA v38 — nueva clave The Odds API)
+try {
+  if (localStorage.getItem('smp_keys_version') !== 'v38') {
+    localStorage.removeItem('smp_keys');
+    localStorage.setItem('smp_keys_version', 'v38');
+  }
+} catch(e) {}
+
 function loadKeys() {
   try {
     var saved = JSON.parse(localStorage.getItem('smp_keys')||'null');
