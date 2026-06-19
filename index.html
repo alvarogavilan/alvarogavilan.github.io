@@ -439,8 +439,8 @@ async function fetchTheOdds() {
       k.includes('bundesliga') || k.includes('ligue_one') || k.includes('uefa')
     );
   }).slice(0,3);
-  var basketKeys = all.filter(function(k){return k.indexOf('basketball_')===0;}).slice(0,1);
-  var tennisKeys = all.filter(function(k){return k.indexOf('tennis_')===0;}).slice(0,1);
+  var basketKeys = [];
+  var tennisKeys = [];
   var hockeyKeys = [];
   var baseballKeys = [];
   var amFootballKeys = [];
@@ -497,7 +497,7 @@ async function fetchOddsApiIo() {
   // solo para planes de pago, confirmado tras el error 429 real del usuario).
   // Con ese límite real, cubrir 6 deportes obligaría a un intervalo de ~21min,
   // demasiado lento. Reducimos a los 3 deportes de mayor volumen/liquidez.
-  var SPORTS_TARGET = ['football', 'basketball', 'tennis'];
+  var SPORTS_TARGET = ['football'];
   var allResults = [];
 
   for (var s = 0; s < SPORTS_TARGET.length; s++) {
@@ -687,33 +687,12 @@ async function fetchOddsPapiEsports() {
 }
 
 async function fetchOddsPapi() {
-  // sportId=10 es fútbol (confirmado). Para baloncesto y tenis, en vez de
-  // adivinar el ID (la documentación pública de OddsPapi no es consistente
-  // entre fuentes), lo confirmamos en cada sesión con /v4/sports — así nunca
-  // pedimos un deporte equivocado por un ID mal memorizado.
-  if (!window._oddsPapiSportIds || Date.now() - (window._oddsPapiSportIdsTime||0) > 86400000) {
-    var sportsListUrl = 'https://api.oddspapi.io/v4/sports?apiKey=' + KEYS.oddsPapi;
-    var sportsList = await proxyFetch(sportsListUrl, 'OddsPapi (sports list)');
-    if (sportsList && Array.isArray(sportsList)) {
-      var map = {};
-      sportsList.forEach(function(s) {
-        var slug = (s.slug||s.sportSlug||s.name||'').toLowerCase();
-        if (slug.indexOf('soccer')>-1) map.soccer = s.sportId;
-        if (slug.indexOf('basketball')>-1) map.basketball = s.sportId;
-        if (slug.indexOf('tennis')>-1) map.tennis = s.sportId;
-      });
-      window._oddsPapiSportIds = map;
-      window._oddsPapiSportIdsTime = Date.now();
-      addDiag('  OddsPapi sportIds confirmados: '+JSON.stringify(map));
-    }
-  }
-  var sportIds = window._oddsPapiSportIds || {soccer:10};
-
+  // sportId=10 es fútbol (confirmado por la documentación oficial).
+  // Por ahora solo fútbol: es lo único confirmado al 100% y evita sobrecargar
+  // el Worker con llamadas extra mientras estabilizamos lo esencial.
   var SPORT_CONFIG = [
-    {key:'soccer', id: sportIds.soccer || 10, icon:'⚽'},
-    {key:'basketball', id: sportIds.basketball, icon:'🏀'},
-    {key:'tennis', id: sportIds.tennis, icon:'🎾'},
-  ].filter(function(s){ return s.id !== undefined && s.id !== null; });
+    {key:'soccer', id: 10, icon:'⚽'},
+  ];
 
   var allOut = [];
   for (var si=0; si<SPORT_CONFIG.length; si++) {
@@ -762,7 +741,7 @@ async function runFetch() {
   renderPage();
 
   try {
-    var apis = ['theOdds','oddsApi','sgo','oddsPapi','sharpApi','oddsPapiEsports'].filter(shouldFetch);
+    var apis = ['theOdds','oddsApi','oddsPapi','sharpApi'].filter(shouldFetch);
     if (!apis.length) {
       addDiag('Nada que actualizar todavía (esperando intervalos)');
       LOADING=false; FETCH_RUNNING=false; setPulse('live'); renderPage(); return;
