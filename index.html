@@ -186,7 +186,7 @@ var DEFAULT_KEYS = {
   theOdds:  '43f37f6e5c3435ddc2c2ef5c4d71eb09',
   oddsApi:  '54a869df6080c65fd4230946cb8db844f34fd41a3db8c48602864eacf5a22af3',
   oddsPapi: '65ab6c8d-b4da-4a60-8a40-17c6b40de9fe',
-  sgo:      'c02d82ba7268186e9f7fce8bdd0d5da1',
+  sgo:      '871ca54f86eecda89789b97f1650f4f8',
   sharpApi: 'sk_live_GM2sZ6KuXyw4FdngDLgpq2', // clave personal del usuario, confirmada directamente en su dashboard de sharpapi.io
 };
 var DEFAULT_WORKER_URL = 'https://smart-money-pro.k8mwkbp68y.workers.dev/';
@@ -563,18 +563,30 @@ async function fetchOddsApiIo() {
   return allResults;
 }
 
+// Convierte cuota americana (+108, -102) a decimal, formato que usa el resto de la app
+function americanToDecimal(american) {
+  var n = parseFloat(american);
+  if (!n) return null;
+  if (n > 0) return (n/100) + 1;
+  return (100/Math.abs(n)) + 1;
+}
+
 async function fetchSGO() {
-  // Incluye EPL (fútbol) además de deportes US — SGO sí tiene Pinnacle real,
-  // a diferencia de OddsPapi que tiene el endpoint /fixtures caído desde
-  // el 10 de junio (confirmado en oddspapi.instatus.com). SGO es ahora
-  // nuestra fuente principal y fiable de Pinnacle.
-  var url = 'https://api.sportsgameodds.com/v2/events?leagueID=NBA,NFL,MLB,NHL,WNBA,UFC,EPL&oddsAvailable=true&limit=25';
-  var data = await proxyFetch(url, 'SportsGameOdds', KEYS.sgo);
+  // IMPORTANTE: el plan gratuito de SGO NO incluye desglose por casa
+  // (byBookmaker sale vacío — confirmado en respuesta real: "Response is
+  // missing 2 bookmaker odds. Upgrade your API key..."). Solo el plan de
+  // pago ($149+/mes) da Pinnacle real. En el plan gratis SÍ vienen gratis
+  // "fairOdds" (precio de mercado sin vig, vía regresión) y "bookOdds"
+  // (consenso del mercado con vig). Usamos fairOdds como referencia de
+  // "precio justo" — conceptualmente similar a lo que aporta Pinnacle,
+  // aunque no es Pinnacle real. Lo etiquetamos honestamente como tal.
+  var url = 'https://api.sportsgameodds.com/v2/events?leagueID=NBA,NFL,MLB,NHL,WNBA,UFC,EPL&oddsAvailable=true&limit=25&apiKey=' + KEYS.sgo;
+  var data = await proxyFetch(url, 'SportsGameOdds');
   if (!data || data.success===false) return [];
   apiStatus.sgo = 'ok';
   var events = data.data || data.events || (Array.isArray(data)?data:[]);
   if (!Array.isArray(events)) { addDiag('  SGO: estructura inesperada, keys: '+Object.keys(data||{}).join(',')); return []; }
-  addDiag('  SGO: '+events.length+' eventos crudos recibidos');
+  addDiag('  SGO: '+events.length+' eventos crudos recibidos'+(data.notice?' (plan gratis: '+data.notice.substring(0,50)+')':''));
 
   return events.slice(0,15).map(function(ev) {
     var b365={}, pin={};
@@ -585,8 +597,11 @@ async function fetchSGO() {
       Object.keys(ev.odds).forEach(function(oddID) {
         var isML = oddID.toLowerCase().indexOf('ml-home')>-1 || oddID.toLowerCase().indexOf('ml-away')>-1 || oddID.toLowerCase().indexOf('moneyline')>-1;
         if (!isML) return;
-        var byBk = ev.odds[oddID].byBookmaker || {};
+        var oddData = ev.odds[oddID];
         var side = oddID.toLowerCase().indexOf('home')>-1 ? 'home' : 'away';
+
+        // Primero intentamos byBookmaker (solo funciona en plan de pago)
+        var byBk = oddData.byBookmaker || {};
         Object.keys(byBk).forEach(function(bkName) {
           var bk = byBk[bkName];
           if (!bk || bk.odds===undefined) return;
@@ -594,6 +609,17 @@ async function fetchSGO() {
           var tgt = bkLower.includes('pinnacle') ? pin : b365;
           if (tgt['h2h_'+side]===undefined) tgt['h2h_'+side] = parseFloat(bk.odds);
         });
+
+        // Fallback gratuito: fairOdds (precio justo de mercado) como referencia,
+        // y bookOdds (consenso con vig) como "casa genérica" si no hay byBookmaker real
+        if (Object.keys(pin).length===0 && oddData.fairOdds) {
+          var fairDec = americanToDecimal(oddData.fairOdds);
+          if (fairDec) pin['h2h_'+side] = fairDec;
+        }
+        if (Object.keys(b365).length===0 && oddData.bookOdds) {
+          var bookDec = americanToDecimal(oddData.bookOdds);
+          if (bookDec) b365['h2h_'+side] = bookDec;
+        }
       });
     }
 
