@@ -873,12 +873,13 @@ function matchPinnacleEvent(ev, pinnacleList) {
       (pA.indexOf(evA)>-1 && pB.indexOf(evB)>-1) || (pA.indexOf(evB)>-1 && pB.indexOf(evA)>-1);
     if (!namesMatch) return;
 
-    // Si tenemos hora de inicio en ambas fuentes, exigir que estén dentro de 3h
-    // (mismos partidos pueden diferir en redondeo de zona horaria entre proveedores)
+    // Si tenemos hora de inicio en ambas fuentes, exigir que estén dentro de 1h
+    // (reducido de 3h: una ventana más amplia aumenta el riesgo de emparejar
+    // por error dos partidos distintos de la misma liga el mismo día)
     if (evTime && p.ko) {
       var pTime = new Date(p.ko).getTime();
       var diffH = Math.abs(evTime - pTime) / 3600000;
-      if (diffH > 3) return;
+      if (diffH > 1) return;
     }
     var score = 2; // coincidencia de nombre válida
     if (score > bestScore) { bestScore = score; best = p; }
@@ -1127,8 +1128,8 @@ function detectEV(id,sport,match,ko,b365,winamax,pin,outV,outA) {
     // de que estamos cruzando mercados que no son el mismo dato real (bug de
     // matching entre fuentes). Lo registramos para depurar en vez de mostrarlo
     // como si fuera una oportunidad real.
-    if (bestEv > 500) {
-      addDiag('⚠️ EV+ absurdo descartado: '+match+' mkt='+mkt+' pin='+p+' b365='+bVal+' winamax='+wVal);
+    if (bestEv > 150) {
+      addDiag('⚠️ EV+ sospechoso descartado: '+match+' mkt='+mkt+' pin='+p+' b365='+bVal+' winamax='+wVal);
       return;
     }
     outV.push({key:key,sport:sport,match:match,ko:ko,market:name,
@@ -1264,7 +1265,19 @@ function ago(ts) {
   if(!ts) return ''; var s=Math.floor((Date.now()-ts)/1000);
   if(s<60) return 'hace '+s+'s'; if(s<3600) return 'hace '+Math.floor(s/60)+'min'; return 'hace '+Math.floor(s/3600)+'h';
 }
-function fko(iso) { if(!iso) return ''; try{var d=new Date(iso);return d.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})+'h';}catch(e){return '';} }
+function fko(iso) {
+  if(!iso) return '';
+  try{
+    var d=new Date(iso);
+    var today = new Date();
+    var isToday = d.toDateString() === today.toDateString();
+    var tomorrow = new Date(today); tomorrow.setDate(today.getDate()+1);
+    var isTomorrow = d.toDateString() === tomorrow.toDateString();
+    var datePart = isToday ? 'Hoy' : isTomorrow ? 'Mañana' : d.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit'});
+    var timePart = d.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+    return datePart+' '+timePart+'h';
+  }catch(e){return '';}
+}
 
 // ── PAGE ALERTS ────────────────────────────────────────────
 function pgAlerts() {
