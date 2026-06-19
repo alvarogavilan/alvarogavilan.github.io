@@ -1123,6 +1123,14 @@ function detectEV(id,sport,match,ko,b365,winamax,pin,outV,outA) {
 
     var bestEv = Math.max(bEv||-999, wEv||-999);
     var key=id+'_'+mkt;
+    // Diagnóstico de seguridad: si el EV+ es absurdamente alto (>500%), es señal
+    // de que estamos cruzando mercados que no son el mismo dato real (bug de
+    // matching entre fuentes). Lo registramos para depurar en vez de mostrarlo
+    // como si fuera una oportunidad real.
+    if (bestEv > 500) {
+      addDiag('⚠️ EV+ absurdo descartado: '+match+' mkt='+mkt+' pin='+p+' b365='+bVal+' winamax='+wVal);
+      return;
+    }
     outV.push({key:key,sport:sport,match:match,ko:ko,market:name,
       b365odds: bVal||null, b365ev: bEv,
       winamaxOdds: wVal||null, winamaxEv: wEv,
