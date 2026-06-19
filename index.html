@@ -438,9 +438,9 @@ async function fetchTheOdds() {
       k.includes('epl') || k.includes('la_liga') || k.includes('serie_a') ||
       k.includes('bundesliga') || k.includes('ligue_one') || k.includes('uefa')
     );
-  }).slice(0,4);
-  var basketKeys = [];
-  var tennisKeys = [];
+  }).slice(0,3);
+  var basketKeys = all.filter(function(k){return k.indexOf('basketball_')===0;}).slice(0,1);
+  var tennisKeys = all.filter(function(k){return k.indexOf('tennis_')===0;}).slice(0,1);
   var hockeyKeys = [];
   var baseballKeys = [];
   var amFootballKeys = [];
@@ -687,37 +687,69 @@ async function fetchOddsPapiEsports() {
 }
 
 async function fetchOddsPapi() {
-  // Correct domain: api.oddspapi.io (not .com). sportId=10 is football/soccer.
-  // Step 1: get fixtures for soccer
-  var fixturesUrl = 'https://api.oddspapi.io/v4/fixtures?sportId=10&apiKey=' + KEYS.oddsPapi;
-  var fixtures = await proxyFetch(fixturesUrl, 'OddsPapi (fixtures)');
-  if (!fixtures || !Array.isArray(fixtures) || !fixtures.length) return [];
-  apiStatus.oddsPapi = 'ok';
-
-  var tournamentIds = [...new Set(fixtures.slice(0,10).map(function(f){return f.tournamentId;}).filter(Boolean))].slice(0,3);
-  if (!tournamentIds.length) return [];
-
-  // Step 2: get Pinnacle odds for those tournaments
-  var oddsUrl = 'https://api.oddspapi.io/v4/odds-by-tournaments?bookmaker=pinnacle&tournamentIds='
-    + tournamentIds.join(',') + '&apiKey=' + KEYS.oddsPapi;
-  var oddsData = await proxyFetch(oddsUrl, 'OddsPapi (odds)');
-  if (!oddsData || !Array.isArray(oddsData)) return [];
-
-  return oddsData.slice(0,15).map(function(fx) {
-    var pin = {};
-    var pinData = fx.bookmakerOdds && fx.bookmakerOdds.pinnacle;
-    if (pinData && pinData.markets) {
-      // Market 101 is typically 1X2 in OddsPapi's schema; extract home/draw/away prices
-      var mkt1x2 = pinData.markets['101'];
-      if (mkt1x2 && mkt1x2.outcomes) {
-        var o = mkt1x2.outcomes;
-        if (o['101'] && o['101'].players && o['101'].players['0']) pin['h2h_home'] = parseFloat(o['101'].players['0'].price||0);
-        if (o['102'] && o['102'].players && o['102'].players['0']) pin['h2h_draw'] = parseFloat(o['102'].players['0'].price||0);
-        if (o['103'] && o['103'].players && o['103'].players['0']) pin['h2h_away'] = parseFloat(o['103'].players['0'].price||0);
-      }
+  // sportId=10 es fútbol (confirmado). Para baloncesto y tenis, en vez de
+  // adivinar el ID (la documentación pública de OddsPapi no es consistente
+  // entre fuentes), lo confirmamos en cada sesión con /v4/sports — así nunca
+  // pedimos un deporte equivocado por un ID mal memorizado.
+  if (!window._oddsPapiSportIds || Date.now() - (window._oddsPapiSportIdsTime||0) > 86400000) {
+    var sportsListUrl = 'https://api.oddspapi.io/v4/sports?apiKey=' + KEYS.oddsPapi;
+    var sportsList = await proxyFetch(sportsListUrl, 'OddsPapi (sports list)');
+    if (sportsList && Array.isArray(sportsList)) {
+      var map = {};
+      sportsList.forEach(function(s) {
+        var slug = (s.slug||s.sportSlug||s.name||'').toLowerCase();
+        if (slug.indexOf('soccer')>-1) map.soccer = s.sportId;
+        if (slug.indexOf('basketball')>-1) map.basketball = s.sportId;
+        if (slug.indexOf('tennis')>-1) map.tennis = s.sportId;
+      });
+      window._oddsPapiSportIds = map;
+      window._oddsPapiSportIdsTime = Date.now();
+      addDiag('  OddsPapi sportIds confirmados: '+JSON.stringify(map));
     }
-    return {id:fx.fixtureId, match:'fixture_'+fx.fixtureId, ko:fx.startTime, pin:pin};
-  }).filter(function(e){return Object.keys(e.pin).length>0;});
+  }
+  var sportIds = window._oddsPapiSportIds || {soccer:10};
+
+  var SPORT_CONFIG = [
+    {key:'soccer', id: sportIds.soccer || 10, icon:'⚽'},
+    {key:'basketball', id: sportIds.basketball, icon:'🏀'},
+    {key:'tennis', id: sportIds.tennis, icon:'🎾'},
+  ].filter(function(s){ return s.id !== undefined && s.id !== null; });
+
+  var allOut = [];
+  for (var si=0; si<SPORT_CONFIG.length; si++) {
+    var sc = SPORT_CONFIG[si];
+    var fixturesUrl = 'https://api.oddspapi.io/v4/fixtures?sportId='+sc.id+'&apiKey=' + KEYS.oddsPapi;
+    var fixtures = await proxyFetch(fixturesUrl, 'OddsPapi (fixtures '+sc.icon+')');
+    if (!fixtures || !Array.isArray(fixtures) || !fixtures.length) continue;
+    apiStatus.oddsPapi = 'ok';
+
+    var tournamentIds = [...new Set(fixtures.slice(0,10).map(function(f){return f.tournamentId;}).filter(Boolean))].slice(0,3);
+    if (!tournamentIds.length) continue;
+
+    var oddsUrl = 'https://api.oddspapi.io/v4/odds-by-tournaments?bookmaker=pinnacle&tournamentIds='
+      + tournamentIds.join(',') + '&apiKey=' + KEYS.oddsPapi;
+    var oddsData = await proxyFetch(oddsUrl, 'OddsPapi (odds '+sc.icon+')');
+    if (!oddsData || !Array.isArray(oddsData)) continue;
+
+    var mapped = oddsData.slice(0,15).map(function(fx) {
+      var pin = {};
+      var pinData = fx.bookmakerOdds && fx.bookmakerOdds.pinnacle;
+      if (pinData && pinData.markets) {
+        // Market 101 is typically 1X2/moneyline in OddsPapi's schema
+        var mkt1x2 = pinData.markets['101'];
+        if (mkt1x2 && mkt1x2.outcomes) {
+          var o = mkt1x2.outcomes;
+          if (o['101'] && o['101'].players && o['101'].players['0']) pin['h2h_home'] = parseFloat(o['101'].players['0'].price||0);
+          if (o['102'] && o['102'].players && o['102'].players['0']) pin['h2h_draw'] = parseFloat(o['102'].players['0'].price||0);
+          if (o['103'] && o['103'].players && o['103'].players['0']) pin['h2h_away'] = parseFloat(o['103'].players['0'].price||0);
+        }
+      }
+      return {id:fx.fixtureId, match:(fx.participant1Name||'')+' vs '+(fx.participant2Name||''), ko:fx.startTime, pin:pin, sportIcon:sc.icon};
+    }).filter(function(e){return Object.keys(e.pin).length>0;});
+
+    allOut = allOut.concat(mapped);
+  }
+  return allOut;
 }
 
 function shouldFetch(api) { return Date.now()-lastFetch[api] >= INTERVALS[api]; }
@@ -769,15 +801,64 @@ async function runFetch() {
   updateBadge();
 }
 
+// ── MATCHING ENTRE PLATAFORMAS ─────────────────────────────
+// The Odds API / Odds-API.io / SGO usan IDs propios, distintos a los de
+// OddsPapi (nuestra única fuente de Pinnacle). El ID nunca va a coincidir
+// entre dos plataformas distintas — hay que cruzar por nombres de equipo
+// normalizados + cercanía de hora de inicio. Esto sustituye el matching
+// por ID exacto que nunca pudo funcionar entre fuentes distintas.
+function normalizeTeamName(name) {
+  if (!name) return '';
+  return name.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // quitar acentos
+    .replace(/\b(fc|cf|sc|afc|cd|ud|rcd|real|atletico|athletic|club|deportivo)\b/g, '')
+    .replace(/[^a-z0-9]/g, '')
+    .trim();
+}
+function matchPinnacleEvent(ev, pinnacleList) {
+  if (!ev.match || !pinnacleList || !pinnacleList.length) return null;
+  var parts = ev.match.split(' vs ');
+  if (parts.length !== 2) return null;
+  var evA = normalizeTeamName(parts[0]), evB = normalizeTeamName(parts[1]);
+  if (!evA || !evB) return null;
+  var evTime = ev.ko ? new Date(ev.ko).getTime() : null;
+
+  var best = null, bestScore = 0;
+  pinnacleList.forEach(function(p) {
+    if (!p.match) return;
+    var pParts = p.match.split(' vs ');
+    if (pParts.length !== 2) return;
+    var pA = normalizeTeamName(pParts[0]), pB = normalizeTeamName(pParts[1]);
+    if (!pA || !pB) return;
+
+    // Coincidencia de nombres en cualquier orden (home/away puede variar entre fuentes)
+    var namesMatch = (evA===pA && evB===pB) || (evA===pB && evB===pA) ||
+      (pA.indexOf(evA)>-1 && pB.indexOf(evB)>-1) || (pA.indexOf(evB)>-1 && pB.indexOf(evA)>-1);
+    if (!namesMatch) return;
+
+    // Si tenemos hora de inicio en ambas fuentes, exigir que estén dentro de 3h
+    // (mismos partidos pueden diferir en redondeo de zona horaria entre proveedores)
+    if (evTime && p.ko) {
+      var pTime = new Date(p.ko).getTime();
+      var diffH = Math.abs(evTime - pTime) / 3600000;
+      if (diffH > 3) return;
+    }
+    var score = 2; // coincidencia de nombre válida
+    if (score > bestScore) { bestScore = score; best = p; }
+  });
+  return best;
+}
+
 function processDirectResults(results) {
   var newAlerts=[], newSharp=[], newValue=[], newMon=[], newArb=[];
   var totalRaw = 0;
+  var pinnacleList = results.oddsPapi || [];
 
   ['theOdds','oddsApi','sgo','sharpApi','oddsPapiEsports'].forEach(function(src) {
     totalRaw += (results[src]||[]).length;
     (results[src]||[]).forEach(function(ev) {
       if (!ev || !ev.id) return;
-      var pinMatch = (results.oddsPapi||[]).find(function(p){return p.id===ev.id;});
+      var pinMatch = (ev.pin && Object.keys(ev.pin).length) ? null : matchPinnacleEvent(ev, pinnacleList);
       var pin = (ev.pin && Object.keys(ev.pin).length) ? ev.pin : (pinMatch ? pinMatch.pin : {});
       var b365 = ev.b365 || {};
       var winamax = ev.winamax || {};
@@ -799,6 +880,8 @@ function processDirectResults(results) {
   });
 
   addDiag('Procesado: '+totalRaw+' eventos crudos → '+newMon.length+' con cuotas'+(newArb.length?' · '+newArb.length+' arbitrajes':''));
+  var withPinCount = newMon.filter(function(m){return m.pin && Object.keys(m.pin).length>0;}).length;
+  addDiag('  Pinnacle: '+pinnacleList.length+' eventos disponibles, '+withPinCount+' cruzados con éxito');
 
   newAlerts.forEach(function(a) { if(!ALERTS.find(function(x){return x.key===a.key;})) ALERTS.unshift(a); });
   var priorityRank = {highvolume:-1, extreme:0, high:1, normal:2, undefined:2};
