@@ -609,7 +609,10 @@ async function fetchSGO() {
         var isML = oddID.toLowerCase().indexOf('ml-home')>-1 || oddID.toLowerCase().indexOf('ml-away')>-1 || oddID.toLowerCase().indexOf('moneyline')>-1;
         if (!isML) return;
         var oddData = ev.odds[oddID];
-        var side = oddID.toLowerCase().indexOf('home')>-1 ? 'home' : 'away';
+        var sideRaw = oddID.toLowerCase().indexOf('home')>-1 ? 'home' : 'away';
+        // Usar el nombre REAL del equipo, no la palabra "home"/"away" literal —
+        // eso es lo que causaba "Victoria de home" en vez de "Victoria de Braves".
+        var sideName = sideRaw === 'home' ? homeT : awayT;
 
         // Primero intentamos byBookmaker (solo funciona en plan de pago)
         var byBk = oddData.byBookmaker || {};
@@ -618,25 +621,29 @@ async function fetchSGO() {
           if (!bk || bk.odds===undefined) return;
           var bkLower = bkName.toLowerCase();
           var tgt = bkLower.includes('pinnacle') ? pin : b365;
-          if (tgt['h2h_'+side]===undefined) tgt['h2h_'+side] = parseFloat(bk.odds);
+          if (tgt['h2h_'+sideName]===undefined) tgt['h2h_'+sideName] = parseFloat(bk.odds);
         });
 
         // Fallback gratuito: fairOdds (precio justo de mercado) como referencia,
-        // y bookOdds (consenso con vig) como "casa genérica" si no hay byBookmaker real
+        // y bookOdds (consenso con vig) como "casa genérica" si no hay byBookmaker real.
+        // Validamos rango realista (cuota decimal entre 1.01 y 50) para evitar
+        // valores absurdos si la API devuelve un campo en formato inesperado.
         if (Object.keys(pin).length===0 && oddData.fairOdds) {
           var fairDec = americanToDecimal(oddData.fairOdds);
-          if (fairDec) pin['h2h_'+side] = fairDec;
+          if (fairDec && fairDec>1.01 && fairDec<50) pin['h2h_'+sideName] = fairDec;
         }
         if (Object.keys(b365).length===0 && oddData.bookOdds) {
           var bookDec = americanToDecimal(oddData.bookOdds);
-          if (bookDec) b365['h2h_'+side] = bookDec;
+          if (bookDec && bookDec>1.01 && bookDec<50) b365['h2h_'+sideName] = bookDec;
         }
       });
     }
 
     var lg = ev.leagueID || '';
     var sp = ['NBA','WNBA'].includes(lg)?'🏀' : ['NFL'].includes(lg)?'🏈' : ['MLB'].includes(lg)?'⚾' : ['NHL'].includes(lg)?'🏒' : ['ATP','WTA'].includes(lg)?'🎾' : ['UFC'].includes(lg)?'🥊' : '⚽';
-    return {id:ev.eventID||ev.id, sport:sp, match:homeT+' vs '+awayT, comp:lg, ko:(ev.status&&ev.status.startsTime)||ev.startTime, b365:b365, pin:pin, src:'SGO'};
+    // Campo real confirmado en respuesta de la API: ev.status.startsAt (no startsTime)
+    var koTime = (ev.status && ev.status.startsAt) || ev.startsAt || ev.startTime || '';
+    return {id:ev.eventID||ev.id, sport:sp, match:homeT+' vs '+awayT, comp:lg, ko:koTime, b365:b365, pin:pin, src:'SGO'};
   }).filter(function(e){return Object.keys(e.b365).length>0 || Object.keys(e.pin).length>0;});
 }
 
