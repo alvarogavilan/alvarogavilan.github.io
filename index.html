@@ -460,13 +460,25 @@ async function fetchTheOdds() {
     'club_friendlies', 'friendlies',                                   // Amistosos de clubes
   ];
   var allSoccerAvailable = all.filter(function(k){return k.indexOf('soccer_')===0;});
-  var soccerKeys = allSoccerAvailable.filter(function(k){
+  // EXCLUIR explícitamente mercados de futuro tipo "_winner" (¿quién gana el
+  // torneo?) — The Odds API los rechaza con HTTP 422 cuando pedimos
+  // markets=h2h, porque ese mercado no aplica a partidos individuales.
+  var validSoccerLeagues = allSoccerAvailable.filter(function(k){ return !k.includes('_winner'); });
+  var soccerKeys = validSoccerLeagues.filter(function(k){
     return priorityKeywords.some(function(kw){ return k.includes(kw); });
-  }).slice(0,15); // ampliado de 8 a 15 — cubrir más países de los solicitados
+  });
+  // Priorizar el Mundial/Mundial de Clubes (mejor cobertura de Bet365/Winamax
+  // al ser un torneo mediático) poniéndolo primero en la lista
+  soccerKeys.sort(function(a,b){
+    var aIsWC = a.includes('world_cup') ? 0 : 1;
+    var bIsWC = b.includes('world_cup') ? 0 : 1;
+    return aIsWC - bIsWC;
+  });
+  soccerKeys = soccerKeys.slice(0,15); // ampliado de 8 a 15 — cubrir más países de los solicitados
   // Fallback: si ninguna liga prioritaria está activa ahora, usar cualquier
   // soccer_ disponible en vez de quedarse sin nada
   if (!soccerKeys.length) {
-    soccerKeys = allSoccerAvailable.slice(0,8);
+    soccerKeys = validSoccerLeagues.slice(0,15);
   }
   addDiag('  TODAS las ligas de fútbol activas ahora ('+allSoccerAvailable.length+'): '+allSoccerAvailable.join(', '));
   var basketKeys = [];
@@ -810,9 +822,13 @@ async function fetchOddsPapiEsports() {
 }
 
 async function fetchOddsPapi() {
-  // sportId=10 es fútbol (confirmado por la documentación oficial).
-  // Por ahora solo fútbol: es lo único confirmado al 100% y evita sobrecargar
-  // el Worker con llamadas extra mientras estabilizamos lo esencial.
+  // sportId=10 es fútbol (confirmado por la documentación oficial). OddsPapi
+  // cubre 1.372 torneos de fútbol incluyendo ligas menores/juveniles/femeninas
+  // con Bet365 incluido en el mismo feed — confirmado en su documentación
+  // oficial. El bug anterior: pedíamos "bookmaker=pinnacle" que descarta
+  // Bet365/Winamax de la respuesta, aunque vengan en el mismo JSON bajo
+  // bookmakerOdds.bet365 / bookmakerOdds.winamax. Ahora pedimos sin filtro
+  // de bookmaker y extraemos los tres de la misma llamada.
   var SPORT_CONFIG = [
     {key:'soccer', id: 10, icon:'⚽'},
   ];
@@ -827,30 +843,39 @@ async function fetchOddsPapi() {
     if (!fixtures || !Array.isArray(fixtures) || !fixtures.length) continue;
     apiStatus.oddsPapi = 'ok';
 
-    var tournamentIds = [...new Set(fixtures.slice(0,10).map(function(f){return f.tournamentId;}).filter(Boolean))].slice(0,3);
+    // Ampliado de 10/3 a 20/8 fixtures/torneos para cubrir más ligas menores
+    var tournamentIds = [...new Set(fixtures.slice(0,20).map(function(f){return f.tournamentId;}).filter(Boolean))].slice(0,8);
     if (!tournamentIds.length) continue;
 
-    var oddsUrl = 'https://api.oddspapi.io/v4/odds-by-tournaments?bookmaker=pinnacle&tournamentIds='
+    // SIN filtro de bookmaker: pedimos todos para poder extraer Pinnacle,
+    // Bet365 y Winamax de la misma respuesta, no solo uno
+    var oddsUrl = 'https://api.oddspapi.io/v4/odds-by-tournaments?tournamentIds='
       + tournamentIds.join(',') + '&apiKey=' + KEYS.oddsPapi;
     var oddsData = await proxyFetch(oddsUrl, 'OddsPapi (odds '+sc.icon+')');
     if (!oddsData || !Array.isArray(oddsData)) continue;
 
-    var mapped = oddsData.slice(0,15).map(function(fx) {
-      var pin = {};
-      var pinData = fx.bookmakerOdds && fx.bookmakerOdds.pinnacle;
-      if (pinData && pinData.markets) {
-        // Market 101 is typically 1X2/moneyline in OddsPapi's schema
-        var mkt1x2 = pinData.markets['101'];
-        if (mkt1x2 && mkt1x2.outcomes) {
-          var o = mkt1x2.outcomes;
-          if (o['101'] && o['101'].players && o['101'].players['0']) pin['h2h_home'] = parseFloat(o['101'].players['0'].price||0);
-          if (o['102'] && o['102'].players && o['102'].players['0']) pin['h2h_draw'] = parseFloat(o['102'].players['0'].price||0);
-          if (o['103'] && o['103'].players && o['103'].players['0']) pin['h2h_away'] = parseFloat(o['103'].players['0'].price||0);
-        }
+    function extractMoneyline(bkData) {
+      var out = {};
+      if (!bkData || !bkData.markets) return out;
+      var mkt1x2 = bkData.markets['101'];
+      if (mkt1x2 && mkt1x2.outcomes) {
+        var o = mkt1x2.outcomes;
+        if (o['101'] && o['101'].players && o['101'].players['0']) out['h2h_home'] = parseFloat(o['101'].players['0'].price||0);
+        if (o['102'] && o['102'].players && o['102'].players['0']) out['h2h_draw'] = parseFloat(o['102'].players['0'].price||0);
+        if (o['103'] && o['103'].players && o['103'].players['0']) out['h2h_away'] = parseFloat(o['103'].players['0'].price||0);
       }
-      return {id:fx.fixtureId, match:(fx.participant1Name||'')+' vs '+(fx.participant2Name||''), ko:fx.startTime, pin:pin, sportIcon:sc.icon};
-    }).filter(function(e){return Object.keys(e.pin).length>0;});
+      return out;
+    }
 
+    var mapped = oddsData.slice(0,30).map(function(fx) {
+      var bk = fx.bookmakerOdds || {};
+      var pin = extractMoneyline(bk.pinnacle);
+      var b365 = extractMoneyline(bk.bet365);
+      var winamax = extractMoneyline(bk.winamax);
+      return {id:fx.fixtureId, match:(fx.participant1Name||'')+' vs '+(fx.participant2Name||''), ko:fx.startTime, pin:pin, b365:b365, winamax:winamax, sport:sc.icon, src:'OddsPapi'};
+    }).filter(function(e){return Object.keys(e.pin).length>0 || Object.keys(e.b365).length>0 || Object.keys(e.winamax).length>0;});
+
+    addDiag('  OddsPapi: '+mapped.length+' partidos con datos de Pinnacle/Bet365/Winamax (de '+tournamentIds.length+' torneos)');
     allOut = allOut.concat(mapped);
   }
   return allOut;
@@ -961,7 +986,7 @@ function processDirectResults(results) {
     (results.sgo || []).filter(function(s){ return s.pin && Object.keys(s.pin).length>0; })
   );
 
-  ['theOdds','oddsApi','sgo','sharpApi','oddsPapiEsports'].forEach(function(src) {
+  ['theOdds','oddsApi','sgo','sharpApi','oddsPapiEsports','oddsPapi'].forEach(function(src) {
     totalRaw += (results[src]||[]).length;
     (results[src]||[]).forEach(function(ev) {
       if (!ev || !ev.id) return;
