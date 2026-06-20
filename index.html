@@ -330,7 +330,7 @@ var DIAG = [];
 function addDiag(msg) {
   var ts = new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   DIAG.unshift('['+ts+'] '+msg);
-  DIAG = DIAG.slice(0,20);
+  DIAG = DIAG.slice(0,60);
   var el = document.getElementById('diag-panel');
   if (el) el.innerHTML = DIAG.map(function(d){
     var col = d.includes('✓')?'#00FF87':d.includes('✗')?'#FF3B5C':'#8896AA';
@@ -459,15 +459,16 @@ async function fetchTheOdds() {
     'morocco',                                                         // Marruecos
     'club_friendlies', 'friendlies',                                   // Amistosos de clubes
   ];
-  var soccerKeys = all.filter(function(k){
-    if (k.indexOf('soccer_')!==0) return false;
+  var allSoccerAvailable = all.filter(function(k){return k.indexOf('soccer_')===0;});
+  var soccerKeys = allSoccerAvailable.filter(function(k){
     return priorityKeywords.some(function(kw){ return k.includes(kw); });
-  }).slice(0,8); // ampliamos el límite de 4 a 8 ligas por la cantidad de países pedidos
+  }).slice(0,15); // ampliado de 8 a 15 — cubrir más países de los solicitados
   // Fallback: si ninguna liga prioritaria está activa ahora, usar cualquier
   // soccer_ disponible en vez de quedarse sin nada
   if (!soccerKeys.length) {
-    soccerKeys = all.filter(function(k){return k.indexOf('soccer_')===0;}).slice(0,8);
+    soccerKeys = allSoccerAvailable.slice(0,8);
   }
+  addDiag('  TODAS las ligas de fútbol activas ahora ('+allSoccerAvailable.length+'): '+allSoccerAvailable.join(', '));
   var basketKeys = [];
   var tennisKeys = [];
   var hockeyKeys = [];
@@ -982,7 +983,7 @@ function processDirectResults(results) {
           var majorLeagueKeywords = ['nba','nfl','mlb','nhl','premier league','la liga','serie a','bundesliga','champions league','epl'];
           var isMinorLeague = !majorLeagueKeywords.some(function(kw){ return compLower.includes(kw); });
 
-          detectEV(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, pin, newValue, newAlerts);
+          detectEV(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, pin, newValue, newAlerts, ev.src);
           detectSharp(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, newSharp, newAlerts, isMinorLeague);
           detectDivergence(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, pin, newAlerts);
           detectSuspension(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, newAlerts);
@@ -1178,7 +1179,7 @@ function noVigProb(pinMarketOdds) {
   return fair; // probabilidad justa de cada resultado, vig ya descontado
 }
 
-function detectEV(id,sport,match,ko,b365,winamax,pin,outV,outA) {
+function detectEV(id,sport,match,ko,b365,winamax,pin,outV,outA,src) {
   if (!pin || !Object.keys(pin).length) return;
   // Agrupamos las claves de Pinnacle por "familia" de mercado (todo lo que
   // empiece igual hasta el último _) para poder calcular el no-vig junto.
@@ -1186,6 +1187,13 @@ function detectEV(id,sport,match,ko,b365,winamax,pin,outV,outA) {
   // como fallback, igual que antes — mejor tener una señal aproximada que ninguna.
   var pinFair = noVigProb(pin) || pin;
   var allMarkets = new Set(Object.keys(b365||{}).concat(Object.keys(winamax||{})));
+  // SGO en plan gratis usa fairOdds/bookOdds (aproximación estadística, NO
+  // cuotas reales de Bet365/Pinnacle) — es la fuente que generó el pick
+  // absurdo de Braves vs Brewers (EV+75%). Le exigimos un umbral mucho más
+  // estricto que a datos reales de The Odds API / Odds-API.io.
+  var isApproxSource = (src === 'SGO');
+  var maxRealisticEv = isApproxSource ? 25 : 150;
+
   allMarkets.forEach(function(mkt) {
     var p = parseFloat(pin[mkt]);
     if (!p || p<=1.01) return;
@@ -1210,18 +1218,17 @@ function detectEV(id,sport,match,ko,b365,winamax,pin,outV,outA) {
 
     var bestEv = Math.max(bEv||-999, wEv||-999);
     var key=id+'_'+mkt;
-    // Diagnóstico de seguridad: si el EV+ es absurdamente alto (>500%), es señal
-    // de que estamos cruzando mercados que no son el mismo dato real (bug de
-    // matching entre fuentes). Lo registramos para depurar en vez de mostrarlo
-    // como si fuera una oportunidad real.
-    if (bestEv > 150) {
-      addDiag('⚠️ EV+ sospechoso descartado: '+match+' mkt='+mkt+' pin='+p+' b365='+bVal+' winamax='+wVal);
+    // Diagnóstico de seguridad: umbral distinto según la fiabilidad de la
+    // fuente. SGO (fairOdds aproximado) corta en 25%; fuentes con cuotas
+    // reales (The Odds API, Odds-API.io) cortan en 150% como antes.
+    if (bestEv > maxRealisticEv) {
+      addDiag('⚠️ EV+ sospechoso descartado ('+(src||'?')+'): '+match+' mkt='+mkt+' pin='+p+' b365='+bVal+' winamax='+wVal);
       return;
     }
     outV.push({key:key,sport:sport,match:match,ko:ko,market:name,
       b365odds: bVal||null, b365ev: bEv,
       winamaxOdds: wVal||null, winamaxEv: wEv,
-      pinnacle:p, ev:bestEv.toFixed(1), evNum:bestEv});
+      pinnacle:p, ev:bestEv.toFixed(1), evNum:bestEv, src:src});
 
     // Registro automático para CLV: cada pick que cumple el umbral se guarda con su
     // cuota de apertura, sin que el usuario tenga que marcar nada manualmente.
@@ -1234,7 +1241,7 @@ function detectEV(id,sport,match,ko,b365,winamax,pin,outV,outA) {
       outA.push({key:'ev_'+key,type:'value',sport:sport,match:match,ko:ko,
         signal:'EV+'+bestEv.toFixed(1)+'% — '+name+' ('+bestBook+')',
         detail:'Apuesta: "'+name+'". '+bestBook+' paga '+bestOdds.toFixed(2)+' cuando Pinnacle lo tiene a '+p.toFixed(2)+'. La casa está equivocada. Ventana de valor abierta — actúa antes de que corrija.',
-        from:p.toFixed(2),to:bestOdds.toFixed(2),bestBook:bestBook,market:name,ev:bestEv.toFixed(1),t:Date.now()});
+        from:p.toFixed(2),to:bestOdds.toFixed(2),bestBook:bestBook,market:name,ev:bestEv.toFixed(1),t:Date.now(),src:src});
     }
   });
 }
@@ -1466,6 +1473,10 @@ function scoreAlertConfidence(a) {
     if (ev >= 5 && ev <= 30) { score += 40; reasons.push('EV+ en rango creíble'); }
     else if (ev > 30 && ev <= 80) { score += 25; reasons.push('EV+ alto, verificar manualmente'); }
     else { score += 10; reasons.push('EV+ extremo, alta probabilidad de ruido de datos'); }
+    // SGO en plan gratis usa fairOdds aproximado (regresión estadística), NO
+    // una comparación real entre dos casas de apuestas reales — penalizamos
+    // fuerte porque no es el mismo tipo de señal que The Odds API/Odds-API.io.
+    if (a.src === 'SGO') { score -= 25; reasons.push('fuente aproximada (SGO), no cuota real de casa'); }
   }
 
   if (a.type === 'sharp') {
