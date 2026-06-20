@@ -709,7 +709,11 @@ async function fetchSGO() {
           if (!bk || bk.odds===undefined) return;
           var bkLower = bkName.toLowerCase();
           var tgt = bkLower.includes('pinnacle') ? pin : b365;
-          if (tgt['h2h_'+sideName]===undefined) tgt['h2h_'+sideName] = parseFloat(bk.odds);
+          // CRÍTICO: bk.odds viene en formato americano (igual que fairOdds/bookOdds),
+          // NO en decimal. Sin esta conversión, cuotas como +1500/+1700 se mostraban
+          // tal cual como si fueran decimales — de ahí las cuotas absurdas vistas en producción.
+          var bkDec = americanToDecimal(bk.odds);
+          if (tgt['h2h_'+sideName]===undefined && bkDec && bkDec>1.01 && bkDec<50) tgt['h2h_'+sideName] = bkDec;
         });
 
         // Fallback gratuito: fairOdds (precio justo de mercado) como referencia,
@@ -1323,6 +1327,15 @@ function detectEV(id,sport,match,ko,b365,winamax,pin,outV,outA,src) {
 // Sharp money: detecta movimiento en CUALQUIERA de tus dos casas
 function detectSharp(id,sport,match,ko,b365,winamax,outS,outA,isMinorLeague) {
   var prev=HISTORY[id]; if (!prev) return;
+  // CRÍTICO: si el partido ya ha empezado, el movimiento de cuota refleja el
+  // marcador real en directo (un equipo perdiendo sube de cuota de forma
+  // lógica), NO dinero sharp entrando sin motivo público. Sin este filtro,
+  // el bot llegó a recomendar "EJECUTAR" apostar a un equipo que ya iba
+  // perdiendo 2-6, interpretando la subida normal de cuota como señal sharp.
+  if (ko) {
+    var koTs = new Date(ko).getTime();
+    if (!isNaN(koTs) && Date.now() >= koTs) return; // partido en directo: no es señal sharp fiable
+  }
   var minsSincePrev = prev.t ? (Date.now()-prev.t)/60000 : null;
   var movesThisEvent = {}; // mkt -> {Bet365: chg, Winamax: chg} para detectar coordinación
   // Las ligas pequeñas/poco líquidas (ej. Estonia, Letonia, Islas Feroe) tienen
@@ -1668,12 +1681,14 @@ function botTxt(a) {
     return 'EJECUTAR — Apuesta <strong style="color:var(--value)">'+stakes.stakeA.toFixed(2)+'€</strong> en '+d.bookA+' a "'+d.outcomeA+'" y <strong style="color:var(--value)">'+stakes.stakeB.toFixed(2)+'€</strong> en '+d.bookB+' a "'+d.outcomeB+'". Ganas <strong style="color:var(--value)">'+stakes.profit.toFixed(2)+'€</strong> sin importar el resultado. Actúa rápido, estas discrepancias se corrigen en minutos.';
   }
   if(a.suspended){
-    return 'VIGILAR — '+a.book+' ha retirado esta cuota temporalmente. No se puede apostar hasta que reaparezca. Cuando vuelva, compara la nueva cuota con la anterior ('+a.from+') para ver si subió o bajó — eso te dirá hacia qué lado se movió el dinero grande.';
+    var marketTxtSusp = a.market ? ' ("'+a.market+'")' : '';
+    return 'VIGILAR — '+a.book+' ha retirado esta cuota temporalmente'+marketTxtSusp+'. No se puede apostar hasta que reaparezca. Cuando vuelva, compara la nueva cuota con la anterior ('+a.from+') para ver si subió o bajó — eso te dirá hacia qué lado se movió el dinero grande.';
   }
   if(a.type==='sharp'){var c=parseFloat(a.chg||0);
     var bookName = a.coordinated ? 'Bet365 Y Winamax' : (a.book || 'tu casa');
     var stakeInfo = calcStake(parseFloat(a.to), parseFloat(a.to)*0.95);
-    var stakeTxt = stakeInfo ? ' <strong style="color:var(--value)">Apuesta sugerida: '+stakeInfo.stake.toFixed(0)+'€</strong> ('+stakeInfo.pct.toFixed(1)+'% de tu banca) en '+bookName+'.' : '';
+    var marketTxtSharp = a.market ? ' a "'+a.market+'"' : '';
+    var stakeTxt = stakeInfo ? ' <strong style="color:var(--value)">Apuesta sugerida: '+stakeInfo.stake.toFixed(0)+'€</strong> ('+stakeInfo.pct.toFixed(1)+'% de tu banca) en '+bookName+marketTxtSharp+'.' : '';
     if(a.coordinated) return 'EJECUTAR AHORA — Movimiento coordinado del '+c.toFixed(1)+'% en ambas casas a la vez. Esto es más fiable que un movimiento aislado: indica que el mercado entero está corrigiendo, no solo una casa.'+stakeTxt;
     if(c>15) return 'EJECUTAR AHORA — Caída del '+c+'% en '+bookName+' es señal sharp muy fuerte. Como haría Walters: actúa inmediatamente antes de que la cuota siga bajando.'+stakeTxt;
     if(c>8) return 'EJECUTAR — Movimiento del '+c+'% en '+bookName+'. Dinero profesional confirmado. Cuota '+a.to+' todavía con valor.'+stakeTxt;
@@ -1726,7 +1741,8 @@ function pgSharp() {
       +'<div class="bot-l" style="color:'+col+'">🤖 DECISIÓN</div>'
       +'<div class="bot-t">'+(function(){
         var si = calcStake(parseFloat(s.to), parseFloat(s.to)*0.95);
-        var st = si ? ' <strong style="color:var(--value)">Apuesta sugerida: '+si.stake.toFixed(0)+'€</strong> ('+si.pct.toFixed(1)+'%) en '+(s.book||'')+'.' : '';
+        var marketTxtSh = s.market ? ' a "'+s.market+'"' : '';
+        var st = si ? ' <strong style="color:var(--value)">Apuesta sugerida: '+si.stake.toFixed(0)+'€</strong> ('+si.pct.toFixed(1)+'%) en '+(s.book||'')+marketTxtSh+'.' : '';
         if (isD&&parseFloat(s.chg)>10) return 'EJECUTAR — Caída del '+s.chg+'% en '+(s.book||'')+' = sharp money confirmado. Actúa en cuota '+s.to+' ahora antes de que siga bajando.'+st;
         if (isD) return 'VIGILAR — Caída del '+s.chg+'% en '+(s.book||'')+'. Si continúa en la próxima actualización, ejecutar.';
         return 'ANALIZAR — Subida del '+s.chg+'% en '+(s.book||'')+'. Puede indicar dinero saliendo o corrección. No ejecutar todavía.';
