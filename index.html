@@ -492,6 +492,7 @@ async function fetchTheOdds() {
     var data = await proxyFetch(url, 'The Odds API ('+sportKey+')');
     if (!data || !Array.isArray(data)) continue;
     apiStatus.theOdds = 'ok';
+    var noBookCoverage = 0;
 
     data.forEach(function(ev) {
       var b365={}, winamax={}, pin={}, points={};
@@ -508,10 +509,12 @@ async function fetchTheOdds() {
           });
         });
       });
+      if (Object.keys(b365).length===0 && Object.keys(winamax).length===0) noBookCoverage++;
       if (Object.keys(b365).length>0 || Object.keys(winamax).length>0 || Object.keys(pin).length>0) {
         allResults.push({id:ev.id, sport:sportIcon, match:(ev.home_team||'')+' vs '+(ev.away_team||''), comp:ev.sport_title||sportKey, ko:ev.commence_time, b365:b365, winamax:winamax, pin:pin, points:points, src:'TheOddsAPI'});
       }
     });
+    if (noBookCoverage>0) addDiag('  '+sportKey+': '+noBookCoverage+'/'+data.length+' partidos SIN Bet365/Winamax (otras casas no nos sirven)');
   }
   return allResults;
 }
