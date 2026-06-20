@@ -936,6 +936,54 @@ async function runFetch() {
 // entre dos plataformas distintas — hay que cruzar por nombres de equipo
 // normalizados + cercanía de hora de inicio. Esto sustituye el matching
 // por ID exacto que nunca pudo funcionar entre fuentes distintas.
+// ── TRADUCCIÓN DE NOMBRES (países/selecciones más comunes) ──
+// Las fuentes (OddsPapi, The Odds API...) devuelven nombres en inglés.
+// Esto traduce solo nombres de PAÍS exactos (selecciones nacionales) —
+// los nombres de clubes (Bayern Munich, Real Madrid, etc.) ya vienen
+// igual o muy parecidos en ambos idiomas, así que no se tocan.
+var COUNTRY_TRANSLATIONS = {
+  'ivory coast':'Costa de Marfil','cote d\'ivoire':'Costa de Marfil','cape verde':'Cabo Verde',
+  'south korea':'Corea del Sur','north korea':'Corea del Norte','south africa':'Sudáfrica',
+  'united states':'Estados Unidos','usa':'Estados Unidos','united states of america':'Estados Unidos',
+  'germany':'Alemania','spain':'España','france':'Francia','italy':'Italia','england':'Inglaterra',
+  'portugal':'Portugal','netherlands':'Países Bajos','holland':'Países Bajos','belgium':'Bélgica',
+  'switzerland':'Suiza','austria':'Austria','poland':'Polonia','czech republic':'Chequia','czechia':'Chequia',
+  'croatia':'Croacia','serbia':'Serbia','denmark':'Dinamarca','sweden':'Suecia','norway':'Noruega',
+  'finland':'Finlandia','iceland':'Islandia','ireland':'Irlanda','scotland':'Escocia','wales':'Gales',
+  'turkey':'Turquía','turkiye':'Turquía','greece':'Grecia','ukraine':'Ucrania','russia':'Rusia',
+  'romania':'Rumanía','hungary':'Hungría','slovakia':'Eslovaquia','slovenia':'Eslovenia',
+  'bosnia and herzegovina':'Bosnia y Herzegovina','bosnia':'Bosnia','albania':'Albania',
+  'morocco':'Marruecos','algeria':'Argelia','tunisia':'Túnez','egypt':'Egipto','nigeria':'Nigeria',
+  'senegal':'Senegal','ghana':'Ghana','cameroon':'Camerún','mali':'Mali','gabon':'Gabón',
+  'tanzania':'Tanzania','zambia':'Zambia','angola':'Angola','mozambique':'Mozambique',
+  'argentina':'Argentina','brazil':'Brasil','uruguay':'Uruguay','chile':'Chile','colombia':'Colombia',
+  'peru':'Perú','ecuador':'Ecuador','paraguay':'Paraguay','bolivia':'Bolivia','venezuela':'Venezuela',
+  'mexico':'México','costa rica':'Costa Rica','panama':'Panamá','honduras':'Honduras',
+  'guatemala':'Guatemala','jamaica':'Jamaica','canada':'Canadá',
+  'japan':'Japón','china':'China','australia':'Australia','new zealand':'Nueva Zelanda',
+  'saudi arabia':'Arabia Saudí','qatar':'Catar','iran':'Irán','iraq':'Irak','jordan':'Jordania',
+  'india':'India','indonesia':'Indonesia','thailand':'Tailandia','vietnam':'Vietnam',
+  'uzbekistan':'Uzbekistán','kazakhstan':'Kazajistán','azerbaijan':'Azerbaiyán','armenia':'Armenia',
+  'georgia':'Georgia','israel':'Israel','lebanon':'Líbano','syria':'Siria',
+  'estonia':'Estonia','latvia':'Letonia','lithuania':'Lituania','belarus':'Bielorrusia',
+  'moldova':'Moldavia','luxembourg':'Luxemburgo','malta':'Malta','cyprus':'Chipre',
+  'faroe islands':'Islas Feroe','andorra':'Andorra','san marino':'San Marino','gibraltar':'Gibraltar',
+  'kosovo':'Kosovo','montenegro':'Montenegro','north macedonia':'Macedonia del Norte',
+  'dr congo':'RD Congo','ivory':'Costa de Marfil','curacao':'Curazao','trinidad and tobago':'Trinidad y Tobago',
+  'el salvador':'El Salvador','dominican republic':'República Dominicana','haiti':'Haití',
+};
+function translateTeamName(name) {
+  if (!name) return name;
+  var key = name.toLowerCase().trim();
+  return COUNTRY_TRANSLATIONS[key] || name;
+}
+function translateMatchName(matchStr) {
+  if (!matchStr || matchStr.indexOf(' vs ')===-1) return matchStr;
+  var parts = matchStr.split(' vs ');
+  if (parts.length !== 2) return matchStr;
+  return translateTeamName(parts[0].trim()) + ' vs ' + translateTeamName(parts[1].trim());
+}
+
 function normalizeTeamName(name) {
   if (!name) return '';
   return name.toLowerCase()
@@ -992,6 +1040,7 @@ function processDirectResults(results) {
       if (!ev || !ev.id) return;
       var pinMatch = (ev.pin && Object.keys(ev.pin).length) ? null : matchPinnacleEvent(ev, pinnacleList);
       var pin = (ev.pin && Object.keys(ev.pin).length) ? ev.pin : (pinMatch ? pinMatch.pin : {});
+      ev.match = translateMatchName(ev.match); // traducir SOLO para mostrar, después del cruce con Pinnacle
       var b365 = ev.b365 || {};
       var winamax = ev.winamax || {};
       var points = ev.points || {};
@@ -1290,7 +1339,7 @@ function detectSharp(id,sport,match,ko,b365,winamax,outS,outA,isMinorLeague) {
       if (!c||!o||c<=1.01||o<=1.01) return;
       var chg=((o-c)/o)*100; if (Math.abs(chg)<minThreshold) return;
       var dir=chg>0?'BAJADA':'SUBIDA';
-      var name=mkt.replace(/_/g,' ').replace(/^h2h /,'').trim();
+      var name=buildMarketLabel(mkt, sport);
       var key=id+'_'+mkt+'_'+dir+'_'+pair.book;
       var absChg = Math.abs(chg);
       // Velocidad: % de cambio por minuto. Un mismo % en 3 min es mucho más
@@ -1387,7 +1436,7 @@ function detectDivergence(id,sport,match,ko,b365,winamax,pin,outA) {
       var divergence = bookChg - pinChg;
       if (Math.abs(divergence) < 6) return; // umbral: diferencia significativa
 
-      var name = mkt.replace(/_/g,' ').replace(/^h2h /,'').trim();
+      var name = buildMarketLabel(mkt, sport);
       var sameDirection = (bookChg>0 && pinChg>0) || (bookChg<0 && pinChg<0);
       var isOpposite = (bookChg>0 && pinChg<0) || (bookChg<0 && pinChg>0);
 
@@ -1418,7 +1467,7 @@ function detectSuspension(id,sport,match,ko,b365,winamax,outA) {
       var hadBefore = parseFloat(pair.prevB[mkt]) > 1.01;
       var hasNow = parseFloat(pair.curr[mkt]) > 1.01;
       if (hadBefore && !hasNow) {
-        var name=mkt.replace(/_/g,' ').replace(/^h2h /,'').trim();
+        var name=buildMarketLabel(mkt, sport);
         outA.push({key:'susp_'+id+'_'+mkt+'_'+pair.book, type:'sharp', sport:sport, match:match, ko:ko, market:name,
           signal:'⏸️ MERCADO SUSPENDIDO en '+pair.book+' — '+name,
           detail:pair.book+' ha retirado temporalmente esta cuota concreta (estaba en '+parseFloat(pair.prevB[mkt]).toFixed(2)+'), mientras otros mercados de la misma casa siguen activos. Las casas suspenden mercados cuando reciben una apuesta grande y necesitan recalcular el precio. Vigila si reaparece con una cuota distinta.',
@@ -1817,7 +1866,13 @@ function pgHistory() {
     +'<div style="font-size:11px;color:var(--value);font-weight:800;letter-spacing:.8px;margin-bottom:5px">📈 HISTORIAL — ¿FUNCIONA DE VERDAD?</div>'
     +'<div style="font-size:12px;color:var(--sub);line-height:1.65">'
     +'Las herramientas profesionales (OddsJam, RebelBetting) llevan un registro de cada pick mostrado y miden el <strong style="color:var(--text)">Closing Line Value (CLV)</strong>: si la cuota bajó después de detectar el pick, el mercado confirmó que tenía valor real. Esto es la prueba más fiable de si el sistema funciona a largo plazo — más que cualquier resultado puntual.'
+    +'</div>'
+    +'<div style="margin-top:8px;background:rgba(255,214,0,.08);border:1px solid rgba(255,214,0,.25);border-radius:9px;padding:9px 11px">'
+    +'<div style="font-size:11px;color:var(--warn);font-weight:800;margin-bottom:3px">⚠️ CLV ≠ si ganó el partido</div>'
+    +'<div style="font-size:11px;color:var(--sub);line-height:1.6">El CLV mide si la cuota se movió a tu favor entre que detectamos el pick y el cierre del mercado. Que el equipo gane o pierda el partido NO valida ni invalida la jugada — son dos medidas completamente distintas. Un pick con buen CLV puede perder, y uno con mal CLV puede ganar; a largo plazo, el CLV es el que predice si el sistema genera valor real.</div>'
     +'</div></div>';
+
+  h += '<button class="btn-s" onclick="borrarHistorialPicks()">🗑 Borrar historial de picks antiguos</button>';
 
   if (!PICK_LOG.length) {
     return h+'<div class="empty"><div class="ei">📊</div><h3>Aún sin historial</h3><p>Cada pick de EV+ que aparezca se registrará automáticamente aquí con su cuota inicial. Vuelve en unas horas para ver las primeras estadísticas reales.</p></div>';
@@ -2031,6 +2086,13 @@ function forceRefresh() {
 function resetCounters() {
   if (confirm('¿Resetear contadores? Solo al inicio del mes.')) {
     Object.keys(REQ).forEach(function(k){REQ[k]=0;}); saveReq(); renderPage();
+  }
+}
+function borrarHistorialPicks() {
+  if (confirm('¿Borrar todo el historial de picks guardado en este dispositivo? Esto no se puede deshacer.')) {
+    PICK_LOG = [];
+    try { localStorage.removeItem('smp_picklog'); } catch(e) {}
+    renderPage();
   }
 }
 
