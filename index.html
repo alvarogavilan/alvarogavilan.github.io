@@ -600,6 +600,29 @@ async function fetchSGO() {
   if (!Array.isArray(events)) { addDiag('  SGO: estructura inesperada, keys: '+Object.keys(data||{}).join(',')); return []; }
   addDiag('  SGO: '+events.length+' eventos crudos recibidos'+(data.notice?' (plan gratis: '+data.notice.substring(0,50)+')':''));
 
+  var nowTs = Date.now();
+  var beforeFilterCount = events.length;
+  events = events.filter(function(ev) {
+    var st = ev.status || {};
+    // CRÍTICO: descartar partidos ya terminados, cancelados o cuya hora de
+    // inicio ya pasó. Sin este filtro, un partido jugado hace días puede
+    // seguir apareciendo como "oportunidad activa de apostar" — bug grave
+    // detectado el 20/06/2026: Spurs vs Knicks del 14/06 seguía mostrándose
+    // como pick válido "de hoy" varios días después de jugado.
+    if (st.completed === true || st.ended === true || st.cancelled === true) return false;
+    var startsAt = st.startsAt;
+    if (startsAt) {
+      var startTs = new Date(startsAt).getTime();
+      // Margen de 4h tras el inicio: partidos en vivo siguen siendo relevantes
+      // un rato, pero más de eso es casi seguro que ya terminó.
+      if (!isNaN(startTs) && (nowTs - startTs) > 4*60*60*1000) return false;
+    }
+    return true;
+  });
+  if (events.length !== beforeFilterCount) {
+    addDiag('  SGO: '+(beforeFilterCount-events.length)+' eventos finalizados/pasados descartados');
+  }
+
   return events.slice(0,15).map(function(ev) {
     var b365={}, pin={};
     var homeT = (ev.teams && ev.teams.home && ev.teams.home.names) ? ev.teams.home.names.medium : (ev.homeTeam||'Home');
@@ -928,6 +951,12 @@ function processDirectResults(results) {
   }
 
   newAlerts.forEach(function(a) { if(!ALERTS.find(function(x){return x.key===a.key;})) ALERTS.unshift(a); });
+  // Limpiar alertas viejas (>6h): sin esto, una alerta de un partido ya
+  // jugado puede quedarse mostrándose como "oportunidad activa" indefinidamente.
+  // Bug detectado el 20/06/2026: pick de Spurs vs Knicks del 14/06 seguía
+  // apareciendo días después como si fuera de "hoy".
+  var sixHoursAgo = Date.now() - 6*60*60*1000;
+  ALERTS = ALERTS.filter(function(a){ return (a.t||0) >= sixHoursAgo; });
   var priorityRank = {highvolume:-1, extreme:0, high:1, normal:2, undefined:2};
   ALERTS.sort(function(a,b){
     var pa = priorityRank[a.priority]!==undefined ? priorityRank[a.priority] : 2;
