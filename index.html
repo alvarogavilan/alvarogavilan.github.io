@@ -992,6 +992,11 @@ function processDirectResults(results) {
   });
 
   addDiag('Procesado: '+totalRaw+' eventos crudos → '+newMon.length+' con cuotas'+(newArb.length?' · '+newArb.length+' arbitrajes':''));
+  // Desglose por deporte: confirma si el fútbol SÍ se está procesando (solo
+  // que sin EV+/Sharp suficiente para generar alerta) o si de verdad no llega
+  var sportBreakdown = {};
+  newMon.forEach(function(m){ sportBreakdown[m.sport||'?'] = (sportBreakdown[m.sport||'?']||0)+1; });
+  addDiag('  Desglose por deporte: '+Object.keys(sportBreakdown).map(function(s){return s+':'+sportBreakdown[s];}).join(' '));
   if (pinnacleList.length === 0) {
     addDiag('  Pinnacle: 0 eventos en este escaneo (OddsPapi no respondió o sin partidos) — sin cruces nuevos posibles');
   } else {
@@ -1660,7 +1665,18 @@ function pgValue() {
     +'</div>';
 
   if(LOADING&&!VALUEB.length) return h+'<div class="loadbox"><div class="spin"></div>Calculando EV+ entre tus casas y Pinnacle...</div>';
-  if(!VALUEB.length) return h+'<div class="empty"><div class="ei">💎</div><h3>Buscando valor...</h3><p>Comparamos Bet365 y Winamax vs Pinnacle en tiempo real. Verás ambas cuotas juntas para que decidas dónde apostar.</p></div>';
+  if(!VALUEB.length) {
+    var monitoredList = MONITOR.filter(function(m){ return m.pin && Object.keys(m.pin).length>0; });
+    var monitoredHtml = '';
+    if (monitoredList.length) {
+      monitoredHtml = '<div class="shdr">👁️ MONITOREADOS SIN EV+ SUFICIENTE · '+monitoredList.length+'</div>'
+        + monitoredList.slice(0,10).map(function(m){
+            return '<div class="card cn" style="padding:10px 14px"><div style="font-size:12px;color:var(--sub)">'+(m.sport||'')+' '+m.match+'</div>'
+              + '<div style="font-size:10px;color:var(--muted)">Tiene Pinnacle de referencia pero sin discrepancia ≥5% con tus casas ahora mismo</div></div>';
+          }).join('');
+    }
+    return h+'<div class="empty"><div class="ei">💎</div><h3>Buscando valor...</h3><p>Comparamos Bet365 y Winamax vs Pinnacle en tiempo real. Verás ambas cuotas juntas para que decidas dónde apostar.</p></div>'+monitoredHtml;
+  }
 
   VALUEB.forEach(function(v) {
     var ev=parseFloat(v.ev); var col=ev>20?'var(--sharp)':ev>12?'var(--warn)':'var(--value)';
