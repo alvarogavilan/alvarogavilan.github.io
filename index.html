@@ -434,12 +434,40 @@ async function fetchTheOdds() {
   // Baloncesto, tenis y fútbol americano de The Odds API nunca tendrán EV+
   // porque no hay cuota de Pinnacle con la que compararlos. Priorizamos
   // fútbol (4 ligas) para maximizar el solapamiento real con Pinnacle.
+  // Lista amplia de países/competiciones solicitados. Usamos coincidencia de
+  // palabra clave sobre la lista REAL de deportes activos ahora mismo
+  // (window._cachedSports), no slugs adivinados — así nos adaptamos a lo que
+  // The Odds API realmente tenga disponible en cada momento, sin fallar por
+  // un nombre de liga mal adivinado.
+  var priorityKeywords = [
+    'world_cup', 'fifa_world_cup',                                    // Mundial
+    'argentina',                                                       // Argentina (todas categorías)
+    'australia', 'a_league',                                           // Australia
+    'belarus',                                                         // Bielorrusia
+    'brazil', 'brasil', 'serie_b', 'serie_c',                          // Brasil (todo lo posible)
+    'chile',                                                           // Chile
+    'china', 'super_league',                                           // China
+    'korea', 'k_league',                                               // Corea del Sur
+    'la_liga', 'spain', 'segunda', 'copa_del_rey',                     // España (todas las ligas)
+    'usa', 'mls', 'usl',                                               // EEUU
+    'estonia',                                                         // Estonia
+    'ireland',                                                         // Irlanda
+    'iceland',                                                         // Islandia
+    'faroe',                                                           // Islas Feroe
+    'japan', 'j_league',                                               // Japón
+    'latvia',                                                          // Letonia
+    'morocco',                                                         // Marruecos
+    'club_friendlies', 'friendlies',                                   // Amistosos de clubes
+  ];
   var soccerKeys = all.filter(function(k){
-    return k.indexOf('soccer_')===0 && (
-      k.includes('epl') || k.includes('la_liga') || k.includes('serie_a') ||
-      k.includes('bundesliga') || k.includes('ligue_one') || k.includes('uefa')
-    );
-  }).slice(0,3);
+    if (k.indexOf('soccer_')!==0) return false;
+    return priorityKeywords.some(function(kw){ return k.includes(kw); });
+  }).slice(0,8); // ampliamos el límite de 4 a 8 ligas por la cantidad de países pedidos
+  // Fallback: si ninguna liga prioritaria está activa ahora, usar cualquier
+  // soccer_ disponible en vez de quedarse sin nada
+  if (!soccerKeys.length) {
+    soccerKeys = all.filter(function(k){return k.indexOf('soccer_')===0;}).slice(0,8);
+  }
   var basketKeys = [];
   var tennisKeys = [];
   var hockeyKeys = [];
@@ -449,7 +477,7 @@ async function fetchTheOdds() {
 
   var targets = soccerKeys.concat(basketKeys, tennisKeys, hockeyKeys, baseballKeys, amFootballKeys, mmaKeys);
   if (!targets.length) targets = all.filter(function(k){return k.indexOf('soccer_')===0;}).slice(0,5); // fallback: cualquier fútbol activo
-  addDiag('  Ligas a consultar: '+targets.length+' ('+targets.slice(0,5).join(', ')+(targets.length>5?'...':'')+')');
+  addDiag('  Ligas a consultar: '+targets.length+' ('+targets.join(', ')+')');
 
   var allResults = [];
   for (var i=0; i<targets.length; i++) {
@@ -584,15 +612,19 @@ async function fetchSGO() {
   // Solo NBA confirmada en plan gratis (probado directamente: success:true).
   // Otras ligas (WNBA confirmada NO disponible) pueden no estar incluidas
   // en el plan gratuito y tirar toda la petición abajo si se piden juntas.
-  var url = 'https://api.sportsgameodds.com/v2/events?leagueID=NBA,NFL,MLB,EPL,LA_LIGA,IT_SERIE_A,BUNDESLIGA,UEFA_CHAMPIONS_LEAGUE&oddsAvailable=true&limit=25&apiKey=' + KEYS.sgo;
+  // Ligas CONFIRMADAS en el plan gratuito real (verificado vía /v2/leagues):
+  // NBA, MLB, NFL, NHL, NCAAB, NCAAF, MLS, UEFA_CHAMPIONS_LEAGUE.
+  // EPL/LA_LIGA/SERIE_A/BUNDESLIGA NO están disponibles en este plan — antes
+  // fallaba toda la petición por pedir ligas no permitidas.
+  var url = 'https://api.sportsgameodds.com/v2/events?leagueID=NBA,NFL,MLB,NHL,MLS,UEFA_CHAMPIONS_LEAGUE&oddsAvailable=true&limit=25&apiKey=' + KEYS.sgo;
   var data = await proxyFetch(url, 'SportsGameOdds');
   // Si alguna liga no está en el plan gratis, la API devuelve success:false
   // para TODA la petición. Reintentamos con solo NBA (confirmada disponible)
   // en vez de perder todo el escaneo.
   if (!data || data.success===false) {
     addDiag('  SGO: fallback a NBA-only (alguna liga no disponible en el plan)');
-    var fallbackUrl = 'https://api.sportsgameodds.com/v2/events?leagueID=EPL,LA_LIGA&oddsAvailable=true&limit=25&apiKey=' + KEYS.sgo;
-    data = await proxyFetch(fallbackUrl, 'SportsGameOdds (fútbol fallback)');
+    var fallbackUrl = 'https://api.sportsgameodds.com/v2/events?leagueID=NBA,MLB&oddsAvailable=true&limit=25&apiKey=' + KEYS.sgo;
+    data = await proxyFetch(fallbackUrl, 'SportsGameOdds (NBA/MLB fallback)');
   }
   if (!data || data.success===false) return [];
   apiStatus.sgo = 'ok';
@@ -939,12 +971,21 @@ function processDirectResults(results) {
       if (hasAny) {
         newMon.push({sport:ev.sport||'⚽', match:ev.match, comp:ev.comp||'', ko:ev.ko||'', b365:b365, winamax:winamax, pin:pin, src:ev.src});
         if (Object.keys(b365).length>0 || Object.keys(winamax).length>0) {
+          // Ligas de alta liquidez confirmadas (gran volumen profesional) vs
+          // todo lo demás, que tratamos como "menor" por seguridad — mejor
+          // pedir más confirmación de menos ligas conocidas que arriesgarnos
+          // a etiquetar ruido de mercados pequeños como sharp money real.
+          var compLower = (ev.comp||'').toLowerCase();
+          var majorLeagueKeywords = ['nba','nfl','mlb','nhl','premier league','la liga','serie a','bundesliga','champions league','epl'];
+          var isMinorLeague = !majorLeagueKeywords.some(function(kw){ return compLower.includes(kw); });
+
           detectEV(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, pin, newValue, newAlerts);
-          detectSharp(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, newSharp, newAlerts);
+          detectSharp(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, newSharp, newAlerts, isMinorLeague);
+          detectDivergence(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, pin, newAlerts);
           detectSuspension(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, newAlerts);
           detectArbitrage(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, newArb, newAlerts);
           detectMiddles(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, points, newArb, newAlerts);
-          HISTORY[ev.id] = {b365: Object.assign({}, b365), winamax: Object.assign({}, winamax), t: Date.now()};
+          HISTORY[ev.id] = {b365: Object.assign({}, b365), winamax: Object.assign({}, winamax), pin: Object.assign({}, pin), t: Date.now()};
         }
       }
     });
@@ -1191,17 +1232,23 @@ function detectEV(id,sport,match,ko,b365,winamax,pin,outV,outA) {
 }
 
 // Sharp money: detecta movimiento en CUALQUIERA de tus dos casas
-function detectSharp(id,sport,match,ko,b365,winamax,outS,outA) {
+function detectSharp(id,sport,match,ko,b365,winamax,outS,outA,isMinorLeague) {
   var prev=HISTORY[id]; if (!prev) return;
   var minsSincePrev = prev.t ? (Date.now()-prev.t)/60000 : null;
   var movesThisEvent = {}; // mkt -> {Bet365: chg, Winamax: chg} para detectar coordinación
+  // Las ligas pequeñas/poco líquidas (ej. Estonia, Letonia, Islas Feroe) tienen
+  // mercados menos eficientes — un movimiento del 6% ahí es mucho menos
+  // significativo que el mismo 6% en NBA/Champions League, donde hay
+  // muchísimo más volumen y los libros ajustan con más precisión. Exigimos
+  // un umbral más alto para no confundir ruido de mercado con sharp money real.
+  var minThreshold = isMinorLeague ? 8 : 5;
 
   [{curr:b365, prevB:prev.b365, book:'Bet365'}, {curr:winamax, prevB:prev.winamax, book:'Winamax'}].forEach(function(pair) {
     if (!pair.curr || !pair.prevB) return;
     Object.keys(pair.curr).forEach(function(mkt) {
       var c=parseFloat(pair.curr[mkt]); var o=parseFloat(pair.prevB[mkt]);
       if (!c||!o||c<=1.01||o<=1.01) return;
-      var chg=((o-c)/o)*100; if (Math.abs(chg)<5) return;
+      var chg=((o-c)/o)*100; if (Math.abs(chg)<minThreshold) return;
       var dir=chg>0?'BAJADA':'SUBIDA';
       var name=mkt.replace(/_/g,' ').replace(/^h2h /,'').trim();
       var key=id+'_'+mkt+'_'+dir+'_'+pair.book;
@@ -1212,7 +1259,11 @@ function detectSharp(id,sport,match,ko,b365,winamax,outS,outA) {
       var ratePerMin = (minsSincePrev && minsSincePrev>0) ? absChg/minsSincePrev : null;
       var isFast = ratePerMin!==null && ratePerMin>=3 && minsSincePrev<=15;
       // Magnitud del movimiento = proxy de tamaño de la apuesta que lo causó.
-      var priority = absChg>=20 ? 'extreme' : absChg>=10 ? 'high' : 'normal';
+      // En ligas menores, subimos también los cortes de "high"/"extreme"
+      // proporcionalmente, ya que su escala de ruido normal es mayor.
+      var extremeCut = isMinorLeague ? 25 : 20;
+      var highCut = isMinorLeague ? 14 : 10;
+      var priority = absChg>=extremeCut ? 'extreme' : absChg>=highCut ? 'high' : 'normal';
       // Perfil de alto volumen: magnitud alta Y rápida. Es inferencia estadística,
       // NUNCA identificación de quién apostó — eso no es posible con datos públicos.
       var highVolumeProfile = (priority==='extreme' || priority==='high') && isFast;
@@ -1246,7 +1297,9 @@ function detectSharp(id,sport,match,ko,b365,winamax,outS,outA) {
       var dir = m.Bet365.dir;
       var name = m.Bet365.name;
       var bothFast = m.Bet365.isFast && m.Winamax.isFast;
-      var coordPriority = avgChg>=15 ? 'extreme' : avgChg>=8 ? 'high' : 'normal';
+      var coordExtreme = isMinorLeague ? 20 : 15;
+      var coordHigh = isMinorLeague ? 11 : 8;
+      var coordPriority = avgChg>=coordExtreme ? 'extreme' : avgChg>=coordHigh ? 'high' : 'normal';
       if (bothFast && (coordPriority==='extreme'||coordPriority==='high')) coordPriority = 'highvolume';
       var sig = coordPriority==='highvolume' ? '🏆🔥 PERFIL ALTO VOLUMEN COORDINADO — ' : (coordPriority==='extreme'?'🚨🔥 INVERSIÓN MASIVA COORDINADA — ':'🔥 SEÑAL COORDINADA — ');
       var det = coordPriority==='highvolume'
@@ -1264,6 +1317,55 @@ function detectSharp(id,sport,match,ko,b365,winamax,outS,outA) {
 // Cuando un mercado que existía en el escaneo anterior desaparece del
 // actual, suele indicar que la casa lo ha suspendido temporalmente para
 // recalcular tras una apuesta grande — señal fuerte según método Walters.
+// ── DIVERGENCIA CON PINNACLE: proxy de "Reverse Line Movement" ────────────
+// El RLM real (línea moviéndose contra el % de apuestas públicas) requiere
+// datos de % de apuestas que ninguna API gratuita nos da. Pero hay un proxy
+// fiable: Pinnacle es el libro sharp de referencia mundial — si Bet365 o
+// Winamax se mueven en una dirección y Pinnacle se mueve en la OPUESTA (o no
+// se mueve nada), es la señal pública más cercana a "el mercado retail está
+// equivocado y el libro profesional no lo sigue" — la misma lógica de fondo
+// que el RLM, pero con datos que sí podemos obtener.
+function detectDivergence(id,sport,match,ko,b365,winamax,pin,outA) {
+  var prev=HISTORY[id]; if (!prev || !prev.pin || !Object.keys(prev.pin).length) return;
+  if (!pin || !Object.keys(pin).length) return;
+
+  [{curr:b365, prevB:prev.b365, book:'Bet365'}, {curr:winamax, prevB:prev.winamax, book:'Winamax'}].forEach(function(pair) {
+    if (!pair.curr || !pair.prevB) return;
+    Object.keys(pair.curr).forEach(function(mkt) {
+      var c=parseFloat(pair.curr[mkt]); var o=parseFloat(pair.prevB[mkt]);
+      var pc=parseFloat(pin[mkt]); var po=parseFloat(prev.pin[mkt]);
+      if (!c||!o||c<=1.01||o<=1.01||!pc||!po||pc<=1.01||po<=1.01) return;
+
+      var bookChg = ((o-c)/o)*100; // positivo = bajó (más probable)
+      var pinChg = ((po-pc)/po)*100;
+      if (Math.abs(bookChg) < 5) return; // necesitamos un movimiento real en la casa
+
+      // Divergencia: la casa se mueve con fuerza pero Pinnacle apenas se
+      // mueve o se mueve en dirección contraria. Esto sugiere que el
+      // movimiento en la casa es ruido propio (o apuesta grande aislada en
+      // esa casa concreta) en vez de una corrección real del mercado sharp.
+      var divergence = bookChg - pinChg;
+      if (Math.abs(divergence) < 6) return; // umbral: diferencia significativa
+
+      var name = mkt.replace(/_/g,' ').replace(/^h2h /,'').trim();
+      var sameDirection = (bookChg>0 && pinChg>0) || (bookChg<0 && pinChg<0);
+      var isOpposite = (bookChg>0 && pinChg<0) || (bookChg<0 && pinChg>0);
+
+      if (isOpposite) {
+        outA.push({key:'div_'+id+'_'+mkt+'_'+pair.book, type:'sharp', sport:sport, match:match, ko:ko, market:name, priority:'high',
+          signal:'⚠️ DIVERGENCIA CON PINNACLE — '+pair.book+' vs mercado sharp en '+name,
+          detail:pair.book+' se movió '+Math.abs(bookChg).toFixed(1)+'% en una dirección mientras Pinnacle (la referencia sharp) se movió al revés. Esto sugiere que el movimiento en '+pair.book+' puede ser ruido propio de esa casa, no una señal de mercado real — actúa con más cautela que en un movimiento coordinado.',
+          from:o.toFixed(2), to:c.toFixed(2), book:pair.book, chg:Math.abs(bookChg).toFixed(1), dir:bookChg>0?'BAJADA':'SUBIDA', t:Date.now()});
+      } else if (!sameDirection || Math.abs(divergence) >= 10) {
+        outA.push({key:'div_'+id+'_'+mkt+'_'+pair.book, type:'sharp', sport:sport, match:match, ko:ko, market:name, priority:'normal',
+          signal:'📐 '+pair.book+' se adelanta a Pinnacle en '+name,
+          detail:pair.book+' se movió '+Math.abs(bookChg).toFixed(1)+'% mientras Pinnacle apenas reaccionó ('+Math.abs(pinChg).toFixed(1)+'%). Puede que '+pair.book+' esté reaccionando a algo que el mercado sharp aún no ha incorporado — vigilar si Pinnacle confirma el movimiento en el próximo escaneo antes de actuar con fuerza.',
+          from:o.toFixed(2), to:c.toFixed(2), book:pair.book, chg:Math.abs(bookChg).toFixed(1), dir:bookChg>0?'BAJADA':'SUBIDA', t:Date.now()});
+      }
+    });
+  });
+}
+
 function detectSuspension(id,sport,match,ko,b365,winamax,outA) {
   var prev=HISTORY[id]; if (!prev) return;
   [{curr:b365, prevB:prev.b365, book:'Bet365'}, {curr:winamax, prevB:prev.winamax, book:'Winamax'}].forEach(function(pair) {
@@ -1332,11 +1434,76 @@ function pgAlerts() {
   }
   if (!ALERTS.length) return h+howItWorks()+'<div class="empty"><div class="ei">🔍</div><h3>Escaneando el mercado...</h3><p>Las alertas aparecerán aquí en cuanto se detecte un movimiento de cuota anómalo o un EV+ entre Bet365 y Pinnacle.</p></div>';
 
+  h += pgBestBet();
   var sharp=ALERTS.filter(function(a){return a.type==='sharp';});
   var value=ALERTS.filter(function(a){return a.type==='value';});
   if(sharp.length){h+='<div class="shdr">💰 SHARP MONEY · '+sharp.length+'</div>'; sharp.slice(0,5).forEach(function(a){h+=aCard(a);});}
   if(value.length){h+='<div class="shdr">📊 EV+ DETECTADO · '+value.length+'</div>'; value.slice(0,5).forEach(function(a){h+=aCard(a);});}
   return h;
+}
+
+// ── BOT DE DECISIÓN: puntúa cada alerta por fiabilidad real, no solo por
+// magnitud bruta. Una alerta con coordinación entre casas + confirmación de
+// Pinnacle es mucho más fiable que un EV+ enorme aislado que podría ser
+// ruido de datos. Esto es lo más cerca que podemos llegar de "qué apostaría
+// un profesional primero" con datos públicos.
+function scoreAlertConfidence(a) {
+  var score = 0;
+  var reasons = [];
+
+  if (a.type === 'value') {
+    var ev = parseFloat(a.ev||0);
+    // EV+ moderado (5-30%) es más creíble que uno extremo; >80% casi siempre
+    // es señal de datos mal cruzados entre fuentes, ya lo hemos visto.
+    if (ev >= 5 && ev <= 30) { score += 40; reasons.push('EV+ en rango creíble'); }
+    else if (ev > 30 && ev <= 80) { score += 25; reasons.push('EV+ alto, verificar manualmente'); }
+    else { score += 10; reasons.push('EV+ extremo, alta probabilidad de ruido de datos'); }
+  }
+
+  if (a.type === 'sharp') {
+    if (a.coordinated) { score += 35; reasons.push('Bet365 y Winamax coordinados'); }
+    else { score += 15; reasons.push('movimiento en una sola casa'); }
+    if (a.priority === 'highvolume') { score += 25; reasons.push('magnitud + velocidad inusuales'); }
+    else if (a.priority === 'extreme') { score += 15; reasons.push('magnitud extrema'); }
+    else if (a.priority === 'high') { score += 8; }
+  }
+
+  if (a.suspended) { score += 5; reasons.push('mercado suspendido, señal débil hasta que reabra'); }
+
+  // Frescura: una señal de hace 2 minutos vale más que una de hace 40
+  var ageMin = a.t ? (Date.now()-a.t)/60000 : 999;
+  if (ageMin <= 5) { score += 15; reasons.push('muy reciente'); }
+  else if (ageMin <= 20) { score += 5; }
+  else { score -= 10; reasons.push('ya no es reciente'); }
+
+  return {score: Math.max(0, Math.min(100, score)), reasons: reasons};
+}
+
+function pgBestBet() {
+  if (!ALERTS.length) return '';
+  var scored = ALERTS.map(function(a){
+    var s = scoreAlertConfidence(a);
+    return Object.assign({}, a, {confidence: s.score, reasons: s.reasons});
+  }).sort(function(a,b){ return b.confidence - a.confidence; });
+
+  var top = scored[0];
+  if (!top || top.confidence < 30) return ''; // nada con suficiente fiabilidad ahora mismo
+
+  var col = top.confidence>=70 ? 'var(--value)' : top.confidence>=50 ? 'var(--warn)' : 'var(--muted)';
+  var label = top.confidence>=70 ? '🤖 MEJOR APUESTA AHORA — alta confianza' : top.confidence>=50 ? '🤖 MEJOR OPCIÓN AHORA — confianza moderada' : '🤖 ÚNICA OPCIÓN AHORA — confianza baja, verificar antes';
+
+  return '<div class="card" style="border:2px solid '+col+';box-shadow:0 0 18px '+col+'40;margin-bottom:14px">'
+    +'<div style="font-size:11px;font-weight:900;color:'+col+';letter-spacing:.6px;margin-bottom:8px">'+label+'</div>'
+    +'<div class="mt">'+(top.sport||'')+' '+(top.match||'').replace('vs',' vs ')+'</div>'
+    +'<div style="font-size:13px;color:var(--text);font-weight:700;margin:6px 0">'+(top.signal||'')+'</div>'
+    +'<div style="display:flex;align-items:center;gap:10px;margin:10px 0">'
+    +'<div style="flex:1;background:var(--bg3);border-radius:8px;height:8px;overflow:hidden"><div style="height:100%;width:'+top.confidence+'%;background:'+col+';border-radius:8px"></div></div>'
+    +'<div style="font-size:16px;font-weight:900;color:'+col+'">'+top.confidence+'%</div>'
+    +'</div>'
+    +'<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Por qué: '+top.reasons.join(' · ')+'</div>'
+    +'<div class="bot" style="border-left-color:'+col+'"><div class="bot-l" style="color:'+col+'">🤖 DECISIÓN</div><div class="bot-t">'+botTxt(top)+'</div></div>'
+    +'<div style="font-size:10px;color:var(--muted);margin-top:8px;text-align:center">⚠️ Esto es una sugerencia automática, no un consejo financiero. Verifica siempre la cuota real antes de apostar.</div>'
+    +'</div>';
 }
 
 function howItWorks() {
