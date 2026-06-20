@@ -258,7 +258,7 @@ function saveReq(){ try{localStorage.setItem('smp_req',JSON.stringify(REQ));}cat
 
 var INTERVALS = {theOdds:7200000, oddsApi:508000, oddsPapi:600000, sgo:65000, sharpApi:90000, oddsPapiEsports:122040000};
 var lastFetch  = {theOdds:0, oddsApi:0, oddsPapi:0, sgo:0, sharpApi:0, oddsPapiEsports:0};
-var apiStatus  = {theOdds:'idle', oddsApi:'idle', oddsPapi:'idle', sgo:'idle'};
+var apiStatus  = {theOdds:'idle', oddsApi:'idle', oddsPapi:'idle', sgo:'idle', sharpApi:'idle', oddsPapiEsports:'idle'};
 
 var PAGE    = 'alerts';
 var ALERTS  = [];
@@ -891,7 +891,7 @@ async function runFetch() {
   renderPage();
 
   try {
-    var apis = ['theOdds','oddsApi','sgo','sharpApi'].filter(shouldFetch);
+    var apis = ['theOdds','oddsApi','sgo','sharpApi','oddsPapi','oddsPapiEsports'].filter(shouldFetch);
     if (!apis.length) {
       addDiag('Nada que actualizar todavía (esperando intervalos)');
       LOADING=false; FETCH_RUNNING=false; setPulse('live'); renderPage(); return;
