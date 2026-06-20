@@ -584,15 +584,15 @@ async function fetchSGO() {
   // Solo NBA confirmada en plan gratis (probado directamente: success:true).
   // Otras ligas (WNBA confirmada NO disponible) pueden no estar incluidas
   // en el plan gratuito y tirar toda la petición abajo si se piden juntas.
-  var url = 'https://api.sportsgameodds.com/v2/events?leagueID=NBA,NFL,MLB&oddsAvailable=true&limit=25&apiKey=' + KEYS.sgo;
+  var url = 'https://api.sportsgameodds.com/v2/events?leagueID=NBA,NFL,MLB,EPL,LA_LIGA,IT_SERIE_A,BUNDESLIGA,UEFA_CHAMPIONS_LEAGUE&oddsAvailable=true&limit=25&apiKey=' + KEYS.sgo;
   var data = await proxyFetch(url, 'SportsGameOdds');
   // Si alguna liga no está en el plan gratis, la API devuelve success:false
   // para TODA la petición. Reintentamos con solo NBA (confirmada disponible)
   // en vez de perder todo el escaneo.
   if (!data || data.success===false) {
     addDiag('  SGO: fallback a NBA-only (alguna liga no disponible en el plan)');
-    var fallbackUrl = 'https://api.sportsgameodds.com/v2/events?leagueID=NBA&oddsAvailable=true&limit=25&apiKey=' + KEYS.sgo;
-    data = await proxyFetch(fallbackUrl, 'SportsGameOdds (NBA fallback)');
+    var fallbackUrl = 'https://api.sportsgameodds.com/v2/events?leagueID=EPL,LA_LIGA&oddsAvailable=true&limit=25&apiKey=' + KEYS.sgo;
+    data = await proxyFetch(fallbackUrl, 'SportsGameOdds (fútbol fallback)');
   }
   if (!data || data.success===false) return [];
   apiStatus.sgo = 'ok';
@@ -611,17 +611,25 @@ async function fetchSGO() {
     // como pick válido "de hoy" varios días después de jugado.
     if (st.completed === true || st.ended === true || st.cancelled === true) return false;
     var startsAt = st.startsAt;
-    if (startsAt) {
-      var startTs = new Date(startsAt).getTime();
-      // Margen de 4h tras el inicio: partidos en vivo siguen siendo relevantes
-      // un rato, pero más de eso es casi seguro que ya terminó.
-      if (!isNaN(startTs) && (nowTs - startTs) > 4*60*60*1000) return false;
-    }
-    return true;
+    var startTs = startsAt ? new Date(startsAt).getTime() : NaN;
+    // FAIL-SAFE: si no hay fecha de inicio fiable, descartar el evento por
+    // seguridad en vez de asumir que es válido.
+    if (isNaN(startTs)) return false;
+    var hoursDiff = (nowTs - startTs) / 3600000; // positivo = ya empezó, negativo = aún no
+    // NUNCA confiar solo en el flag "started:false" de la API — ese fue
+    // exactamente el bug de Spurs vs Knicks (un partido del 14/06 seguía
+    // marcado como "Upcoming" días después). La fecha real manda siempre.
+    if (hoursDiff < 0) return hoursDiff > -120; // futuro, máximo 5 días vista
+    return hoursDiff <= 6; // ya empezado, máximo 6h de margen
   });
   if (events.length !== beforeFilterCount) {
-    addDiag('  SGO: '+(beforeFilterCount-events.length)+' eventos finalizados/pasados descartados');
+    addDiag('  SGO: '+(beforeFilterCount-events.length)+' eventos finalizados/pasados/sin fecha descartados');
   }
+  addDiag('  SGO supervivientes: '+events.map(function(e){
+    var h = (e.teams&&e.teams.home&&e.teams.home.names&&e.teams.home.names.medium)||'?';
+    var a = (e.teams&&e.teams.away&&e.teams.away.names&&e.teams.away.names.medium)||'?';
+    return h+'/'+a+'@'+((e.status&&e.status.startsAt)||'sin-fecha');
+  }).join(', '));
 
   return events.slice(0,15).map(function(ev) {
     var b365={}, pin={};
