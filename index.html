@@ -256,7 +256,7 @@ function calcStake(oddsBet365, oddsPinnacle) {
 
 function saveReq(){ try{localStorage.setItem('smp_req',JSON.stringify(REQ));}catch(e){} }
 
-var INTERVALS = {theOdds:7200000, oddsApi:508000, oddsPapi:600000, sgo:900000, sharpApi:90000, oddsPapiEsports:122040000};
+var INTERVALS = {theOdds:7200000, oddsApi:720000, oddsPapi:600000, sgo:900000, sharpApi:90000, oddsPapiEsports:122040000};
 var lastFetch  = {theOdds:0, oddsApi:0, oddsPapi:0, sgo:0, sharpApi:0, oddsPapiEsports:0};
 var apiStatus  = {theOdds:'idle', oddsApi:'idle', oddsPapi:'idle', sgo:'idle', sharpApi:'idle', oddsPapiEsports:'idle'};
 
@@ -508,11 +508,21 @@ async function fetchTheOdds() {
     var noBookCoverage = 0;
 
     data.forEach(function(ev) {
-      var b365={}, winamax={}, pin={}, points={};
+      var b365={}, winamax={}, pin={}, points={}, witnesses={};
       (ev.bookmakers||[]).forEach(function(bm) {
         var n=(bm.key||'').toLowerCase();
         var tgt = n.includes('pinnacle') ? pin : n.includes('winamax') ? winamax : n.includes('bet365') ? b365 : null;
-        if (!tgt) return; // skip bookmakers we don't track (keeps data relevant to user's actual books)
+        // CASAS TESTIGO: no las usamos para apostar (Alvaro solo opera en Bet365/
+        // Winamax/Betfair), pero ya vienen incluidas gratis en esta misma llamada.
+        // Las guardamos aparte para reforzar el steam move: si Pinnacle+Bet365+
+        // Winamax se mueven Y además 2-3 casas testigo más confirman la misma
+        // dirección, la señal es mucho más fiable que con solo 3 fuentes.
+        // Tope de 5 testigos por partido para no inflar el payload sin necesidad.
+        if (!tgt && Object.keys(witnesses).length < 5) {
+          witnesses[bm.key] = witnesses[bm.key] || {};
+          tgt = witnesses[bm.key];
+        }
+        if (!tgt) return;
         (bm.markets||[]).forEach(function(mkt) {
           (mkt.outcomes||[]).forEach(function(o) {
             var k = (mkt.key||'h2h')+'_'+(o.name||'');
@@ -524,7 +534,7 @@ async function fetchTheOdds() {
       });
       if (Object.keys(b365).length===0 && Object.keys(winamax).length===0) noBookCoverage++;
       if (Object.keys(b365).length>0 || Object.keys(winamax).length>0 || Object.keys(pin).length>0) {
-        allResults.push({id:ev.id, sport:sportIcon, match:(ev.home_team||'')+' vs '+(ev.away_team||''), comp:ev.sport_title||sportKey, ko:ev.commence_time, b365:b365, winamax:winamax, pin:pin, points:points, src:'TheOddsAPI'});
+        allResults.push({id:ev.id, sport:sportIcon, match:(ev.home_team||'')+' vs '+(ev.away_team||''), comp:ev.sport_title||sportKey, ko:ev.commence_time, b365:b365, winamax:winamax, pin:pin, points:points, witnesses:witnesses, src:'TheOddsAPI'});
       }
     });
     if (noBookCoverage>0) addDiag('  '+sportKey+': '+noBookCoverage+'/'+data.length+' partidos SIN Bet365/Winamax (otras casas no nos sirven)');
@@ -542,7 +552,7 @@ async function fetchOddsApiIo() {
   // solo para planes de pago, confirmado tras el error 429 real del usuario).
   // Con ese límite real, cubrir 6 deportes obligaría a un intervalo de ~21min,
   // demasiado lento. Reducimos a los 3 deportes de mayor volumen/liquidez.
-  var SPORTS_TARGET = ['football'];
+  var SPORTS_TARGET = ['football', 'tennis'];
   var allResults = [];
 
   for (var s = 0; s < SPORTS_TARGET.length; s++) {
@@ -1061,13 +1071,14 @@ function processDirectResults(results) {
           var majorLeagueKeywords = ['nba','nfl','mlb','nhl','premier league','la liga','serie a','bundesliga','champions league','epl'];
           var isMinorLeague = !majorLeagueKeywords.some(function(kw){ return compLower.includes(kw); });
 
+          var witnesses = ev.witnesses || {};
           detectEV(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, pin, newValue, newAlerts, ev.src);
-          detectSharp(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, newSharp, newAlerts, isMinorLeague);
+          detectSharp(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, pin, witnesses, newSharp, newAlerts, isMinorLeague);
           detectDivergence(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, pin, newAlerts);
           detectSuspension(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, newAlerts);
           detectArbitrage(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, newArb, newAlerts);
           detectMiddles(ev.id, ev.sport||'⚽', ev.match, ev.ko||'', b365, winamax, points, newArb, newAlerts);
-          HISTORY[ev.id] = {b365: Object.assign({}, b365), winamax: Object.assign({}, winamax), pin: Object.assign({}, pin), t: Date.now()};
+          HISTORY[ev.id] = {b365: Object.assign({}, b365), winamax: Object.assign({}, winamax), pin: Object.assign({}, pin), witnesses: JSON.parse(JSON.stringify(witnesses)), t: Date.now()};
         }
       }
     });
@@ -1325,7 +1336,7 @@ function detectEV(id,sport,match,ko,b365,winamax,pin,outV,outA,src) {
 }
 
 // Sharp money: detecta movimiento en CUALQUIERA de tus dos casas
-function detectSharp(id,sport,match,ko,b365,winamax,outS,outA,isMinorLeague) {
+function detectSharp(id,sport,match,ko,b365,winamax,pin,witnesses,outS,outA,isMinorLeague) {
   var prev=HISTORY[id]; if (!prev) return;
   // CRÍTICO: si el partido ya ha empezado, el movimiento de cuota refleja el
   // marcador real en directo (un equipo perdiendo sube de cuota de forma
@@ -1394,6 +1405,38 @@ function detectSharp(id,sport,match,ko,b365,winamax,outS,outA,isMinorLeague) {
   // y de magnitud extrema, es la inferencia más fuerte posible con datos públicos.
   Object.keys(movesThisEvent).forEach(function(mkt) {
     var m = movesThisEvent[mkt];
+    // ── STEAM MOVE: Pinnacle + Bet365 + Winamax se mueven a la vez en la
+    // misma dirección. Esta es la señal más fuerte que existe con datos
+    // públicos — el mercado entero (sharp y retail) está de acuerdo en que
+    // algo ha cambiado. En la jerga profesional esto se llama "steam move":
+    // varios libros corrigiendo simultáneamente tras la misma información.
+    var pc = pin ? parseFloat(pin[mkt]) : null;
+    var po = (prev && prev.pin) ? parseFloat(prev.pin[mkt]) : null;
+    var pinMoveOk = pc && po && pc>1.01 && po>1.01;
+    var pinChgSteam = pinMoveOk ? ((po-pc)/po)*100 : null;
+    var pinDirSteam = pinChgSteam!==null && pinChgSteam>0 ? 'BAJADA' : (pinChgSteam!==null ? 'SUBIDA' : null);
+    if (m.Bet365 && m.Winamax && m.Bet365.dir === m.Winamax.dir && pinDirSteam === m.Bet365.dir && Math.abs(pinChgSteam) >= 3) {
+      var steamAvg = (Math.abs(m.Bet365.chg) + Math.abs(m.Winamax.chg) + Math.abs(pinChgSteam)) / 3;
+      // ── CASAS TESTIGO: refuerzo adicional, no usado para apostar. Si otras
+      // casas (que Alvaro no usa) también confirman la misma dirección, el
+      // steam move pasa de "3 fuentes coinciden" a "N fuentes coinciden" —
+      // cuantas más, menos probable que sea ruido de una sola casa.
+      var witnessConfirms = 0;
+      var prevW = (prev && prev.witnesses) ? prev.witnesses : {};
+      Object.keys(witnesses||{}).forEach(function(wKey) {
+        var wc = parseFloat((witnesses[wKey]||{})[mkt]);
+        var wo = parseFloat((prevW[wKey]||{})[mkt]);
+        if (!wc||!wo||wc<=1.01||wo<=1.01) return;
+        var wChg = ((wo-wc)/wo)*100;
+        var wDir = wChg>0 ? 'BAJADA' : 'SUBIDA';
+        if (wDir === m.Bet365.dir && Math.abs(wChg) >= 3) witnessConfirms++;
+      });
+      var witnessTxt = witnessConfirms>0 ? ' + '+witnessConfirms+' casa'+(witnessConfirms>1?'s':'')+' testigo más confirma'+(witnessConfirms>1?'n':'') : '';
+      outA.push({key:'steam_'+id+'_'+mkt, type:'sharp', sport:sport, match:match, ko:ko, market:m.Bet365.name, priority:'extreme',
+        signal:'⚡🌪️ STEAM MOVE — Pinnacle + Bet365 + Winamax'+(witnessConfirms>0?' (+'+witnessConfirms+' más)':'')+' se mueven juntos',
+        detail:'Las tres referencias (el libro sharp y tus dos casas) se mueven en la misma dirección a la vez: Pinnacle '+Math.abs(pinChgSteam).toFixed(1)+'%, Bet365 '+Math.abs(m.Bet365.chg).toFixed(1)+'%, Winamax '+Math.abs(m.Winamax.chg).toFixed(1)+'%'+witnessTxt+'. Es la señal más fiable posible con datos públicos: todo el mercado está corrigiendo a la vez, lo que normalmente indica información real (lesión, alineación, lo que sea) ya incorporada en todos los libros. No hay duda razonable de que algo ha cambiado.',
+        from:m.Bet365.from.toFixed(2), to:m.Bet365.to.toFixed(2), chg:steamAvg.toFixed(1), dir:m.Bet365.dir, steam:true, witnessConfirms:witnessConfirms, t:Date.now()});
+    }
     if (m.Bet365 && m.Winamax && m.Bet365.dir === m.Winamax.dir) {
       var avgChg = (Math.abs(m.Bet365.chg) + Math.abs(m.Winamax.chg)) / 2;
       var dir = m.Bet365.dir;
@@ -1440,6 +1483,26 @@ function detectDivergence(id,sport,match,ko,b365,winamax,pin,outA) {
 
       var bookChg = ((o-c)/o)*100; // positivo = bajó (más probable)
       var pinChg = ((po-pc)/po)*100;
+
+      // ── SEÑAL DE VENTANA: Pinnacle (sharp) ya se movió, la casa retail
+      // (Bet365/Winamax) todavía no ha actualizado su cuota. Esto es lo más
+      // parecido a "saber algo antes que el resto": el mercado profesional ya
+      // ha incorporado la información (lesión, alineación, lo que sea la haya
+      // causado) pero la casa pública aún ofrece el precio viejo. Es una
+      // ventana temporal — en cuanto la casa actualice, esta cuota desaparece.
+      // Umbral de Pinnacle más bajo (4%) que el de las casas (5%) porque al
+      // ser el libro más eficiente, sus movimientos son menos ruidosos: un
+      // 4% en Pinnacle pesa más que un 4% en Bet365.
+      if (Math.abs(pinChg) >= 4 && Math.abs(bookChg) < 2.5) {
+        var pinDir = pinChg>0 ? 'BAJADA' : 'SUBIDA'; // dirección de la probabilidad de ese resultado
+        var staleName = buildMarketLabel(mkt, sport);
+        var windowPriority = Math.abs(pinChg)>=8 ? 'extreme' : Math.abs(pinChg)>=6 ? 'high' : 'normal';
+        outA.push({key:'lead_'+id+'_'+mkt+'_'+pair.book, type:'sharp', sport:sport, match:match, ko:ko, market:staleName, priority:windowPriority,
+          signal:'🎯 VENTANA DE OPORTUNIDAD — Pinnacle se adelantó, '+pair.book+' aún no',
+          detail:'Pinnacle (el mercado profesional) movió su cuota '+Math.abs(pinChg).toFixed(1)+'% ('+pinDir+' de probabilidad) en '+staleName+', pero '+pair.book+' sigue ofreciendo prácticamente el mismo precio ('+Math.abs(bookChg).toFixed(1)+'% de cambio). El mercado sharp puede haber incorporado ya información que '+pair.book+' aún no ha procesado. Es una ventana temporal: en el próximo escaneo, '+pair.book+' probablemente corrija hacia el precio de Pinnacle — actúa antes de que eso pase.',
+          from:o.toFixed(2), to:c.toFixed(2), book:pair.book, chg:Math.abs(pinChg).toFixed(1), dir:pinDir, leadingEdge:true, t:Date.now()});
+      }
+
       if (Math.abs(bookChg) < 5) return; // necesitamos un movimiento real en la casa
 
       // Divergencia: la casa se mueve con fuerza pero Pinnacle apenas se
