@@ -720,11 +720,11 @@ async function fetchSGO() {
         // y bookOdds (consenso con vig) como "casa genérica" si no hay byBookmaker real.
         // Validamos rango realista (cuota decimal entre 1.01 y 50) para evitar
         // valores absurdos si la API devuelve un campo en formato inesperado.
-        if (Object.keys(pin).length===0 && oddData.fairOdds) {
+        if (pin['h2h_'+sideName]===undefined && oddData.fairOdds) {
           var fairDec = americanToDecimal(oddData.fairOdds);
           if (fairDec && fairDec>1.01 && fairDec<50) pin['h2h_'+sideName] = fairDec;
         }
-        if (Object.keys(b365).length===0 && oddData.bookOdds) {
+        if (b365['h2h_'+sideName]===undefined && oddData.bookOdds) {
           var bookDec = americanToDecimal(oddData.bookOdds);
           if (bookDec && bookDec>1.01 && bookDec<50) b365['h2h_'+sideName] = bookDec;
         }
