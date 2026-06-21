@@ -371,8 +371,14 @@ async function proxyFetch(targetUrl, label, apiKeyForHeader) {
           var jDirect = JSON.parse(txtDirect);
           addDiag('✓ '+label+' (directo, sin proxy)');
           return jDirect;
-        } catch(e) { /* no era JSON, seguimos con el flujo normal */ }
+        } catch(e) { addDiag('  directo (sin proxy): texto no-JSON, HTTP '+rDirect.status); }
+      } else {
+        addDiag('  directo (sin proxy): respuesta vacía, HTTP '+rDirect.status);
       }
+    } else {
+      var errTxtDirect = '';
+      try { errTxtDirect = await rDirect.text(); } catch(e){}
+      addDiag('  directo (sin proxy) HTTP '+rDirect.status+': '+errTxtDirect.substring(0,70));
     }
   } catch(e) { addDiag('  directo (sin proxy) falló: '+(e.name==='AbortError'?'timeout 15s':e.message.substring(0,60))); }
 
