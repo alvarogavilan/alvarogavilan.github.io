@@ -186,7 +186,7 @@ var DEFAULT_KEYS = {
   theOdds:  '8682d02fa435e17e5b531b5c8631bd0f',
   oddsApi:  '54a869df6080c65fd4230946cb8db844f34fd41a3db8c48602864eacf5a22af3',
   oddsPapi: 'e94cfac5-ebc3-45e1-abf5-ca58edf3fbc0',
-  sgo:      '871ca54f86eecda89789b97f1650f4f8',
+  sgo:      'dfc93969fac28e8fdbe1cd587cbeaec1',
   sharpApi: 'sk_live_GM2sZ6KuXyw4FdngDLgpq2', // clave personal del usuario, confirmada directamente en su dashboard de sharpapi.io
 };
 var DEFAULT_WORKER_URL = 'https://smart-money-pro.k8mwkbp68y.workers.dev/';
@@ -196,10 +196,10 @@ var DEFAULT_WORKER_URL = 'https://smart-money-pro.k8mwkbp68y.workers.dev/';
 // personas pueden compartir el mismo enlace sin compartir cuota.
 // Forzar limpieza de claves antiguas una sola vez (BETA v38 — nueva clave The Odds API)
 try {
-  if (localStorage.getItem('smp_keys_version') !== 'v41') {
+  if (localStorage.getItem('smp_keys_version') !== 'v42') {
     localStorage.removeItem('smp_keys');
     localStorage.removeItem('smp_picklog'); // limpiar picks viejos con cuotas erróneas (bug de mercados prop confundidos con moneyline)
-    localStorage.setItem('smp_keys_version', 'v41');
+    localStorage.setItem('smp_keys_version', 'v42');
   }
 } catch(e) {}
 
