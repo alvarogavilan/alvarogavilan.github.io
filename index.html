@@ -357,6 +357,25 @@ async function fetchWithTimeout(url, ms) {
 async function proxyFetch(targetUrl, label, apiKeyForHeader) {
   addDiag('→ '+label);
 
+  // INTENTO DIRECTO: sin proxy ni Worker, directo desde tu navegador. Si la
+  // API permite CORS y el bloqueo es solo contra IPs de datacenter (Cloudflare,
+  // proxies públicos) y no contra tu IP residencial/móvil real, esto se salta
+  // el problema por completo. Si falla (CORS, red, etc.) caemos al flujo de
+  // siempre sin coste extra real (un intento rápido más).
+  try {
+    var rDirect = await fetchWithTimeout(targetUrl, 8000);
+    if (rDirect.ok) {
+      var txtDirect = await rDirect.text();
+      if (txtDirect && txtDirect.length > 2) {
+        try {
+          var jDirect = JSON.parse(txtDirect);
+          addDiag('✓ '+label+' (directo, sin proxy)');
+          return jDirect;
+        } catch(e) { /* no era JSON, seguimos con el flujo normal */ }
+      }
+    }
+  } catch(e) { /* bloqueado por CORS o red — seguimos con Workers/proxies */ }
+
   // Try Cloudflare Workers (principal + backup automático)
   var workersToTry = [];
   if (WORKER_URL && WORKER_URL !== 'YOUR-WORKER-URL') workersToTry.push({url: WORKER_URL, name: 'Worker principal'});
