@@ -322,8 +322,14 @@ var WORKER_URL_BACKUP = 'https://smart-money-proxy-backup.alvarogavilanart.worke
 
 // Fallback proxies por si el worker no está configurado aún
 var FALLBACK_PROXIES = [
-  function(u){ return 'https://corsproxy.io/?'+encodeURIComponent(u); },
-  function(u){ return 'https://api.allorigins.win/raw?url='+encodeURIComponent(u); },
+  {name:'corsproxy.io', fn:function(u){ return 'https://corsproxy.io/?'+encodeURIComponent(u); }},
+  {name:'AllOrigins',   fn:function(u){ return 'https://api.allorigins.win/raw?url='+encodeURIComponent(u); }},
+  // Tercer proxy de respaldo: cuando corsproxy.io Y AllOrigins fallan a la vez
+  // (visto en producción más de una vez), sin esto el escaneo entero se
+  // perdía. codetabs es otro proxy CORS público gratuito independiente de
+  // los otros dos — distinta infraestructura, así que un fallo de uno no
+  // suele coincidir con un fallo del otro.
+  {name:'CodeTabs',     fn:function(u){ return 'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(u); }},
 ];
 
 var DIAG = [];
@@ -385,9 +391,9 @@ async function proxyFetch(targetUrl, label, apiKeyForHeader) {
 
   // Fallback to public proxies
   for (var i=0; i<FALLBACK_PROXIES.length; i++) {
-    var pName = i===0?'corsproxy.io':'AllOrigins';
+    var pName = FALLBACK_PROXIES[i].name;
     try {
-      var proxied = FALLBACK_PROXIES[i](targetUrl);
+      var proxied = FALLBACK_PROXIES[i].fn(targetUrl);
       addDiag('  via '+pName+'...');
       var r2 = await fetchWithTimeout(proxied, 15000);
       if (!r2.ok) { addDiag('  ✗ '+pName+' HTTP '+r2.status); ERRORS.push({src:label,code:r2.status,msg:pName,t:Date.now()}); continue; }
