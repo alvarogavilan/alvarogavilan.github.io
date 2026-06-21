@@ -799,7 +799,7 @@ async function fetchOddsPapiEsports() {
   var out = [];
   for (var i=0; i<allResults.length; i++) {
     var fx = allResults[i];
-    var oddsUrl = 'https://api.oddspapi.io/v4/odds?fixtureId='+fx.fixtureId+'&apiKey=' + KEYS.oddsPapi;
+    var oddsUrl = 'https://api.oddspapi.io/v4/odds?fixtureId='+fx.fixtureId+'&bookmakers=pinnacle,bet365&apiKey=' + KEYS.oddsPapi;
     var data = await proxyFetch(oddsUrl, 'OddsPapi Esports odds');
     if (!data || !data.bookmakerOdds) continue;
 
