@@ -854,7 +854,7 @@ async function fetchOddsPapi() {
     // SIN filtro de bookmaker: pedimos todos para poder extraer Pinnacle,
     // Bet365 y Winamax de la misma respuesta, no solo uno
     var oddsUrl = 'https://api.oddspapi.io/v4/odds-by-tournaments?tournamentIds='
-      + tournamentIds.join(',') + '&apiKey=' + KEYS.oddsPapi;
+      + tournamentIds.join(',') + '&bookmakers=pinnacle,bet365,winamax&apiKey=' + KEYS.oddsPapi;
     var oddsData = await proxyFetch(oddsUrl, 'OddsPapi (odds '+sc.icon+')');
     if (!oddsData || !Array.isArray(oddsData)) continue;
 
