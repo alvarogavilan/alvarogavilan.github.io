@@ -196,10 +196,10 @@ var DEFAULT_WORKER_URL = 'https://smart-money-pro.k8mwkbp68y.workers.dev/';
 // personas pueden compartir el mismo enlace sin compartir cuota.
 // Forzar limpieza de claves antiguas una sola vez (BETA v38 — nueva clave The Odds API)
 try {
-  if (localStorage.getItem('smp_keys_version') !== 'v42') {
+  if (localStorage.getItem('smp_keys_version') !== 'v43') {
     localStorage.removeItem('smp_keys');
     localStorage.removeItem('smp_picklog'); // limpiar picks viejos con cuotas erróneas (bug de mercados prop confundidos con moneyline)
-    localStorage.setItem('smp_keys_version', 'v42');
+    localStorage.setItem('smp_keys_version', 'v43');
   }
 } catch(e) {}
 
@@ -256,7 +256,7 @@ function calcStake(oddsBet365, oddsPinnacle) {
 
 function saveReq(){ try{localStorage.setItem('smp_req',JSON.stringify(REQ));}catch(e){} }
 
-var INTERVALS = {theOdds:7200000, oddsApi:508000, oddsPapi:600000, sgo:150000, sharpApi:90000, oddsPapiEsports:122040000};
+var INTERVALS = {theOdds:7200000, oddsApi:508000, oddsPapi:600000, sgo:900000, sharpApi:90000, oddsPapiEsports:122040000};
 var lastFetch  = {theOdds:0, oddsApi:0, oddsPapi:0, sgo:0, sharpApi:0, oddsPapiEsports:0};
 var apiStatus  = {theOdds:'idle', oddsApi:'idle', oddsPapi:'idle', sgo:'idle', sharpApi:'idle', oddsPapiEsports:'idle'};
 
