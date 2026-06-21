@@ -1178,7 +1178,18 @@ function buildMarketLabel(mktKey, sport) {
 // excluyentes en TUS dos casas es <100%, puedes apostar a ambos lados y
 // ganar dinero seguro sin importar el resultado. Es la categoría que toda
 // herramienta profesional (OddsJam, RebelBetting) ofrece y que nos faltaba.
+// Comprueba si un partido ya ha empezado. Sin esto, los movimientos de cuota
+// durante el partido (que reflejan el marcador real, no información previa)
+// se confunden con señales sharp/EV+/divergencia/arbitraje. Centralizado aquí
+// para que todos los detectores usen exactamente la misma regla.
+function isLiveMatch(ko) {
+  if (!ko) return false;
+  var koTs = new Date(ko).getTime();
+  return !isNaN(koTs) && Date.now() >= koTs;
+}
+
 function detectArbitrage(id,sport,match,ko,b365,winamax,outArb,outA) {
+  if (isLiveMatch(ko)) return; // partido en directo: las cuotas reflejan el marcador, no es arbitraje real
   if (!b365 || !winamax) return;
   // Agrupar por tipo de mercado (h2h, totals, spreads) para comparar resultados opuestos
   var groups = {};
@@ -1239,6 +1250,7 @@ function detectArbitrage(id,sport,match,ko,b365,winamax,outArb,outA) {
 // una de las dos como en una apuesta normal. Requiere el valor de línea (point),
 // que solo The Odds API nos da de momento.
 function detectMiddles(id,sport,match,ko,b365,winamax,points,outArb,outA) {
+  if (isLiveMatch(ko)) return; // partido en directo: las líneas cambian por el marcador, no es un middle real
   // NOTA DE DISEÑO: los middles solo se envían a outA (Alertas), NUNCA a outArb
   // (pestaña Arbitraje), a propósito. Mezclar "riesgo limitado" con "beneficio
   // garantizado" en la misma lista sería confuso y potencialmente peligroso.
@@ -1300,6 +1312,7 @@ function noVigProb(pinMarketOdds) {
 }
 
 function detectEV(id,sport,match,ko,b365,winamax,pin,outV,outA,src) {
+  if (isLiveMatch(ko)) return; // partido en directo: el EV+ aparente puede ser solo el marcador moviendo la cuota
   if (!pin || !Object.keys(pin).length) return;
   // Agrupamos las claves de Pinnacle por "familia" de mercado (todo lo que
   // empiece igual hasta el último _) para poder calcular el no-vig junto.
@@ -1374,10 +1387,7 @@ function detectSharp(id,sport,match,ko,b365,winamax,pin,witnesses,outS,outA,isMi
   // lógica), NO dinero sharp entrando sin motivo público. Sin este filtro,
   // el bot llegó a recomendar "EJECUTAR" apostar a un equipo que ya iba
   // perdiendo 2-6, interpretando la subida normal de cuota como señal sharp.
-  if (ko) {
-    var koTs = new Date(ko).getTime();
-    if (!isNaN(koTs) && Date.now() >= koTs) return; // partido en directo: no es señal sharp fiable
-  }
+  if (isLiveMatch(ko)) return; // partido en directo: no es señal sharp fiable
   var minsSincePrev = prev.t ? (Date.now()-prev.t)/60000 : null;
   var movesThisEvent = {}; // mkt -> {Bet365: chg, Winamax: chg} para detectar coordinación
   // Las ligas pequeñas/poco líquidas (ej. Estonia, Letonia, Islas Feroe) tienen
@@ -1393,6 +1403,14 @@ function detectSharp(id,sport,match,ko,b365,winamax,pin,witnesses,outS,outA,isMi
       var c=parseFloat(pair.curr[mkt]); var o=parseFloat(pair.prevB[mkt]);
       if (!c||!o||c<=1.01||o<=1.01) return;
       var chg=((o-c)/o)*100; if (Math.abs(chg)<minThreshold) return;
+      // Límite de cordura: un movimiento real de mercado no salta de 1.49 a
+      // 16.00 (975%) de golpe — eso es casi siempre un error de datos (cuota
+      // residual, fuente que mezcla mercados distintos, etc.), no dinero
+      // sharp real. Lo descartamos en vez de mostrarlo como señal fuerte.
+      if (Math.abs(chg) > 100) {
+        addDiag('⚠️ Movimiento sharp sospechoso descartado: '+match+' '+pair.book+' '+o.toFixed(2)+'→'+c.toFixed(2)+' ('+chg.toFixed(0)+'%)');
+        return;
+      }
       var dir=chg>0?'BAJADA':'SUBIDA';
       var name=buildMarketLabel(mkt, sport);
       var key=id+'_'+mkt+'_'+dir+'_'+pair.book;
@@ -1502,6 +1520,7 @@ function detectSharp(id,sport,match,ko,b365,winamax,pin,witnesses,outS,outA,isMi
 // equivocado y el libro profesional no lo sigue" — la misma lógica de fondo
 // que el RLM, pero con datos que sí podemos obtener.
 function detectDivergence(id,sport,match,ko,b365,winamax,pin,outA) {
+  if (isLiveMatch(ko)) return; // partido en directo: la divergencia con Pinnacle puede ser solo el marcador
   var prev=HISTORY[id]; if (!prev || !prev.pin || !Object.keys(prev.pin).length) return;
   if (!pin || !Object.keys(pin).length) return;
 
