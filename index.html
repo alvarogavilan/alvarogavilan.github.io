@@ -374,7 +374,7 @@ async function proxyFetch(targetUrl, label, apiKeyForHeader) {
         } catch(e) { /* no era JSON, seguimos con el flujo normal */ }
       }
     }
-  } catch(e) { /* bloqueado por CORS o red — seguimos con Workers/proxies */ }
+  } catch(e) { addDiag('  directo (sin proxy) falló: '+(e.name==='AbortError'?'timeout 15s':e.message.substring(0,60))); }
 
   // Try Cloudflare Workers (principal + backup automático)
   var workersToTry = [];
