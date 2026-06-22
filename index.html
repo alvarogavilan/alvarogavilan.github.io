@@ -362,6 +362,13 @@ async function proxyFetch(targetUrl, label, apiKeyForHeader) {
   // proxies públicos) y no contra tu IP residencial/móvil real, esto se salta
   // el problema por completo. Si falla (CORS, red, etc.) caemos al flujo de
   // siempre sin coste extra real (un intento rápido más).
+  // EXCEPCIÓN: OddsPapi tiene un límite de ráfaga (peticiones/minuto) propio.
+  // Añadir un intento directo ADEMÁS de los proxies duplica el volumen de
+  // peticiones contra esa API en concreto, y probablemente fue lo que disparó
+  // el "429 Request limit exceeded" visto el 22/06 — para OddsPapi nos
+  // saltamos el intento directo y vamos derechos a Workers/proxies, igual
+  // que antes de ese cambio.
+  if (label.indexOf('OddsPapi') === -1) {
   try {
     var rDirect = await fetchWithTimeout(targetUrl, 15000);
     if (rDirect.ok) {
@@ -381,6 +388,7 @@ async function proxyFetch(targetUrl, label, apiKeyForHeader) {
       addDiag('  directo (sin proxy) HTTP '+rDirect.status+': '+errTxtDirect.substring(0,70));
     }
   } catch(e) { addDiag('  directo (sin proxy) falló: '+(e.name==='AbortError'?'timeout 15s':e.message.substring(0,60))); }
+  }
 
   // Try Cloudflare Workers (principal + backup automático)
   var workersToTry = [];
