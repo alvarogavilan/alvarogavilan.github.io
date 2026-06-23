@@ -236,12 +236,14 @@ function eventStatus(p){
 }
 function statusBadge(p){
   var st=eventStatus(p);
-  var dateStr=p.koDate||todayStr();
+  var ref = p.ko ? new Date(p.ko) : new Date();
+  var fullDate = ref.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
+  var fullTime = ref.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
   if(st==='live')
     return '<span class="livebadge"><span class="ld"></span>LIVE '+(p.liveMin||'')+'</span>';
   if(st==='passed')
-    return '<span class="passedbadge">✓ FIN '+dateStr+'</span>';
-  return '<span class="futurebadge">🕐 '+(p.time||'')+'h '+dateStr+'</span>';
+    return '<span class="passedbadge">✓ FIN '+fullDate+' '+fullTime+'h</span>';
+  return '<span class="futurebadge">🕐 '+fullDate+' · '+fullTime+'h</span>';
 }
 
 // ============================================================
@@ -644,6 +646,8 @@ var FALLBACK_EVENTS = [
 var ALL_EVENTS = FALLBACK_EVENTS.slice();
 var WORKER_URL = 'https://betpro-cron.k8mwkbp68y.workers.dev/picks';
 var workerConnected = false;
+var lastWorkerUpdate = null;
+var lastPicksCount = 0;
 
 function mapWorkerPick(p){
   var emoji = (p.sport||'').split(' ')[0] || '🎯';
@@ -671,11 +675,19 @@ function loadWorkerPicks(){
     .then(function(r){ return r.json(); })
     .then(function(data){
       if(Array.isArray(data) && data.length>0){
-        ALL_EVENTS = data.map(mapWorkerPick);
+        var bestByMatch={};
+        data.forEach(function(p){
+          if(!bestByMatch[p.match] || p.conf>bestByMatch[p.match].conf) bestByMatch[p.match]=p;
+        });
+        ALL_EVENTS = Object.values(bestByMatch).map(mapWorkerPick);
         workerConnected = true;
+        lastWorkerUpdate = new Date();
+        lastPicksCount = data.length;
       } else {
         ALL_EVENTS = FALLBACK_EVENTS.slice();
         workerConnected = false;
+        lastWorkerUpdate = new Date();
+        lastPicksCount = 0;
       }
       if(typeof autoUpdate==='function') autoUpdate();
       updEngineBadge();
@@ -690,12 +702,16 @@ function loadWorkerPicks(){
 function updEngineBadge(){
   var el=document.getElementById('engineBadge');
   if(!el) return;
+  var now=new Date();
+  var nowStr=now.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'})+' '
+    +now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  var upd = lastWorkerUpdate
+    ? lastWorkerUpdate.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'})
+    : '—';
   if(workerConnected){
-    el.textContent='🟢 Motor automático activo';
-    el.style.color='#00E68A';
+    el.innerHTML='🟢 Motor automático activo · '+lastPicksCount+' picks detectados<br><span style="font-weight:500;color:#5A6785">Hoy '+nowStr+' · últ. actualización '+upd+'</span>';
   } else {
-    el.textContent='🟡 Sin picks de valor ahora · mostrando ejemplos';
-    el.style.color='#FFD600';
+    el.innerHTML='🟡 Sin picks de valor ahora (EV+ mínimo 4%) · mostrando ejemplos<br><span style="font-weight:500;color:#5A6785">Hoy '+nowStr+' · últ. intento '+upd+'</span>';
   }
 }
 
@@ -1251,7 +1267,8 @@ function pgHome(){
       +'<div class="g4"><div class="sb"><div class="sv" style="color:#00FF87">'+wr+'%</div><div class="sl">Win%</div></div>'
       +'<div class="sb"><div class="sv" style="color:#00D4FF">'+settled.length+'</div><div class="sl">Picks</div></div>'
       +'<div class="sb"><div class="sv" style="color:#00FF87">'+settled.filter(function(h){return h.result==='won';}).length+'</div><div class="sl">Ganad.</div></div>'
-      +'<div class="sb"><div class="sv" style="color:'+(pnl>=0?'#00FF87':'#FF3B5C')+'">'+(pnl>=0?'+':'')+pnl.toFixed(0)+'€</div><div class="sl">P&L</div></div></div>';
+      +'<div class="sb"><div class="sv" style="color:'+(pnl>=0?'#00FF87':'#FF3B5C')+'">'+(pnl>=0?'+':'')+pnl.toFixed(0)+'€</div><div class="sl">P&L</div></div></div>'
+      +bankSparkline(settled,ST.startBank);
   }
   var h='<div id="engineBadge" style="font-size:11px;font-weight:700;text-align:center;margin-bottom:10px">🟡 Conectando con el motor automático...</div>';
   h+='<div class="bcard"><div style="font-size:11px;color:#00D4FF;font-weight:800;letter-spacing:1.2px;margin-bottom:10px">💼 MI BANCA</div>'+bhtml+'</div>';
@@ -1264,6 +1281,26 @@ function pgHome(){
 }
 function svBank(){var v=parseFloat((document.getElementById('bi')||{}).value||0);if(v>0){ST.bank=v;ST.startBank=v;saveST();go('home');}}
 function edBank(){ST.bank=0;ST.startBank=0;saveST();go('home');}
+
+function bankSparkline(settled,startBank){
+  if(settled.length<2) return '';
+  var points=[startBank];
+  var run=startBank;
+  settled.slice().reverse().forEach(function(h){ run+=(h.profit||0); points.push(run); });
+  var w=300,hh=60,pad=4;
+  var min=Math.min.apply(null,points), max=Math.max.apply(null,points);
+  var range=(max-min)||1;
+  var step=(w-pad*2)/(points.length-1);
+  var path=points.map(function(v,i){
+    var x=pad+i*step, y=hh-pad-((v-min)/range)*(hh-pad*2);
+    return (i===0?'M':'L')+x.toFixed(1)+','+y.toFixed(1);
+  }).join(' ');
+  var up=points[points.length-1]>=points[0];
+  var color=up?'#00FF87':'#FF3B5C';
+  return '<div style="margin-top:10px"><svg viewBox="0 0 '+w+' '+hh+'" style="width:100%;height:60px;display:block">'
+    +'<path d="'+path+'" fill="none" stroke="'+color+'" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>'
+    +'</svg><div style="font-size:10px;color:#5A6785;text-align:center;margin-top:2px">Evolución de banca · últimos '+points.length+' picks liquidados</div></div>';
+}
 
 function pgLive(){
   var live=LIVE_PICKS.filter(function(p){return eventStatus(p)==='live';});
@@ -1785,7 +1822,7 @@ function autoUpdate(){
 }
 
 document.addEventListener('DOMContentLoaded',function(){
-  setInterval(function(){var c=document.getElementById('clk');if(c)c.textContent=timeStr();},1000);
+  setInterval(function(){var c=document.getElementById('clk');if(c)c.textContent=timeStr();updEngineBadge();},1000);
   setInterval(autoUpdate,30000);
   setInterval(loadWorkerPicks,600000); // re-consulta el Worker cada 10 min
   TENNIS_PICKS=buildTennisPicks();
