@@ -424,7 +424,6 @@ async function fetchTheOdds() {
   // Con 3 ligas + 1 de lista de deportes (cacheada 24h, casi nunca se repite)
   // el consumo mensual real queda en torno a 360-450 peticiones/mes.
   var priorityKeywords = [
-    'world_cup', 'fifa_world_cup',
     'spain', 'la_liga',
     'epl', 'england',
     'brazil', 'brasil',
@@ -433,14 +432,14 @@ async function fetchTheOdds() {
   ];
   var allSoccerAvailable = all.filter(function(k){return k.indexOf('soccer_')===0;});
   var validSoccerLeagues = allSoccerAvailable.filter(function(k){ return !k.includes('_winner'); });
-  var soccerKeys = validSoccerLeagues.filter(function(k){
-    return priorityKeywords.some(function(kw){ return k.includes(kw); });
+  // El Mundial 2026 está en curso (11 junio - 19 julio) — lo reservamos SIEMPRE
+  // como hueco fijo, sin que tenga que competir con La Liga/EPL/etc por los
+  // 3 huecos totales. Es la liga con más volumen de partidos ahora mismo.
+  var worldCupKeys = validSoccerLeagues.filter(function(k){ return k.includes('world_cup'); });
+  var otherKeys = validSoccerLeagues.filter(function(k){
+    return !k.includes('world_cup') && priorityKeywords.some(function(kw){ return k.includes(kw); });
   });
-  soccerKeys.sort(function(a,b){
-    var aIsWC = a.includes('world_cup') ? 0 : 1;
-    var bIsWC = b.includes('world_cup') ? 0 : 1;
-    return aIsWC - bIsWC;
-  });
+  var soccerKeys = worldCupKeys.concat(otherKeys);
   soccerKeys = soccerKeys.slice(0,3); // FIX: de 15 a 3 — esto es lo que agotaba la cuota
   if (!soccerKeys.length) {
     soccerKeys = validSoccerLeagues.slice(0,3);
@@ -457,7 +456,10 @@ async function fetchTheOdds() {
     var sportIcon = '⚽';
 
     var now = new Date();
-    var future = new Date(now.getTime() + 5*24*60*60*1000);
+    // Ventana ampliada de 5 a 10 días para cubrir bien el calendario de fase
+    // de grupos del Mundial, donde los partidos de un grupo pueden estar
+    // espaciados varios días.
+    var future = new Date(now.getTime() + 10*24*60*60*1000);
     var url = 'https://api.the-odds-api.com/v4/sports/' + sportKey + '/odds/?apiKey='
       + KEYS.theOdds + '&regions=eu,uk,fr&markets=h2h&oddsFormat=decimal'
       + '&commenceTimeTo=' + future.toISOString().split('.')[0] + 'Z';
@@ -1117,7 +1119,7 @@ function detectEV(id,sport,match,ko,b365,winamax,pin,outV,outA,src) {
     var bEv = bVal>1.01 ? ((bVal*pFairProb)-1)*100 : null;
     var wEv = wVal>1.01 ? ((wVal*pFairProb)-1)*100 : null;
 
-    var qualifies = (bEv!==null && bEv>=5) || (wEv!==null && wEv>=5);
+    var qualifies = (bEv!==null && bEv>=3) || (wEv!==null && wEv>=3);
     if (!qualifies) return;
 
     var bestEv = Math.max(bEv||-999, wEv||-999);
@@ -1131,10 +1133,10 @@ function detectEV(id,sport,match,ko,b365,winamax,pin,outV,outA,src) {
       winamaxOdds: wVal||null, winamaxEv: wEv,
       pinnacle:p, ev:bestEv.toFixed(1), evNum:bestEv, src:src});
 
-    if (bEv!==null && bEv>=5) logPick(key+'_Bet365', {sport:sport, match:match, market:name, book:'Bet365', odds:bVal, pinnacle:p, ev:bEv.toFixed(1), ko:ko});
-    if (wEv!==null && wEv>=5) logPick(key+'_Winamax', {sport:sport, match:match, market:name, book:'Winamax', odds:wVal, pinnacle:p, ev:wEv.toFixed(1), ko:ko});
+    if (bEv!==null && bEv>=3) logPick(key+'_Bet365', {sport:sport, match:match, market:name, book:'Bet365', odds:bVal, pinnacle:p, ev:bEv.toFixed(1), ko:ko});
+    if (wEv!==null && wEv>=3) logPick(key+'_Winamax', {sport:sport, match:match, market:name, book:'Winamax', odds:wVal, pinnacle:p, ev:wEv.toFixed(1), ko:ko});
 
-    if (bestEv>6) {
+    if (bestEv>4) {
       var bestBook = (wEv||-999) > (bEv||-999) ? 'Winamax' : 'Bet365';
       var bestOdds = bestBook==='Winamax' ? wVal : bVal;
       outA.push({key:'ev_'+key,type:'value',sport:sport,match:match,ko:ko,
@@ -1150,7 +1152,7 @@ function detectSharp(id,sport,match,ko,b365,winamax,pin,witnesses,outS,outA,isMi
   if (isLiveMatch(ko)) return;
   var minsSincePrev = prev.t ? (Date.now()-prev.t)/60000 : null;
   var movesThisEvent = {};
-  var minThreshold = isMinorLeague ? 8 : 5;
+  var minThreshold = isMinorLeague ? 6 : 3;
 
   [{curr:b365, prevB:prev.b365, book:'Bet365'}, {curr:winamax, prevB:prev.winamax, book:'Winamax'}].forEach(function(pair) {
     if (!pair.curr || !pair.prevB) return;
