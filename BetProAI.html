@@ -370,7 +370,7 @@ function updSub(){
 // Cuotas verificadas 16 Junio 2026 · 07:00h España
 // Bet365 y Winamax confirmados en casasdeapuestas.com / transfermarkt
 // ============================================================
-var ALL_EVENTS = [
+var FALLBACK_EVENTS = [
 
   // ══════════════════════════════════════════════════════
   // ✓ FINALIZADOS — 15 JUNIO
@@ -634,6 +634,70 @@ var ALL_EVENTS = [
    odds:2.10,conf:55,bookie:'Bet365',tipster:'VCT Analytics',hot:false,
    note:'Cuota REAL: 2.10 Bet365. LOUD en casa en Madrid. Fnatic sin su IGL titular.'},
 ];
+
+// ============================================================
+// CONEXIÓN AL MOTOR AUTOMÁTICO (betpro-cron Worker)
+// ALL_EVENTS arranca con los datos de respaldo (FALLBACK_EVENTS)
+// y se sustituye por los picks reales en cuanto el Worker responde.
+// Si el Worker falla o está vacío, se mantiene el respaldo.
+// ============================================================
+var ALL_EVENTS = FALLBACK_EVENTS.slice();
+var WORKER_URL = 'https://betpro-cron.k8mwkbp68y.workers.dev/picks';
+var workerConnected = false;
+
+function mapWorkerPick(p){
+  var emoji = (p.sport||'').split(' ')[0] || '🎯';
+  return {
+    id: p.id,
+    cat: 'live',
+    sport: emoji,
+    sl: p.comp || (p.sport||'').replace(emoji,'').trim(),
+    ko: p.commenceTime || new Date().toISOString(),
+    match: p.match,
+    comp: p.comp,
+    pick: p.pick + ' (' + (p.market||'1X2') + ')',
+    market: p.market || '1X2',
+    odds: p.odds,
+    conf: p.conf,
+    bookie: p.bookie,
+    tipster: 'BetPro AI Engine · EV+ ' + p.ev,
+    hot: p.conf >= 80,
+    note: p.note
+  };
+}
+
+function loadWorkerPicks(){
+  fetch(WORKER_URL, {cache:'no-store'})
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if(Array.isArray(data) && data.length>0){
+        ALL_EVENTS = data.map(mapWorkerPick);
+        workerConnected = true;
+      } else {
+        ALL_EVENTS = FALLBACK_EVENTS.slice();
+        workerConnected = false;
+      }
+      if(typeof autoUpdate==='function') autoUpdate();
+      updEngineBadge();
+    })
+    .catch(function(){
+      ALL_EVENTS = FALLBACK_EVENTS.slice();
+      workerConnected = false;
+      updEngineBadge();
+    });
+}
+
+function updEngineBadge(){
+  var el=document.getElementById('engineBadge');
+  if(!el) return;
+  if(workerConnected){
+    el.textContent='🟢 Motor automático activo';
+    el.style.color='#00E68A';
+  } else {
+    el.textContent='🟡 Sin picks de valor ahora · mostrando ejemplos';
+    el.style.color='#FFD600';
+  }
+}
 
 
 // ============================================================
@@ -1189,7 +1253,8 @@ function pgHome(){
       +'<div class="sb"><div class="sv" style="color:#00FF87">'+settled.filter(function(h){return h.result==='won';}).length+'</div><div class="sl">Ganad.</div></div>'
       +'<div class="sb"><div class="sv" style="color:'+(pnl>=0?'#00FF87':'#FF3B5C')+'">'+(pnl>=0?'+':'')+pnl.toFixed(0)+'€</div><div class="sl">P&L</div></div></div>';
   }
-  var h='<div class="bcard"><div style="font-size:11px;color:#00D4FF;font-weight:800;letter-spacing:1.2px;margin-bottom:10px">💼 MI BANCA</div>'+bhtml+'</div>';
+  var h='<div id="engineBadge" style="font-size:11px;font-weight:700;text-align:center;margin-bottom:10px">🟡 Conectando con el motor automático...</div>';
+  h+='<div class="bcard"><div style="font-size:11px;color:#00D4FF;font-weight:800;letter-spacing:1.2px;margin-bottom:10px">💼 MI BANCA</div>'+bhtml+'</div>';
   h+='<div style="margin-bottom:16px"><div style="font-size:10px;color:#00D4FF;font-weight:800;letter-spacing:1.2px;margin-bottom:6px">🏆 TOP 5 PICKS DEL DÍA</div>'
     +'<div style="font-size:22px;font-weight:900;color:#F0F2F7;line-height:1.2;margin-bottom:4px">Los mejores pronósticos de hoy</div>'
     +'<div style="font-size:12px;color:#5A6785">Todos los deportes · '+todayStr()+'</div></div>';
@@ -1722,11 +1787,13 @@ function autoUpdate(){
 document.addEventListener('DOMContentLoaded',function(){
   setInterval(function(){var c=document.getElementById('clk');if(c)c.textContent=timeStr();},1000);
   setInterval(autoUpdate,30000);
+  setInterval(loadWorkerPicks,600000); // re-consulta el Worker cada 10 min
   TENNIS_PICKS=buildTennisPicks();
   STATS_PICKS=buildStatsPicks();
   go('home');
   updPin(); updSub();
   setTimeout(autoUpdate,1000);
+  loadWorkerPicks();
 });
 
 </script>
