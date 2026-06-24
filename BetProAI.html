@@ -660,15 +660,19 @@ var lastPicksCount = 0;
 
 function mapWorkerPick(p){
   var emoji = (p.sport||'').split(' ')[0] || '🎯';
+  var cat = 'live';
+  if (emoji === '🎾') cat = 'tennis';
+  else if (emoji === '🎮') cat = 'esports';
+  var pickName = (p.pick === 'Draw') ? 'Empate' : p.pick;
   return {
     id: p.id,
-    cat: 'live',
+    cat: cat,
     sport: emoji,
     sl: p.comp || (p.sport||'').replace(emoji,'').trim(),
     ko: p.commenceTime || new Date().toISOString(),
     match: p.match,
     comp: p.comp,
-    pick: p.pick + ' (' + (p.market||'1X2') + ')',
+    pick: pickName + ' (' + (p.market||'1X2') + ')',
     market: p.market || '1X2',
     odds: p.odds,
     conf: p.conf,
@@ -1401,7 +1405,7 @@ function pgHorses(){
 }
 
 function pgTennis(){
-  if(!TENNIS_PICKS.length)TENNIS_PICKS=buildTennisPicks();
+  TENNIS_PICKS=buildTennisPicks();
   var live=TENNIS_PICKS.filter(function(p){return eventStatus(p)==='live';});
   var upcoming=TENNIS_PICKS.filter(function(p){return eventStatus(p)==='future';});
   var passed=TENNIS_PICKS.filter(function(p){return eventStatus(p)==='passed';});
@@ -1428,7 +1432,7 @@ function pgTennis(){
 }
 
 function pgStats(){
-  if(!STATS_PICKS.length)STATS_PICKS=buildStatsPicks();
+  STATS_PICKS=buildStatsPicks();
   var live=STATS_PICKS.filter(function(p){return eventStatus(p)==='live';});
   var upcoming=STATS_PICKS.filter(function(p){return eventStatus(p)==='future';});
   var passed=STATS_PICKS.filter(function(p){return eventStatus(p)==='passed';});
