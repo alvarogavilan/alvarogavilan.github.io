@@ -267,10 +267,14 @@ function liveDetailView(){
     +'<div class="livebadge"><span class="ld"></span>'+minute+"'</div></div>";
 
   html += '<div style="background:#11141C;border:1px solid rgba(255,214,0,.3);border-radius:12px;padding:16px">'
-    +'<div style="font-size:11px;color:#FFD600;font-weight:800;letter-spacing:.5px;margin-bottom:8px">🎯 PRONÓSTICO PRINCIPAL DEL BOT</div>'
-    +'<div style="color:#F0F2F7;font-weight:800;font-size:18px;margin-bottom:6px">'+(f.pick||'Sin señal todavía')+'</div>'
-    +'<div style="color:#00FF87;font-weight:700;font-size:13px;margin-bottom:4px">Fiabilidad: '+(f.confidence||0)+'%</div>'
-    +'<div style="color:#5A6785;font-size:11px;margin-bottom:10px">'+((f.allSignals||[]).length)+' patrón(es) detectado(s) en este partido</div>'
+    +'<div style="font-size:11px;color:#FFD600;font-weight:800;letter-spacing:.5px;margin-bottom:8px">🎯 APUESTA RECOMENDADA</div>'
+    +'<div style="color:#F0F2F7;font-weight:800;font-size:19px;margin-bottom:8px">'+(f.market||f.pick||'Sin señal todavía')+'</div>'
+    +'<div style="display:flex;gap:10px;margin-bottom:10px">'
+    +'<div style="flex:1;background:#0B0E15;border-radius:8px;padding:8px;text-align:center"><div style="font-size:10px;color:#5A6785">FIABILIDAD</div><div style="color:#00FF87;font-weight:800;font-size:18px">'+(f.confidence||0)+'%</div></div>'
+    +'<div style="flex:1;background:#0B0E15;border-radius:8px;padding:8px;text-align:center"><div style="font-size:10px;color:#5A6785">CUOTA MÍNIMA</div><div style="color:#FFD600;font-weight:800;font-size:18px">'+(f.minOdds||'—')+'</div></div>'
+    +'</div>'
+    +(f.valueNote?'<div style="color:#FF9F40;font-size:12px;background:#1A1208;border-radius:8px;padding:8px 10px;margin-bottom:8px">⚠️ '+f.valueNote+'</div>':'')
+    +'<div style="color:#5A6785;font-size:11px">'+((f.allSignals||[]).length)+' patrón(es) detectado(s) en este partido</div>'
     +'</div>';
 
   if (f.allSignals && f.allSignals.length) {
