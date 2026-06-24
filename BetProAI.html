@@ -142,6 +142,15 @@ textarea{resize:none}
 .sig-cyan{background:#051218;border:1px solid #00D4FF;color:#00D4FF}
 </style>
 
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "f54f85e5-7461-49b5-8757-b5d655475c85",
+    });
+  });
+</script>
 </head>
 <body>
 
@@ -166,7 +175,7 @@ textarea{resize:none}
     <button class="tab" data-p="smartmoney" onclick="go('smartmoney')"><span class="tic">🧠</span><span class="tlb">Smart $</span></button>
     <button class="tab" data-p="live"       onclick="go('live')">      <span class="tic">🔴</span><span class="tlb">Live</span><span class="rdot" id="rdot"></span></button>
     <button class="tab" data-p="esports"    onclick="go('esports')">   <span class="tic">🎮</span><span class="tlb">Esports</span></button>
-    <button class="tab" data-p="horses"     onclick="go('horses')">    <span class="tic">🏇</span><span class="tlb">Caballos</span></button>
+    <!-- Caballos: pestaña retirada — sin fuente de datos real gratuita disponible -->
     <button class="tab" data-p="tennis"     onclick="go('tennis')">    <span class="tic">🎾</span><span class="tlb">Tenis</span></button>
     <button class="tab" data-p="stats"      onclick="go('stats')">     <span class="tic">📈</span><span class="tlb">Stats</span></button>
     <button class="tab" data-p="highOdds"   onclick="go('highOdds')">  <span class="tic">💎</span><span class="tlb">High Odds</span></button>
@@ -1090,7 +1099,7 @@ function pcard(p,medal,mc,idx){
     +'</div>'
     +'<div style="background:#0B0E15;border:1px solid #252D3D;border-radius:10px;padding:10px 12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:8px">'
     +'<div>'
-    +'<div style="font-size:10px;color:#5A6785;font-weight:600;margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px">'+p.market+'</div>'
+    +'<div style="font-size:10px;color:#5A6785;font-weight:600;margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px">APUESTA A · '+p.market+'</div>'
     +'<div style="font-size:16px;font-weight:900;color:#00D4FF;line-height:1.2">'+p.pick+'</div>'
     +'</div>'
     +'<button class="tick'+(on?' on':'')+'" data-pickid="'+p.id+'" onclick="doTogglePick(this)" style="flex-shrink:0">'+(on?'✓':'○')+'</button>'
@@ -1141,7 +1150,7 @@ function liveCard(p,medal,mc,idx){
     +(isLiveNow&&p.score?'<div style="font-size:18px;font-weight:900;color:#FFD600;margin-top:4px;letter-spacing:1px">'+p.score+'</div>':'')
     +'<div style="font-size:10px;color:#5A6785;margin-top:3px">'+p.comp+'</div>'
     +'<div style="font-size:16px;font-weight:900;color:#00D4FF;margin-top:8px">'+p.pick+'</div>'
-    +'<div style="font-size:10px;color:#5A6785;margin-top:2px">'+p.market+'</div>'
+    +'<div style="font-size:10px;color:#5A6785;margin-top:2px">APUESTA A · '+p.market+'</div>'
     +'</div>'
     +'<div style="display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0">'
     +'<div style="text-align:center;background:'+confColor+'15;border:2px solid '+confColor+';border-radius:11px;padding:7px 10px;min-width:56px">'
@@ -1270,7 +1279,8 @@ function pgHome(){
       +'<div class="sb"><div class="sv" style="color:'+(pnl>=0?'#00FF87':'#FF3B5C')+'">'+(pnl>=0?'+':'')+pnl.toFixed(0)+'€</div><div class="sl">P&L</div></div></div>'
       +bankSparkline(settled,ST.startBank);
   }
-  var h='<div id="engineBadge" style="font-size:11px;font-weight:700;text-align:center;margin-bottom:10px">🟡 Conectando con el motor automático...</div>';
+  var h='<div id="engineBadge" style="font-size:11px;font-weight:700;text-align:center;margin-bottom:6px">🟡 Conectando con el motor automático...</div>';
+  h+='<button onclick="activarPush()" style="display:block;width:100%;background:linear-gradient(90deg,#00FF87,#00D4FF);border:none;color:#0B0E15;font-weight:800;font-size:13px;border-radius:10px;padding:10px;margin-bottom:12px">🔔 Activar notificaciones</button>';
   h+='<div class="bcard"><div style="font-size:11px;color:#00D4FF;font-weight:800;letter-spacing:1.2px;margin-bottom:10px">💼 MI BANCA</div>'+bhtml+'</div>';
   h+='<div style="margin-bottom:16px"><div style="font-size:10px;color:#00D4FF;font-weight:800;letter-spacing:1.2px;margin-bottom:6px">🏆 TOP 5 PICKS DEL DÍA</div>'
     +'<div style="font-size:22px;font-weight:900;color:#F0F2F7;line-height:1.2;margin-bottom:4px">Los mejores pronósticos de hoy</div>'
@@ -1280,6 +1290,20 @@ function pgHome(){
   return h;
 }
 function svBank(){var v=parseFloat((document.getElementById('bi')||{}).value||0);if(v>0){ST.bank=v;ST.startBank=v;saveST();go('home');}}
+function activarPush(){
+  if (window.OneSignalDeferred) {
+    OneSignalDeferred.push(async function(OneSignal) {
+      try {
+        await OneSignal.Notifications.requestPermission();
+        alert('Si ves un aviso del sistema, acepta "Permitir". Si no pasa nada, asegúrate de haber abierto la app desde el icono de pantalla de inicio, no desde Safari.');
+      } catch (e) {
+        alert('No se pudo activar: ' + e.message);
+      }
+    });
+  } else {
+    alert('OneSignal no ha cargado todavía, espera unos segundos y vuelve a intentarlo.');
+  }
+}
 function edBank(){ST.bank=0;ST.startBank=0;saveST();go('home');}
 
 function bankSparkline(settled,startBank){
@@ -1322,6 +1346,7 @@ function pgLive(){
     h+='<div class="srow"><button class="sbt" style="'+(lSort==='lr'?'background:#CC2040;color:#fff':'')+'" onclick="lSort=\'lr\';go(\'live\')">% Pérd ↑</button>'
       +'<button class="sbt" style="'+(lSort==='roi'?'background:#CC2040;color:#fff':'')+'" onclick="lSort=\'roi\';go(\'live\')">ROI</button>'
       +'<button class="sbt" style="'+(lSort==='wr'?'background:#CC2040;color:#fff':'')+'" onclick="lSort=\'wr\';go(\'live\')">Win%</button></div>';
+    h+=tipsterDisclaimer();
     for(var s=0;s<sorted.length;s++)h+=tipCard(sorted[s],s,'#FF3B5C',lSort);
   }
   return h;
@@ -1346,6 +1371,7 @@ function pgES(){
     h+='<div class="srow"><button class="sbt" style="'+(esSort==='roi'?'background:#7733CC;color:#fff':'')+'" onclick="esSort=\'roi\';go(\'esports\')">ROI</button>'
       +'<button class="sbt" style="'+(esSort==='lr'?'background:#7733CC;color:#fff':'')+'" onclick="esSort=\'lr\';go(\'esports\')">% Pérd ↑</button>'
       +'<button class="sbt" style="'+(esSort==='wr'?'background:#7733CC;color:#fff':'')+'" onclick="esSort=\'wr\';go(\'esports\')">Win%</button></div>';
+    h+=tipsterDisclaimer();
     for(var s=0;s<sorted.length;s++)h+=tipCard(sorted[s],s,'#A855F7',esSort);
   }
   return h;
@@ -1368,6 +1394,7 @@ function pgHorses(){
     h+='<div class="srow"><button class="sbt" style="'+(horSort==='roi'?'background:#AA6A30;color:#000':'')+'" onclick="horSort=\'roi\';go(\'horses\')">ROI</button>'
       +'<button class="sbt" style="'+(horSort==='lr'?'background:#AA6A30;color:#000':'')+'" onclick="horSort=\'lr\';go(\'horses\')">% Pérd ↑</button>'
       +'<button class="sbt" style="'+(horSort==='wr'?'background:#AA6A30;color:#000':'')+'" onclick="horSort=\'wr\';go(\'horses\')">Win%</button></div>';
+    h+=tipsterDisclaimer();
     for(var s=0;s<sorted.length;s++)h+=tipCard(sorted[s],s,'#CD853F',horSort);
   }
   return h;
@@ -1394,6 +1421,7 @@ function pgTennis(){
     h+='<div class="srow"><button class="sbt" style="'+(tenSort==='roi'?'background:#00CC6A;color:#000':'')+'" onclick="tenSort=\'roi\';go(\'tennis\')">ROI</button>'
       +'<button class="sbt" style="'+(tenSort==='lr'?'background:#00CC6A;color:#000':'')+'" onclick="tenSort=\'lr\';go(\'tennis\')">% Pérd ↑</button>'
       +'<button class="sbt" style="'+(tenSort==='wr'?'background:#00CC6A;color:#000':'')+'" onclick="tenSort=\'wr\';go(\'tennis\')">Win%</button></div>';
+    h+=tipsterDisclaimer();
     for(var s=0;s<sorted.length;s++)h+=tipCard(sorted[s],s,'#00FF87',tenSort);
   }
   return h;
@@ -1420,6 +1448,7 @@ function pgStats(){
     h+='<div class="srow"><button class="sbt" style="'+(stSort==='roi'?'background:#CC5500;color:#fff':'')+'" onclick="stSort=\'roi\';go(\'stats\')">ROI</button>'
       +'<button class="sbt" style="'+(stSort==='lr'?'background:#CC5500;color:#fff':'')+'" onclick="stSort=\'lr\';go(\'stats\')">% Pérd ↑</button>'
       +'<button class="sbt" style="'+(stSort==='wr'?'background:#CC5500;color:#fff':'')+'" onclick="stSort=\'wr\';go(\'stats\')">Win%</button></div>';
+    h+=tipsterDisclaimer();
     for(var s=0;s<sorted.length;s++)h+=tipCard(sorted[s],s,'#FF6B00',stSort);
   }
   return h;
@@ -1555,11 +1584,17 @@ function pgHist(){
   return html;
 }
 
+function tipsterDisclaimer(){
+  return '<div style="background:#1A0F05;border:1px solid rgba(255,107,0,.4);border-radius:10px;padding:10px 12px;margin-bottom:12px">'
+    +'<div style="font-size:11px;color:#FF6B00;font-weight:800;margin-bottom:3px">⚠️ DATOS DE EJEMPLO — NO VERIFICADOS</div>'
+    +'<div style="font-size:11px;color:#8896AA;line-height:1.5">Estos "especialistas" y sus estadísticas son ilustrativos, no provienen de tipsters reales ni de ninguna plataforma de verificación. Los únicos picks generados de forma real y automática son los de las pestañas Live, Esports y Smart Money cuando el motor está 🟢 activo.</div></div>';
+}
 function pgTips(){
   var tabs=[{k:'gen',l:'📊 Generales',c:'#00D4FF'},{k:'live',l:'🔴 In-Play',c:'#FF3B5C'},
     {k:'esports',l:'🎮 Esports',c:'#A855F7'},{k:'ho',l:'💎 High Odds',c:'#FFD600'},
     {k:'horses',l:'🏇 Caballos',c:'#CD853F'},{k:'tennis',l:'🎾 Tenis',c:'#00FF87'},{k:'stats',l:'📈 Stats',c:'#FF6B00'}];
-  var h='<div class="sx" style="margin-bottom:13px">';
+  var h=tipsterDisclaimer();
+  h+='<div class="sx" style="margin-bottom:13px">';
   tabs.forEach(function(tab){h+='<button onclick="tTab=\''+tab.k+'\';go(\'tipsters\')" style="white-space:nowrap;padding:7px 11px;border-radius:10px;border:1px solid '+(tTab===tab.k?tab.c:'#1E2330')+';background:'+(tTab===tab.k?tab.c+'20':'transparent')+';color:'+(tTab===tab.k?tab.c:'#6B7490')+';font-weight:800;font-size:11px">'+tab.l+'</button>';});
   h+='</div>';
   var sets={gen:{data:TAI,col:'#00D4FF'},live:{data:LT,col:'#FF3B5C'},
@@ -1594,7 +1629,8 @@ function pgSmartMoney(){
   var watchNow=active.filter(function(s){return s.size==='MICRO'||s.size==='ESPERAR';}).slice(0,3);
 
   // BOT DECISION BOX
-  var h='<div style="background:linear-gradient(135deg,#0D0510,#130818);border:2px solid rgba(168,85,247,.5);border-radius:16px;padding:15px;margin-bottom:14px">'
+  var h=tipsterDisclaimer();
+  h+='<div style="background:linear-gradient(135deg,#0D0510,#130818);border:2px solid rgba(168,85,247,.5);border-radius:16px;padding:15px;margin-bottom:14px">'
     +'<div style="display:flex;align-items:center;gap:9px;margin-bottom:12px">'
     +'<div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#A855F7,#FF3B5C);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🤖</div>'
     +'<div><div style="font-size:12px;color:#A855F7;font-weight:800;letter-spacing:.8px">BOT SMART MONEY · DECISIÓN AHORA</div>'
