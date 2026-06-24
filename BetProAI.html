@@ -658,19 +658,36 @@ var workerConnected = false;
 var lastWorkerUpdate = null;
 var lastPicksCount = 0;
 
+var COUNTRY_ES = {
+  'Ivory Coast':'Costa de Marfil','Netherlands':'Países Bajos','Germany':'Alemania',
+  'Spain':'España','France':'Francia','Belgium':'Bélgica','England':'Inglaterra',
+  'Morocco':'Marruecos','Argentina':'Argentina','USA':'EE.UU.','South Korea':'Corea del Sur',
+  'Japan':'Japón','Sweden':'Suecia','Norway':'Noruega','Croatia':'Croacia','Ghana':'Ghana',
+  'Algeria':'Argelia','Austria':'Austria','Turkey':'Turquía','Australia':'Australia',
+  'Paraguay':'Paraguay','Qatar':'Catar','Bosnia & Herzegovina':'Bosnia y Herzegovina',
+  'Senegal':'Senegal','Iraq':'Irak','Tunisia':'Túnez','Uruguay':'Uruguay','Haiti':'Haití',
+  'Jordan':'Jordania','Colombia':'Colombia','Portugal':'Portugal','Egypt':'Egipto','Iran':'Irán',
+  'Brazil':'Brasil','Scotland':'Escocia','Czech Republic':'República Checa','Mexico':'México',
+  'South Africa':'Sudáfrica','Cape Verde':'Cabo Verde','Saudi Arabia':'Arabia Saudí',
+  'DR Congo':'RD Congo','Uzbekistan':'Uzbekistán','New Zealand':'Nueva Zelanda',
+  'Panama':'Panamá','Ecuador':'Ecuador'
+};
+function translateTeam(name){ return COUNTRY_ES[name] || name; }
+
 function mapWorkerPick(p){
   var emoji = (p.sport||'').split(' ')[0] || '🎯';
   var cat = 'live';
   if (emoji === '🎾') cat = 'tennis';
   else if (emoji === '🎮') cat = 'esports';
-  var pickName = (p.pick === 'Draw') ? 'Empate' : p.pick;
+  var pickName = (p.pick === 'Draw') ? 'Empate' : translateTeam(p.pick);
+  var matchTranslated = (p.match||'').split(' vs ').map(translateTeam).join(' vs ');
   return {
     id: p.id,
     cat: cat,
     sport: emoji,
     sl: p.comp || (p.sport||'').replace(emoji,'').trim(),
     ko: p.commenceTime || new Date().toISOString(),
-    match: p.match,
+    match: matchTranslated,
     comp: p.comp,
     pick: pickName + ' (' + (p.market||'1X2') + ')',
     market: p.market || '1X2',
@@ -750,7 +767,7 @@ function buildESPicks(){return ALL_EVENTS.filter(function(p){return p.cat==='esp
 function buildAllPicks(){var seen={};return ALL_EVENTS.filter(function(p){return p.cat==='live';}).map(enrichPick).filter(function(p){if(seen[p.match])return false;seen[p.match]=true;return true;});}
 function buildTennisPicks(){return ALL_EVENTS.filter(function(p){return p.cat==='tennis';}).map(enrichPick);}
 function buildStatsPicks(){return ALL_EVENTS.filter(function(p){return p.cat==='stats';}).map(enrichPick);}
-function getHOPicks(){return ALL_EVENTS.filter(function(p){return p.cat==='highOdds';}).map(enrichPick);}
+function getHOPicks(){return ALL_EVENTS.filter(function(p){return p.odds && parseFloat(p.odds)>=5;}).map(enrichPick);}
 function getTop5(){
   var seen={};
   return ALL_EVENTS.map(enrichPick).filter(function(p){
@@ -1523,7 +1540,7 @@ function pgHO(){
 }
 
 function pgAll(){
-  var filters=['Todos','⚽','🏀','🎾','🏇','🎮','🏓'];
+  var filters=['Todos','🏆','⚽','🏀','🎾','🎮'];
   var picks=ALL_EVENTS.map(enrichPick).filter(function(p){return asFilter==='Todos'||p.sport===asFilter;});
   var active=picks.filter(function(p){return eventStatus(p)!=='passed';}).sort(function(a,b){return b.conf-a.conf;});
   var passed=picks.filter(function(p){return eventStatus(p)==='passed';});
