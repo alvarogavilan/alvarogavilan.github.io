@@ -302,6 +302,9 @@ function liveDetailView(){
   }
 
   var html = '<button onclick="closeLiveDetail()" style="margin-bottom:12px;padding:8px 14px;border-radius:8px;border:1px solid #1E2330;background:#11141C;color:#5A6785;font-size:12px">← Volver a directos</button>';
+  if (LIVE_DETAIL.missingDataNote) {
+    html += '<div style="background:#1A1208;border:1px solid rgba(255,159,64,.4);border-radius:8px;padding:8px 10px;margin-bottom:10px;font-size:11px;color:#FF9F40">ℹ️ '+LIVE_DETAIL.missingDataNote+'</div>';
+  }
   html += '<div style="background:#11141C;border:1px solid #1E2330;border-radius:12px;padding:16px;margin-bottom:14px;text-align:center">'
     +'<div style="color:#F0F2F7;font-weight:700;font-size:16px">'+home+' vs '+away+'</div>'
     +'<div style="color:#FFD600;font-weight:900;font-size:32px;margin:6px 0">'+score+'</div>'
