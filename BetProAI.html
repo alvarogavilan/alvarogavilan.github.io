@@ -321,6 +321,17 @@ function liveDetailView(){
     +'<div style="color:#5A6785;font-size:11px">'+((f.allSignals||[]).length)+' patrón(es) detectado(s) en este partido</div>'
     +'</div>';
 
+  if (LIVE_DETAIL.realOdds && LIVE_DETAIL.realOdds.bets && LIVE_DETAIL.realOdds.bets.length) {
+    html += '<div style="font-size:11px;color:#00FF87;font-weight:800;letter-spacing:.5px;margin:14px 0 6px">💰 CUOTAS REALES EN VIVO (API)</div>';
+    LIVE_DETAIL.realOdds.bets.forEach(function(b){
+      html += '<div style="background:#11141C;border:1px solid #1E2330;border-radius:10px;padding:10px 12px;margin-bottom:6px">'
+        +'<div style="color:#5A6785;font-size:11px;font-weight:700;margin-bottom:5px">'+b.market+'</div>'
+        +'<div style="display:flex;flex-wrap:wrap;gap:6px">'
+        + b.values.map(function(v){ return '<span style="background:#0B0E15;border-radius:6px;padding:4px 8px;font-size:12px;color:#F0F2F7">'+v.tag+' <b style="color:#FFD600">'+v.odd+'</b></span>'; }).join('')
+        +'</div></div>';
+    });
+  }
+
   if (f.allSignals && f.allSignals.length) {
     html += '<div style="font-size:11px;color:#5A6785;font-weight:800;letter-spacing:.5px;margin:14px 0 6px">📋 TODAS LAS SEÑALES DETECTADAS</div>';
     f.allSignals.forEach(function(s, idx){
