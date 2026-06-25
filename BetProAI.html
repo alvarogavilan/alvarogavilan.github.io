@@ -204,16 +204,44 @@ var LIVE_LOADING = false;
 var LIVE_ERROR = null;
 
 var LIVE_LAST_FETCH = 0;
+var LIVE_TOP = null;
+var LIVE_TOP_LOADING = false;
+var LIVE_TOP_ERROR = null;
+
+async function fetchTopForecasts(){
+  LIVE_TOP_LOADING = true; LIVE_TOP_ERROR = null;
+  go('live');
+  try {
+    var r = await fetch(WORKER_LIVE_URL+'/live/top');
+    var j = await r.json();
+    LIVE_TOP = Array.isArray(j) ? j : [];
+  } catch(e){
+    LIVE_TOP_ERROR = 'No se pudo calcular el ranking ahora mismo.';
+    LIVE_TOP = [];
+  }
+  LIVE_TOP_LOADING = false;
+  if(PG==='live') go('live');
+}
+
+function topForecastCard(t, idx){
+  var icon = '⚽';
+  return '<div onclick="openLiveMatch('+t.id+',\''+t.sport+'\')" style="background:#11141C;border:1px solid '+(idx===0?'rgba(255,214,0,.5)':'#1E2330')+';border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+    +'<span style="font-size:11px;color:#5A6785;font-weight:700">'+icon+' '+(t.home||'')+' vs '+(t.away||'')+' · '+(t.score||'')+'</span>'
+    +'<span style="background:'+(idx===0?'#FFD600':'#1E2330')+';color:'+(idx===0?'#000':'#F0F2F7')+';font-weight:800;font-size:11px;padding:2px 8px;border-radius:6px">'+t.confidence+'%</span>'
+    +'</div>'
+    +'<div style="color:#F0F2F7;font-weight:800;font-size:14px">'+(idx===0?'⭐ ':'')+(t.market||t.pick)+'</div>'
+    +(t.minOdds?'<div style="color:#FFD600;font-size:11px;margin-top:3px">Cuota mínima recomendada: '+t.minOdds+'</div>':'')
+    +'</div>';
+}
 
 async function fetchLiveMatches(){
   LIVE_LOADING = true; LIVE_ERROR = null;
   LIVE_LAST_FETCH = Date.now();
   try {
-    var fb = await fetch(WORKER_LIVE_URL+'/live/list?sport=football');
-    var fJson = await fb.json();
-    var bb = await fetch(WORKER_LIVE_URL+'/live/list?sport=basketball');
-    var bJson = await bb.json();
-    LIVE_MATCHES = (Array.isArray(fJson)?fJson:[]).concat(Array.isArray(bJson)?bJson:[]);
+    var r = await fetch(WORKER_LIVE_URL+'/live/list?sport=football');
+    var j = await r.json();
+    LIVE_MATCHES = Array.isArray(j) ? j : [];
   } catch(e){
     LIVE_ERROR = 'No se pudo conectar con el servidor de directos.';
     LIVE_MATCHES = [];
@@ -238,11 +266,11 @@ async function openLiveMatch(id, sport){
 function closeLiveDetail(){ LIVE_DETAIL=null; go('live'); }
 
 function liveMatchCard(m){
-  var icon = m.sport==='basketball' ? '🏀' : '⚽';
+  var icon = '⚽';
   return '<div onclick="openLiveMatch('+m.id+',\''+m.sport+'\')" style="background:#11141C;border:1px solid #1E2330;border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer">'
     +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
     +'<span style="font-size:11px;color:#5A6785;font-weight:700">'+icon+' '+(m.league||'')+'</span>'
-    +'<span class="livebadge"><span class="ld"></span>'+(m.minute!=null?(m.minute+"'"):(m.clock||'LIVE'))+'</span>'
+    +'<span class="livebadge"><span class="ld"></span>'+(m.minute!=null?(m.minute+"'"):(m.clock||m.status||'LIVE'))+'</span>'
     +'</div>'
     +'<div style="display:flex;justify-content:space-between;align-items:center">'
     +'<span style="color:#F0F2F7;font-weight:700;font-size:14px">'+m.home+'</span>'
@@ -258,16 +286,26 @@ function liveDetailView(){
 
   var m = LIVE_DETAIL.match;
   var f = LIVE_DETAIL.forecast || {};
-  var home = m.teams ? m.teams.home.name : (m.teams && m.teams.home);
-  var away = m.teams ? m.teams.away.name : (m.teams && m.teams.away);
-  var score = m.goals ? (m.goals.home+' - '+m.goals.away) : (m.scores ? m.scores.home.total+' - '+m.scores.away.total : '');
-  var minute = m.fixture ? m.fixture.status.elapsed : (m.periods ? m.periods.current : '');
+  var isRacket = m.players != null;
+  var home, away, score, minute;
+  if (isRacket) {
+    home = (m.players.first||{}).name || 'Jugador 1';
+    away = (m.players.second||{}).name || 'Jugador 2';
+    var sets = m.scores ? Object.values(m.scores) : [];
+    score = sets.map(function(s){ return (s.home??s[0]??'')+'-'+(s.away??s[1]??''); }).join('  ');
+    minute = m.status ? (m.status.long||m.status) : '';
+  } else {
+    home = m.teams ? m.teams.home.name : (m.teams && m.teams.home);
+    away = m.teams ? m.teams.away.name : (m.teams && m.teams.away);
+    score = m.goals ? (m.goals.home+' - '+m.goals.away) : (m.scores ? m.scores.home.total+' - '+m.scores.away.total : '');
+    minute = m.fixture ? m.fixture.status.elapsed : (m.periods ? m.periods.current : '');
+  }
 
   var html = '<button onclick="closeLiveDetail()" style="margin-bottom:12px;padding:8px 14px;border-radius:8px;border:1px solid #1E2330;background:#11141C;color:#5A6785;font-size:12px">← Volver a directos</button>';
   html += '<div style="background:#11141C;border:1px solid #1E2330;border-radius:12px;padding:16px;margin-bottom:14px;text-align:center">'
     +'<div style="color:#F0F2F7;font-weight:700;font-size:16px">'+home+' vs '+away+'</div>'
     +'<div style="color:#FFD600;font-weight:900;font-size:32px;margin:6px 0">'+score+'</div>'
-    +'<div class="livebadge"><span class="ld"></span>'+minute+"'</div></div>";
+    +'<div class="livebadge"><span class="ld"></span>'+(isRacket?minute:(minute+"'"))+'</div></div>';
 
   html += '<div style="background:#11141C;border:1px solid rgba(255,214,0,.3);border-radius:12px;padding:16px">'
     +'<div style="font-size:11px;color:#FFD600;font-weight:800;letter-spacing:.5px;margin-bottom:8px">🎯 APUESTA RECOMENDADA</div>'
@@ -1460,6 +1498,18 @@ function pgLive(){
     +'<div style="font-size:12px;color:#F0F2F7;margin-top:1px">Fútbol y baloncesto en vivo · pronóstico del bot al entrar al partido</div></div>'
     +'<button onclick="LIVE_LAST_FETCH=0;go(\'live\')" style="background:#11141C;border:1px solid #1E2330;border-radius:8px;padding:6px 10px;color:#F0F2F7;font-size:16px">🔄</button>'
     +'</div>';
+
+  // ---- RANKING DE MEJORES PRONÓSTICOS ----
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin:14px 0 6px">'
+    +'<div style="font-size:11px;color:#FFD600;font-weight:800;letter-spacing:.5px">🏆 MEJORES PRONÓSTICOS AHORA</div>'
+    +'<button onclick="fetchTopForecasts()" style="background:#11141C;border:1px solid rgba(255,214,0,.4);border-radius:8px;padding:5px 10px;color:#FFD600;font-size:11px;font-weight:700">'+(LIVE_TOP_LOADING?'Calculando...':'🔍 Calcular')+'</button>'
+    +'</div>';
+  if (LIVE_TOP_LOADING) h += '<div style="text-align:center;padding:14px 0;color:#5A6785;font-size:12px">Analizando varios partidos en directo, puede tardar unos segundos...</div>';
+  else if (LIVE_TOP_ERROR) h += '<div style="color:#FF3B5C;font-size:12px;padding:10px 0">'+LIVE_TOP_ERROR+'</div>';
+  else if (LIVE_TOP === null) h += '<div style="color:#5A6785;font-size:12px;padding:6px 0 14px">Pulsa "Calcular" para que el bot revise hasta 12 partidos de fútbol en directo (todas las ligas disponibles) y te diga cuáles tienen el pronóstico más fiable. (Consume cuota de la API — úsalo con moderación.)</div>';
+  else if (!LIVE_TOP.length) h += '<div style="color:#6B7490;font-size:12px;padding:10px 0">No se detectaron pronósticos con suficiente fiabilidad ahora mismo.</div>';
+  else LIVE_TOP.forEach(function(t, idx){ h += topForecastCard(t, idx); });
+  h += '<div style="font-size:11px;color:#5A6785;font-weight:800;letter-spacing:.5px;margin:16px 0 6px">📡 TODOS LOS PARTIDOS EN DIRECTO</div>';
 
   if(LIVE_LOADING) h += '<div style="text-align:center;padding:40px 0;color:#5A6785">Buscando partidos en directo...</div>';
   else if(LIVE_ERROR) h += '<div style="text-align:center;padding:30px 0;color:#FF3B5C">'+LIVE_ERROR+'</div>';
