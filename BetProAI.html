@@ -203,8 +203,11 @@ var LIVE_DETAIL = null;
 var LIVE_LOADING = false;
 var LIVE_ERROR = null;
 
+var LIVE_LAST_FETCH = 0;
+
 async function fetchLiveMatches(){
   LIVE_LOADING = true; LIVE_ERROR = null;
+  LIVE_LAST_FETCH = Date.now();
   try {
     var fb = await fetch(WORKER_LIVE_URL+'/live/list?sport=football');
     var fJson = await fb.json();
@@ -1448,12 +1451,15 @@ function bankSparkline(settled,startBank){
 }
 
 function pgLive(){
-  if(!LIVE_MATCHES.length && !LIVE_LOADING && !LIVE_ERROR) fetchLiveMatches();
+  var now = Date.now();
+  if(!LIVE_LOADING && !LIVE_DETAIL && (now - LIVE_LAST_FETCH > 30000)) fetchLiveMatches();
   if(LIVE_DETAIL) return liveDetailView();
 
-  var h = '<div class="bnr2" style="background:#1A0810;border:1px solid rgba(255,59,92,.5)">'
-    +'<div style="font-size:11px;color:#FF3B5C;font-weight:800">🔴 DIRECTO AHORA · '+timeStr()+' · '+todayStr()+'</div>'
-    +'<div style="font-size:12px;color:#F0F2F7;margin-top:1px">Fútbol y baloncesto en vivo · pronóstico del bot al entrar al partido</div></div>';
+  var h = '<div class="bnr2" style="background:#1A0810;border:1px solid rgba(255,59,92,.5);display:flex;justify-content:space-between;align-items:center">'
+    +'<div><div style="font-size:11px;color:#FF3B5C;font-weight:800">🔴 DIRECTO AHORA · '+timeStr()+' · '+todayStr()+'</div>'
+    +'<div style="font-size:12px;color:#F0F2F7;margin-top:1px">Fútbol y baloncesto en vivo · pronóstico del bot al entrar al partido</div></div>'
+    +'<button onclick="LIVE_LAST_FETCH=0;go(\'live\')" style="background:#11141C;border:1px solid #1E2330;border-radius:8px;padding:6px 10px;color:#F0F2F7;font-size:16px">🔄</button>'
+    +'</div>';
 
   if(LIVE_LOADING) h += '<div style="text-align:center;padding:40px 0;color:#5A6785">Buscando partidos en directo...</div>';
   else if(LIVE_ERROR) h += '<div style="text-align:center;padding:30px 0;color:#FF3B5C">'+LIVE_ERROR+'</div>';
