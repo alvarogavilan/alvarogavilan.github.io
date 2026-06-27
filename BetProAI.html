@@ -8,6 +8,19 @@
 <meta name="apple-mobile-web-app-title" content="BetPro AI">
 <meta name="theme-color" content="#07090E">
 <title>BetPro AI</title>
+<script>
+window.onerror = function(msg, src, line, col, err){
+  document.title = 'ERROR';
+  function show(){
+    var d = document.createElement('div');
+    d.style = 'position:fixed;top:0;left:0;right:0;background:#FF0000;color:#fff;padding:14px;font-size:13px;z-index:99999;font-family:monospace;white-space:pre-wrap';
+    d.textContent = 'JS ERROR: ' + msg + '\nLine: ' + line + ':' + col + '\nFile: ' + src;
+    document.body.appendChild(d);
+  }
+  if (document.body) show(); else document.addEventListener('DOMContentLoaded', show);
+  return false;
+};
+</script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;font-family:-apple-system,'SF Pro Display',sans-serif}
 body{background:#07090E;color:#F0F2F7;max-width:480px;margin:0 auto;min-height:100vh;-webkit-text-size-adjust:100%}
@@ -291,7 +304,7 @@ function liveDetailView(){
   html += '<div style="background:#11141C;border:1px solid #1E2330;border-radius:12px;padding:16px;margin-bottom:14px;text-align:center">'
     +'<div style="color:#F0F2F7;font-weight:700;font-size:16px">'+home+' vs '+away+'</div>'
     +'<div style="color:#FFD600;font-weight:900;font-size:32px;margin:6px 0">'+score+'</div>'
-    +'<div class="livebadge"><span class="ld"></span>'+minute+"'</div></div>';
+    +'<div class="livebadge"><span class="ld"></span>'+minute+"'</div></div>";
 
   html += '<div style="background:#11141C;border:1px solid rgba(255,214,0,.3);border-radius:12px;padding:16px">'
     +'<div style="font-size:11px;color:#FFD600;font-weight:800;letter-spacing:.5px;margin-bottom:8px">🎯 APUESTA RECOMENDADA</div>'
