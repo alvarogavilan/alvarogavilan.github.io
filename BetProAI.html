@@ -10,6 +10,8 @@
 <title>BetPro AI</title>
 <script>
 window.onerror = function(msg, src, line, col, err){
+  // Ignorar errores genéricos de scripts externos (cross-origin, ej. OneSignal) — no son de nuestro código y no dan información útil
+  if (msg === 'Script error.' && !src) return false;
   document.title = 'ERROR';
   function show(){
     var d = document.createElement('div');
@@ -1516,9 +1518,8 @@ function bankSparkline(settled,startBank){
 }
 
 function pgLive(){
-  var now = Date.now();
-  if(!LIVE_LOADING && !LIVE_DETAIL && (now - LIVE_LAST_FETCH > 30000)) fetchLiveMatches();
   if(LIVE_DETAIL) return liveDetailView();
+  if(!LIVE_LOADING && LIVE_LAST_FETCH===0) fetchLiveMatches();
 
   var h = '<div class="bnr2" style="background:#1A0810;border:1px solid rgba(255,59,92,.5);display:flex;justify-content:space-between;align-items:center">'
     +'<div><div style="font-size:11px;color:#FF3B5C;font-weight:800">🔴 DIRECTO AHORA · '+timeStr()+' · '+todayStr()+'</div>'
@@ -1531,7 +1532,7 @@ function pgLive(){
     +'<div style="font-size:11px;color:#FFD600;font-weight:800;letter-spacing:.5px">🏆 MEJORES PRONÓSTICOS AHORA</div>'
     +'<button onclick="fetchTopForecasts()" style="background:#11141C;border:1px solid rgba(255,214,0,.4);border-radius:8px;padding:5px 10px;color:#FFD600;font-size:11px;font-weight:700">'+(LIVE_TOP_LOADING?'Calculando...':'🔍 Calcular')+'</button>'
     +'</div>';
-  if (LIVE_TOP_LOADING) h += '<div style="text-align:center;padding:14px 0;color:#5A6785;font-size:12px">Analizando varios partidos en directo, puede tardar unos segundos...</div>';
+  if (LIVE_TOP_LOADING) h += '<div style="text-align:center;padding:14px 0;color:#5A6785;font-size:12px">Analizando partidos en directo (puede tardar 30-60s, vamos al ritmo real permitido por la API para no fallar)...</div>';
   else if (LIVE_TOP_ERROR) h += '<div style="color:#FF3B5C;font-size:12px;padding:10px 0">'+LIVE_TOP_ERROR+'</div>';
   else if (LIVE_TOP === null) h += '<div style="color:#5A6785;font-size:12px;padding:6px 0 14px">Pulsa "Calcular" para que el bot revise hasta 12 partidos de fútbol en directo (todas las ligas disponibles) y te diga cuáles tienen el pronóstico más fiable. (Consume cuota de la API — úsalo con moderación.)</div>';
   else {
