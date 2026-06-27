@@ -172,16 +172,9 @@ textarea{resize:none}
 <div id="bnav">
   <div id="tabrail">
     <button class="tab" data-p="home"       onclick="go('home')">      <span class="tic">🏠</span><span class="tlb">Inicio</span></button>
-    <button class="tab" data-p="smartmoney" onclick="go('smartmoney')"><span class="tic">🧠</span><span class="tlb">Smart $</span></button>
     <button class="tab" data-p="live"       onclick="go('live')">      <span class="tic">🔴</span><span class="tlb">Live</span><span class="rdot" id="rdot"></span></button>
-    <button class="tab" data-p="esports"    onclick="go('esports')">   <span class="tic">🎮</span><span class="tlb">Esports</span></button>
-    <!-- Caballos: pestaña retirada — sin fuente de datos real gratuita disponible -->
-    <button class="tab" data-p="tennis"     onclick="go('tennis')">    <span class="tic">🎾</span><span class="tlb">Tenis</span></button>
-    <button class="tab" data-p="stats"      onclick="go('stats')">     <span class="tic">📈</span><span class="tlb">Stats</span></button>
     <button class="tab" data-p="highOdds"   onclick="go('highOdds')">  <span class="tic">💎</span><span class="tlb">High Odds</span></button>
-    <button class="tab" data-p="allsport"   onclick="go('allsport')">  <span class="tic">⚽</span><span class="tlb">Deportes</span></button>
     <button class="tab" data-p="history"    onclick="go('history')">   <span class="tic">📅</span><span class="tlb">Historial</span><span class="ppin hide" id="ppin">0</span></button>
-    <button class="tab" data-p="tipsters"   onclick="go('tipsters')">  <span class="tic">📊</span><span class="tlb">Tipsters</span></button>
   </div>
   <div style="text-align:center;padding:3px 0 9px;font-size:9px;color:#222A3A">⚠️ Solo informativo · +18 · Apuesta responsablemente</div>
 </div>
@@ -286,20 +279,10 @@ function liveDetailView(){
 
   var m = LIVE_DETAIL.match;
   var f = LIVE_DETAIL.forecast || {};
-  var isRacket = m.players != null;
-  var home, away, score, minute;
-  if (isRacket) {
-    home = (m.players.first||{}).name || 'Jugador 1';
-    away = (m.players.second||{}).name || 'Jugador 2';
-    var sets = m.scores ? Object.values(m.scores) : [];
-    score = sets.map(function(s){ return (s.home??s[0]??'')+'-'+(s.away??s[1]??''); }).join('  ');
-    minute = m.status ? (m.status.long||m.status) : '';
-  } else {
-    home = m.teams ? m.teams.home.name : (m.teams && m.teams.home);
-    away = m.teams ? m.teams.away.name : (m.teams && m.teams.away);
-    score = m.goals ? (m.goals.home+' - '+m.goals.away) : (m.scores ? m.scores.home.total+' - '+m.scores.away.total : '');
-    minute = m.fixture ? m.fixture.status.elapsed : (m.periods ? m.periods.current : '');
-  }
+  var home = m.teams ? m.teams.home.name : '';
+  var away = m.teams ? m.teams.away.name : '';
+  var score = m.goals ? (m.goals.home+' - '+m.goals.away) : '';
+  var minute = m.fixture ? m.fixture.status.elapsed : '';
 
   var html = '<button onclick="closeLiveDetail()" style="margin-bottom:12px;padding:8px 14px;border-radius:8px;border:1px solid #1E2330;background:#11141C;color:#5A6785;font-size:12px">← Volver a directos</button>';
   if (LIVE_DETAIL.missingDataNote) {
@@ -308,7 +291,7 @@ function liveDetailView(){
   html += '<div style="background:#11141C;border:1px solid #1E2330;border-radius:12px;padding:16px;margin-bottom:14px;text-align:center">'
     +'<div style="color:#F0F2F7;font-weight:700;font-size:16px">'+home+' vs '+away+'</div>'
     +'<div style="color:#FFD600;font-weight:900;font-size:32px;margin:6px 0">'+score+'</div>'
-    +'<div class="livebadge"><span class="ld"></span>'+(isRacket?minute:(minute+"'"))+'</div></div>';
+    +'<div class="livebadge"><span class="ld"></span>'+minute+"'</div></div>';
 
   html += '<div style="background:#11141C;border:1px solid rgba(255,214,0,.3);border-radius:12px;padding:16px">'
     +'<div style="font-size:11px;color:#FFD600;font-weight:800;letter-spacing:.5px;margin-bottom:8px">🎯 APUESTA RECOMENDADA</div>'
