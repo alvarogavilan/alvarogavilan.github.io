@@ -215,6 +215,7 @@ var LIVE_TOP_LOADING = false;
 var LIVE_TOP_ERROR = null;
 
 var LIVE_HIGHVALUE = null;
+var LIVE_TOP_DEBUG = null;
 
 async function fetchTopForecasts(){
   LIVE_TOP_LOADING = true; LIVE_TOP_ERROR = null;
@@ -224,6 +225,7 @@ async function fetchTopForecasts(){
     var j = await r.json();
     LIVE_TOP = Array.isArray(j.top) ? j.top : [];
     LIVE_HIGHVALUE = Array.isArray(j.highValue) ? j.highValue : [];
+    LIVE_TOP_DEBUG = j.debug || null;
   } catch(e){
     LIVE_TOP_ERROR = 'No se pudo calcular el ranking ahora mismo.';
     LIVE_TOP = []; LIVE_HIGHVALUE = [];
@@ -1538,7 +1540,16 @@ function pgLive(){
       LIVE_HIGHVALUE.forEach(function(hv){ h += highValueCard(hv); });
       h += '<div style="font-size:11px;color:#5A6785;font-weight:800;letter-spacing:.5px;margin:14px 0 6px">🏆 RANKING GENERAL</div>';
     }
-    if (!LIVE_TOP.length && !(LIVE_HIGHVALUE && LIVE_HIGHVALUE.length)) h += '<div style="color:#6B7490;font-size:12px;padding:10px 0">No se detectaron pronósticos con suficiente fiabilidad ahora mismo.</div>';
+    if (!LIVE_TOP.length && !(LIVE_HIGHVALUE && LIVE_HIGHVALUE.length)) {
+      h += '<div style="color:#6B7490;font-size:12px;padding:10px 0">No se detectaron pronósticos con suficiente fiabilidad ahora mismo.</div>';
+      if (LIVE_TOP_DEBUG) {
+        h += '<div style="background:#0B0E15;border:1px solid #1E2330;border-radius:8px;padding:10px;font-size:11px;color:#5A6785;line-height:1.6">'
+          +'🔎 Diagnóstico: '+LIVE_TOP_DEBUG.totalLive+' partidos en directo · '+LIVE_TOP_DEBUG.scanned+' analizados · '
+          +LIVE_TOP_DEBUG.skippedNoSignal+' sin señal · '+LIVE_TOP_DEBUG.skippedInconsistent+' con datos inconsistentes'
+          +(LIVE_TOP_DEBUG.errors && LIVE_TOP_DEBUG.errors.length ? '<br>Errores: '+LIVE_TOP_DEBUG.errors.join(' | ') : '')
+          +'</div>';
+      }
+    }
     else LIVE_TOP.forEach(function(t, idx){ h += topForecastCard(t, idx); });
   }
   h += '<div style="font-size:11px;color:#5A6785;font-weight:800;letter-spacing:.5px;margin:16px 0 6px">📡 TODOS LOS PARTIDOS EN DIRECTO</div>';
