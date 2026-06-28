@@ -1532,9 +1532,9 @@ function pgLive(){
     +'<div style="font-size:11px;color:#FFD600;font-weight:800;letter-spacing:.5px">🏆 MEJORES PRONÓSTICOS AHORA</div>'
     +'<button onclick="fetchTopForecasts()" style="background:#11141C;border:1px solid rgba(255,214,0,.4);border-radius:8px;padding:5px 10px;color:#FFD600;font-size:11px;font-weight:700">'+(LIVE_TOP_LOADING?'Calculando...':'🔍 Calcular')+'</button>'
     +'</div>';
-  if (LIVE_TOP_LOADING) h += '<div style="text-align:center;padding:14px 0;color:#5A6785;font-size:12px">Analizando partidos en directo (puede tardar 30-60s, vamos al ritmo real permitido por la API para no fallar)...</div>';
+  if (LIVE_TOP_LOADING) h += '<div style="text-align:center;padding:14px 0;color:#5A6785;font-size:12px">Cargando lo que el bot ya analizó en segundo plano...</div>';
   else if (LIVE_TOP_ERROR) h += '<div style="color:#FF3B5C;font-size:12px;padding:10px 0">'+LIVE_TOP_ERROR+'</div>';
-  else if (LIVE_TOP === null) h += '<div style="color:#5A6785;font-size:12px;padding:6px 0 14px">Pulsa "Calcular" para que el bot revise hasta 12 partidos de fútbol en directo (todas las ligas disponibles) y te diga cuáles tienen el pronóstico más fiable. (Consume cuota de la API — úsalo con moderación.)</div>';
+  else if (LIVE_TOP === null) h += '<div style="color:#5A6785;font-size:12px;padding:6px 0 14px">Pulsa "Calcular" para ver los partidos en directo que el bot ya ha analizado en segundo plano (se actualiza solo cada pocos minutos, sin que tengas que esperar).</div>';
   else {
     if (LIVE_HIGHVALUE && LIVE_HIGHVALUE.length) {
       h += '<div style="font-size:11px;color:#00FF87;font-weight:800;letter-spacing:.5px;margin-bottom:6px">💎 OPORTUNIDADES DE ALTO VALOR ('+LIVE_HIGHVALUE.length+')</div>';
