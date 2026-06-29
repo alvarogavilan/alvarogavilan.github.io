@@ -1547,9 +1547,9 @@ function pgLive(){
       h += '<div style="color:#6B7490;font-size:12px;padding:10px 0">No se detectaron pronósticos con suficiente fiabilidad ahora mismo.</div>';
       if (LIVE_TOP_DEBUG) {
         h += '<div style="background:#0B0E15;border:1px solid #1E2330;border-radius:8px;padding:10px;font-size:11px;color:#5A6785;line-height:1.6">'
-          +'🔎 Diagnóstico: '+LIVE_TOP_DEBUG.totalLive+' partidos en directo · '+LIVE_TOP_DEBUG.scanned+' analizados · '
-          +LIVE_TOP_DEBUG.skippedNoSignal+' sin señal · '+LIVE_TOP_DEBUG.skippedInconsistent+' con datos inconsistentes'
+          +'🔎 Diagnóstico: '+(LIVE_TOP_DEBUG.cachedMatches||0)+' partidos en caché del cron'
           +(LIVE_TOP_DEBUG.errors && LIVE_TOP_DEBUG.errors.length ? '<br>Errores: '+LIVE_TOP_DEBUG.errors.join(' | ') : '')
+          +'<br><span style="color:#8896AA">Si pone 0, el cron todavía no ha analizado nada — espera unos minutos a que se ejecute, o pídele a Claude que fuerce un escaneo manual.</span>'
           +'</div>';
       }
     }
