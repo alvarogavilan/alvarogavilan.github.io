@@ -292,6 +292,7 @@ function pgTop(){
 }
 
 var SERVER_LOG = null;
+var histRange = 'all'; // 'day' | 'week' | 'month' | 'all' — filtro de fechas en Historial
 var SERVER_LOG_LOADING = false;
 var SERVER_SIGNAL_STATS = {};
 
@@ -316,30 +317,33 @@ async function fetchServerHistory(){
 }
 
 function highValueCard(hv){
+  var home = translateTeam(hv.home||''), away = translateTeam(hv.away||'');
   return '<div onclick="openLiveMatch('+hv.id+',\'football\')" style="background:#0D1A12;border:1px solid rgba(0,255,135,.4);border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer">'
-    +'<div style="font-size:11px;color:#5A6785;font-weight:700;margin-bottom:4px">⚽ '+(hv.home||'')+' vs '+(hv.away||'')+' · '+(hv.score||'')+' · '+(hv.minute!=null?hv.minute+"'":'')+'</div>'
+    +'<div style="font-size:11px;color:#5A6785;font-weight:700;margin-bottom:4px">⚽ '+home+' vs '+away+' · '+(hv.score||'')+' · '+(hv.minute!=null?hv.minute+"'":'')+'</div>'
     +'<div style="color:#00FF87;font-weight:800;font-size:15px;margin-bottom:4px">💎 '+hv.market+'</div>'
     +'<div style="color:#8896AA;font-size:11px;line-height:1.5">'+hv.reason+'</div>'
-    +'<div style="margin-top:8px;font-size:10px;color:#5A6785;border-top:1px solid rgba(0,255,135,.15);padding-top:6px">Esta es una señal aislada, sin cuota mínima calculada — toca el partido para ver el pronóstico completo con stake sugerido.</div>'
+    +'<div style="margin-top:9px;width:100%;padding:8px 0;border-radius:8px;border:1px solid rgba(0,255,135,.4);background:rgba(0,255,135,.08);color:#00FF87;font-weight:800;font-size:12px;text-align:center">👆 Toca para ver el pronóstico completo, confianza y stake</div>'
     +'</div>';
 }
 
 function topForecastCard(t, idx){
   var icon = '⚽';
+  var home = translateTeam(t.home||''), away = translateTeam(t.away||'');
   var tier = t.tier || {label:'', color:'#FFD600'};
-  var stk = (ST.bank>0 && t.confidence && t.minOdds) ? getStk(t.confidence, t.minOdds) : null;
-  var entryJson = JSON.stringify({id:t.id,home:t.home,away:t.away,market:t.market||t.pick,minOdds:t.minOdds}).replace(/'/g,"&#39;");
+  var realOdd = (t.betReal && t.betReal.exists && t.betReal.odd) ? parseFloat(t.betReal.odd) : null;
+  var stk = (ST.bank>0 && t.confidence && realOdd) ? getStk(t.confidence, realOdd) : null;
+  var entryJson = JSON.stringify({id:t.id,home:home,away:away,market:t.market||t.pick,minOdds:realOdd}).replace(/'/g,"&#39;");
   return '<div onclick="openLiveMatch('+t.id+',\''+t.sport+'\')" style="background:#11141C;border:1px solid '+(idx===0?'rgba(255,214,0,.5)':'#1E2330')+';border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer">'
     +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
-    +'<span style="font-size:11px;color:#5A6785;font-weight:700">'+icon+' '+(t.home||'')+' vs '+(t.away||'')+' · '+(t.score||'')+'</span>'
+    +'<span style="font-size:11px;color:#5A6785;font-weight:700">'+icon+' '+home+' vs '+away+' · '+(t.score||'')+'</span>'
     +'<span style="background:'+(idx===0?'#FFD600':'#1E2330')+';color:'+(idx===0?'#000':'#F0F2F7')+';font-weight:800;font-size:11px;padding:2px 8px;border-radius:6px">'+t.confidence+'%</span>'
     +'</div>'
     +(tier.label?'<div style="font-size:10px;color:'+tier.color+';font-weight:800;margin-bottom:4px">'+tier.label+'</div>':'')
     +'<div style="color:#F0F2F7;font-weight:800;font-size:14px">'+(idx===0?'⭐ ':'')+(t.market||t.pick)+'</div>'
-    +(t.minOdds?'<div style="color:#FFD600;font-size:11px;margin-top:3px">Cuota mínima recomendada: '+t.minOdds+'</div>':'')
+    +(realOdd?'<div style="color:#00FF87;font-size:11px;margin-top:3px">✅ Cuota real verificada (Bet365): '+realOdd.toFixed(2)+'</div>':'')
     +(t.marketComparison && t.marketComparison.length?'<div style="margin-top:8px;border-top:1px solid #1E2330;padding-top:8px"><div style="font-size:10px;color:#00FF87;font-weight:800;margin-bottom:5px">💰 COMPARATIVA CON EL MERCADO REAL</div>'+t.marketComparison.map(function(b){return '<div style="font-size:11px;color:#8896AA;margin-bottom:3px">'+b.market+': '+b.values.map(function(v){return v.tag+' <b style="color:#FFD600">'+v.odd+'</b>';}).join(' · ')+'</div>';}).join('')+'</div>':'')
     +(t.reasoning?'<div style="color:#8896AA;font-size:11px;margin-top:6px;line-height:1.5;border-top:1px solid #1E2330;padding-top:6px">'+t.reasoning+'</div>':'')
-    +(stk?'<button onclick="event.stopPropagation();logBet('+entryJson+','+stk+')" style="width:100%;margin-top:9px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,212,255,.4);background:#091520;color:#00D4FF;font-weight:800;font-size:12px">💼 Registrar apuesta · stake '+stk.toFixed(2)+'€</button>':(ST.bank>0?'<div style="margin-top:9px;font-size:10px;color:#5A6785">⚠️ Sin stake sugerido: la cuota mínima está demasiado pegada a la cuota real, el margen no compensa el riesgo según Kelly</div>':'<div style="margin-top:9px;font-size:10px;color:#5A6785">Configura tu banca en 💼 Banca para ver el stake sugerido</div>'))
+    +(stk?'<button onclick="event.stopPropagation();logBet('+entryJson+','+stk+')" style="width:100%;margin-top:9px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,212,255,.4);background:#091520;color:#00D4FF;font-weight:800;font-size:12px">💼 Registrar apuesta · stake '+stk.toFixed(2)+'€</button>':(ST.bank>0?'<div style="margin-top:9px;font-size:10px;color:#5A6785">⚠️ Sin stake sugerido: el margen no compensa el riesgo según Kelly</div>':'<div style="margin-top:9px;font-size:10px;color:#5A6785">Configura tu banca en 💼 Banca para ver el stake sugerido</div>'))
     +'</div>';
 }
 
@@ -376,15 +380,16 @@ function closeLiveDetail(){ LIVE_DETAIL=null; go('live'); }
 
 function liveMatchCard(m){
   var icon = '⚽';
+  var home = translateTeam(m.home||''), away = translateTeam(m.away||'');
   return '<div onclick="openLiveMatch('+m.id+',\''+m.sport+'\')" style="background:#11141C;border:1px solid #1E2330;border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer">'
     +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
     +'<span style="font-size:11px;color:#5A6785;font-weight:700">'+icon+' '+(m.league||'')+'</span>'
     +'<span class="livebadge"><span class="ld"></span>'+(m.minute!=null?(m.minute+"'"):(m.clock||m.status||'LIVE'))+'</span>'
     +'</div>'
     +'<div style="display:flex;justify-content:space-between;align-items:center">'
-    +'<span style="color:#F0F2F7;font-weight:700;font-size:14px">'+m.home+'</span>'
+    +'<span style="color:#F0F2F7;font-weight:700;font-size:14px">'+home+'</span>'
     +'<span style="color:#FFD600;font-weight:900;font-size:18px">'+m.score+'</span>'
-    +'<span style="color:#F0F2F7;font-weight:700;font-size:14px;text-align:right">'+m.away+'</span>'
+    +'<span style="color:#F0F2F7;font-weight:700;font-size:14px;text-align:right">'+away+'</span>'
     +'</div></div>';
 }
 
@@ -395,8 +400,8 @@ function liveDetailView(){
 
   var m = LIVE_DETAIL.match;
   var f = LIVE_DETAIL.forecast || {};
-  var home = m.teams ? m.teams.home.name : '';
-  var away = m.teams ? m.teams.away.name : '';
+  var home = m.teams ? translateTeam(m.teams.home.name) : '';
+  var away = m.teams ? translateTeam(m.teams.away.name) : '';
   var score = m.goals ? (m.goals.home+' - '+m.goals.away) : '';
   var minute = m.fixture ? m.fixture.status.elapsed : '';
 
@@ -952,7 +957,39 @@ var COUNTRY_ES = {
   'Brazil':'Brasil','Scotland':'Escocia','Czech Republic':'República Checa','Mexico':'México',
   'South Africa':'Sudáfrica','Cape Verde':'Cabo Verde','Saudi Arabia':'Arabia Saudí',
   'DR Congo':'RD Congo','Uzbekistan':'Uzbekistán','New Zealand':'Nueva Zelanda',
-  'Panama':'Panamá','Ecuador':'Ecuador'
+  'Panama':'Panamá','Ecuador':'Ecuador',
+  // Ampliación: resto de selecciones que pueden aparecer en partidos amistosos, clasificaciones
+  // y torneos menores que el motor también analiza.
+  'Wales':'Gales','Republic of Ireland':'Irlanda','Northern Ireland':'Irlanda del Norte',
+  'Switzerland':'Suiza','Poland':'Polonia','Ukraine':'Ucrania','Russia':'Rusia',
+  'Serbia':'Serbia','Slovenia':'Eslovenia','Slovakia':'Eslovaquia','Hungary':'Hungría',
+  'Romania':'Rumanía','Bulgaria':'Bulgaria','Greece':'Grecia','Italy':'Italia',
+  'Iceland':'Islandia','Finland':'Finlandia','Denmark':'Dinamarca','Israel':'Israel',
+  'United Arab Emirates':'Emiratos Árabes Unidos','Costa Rica':'Costa Rica','Honduras':'Honduras',
+  'Jamaica':'Jamaica','Canada':'Canadá','Venezuela':'Venezuela','Peru':'Perú','Bolivia':'Bolivia',
+  'Chile':'Chile','Nigeria':'Nigeria','Cameroon':'Camerún','Mali':'Malí','Guinea':'Guinea',
+  'Gabon':'Gabón','Zambia':'Zambia','Tanzania':'Tanzania','Kenya':'Kenia','Angola':'Angola',
+  'Mauritania':'Mauritania','Libya':'Libia','Sudan':'Sudán','Ethiopia':'Etiopía',
+  'Namibia':'Namibia','Botswana':'Botsuana','Madagascar':'Madagascar',
+  'Burkina Faso':'Burkina Faso','Niger':'Níger','Chad':'Chad','Congo':'Congo',
+  'Gambia':'Gambia','Sierra Leone':'Sierra Leona','Liberia':'Liberia','Togo':'Togo',
+  'Benin':'Benín','Somalia':'Somalia','Rwanda':'Ruanda','Burundi':'Burundi',
+  'Malawi':'Malaui','Mozambique':'Mozambique','Zimbabwe':'Zimbabue',
+  'India':'India','Pakistan':'Pakistán','Bangladesh':'Bangladés','Vietnam':'Vietnam',
+  'Thailand':'Tailandia','Indonesia':'Indonesia','Malaysia':'Malasia','Philippines':'Filipinas',
+  'Singapore':'Singapur','Myanmar':'Birmania','Cambodia':'Camboya','Laos':'Laos',
+  'China':'China','Hong Kong':'Hong Kong','Chinese Taipei':'Taipéi Chino','North Korea':'Corea del Norte',
+  'Mongolia':'Mongolia','Kazakhstan':'Kazajistán','Kyrgyzstan':'Kirguistán',
+  'Tajikistan':'Tayikistán','Turkmenistan':'Turkmenistán','Afghanistan':'Afganistán',
+  'Syria':'Siria','Lebanon':'Líbano','Yemen':'Yemen','Oman':'Omán','Kuwait':'Kuwait',
+  'Bahrain':'Baréin','Palestine':'Palestina','Armenia':'Armenia','Georgia':'Georgia',
+  'Azerbaijan':'Azerbaiyán','Cyprus':'Chipre','Malta':'Malta','Luxembourg':'Luxemburgo',
+  'Andorra':'Andorra','San Marino':'San Marino','Liechtenstein':'Liechtenstein',
+  'Gibraltar':'Gibraltar','Kosovo':'Kosovo','Montenegro':'Montenegro',
+  'North Macedonia':'Macedonia del Norte','Albania':'Albania','Moldova':'Moldavia',
+  'Belarus':'Bielorrusia','Lithuania':'Lituania','Latvia':'Letonia','Estonia':'Estonia',
+  'Faroe Islands':'Islas Feroe','El Salvador':'El Salvador','Guatemala':'Guatemala',
+  'Trinidad and Tobago':'Trinidad y Tobago','Curacao':'Curazao'
 };
 function translateTeam(name){ return COUNTRY_ES[name] || name; }
 
@@ -1968,6 +2005,13 @@ function pgHist(){
   if(SYSTEM_HEALTH===null) fetchHealth();
   var log = SERVER_LOG || [];
 
+  // El filtro de fechas solo afecta a qué pronósticos ves en la lista de abajo — el bot sigue
+  // analizando y aprendiendo de TODO el historial para siempre, esto es solo para que puedas
+  // buscar más cómodo entre lo antiguo sin tener que hacer scroll infinito.
+  var now = Date.now();
+  var RANGE_MS = { day: 24*3600*1000, week: 7*24*3600*1000, month: 30*24*3600*1000 };
+  var visibleLog = (histRange==='all') ? log : log.filter(function(f){ return (now - f.loggedAt) <= RANGE_MS[histRange]; });
+
   var byTier = {alta:0, media:0, baja:0};
   log.forEach(function(f){
     if(f.confidence>=80) byTier.alta++;
@@ -2022,8 +2066,17 @@ function pgHist(){
   if (SERVER_LOG_LOADING) {
     html += '<div style="text-align:center;padding:30px 0;color:#5A6785">Cargando base de datos del servidor...</div>';
   } else if (log.length) {
-    html += '<div class="shdr">🏆 PRONÓSTICOS REGISTRADOS · '+log.length+'</div>';
-    log.slice(0, 60).forEach(function(f){
+    html += '<div class="tbrow" style="margin-bottom:8px">'
+      +'<button class="tbt" style="'+(histRange==='day'?'border-color:#FFD600;background:#141100;color:#FFD600':'')+'" onclick="histRange=\'day\';go(\'history\')">Hoy</button>'
+      +'<button class="tbt" style="'+(histRange==='week'?'border-color:#FFD600;background:#141100;color:#FFD600':'')+'" onclick="histRange=\'week\';go(\'history\')">7 días</button>'
+      +'<button class="tbt" style="'+(histRange==='month'?'border-color:#FFD600;background:#141100;color:#FFD600':'')+'" onclick="histRange=\'month\';go(\'history\')">30 días</button>'
+      +'<button class="tbt" style="'+(histRange==='all'?'border-color:#FFD600;background:#141100;color:#FFD600':'')+'" onclick="histRange=\'all\';go(\'history\')">Todo</button>'
+      +'</div>';
+    html += '<div class="shdr">🏆 PRONÓSTICOS REGISTRADOS · '+visibleLog.length+'</div>';
+    if (!visibleLog.length) {
+      html += '<div style="text-align:center;padding:30px 0;color:#6B7490;font-size:13px">No hay pronósticos en este rango de fechas. Prueba con "Todo".</div>';
+    }
+    visibleLog.slice(0, 60).forEach(function(f){
       var when = new Date(f.loggedAt).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
       var tc = f.confidence>=80?'#00FF87':f.confidence>=65?'#FFD600':'#FF9F40';
       var verifyBadge = '';
@@ -2035,7 +2088,7 @@ function pgHist(){
       html += '<div class="card" style="border-color:'+tc+'33;padding:11px 13px;margin-bottom:8px">'
         +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">'
         +'<div style="flex:1;min-width:0">'
-        +'<div style="font-size:10px;color:#5A6785;margin-bottom:3px">'+when+' · '+(f.home||'')+' vs '+(f.away||'')+' · '+(f.score||'')+(f.minute!=null?(' · '+f.minute+"'"):'')+'</div>'
+        +'<div style="font-size:10px;color:#5A6785;margin-bottom:3px">'+when+' · '+translateTeam(f.home||'')+' vs '+translateTeam(f.away||'')+' · '+(f.score||'')+(f.minute!=null?(' · '+f.minute+"'"):'')+'</div>'
         +'<div style="color:#F0F2F7;font-weight:800;font-size:14px">'+(f.market||f.pick)+verifyBadge+'</div>'
         +(f.minOdds?'<div style="color:#FFD600;font-size:11px;margin-top:2px">Cuota mínima: '+f.minOdds+'</div>':'')
         +'</div>'
