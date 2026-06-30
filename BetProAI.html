@@ -187,6 +187,7 @@ textarea{resize:none}
   <div id="tabrail">
     <button class="tab" data-p="top"        onclick="go('top')">       <span class="tic">🏆</span><span class="tlb">Top</span></button>
     <button class="tab" data-p="live"       onclick="go('live')">      <span class="tic">🔴</span><span class="tlb">Live</span><span class="rdot" id="rdot"></span></button>
+    <button class="tab" data-p="banca"      onclick="go('banca')">     <span class="tic">💼</span><span class="tlb">Banca</span></button>
     <button class="tab" data-p="history"    onclick="go('history')">   <span class="tic">📅</span><span class="tlb">Historial</span><span class="ppin hide" id="ppin">0</span></button>
   </div>
   <div style="text-align:center;padding:3px 0 9px;font-size:9px;color:#222A3A">⚠️ Solo informativo · +18 · Apuesta responsablemente</div>
@@ -237,9 +238,29 @@ async function fetchTopForecasts(){
   if(PG==='live'||PG==='top') go(PG);
 }
 
+var SYSTEM_HEALTH = null;
+async function fetchHealth(){
+  try {
+    var r = await fetch(WORKER_LIVE_URL+'/live/health');
+    SYSTEM_HEALTH = await r.json();
+  } catch(e){}
+  if(PG==='top') go('top');
+}
+
 function pgTop(){
   if(!LIVE_TOP_LOADING && LIVE_TOP===null) fetchTopForecasts();
-  var h = '<button onclick="activarPush()" style="display:block;width:100%;background:linear-gradient(90deg,#00FF87,#00D4FF);border:none;color:#0B0E15;font-weight:800;font-size:13px;border-radius:10px;padding:10px;margin-bottom:10px">🔔 Activar notificaciones de pronósticos fiables</button>';
+  if(SYSTEM_HEALTH===null) fetchHealth();
+  var h = '';
+
+  if (SYSTEM_HEALTH && (SYSTEM_HEALTH.status==='error' || (SYSTEM_HEALTH.issues && SYSTEM_HEALTH.issues.length))) {
+    var hc = SYSTEM_HEALTH.status==='error' ? '#FF3B5C' : '#FFD600';
+    h += '<div style="background:'+hc+'15;border:1.5px solid '+hc+';border-radius:10px;padding:11px 13px;margin-bottom:10px">'
+      +'<div style="font-size:11px;color:'+hc+';font-weight:800;margin-bottom:5px">'+(SYSTEM_HEALTH.status==='error'?'🔴 ALGO FALLA':'🟡 AVISO DEL SISTEMA')+'</div>'
+      +(SYSTEM_HEALTH.issues||[]).map(function(i){return '<div style="font-size:12px;color:#F0F2F7;margin-bottom:3px">• '+i+'</div>';}).join('')
+      +'</div>';
+  }
+
+  h += '<button onclick="activarPush()" style="display:block;width:100%;background:linear-gradient(90deg,#00FF87,#00D4FF);border:none;color:#0B0E15;font-weight:800;font-size:13px;border-radius:10px;padding:10px;margin-bottom:10px">🔔 Activar notificaciones de pronósticos fiables</button>';
   h += '<div class="bnr2" style="background:#130D1A;border:1px solid rgba(168,85,247,.5);display:flex;justify-content:space-between;align-items:center">'
     +'<div><div style="font-size:11px;color:#A855F7;font-weight:800">🏆 LO MEJOR AHORA MISMO</div>'
     +'<div style="font-size:12px;color:#F0F2F7;margin-top:1px">Filtrado por los 3 agentes: en vivo, historial real y síntesis final</div></div>'
@@ -299,6 +320,8 @@ function highValueCard(hv){
 function topForecastCard(t, idx){
   var icon = '⚽';
   var tier = t.tier || {label:'', color:'#FFD600'};
+  var stk = (ST.bank>0 && t.confidence && t.minOdds) ? getStk(t.confidence, t.minOdds) : null;
+  var entryJson = JSON.stringify({id:t.id,home:t.home,away:t.away,market:t.market||t.pick,minOdds:t.minOdds}).replace(/'/g,"&#39;");
   return '<div onclick="openLiveMatch('+t.id+',\''+t.sport+'\')" style="background:#11141C;border:1px solid '+(idx===0?'rgba(255,214,0,.5)':'#1E2330')+';border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer">'
     +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
     +'<span style="font-size:11px;color:#5A6785;font-weight:700">'+icon+' '+(t.home||'')+' vs '+(t.away||'')+' · '+(t.score||'')+'</span>'
@@ -309,6 +332,7 @@ function topForecastCard(t, idx){
     +(t.minOdds?'<div style="color:#FFD600;font-size:11px;margin-top:3px">Cuota mínima recomendada: '+t.minOdds+'</div>':'')
     +(t.marketComparison && t.marketComparison.length?'<div style="margin-top:8px;border-top:1px solid #1E2330;padding-top:8px"><div style="font-size:10px;color:#00FF87;font-weight:800;margin-bottom:5px">💰 COMPARATIVA CON EL MERCADO REAL</div>'+t.marketComparison.map(function(b){return '<div style="font-size:11px;color:#8896AA;margin-bottom:3px">'+b.market+': '+b.values.map(function(v){return v.tag+' <b style="color:#FFD600">'+v.odd+'</b>';}).join(' · ')+'</div>';}).join('')+'</div>':'')
     +(t.reasoning?'<div style="color:#8896AA;font-size:11px;margin-top:6px;line-height:1.5;border-top:1px solid #1E2330;padding-top:6px">'+t.reasoning+'</div>':'')
+    +(stk?'<button onclick="event.stopPropagation();logBet('+entryJson+','+stk+')" style="width:100%;margin-top:9px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,212,255,.4);background:#091520;color:#00D4FF;font-weight:800;font-size:12px">💼 Registrar apuesta · stake '+stk.toFixed(2)+'€</button>':(ST.bank>0?'':'<div style="margin-top:9px;font-size:10px;color:#5A6785">Configura tu banca en 💼 Banca para ver el stake sugerido</div>'))
     +'</div>';
 }
 
@@ -1483,6 +1507,7 @@ function go(pg){
   if(pg==='home')          html=pgHome();
   else if(pg==='smartmoney')html=pgSmartMoney();
   else if(pg==='top')      html=pgTop();
+  else if(pg==='banca')    html=pgBanca();
   else if(pg==='live')     html=pgLive();
   else if(pg==='esports')  html=pgES();
   else if(pg==='horses')   html=pgHorses();
@@ -1767,9 +1792,129 @@ function pgAll(){
   return h;
 }
 
+// ============================================================
+// BANCA — gestión responsable: stake por confianza real verificada, nunca por persecución de pérdidas
+// ============================================================
+function todayKeyStr(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+
+function logBet(entry, stake){
+  if(!ST.hist) ST.hist=[];
+  var id = entry.id + '|' + (entry.market||entry.pick) + '|' + Date.now();
+  ST.hist.push({
+    id: id, dayKey: todayKeyStr(), date: todayStr(), match: (entry.home||'')+' vs '+(entry.away||''),
+    pick: entry.market || entry.pick, odds: entry.minOdds || 2, stake: stake, result: 'pending', profit: 0
+  });
+  saveST(); go('banca');
+}
+function settleBet(id, res){
+  ST.hist = ST.hist.map(function(h){
+    if(h.id!==id) return h;
+    var pr = res==='won' ? Math.round(h.stake*(parseFloat(h.odds)-1)*100)/100 : res==='lost' ? -h.stake : 0;
+    return Object.assign({}, h, {result:res, profit:pr});
+  });
+  var pnl = ST.hist.filter(function(h){return h.result && h.result!=='pending';}).reduce(function(a,h){return a+(h.profit||0);},0);
+  ST.bank = (ST.startBank||0) + pnl;
+  saveST(); go('banca');
+}
+function deleteBet(id){ ST.hist = (ST.hist||[]).filter(function(h){return h.id!==id;}); saveST(); go('banca'); }
+
+function periodPnl(filterFn){
+  var entries = (ST.hist||[]).filter(function(h){return h.result && h.result!=='pending';}).filter(filterFn);
+  var pnl = entries.reduce(function(a,h){return a+(h.profit||0);},0);
+  var staked = entries.reduce(function(a,h){return a+h.stake;},0);
+  var wins = entries.filter(function(h){return h.result==='won';}).length;
+  return { pnl:pnl, staked:staked, count:entries.length, wins:wins, roi: staked>0?(pnl/staked*100):0 };
+}
+
+var bancaPeriod = 'day';
+function pgBanca(){
+  var pending = (ST.hist||[]).filter(function(h){return h.result==='pending';});
+  var html = '';
+
+  if(!ST.bank || ST.bank<=0){
+    html += '<div class="bcard"><div style="font-size:11px;color:#00D4FF;font-weight:800;letter-spacing:1.2px;margin-bottom:10px">💼 BANCA INICIAL</div>'
+      +'<div style="color:#6B7490;font-size:13px;margin-bottom:10px">Introduce con cuánto empiezas. El stake de cada pick se calcula solo según la confianza real verificada de esa señal — nunca según si ganaste o perdiste la apuesta anterior.</div>'
+      +'<div style="display:flex;gap:8px"><input type="number" id="bi" class="binp" placeholder="Ej: 100"><button onclick="svBancaInicial()" class="bsave">✓</button></div></div>';
+    return html;
+  }
+
+  var gr = ST.startBank>0 ? ((ST.bank/ST.startBank-1)*100).toFixed(1) : '0.0';
+  html += '<div class="bcard"><div style="display:flex;justify-content:space-between;align-items:flex-start">'
+    +'<div><div style="font-size:11px;color:#00D4FF;font-weight:800;letter-spacing:1.2px;margin-bottom:6px">💼 MI BANCA</div>'
+    +'<div style="color:#F0F2F7;font-weight:900;font-size:36px;line-height:1">'+ST.bank.toFixed(2)+'€</div>'
+    +'<div style="font-weight:700;font-size:13px;color:'+(parseFloat(gr)>=0?'#00FF87':'#FF3B5C')+';margin-top:5px">'+(parseFloat(gr)>=0?'▲':'▼')+' '+Math.abs(gr)+'% desde '+ST.startBank.toFixed(2)+'€ inicial</div></div>'
+    +'<button onclick="edBancaInicial()" style="background:#1A2035;border:1px solid #1E2330;color:#00D4FF;font-weight:700;font-size:11px;border-radius:9px;padding:6px 10px">✏️</button>'
+    +'</div></div>';
+
+  // Resumen por periodo
+  var now = new Date();
+  var dayStat = periodPnl(function(h){return h.dayKey===todayKeyStr();});
+  var weekAgo = new Date(now.getTime() - 7*86400000);
+  var weekStat = periodPnl(function(h){return new Date(h.dayKey) >= weekAgo;});
+  var monthStr = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  var monthStat = periodPnl(function(h){return (h.dayKey||'').startsWith(monthStr);});
+  var stat = bancaPeriod==='day'?dayStat:bancaPeriod==='week'?weekStat:monthStat;
+
+  html += '<div class="tbrow">'
+    +'<button class="tbt" style="'+(bancaPeriod==='day'?'border-color:#00D4FF;background:#091520;color:#00D4FF':'')+'" onclick="bancaPeriod=\'day\';go(\'banca\')">Hoy</button>'
+    +'<button class="tbt" style="'+(bancaPeriod==='week'?'border-color:#00D4FF;background:#091520;color:#00D4FF':'')+'" onclick="bancaPeriod=\'week\';go(\'banca\')">7 días</button>'
+    +'<button class="tbt" style="'+(bancaPeriod==='month'?'border-color:#00D4FF;background:#091520;color:#00D4FF':'')+'" onclick="bancaPeriod=\'month\';go(\'banca\')">Mes</button>'
+    +'</div>';
+
+  html += '<div class="g4" style="margin-bottom:14px">'
+    +'<div class="sb"><div class="sv" style="color:'+(stat.pnl>=0?'#00FF87':'#FF3B5C')+'">'+(stat.pnl>=0?'+':'')+stat.pnl.toFixed(2)+'€</div><div class="sl">P&L</div></div>'
+    +'<div class="sb"><div class="sv" style="color:#00D4FF">'+stat.roi.toFixed(1)+'%</div><div class="sl">ROI</div></div>'
+    +'<div class="sb"><div class="sv">'+stat.count+'</div><div class="sl">Apuestas</div></div>'
+    +'<div class="sb"><div class="sv" style="color:#00FF87">'+stat.wins+'</div><div class="sl">Ganadas</div></div></div>';
+
+  html += '<div style="background:#0B0E15;border:1px solid #1A2235;border-radius:10px;padding:10px 13px;margin-bottom:16px;font-size:11px;color:#5A6785;line-height:1.6">ℹ️ El stake se calcula con Kelly conservador (máx. 5% de banca por pick) basado solo en la fiabilidad verificada de cada señal. Nunca subimos el stake para "recuperar" una pérdida anterior — eso destruye bancas, no las hace crecer.</div>';
+
+  if(pending.length){
+    html += '<div class="shdr">⏳ APUESTAS PENDIENTES</div>';
+    pending.forEach(function(h){
+      html += '<div class="card" style="border-color:rgba(255,214,0,.35)">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:9px">'
+        +'<div><span class="timebadge">'+h.date+'</span>'
+        +'<div style="color:#F0F2F7;font-weight:700;font-size:13px;margin-top:4px">'+h.match+'</div>'
+        +'<div style="color:#00D4FF;font-size:13px;margin-top:2px">'+h.pick+' @'+h.odds+'</div></div>'
+        +'<div style="text-align:right"><div style="color:#FFD600;font-weight:900;font-size:17px">'+h.stake.toFixed(2)+'€</div>'
+        +'<div style="color:#00FF87;font-size:12px">+'+getPot(h.stake,h.odds).toFixed(2)+'€</div></div></div>'
+        +'<div style="display:flex;gap:6px">'
+        +'<button onclick="settleBet(\''+h.id+'\',\'won\')" style="flex:1;padding:9px 0;border-radius:9px;border:none;background:rgba(0,255,135,.15);color:#00FF87;font-weight:800;font-size:11px">✅ GANADA</button>'
+        +'<button onclick="settleBet(\''+h.id+'\',\'lost\')" style="flex:1;padding:9px 0;border-radius:9px;border:none;background:rgba(255,59,92,.15);color:#FF3B5C;font-weight:800;font-size:11px">❌ PERDIDA</button>'
+        +'<button onclick="deleteBet(\''+h.id+'\')" style="flex:1;padding:9px 0;border-radius:9px;border:none;background:#1A2035;color:#6B7490;font-weight:700;font-size:11px">🗑️</button>'
+        +'</div></div>';
+    });
+  }
+
+  var settled = (ST.hist||[]).filter(function(h){return h.result && h.result!=='pending';}).slice().reverse();
+  if(settled.length){
+    html += '<div class="shdr" style="margin-top:6px">📋 HISTORIAL DE APUESTAS</div>';
+    settled.slice(0,40).forEach(function(h){
+      var hc = h.result==='won'?'#00FF87':'#FF3B5C';
+      var pVal = h.result==='won' ? '+'+h.profit.toFixed(2)+'€' : '-'+h.stake.toFixed(2)+'€';
+      html += '<div class="card" style="border-color:'+hc+'33;padding:10px 12px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:flex-start">'
+        +'<div style="min-width:0"><div style="font-size:10px;color:#6B7490;margin-bottom:2px">'+h.date+' '+(h.result==='won'?'✅':'❌')+'</div>'
+        +'<div style="color:#F0F2F7;font-weight:700;font-size:12px">'+h.match+'</div>'
+        +'<div style="color:#00D4FF;font-size:12px">'+h.pick+' @'+h.odds+'</div></div>'
+        +'<div style="text-align:right;flex-shrink:0;margin-left:8px"><div style="color:'+hc+';font-weight:900;font-size:15px">'+pVal+'</div>'
+        +'<div style="font-size:10px;color:#6B7490">'+h.stake.toFixed(2)+'€</div></div></div>';
+    });
+  }
+
+  if(!pending.length && !settled.length){
+    html += '<div style="text-align:center;padding:50px 0;color:#6B7490"><div style="font-size:36px;margin-bottom:10px">💼</div><div style="font-weight:700">Sin apuestas registradas todavía</div><div style="font-size:13px;margin-top:5px">Ve a la pestaña Top y pulsa "Registrar apuesta" en cualquier pick</div></div>';
+  }
+
+  return html;
+}
+function svBancaInicial(){var v=parseFloat((document.getElementById('bi')||{}).value||0);if(v>0){ST.bank=v;ST.startBank=v;saveST();go('banca');}}
+function edBancaInicial(){if(confirm('¿Reiniciar banca? Esto no borra tu historial de apuestas, solo el saldo.')){ST.bank=0;ST.startBank=0;saveST();go('banca');}}
+
 function pgHist(){
   if(SERVER_LOG===null && !SERVER_LOG_LOADING) fetchServerHistory();
   if(SERVER_INSIGHTS===null) fetchInsights();
+  if(SYSTEM_HEALTH===null) fetchHealth();
   var log = SERVER_LOG || [];
 
   var byTier = {alta:0, media:0, baja:0};
@@ -1784,7 +1929,14 @@ function pgHist(){
   var accuracy = graded.length ? Math.round(hits/graded.length*100) : null;
   var pendingGrade = log.filter(function(f){return f.graded===undefined;}).length;
 
-  var html = '<div class="card" style="border-color:rgba(255,214,0,.3);margin-bottom:14px">'
+  var html = '';
+  if (SYSTEM_HEALTH && SYSTEM_HEALTH.suggestions && SYSTEM_HEALTH.suggestions.length) {
+    html += '<div class="card" style="border-color:rgba(0,212,255,.4);margin-bottom:14px">'
+      +'<div style="font-size:11px;color:#00D4FF;font-weight:800;margin-bottom:8px">💡 SUGERENCIAS DEL BOT PARA MEJORAR</div>'
+      +SYSTEM_HEALTH.suggestions.map(function(s){return '<div style="font-size:12px;color:#C0CCE0;margin-bottom:5px;line-height:1.5">• '+s+'</div>';}).join('')
+      +'</div>';
+  }
+  html += '<div class="card" style="border-color:rgba(255,214,0,.3);margin-bottom:14px">'
     +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
     +'<div style="font-size:11px;color:#FFD600;font-weight:800">📋 BASE DE DATOS DE PRONÓSTICOS</div>'
     +'<button onclick="fetchServerHistory()" style="background:#11141C;border:1px solid #1E2330;border-radius:8px;padding:4px 9px;color:#8896AA;font-size:11px">'+(SERVER_LOG_LOADING?'...':'🔄')+'</button>'
