@@ -515,18 +515,33 @@ function statusBadge(p){
 // ============================================================
 
 function oddsRow(p,idx){
-  // Cuota REAL devuelta por el motor (The Odds API), con la casa real que la ofrece.
-  // No se inventan cuotas de otras casas: si solo tenemos una fuente, se muestra una sola caja.
-  var o=parseFloat(p.odds);
-  var bookieName=(p.bookie||'Casa no especificada').toUpperCase();
-  var c=o<1.50?'#FFD600':'#F0F2F7';
-  return '<div style="display:flex;gap:8px;margin-bottom:6px">'
-    +'<div style="flex:1;background:#0B0E15;border:1.5px solid rgba(0,212,255,.25);border-radius:10px;padding:9px 10px;text-align:center">'
-    +'<div style="font-size:9px;color:#00D4FF;font-weight:800;letter-spacing:.5px;margin-bottom:3px">'+bookieName+' · CUOTA REAL</div>'
-    +'<div style="color:'+c+';font-weight:900;font-size:26px;line-height:1;letter-spacing:-1px">'+(isNaN(o)?'—':o.toFixed(2))+'</div>'
-    +'</div>'
-    +'</div>'
-    +'<div style="font-size:9px;color:#5A6785;margin:-2px 0 8px 2px">⚠️ Verifica esta cuota y la disponibilidad del mercado en tu casa de apuestas antes de apostar — puede variar o haberse movido.</div>';
+  // El worker ahora verifica el mercado/línea de cada pick contra las cuotas REALES de Bet365
+  // (campo betReal) antes de que el pick llegue aquí. Si no está verificado, NO mostramos ninguna
+  // cuota inventada — mostramos un aviso claro de que esa línea no está confirmada en Bet365.
+  var br = p.betReal;
+  if (br && br.exists && br.odd) {
+    var o=parseFloat(br.odd);
+    var c=o<1.50?'#FFD600':'#F0F2F7';
+    return '<div style="display:flex;gap:8px;margin-bottom:4px">'
+      +'<div style="flex:1;background:#0B0E15;border:1.5px solid rgba(0,255,135,.35);border-radius:10px;padding:9px 10px;text-align:center">'
+      +'<div style="font-size:9px;color:#00FF87;font-weight:800;letter-spacing:.5px;margin-bottom:3px">✅ BET365 · CUOTA REAL VERIFICADA</div>'
+      +'<div style="color:'+c+';font-weight:900;font-size:26px;line-height:1;letter-spacing:-1px">'+o.toFixed(2)+'</div>'
+      +'</div>'
+      +'</div>'
+      +'<div style="font-size:9px;color:#5A6785;margin:-2px 0 8px 2px">Cuota confirmada en Bet365 en el momento del análisis — puede moverse, compruébala antes de apostar.</div>';
+  }
+  // No verificado: este es justo el caso de "+1.5 tarjetas" que no existía como línea real.
+  // Mostramos el aviso en vez de una cuota inventada, y más abajo el botón de registrar se oculta.
+  var reasonTxt = (br && br.checked && br.marketFound && !br.lineFound)
+    ? 'Esta línea concreta no está disponible en Bet365 ahora mismo.'
+    : (br && br.checked && !br.marketFound)
+    ? 'Este mercado no aparece entre los mercados en vivo de Bet365 para este partido.'
+    : 'No se ha podido confirmar esta cuota contra Bet365 en este momento.';
+  var closest = (br && br.closestLine) ? ' Línea más cercana disponible: '+br.closestLine.tag+' @ '+br.closestLine.odd+'.' : '';
+  return '<div style="background:#1A0F08;border:1px dashed rgba(255,107,0,.4);border-radius:10px;padding:10px 12px;margin-bottom:8px">'
+    +'<div style="font-size:11px;color:#FF6B00;font-weight:800;margin-bottom:3px">⚠️ NO VERIFICABLE EN BET365</div>'
+    +'<div style="font-size:11px;color:#8896AA;line-height:1.5">'+reasonTxt+closest+' No apuestes esto hasta comprobarlo tú mismo.</div>'
+    +'</div>';
 }
 
 // ============================================================
@@ -939,6 +954,7 @@ function mapWorkerPick(p){
     odds: p.odds,
     conf: p.conf,
     bookie: p.bookie,
+    betReal: p.betReal || { checked: false, exists: false },
     tipster: 'BetPro AI Engine · EV+ ' + p.ev,
     hot: p.conf >= 80,
     note: p.note
@@ -1345,7 +1361,9 @@ var VALUE_BETS = [
 function pcard(p,medal,mc,idx){
   var on=isConf(p.id), confColor=p.conf>=75?'#00FF87':p.conf>=65?'#FFD600':'#FF6B00';
   var bc=on?'rgba(0,255,135,.45)':mc?mc+'88':p.hot?'rgba(255,214,0,.25)':'#1E2330';
-  var s=getStk(p.conf,p.odds);
+  var verified=!!(p.betReal&&p.betReal.exists);
+  var realOdd=verified?parseFloat(p.betReal.odd):null;
+  var s=verified?getStk(p.conf,realOdd):null;
   var bg=on?'background:#162218;':'';
   return '<div class="card" style="'+bg+'border-color:'+bc+'">'
     +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:7px">'
@@ -1376,17 +1394,17 @@ function pcard(p,medal,mc,idx){
     +'<span style="font-size:11px;color:'+confColor+';font-weight:800">'+p.conf+'%</span>'
     +'</div>'
     +oddsRow(p,idx||0)
-    +(s?'<div style="background:#0D1826;border:1.5px solid rgba(0,212,255,.4);border-radius:12px;padding:12px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">'
+    +(!verified?'':(s?'<div style="background:#0D1826;border:1.5px solid rgba(0,212,255,.4);border-radius:12px;padding:12px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">'
       +'<div><div style="font-size:10px;color:#00D4FF;font-weight:700;letter-spacing:.5px;margin-bottom:4px">💰 STAKE KELLY</div>'
       +'<div style="font-size:28px;font-weight:900;color:#F0F2F7;line-height:1">'+s.toFixed(2)+'€</div>'
       +'<div style="font-size:10px;color:#5A6785;margin-top:3px">'+((s/ST.bank)*100).toFixed(1)+'% de tu banca</div>'
       +'</div><div style="text-align:right"><div style="font-size:11px;color:#5A6785;margin-bottom:3px">si acierta</div>'
-      +'<div style="font-size:22px;font-weight:900;color:#00FF87">+'+getPot(s,p.odds).toFixed(2)+'€</div></div></div>'
+      +'<div style="font-size:22px;font-weight:900;color:#00FF87">+'+getPot(s,realOdd).toFixed(2)+'€</div></div></div>'
     :'<div style="background:rgba(255,214,0,.06);border:1px dashed rgba(255,214,0,.3);border-radius:10px;padding:10px 13px;margin-bottom:10px;text-align:center">'
     +'<div style="font-size:13px;color:#FFD600;font-weight:700">💰 Introduce tu banca en Inicio</div>'
-    +'<div style="font-size:11px;color:#5A6785;margin-top:3px">Se calculará el stake Kelly automáticamente</div></div>')
-    +(on?'<div style="width:100%;margin-bottom:10px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,255,135,.4);background:#0A1F12;color:#00FF87;font-weight:800;font-size:12px;text-align:center">✅ Apuesta registrada en Banca</div>'
-      :'<button data-pickid="'+p.id+'" onclick="doTogglePick(this)" style="width:100%;margin-bottom:10px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,212,255,.4);background:#091520;color:#00D4FF;font-weight:800;font-size:12px;cursor:pointer">💼 Registrar apuesta'+(s?' · stake '+s.toFixed(2)+'€':'')+'</button>')
+    +'<div style="font-size:11px;color:#5A6785;margin-top:3px">Se calculará el stake Kelly automáticamente</div></div>'))
+    +(!verified?'':(on?'<div style="width:100%;margin-bottom:10px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,255,135,.4);background:#0A1F12;color:#00FF87;font-weight:800;font-size:12px;text-align:center">✅ Apuesta registrada en Banca</div>'
+      :'<button data-pickid="'+p.id+'" onclick="doTogglePick(this)" style="width:100%;margin-bottom:10px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,212,255,.4);background:#091520;color:#00D4FF;font-weight:800;font-size:12px;cursor:pointer">💼 Registrar apuesta'+(s?' · stake '+s.toFixed(2)+'€':'')+'</button>'))
     +'<div style="font-size:11px;color:#5A6785;margin-bottom:4px">📊 <span style="color:#8896AA;font-weight:600">'+(p.tipster||'')+'</span></div>'
     +analysisBlock(p,idx||0)
     +'</div>';
@@ -1397,7 +1415,9 @@ function liveCard(p,medal,mc,idx){
   var st=eventStatus(p), isLiveNow=(st==='live');
   var bc=on?'rgba(0,255,135,.45)':isLiveNow?'rgba(255,59,92,.35)':'#1E2330';
   var mT=LT[0]; for(var i=0;i<LT.length;i++){if(LT[i].sp.indexOf(p.sport[0])>=0){mT=LT[i];break;}}
-  var s=getStk(p.conf,p.odds);
+  var verified=!!(p.betReal&&p.betReal.exists);
+  var realOdd=verified?parseFloat(p.betReal.odd):null;
+  var s=verified?getStk(p.conf,realOdd):null;
   var lc2=mT.lr<40?'#00FF87':mT.lr<43?'#00D4FF':mT.lr<45?'#FFD600':'#FF6B00';
   var bg=on?'background:#162218;':isLiveNow?'background:#1A0A0A;':'';
   return '<div class="card" style="'+bg+'border-color:'+bc+'">'
@@ -1440,16 +1460,16 @@ function liveCard(p,medal,mc,idx){
     +'<div style="text-align:right"><div style="color:#00FF87;font-weight:900;font-size:14px">+'+mT.roi+'%</div>'
     +'<div style="color:'+lc2+';font-weight:700;font-size:11px">'+mT.lr+'% pérd.</div></div>'
     +'</div>'
-    +(s?'<div style="background:#0D1826;border:1.5px solid rgba(0,212,255,.4);border-radius:12px;padding:12px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">'
+    +(!verified?'':(s?'<div style="background:#0D1826;border:1.5px solid rgba(0,212,255,.4);border-radius:12px;padding:12px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">'
       +'<div><div style="font-size:10px;color:#00D4FF;font-weight:700;margin-bottom:4px">💰 STAKE KELLY</div>'
       +'<div style="font-size:28px;font-weight:900;color:#F0F2F7;line-height:1">'+s.toFixed(2)+'€</div>'
       +'<div style="font-size:10px;color:#5A6785;margin-top:3px">'+((s/ST.bank)*100).toFixed(1)+'% de tu banca</div></div>'
       +'<div style="text-align:right"><div style="font-size:11px;color:#5A6785;margin-bottom:3px">si acierta</div>'
-      +'<div style="font-size:22px;font-weight:900;color:#00FF87">+'+getPot(s,p.odds).toFixed(2)+'€</div></div></div>'
+      +'<div style="font-size:22px;font-weight:900;color:#00FF87">+'+getPot(s,realOdd).toFixed(2)+'€</div></div></div>'
     :'<div style="background:rgba(255,214,0,.06);border:1px dashed rgba(255,214,0,.3);border-radius:10px;padding:10px 13px;margin-bottom:10px;text-align:center">'
-    +'<div style="font-size:13px;color:#FFD600;font-weight:700">💰 Introduce tu banca en Inicio</div></div>')
-    +(on?'<div style="width:100%;margin-bottom:10px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,255,135,.4);background:#0A1F12;color:#00FF87;font-weight:800;font-size:12px;text-align:center">✅ Apuesta registrada en Banca</div>'
-      :'<button data-pickid="'+p.id+'" onclick="doTogglePick(this)" style="width:100%;margin-bottom:10px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,212,255,.4);background:#091520;color:#00D4FF;font-weight:800;font-size:12px;cursor:pointer">💼 Registrar apuesta'+(s?' · stake '+s.toFixed(2)+'€':'')+'</button>')
+    +'<div style="font-size:13px;color:#FFD600;font-weight:700">💰 Introduce tu banca en Inicio</div></div>'))
+    +(!verified?'':(on?'<div style="width:100%;margin-bottom:10px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,255,135,.4);background:#0A1F12;color:#00FF87;font-weight:800;font-size:12px;text-align:center">✅ Apuesta registrada en Banca</div>'
+      :'<button data-pickid="'+p.id+'" onclick="doTogglePick(this)" style="width:100%;margin-bottom:10px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,212,255,.4);background:#091520;color:#00D4FF;font-weight:800;font-size:12px;cursor:pointer">💼 Registrar apuesta'+(s?' · stake '+s.toFixed(2)+'€':'')+'</button>'))
     +analysisBlock(p,idx||0)
     +'</div>';
 }
@@ -1722,9 +1742,11 @@ function pgHO(){
   var sorted_tips=[].concat(HOS).sort(function(a,b){return hoSort==='roi'?b.roi-a.roi:hoSort==='lr'?a.lr-b.lr:b.wr-a.wr;});
 
   function hocard(p,medal,mc2,idx){
-    var on=isConf(p.id),o=parseFloat(p.odds);
+    var on=isConf(p.id);
+    var verified=!!(p.betReal&&p.betReal.exists);
+    var o=verified?parseFloat(p.betReal.odd):parseFloat(p.odds);
     var oc=o>=50?'#FF3B5C':o>=25?'#FF6B00':'#FFD600';
-    var ms=ST.bank>0?Math.max(0.5,Math.min(ST.bank*0.01,5)):null;
+    var ms=(verified&&ST.bank>0)?Math.max(0.5,Math.min(ST.bank*0.01,5)):null;
     var ev=(p.wr/100*o).toFixed(2);
     var bg=on?'background:#162218;':'';
     return '<div class="card" style="'+bg+'border-color:'+(on?'rgba(0,255,135,.5)':mc2?mc2+'88':oc+'44')+'">'
@@ -1745,18 +1767,18 @@ function pgHO(){
       +'<button class="tick'+(on?' on':'')+'" data-pickid="'+p.id+'" onclick="doTogglePick(this)">'+(on?'✓':'○')+'</button>'
       +'</div>'
       +oddsRow(p,idx||0)
-      +'<div class="g3" style="margin-bottom:8px">'
+      +(!verified?'':('<div class="g3" style="margin-bottom:8px">'
       +'<div class="sb"><div class="sv" style="color:'+oc+'">'+p.wr+'%</div><div class="sl">WR Longshot</div></div>'
       +'<div class="sb"><div class="sv" style="color:#00D4FF">'+ev+'x</div><div class="sl">EV</div></div>'
-      +'<div class="sb"><div class="sv" style="color:#A855F7">'+o+'</div><div class="sl">Cuota</div></div></div>'
+      +'<div class="sb"><div class="sv" style="color:#A855F7">'+o+'</div><div class="sl">Cuota</div></div></div>'))
       +'<div style="background:#0B0E15;border-radius:8px;padding:8px 11px;margin-bottom:8px">'
       +'<div style="font-size:11px;color:#8896AA;line-height:1.6">'+p.note+'</div></div>'
-      +(ms?'<div style="border-radius:8px;padding:9px 11px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center;background:'+oc+'10;border:1px solid '+oc+'33">'
+      +(!verified?'':(ms?'<div style="border-radius:8px;padding:9px 11px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center;background:'+oc+'10;border:1px solid '+oc+'33">'
         +'<div><div style="font-size:22px;font-weight:900;color:#F0F2F7">'+ms.toFixed(2)+'€</div><div style="font-size:10px;color:#5A6785">micro-stake 1% banca</div></div>'
-        +'<div style="font-size:18px;font-weight:900;color:'+oc+'">+'+getPot(ms,p.odds).toFixed(2)+'€</div></div>'
-        :'<div style="background:rgba(255,214,0,.06);border:1px dashed rgba(255,214,0,.3);border-radius:9px;padding:9px;text-align:center;font-size:11px;color:#FFD600;margin-bottom:7px">Introduce banca en Inicio para micro-stake</div>')
-      +(on?'<div style="width:100%;margin-bottom:8px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,255,135,.4);background:#0A1F12;color:#00FF87;font-weight:800;font-size:12px;text-align:center">✅ Apuesta registrada en Banca</div>'
-        :'<button data-pickid="'+p.id+'" onclick="doTogglePick(this)" style="width:100%;margin-bottom:8px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,212,255,.4);background:#091520;color:#00D4FF;font-weight:800;font-size:12px;cursor:pointer">💼 Registrar apuesta'+(ms?' · stake '+ms.toFixed(2)+'€':'')+'</button>')
+        +'<div style="font-size:18px;font-weight:900;color:'+oc+'">+'+getPot(ms,o).toFixed(2)+'€</div></div>'
+        :'<div style="background:rgba(255,214,0,.06);border:1px dashed rgba(255,214,0,.3);border-radius:9px;padding:9px;text-align:center;font-size:11px;color:#FFD600;margin-bottom:7px">Introduce banca en Inicio para micro-stake</div>'))
+      +(!verified?'':(on?'<div style="width:100%;margin-bottom:8px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,255,135,.4);background:#0A1F12;color:#00FF87;font-weight:800;font-size:12px;text-align:center">✅ Apuesta registrada en Banca</div>'
+        :'<button data-pickid="'+p.id+'" onclick="doTogglePick(this)" style="width:100%;margin-bottom:8px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,212,255,.4);background:#091520;color:#00D4FF;font-weight:800;font-size:12px;cursor:pointer">💼 Registrar apuesta'+(ms?' · stake '+ms.toFixed(2)+'€':'')+'</button>'))
       +analysisBlock(p,idx||0)
       +'</div>';
   }
