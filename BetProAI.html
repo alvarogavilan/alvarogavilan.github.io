@@ -260,6 +260,12 @@ function pgTop(){
       +'</div>';
   }
 
+  if (SYSTEM_HEALTH && SYSTEM_HEALTH.quotaUsed != null) {
+    var pct = Math.round((SYSTEM_HEALTH.quotaUsed / SYSTEM_HEALTH.dailyLimit) * 100);
+    var qc = pct >= 85 ? '#FF3B5C' : pct >= 60 ? '#FFD600' : '#5A6785';
+    h += '<div style="font-size:10px;color:'+qc+';margin-bottom:10px;text-align:right">📊 Cuota API hoy: '+SYSTEM_HEALTH.quotaUsed+' / '+SYSTEM_HEALTH.dailyLimit+' ('+pct+'%) — las notificaciones funcionan solas, no dependen de que refresques</div>';
+  }
+
   h += '<button onclick="activarPush()" style="display:block;width:100%;background:linear-gradient(90deg,#00FF87,#00D4FF);border:none;color:#0B0E15;font-weight:800;font-size:13px;border-radius:10px;padding:10px;margin-bottom:10px">🔔 Activar notificaciones de pronósticos fiables</button>';
   h += '<div class="bnr2" style="background:#130D1A;border:1px solid rgba(168,85,247,.5);display:flex;justify-content:space-between;align-items:center">'
     +'<div><div style="font-size:11px;color:#A855F7;font-weight:800">🏆 LO MEJOR AHORA MISMO</div>'
@@ -314,6 +320,7 @@ function highValueCard(hv){
     +'<div style="font-size:11px;color:#5A6785;font-weight:700;margin-bottom:4px">⚽ '+(hv.home||'')+' vs '+(hv.away||'')+' · '+(hv.score||'')+' · '+(hv.minute!=null?hv.minute+"'":'')+'</div>'
     +'<div style="color:#00FF87;font-weight:800;font-size:15px;margin-bottom:4px">💎 '+hv.market+'</div>'
     +'<div style="color:#8896AA;font-size:11px;line-height:1.5">'+hv.reason+'</div>'
+    +'<div style="margin-top:8px;font-size:10px;color:#5A6785;border-top:1px solid rgba(0,255,135,.15);padding-top:6px">Esta es una señal aislada, sin cuota mínima calculada — toca el partido para ver el pronóstico completo con stake sugerido.</div>'
     +'</div>';
 }
 
@@ -332,7 +339,7 @@ function topForecastCard(t, idx){
     +(t.minOdds?'<div style="color:#FFD600;font-size:11px;margin-top:3px">Cuota mínima recomendada: '+t.minOdds+'</div>':'')
     +(t.marketComparison && t.marketComparison.length?'<div style="margin-top:8px;border-top:1px solid #1E2330;padding-top:8px"><div style="font-size:10px;color:#00FF87;font-weight:800;margin-bottom:5px">💰 COMPARATIVA CON EL MERCADO REAL</div>'+t.marketComparison.map(function(b){return '<div style="font-size:11px;color:#8896AA;margin-bottom:3px">'+b.market+': '+b.values.map(function(v){return v.tag+' <b style="color:#FFD600">'+v.odd+'</b>';}).join(' · ')+'</div>';}).join('')+'</div>':'')
     +(t.reasoning?'<div style="color:#8896AA;font-size:11px;margin-top:6px;line-height:1.5;border-top:1px solid #1E2330;padding-top:6px">'+t.reasoning+'</div>':'')
-    +(stk?'<button onclick="event.stopPropagation();logBet('+entryJson+','+stk+')" style="width:100%;margin-top:9px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,212,255,.4);background:#091520;color:#00D4FF;font-weight:800;font-size:12px">💼 Registrar apuesta · stake '+stk.toFixed(2)+'€</button>':(ST.bank>0?'':'<div style="margin-top:9px;font-size:10px;color:#5A6785">Configura tu banca en 💼 Banca para ver el stake sugerido</div>'))
+    +(stk?'<button onclick="event.stopPropagation();logBet('+entryJson+','+stk+')" style="width:100%;margin-top:9px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,212,255,.4);background:#091520;color:#00D4FF;font-weight:800;font-size:12px">💼 Registrar apuesta · stake '+stk.toFixed(2)+'€</button>':(ST.bank>0?'<div style="margin-top:9px;font-size:10px;color:#5A6785">⚠️ Sin stake sugerido: la cuota mínima está demasiado pegada a la cuota real, el margen no compensa el riesgo según Kelly</div>':'<div style="margin-top:9px;font-size:10px;color:#5A6785">Configura tu banca en 💼 Banca para ver el stake sugerido</div>'))
     +'</div>';
 }
 
