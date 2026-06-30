@@ -185,9 +185,7 @@ textarea{resize:none}
 
 <div id="bnav">
   <div id="tabrail">
-    <button class="tab" data-p="home"       onclick="go('home')">      <span class="tic">🏠</span><span class="tlb">Inicio</span></button>
     <button class="tab" data-p="live"       onclick="go('live')">      <span class="tic">🔴</span><span class="tlb">Live</span><span class="rdot" id="rdot"></span></button>
-    <button class="tab" data-p="highOdds"   onclick="go('highOdds')">  <span class="tic">💎</span><span class="tlb">High Odds</span></button>
     <button class="tab" data-p="history"    onclick="go('history')">   <span class="tic">📅</span><span class="tlb">Historial</span><span class="ppin hide" id="ppin">0</span></button>
   </div>
   <div style="text-align:center;padding:3px 0 9px;font-size:9px;color:#222A3A">⚠️ Solo informativo · +18 · Apuesta responsablemente</div>
@@ -236,6 +234,21 @@ async function fetchTopForecasts(){
   }
   LIVE_TOP_LOADING = false;
   if(PG==='live') go('live');
+}
+
+var SERVER_LOG = null;
+var SERVER_LOG_LOADING = false;
+var SERVER_SIGNAL_STATS = {};
+
+async function fetchServerHistory(){
+  SERVER_LOG_LOADING = true; go('history');
+  try {
+    var r = await fetch(WORKER_LIVE_URL+'/live/history');
+    var j = await r.json();
+    SERVER_LOG = Array.isArray(j.log) ? j.log : [];
+    SERVER_SIGNAL_STATS = j.signalStats || {};
+  } catch(e){ SERVER_LOG = []; }
+  SERVER_LOG_LOADING = false; go('history');
 }
 
 function highValueCard(hv){
@@ -1482,7 +1495,7 @@ function pgHome(){
   if(!active.length)h+='<div style="text-align:center;padding:40px 0;color:#6B7490"><div style="font-size:32px;margin-bottom:10px">⏳</div><div>Sin eventos activos ahora</div></div>';
   return h;
 }
-function svBank(){var v=parseFloat((document.getElementById('bi')||{}).value||0);if(v>0){ST.bank=v;ST.startBank=v;saveST();go('home');}}
+function svBank(){var v=parseFloat((document.getElementById('bi')||{}).value||0);if(v>0){ST.bank=v;ST.startBank=v;saveST();go('live');}}
 function activarPush(){
   if (window.OneSignalDeferred) {
     OneSignalDeferred.push(async function(OneSignal) {
@@ -1497,7 +1510,7 @@ function activarPush(){
     alert('OneSignal no ha cargado todavía, espera unos segundos y vuelve a intentarlo.');
   }
 }
-function edBank(){ST.bank=0;ST.startBank=0;saveST();go('home');}
+function edBank(){ST.bank=0;ST.startBank=0;saveST();go('live');}
 
 function bankSparkline(settled,startBank){
   if(settled.length<2) return '';
@@ -1745,55 +1758,62 @@ function pgAll(){
 }
 
 function pgHist(){
-  var pending=ST.hist.filter(function(h){return h.result==='pending';});
-  var settled=ST.hist.filter(function(h){return h.result&&h.result!=='pending';});
-  var pnl=settled.reduce(function(a,h){return a+(h.profit||0);},0);
-  var staked=settled.reduce(function(a,h){return a+h.stake;},0);
-  var roi=staked>0?((pnl/staked)*100).toFixed(1):'0.0';
-  var wr=settled.length?Math.round(settled.filter(function(h){return h.result==='won';}).length/settled.length*100):0;
-  var html='<div class="card" style="border-color:rgba(255,214,0,.3);margin-bottom:14px">'
-    +'<div style="font-size:11px;color:#FFD600;font-weight:800;margin-bottom:10px">📅 RESUMEN · '+todayStr()+'</div>'
-    +'<div class="g4" style="margin-bottom:7px">'
-    +'<div class="sb"><div class="sv" style="color:'+(pnl>=0?'#00FF87':'#FF3B5C')+'">'+(pnl>=0?'+':'')+pnl.toFixed(0)+'€</div><div class="sl">P&L</div></div>'
-    +'<div class="sb"><div class="sv" style="color:'+(parseFloat(roi)>=0?'#00D4FF':'#FF3B5C')+'">'+roi+'%</div><div class="sl">ROI</div></div>'
-    +'<div class="sb"><div class="sv" style="color:#00FF87">'+wr+'%</div><div class="sl">Win%</div></div>'
-    +'<div class="sb"><div class="sv">'+settled.length+'</div><div class="sl">Total</div></div></div>'
-    +'<div class="g3"><div class="sb"><div class="sv" style="color:#00FF87">'+settled.filter(function(h){return h.result==='won';}).length+'</div><div class="sl">✅ Ganad.</div></div>'
-    +'<div class="sb"><div class="sv" style="color:#FF3B5C">'+settled.filter(function(h){return h.result==='lost';}).length+'</div><div class="sl">❌ Perd.</div></div>'
-    +'<div class="sb"><div class="sv" style="color:#FFD600">'+pending.length+'</div><div class="sl">⏳ Pend.</div></div></div></div>';
-  if(pending.length){
-    html+='<div class="shdr">⏳ PENDIENTES</div>';
-    pending.forEach(function(h){
-      html+='<div class="card" style="border-color:rgba(255,214,0,.35)">'
-        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:9px">'
-        +'<div><span class="timebadge">'+h.sport+' · '+h.date+'</span>'
-        +'<div style="color:#F0F2F7;font-weight:700;font-size:13px;margin-top:4px">'+h.match+'</div>'
-        +'<div style="color:#00D4FF;font-size:13px;margin-top:2px">'+h.pick+'</div>'
-        +'<div style="color:#6B7490;font-size:11px;margin-top:2px">'+h.bookie+' @'+h.odds+'</div></div>'
-        +'<div style="text-align:right"><div style="color:#FFD600;font-weight:900;font-size:17px">'+h.stake.toFixed(2)+'€</div>'
-        +'<div style="color:#00FF87;font-size:12px">+'+getPot(h.stake,h.odds).toFixed(2)+'€</div></div></div>'
-        +'<div style="display:flex;gap:6px">'
-        +'<button data-id="'+h.id+'" onclick="doSettle(this,\'won\')" style="flex:1;padding:9px 0;border-radius:9px;border:none;background:rgba(0,255,135,.15);color:#00FF87;font-weight:800;font-size:11px;cursor:pointer">✅ GANADA</button>'
-        +'<button data-id="'+h.id+'" onclick="doSettle(this,\'lost\')" style="flex:1;padding:9px 0;border-radius:9px;border:none;background:rgba(255,59,92,.15);color:#FF3B5C;font-weight:800;font-size:11px;cursor:pointer">❌ PERDIDA</button>'
-        +'<button data-id="'+h.id+'" onclick="doSettle(this,\'void\')" style="flex:1;padding:9px 0;border-radius:9px;border:none;background:#1A2035;color:#6B7490;font-weight:700;font-size:11px;cursor:pointer">↩️ ANULADA</button>'
-        +'</div></div>';
+  if(SERVER_LOG===null && !SERVER_LOG_LOADING) fetchServerHistory();
+  var log = SERVER_LOG || [];
+
+  var byTier = {alta:0, media:0, baja:0};
+  log.forEach(function(f){
+    if(f.confidence>=80) byTier.alta++;
+    else if(f.confidence>=65) byTier.media++;
+    else byTier.baja++;
+  });
+
+  var graded = log.filter(function(f){return f.graded && f.hit!==null;});
+  var hits = graded.filter(function(f){return f.hit===true;}).length;
+  var accuracy = graded.length ? Math.round(hits/graded.length*100) : null;
+  var pendingGrade = log.filter(function(f){return f.graded===undefined;}).length;
+
+  var html = '<div class="card" style="border-color:rgba(255,214,0,.3);margin-bottom:14px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
+    +'<div style="font-size:11px;color:#FFD600;font-weight:800">📋 BASE DE DATOS DE PRONÓSTICOS</div>'
+    +'<button onclick="fetchServerHistory()" style="background:#11141C;border:1px solid #1E2330;border-radius:8px;padding:4px 9px;color:#8896AA;font-size:11px">'+(SERVER_LOG_LOADING?'...':'🔄')+'</button>'
+    +'</div>'
+    +'<div style="font-size:12px;color:#8896AA;line-height:1.6;margin-bottom:10px">El bot guarda esto en el servidor automáticamente cada vez que analiza partidos en segundo plano, aunque no tengas la app abierta. Cada cierto tiempo verifica el resultado final real y aprende: las señales que fallan mucho pierden peso, las que aciertan ganan peso.</div>'
+    +(accuracy!==null?'<div style="background:#0B1510;border:1.5px solid rgba(0,255,135,.3);border-radius:10px;padding:10px;margin-bottom:10px;text-align:center"><div style="font-size:10px;color:#5A6785">FIABILIDAD REAL VERIFICADA</div><div style="font-size:28px;font-weight:900;color:#00FF87">'+accuracy+'%</div><div style="font-size:11px;color:#5A6785">'+hits+' de '+graded.length+' pronósticos verificados acertados · '+pendingGrade+' pendientes de verificar</div></div>':'<div style="color:#5A6785;font-size:11px;margin-bottom:10px">Aún no hay pronósticos verificados (se verifican solos ~95 min después de generarse, 2 por ciclo del bot).</div>')
+    +'<div class="g3">'
+    +'<div class="sb"><div class="sv" style="color:#00FF87">'+byTier.alta+'</div><div class="sl">🟢 Alta conf.</div></div>'
+    +'<div class="sb"><div class="sv" style="color:#FFD600">'+byTier.media+'</div><div class="sl">🟡 Media conf.</div></div>'
+    +'<div class="sb"><div class="sv" style="color:#FF9F40">'+byTier.baja+'</div><div class="sl">🟠 Baja conf.</div></div>'
+    +'</div></div>';
+
+  if (SERVER_LOG_LOADING) {
+    html += '<div style="text-align:center;padding:30px 0;color:#5A6785">Cargando base de datos del servidor...</div>';
+  } else if (log.length) {
+    html += '<div class="shdr">🏆 PRONÓSTICOS REGISTRADOS · '+log.length+'</div>';
+    log.slice(0, 60).forEach(function(f){
+      var when = new Date(f.loggedAt).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+      var tc = f.confidence>=80?'#00FF87':f.confidence>=65?'#FFD600':'#FF9F40';
+      var verifyBadge = '';
+      if(f.graded){
+        if(f.hit===true) verifyBadge = '<span style="background:rgba(0,255,135,.15);color:#00FF87;font-size:10px;font-weight:800;border-radius:5px;padding:2px 7px;margin-left:6px">✅ ACERTÓ ('+f.finalScore+')</span>';
+        else if(f.hit===false) verifyBadge = '<span style="background:rgba(255,59,92,.15);color:#FF3B5C;font-size:10px;font-weight:800;border-radius:5px;padding:2px 7px;margin-left:6px">❌ FALLÓ ('+f.finalScore+')</span>';
+        else verifyBadge = '<span style="background:#1A2035;color:#6B7490;font-size:10px;font-weight:700;border-radius:5px;padding:2px 7px;margin-left:6px">— no evaluable</span>';
+      }
+      html += '<div class="card" style="border-color:'+tc+'33;padding:11px 13px;margin-bottom:8px">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">'
+        +'<div style="flex:1;min-width:0">'
+        +'<div style="font-size:10px;color:#5A6785;margin-bottom:3px">'+when+' · '+(f.home||'')+' vs '+(f.away||'')+' · '+(f.score||'')+(f.minute!=null?(' · '+f.minute+"'"):'')+'</div>'
+        +'<div style="color:#F0F2F7;font-weight:800;font-size:14px">'+(f.market||f.pick)+verifyBadge+'</div>'
+        +(f.minOdds?'<div style="color:#FFD600;font-size:11px;margin-top:2px">Cuota mínima: '+f.minOdds+'</div>':'')
+        +'</div>'
+        +'<div style="text-align:center;flex-shrink:0;background:'+tc+'15;border:1.5px solid '+tc+';border-radius:9px;padding:5px 8px">'
+        +'<div style="color:'+tc+';font-weight:900;font-size:16px;line-height:1">'+f.confidence+'%</div>'
+        +'</div></div></div>';
     });
+  } else {
+    html += '<div style="text-align:center;padding:55px 0;color:#6B7490"><div style="font-size:38px;margin-bottom:11px">📅</div><div style="font-weight:700">Aún no hay pronósticos registrados</div><div style="font-size:13px;margin-top:5px">El bot los guarda solo, en segundo plano</div></div>';
   }
-  if(settled.length){
-    html+='<div class="shdr" style="margin-top:6px">📋 HISTORIAL</div>';
-    settled.slice().reverse().forEach(function(h){
-      var hc=h.result==='won'?'#00FF87':h.result==='lost'?'#FF3B5C':'#6B7490';
-      var pVal=h.result==='won'?'+'+h.profit.toFixed(2)+'€':h.result==='lost'?'-'+h.stake.toFixed(2)+'€':'±0€';
-      html+='<div class="card" style="border-color:'+(h.result==='won'?'rgba(0,255,135,.35)':h.result==='lost'?'rgba(255,59,92,.3)':'#1E2330')+';padding:10px 12px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:flex-start">'
-        +'<div style="min-width:0"><div style="display:flex;gap:5px;align-items:center;margin-bottom:2px"><span>'+(h.sport||'').split(' ')[0]+'</span><span style="font-size:10px;color:#6B7490">'+h.date+'</span>'
-        +'<span style="font-size:11px;font-weight:700;color:'+hc+'">'+(h.result==='won'?'✅':h.result==='lost'?'❌':'↩️')+'</span></div>'
-        +'<div style="color:#F0F2F7;font-weight:700;font-size:12px">'+h.match+'</div>'
-        +'<div style="color:#00D4FF;font-size:12px;margin-top:1px">'+h.pick+' @'+h.odds+'</div></div>'
-        +'<div style="text-align:right;flex-shrink:0;margin-left:8px"><div style="color:'+hc+';font-weight:900;font-size:15px">'+pVal+'</div>'
-        +'<div style="font-size:10px;color:#6B7490">'+h.stake.toFixed(2)+'€</div></div></div>';
-    });
-  }
-  if(!ST.hist.length)html+='<div style="text-align:center;padding:55px 0;color:#6B7490"><div style="font-size:38px;margin-bottom:11px">📅</div><div style="font-weight:700">Sin picks registrados</div><div style="font-size:13px;margin-top:5px">Pulsa ✓ en cualquier pick</div></div>';
+
   return html;
 }
 
@@ -2071,15 +2091,9 @@ function autoUpdate(){
 }
 
 document.addEventListener('DOMContentLoaded',function(){
-  setInterval(function(){var c=document.getElementById('clk');if(c)c.textContent=timeStr();updEngineBadge();},1000);
-  setInterval(autoUpdate,30000);
-  setInterval(loadWorkerPicks,600000); // re-consulta el Worker cada 10 min
-  TENNIS_PICKS=buildTennisPicks();
-  STATS_PICKS=buildStatsPicks();
-  go('home');
+  setInterval(function(){var c=document.getElementById('clk');if(c)c.textContent=timeStr();},1000);
+  go('live');
   updPin(); updSub();
-  setTimeout(autoUpdate,1000);
-  loadWorkerPicks();
 });
 
 </script>
