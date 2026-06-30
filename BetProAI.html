@@ -513,29 +513,20 @@ function statusBadge(p){
 // ============================================================
 // ODDS DISPLAY
 // ============================================================
-function altOdds(mainOdds, seed){
-  var o=parseFloat(mainOdds);
-  if(!o||o<=1) return o.toFixed(2);
-  if(o<1.30) return Math.max(1.01,o-0.03).toFixed(2);
-  if(o<1.50) return (o+(seed%2===0?0.03:-0.02)).toFixed(2);
-  if(o<2.00) return (o+(seed%2===0?0.05:0.00)).toFixed(2);
-  if(o<3.00) return (o+(seed%2===0?0.08:-0.05)).toFixed(2);
-  if(o<5.00) return (o+(seed%2===0?0.12:-0.10)).toFixed(2);
-  return (o+(seed%2===0?0.20:-0.15)).toFixed(2);
-}
+
 function oddsRow(p,idx){
-  var b365=parseFloat(p.odds); var wmax=parseFloat(altOdds(p.odds,idx||0));
-  var c=b365<1.50?'#FFD600':'#F0F2F7';
-  return '<div style="display:flex;gap:8px;margin-bottom:10px">'
+  // Cuota REAL devuelta por el motor (The Odds API), con la casa real que la ofrece.
+  // No se inventan cuotas de otras casas: si solo tenemos una fuente, se muestra una sola caja.
+  var o=parseFloat(p.odds);
+  var bookieName=(p.bookie||'Casa no especificada').toUpperCase();
+  var c=o<1.50?'#FFD600':'#F0F2F7';
+  return '<div style="display:flex;gap:8px;margin-bottom:6px">'
     +'<div style="flex:1;background:#0B0E15;border:1.5px solid rgba(0,212,255,.25);border-radius:10px;padding:9px 10px;text-align:center">'
-    +'<div style="font-size:9px;color:#00D4FF;font-weight:800;letter-spacing:.5px;margin-bottom:3px">BET365</div>'
-    +'<div style="color:'+c+';font-weight:900;font-size:26px;line-height:1;letter-spacing:-1px">'+b365.toFixed(2)+'</div>'
+    +'<div style="font-size:9px;color:#00D4FF;font-weight:800;letter-spacing:.5px;margin-bottom:3px">'+bookieName+' · CUOTA REAL</div>'
+    +'<div style="color:'+c+';font-weight:900;font-size:26px;line-height:1;letter-spacing:-1px">'+(isNaN(o)?'—':o.toFixed(2))+'</div>'
     +'</div>'
-    +'<div style="flex:1;background:#0B0E15;border:1.5px solid rgba(255,107,0,.25);border-radius:10px;padding:9px 10px;text-align:center">'
-    +'<div style="font-size:9px;color:#FF6B00;font-weight:800;letter-spacing:.5px;margin-bottom:3px">WINAMAX</div>'
-    +'<div style="color:'+c+';font-weight:900;font-size:26px;line-height:1;letter-spacing:-1px">'+wmax.toFixed(2)+'</div>'
     +'</div>'
-    +'</div>';
+    +'<div style="font-size:9px;color:#5A6785;margin:-2px 0 8px 2px">⚠️ Verifica esta cuota y la disponibilidad del mercado en tu casa de apuestas antes de apostar — puede variar o haberse movido.</div>';
 }
 
 // ============================================================
@@ -1394,10 +1385,9 @@ function pcard(p,medal,mc,idx){
     :'<div style="background:rgba(255,214,0,.06);border:1px dashed rgba(255,214,0,.3);border-radius:10px;padding:10px 13px;margin-bottom:10px;text-align:center">'
     +'<div style="font-size:13px;color:#FFD600;font-weight:700">💰 Introduce tu banca en Inicio</div>'
     +'<div style="font-size:11px;color:#5A6785;margin-top:3px">Se calculará el stake Kelly automáticamente</div></div>')
-    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">'
-    +'<div style="font-size:11px;color:#5A6785">📊 <span style="color:#8896AA;font-weight:600">'+(p.tipster||'')+'</span></div>'
-    +(on?'<div style="font-size:11px;color:#00FF87;font-weight:700">✅ Registrado</div>':'')
-    +'</div>'
+    +(on?'<div style="width:100%;margin-bottom:10px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,255,135,.4);background:#0A1F12;color:#00FF87;font-weight:800;font-size:12px;text-align:center">✅ Apuesta registrada en Banca</div>'
+      :'<button data-pickid="'+p.id+'" onclick="doTogglePick(this)" style="width:100%;margin-bottom:10px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,212,255,.4);background:#091520;color:#00D4FF;font-weight:800;font-size:12px;cursor:pointer">💼 Registrar apuesta'+(s?' · stake '+s.toFixed(2)+'€':'')+'</button>')
+    +'<div style="font-size:11px;color:#5A6785;margin-bottom:4px">📊 <span style="color:#8896AA;font-weight:600">'+(p.tipster||'')+'</span></div>'
     +analysisBlock(p,idx||0)
     +'</div>';
 }
@@ -1458,7 +1448,8 @@ function liveCard(p,medal,mc,idx){
       +'<div style="font-size:22px;font-weight:900;color:#00FF87">+'+getPot(s,p.odds).toFixed(2)+'€</div></div></div>'
     :'<div style="background:rgba(255,214,0,.06);border:1px dashed rgba(255,214,0,.3);border-radius:10px;padding:10px 13px;margin-bottom:10px;text-align:center">'
     +'<div style="font-size:13px;color:#FFD600;font-weight:700">💰 Introduce tu banca en Inicio</div></div>')
-    +(on?'<div style="font-size:11px;color:#00FF87;font-weight:700;margin-bottom:4px">✅ Registrado</div>':'')
+    +(on?'<div style="width:100%;margin-bottom:10px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,255,135,.4);background:#0A1F12;color:#00FF87;font-weight:800;font-size:12px;text-align:center">✅ Apuesta registrada en Banca</div>'
+      :'<button data-pickid="'+p.id+'" onclick="doTogglePick(this)" style="width:100%;margin-bottom:10px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,212,255,.4);background:#091520;color:#00D4FF;font-weight:800;font-size:12px;cursor:pointer">💼 Registrar apuesta'+(s?' · stake '+s.toFixed(2)+'€':'')+'</button>')
     +analysisBlock(p,idx||0)
     +'</div>';
 }
@@ -1764,6 +1755,8 @@ function pgHO(){
         +'<div><div style="font-size:22px;font-weight:900;color:#F0F2F7">'+ms.toFixed(2)+'€</div><div style="font-size:10px;color:#5A6785">micro-stake 1% banca</div></div>'
         +'<div style="font-size:18px;font-weight:900;color:'+oc+'">+'+getPot(ms,p.odds).toFixed(2)+'€</div></div>'
         :'<div style="background:rgba(255,214,0,.06);border:1px dashed rgba(255,214,0,.3);border-radius:9px;padding:9px;text-align:center;font-size:11px;color:#FFD600;margin-bottom:7px">Introduce banca en Inicio para micro-stake</div>')
+      +(on?'<div style="width:100%;margin-bottom:8px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,255,135,.4);background:#0A1F12;color:#00FF87;font-weight:800;font-size:12px;text-align:center">✅ Apuesta registrada en Banca</div>'
+        :'<button data-pickid="'+p.id+'" onclick="doTogglePick(this)" style="width:100%;margin-bottom:8px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,212,255,.4);background:#091520;color:#00D4FF;font-weight:800;font-size:12px;cursor:pointer">💼 Registrar apuesta'+(ms?' · stake '+ms.toFixed(2)+'€':'')+'</button>')
       +analysisBlock(p,idx||0)
       +'</div>';
   }
