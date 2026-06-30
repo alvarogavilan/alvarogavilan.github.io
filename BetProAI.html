@@ -185,6 +185,7 @@ textarea{resize:none}
 
 <div id="bnav">
   <div id="tabrail">
+    <button class="tab" data-p="top"        onclick="go('top')">       <span class="tic">🏆</span><span class="tlb">Top</span></button>
     <button class="tab" data-p="live"       onclick="go('live')">      <span class="tic">🔴</span><span class="tlb">Live</span><span class="rdot" id="rdot"></span></button>
     <button class="tab" data-p="history"    onclick="go('history')">   <span class="tic">📅</span><span class="tlb">Historial</span><span class="ppin hide" id="ppin">0</span></button>
   </div>
@@ -218,9 +219,9 @@ var LIVE_TOP_DEBUG = null;
 
 async function fetchTopForecasts(){
   LIVE_TOP_LOADING = true; LIVE_TOP_ERROR = null;
-  go('live');
+  go(PG==='top'?'top':'live');
   try {
-    var r = await fetch(WORKER_LIVE_URL+'/live/top');
+    var r = await fetch(WORKER_LIVE_URL+'/live/best');
     var j = await r.json();
     if (j && j.error) { LIVE_TOP_ERROR = j.error; LIVE_TOP = []; LIVE_HIGHVALUE = []; }
     else {
@@ -233,12 +234,48 @@ async function fetchTopForecasts(){
     LIVE_TOP = []; LIVE_HIGHVALUE = [];
   }
   LIVE_TOP_LOADING = false;
-  if(PG==='live') go('live');
+  if(PG==='live'||PG==='top') go(PG);
+}
+
+function pgTop(){
+  if(!LIVE_TOP_LOADING && LIVE_TOP===null) fetchTopForecasts();
+  var h = '<button onclick="activarPush()" style="display:block;width:100%;background:linear-gradient(90deg,#00FF87,#00D4FF);border:none;color:#0B0E15;font-weight:800;font-size:13px;border-radius:10px;padding:10px;margin-bottom:10px">🔔 Activar notificaciones de pronósticos fiables</button>';
+  h += '<div class="bnr2" style="background:#130D1A;border:1px solid rgba(168,85,247,.5);display:flex;justify-content:space-between;align-items:center">'
+    +'<div><div style="font-size:11px;color:#A855F7;font-weight:800">🏆 LO MEJOR AHORA MISMO</div>'
+    +'<div style="font-size:12px;color:#F0F2F7;margin-top:1px">Filtrado por los 3 agentes: en vivo, historial real y síntesis final</div></div>'
+    +'<button onclick="fetchTopForecasts()" style="background:#11141C;border:1px solid #1E2330;border-radius:8px;padding:6px 10px;color:#F0F2F7;font-size:16px">'+(LIVE_TOP_LOADING?'...':'🔄')+'</button>'
+    +'</div>';
+
+  if (LIVE_TOP_LOADING) h += '<div style="text-align:center;padding:30px 0;color:#5A6785">Cargando lo mejor que el bot ha analizado...</div>';
+  else if (LIVE_TOP_ERROR) h += '<div style="color:#FF3B5C;font-size:12px;padding:10px 0">'+LIVE_TOP_ERROR+'</div>';
+  else {
+    if (LIVE_HIGHVALUE && LIVE_HIGHVALUE.length) {
+      h += '<div style="font-size:11px;color:#00FF87;font-weight:800;letter-spacing:.5px;margin:14px 0 6px">💎 OPORTUNIDADES DE ALTO VALOR ('+LIVE_HIGHVALUE.length+')</div>';
+      LIVE_HIGHVALUE.forEach(function(hv){ h += highValueCard(hv); });
+    }
+    if (LIVE_TOP && LIVE_TOP.length) {
+      h += '<div style="font-size:11px;color:#FFD600;font-weight:800;letter-spacing:.5px;margin:14px 0 6px">🏆 RANKING GENERAL</div>';
+      LIVE_TOP.forEach(function(t, idx){ h += topForecastCard(t, idx); });
+    }
+    if ((!LIVE_TOP || !LIVE_TOP.length) && (!LIVE_HIGHVALUE || !LIVE_HIGHVALUE.length)) {
+      h += '<div style="text-align:center;padding:40px 0;color:#6B7490"><div style="font-size:32px;margin-bottom:10px">⏳</div><div>No hay pronósticos que superen el filtro de los 3 agentes ahora mismo</div><div style="font-size:11px;margin-top:6px">Pulsa 🔄 para volver a comprobar, o entra en Live para ver todos los partidos sin filtrar</div></div>';
+    }
+  }
+  return h;
 }
 
 var SERVER_LOG = null;
 var SERVER_LOG_LOADING = false;
 var SERVER_SIGNAL_STATS = {};
+
+var SERVER_INSIGHTS = null;
+async function fetchInsights(){
+  try {
+    var r = await fetch(WORKER_LIVE_URL+'/live/insights');
+    var j = await r.json();
+    SERVER_INSIGHTS = j.insights || null;
+  } catch(e){}
+}
 
 async function fetchServerHistory(){
   SERVER_LOG_LOADING = true; go('history');
@@ -1444,6 +1481,7 @@ function go(pg){
   var html='';
   if(pg==='home')          html=pgHome();
   else if(pg==='smartmoney')html=pgSmartMoney();
+  else if(pg==='top')      html=pgTop();
   else if(pg==='live')     html=pgLive();
   else if(pg==='esports')  html=pgES();
   else if(pg==='horses')   html=pgHorses();
@@ -1535,42 +1573,12 @@ function bankSparkline(settled,startBank){
 function pgLive(){
   if(LIVE_DETAIL) return liveDetailView();
   if(!LIVE_LOADING && LIVE_LAST_FETCH===0) fetchLiveMatches();
-  if(!LIVE_TOP_LOADING && LIVE_TOP===null) fetchTopForecasts();
 
-  var h = '<button onclick="activarPush()" style="display:block;width:100%;background:linear-gradient(90deg,#00FF87,#00D4FF);border:none;color:#0B0E15;font-weight:800;font-size:13px;border-radius:10px;padding:10px;margin-bottom:10px">🔔 Activar notificaciones de pronósticos fiables</button>';
-  h += '<div class="bnr2" style="background:#1A0810;border:1px solid rgba(255,59,92,.5);display:flex;justify-content:space-between;align-items:center">'
+  var h = '<div class="bnr2" style="background:#1A0810;border:1px solid rgba(255,59,92,.5);display:flex;justify-content:space-between;align-items:center">'
     +'<div><div style="font-size:11px;color:#FF3B5C;font-weight:800">🔴 DIRECTO AHORA · '+timeStr()+' · '+todayStr()+'</div>'
-    +'<div style="font-size:12px;color:#F0F2F7;margin-top:1px">Fútbol y baloncesto en vivo · pronóstico del bot al entrar al partido</div></div>'
+    +'<div style="font-size:12px;color:#F0F2F7;margin-top:1px">Todos los partidos en directo · toca uno para ver su análisis individual</div></div>'
     +'<button onclick="LIVE_LAST_FETCH=0;go(\'live\')" style="background:#11141C;border:1px solid #1E2330;border-radius:8px;padding:6px 10px;color:#F0F2F7;font-size:16px">🔄</button>'
     +'</div>';
-
-  // ---- RANKING DE MEJORES PRONÓSTICOS ----
-  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin:14px 0 6px">'
-    +'<div style="font-size:11px;color:#FFD600;font-weight:800;letter-spacing:.5px">🏆 MEJORES PRONÓSTICOS AHORA</div>'
-    +'<button onclick="fetchTopForecasts()" style="background:#11141C;border:1px solid rgba(255,214,0,.4);border-radius:8px;padding:5px 10px;color:#FFD600;font-size:11px;font-weight:700">'+(LIVE_TOP_LOADING?'...':'🔄')+'</button>'
-    +'</div>';
-  if (LIVE_TOP_LOADING) h += '<div style="text-align:center;padding:14px 0;color:#5A6785;font-size:12px">Cargando lo que el bot ya analizó en segundo plano...</div>';
-  else if (LIVE_TOP_ERROR) h += '<div style="color:#FF3B5C;font-size:12px;padding:10px 0">'+LIVE_TOP_ERROR+'</div>';
-  else if (LIVE_TOP === null) h += '<div style="color:#5A6785;font-size:12px;padding:6px 0 14px">Pulsa "Calcular" para ver los partidos en directo que el bot ya ha analizado en segundo plano (se actualiza solo cada pocos minutos, sin que tengas que esperar).</div>';
-  else {
-    if (LIVE_HIGHVALUE && LIVE_HIGHVALUE.length) {
-      h += '<div style="font-size:11px;color:#00FF87;font-weight:800;letter-spacing:.5px;margin-bottom:6px">💎 OPORTUNIDADES DE ALTO VALOR ('+LIVE_HIGHVALUE.length+')</div>';
-      LIVE_HIGHVALUE.forEach(function(hv){ h += highValueCard(hv); });
-      h += '<div style="font-size:11px;color:#5A6785;font-weight:800;letter-spacing:.5px;margin:14px 0 6px">🏆 RANKING GENERAL</div>';
-    }
-    if (!LIVE_TOP.length && !(LIVE_HIGHVALUE && LIVE_HIGHVALUE.length)) {
-      h += '<div style="color:#6B7490;font-size:12px;padding:10px 0">No se detectaron pronósticos con suficiente fiabilidad ahora mismo.</div>';
-      if (LIVE_TOP_DEBUG) {
-        h += '<div style="background:#0B0E15;border:1px solid #1E2330;border-radius:8px;padding:10px;font-size:11px;color:#5A6785;line-height:1.6">'
-          +'🔎 Diagnóstico: '+(LIVE_TOP_DEBUG.cachedMatches||0)+' partidos en caché del cron'
-          +(LIVE_TOP_DEBUG.errors && LIVE_TOP_DEBUG.errors.length ? '<br>Errores: '+LIVE_TOP_DEBUG.errors.join(' | ') : '')
-          +'<br><span style="color:#8896AA">Si pone 0, el cron todavía no ha analizado nada — espera unos minutos a que se ejecute, o pídele a Claude que fuerce un escaneo manual.</span>'
-          +'</div>';
-      }
-    }
-    else LIVE_TOP.forEach(function(t, idx){ h += topForecastCard(t, idx); });
-  }
-  h += '<div style="font-size:11px;color:#5A6785;font-weight:800;letter-spacing:.5px;margin:16px 0 6px">📡 TODOS LOS PARTIDOS EN DIRECTO</div>';
 
   if(LIVE_LOADING) h += '<div style="text-align:center;padding:40px 0;color:#5A6785">Buscando partidos en directo...</div>';
   else if(LIVE_ERROR) h += '<div style="text-align:center;padding:30px 0;color:#FF3B5C">'+LIVE_ERROR+'</div>';
@@ -1760,6 +1768,7 @@ function pgAll(){
 
 function pgHist(){
   if(SERVER_LOG===null && !SERVER_LOG_LOADING) fetchServerHistory();
+  if(SERVER_INSIGHTS===null) fetchInsights();
   var log = SERVER_LOG || [];
 
   var byTier = {alta:0, media:0, baja:0};
@@ -1786,6 +1795,25 @@ function pgHist(){
     +'<div class="sb"><div class="sv" style="color:#FFD600">'+byTier.media+'</div><div class="sl">🟡 Media conf.</div></div>'
     +'<div class="sb"><div class="sv" style="color:#FF9F40">'+byTier.baja+'</div><div class="sl">🟠 Baja conf.</div></div>'
     +'</div></div>';
+
+  if (SERVER_INSIGHTS) {
+    var ins = SERVER_INSIGHTS;
+    html += '<div class="card" style="border-color:rgba(168,85,247,.4);margin-bottom:14px">'
+      +'<div style="font-size:11px;color:#A855F7;font-weight:800;margin-bottom:8px">🤖 AGENTE 2 · ANÁLISIS DIARIO PROFUNDO</div>'
+      +'<div style="font-size:11px;color:#8896AA;margin-bottom:8px">Revisa todo el historial verificado una vez al día y ajusta los parámetros del bot principal.</div>'
+      +'<div style="font-size:11px;color:#5A6785;margin-bottom:6px">Analizados: '+ins.totalGraded+' pronósticos verificados</div>'
+      +'<div style="font-size:11px;color:#5A6785;margin-bottom:6px">Cuota mínima recomendada actual: <span style="color:#FFD600;font-weight:800">'+ins.recommendedMinOdds+'</span></div>';
+    var leagues = Object.keys(ins.byLeague||{}).filter(function(l){return ins.byLeague[l].total>=5;})
+      .sort(function(a,b){return (ins.byLeague[b].hits/ins.byLeague[b].total)-(ins.byLeague[a].hits/ins.byLeague[a].total);});
+    if(leagues.length){
+      html += '<div style="font-size:10px;color:#5A6785;margin-top:8px;margin-bottom:4px">PRECISIÓN POR LIGA (≥5 verificados)</div>';
+      leagues.slice(0,6).forEach(function(l){
+        var d=ins.byLeague[l]; var pct=Math.round(d.hits/d.total*100);
+        html += '<div style="display:flex;justify-content:space-between;font-size:11px;color:#C0CCE0;padding:3px 0"><span>'+l+'</span><span style="color:'+(pct>=55?'#00FF87':'#FF9F40')+';font-weight:700">'+pct+'% ('+d.total+')</span></div>';
+      });
+    }
+    html += '</div>';
+  }
 
   if (SERVER_LOG_LOADING) {
     html += '<div style="text-align:center;padding:30px 0;color:#5A6785">Cargando base de datos del servidor...</div>';
@@ -2093,7 +2121,7 @@ function autoUpdate(){
 
 document.addEventListener('DOMContentLoaded',function(){
   setInterval(function(){var c=document.getElementById('clk');if(c)c.textContent=timeStr();},1000);
-  go('live');
+  go('top');
   updPin(); updSub();
 });
 
