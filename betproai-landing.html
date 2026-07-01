@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BetPro AI — Pronósticos verificados en directo</title>
+<meta name="description" content="Picks de fútbol en directo verificados contra las cuotas reales de Bet365. Sistema de tres agentes de IA. Únete a la lista de espera gratis.">
+<meta property="og:title" content="BetPro AI — Pronósticos verificados en Bet365">
+<meta property="og:description" content="Picks en directo, verificados contra Bet365 antes de enviarse. Lista de espera abierta.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#080F0C;
+    --bg-elevated:#0E1A15;
+    --bg-card:#12211B;
+    --text:#EEEAE0;
+    --text-muted:#84998C;
+    --green:#3FE08C;
+    --green-dim:#1F8A57;
+    --amber:#E8A33D;
+    --holo1:#3FE08C;
+    --holo2:#4FD0E8;
+    --holo3:#9B7FE8;
+    --line:rgba(238,234,224,0.10);
+    --red:#E8613D;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.5;
+    overflow-x:hidden;
+    position:relative;
+  }
+  .display{font-family:'Big Shoulders Display', sans-serif; font-weight:900; text-transform:uppercase;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  a{color:inherit;}
+  .wrap{max-width:1120px; margin:0 auto; padding:0 24px; position:relative; z-index:2;}
+  ::selection{background:var(--green); color:#08130D;}
+
+  /* Ambient glow orbs */
+  .orb{position:fixed; border-radius:50%; filter:blur(90px); z-index:0; pointer-events:none; opacity:0.35;}
+  .orb1{width:520px; height:520px; background:var(--green); top:-180px; left:-120px; animation:drift1 22s ease-in-out infinite;}
+  .orb2{width:420px; height:420px; background:var(--holo3); top:40vh; right:-160px; animation:drift2 26s ease-in-out infinite;}
+  .orb3{width:380px; height:380px; background:var(--amber); bottom:-140px; left:20vw; opacity:0.18; animation:drift1 30s ease-in-out infinite reverse;}
+  @keyframes drift1{0%,100%{transform:translate(0,0);} 50%{transform:translate(60px,40px);}}
+  @keyframes drift2{0%,100%{transform:translate(0,0);} 50%{transform:translate(-50px,60px);}}
+  @media (prefers-reduced-motion: reduce){ .orb{animation:none;} }
+
+  .grain{position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0.035;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+  /* NAV */
+  nav{position:sticky; top:0; z-index:50; background:rgba(8,15,12,0.75); backdrop-filter:blur(10px); border-bottom:1px solid var(--line);}
+  nav .wrap{display:flex; align-items:center; justify-content:space-between; height:64px;}
+  .logo{display:flex; align-items:center; gap:10px; font-family:'Big Shoulders Display'; font-weight:800; font-size:22px; letter-spacing:0.02em;}
+  .logo .dot{width:9px; height:9px; border-radius:50%; background:var(--green); box-shadow:0 0 12px var(--green), 0 0 4px var(--green);}
+  .nav-cta{background:var(--green); color:#08130D; padding:9px 18px; border-radius:3px; font-weight:600; font-size:14px; text-decoration:none;}
+
+  /* HERO */
+  header.hero{padding:80px 0 0;}
+  .hero-grid{display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px; align-items:center;}
+  .eyebrow{color:var(--green); font-family:'IBM Plex Mono'; font-size:13px; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:18px; display:flex; align-items:center; gap:8px;}
+  .eyebrow::before{content:''; width:16px; height:1px; background:var(--green);}
+  h1{font-size:clamp(36px, 5.2vw, 66px); line-height:0.98;}
+  h1 .accent{color:var(--green); text-shadow:0 0 30px rgba(63,224,140,0.35);}
+  .hero-sub{max-width:520px; color:var(--text-muted); font-size:16.5px; margin-top:22px;}
+  .hero-actions{display:flex; gap:14px; margin-top:32px; flex-wrap:wrap;}
+  .btn-primary{background:var(--green); color:#08130D; padding:14px 26px; border-radius:3px; font-weight:600; text-decoration:none; font-size:15px; border:none; cursor:pointer; box-shadow:0 0 24px rgba(63,224,140,0.25);}
+  .btn-secondary{background:transparent; color:var(--text); padding:14px 26px; border-radius:3px; font-weight:600; text-decoration:none; font-size:15px; border:1px solid var(--line);}
+
+  /* 3D CARD */
+  .card-stage{perspective:1200px;}
+  .betslip{
+    background:linear-gradient(155deg, var(--bg-card), #0C1712 60%);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:26px;
+    transform-style:preserve-3d;
+    transform:rotateX(8deg) rotateY(-14deg);
+    transition:transform 0.15s ease-out;
+    box-shadow:0 40px 80px -20px rgba(0,0,0,0.6), 0 0 0 1px rgba(63,224,140,0.06);
+    position:relative;
+  }
+  .betslip::before{
+    content:''; position:absolute; inset:0; border-radius:14px; padding:1px;
+    background:linear-gradient(120deg, var(--holo1), var(--holo2), var(--holo3), var(--holo1));
+    background-size:300% 300%;
+    -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude;
+    opacity:0.5; animation:holoshift 6s linear infinite;
+  }
+  @keyframes holoshift{ to{ background-position:300% 0; } }
+  .betslip-top{display:flex; justify-content:space-between; align-items:center; font-family:'IBM Plex Mono'; font-size:11px; color:var(--text-muted); letter-spacing:0.06em; margin-bottom:18px;}
+  .live-dot{width:7px; height:7px; border-radius:50%; background:var(--red); display:inline-block; margin-right:6px; animation:pulse 1.4s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:0.3;}}
+  .betslip-match{font-family:'Big Shoulders Display'; font-weight:800; font-size:24px; line-height:1.1; margin-bottom:14px;}
+  .betslip-pick{background:var(--bg-elevated); border:1px solid var(--line); border-radius:8px; padding:14px 16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;}
+  .betslip-pick .label{font-size:13px; color:var(--text-muted);}
+  .betslip-pick .odd{font-family:'IBM Plex Mono'; font-weight:600; color:var(--green); font-size:18px;}
+  .confidence-bar{height:6px; background:var(--bg-elevated); border-radius:3px; overflow:hidden; margin-bottom:8px;}
+  .confidence-fill{height:100%; width:84%; background:linear-gradient(90deg, var(--green-dim), var(--green)); border-radius:3px;}
+  .betslip-bottom{display:flex; justify-content:space-between; align-items:center; margin-top:16px;}
+  .conf-label{font-family:'IBM Plex Mono'; font-size:12px; color:var(--green);}
+  .seal{display:flex; align-items:center; gap:6px; font-family:'IBM Plex Mono'; font-size:10px; letter-spacing:0.05em; color:var(--text-muted);}
+  .seal svg{width:16px; height:16px;}
+  .example-tag{position:absolute; top:-10px; right:16px; background:var(--bg); border:1px solid var(--line); padding:3px 10px; border-radius:20px; font-family:'IBM Plex Mono'; font-size:10px; color:var(--text-muted); letter-spacing:0.05em;}
+
+  /* TICKER */
+  .ticker-outer{margin-top:64px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:var(--bg-elevated); overflow:hidden; position:relative;}
+  .ticker-outer::after{content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg, transparent, var(--green), transparent); animation:scanline 3s linear infinite;}
+  @keyframes scanline{ from{transform:translateX(-100%);} to{transform:translateX(100%);} }
+  .ticker-label{position:absolute; left:0; top:0; bottom:0; display:flex; align-items:center; padding:0 16px; background:var(--bg-elevated); z-index:2; font-family:'IBM Plex Mono'; font-size:11px; color:var(--text-muted); letter-spacing:0.08em; border-right:1px solid var(--line);}
+  .ticker-track{display:flex; white-space:nowrap; animation:scroll 38s linear infinite; padding-left:140px;}
+  @keyframes scroll{from{transform:translateX(0);} to{transform:translateX(-50%);}}
+  .tick{display:inline-flex; align-items:center; gap:10px; padding:16px 28px; border-right:1px solid var(--line); font-family:'IBM Plex Mono'; font-size:13px;}
+  .pill{font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px;}
+  .pill.g{background:rgba(63,224,140,0.15); color:var(--green);}
+  .pill.a{background:rgba(232,163,61,0.15); color:var(--amber);}
+  @media (prefers-reduced-motion: reduce){ .ticker-track, .ticker-outer::after{animation:none;} }
+  .ticker-note{text-align:center; font-size:11px; color:var(--text-muted); padding:8px 0; font-family:'IBM Plex Mono';}
+
+  section{padding:100px 0;}
+  .reveal{opacity:0; transform:translateY(24px); transition:opacity 0.7s ease, transform 0.7s ease;}
+  .reveal.in-view{opacity:1; transform:translateY(0);}
+  .section-head{max-width:600px; margin-bottom:48px;}
+  .section-head .eyebrow{margin-bottom:12px;}
+  h2{font-size:clamp(28px,4vw,42px); line-height:1.05;}
+  .section-head p{color:var(--text-muted); margin-top:14px; font-size:16px;}
+
+  /* PROCESS */
+  .process{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:10px; overflow:hidden;}
+  .step{background:var(--bg-card); padding:32px 28px; transition:background 0.25s ease;}
+  .step:hover{background:#16281F;}
+  .step .num{font-family:'Big Shoulders Display'; font-weight:900; font-size:46px; color:var(--green); line-height:1; text-shadow:0 0 20px rgba(63,224,140,0.25);}
+  .step h3{margin-top:14px; font-size:19px;}
+  .step p{color:var(--text-muted); font-size:14px; margin-top:10px;}
+  @media (max-width:760px){ .process{grid-template-columns:1fr;} }
+
+  /* VERIFICATION with holo seal */
+  .verify{display:grid; grid-template-columns:0.8fr 1.2fr; gap:56px; align-items:center;}
+  .holo-seal-wrap{display:flex; justify-content:center; perspective:900px;}
+  .holo-seal{
+    width:220px; height:220px; border-radius:50%; position:relative;
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    background:conic-gradient(from 0deg, var(--holo1), var(--holo2), var(--holo3), var(--green), var(--holo1));
+    animation:spin 10s linear infinite;
+    box-shadow:0 0 60px rgba(63,224,140,0.25);
+  }
+  .holo-seal::before{content:''; position:absolute; inset:8px; border-radius:50%; background:var(--bg); }
+  .holo-seal-inner{position:relative; z-index:2; font-family:'Big Shoulders Display'; font-weight:800; color:var(--text); font-size:15px; letter-spacing:0.04em; padding:0 30px;}
+  .holo-seal-inner .check{font-size:34px; color:var(--green); display:block; margin-bottom:6px; text-shadow:0 0 16px var(--green);}
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce){ .holo-seal{animation:none;} }
+  .verify-card{background:var(--bg-card); border:1px solid var(--line); border-radius:10px; padding:8px 28px;}
+  .verify-row{display:flex; align-items:flex-start; gap:14px; padding:18px 0; border-bottom:1px solid var(--line);}
+  .verify-row:last-child{border-bottom:none;}
+  .verify-badge{font-family:'IBM Plex Mono'; font-size:13px; font-weight:600; padding:4px 10px; border-radius:3px; flex-shrink:0; margin-top:2px;}
+  .verify-badge.g{background:rgba(63,224,140,0.15); color:var(--green);}
+  .verify-badge.a{background:rgba(232,163,61,0.15); color:var(--amber);}
+  .verify-badge.n{background:rgba(232,97,61,0.15); color:var(--red);}
+  .verify-row div p{font-size:14px; color:var(--text-muted); margin-top:4px;}
+  @media (max-width:760px){ .verify{grid-template-columns:1fr;} .holo-seal{width:160px; height:160px;} }
+
+  .disclaimer{background:var(--bg-elevated); border:1px solid var(--line); border-radius:8px; padding:20px 24px; font-size:13px; color:var(--text-muted); display:flex; gap:12px; align-items:flex-start; margin-top:28px;}
+  .disclaimer .mono{color:var(--amber); flex-shrink:0;}
+
+  /* WAITLIST */
+  .waitlist{background:var(--bg-elevated); border-top:1px solid var(--line); border-bottom:1px solid var(--line); position:relative;}
+  .waitlist-inner{display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:start;}
+  .waitlist-inner ul{margin-top:20px; list-style:none;}
+  .waitlist-inner li{display:flex; gap:10px; padding:8px 0; color:var(--text-muted); font-size:14px;}
+  .waitlist-inner li::before{content:'—'; color:var(--green);}
+  form{background:var(--bg-card); border:1px solid var(--line); border-radius:10px; padding:28px; box-shadow:0 20px 50px -20px rgba(0,0,0,0.5);}
+  label{display:block; font-size:12px; color:var(--text-muted); margin-bottom:6px; font-family:'IBM Plex Mono'; letter-spacing:0.04em;}
+  input{width:100%; background:var(--bg); border:1px solid var(--line); color:var(--text); padding:12px 14px; border-radius:6px; font-size:15px; margin-bottom:18px; font-family:'IBM Plex Sans';}
+  input:focus{outline:2px solid var(--green); outline-offset:1px;}
+  .submit-btn{width:100%; background:var(--green); color:#08130D; border:none; padding:14px; border-radius:6px; font-weight:700; font-size:15px; cursor:pointer; box-shadow:0 0 24px rgba(63,224,140,0.2);}
+  .submit-btn:disabled{opacity:0.6; cursor:default;}
+  .form-msg{margin-top:14px; font-size:13px; text-align:center; min-height:18px;}
+  .form-msg.ok{color:var(--green);}
+  .form-msg.err{color:var(--red);}
+  @media (max-width:760px){ .waitlist-inner{grid-template-columns:1fr;} .hero-grid{grid-template-columns:1fr;} .betslip{transform:rotateX(4deg) rotateY(-6deg);} }
+
+  footer{padding:40px 0; text-align:center;}
+  footer p{color:var(--text-muted); font-size:13px;}
+  .admin-toggle{background:none; border:none; color:var(--text-muted); font-size:11px; font-family:'IBM Plex Mono'; margin-top:20px; cursor:pointer; opacity:0.5;}
+  .admin-toggle:hover{opacity:1;}
+  #adminPanel{display:none; max-width:680px; margin:20px auto 0; text-align:left; background:var(--bg-card); border:1px solid var(--line); border-radius:8px; padding:20px;}
+  #adminPanel.open{display:block;}
+  #adminPanel h4{font-family:'IBM Plex Mono'; font-size:12px; color:var(--text-muted); margin-bottom:12px; letter-spacing:0.06em;}
+  .lead-row{display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--line); font-size:13px;}
+  .lead-row span:last-child{color:var(--text-muted); font-family:'IBM Plex Mono'; font-size:12px;}
+</style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+<div class="grain"></div>
+
+<nav>
+  <div class="wrap">
+    <div class="logo"><span class="dot"></span>BETPRO AI</div>
+    <a href="#waitlist" class="nav-cta">Unirme a la lista</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">Picks en directo · Verificados en Bet365</div>
+      <h1 class="display">Cada pick pasa<br>por <span class="accent">tres filtros</span><br>antes de llegar a ti.</h1>
+      <p class="hero-sub">Un sistema de tres agentes analiza partidos en directo cada 15 minutos, recalibra sus propios pesos según el histórico real, y solo entrega picks cuyas cuotas existen de verdad en Bet365.</p>
+      <div class="hero-actions">
+        <a href="#waitlist" class="btn-primary">Apuntarme a la lista de espera</a>
+        <a href="#como-funciona" class="btn-secondary">Ver cómo funciona</a>
+      </div>
+    </div>
+    <div class="card-stage">
+      <div class="betslip" id="betslip">
+        <span class="example-tag">EJEMPLO</span>
+        <div class="betslip-top"><span><span class="live-dot"></span>EN DIRECTO · 67'</span><span>LALIGA</span></div>
+        <div class="betslip-match">Real Betis vs Sevilla</div>
+        <div class="betslip-pick">
+          <span class="label">Más de 2.5 goles</span>
+          <span class="odd">1.84</span>
+        </div>
+        <div class="confidence-bar"><div class="confidence-fill"></div></div>
+        <div class="betslip-bottom">
+          <span class="conf-label">🟢 84% confianza</span>
+          <span class="seal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>Verificado Bet365</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ticker-outer">
+    <div class="ticker-label">EJEMPLO ILUSTRATIVO</div>
+    <div class="ticker-track">
+      <span class="tick"><span class="pill g">🟢 84%</span> Más de 2.5 goles — AH córners priorizado</span>
+      <span class="tick"><span class="pill a">🟡 71%</span> Hándicap asiático -1 — línea verificada Bet365</span>
+      <span class="tick"><span class="pill g">🟢 81%</span> Ambos marcan — cuota mín. 1.30</span>
+      <span class="tick"><span class="pill a">🟡 68%</span> Total córners — Kelly ajustado por drawdown</span>
+      <span class="tick"><span class="pill g">🟢 84%</span> Más de 2.5 goles — AH córners priorizado</span>
+      <span class="tick"><span class="pill a">🟡 71%</span> Hándicap asiático -1 — línea verificada Bet365</span>
+      <span class="tick"><span class="pill g">🟢 81%</span> Ambos marcan — cuota mín. 1.30</span>
+      <span class="tick"><span class="pill a">🟡 68%</span> Total córners — Kelly ajustado por drawdown</span>
+    </div>
+  </div>
+  <p class="ticker-note">Formato real del sistema · datos de ejemplo, no resultados históricos</p>
+</header>
+
+<section id="como-funciona">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">Cómo funciona</div>
+      <h2>Tres agentes, un solo pick verificado</h2>
+      <p>No es una IA que "adivina". Es un proceso secuencial que descarta más de lo que aprueba.</p>
+    </div>
+    <div class="process reveal">
+      <div class="step">
+        <div class="num">01</div>
+        <h3>Escaneo en directo</h3>
+        <p>Cada 15 minutos revisa todos los partidos en curso y detecta señales de valor en las cuotas.</p>
+      </div>
+      <div class="step">
+        <div class="num">02</div>
+        <h3>Recalibración</h3>
+        <p>Ajusta el peso de cada señal según cómo ha funcionado realmente en el histórico, liga por liga.</p>
+      </div>
+      <div class="step">
+        <div class="num">03</div>
+        <h3>Síntesis y filtro</h3>
+        <p>Descarta ligas de baja precisión y solo deja pasar el pick si su línea existe en Bet365.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">Verificación</div>
+      <h2>Si no está en Bet365, no se envía</h2>
+      <p>Cada pick se compara contra las cuotas reales de Bet365 antes de notificarse. Si el mercado no existe, se avisa.</p>
+    </div>
+    <div class="verify reveal">
+      <div class="holo-seal-wrap">
+        <div class="holo-seal">
+          <div class="holo-seal-inner"><span class="check">✓</span>VERIFICADO<br>BET365</div>
+        </div>
+      </div>
+      <div>
+        <div class="verify-card">
+          <div class="verify-row">
+            <span class="verify-badge g">🟢 ≥80%</span>
+            <div><strong>Confianza alta</strong><p>Notificación push inmediata + Telegram</p></div>
+          </div>
+          <div class="verify-row">
+            <span class="verify-badge a">🟡 65–79%</span>
+            <div><strong>Confianza media</strong><p>Se publica en el canal, sin push</p></div>
+          </div>
+          <div class="verify-row">
+            <span class="verify-badge n">NO VERIFICABLE</span>
+            <div><strong>Línea no confirmada</strong><p>Se marca así en vez de ocultarse o inventarse</p></div>
+          </div>
+        </div>
+        <div class="disclaimer">
+          <span class="mono">i</span>
+          <span>BetPro AI es una herramienta de análisis estadístico, no una promesa de ganancias. Apostar conlleva riesgo de pérdida. Úsalo como una señal más dentro de tu propia gestión de banca.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="waitlist" id="waitlist">
+  <div class="wrap waitlist-inner">
+    <div class="reveal">
+      <div class="eyebrow">Acceso anticipado</div>
+      <h2>Entra en la lista de espera</h2>
+      <p style="color:var(--text-muted); margin-top:14px; font-size:15px;">El canal privado de Telegram con los picks en directo se abrirá a un número limitado de personas primero.</p>
+      <ul>
+        <li>Picks 🟢🟡 en directo, verificados en Bet365</li>
+        <li>Resumen diario sobre las 23:00</li>
+        <li>Invita a 3 amigos y entras gratis el primer mes</li>
+      </ul>
+    </div>
+    <form id="leadForm" class="reveal">
+      <label for="name">Nombre</label>
+      <input type="text" id="name" required placeholder="Tu nombre">
+      <label for="tg">Usuario de Telegram</label>
+      <input type="text" id="tg" required placeholder="@tuusuario">
+      <label for="email">Email (opcional)</label>
+      <input type="email" id="email" placeholder="tucorreo@ejemplo.com">
+      <button type="submit" class="submit-btn" id="submitBtn">Unirme a la lista de espera</button>
+      <div class="form-msg" id="formMsg"></div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>BetPro AI — análisis estadístico de partidos en directo. No es asesoramiento financiero.</p>
+    <button class="admin-toggle" id="adminToggle">Ver leads (admin)</button>
+    <div id="adminPanel">
+      <h4>LEADS REGISTRADOS</h4>
+      <div id="leadsList"></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Tilt 3D del betslip con el ratón
+  const betslip = document.getElementById('betslip');
+  const stage = betslip.closest('.card-stage');
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches === false) {
+    stage.addEventListener('mousemove', (e) => {
+      const r = stage.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      betslip.style.transform = `rotateX(${8 - y * 16}deg) rotateY(${-14 + x * 22}deg)`;
+    });
+    stage.addEventListener('mouseleave', () => {
+      betslip.style.transform = 'rotateX(8deg) rotateY(-14deg)';
+    });
+  }
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('in-view'); });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  const form = document.getElementById('leadForm');
+  const btn = document.getElementById('submitBtn');
+  const msg = document.getElementById('formMsg');
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const referrerCode = urlParams.get('ref') || '';
+
+  function genCode(){
+    return Math.random().toString(36).slice(2,7).toUpperCase();
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+    msg.textContent = '';
+    msg.className = 'form-msg';
+
+    const myCode = genCode();
+    const lead = {
+      name: document.getElementById('name').value.trim(),
+      telegram: document.getElementById('tg').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      code: myCode,
+      referredBy: referrerCode,
+      ts: new Date().toISOString()
+    };
+
+    try {
+      const id = 'lead_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
+      const result = await window.storage.set(id, JSON.stringify(lead), true);
+      if (!result) throw new Error('sin resultado');
+
+      if (referrerCode) {
+        try {
+          const rk = 'refcount_' + referrerCode;
+          let count = 0;
+          try {
+            const existing = await window.storage.get(rk, true);
+            if (existing && existing.value) count = parseInt(existing.value, 10) || 0;
+          } catch(e) {}
+          await window.storage.set(rk, String(count + 1), true);
+        } catch(e) {}
+      }
+
+      const myLink = window.location.origin + window.location.pathname + '?ref=' + myCode;
+      form.style.display = 'none';
+      msg.className = 'form-msg ok';
+      msg.innerHTML = '✓ Apuntado. Te avisaremos por Telegram.<br><br>' +
+        '<strong style="color:var(--text)">Invita a 3 amigos y entras gratis el primer mes:</strong><br>' +
+        '<span class="mono" id="refLink" style="display:block; background:var(--bg); border:1px solid var(--line); padding:10px; border-radius:6px; margin-top:8px; word-break:break-all; font-size:12px;">' + myLink + '</span>' +
+        '<button type="button" id="copyRefBtn" class="btn-secondary" style="margin-top:10px; width:100%;">Copiar mi enlace</button>';
+
+      document.getElementById('copyRefBtn').addEventListener('click', () => {
+        navigator.clipboard.writeText(myLink).then(() => {
+          document.getElementById('copyRefBtn').textContent = 'Copiado ✓';
+        });
+      });
+    } catch (err) {
+      msg.textContent = 'No se pudo guardar. Inténtalo de nuevo en unos segundos.';
+      msg.className = 'form-msg err';
+      btn.disabled = false;
+      btn.textContent = 'Unirme a la lista de espera';
+    }
+  });
+
+  const adminToggle = document.getElementById('adminToggle');
+  const adminPanel = document.getElementById('adminPanel');
+  const leadsList = document.getElementById('leadsList');
+
+  adminToggle.addEventListener('click', async () => {
+    const isOpen = adminPanel.classList.toggle('open');
+    if (!isOpen) return;
+    leadsList.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">Cargando...</p>';
+    try {
+      const keys = await window.storage.list('lead_', true);
+      if (!keys || !keys.keys || keys.keys.length === 0) {
+        leadsList.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">Todavía no hay leads.</p>';
+        return;
+      }
+      const leads = [];
+      for (const k of keys.keys) {
+        try {
+          const r = await window.storage.get(k, true);
+          if (r && r.value) leads.push(JSON.parse(r.value));
+        } catch(e) {}
+      }
+      leads.sort((a,b) => new Date(b.ts) - new Date(a.ts));
+      const rows = await Promise.all(leads.map(async (l) => {
+        let refs = 0;
+        if (l.code) {
+          try {
+            const rc = await window.storage.get('refcount_' + l.code, true);
+            if (rc && rc.value) refs = parseInt(rc.value, 10) || 0;
+          } catch(e) {}
+        }
+        const refTag = l.referredBy ? ` · invitado por ${l.referredBy}` : '';
+        return `<div class="lead-row">
+          <span>${l.name} — ${l.telegram}${l.email ? ' — ' + l.email : ''}${refTag}</span>
+          <span>${refs} referidos · ${new Date(l.ts).toLocaleString('es-ES')}</span>
+        </div>`;
+      }));
+      leadsList.innerHTML = rows.join('');
+    } catch (err) {
+      leadsList.innerHTML = '<p style="color:var(--red); font-size:13px;">Error al cargar leads.</p>';
+    }
+  });
+</script>
+
+</body>
+</html>
