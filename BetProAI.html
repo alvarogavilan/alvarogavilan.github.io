@@ -414,15 +414,23 @@ function liveDetailView(){
     +'<div style="color:#FFD600;font-weight:900;font-size:32px;margin:6px 0">'+score+'</div>'
     +'<div class="livebadge"><span class="ld"></span>'+minute+"'</div></div>";
 
-  html += '<div style="background:#11141C;border:1px solid rgba(255,214,0,.3);border-radius:12px;padding:16px">'
+  var verified = !!(f.betReal && f.betReal.exists);
+  var realOdd = verified && f.betReal.odd ? parseFloat(f.betReal.odd) : null;
+  html += '<div style="background:#11141C;border:1px solid '+(verified ? 'rgba(255,214,0,.3)' : 'rgba(255,59,92,.35)')+';border-radius:12px;padding:16px">'
     +(f.tier?'<div style="font-size:11px;color:'+f.tier.color+';font-weight:800;margin-bottom:6px">'+f.tier.label+'</div>':'')
-    +'<div style="font-size:11px;color:#FFD600;font-weight:800;letter-spacing:.5px;margin-bottom:8px">🎯 APUESTA RECOMENDADA</div>'
+    +(verified
+      ? '<div style="font-size:11px;color:#FFD600;font-weight:800;letter-spacing:.5px;margin-bottom:8px">🎯 APUESTA RECOMENDADA</div>'
+      : '<div style="font-size:11px;color:#FF3B5C;font-weight:800;letter-spacing:.5px;margin-bottom:8px">⚠️ SEÑAL DETECTADA — NO VERIFICADA EN BET365</div>')
     +'<div style="color:#F0F2F7;font-weight:800;font-size:19px;margin-bottom:8px">'+(f.market||f.pick||'Sin señal todavía')+'</div>'
     +'<div style="display:flex;gap:10px;margin-bottom:10px">'
     +'<div style="flex:1;background:#0B0E15;border-radius:8px;padding:8px;text-align:center"><div style="font-size:10px;color:#5A6785">FIABILIDAD</div><div style="color:#00FF87;font-weight:800;font-size:18px">'+(f.confidence||0)+'%</div></div>'
-    +'<div style="flex:1;background:#0B0E15;border-radius:8px;padding:8px;text-align:center"><div style="font-size:10px;color:#5A6785">CUOTA MÍNIMA</div><div style="color:#FFD600;font-weight:800;font-size:18px">'+(f.minOdds||'—')+'</div></div>'
+    + (verified
+        ? '<div style="flex:1;background:#0B0E15;border-radius:8px;padding:8px;text-align:center"><div style="font-size:10px;color:#5A6785">CUOTA REAL (BET365)</div><div style="color:#00FF87;font-weight:800;font-size:18px">'+realOdd.toFixed(2)+'</div></div>'
+        : '<div style="flex:1;background:#0B0E15;border-radius:8px;padding:8px;text-align:center"><div style="font-size:10px;color:#5A6785">CUOTA REAL</div><div style="color:#FF3B5C;font-weight:800;font-size:16px">No disponible</div></div>')
     +'</div>'
-    +(f.valueNote?'<div style="color:#FF9F40;font-size:12px;background:#1A1208;border-radius:8px;padding:8px 10px;margin-bottom:8px">⚠️ '+f.valueNote+'</div>':'')
+    + (!verified
+        ? '<div style="color:#FF3B5C;font-size:12px;background:#1A0810;border:1px solid rgba(255,59,92,.3);border-radius:8px;padding:10px;margin-bottom:8px;font-weight:600">🚫 Esta línea no existe (o no cumple la cuota mínima) en Bet365 ahora mismo. No es una apuesta recomendada — es una señal detectada por el motor que todavía no se puede confirmar contra el mercado real. No apuestes esto.</div>'
+        : (f.betReal.snapped ? '<div style="color:#FFD600;font-size:11px;background:#1A1208;border-radius:8px;padding:8px 10px;margin-bottom:8px">ℹ️ Línea ajustada automáticamente a la más cercana real de Bet365.</div>' : ''))
     +'<div style="color:#5A6785;font-size:11px">'+((f.allSignals||[]).length)+' patrón(es) detectado(s) en este partido</div>'
     +'</div>';
 
