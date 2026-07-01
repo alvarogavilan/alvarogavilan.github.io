@@ -33,17 +33,17 @@ textarea{resize:none}
 .sx{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
 .sx::-webkit-scrollbar{display:none}
 .hide{display:none!important}
-#hdr{background:#0F1218;border-bottom:1px solid rgba(255,255,255,.06);position:sticky;position:-webkit-sticky;top:0;z-index:99;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-.logo{font-weight:900;font-size:19px;letter-spacing:-1px;display:flex;align-items:center;gap:3px}
-.lp{color:#00D4FF}
-.lb{background:linear-gradient(135deg,#00D4FF,#A855F7);color:#fff;font-size:9px;font-weight:900;border-radius:5px;padding:2px 6px}
+#hdr{background:linear-gradient(180deg,rgba(20,24,32,.95),rgba(15,18,24,.85));border-bottom:1px solid rgba(255,255,255,.07);position:sticky;position:-webkit-sticky;top:0;z-index:99;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.logo{font-weight:900;font-size:20px;letter-spacing:-1px;display:flex;align-items:center;gap:3px}
+.lp{background:linear-gradient(135deg,#00D4FF,#00FF87);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.lb{background:linear-gradient(135deg,#00D4FF,#A855F7);color:#fff;font-size:9px;font-weight:900;border-radius:6px;padding:2px 7px;box-shadow:0 2px 8px rgba(168,85,247,.35)}
 .htop{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .clk{font-size:11px;color:#00FF87;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.5px}
 .lchip{background:rgba(255,59,92,.15);border:1px solid rgba(255,59,92,.4);border-radius:6px;padding:3px 8px;font-size:11px;color:#FF3B5C;font-weight:700;display:flex;align-items:center;gap:4px}
 .ld{width:6px;height:6px;border-radius:50%;background:#FF3B5C;animation:bk 1s infinite}
 @keyframes bk{0%,100%{opacity:1}50%{opacity:.25}}
 
-#main{padding:12px 12px 95px}
+#main{padding:12px 12px 108px}
 
 
 
@@ -123,18 +123,19 @@ textarea{resize:none}
 
 
 /* ── BOTTOM TAB RAIL (single, scrollable) ── */
-#bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#0F1218;border-top:1px solid #1E2330;z-index:100}
-#tabrail{display:flex;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:7px 6px 0;gap:0}
-#tabrail::-webkit-scrollbar{display:none}
-.tab{display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 11px 6px;background:transparent;border:none;cursor:pointer;position:relative;flex-shrink:0;-webkit-tap-highlight-color:transparent;border-radius:10px;transition:background .15s}
-.tab.on{background:rgba(255,255,255,.06)}
-.tic{font-size:19px;line-height:1;transition:transform .15s}
-.tab.on .tic{transform:translateY(-1px)}
-.tlb{font-size:9px;font-weight:600;color:#6B7490;white-space:nowrap;transition:color .15s}
-.tab.on .tlb{font-weight:800}
-.rdot{position:absolute;top:4px;right:7px;width:7px;height:7px;border-radius:50%;background:#FF3B5C;border:1.5px solid #0F1218;display:none}
-.rdot.on{display:block}
-.ppin{position:absolute;top:2px;right:5px;background:#FF3B5C;color:#fff;border-radius:50%;width:14px;height:14px;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center}
+#bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(15,18,24,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid rgba(255,255,255,.08);z-index:100;box-shadow:0 -8px 30px rgba(0,0,0,.35)}
+#tabrail{display:flex;justify-content:space-around;align-items:stretch;padding:10px 8px 4px;gap:4px}
+.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 10px 9px;background:transparent;border:none;cursor:pointer;position:relative;flex:1 1 0;min-width:0;-webkit-tap-highlight-color:transparent;border-radius:14px;transition:background .25s ease,transform .2s ease}
+.tab.on{background:linear-gradient(160deg,rgba(0,255,135,.16),rgba(0,212,255,.10));box-shadow:inset 0 0 0 1px rgba(0,255,135,.25)}
+.tab:active{transform:scale(.94)}
+.tic{font-size:23px;line-height:1;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+.tab.on .tic{transform:translateY(-2px) scale(1.08)}
+.tlb{font-size:10px;font-weight:700;color:#6B7490;white-space:nowrap;transition:color .2s}
+.tab.on .tlb{font-weight:800;color:#00FF87;background:linear-gradient(90deg,#00FF87,#00D4FF);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.rdot{position:absolute;top:6px;right:12px;width:8px;height:8px;border-radius:50%;background:#FF3B5C;border:2px solid #0F1218;display:none;box-shadow:0 0 6px rgba(255,59,92,.7)}
+.rdot.on{display:block;animation:pulse-dot 1.6s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
+.ppin{position:absolute;top:3px;right:8px;background:linear-gradient(135deg,#FF3B5C,#FF7A3B);color:#fff;border-radius:50%;width:16px;height:16px;font-size:9.5px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(255,59,92,.5)}
 #main{padding:12px 12px 95px}
 
 /* ── SMART MONEY ── */
@@ -266,7 +267,6 @@ function pgTop(){
     h += '<div style="font-size:10px;color:'+qc+';margin-bottom:10px;text-align:right">📊 Cuota API hoy: '+SYSTEM_HEALTH.quotaUsed+' / '+SYSTEM_HEALTH.dailyLimit+' ('+pct+'%) — las notificaciones funcionan solas, no dependen de que refresques</div>';
   }
 
-  h += '<button onclick="activarPush()" style="display:block;width:100%;background:linear-gradient(90deg,#00FF87,#00D4FF);border:none;color:#0B0E15;font-weight:800;font-size:13px;border-radius:10px;padding:10px;margin-bottom:10px">🔔 Activar notificaciones de pronósticos fiables</button>';
   h += '<div class="bnr2" style="background:#130D1A;border:1px solid rgba(168,85,247,.5);display:flex;justify-content:space-between;align-items:center">'
     +'<div><div style="font-size:11px;color:#A855F7;font-weight:800">🏆 LO MEJOR AHORA MISMO</div>'
     +'<div style="font-size:12px;color:#F0F2F7;margin-top:1px">Filtrado por los 3 agentes: en vivo, historial real y síntesis final</div></div>'
@@ -1635,7 +1635,6 @@ function pgHome(){
       +bankSparkline(settled,ST.startBank);
   }
   var h='<div id="engineBadge" style="font-size:11px;font-weight:700;text-align:center;margin-bottom:6px">🟡 Conectando con el motor automático...</div>';
-  h+='<button onclick="activarPush()" style="display:block;width:100%;background:linear-gradient(90deg,#00FF87,#00D4FF);border:none;color:#0B0E15;font-weight:800;font-size:13px;border-radius:10px;padding:10px;margin-bottom:12px">🔔 Activar notificaciones</button>';
   h+='<div class="bcard"><div style="font-size:11px;color:#00D4FF;font-weight:800;letter-spacing:1.2px;margin-bottom:10px">💼 MI BANCA</div>'+bhtml+'</div>';
   h+='<div style="margin-bottom:16px"><div style="font-size:10px;color:#00D4FF;font-weight:800;letter-spacing:1.2px;margin-bottom:6px">🏆 TOP 5 PICKS DEL DÍA</div>'
     +'<div style="font-size:22px;font-weight:900;color:#F0F2F7;line-height:1.2;margin-bottom:4px">Los mejores pronósticos de hoy</div>'
