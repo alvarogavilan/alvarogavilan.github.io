@@ -407,18 +407,15 @@
 
     try {
       const id = 'lead_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
-      const result = await window.storage.set(id, JSON.stringify(lead), true);
-      if (!result) throw new Error('sin resultado');
+      localStorage.setItem(id, JSON.stringify(lead));
 
       if (referrerCode) {
         try {
           const rk = 'refcount_' + referrerCode;
           let count = 0;
-          try {
-            const existing = await window.storage.get(rk, true);
-            if (existing && existing.value) count = parseInt(existing.value, 10) || 0;
-          } catch(e) {}
-          await window.storage.set(rk, String(count + 1), true);
+          const existing = localStorage.getItem(rk);
+          if (existing) count = parseInt(existing, 10) || 0;
+          localStorage.setItem(rk, String(count + 1));
         } catch(e) {}
       }
 
@@ -452,33 +449,36 @@
     if (!isOpen) return;
     leadsList.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">Cargando...</p>';
     try {
-      const keys = await window.storage.list('lead_', true);
-      if (!keys || !keys.keys || keys.keys.length === 0) {
+      const leads = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('lead_')) {
+          try {
+            const data = JSON.parse(localStorage.getItem(key));
+            if (data) leads.push(data);
+          } catch(e) {}
+        }
+      }
+      
+      if (leads.length === 0) {
         leadsList.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">Todavía no hay leads.</p>';
         return;
       }
-      const leads = [];
-      for (const k of keys.keys) {
-        try {
-          const r = await window.storage.get(k, true);
-          if (r && r.value) leads.push(JSON.parse(r.value));
-        } catch(e) {}
-      }
+
       leads.sort((a,b) => new Date(b.ts) - new Date(a.ts));
-      const rows = await Promise.all(leads.map(async (l) => {
+      const rows = leads.map((l) => {
         let refs = 0;
         if (l.code) {
-          try {
-            const rc = await window.storage.get('refcount_' + l.code, true);
-            if (rc && rc.value) refs = parseInt(rc.value, 10) || 0;
-          } catch(e) {}
+          const rk = 'refcount_' + l.code;
+          const rc = localStorage.getItem(rk);
+          if (rc) refs = parseInt(rc, 10) || 0;
         }
         const refTag = l.referredBy ? ` · invitado por ${l.referredBy}` : '';
         return `<div class="lead-row">
           <span>${l.name} — ${l.telegram}${l.email ? ' — ' + l.email : ''}${refTag}</span>
           <span>${refs} referidos · ${new Date(l.ts).toLocaleString('es-ES')}</span>
         </div>`;
-      }));
+      });
       leadsList.innerHTML = rows.join('');
     } catch (err) {
       leadsList.innerHTML = '<p style="color:var(--red); font-size:13px;">Error al cargar leads.</p>';
