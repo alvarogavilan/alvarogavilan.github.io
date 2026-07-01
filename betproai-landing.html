@@ -388,6 +388,8 @@
     return Math.random().toString(36).slice(2,7).toUpperCase();
   }
 
+  const WORKER_URL = 'https://betpro-live.k8mwkbp68y.workers.dev';
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     btn.disabled = true;
@@ -401,23 +403,16 @@
       telegram: document.getElementById('tg').value.trim(),
       email: document.getElementById('email').value.trim(),
       code: myCode,
-      referredBy: referrerCode,
-      ts: new Date().toISOString()
+      referredBy: referrerCode
     };
 
     try {
-      const id = 'lead_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
-      localStorage.setItem(id, JSON.stringify(lead));
-
-      if (referrerCode) {
-        try {
-          const rk = 'refcount_' + referrerCode;
-          let count = 0;
-          const existing = localStorage.getItem(rk);
-          if (existing) count = parseInt(existing, 10) || 0;
-          localStorage.setItem(rk, String(count + 1));
-        } catch(e) {}
-      }
+      const res = await fetch(WORKER_URL + '/live/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(lead)
+      });
+      if (!res.ok) throw new Error('fallo al guardar');
 
       const myLink = window.location.origin + window.location.pathname + '?ref=' + myCode;
       form.style.display = 'none';
@@ -448,38 +443,26 @@
     const isOpen = adminPanel.classList.toggle('open');
     if (!isOpen) return;
     leadsList.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">Cargando...</p>';
+    const key = prompt('Clave de administrador:');
+    if (!key) { adminPanel.classList.remove('open'); return; }
     try {
-      const leads = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key.startsWith('lead_')) {
-          try {
-            const data = JSON.parse(localStorage.getItem(key));
-            if (data) leads.push(data);
-          } catch(e) {}
-        }
+      const res = await fetch(WORKER_URL + '/live/leads?key=' + encodeURIComponent(key));
+      if (res.status === 401) {
+        leadsList.innerHTML = '<p style="color:var(--red); font-size:13px;">Clave incorrecta.</p>';
+        return;
       }
-      
-      if (leads.length === 0) {
+      const leads = await res.json();
+      if (!leads.length) {
         leadsList.innerHTML = '<p style="color:var(--text-muted); font-size:13px;">Todavía no hay leads.</p>';
         return;
       }
-
-      leads.sort((a,b) => new Date(b.ts) - new Date(a.ts));
-      const rows = leads.map((l) => {
-        let refs = 0;
-        if (l.code) {
-          const rk = 'refcount_' + l.code;
-          const rc = localStorage.getItem(rk);
-          if (rc) refs = parseInt(rc, 10) || 0;
-        }
+      leadsList.innerHTML = leads.map(l => {
         const refTag = l.referredBy ? ` · invitado por ${l.referredBy}` : '';
         return `<div class="lead-row">
           <span>${l.name} — ${l.telegram}${l.email ? ' — ' + l.email : ''}${refTag}</span>
-          <span>${refs} referidos · ${new Date(l.ts).toLocaleString('es-ES')}</span>
+          <span>${l.refs || 0} referidos · ${new Date(l.ts).toLocaleString('es-ES')}</span>
         </div>`;
-      });
-      leadsList.innerHTML = rows.join('');
+      }).join('');
     } catch (err) {
       leadsList.innerHTML = '<p style="color:var(--red); font-size:13px;">Error al cargar leads.</p>';
     }
