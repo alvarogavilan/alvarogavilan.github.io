@@ -2232,7 +2232,7 @@ function pgLigas(){
           : '<span style="color:#FF3B5C;font-size:10px;font-weight:700">❌ Falló ('+(f.finalScore||'')+')</span>';
         html += '<div style="border-top:1px solid #171B28;padding:9px 0">'
           +'<div style="color:#C9D2E3;font-size:12px;font-weight:600">'+translateTeam(f.home||'')+' vs '+translateTeam(f.away||'')+'</div>'
-          +'<div style="color:#00D4FF;font-size:11px;margin-top:1px">'+(f.market||f.pick||'')+' · '+(f.confidence||0)+'%</div>'
+          +'<div style="color:#00D4FF;font-size:11px;margin-top:1px">'+(f.market||f.pick||'')+' · '+(f.confidence||0)+'%'+((f.betReal&&f.betReal.exists&&f.betReal.odd)?' · cuota '+f.betReal.odd:'')+'</div>'
           +'<div style="margin-top:2px">'+badge+'</div></div>';
       });
       if(lg.items.length>50) html += '<div style="color:#5A6785;font-size:10px;padding-top:6px">…y '+(lg.items.length-50)+' más</div>';
