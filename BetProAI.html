@@ -2016,8 +2016,23 @@ function pgHist(){
   // analizando y aprendiendo de TODO el historial para siempre, esto es solo para que puedas
   // buscar más cómodo entre lo antiguo sin tener que hacer scroll infinito.
   var now = Date.now();
-  var RANGE_MS = { day: 24*3600*1000, week: 7*24*3600*1000, month: 30*24*3600*1000 };
-  var visibleLog = (histRange==='all') ? log : log.filter(function(f){ return (now - f.loggedAt) <= RANGE_MS[histRange]; });
+  var RANGE_MS = { week: 7*24*3600*1000, month: 30*24*3600*1000 };
+  // "Hoy" = día natural (desde las 00:00 locales), no "últimas 24 horas" — así lo que hiciste hoy
+  // aparece en Hoy aunque sean las 9 de la mañana, y lo de anoche a las 23h ya no se cuela.
+  var startOfDay = new Date(); startOfDay.setHours(0,0,0,0);
+  var cutoff = histRange==='day' ? startOfDay.getTime() : (now - (RANGE_MS[histRange]||0));
+  var visibleLog = (histRange==='all') ? log : log.filter(function(f){ return (f.loggedAt||0) >= cutoff; });
+
+  // Resumen del periodo seleccionado: cuántos picks, aciertos, fallos, pendientes, win rate y
+  // unidades netas (las unidades solo con picks verificados con cuota real: +cuota-1 / -1).
+  var pStats = {total: visibleLog.length, w:0, l:0, pend:0, noEval:0, units:0, unitsCount:0};
+  visibleLog.forEach(function(f){
+    if (f.graded === undefined) { pStats.pend++; return; }
+    if (f.hit === null) { pStats.noEval++; return; }
+    var odd = (f.betReal && f.betReal.exists && f.betReal.odd) ? parseFloat(f.betReal.odd) : null;
+    if (f.hit === true) { pStats.w++; if(odd){ pStats.units += (odd-1); pStats.unitsCount++; } }
+    else { pStats.l++; if(odd){ pStats.units -= 1; pStats.unitsCount++; } }
+  });
 
   var byTier = {alta:0, media:0, baja:0};
   log.forEach(function(f){
@@ -2080,6 +2095,23 @@ function pgHist(){
       +'<button class="tbt" style="'+(histRange==='all'?'border-color:#FFD600;background:#141100;color:#FFD600':'')+'" onclick="histRange=\'all\';go(\'history\')">Todo</button>'
       +'</div>';
     html += '<div class="shdr">🏆 PRONÓSTICOS REGISTRADOS · '+visibleLog.length+'</div>';
+    // Tarjeta-resumen del periodo elegido (Hoy / 7 días / 30 días / Todo)
+    var decided = pStats.w + pStats.l;
+    var wr = decided > 0 ? Math.round(pStats.w/decided*100) : null;
+    var uTxt = (pStats.units>=0?'+':'')+pStats.units.toFixed(2);
+    var uColor = pStats.units>=0 ? '#00FF87' : '#FF3B5C';
+    html += '<div style="background:#0E1420;border:1px solid rgba(0,212,255,.25);border-radius:12px;padding:12px 14px;margin-bottom:12px">'
+      +'<div style="font-size:11px;color:#00D4FF;font-weight:800;letter-spacing:1px;margin-bottom:6px">📅 RESUMEN DEL PERIODO</div>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13px;color:#C9D2E3">'
+      +'<span>Picks: <b style="color:#F0F2F7">'+pStats.total+'</b></span>'
+      +'<span>✅ <b style="color:#00FF87">'+pStats.w+'</b></span>'
+      +'<span>❌ <b style="color:#FF3B5C">'+pStats.l+'</b></span>'
+      +(pStats.pend?'<span>⏳ <b>'+pStats.pend+'</b></span>':'')
+      +(pStats.noEval?'<span>➖ <b>'+pStats.noEval+'</b> sin datos</span>':'')
+      +(wr!==null?'<span>Win rate: <b style="color:'+(wr>=55?'#00FF87':wr>=45?'#FFD600':'#FF3B5C')+'">'+wr+'%</b></span>':'')
+      +'</div>'
+      +(pStats.unitsCount?'<div style="margin-top:8px;font-size:14px;color:#C9D2E3">Unidades netas (verificados, 1u/pick): <b style="color:'+uColor+';font-size:16px">'+uTxt+'u</b> <span style="font-size:11px;color:#5A6785">en '+pStats.unitsCount+' picks con cuota real</span></div>':'')
+      +'</div>';
     if (!visibleLog.length) {
       html += '<div style="text-align:center;padding:30px 0;color:#6B7490;font-size:13px">No hay pronósticos en este rango de fechas. Prueba con "Todo".</div>';
     }
