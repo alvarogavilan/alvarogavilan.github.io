@@ -306,14 +306,124 @@ async function fetchInsights(){
 }
 
 async function fetchServerHistory(){
-  SERVER_LOG_LOADING = true; go('history');
+  SERVER_LOG_LOADING = true; go(PG||'history');
   try {
     var r = await fetch(WORKER_LIVE_URL+'/live/history');
     var j = await r.json();
     SERVER_LOG = Array.isArray(j.log) ? j.log : [];
     SERVER_SIGNAL_STATS = j.signalStats || {};
   } catch(e){ SERVER_LOG = []; }
-  SERVER_LOG_LOADING = false; go('history');
+  SERVER_LOG_LOADING = false; go(PG||'history');
+}
+
+// ---------- BANCA AUTOMÁTICA (a partir de los picks reales verificados del servidor) ----------
+// Ya no se añaden apuestas a mano: la Banca se calcula sola a partir de TODO lo que el bot ha
+// publicado y verificado de verdad (los mismos picks que llegan a Telegram), usando cuota real.
+function serverGradedPicks(){
+  return (SERVER_LOG||[]).filter(function(f){
+    return f.graded && f.hit !== null && f.betReal && f.betReal.exists && f.betReal.odd;
+  });
+}
+function dayKeyFromTs(ts){
+  var d = new Date(ts);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+// 1 unidad = 2% de la banca inicial (gestión conservadora estándar) — el mismo criterio con el
+// que se calculan las unidades que ves publicadas en el canal de Telegram.
+function unitStake(){ return (ST.startBank||0) * 0.02; }
+
+function monthlySeries(refDate){
+  var picks = serverGradedPicks();
+  var y = refDate.getFullYear(), m = refDate.getMonth();
+  var daysInMonth = new Date(y, m+1, 0).getDate();
+  var byDay = {};
+  picks.forEach(function(f){
+    var dk = dayKeyFromTs(f.loggedAt);
+    var dd = new Date(dk);
+    if (dd.getFullYear()!==y || dd.getMonth()!==m) return;
+    var day = dd.getDate();
+    if (!byDay[day]) byDay[day] = {wins:0, losses:0, units:0};
+    var u = unitStake();
+    if (f.hit) { byDay[day].units += (parseFloat(f.betReal.odd)-1) * (u || 1); byDay[day].wins++; }
+    else { byDay[day].units -= (u || 1); byDay[day].losses++; }
+  });
+  var series = [];
+  for (var d=1; d<=daysInMonth; d++){
+    series.push({ day:d, units: byDay[d]?byDay[d].units:0, wins: byDay[d]?byDay[d].wins:0, losses: byDay[d]?byDay[d].losses:0 });
+  }
+  return series;
+}
+
+function drawBancaChart(canvasId, series, startBank){
+  var c = document.getElementById(canvasId);
+  if (!c) return;
+  var dpr = window.devicePixelRatio || 1;
+  var w = c.clientWidth, h = c.clientHeight;
+  c.width = w*dpr; c.height = h*dpr;
+  var ctx = c.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0,0,w,h);
+
+  var padL=34, padR=10, padT=14, padB=22;
+  var chartW = w-padL-padR, chartH = h-padT-padB;
+  var n = series.length;
+  var barW = chartW/n * 0.62;
+  var gap = chartW/n;
+
+  // Línea acumulada (saldo de banca día a día)
+  var running = startBank || 0;
+  var cum = series.map(function(s){ running += s.units; return running; });
+  var allVals = series.map(function(s){return s.units;});
+  var maxAbs = Math.max(1, Math.max.apply(null, allVals.map(Math.abs)));
+  var minCum = Math.min.apply(null, cum.concat([startBank||0]));
+  var maxCum = Math.max.apply(null, cum.concat([startBank||0]));
+  var cumRange = Math.max(1, maxCum-minCum);
+
+  var zeroY = padT + chartH*0.55;
+  var barScale = (chartH*0.42)/maxAbs;
+
+  // Barras de unidades diarias (verde/rojo), con degradado para efecto más "premium"
+  series.forEach(function(s,i){
+    var x = padL + i*gap + (gap-barW)/2;
+    var bh = Math.abs(s.units)*barScale;
+    var y = s.units>=0 ? zeroY-bh : zeroY;
+    var grad = ctx.createLinearGradient(0,y,0,y+Math.max(bh,1));
+    if (s.units>=0){ grad.addColorStop(0,'#00FF87'); grad.addColorStop(1,'#00B85F'); }
+    else { grad.addColorStop(0,'#FF6B85'); grad.addColorStop(1,'#FF3B5C'); }
+    ctx.fillStyle = s.units!==0 ? grad : 'rgba(255,255,255,.06)';
+    ctx.beginPath();
+    var r = 3;
+    var bb = Math.max(bh,2);
+    ctx.roundRect ? ctx.roundRect(x, s.units>=0?y:zeroY, barW, bb, r) : ctx.rect(x, s.units>=0?y:zeroY, barW, bb);
+    ctx.fill();
+  });
+
+  // Línea de evolución de banca acumulada, con relleno degradado bajo la curva
+  ctx.beginPath();
+  cum.forEach(function(v,i){
+    var x = padL + i*gap + gap/2;
+    var y = padT + chartH - ((v-minCum)/cumRange)*chartH;
+    if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle = '#00D4FF';
+  ctx.lineWidth = 2.2;
+  ctx.lineJoin = 'round';
+  ctx.shadowColor = 'rgba(0,212,255,.5)';
+  ctx.shadowBlur = 6;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Eje base y etiquetas de días (cada ~5)
+  ctx.strokeStyle = 'rgba(255,255,255,.08)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(padL, zeroY); ctx.lineTo(w-padR, zeroY); ctx.stroke();
+  ctx.fillStyle = '#5A6785';
+  ctx.font = '9px -apple-system, sans-serif';
+  series.forEach(function(s,i){
+    if (s.day % 5 !== 0 && s.day!==1) return;
+    var x = padL + i*gap + gap/2;
+    ctx.fillText(String(s.day), x-4, h-6);
+  });
 }
 
 function highValueCard(hv){
@@ -343,7 +453,7 @@ function topForecastCard(t, idx){
     +(realOdd?'<div style="color:#00FF87;font-size:11px;margin-top:3px">✅ Cuota real verificada (Bet365): '+realOdd.toFixed(2)+'</div>':'')
     +(t.marketComparison && t.marketComparison.length?'<div style="margin-top:8px;border-top:1px solid #1E2330;padding-top:8px"><div style="font-size:10px;color:#00FF87;font-weight:800;margin-bottom:5px">💰 COMPARATIVA CON EL MERCADO REAL</div>'+t.marketComparison.map(function(b){return '<div style="font-size:11px;color:#8896AA;margin-bottom:3px">'+b.market+': '+b.values.map(function(v){return v.tag+' <b style="color:#FFD600">'+v.odd+'</b>';}).join(' · ')+'</div>';}).join('')+'</div>':'')
     +(t.reasoning?'<div style="color:#8896AA;font-size:11px;margin-top:6px;line-height:1.5;border-top:1px solid #1E2330;padding-top:6px">'+t.reasoning+'</div>':'')
-    +(stk?'<button onclick="event.stopPropagation();logBet('+entryJson+','+stk+')" style="width:100%;margin-top:9px;padding:9px 0;border-radius:9px;border:1px solid rgba(0,212,255,.4);background:#091520;color:#00D4FF;font-weight:800;font-size:12px">💼 Registrar apuesta · stake '+stk.toFixed(2)+'€</button>':(ST.bank>0?'<div style="margin-top:9px;font-size:10px;color:#5A6785">⚠️ Sin stake sugerido: el margen no compensa el riesgo según Kelly</div>':'<div style="margin-top:9px;font-size:10px;color:#5A6785">Configura tu banca en 💼 Banca para ver el stake sugerido</div>'))
+    +'<div style="margin-top:9px;font-size:10px;color:#5A6785">💼 Si este pick se confirma y verifica, aparecerá solo en tu Banca — no hace falta registrarlo a mano.</div>'
     +'</div>';
 }
 
@@ -1916,93 +2026,74 @@ function periodPnl(filterFn){
 
 var bancaPeriod = 'day';
 function pgBanca(){
-  var pending = (ST.hist||[]).filter(function(h){return h.result==='pending';});
+  if(SERVER_LOG===null && !SERVER_LOG_LOADING) fetchServerHistory();
   var html = '';
 
   if(!ST.bank || ST.bank<=0){
     html += '<div class="bcard"><div style="font-size:11px;color:#00D4FF;font-weight:800;letter-spacing:1.2px;margin-bottom:10px">💼 BANCA INICIAL</div>'
-      +'<div style="color:#6B7490;font-size:13px;margin-bottom:10px">Introduce con cuánto empiezas. El stake de cada pick se calcula solo según la confianza real verificada de esa señal — nunca según si ganaste o perdiste la apuesta anterior.</div>'
+      +'<div style="color:#6B7490;font-size:13px;margin-bottom:10px">Introduce con cuánto empiezas. A partir de aquí, la banca se calcula sola con los picks REALES que el bot ya publica y verifica en Telegram — no hace falta que apuntes nada a mano.</div>'
       +'<div style="display:flex;gap:8px"><input type="number" id="bi" class="binp" placeholder="Ej: 100"><button onclick="svBancaInicial()" class="bsave">✓</button></div></div>';
     return html;
   }
 
-  var gr = ST.startBank>0 ? ((ST.bank/ST.startBank-1)*100).toFixed(1) : '0.0';
+  var picks = serverGradedPicks();
+  var now = new Date();
+  var series = monthlySeries(now);
+  var monthUnits = series.reduce(function(a,s){return a+s.units;},0);
+  var monthWins = series.reduce(function(a,s){return a+s.wins;},0);
+  var monthLosses = series.reduce(function(a,s){return a+s.losses;},0);
+  var decided = monthWins+monthLosses;
+  var winRate = decided>0 ? Math.round(monthWins/decided*100) : null;
+  var currentBank = (ST.startBank||0) + monthUnits;
+  ST.bank = currentBank; // se recalcula siempre a partir de datos reales del mes en curso
+
+  var gr = ST.startBank>0 ? ((currentBank/ST.startBank-1)*100).toFixed(1) : '0.0';
   html += '<div class="bcard"><div style="display:flex;justify-content:space-between;align-items:flex-start">'
-    +'<div><div style="font-size:11px;color:#00D4FF;font-weight:800;letter-spacing:1.2px;margin-bottom:6px">💼 MI BANCA</div>'
-    +'<div style="color:#F0F2F7;font-weight:900;font-size:36px;line-height:1">'+ST.bank.toFixed(2)+'€</div>'
+    +'<div><div style="font-size:11px;color:#00D4FF;font-weight:800;letter-spacing:1.2px;margin-bottom:6px">💼 MI BANCA (automática)</div>'
+    +'<div style="color:#F0F2F7;font-weight:900;font-size:36px;line-height:1">'+currentBank.toFixed(2)+'€</div>'
     +'<div style="font-weight:700;font-size:13px;color:'+(parseFloat(gr)>=0?'#00FF87':'#FF3B5C')+';margin-top:5px">'+(parseFloat(gr)>=0?'▲':'▼')+' '+Math.abs(gr)+'% desde '+ST.startBank.toFixed(2)+'€ inicial</div></div>'
     +'<button onclick="edBancaInicial()" style="background:#1A2035;border:1px solid #1E2330;color:#00D4FF;font-weight:700;font-size:11px;border-radius:9px;padding:6px 10px">✏️</button>'
     +'</div></div>';
 
-  // Resumen por periodo
-  var now = new Date();
-  var dayStat = periodPnl(function(h){return h.dayKey===todayKeyStr();});
-  var weekAgo = new Date(now.getTime() - 7*86400000);
-  var weekStat = periodPnl(function(h){return new Date(h.dayKey) >= weekAgo;});
-  var monthStr = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
-  var monthStat = periodPnl(function(h){return (h.dayKey||'').startsWith(monthStr);});
-  var stat = bancaPeriod==='day'?dayStat:bancaPeriod==='week'?weekStat:monthStat;
-
-  html += '<div class="tbrow">'
-    +'<button class="tbt" style="'+(bancaPeriod==='day'?'border-color:#00D4FF;background:#091520;color:#00D4FF':'')+'" onclick="bancaPeriod=\'day\';go(\'banca\')">Hoy</button>'
-    +'<button class="tbt" style="'+(bancaPeriod==='week'?'border-color:#00D4FF;background:#091520;color:#00D4FF':'')+'" onclick="bancaPeriod=\'week\';go(\'banca\')">7 días</button>'
-    +'<button class="tbt" style="'+(bancaPeriod==='month'?'border-color:#00D4FF;background:#091520;color:#00D4FF':'')+'" onclick="bancaPeriod=\'month\';go(\'banca\')">Mes</button>'
+  var mesNombre = now.toLocaleDateString('es-ES',{month:'long',year:'numeric'});
+  html += '<div class="bcard" style="margin-top:12px">'
+    +'<div style="font-size:11px;color:#A855F7;font-weight:800;letter-spacing:1px;margin-bottom:2px">📊 EVOLUCIÓN — '+mesNombre.toUpperCase()+'</div>'
+    +'<div style="font-size:11px;color:#5A6785;margin-bottom:10px">Barras = unidades ganadas/perdidas cada día · Línea = saldo acumulado de banca</div>'
+    +'<canvas id="bancaChart" style="width:100%;height:150px;display:block"></canvas>'
     +'</div>';
 
-  html += '<div class="g4" style="margin-bottom:14px">'
-    +'<div class="sb"><div class="sv" style="color:'+(stat.pnl>=0?'#00FF87':'#FF3B5C')+'">'+(stat.pnl>=0?'+':'')+stat.pnl.toFixed(2)+'€</div><div class="sl">P&L</div></div>'
-    +'<div class="sb"><div class="sv" style="color:#00D4FF">'+stat.roi.toFixed(1)+'%</div><div class="sl">ROI</div></div>'
-    +'<div class="sb"><div class="sv">'+stat.count+'</div><div class="sl">Apuestas</div></div>'
-    +'<div class="sb"><div class="sv" style="color:#00FF87">'+stat.wins+'</div><div class="sl">Ganadas</div></div></div>';
+  html += '<div class="g4" style="margin:14px 0">'
+    +'<div class="sb"><div class="sv" style="color:'+(monthUnits>=0?'#00FF87':'#FF3B5C')+'">'+(monthUnits>=0?'+':'')+monthUnits.toFixed(2)+'u</div><div class="sl">Este mes</div></div>'
+    +'<div class="sb"><div class="sv" style="color:#00D4FF">'+(winRate!==null?winRate+'%':'—')+'</div><div class="sl">Win rate</div></div>'
+    +'<div class="sb"><div class="sv">'+decided+'</div><div class="sl">Picks</div></div>'
+    +'<div class="sb"><div class="sv" style="color:#00FF87">'+monthWins+'</div><div class="sl">Ganados</div></div></div>';
 
-  html += '<div style="background:#0B0E15;border:1px solid #1A2235;border-radius:10px;padding:10px 13px;margin-bottom:16px;font-size:11px;color:#5A6785;line-height:1.6">ℹ️ El stake se calcula con Kelly conservador (máx. 5% de banca por pick) basado solo en la fiabilidad verificada de cada señal. Nunca subimos el stake para "recuperar" una pérdida anterior — eso destruye bancas, no las hace crecer.</div>';
-  (function(){
-    var dd = drawdownMultiplier();
-    if (dd < 1 && ST.peakBank) {
-      var ddPct = Math.round((1-(ST.bank/ST.peakBank))*100);
-      html += '<div style="background:rgba(255,107,0,.08);border:1px solid rgba(255,107,0,.3);border-radius:10px;padding:10px 13px;margin-bottom:16px;font-size:11px;color:#FF6B00;line-height:1.6">🛡️ Protección de drawdown activa: tu banca ha caído un '+ddPct+'% desde su pico ('+ST.peakBank.toFixed(2)+'€). Los stakes sugeridos se han reducido al '+Math.round(dd*100)+'% de lo normal hasta que la banca se recupere.</div>';
-    }
-  })();
+  html += '<div style="background:#0B0E15;border:1px solid #1A2235;border-radius:10px;padding:10px 13px;margin-bottom:16px;font-size:11px;color:#5A6785;line-height:1.6">ℹ️ Cada pick verificado cuenta 1 unidad = 2% de tu banca inicial (gestión conservadora) — el mismo criterio con el que ves las unidades publicadas en el canal de Telegram. Se calcula solo con picks que ya tienen cuota real verificada y resultado confirmado; nada se introduce a mano.</div>';
 
-  if(pending.length){
-    html += '<div class="shdr">⏳ APUESTAS PENDIENTES</div>';
-    pending.forEach(function(h){
-      html += '<div class="card" style="border-color:rgba(255,214,0,.35)">'
-        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:9px">'
-        +'<div><span class="timebadge">'+h.date+'</span>'
-        +'<div style="color:#F0F2F7;font-weight:700;font-size:13px;margin-top:4px">'+h.match+'</div>'
-        +'<div style="color:#00D4FF;font-size:13px;margin-top:2px">'+h.pick+' @'+h.odds+'</div></div>'
-        +'<div style="text-align:right"><div style="color:#FFD600;font-weight:900;font-size:17px">'+h.stake.toFixed(2)+'€</div>'
-        +'<div style="color:#00FF87;font-size:12px">+'+getPot(h.stake,h.odds).toFixed(2)+'€</div></div></div>'
-        +'<div style="display:flex;gap:6px">'
-        +'<button onclick="settleBet(\''+h.id+'\',\'won\')" style="flex:1;padding:9px 0;border-radius:9px;border:none;background:rgba(0,255,135,.15);color:#00FF87;font-weight:800;font-size:11px">✅ GANADA</button>'
-        +'<button onclick="settleBet(\''+h.id+'\',\'lost\')" style="flex:1;padding:9px 0;border-radius:9px;border:none;background:rgba(255,59,92,.15);color:#FF3B5C;font-weight:800;font-size:11px">❌ PERDIDA</button>'
-        +'<button onclick="deleteBet(\''+h.id+'\')" style="flex:1;padding:9px 0;border-radius:9px;border:none;background:#1A2035;color:#6B7490;font-weight:700;font-size:11px">🗑️</button>'
-        +'</div></div>';
+  var settledDesc = picks.slice().sort(function(a,b){return (b.loggedAt||0)-(a.loggedAt||0);});
+  if(settledDesc.length){
+    html += '<div class="shdr" style="margin-top:6px">📋 PICKS VERIFICADOS RECIENTES</div>';
+    settledDesc.slice(0,40).forEach(function(f){
+      var won = f.hit===true;
+      var hc = won?'#00FF87':'#FF3B5C';
+      var u = unitStake();
+      var pVal = won ? '+'+((parseFloat(f.betReal.odd)-1)*(u||1)).toFixed(2)+'€' : '-'+(u||1).toFixed(2)+'€';
+      html += '<div class="card" style="border-color:'+hc+'33">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+        +'<div><div style="color:#F0F2F7;font-weight:700;font-size:13px">'+translateTeam(f.home||'')+' vs '+translateTeam(f.away||'')+'</div>'
+        +'<div style="color:#00D4FF;font-size:12px;margin-top:2px">'+(f.market||f.pick)+' @'+f.betReal.odd+'</div>'
+        +'<div style="color:#5A6785;font-size:10px;margin-top:2px">'+(f.league||'')+'</div></div>'
+        +'<div style="text-align:right"><div style="color:'+hc+';font-weight:900;font-size:15px">'+(won?'✅':'❌')+'</div>'
+        +'<div style="color:'+hc+';font-size:12px;font-weight:700">'+pVal+'</div></div></div></div>';
     });
+  } else {
+    html += '<div style="text-align:center;padding:30px 10px;color:#5A6785;font-size:13px">Aún no hay picks verificados este mes. En cuanto el bot confirme el primer resultado, aparecerá aquí solo.</div>';
   }
 
-  var settled = (ST.hist||[]).filter(function(h){return h.result && h.result!=='pending';}).slice().reverse();
-  if(settled.length){
-    html += '<div class="shdr" style="margin-top:6px">📋 HISTORIAL DE APUESTAS</div>';
-    settled.slice(0,40).forEach(function(h){
-      var hc = h.result==='won'?'#00FF87':'#FF3B5C';
-      var pVal = h.result==='won' ? '+'+h.profit.toFixed(2)+'€' : '-'+h.stake.toFixed(2)+'€';
-      html += '<div class="card" style="border-color:'+hc+'33;padding:10px 12px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:flex-start">'
-        +'<div style="min-width:0"><div style="font-size:10px;color:#6B7490;margin-bottom:2px">'+h.date+' '+(h.result==='won'?'✅':'❌')+'</div>'
-        +'<div style="color:#F0F2F7;font-weight:700;font-size:12px">'+h.match+'</div>'
-        +'<div style="color:#00D4FF;font-size:12px">'+h.pick+' @'+h.odds+'</div></div>'
-        +'<div style="text-align:right;flex-shrink:0;margin-left:8px"><div style="color:'+hc+';font-weight:900;font-size:15px">'+pVal+'</div>'
-        +'<div style="font-size:10px;color:#6B7490">'+h.stake.toFixed(2)+'€</div></div></div>';
-    });
-  }
-
-  if(!pending.length && !settled.length){
-    html += '<div style="text-align:center;padding:50px 0;color:#6B7490"><div style="font-size:36px;margin-bottom:10px">💼</div><div style="font-weight:700">Sin apuestas registradas todavía</div><div style="font-size:13px;margin-top:5px">Ve a la pestaña Top y pulsa "Registrar apuesta" en cualquier pick</div></div>';
-  }
-
+  setTimeout(function(){ drawBancaChart('bancaChart', series, ST.startBank||0); }, 30);
   return html;
 }
+
 function svBancaInicial(){var v=parseFloat((document.getElementById('bi')||{}).value||0);if(v>0){setBank(v);ST.startBank=v;saveST();go('banca');}}
 function edBancaInicial(){if(confirm('¿Reiniciar banca? Esto no borra tu historial de apuestas, solo el saldo.')){setBank(0);ST.startBank=0;ST.peakBank=0;saveST();go('banca');}}
 
