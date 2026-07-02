@@ -190,6 +190,7 @@ textarea{resize:none}
     <button class="tab" data-p="live"       onclick="go('live')">      <span class="tic">🔴</span><span class="tlb">Live</span><span class="rdot" id="rdot"></span></button>
     <button class="tab" data-p="banca"      onclick="go('banca')">     <span class="tic">💼</span><span class="tlb">Banca</span></button>
     <button class="tab" data-p="history"    onclick="go('history')">   <span class="tic">📅</span><span class="tlb">Historial</span><span class="ppin hide" id="ppin">0</span></button>
+    <button class="tab" data-p="ligas"      onclick="go('ligas')">     <span class="tic">🌍</span><span class="tlb">Ligas</span></button>
   </div>
   <div style="text-align:center;padding:3px 0 9px;font-size:9px;color:#222A3A">⚠️ Solo informativo · +18 · Apuesta responsablemente</div>
 </div>
@@ -295,6 +296,8 @@ var SERVER_LOG = null;
 var histRange = 'all'; // 'day' | 'week' | 'month' | 'all' — filtro de fechas en Historial
 var SERVER_LOG_LOADING = false;
 var SERVER_SIGNAL_STATS = {};
+var SERVER_TG_LOG = null; // SOLO los picks realmente enviados a Telegram — usado por la Banca
+var SERVER_TG_LOG_LOADING = false;
 
 var SERVER_INSIGHTS = null;
 async function fetchInsights(){
@@ -316,36 +319,64 @@ async function fetchServerHistory(){
   SERVER_LOG_LOADING = false; go(PG||'history');
 }
 
+async function fetchTelegramLog(){
+  SERVER_TG_LOG_LOADING = true; go(PG||'banca');
+  try {
+    var r = await fetch(WORKER_LIVE_URL+'/live/telegram-log');
+    var j = await r.json();
+    SERVER_TG_LOG = Array.isArray(j.log) ? j.log : [];
+  } catch(e){ SERVER_TG_LOG = []; }
+  SERVER_TG_LOG_LOADING = false; go(PG||'banca');
+}
+
 // ---------- BANCA AUTOMÁTICA (a partir de los picks reales verificados del servidor) ----------
 // Ya no se añaden apuestas a mano: la Banca se calcula sola a partir de TODO lo que el bot ha
 // publicado y verificado de verdad (los mismos picks que llegan a Telegram), usando cuota real.
+// CORREGIDO: la Banca solo debe contar los picks que de verdad se enviaron al canal de Telegram
+// (lo que el suscriptor ve y por lo que paga), NO todo lo que el motor analiza internamente.
+// Antes usaba SERVER_LOG (el historial completo, incluyendo especulativos nunca publicados),
+// lo que inflaba las unidades mostradas frente a lo que realmente se comunica en el canal.
 function serverGradedPicks(){
-  return (SERVER_LOG||[]).filter(function(f){
-    return f.graded && f.hit !== null && f.betReal && f.betReal.exists && f.betReal.odd;
+  return (SERVER_TG_LOG||[]).filter(function(f){
+    return f.graded && f.hit !== null && f.odd;
   });
 }
 function dayKeyFromTs(ts){
   var d = new Date(ts);
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
-// 1 unidad = 2% de la banca inicial (gestión conservadora estándar) — el mismo criterio con el
-// que se calculan las unidades que ves publicadas en el canal de Telegram.
-function unitStake(){ return (ST.startBank||0) * 0.02; }
+
+// BANCA COMPUESTA: cada pick apuesta el 2% de la banca REAL en ESE MOMENTO (no un 2% fijo del
+// depósito inicial) — así, si la banca ha crecido, apuestas más en unidades absolutas, y si ha
+// bajado, apuestas menos, igual que en una gestión de banca real. Recorremos TODO el historial
+// de picks enviados a Telegram en orden cronológico desde el primero, arrastrando el saldo.
+function computeBancaTimeline(){
+  var picks = serverGradedPicks().slice().sort(function(a,b){ return (a.sentAt||0)-(b.sentAt||0); });
+  var bank = ST.startBank||0;
+  var timeline = [];
+  picks.forEach(function(f){
+    var stake = bank * 0.02;
+    var pnl = f.hit ? stake*(parseFloat(f.odd)-1) : -stake;
+    bank += pnl;
+    timeline.push({ pick:f, stake:stake, pnl:pnl, bankAfter:bank });
+  });
+  return { timeline: timeline, finalBank: bank };
+}
 
 function monthlySeries(refDate){
-  var picks = serverGradedPicks();
+  var bt = computeBancaTimeline();
   var y = refDate.getFullYear(), m = refDate.getMonth();
   var daysInMonth = new Date(y, m+1, 0).getDate();
   var byDay = {};
-  picks.forEach(function(f){
-    var dk = dayKeyFromTs(f.loggedAt);
+  bt.timeline.forEach(function(row){
+    var f = row.pick;
+    var dk = dayKeyFromTs(f.sentAt);
     var dd = new Date(dk);
     if (dd.getFullYear()!==y || dd.getMonth()!==m) return;
     var day = dd.getDate();
     if (!byDay[day]) byDay[day] = {wins:0, losses:0, units:0};
-    var u = unitStake();
-    if (f.hit) { byDay[day].units += (parseFloat(f.betReal.odd)-1) * (u || 1); byDay[day].wins++; }
-    else { byDay[day].units -= (u || 1); byDay[day].losses++; }
+    byDay[day].units += row.pnl;
+    if (f.hit) byDay[day].wins++; else byDay[day].losses++;
   });
   var series = [];
   for (var d=1; d<=daysInMonth; d++){
@@ -1736,6 +1767,7 @@ function go(pg){
   else if(pg==='highOdds') html=pgHO();
   else if(pg==='allsport') html=pgAll();
   else if(pg==='history')  html=pgHist();
+  else if(pg==='ligas')    html=pgLigas();
   else if(pg==='tipsters') html=pgTips();
 
   var m=document.getElementById('main');
@@ -2051,7 +2083,7 @@ function periodPnl(filterFn){
 
 var bancaPeriod = 'day';
 function pgBanca(){
-  if(SERVER_LOG===null && !SERVER_LOG_LOADING) fetchServerHistory();
+  if(SERVER_TG_LOG===null && !SERVER_TG_LOG_LOADING) fetchTelegramLog();
   var html = '';
 
   if(!ST.bank || ST.bank<=0){
@@ -2061,16 +2093,16 @@ function pgBanca(){
     return html;
   }
 
-  var picks = serverGradedPicks();
+  var bt = computeBancaTimeline();
   var now = new Date();
   var series = monthlySeries(now);
-  var monthUnits = series.reduce(function(a,s){return a+s.units;},0);
+  var monthUnitsEUR = series.reduce(function(a,s){return a+s.units;},0); // en € ya (compuesto), pese al nombre
   var monthWins = series.reduce(function(a,s){return a+s.wins;},0);
   var monthLosses = series.reduce(function(a,s){return a+s.losses;},0);
   var decided = monthWins+monthLosses;
   var winRate = decided>0 ? Math.round(monthWins/decided*100) : null;
-  var currentBank = (ST.startBank||0) + monthUnits;
-  ST.bank = currentBank; // se recalcula siempre a partir de datos reales del mes en curso
+  var currentBank = bt.finalBank; // banca real compuesta con TODO el historial de picks enviados
+  ST.bank = currentBank;
 
   var gr = ST.startBank>0 ? ((currentBank/ST.startBank-1)*100).toFixed(1) : '0.0';
   html += '<div class="bcard"><div style="display:flex;justify-content:space-between;align-items:flex-start">'
@@ -2083,45 +2115,44 @@ function pgBanca(){
   var mesNombre = now.toLocaleDateString('es-ES',{month:'long',year:'numeric'});
   html += '<div class="bcard" style="margin-top:12px">'
     +'<div style="font-size:11px;color:#A855F7;font-weight:800;letter-spacing:1px;margin-bottom:2px">📊 EVOLUCIÓN — '+mesNombre.toUpperCase()+'</div>'
-    +'<div style="font-size:11px;color:#5A6785;margin-bottom:10px">Barras = unidades ganadas/perdidas cada día · Línea = saldo acumulado de banca</div>'
+    +'<div style="font-size:11px;color:#5A6785;margin-bottom:10px">Barras = € ganados/perdidos cada día · Línea = saldo acumulado de banca</div>'
     +'<canvas id="bancaChart" style="width:100%;height:150px;display:block"></canvas>'
     +'</div>';
 
   html += '<div style="font-size:11px;color:#5A6785;margin-bottom:6px">'+decided+' picks verificados este mes con cuota real</div>';
   html += '<div class="g4" style="margin:0 0 14px">'
-    +'<div class="sb"><div class="sv" style="color:'+(monthUnits>=0?'#00FF87':'#FF3B5C')+'">'+(monthUnits>=0?'+':'')+monthUnits.toFixed(2)+'u</div><div class="sl">Este mes</div></div>'
+    +'<div class="sb"><div class="sv" style="color:'+(monthUnitsEUR>=0?'#00FF87':'#FF3B5C')+'">'+(monthUnitsEUR>=0?'+':'')+monthUnitsEUR.toFixed(2)+'€</div><div class="sl">Este mes</div></div>'
     +'<div class="sb"><div class="sv" style="color:#00D4FF">'+(winRate!==null?winRate+'%':'—')+'</div><div class="sl">Win rate</div></div>'
     +'<div class="sb"><div class="sv" style="color:#00FF87">'+monthWins+'</div><div class="sl">Ganados</div></div>'
     +'<div class="sb"><div class="sv" style="color:#FF3B5C">'+monthLosses+'</div><div class="sl">Perdidos</div></div></div>';
 
-  var u0 = unitStake();
-  html += '<div style="background:#0B0E15;border:1px solid #1A2235;border-radius:10px;padding:10px 13px;margin-bottom:16px;font-size:11px;color:#5A6785;line-height:1.6">ℹ️ Cada pick verificado apuesta 1 unidad = '+(u0?u0.toFixed(2)+'€':'2% de tu banca')+' (gestión conservadora) — el mismo criterio con el que ves las unidades publicadas en el canal de Telegram. Se calcula solo con picks que ya tienen cuota real verificada y resultado confirmado; nada se introduce a mano.</div>';
+  html += '<div style="background:#0B0E15;border:1px solid #1A2235;border-radius:10px;padding:10px 13px;margin-bottom:16px;font-size:11px;color:#5A6785;line-height:1.6">ℹ️ Cada pick verificado apuesta el 2% de tu banca REAL en ese momento (gestión conservadora compuesta): si tu banca crece, apuestas más en €; si baja, apuestas menos — igual que en una gestión de banca de verdad. Se calcula solo con picks que ya tienen cuota real verificada y resultado confirmado; nada se introduce a mano.</div>';
 
   // Racha actual (bonus): cuántos aciertos o fallos consecutivos lleva desde el más reciente.
-  var settledDesc = picks.slice().sort(function(a,b){return (b.loggedAt||0)-(a.loggedAt||0);});
-  if (settledDesc.length){
-    var streak = 1, streakWin = settledDesc[0].hit;
-    for (var si=1; si<settledDesc.length; si++){
-      if (settledDesc[si].hit === streakWin) streak++; else break;
+  var timelineDesc = bt.timeline.slice().reverse(); // más reciente primero
+  if (timelineDesc.length){
+    var streak = 1, streakWin = timelineDesc[0].pick.hit;
+    for (var si=1; si<timelineDesc.length; si++){
+      if (timelineDesc[si].pick.hit === streakWin) streak++; else break;
     }
     if (streak >= 3) {
       html += '<div style="background:'+(streakWin?'rgba(0,255,135,.08)':'rgba(255,59,92,.08)')+';border:1px solid '+(streakWin?'rgba(0,255,135,.3)':'rgba(255,59,92,.3)')+';border-radius:10px;padding:9px 13px;margin-bottom:16px;font-size:12px;color:'+(streakWin?'#00FF87':'#FF3B5C')+';font-weight:700">'+(streakWin?'🔥 Racha de '+streak+' aciertos seguidos':'⚠️ '+streak+' fallos seguidos — el sistema seguirá siendo prudente con el stake')+'</div>';
     }
   }
 
-  if(settledDesc.length){
-    html += '<div class="shdr" style="margin-top:6px">📋 PICKS VERIFICADOS RECIENTES</div>';
-    settledDesc.slice(0,40).forEach(function(f){
+  if(timelineDesc.length){
+    html += '<div class="shdr" style="margin-top:6px">📋 PICKS VERIFICADOS RECIENTES (enviados a Telegram)</div>';
+    timelineDesc.slice(0,40).forEach(function(row){
+      var f = row.pick;
       var won = f.hit===true;
       var hc = won?'#00FF87':'#FF3B5C';
-      var u = unitStake();
-      var stakeTxt = (u||1).toFixed(2)+'€';
-      var pVal = won ? '+'+((parseFloat(f.betReal.odd)-1)*(u||1)).toFixed(2)+'€' : '-'+stakeTxt;
+      var stakeTxt = row.stake.toFixed(2)+'€';
+      var pVal = (row.pnl>=0?'+':'')+row.pnl.toFixed(2)+'€';
       html += '<div class="card" style="border-color:'+hc+'33">'
         +'<div style="display:flex;justify-content:space-between;align-items:flex-start">'
         +'<div><div style="color:#F0F2F7;font-weight:700;font-size:13px">'+translateTeam(f.home||'')+' vs '+translateTeam(f.away||'')+'</div>'
-        +'<div style="color:#00D4FF;font-size:12px;margin-top:2px">'+(f.market||f.pick)+' @'+f.betReal.odd+'</div>'
-        +'<div style="color:#5A6785;font-size:10px;margin-top:2px">'+(f.league||'')+' · Apostado: '+stakeTxt+'</div></div>'
+        +'<div style="color:#00D4FF;font-size:12px;margin-top:2px">'+(f.market||'')+' @'+f.odd+'</div>'
+        +'<div style="color:#5A6785;font-size:10px;margin-top:2px">'+(f.league||'')+' · Apostado: '+stakeTxt+' · Banca tras esto: '+row.bankAfter.toFixed(2)+'€</div></div>'
         +'<div style="text-align:right"><div style="color:'+hc+';font-weight:900;font-size:15px">'+(won?'✅':'❌')+'</div>'
         +'<div style="color:'+hc+';font-size:12px;font-weight:700">'+pVal+'</div></div></div></div>';
     });
@@ -2135,6 +2166,77 @@ function pgBanca(){
 
 function svBancaInicial(){var v=parseFloat((document.getElementById('bi')||{}).value||0);if(v>0){setBank(v);ST.startBank=v;saveST();go('banca');}}
 function edBancaInicial(){if(confirm('¿Reiniciar banca? Esto no borra tu historial de apuestas, solo el saldo.')){setBank(0);ST.startBank=0;ST.peakBank=0;saveST();go('banca');}}
+
+var LIGA_ABIERTA = null; // qué liga está desplegada en la pestaña Ligas (una a la vez)
+function toggleLiga(nombre){ LIGA_ABIERTA = (LIGA_ABIERTA===nombre) ? null : nombre; go('ligas'); }
+
+function pgLigas(){
+  if(SERVER_LOG===null && !SERVER_LOG_LOADING) fetchServerHistory();
+  var log = SERVER_LOG || [];
+  var html = '<div class="shdr" style="margin-top:0">🌍 RENDIMIENTO POR LIGA</div>'
+    +'<div style="font-size:11px;color:#5A6785;margin-bottom:12px">Todo lo acumulado en el historial, agrupado por liga. Toca una liga para ver sus pronósticos.</div>';
+
+  if(!log.length){
+    html += '<div style="text-align:center;padding:40px 10px;color:#5A6785;font-size:13px">'+(SERVER_LOG_LOADING?'Cargando historial…':'Aún no hay datos suficientes.')+'</div>';
+    return html;
+  }
+
+  // Agrupamos por liga: total, verificados, aciertos, win rate.
+  var byLeague = {};
+  log.forEach(function(f){
+    var lg = f.league || 'Sin liga';
+    if(!byLeague[lg]) byLeague[lg] = { total:0, graded:0, hits:0, items:[] };
+    byLeague[lg].total++;
+    byLeague[lg].items.push(f);
+    if(f.graded && f.hit!==null){ byLeague[lg].graded++; if(f.hit) byLeague[lg].hits++; }
+  });
+
+  var leagues = Object.keys(byLeague).map(function(lg){
+    var d = byLeague[lg];
+    var wr = d.graded>0 ? Math.round(d.hits/d.graded*100) : null;
+    return { name: lg, total: d.total, graded: d.graded, hits: d.hits, winRate: wr, items: d.items };
+  });
+  // Ordenamos: primero las que tienen más muestra verificada, luego por mejor win rate.
+  leagues.sort(function(a,b){
+    if(b.graded!==a.graded) return b.graded-a.graded;
+    return (b.winRate||0)-(a.winRate||0);
+  });
+
+  leagues.forEach(function(lg){
+    var open = LIGA_ABIERTA === lg.name;
+    var wrColor = lg.winRate===null ? '#5A6785' : lg.winRate>=65 ? '#00FF87' : lg.winRate>=45 ? '#FFD600' : '#FF3B5C';
+    var wrTxt = lg.winRate===null ? 'sin verificar' : lg.winRate+'%';
+    var fiable = lg.graded>=15;
+    html += '<div class="card" style="border-color:'+(open?'#00D4FF55':'#1E2330')+';padding:0;overflow:hidden">'
+      +'<div onclick="toggleLiga('+JSON.stringify(lg.name)+')" style="padding:13px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer">'
+      +'<div style="min-width:0"><div style="color:#F0F2F7;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+lg.name+'</div>'
+      +'<div style="color:#5A6785;font-size:11px;margin-top:2px">'+lg.total+' pronósticos'+(lg.graded?' · '+lg.graded+' verificados':'')+(!fiable&&lg.graded>0?' · muestra pequeña':'')+'</div></div>'
+      +'<div style="display:flex;align-items:center;gap:10px;flex-shrink:0">'
+      +'<div style="text-align:right"><div style="color:'+wrColor+';font-weight:900;font-size:16px">'+wrTxt+'</div></div>'
+      +'<span style="color:#5A6785;font-size:14px;transform:rotate('+(open?'180':'0')+'deg);transition:.2s">▾</span>'
+      +'</div></div>';
+
+    if(open){
+      var itemsDesc = lg.items.slice().sort(function(a,b){return (b.loggedAt||0)-(a.loggedAt||0);});
+      html += '<div style="padding:0 12px 12px">';
+      itemsDesc.slice(0,50).forEach(function(f){
+        var badge = (!f.graded) ? '<span style="color:#FFD600;font-size:10px;font-weight:700">⏳ Pendiente</span>'
+          : f.hit===null ? '<span style="color:#5A6785;font-size:10px;font-weight:700">➖ Sin datos</span>'
+          : f.hit ? '<span style="color:#00FF87;font-size:10px;font-weight:700">✅ Acertó ('+(f.finalScore||'')+')</span>'
+          : '<span style="color:#FF3B5C;font-size:10px;font-weight:700">❌ Falló ('+(f.finalScore||'')+')</span>';
+        html += '<div style="border-top:1px solid #171B28;padding:9px 0">'
+          +'<div style="color:#C9D2E3;font-size:12px;font-weight:600">'+translateTeam(f.home||'')+' vs '+translateTeam(f.away||'')+'</div>'
+          +'<div style="color:#00D4FF;font-size:11px;margin-top:1px">'+(f.market||f.pick||'')+' · '+(f.confidence||0)+'%</div>'
+          +'<div style="margin-top:2px">'+badge+'</div></div>';
+      });
+      if(lg.items.length>50) html += '<div style="color:#5A6785;font-size:10px;padding-top:6px">…y '+(lg.items.length-50)+' más</div>';
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+
+  return html;
+}
 
 function pgHist(){
   if(SERVER_LOG===null && !SERVER_LOG_LOADING) fetchServerHistory();
