@@ -2169,6 +2169,12 @@ function edBancaInicial(){if(confirm('¿Reiniciar banca? Esto no borra tu histor
 
 var LIGA_ABIERTA = null; // qué liga está desplegada en la pestaña Ligas (una a la vez)
 function toggleLiga(nombre){ LIGA_ABIERTA = (LIGA_ABIERTA===nombre) ? null : nombre; go('ligas'); }
+// Genera un literal JS (con comillas dobles) seguro para meter dentro de un atributo HTML
+// delimitado por comillas SIMPLES — antes se usaba JSON.stringify directo dentro de un atributo
+// onclick="..." con comillas dobles, y como JSON.stringify también usa comillas dobles, cualquier
+// texto (nombre de liga) rompía el HTML entero. Aquí además escapamos cualquier comilla simple
+// que pudiera aparecer en el texto, para que nunca choque con el delimitador del atributo.
+function jsAttrLiteral(s){ return JSON.stringify(String(s)).replace(/'/g, "\\u0027"); }
 
 function pgLigas(){
   if(SERVER_LOG===null && !SERVER_LOG_LOADING) fetchServerHistory();
@@ -2208,7 +2214,7 @@ function pgLigas(){
     var wrTxt = lg.winRate===null ? 'sin verificar' : lg.winRate+'%';
     var fiable = lg.graded>=15;
     html += '<div class="card" style="border-color:'+(open?'#00D4FF55':'#1E2330')+';padding:0;overflow:hidden">'
-      +'<div onclick="toggleLiga('+JSON.stringify(lg.name)+')" style="padding:13px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer">'
+      +'<div onclick=\'toggleLiga('+jsAttrLiteral(lg.name)+')\' style="padding:13px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer">'
       +'<div style="min-width:0"><div style="color:#F0F2F7;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+lg.name+'</div>'
       +'<div style="color:#5A6785;font-size:11px;margin-top:2px">'+lg.total+' pronósticos'+(lg.graded?' · '+lg.graded+' verificados':'')+(!fiable&&lg.graded>0?' · muestra pequeña':'')+'</div></div>'
       +'<div style="display:flex;align-items:center;gap:10px;flex-shrink:0">'
