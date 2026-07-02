@@ -364,13 +364,12 @@ function drawBancaChart(canvasId, series, startBank){
   ctx.scale(dpr, dpr);
   ctx.clearRect(0,0,w,h);
 
-  var padL=34, padR=10, padT=14, padB=22;
+  var padL=34, padR=38, padT=16, padB=22;
   var chartW = w-padL-padR, chartH = h-padT-padB;
   var n = series.length;
-  var barW = chartW/n * 0.62;
+  var barW = Math.min(7, chartW/n * 0.34);
   var gap = chartW/n;
 
-  // Línea acumulada (saldo de banca día a día)
   var running = startBank || 0;
   var cum = series.map(function(s){ running += s.units; return running; });
   var allVals = series.map(function(s){return s.units;});
@@ -379,10 +378,18 @@ function drawBancaChart(canvasId, series, startBank){
   var maxCum = Math.max.apply(null, cum.concat([startBank||0]));
   var cumRange = Math.max(1, maxCum-minCum);
 
-  var zeroY = padT + chartH*0.55;
-  var barScale = (chartH*0.42)/maxAbs;
+  var zeroY = padT + chartH*0.58;
+  var barScale = (chartH*0.38)/maxAbs;
 
-  // Barras de unidades diarias (verde/rojo), con degradado para efecto más "premium"
+  // Líneas guía horizontales sutiles, para leer mejor sin recargar la gráfica.
+  ctx.strokeStyle = 'rgba(255,255,255,.045)';
+  ctx.lineWidth = 1;
+  for (var gl=1; gl<3; gl++){
+    var gy = padT + (chartH/3)*gl;
+    ctx.beginPath(); ctx.moveTo(padL, gy); ctx.lineTo(w-padR, gy); ctx.stroke();
+  }
+
+  // Barras finas de unidades diarias (verde/rojo)
   series.forEach(function(s,i){
     var x = padL + i*gap + (gap-barW)/2;
     var bh = Math.abs(s.units)*barScale;
@@ -390,28 +397,46 @@ function drawBancaChart(canvasId, series, startBank){
     var grad = ctx.createLinearGradient(0,y,0,y+Math.max(bh,1));
     if (s.units>=0){ grad.addColorStop(0,'#00FF87'); grad.addColorStop(1,'#00B85F'); }
     else { grad.addColorStop(0,'#FF6B85'); grad.addColorStop(1,'#FF3B5C'); }
-    ctx.fillStyle = s.units!==0 ? grad : 'rgba(255,255,255,.06)';
+    ctx.fillStyle = s.units!==0 ? grad : 'rgba(255,255,255,.05)';
     ctx.beginPath();
-    var r = 3;
-    var bb = Math.max(bh,2);
+    var r = 2;
+    var bb = Math.max(bh,1.5);
     ctx.roundRect ? ctx.roundRect(x, s.units>=0?y:zeroY, barW, bb, r) : ctx.rect(x, s.units>=0?y:zeroY, barW, bb);
     ctx.fill();
   });
 
-  // Línea de evolución de banca acumulada, con relleno degradado bajo la curva
-  ctx.beginPath();
-  cum.forEach(function(v,i){
-    var x = padL + i*gap + gap/2;
-    var y = padT + chartH - ((v-minCum)/cumRange)*chartH;
-    if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  // Línea de evolución de banca, suavizada con curvas para que no se vea dentada/gruesa.
+  var pts = cum.map(function(v,i){
+    return { x: padL + i*gap + gap/2, y: padT + chartH - ((v-minCum)/cumRange)*chartH };
   });
+  ctx.beginPath();
+  pts.forEach(function(p,i){
+    if (i===0) { ctx.moveTo(p.x,p.y); return; }
+    var prev = pts[i-1];
+    var midX = (prev.x+p.x)/2;
+    ctx.quadraticCurveTo(prev.x, prev.y, midX, (prev.y+p.y)/2);
+  });
+  if (pts.length) ctx.lineTo(pts[pts.length-1].x, pts[pts.length-1].y);
   ctx.strokeStyle = '#00D4FF';
-  ctx.lineWidth = 2.2;
+  ctx.lineWidth = 1.6;
   ctx.lineJoin = 'round';
-  ctx.shadowColor = 'rgba(0,212,255,.5)';
-  ctx.shadowBlur = 6;
+  ctx.lineCap = 'round';
+  ctx.shadowColor = 'rgba(0,212,255,.35)';
+  ctx.shadowBlur = 4;
   ctx.stroke();
   ctx.shadowBlur = 0;
+
+  // Punto y etiqueta en el último día con dato real (saldo actual)
+  var lastIdx = -1;
+  for (var li=series.length-1; li>=0; li--){ if (series[li].units!==0 || li===series.length-1){ lastIdx = li; break; } }
+  if (lastIdx>=0 && pts[lastIdx]){
+    var lp = pts[lastIdx];
+    ctx.beginPath(); ctx.arc(lp.x, lp.y, 2.6, 0, Math.PI*2);
+    ctx.fillStyle = '#00D4FF'; ctx.fill();
+    ctx.fillStyle = '#00D4FF';
+    ctx.font = '700 10px -apple-system, sans-serif';
+    ctx.fillText(cum[lastIdx].toFixed(0)+'€', Math.min(lp.x+6, w-padR-2), lp.y+3);
+  }
 
   // Eje base y etiquetas de días (cada ~5)
   ctx.strokeStyle = 'rgba(255,255,255,.08)';
@@ -2062,27 +2087,41 @@ function pgBanca(){
     +'<canvas id="bancaChart" style="width:100%;height:150px;display:block"></canvas>'
     +'</div>';
 
-  html += '<div class="g4" style="margin:14px 0">'
+  html += '<div style="font-size:11px;color:#5A6785;margin-bottom:6px">'+decided+' picks verificados este mes con cuota real</div>';
+  html += '<div class="g4" style="margin:0 0 14px">'
     +'<div class="sb"><div class="sv" style="color:'+(monthUnits>=0?'#00FF87':'#FF3B5C')+'">'+(monthUnits>=0?'+':'')+monthUnits.toFixed(2)+'u</div><div class="sl">Este mes</div></div>'
     +'<div class="sb"><div class="sv" style="color:#00D4FF">'+(winRate!==null?winRate+'%':'—')+'</div><div class="sl">Win rate</div></div>'
-    +'<div class="sb"><div class="sv">'+decided+'</div><div class="sl">Picks</div></div>'
-    +'<div class="sb"><div class="sv" style="color:#00FF87">'+monthWins+'</div><div class="sl">Ganados</div></div></div>';
+    +'<div class="sb"><div class="sv" style="color:#00FF87">'+monthWins+'</div><div class="sl">Ganados</div></div>'
+    +'<div class="sb"><div class="sv" style="color:#FF3B5C">'+monthLosses+'</div><div class="sl">Perdidos</div></div></div>';
 
-  html += '<div style="background:#0B0E15;border:1px solid #1A2235;border-radius:10px;padding:10px 13px;margin-bottom:16px;font-size:11px;color:#5A6785;line-height:1.6">ℹ️ Cada pick verificado cuenta 1 unidad = 2% de tu banca inicial (gestión conservadora) — el mismo criterio con el que ves las unidades publicadas en el canal de Telegram. Se calcula solo con picks que ya tienen cuota real verificada y resultado confirmado; nada se introduce a mano.</div>';
+  var u0 = unitStake();
+  html += '<div style="background:#0B0E15;border:1px solid #1A2235;border-radius:10px;padding:10px 13px;margin-bottom:16px;font-size:11px;color:#5A6785;line-height:1.6">ℹ️ Cada pick verificado apuesta 1 unidad = '+(u0?u0.toFixed(2)+'€':'2% de tu banca')+' (gestión conservadora) — el mismo criterio con el que ves las unidades publicadas en el canal de Telegram. Se calcula solo con picks que ya tienen cuota real verificada y resultado confirmado; nada se introduce a mano.</div>';
 
+  // Racha actual (bonus): cuántos aciertos o fallos consecutivos lleva desde el más reciente.
   var settledDesc = picks.slice().sort(function(a,b){return (b.loggedAt||0)-(a.loggedAt||0);});
+  if (settledDesc.length){
+    var streak = 1, streakWin = settledDesc[0].hit;
+    for (var si=1; si<settledDesc.length; si++){
+      if (settledDesc[si].hit === streakWin) streak++; else break;
+    }
+    if (streak >= 3) {
+      html += '<div style="background:'+(streakWin?'rgba(0,255,135,.08)':'rgba(255,59,92,.08)')+';border:1px solid '+(streakWin?'rgba(0,255,135,.3)':'rgba(255,59,92,.3)')+';border-radius:10px;padding:9px 13px;margin-bottom:16px;font-size:12px;color:'+(streakWin?'#00FF87':'#FF3B5C')+';font-weight:700">'+(streakWin?'🔥 Racha de '+streak+' aciertos seguidos':'⚠️ '+streak+' fallos seguidos — el sistema seguirá siendo prudente con el stake')+'</div>';
+    }
+  }
+
   if(settledDesc.length){
     html += '<div class="shdr" style="margin-top:6px">📋 PICKS VERIFICADOS RECIENTES</div>';
     settledDesc.slice(0,40).forEach(function(f){
       var won = f.hit===true;
       var hc = won?'#00FF87':'#FF3B5C';
       var u = unitStake();
-      var pVal = won ? '+'+((parseFloat(f.betReal.odd)-1)*(u||1)).toFixed(2)+'€' : '-'+(u||1).toFixed(2)+'€';
+      var stakeTxt = (u||1).toFixed(2)+'€';
+      var pVal = won ? '+'+((parseFloat(f.betReal.odd)-1)*(u||1)).toFixed(2)+'€' : '-'+stakeTxt;
       html += '<div class="card" style="border-color:'+hc+'33">'
         +'<div style="display:flex;justify-content:space-between;align-items:flex-start">'
         +'<div><div style="color:#F0F2F7;font-weight:700;font-size:13px">'+translateTeam(f.home||'')+' vs '+translateTeam(f.away||'')+'</div>'
         +'<div style="color:#00D4FF;font-size:12px;margin-top:2px">'+(f.market||f.pick)+' @'+f.betReal.odd+'</div>'
-        +'<div style="color:#5A6785;font-size:10px;margin-top:2px">'+(f.league||'')+'</div></div>'
+        +'<div style="color:#5A6785;font-size:10px;margin-top:2px">'+(f.league||'')+' · Apostado: '+stakeTxt+'</div></div>'
         +'<div style="text-align:right"><div style="color:'+hc+';font-weight:900;font-size:15px">'+(won?'✅':'❌')+'</div>'
         +'<div style="color:'+hc+';font-size:12px;font-weight:700">'+pVal+'</div></div></div></div>';
     });
