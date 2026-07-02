@@ -125,7 +125,7 @@ textarea{resize:none}
 /* ── BOTTOM TAB RAIL (single, scrollable) ── */
 #bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(15,18,24,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid rgba(255,255,255,.08);z-index:100;box-shadow:0 -8px 30px rgba(0,0,0,.35)}
 #tabrail{display:flex;justify-content:space-around;align-items:stretch;padding:10px 8px 4px;gap:4px}
-.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 10px 9px;background:transparent;border:none;cursor:pointer;position:relative;flex:1 1 0;min-width:0;-webkit-tap-highlight-color:transparent;border-radius:14px;transition:background .25s ease,transform .2s ease}
+.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px 3px 9px;background:transparent;border:none;cursor:pointer;position:relative;flex:1 1 0;min-width:0;-webkit-tap-highlight-color:transparent;border-radius:14px;transition:background .25s ease,transform .2s ease}
 .tab.on{background:linear-gradient(160deg,rgba(0,255,135,.16),rgba(0,212,255,.10));box-shadow:inset 0 0 0 1px rgba(0,255,135,.25)}
 .tab:active{transform:scale(.94)}
 .tic{font-size:23px;line-height:1;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
@@ -191,6 +191,7 @@ textarea{resize:none}
     <button class="tab" data-p="banca"      onclick="go('banca')">     <span class="tic">💼</span><span class="tlb">Banca</span></button>
     <button class="tab" data-p="history"    onclick="go('history')">   <span class="tic">📅</span><span class="tlb">Historial</span><span class="ppin hide" id="ppin">0</span></button>
     <button class="tab" data-p="ligas"      onclick="go('ligas')">     <span class="tic">🌍</span><span class="tlb">Ligas</span></button>
+    <button class="tab" data-p="jugadores"  onclick="go('jugadores')"> <span class="tic">👤</span><span class="tlb">Jugadores</span></button>
   </div>
   <div style="text-align:center;padding:3px 0 9px;font-size:9px;color:#222A3A">⚠️ Solo informativo · +18 · Apuesta responsablemente</div>
 </div>
@@ -1730,10 +1731,70 @@ var lTab='picks',lSort='lr',hoTab='picks',hoSort='ev',esTab='picks',esSort='roi'
 var horTab='picks',horSort='roi',tenTab='picks',tenSort='roi',stTab='picks',stSort='roi';
 var asFilter='Todos',tTab='gen',tSort='sc';
 
+// ============ PESTAÑA JUGADORES: biblioteca de señales de jugador ============
+// Carga la biblioteca desde el worker (/live/player-library): tasa de acierto real de cada
+// señal de jugador (goleador caliente, riesgo de expulsión) verificada con los eventos
+// oficiales de cada partido. Diseño a prueba de fallos: si el worker no responde, muestra un
+// estado de error amable con botón de reintento — jamás rompe la app.
+var JUG_DATA=null, JUG_LOADING=false, JUG_ERROR=null;
+function loadJugadores(){
+  if(JUG_LOADING) return;
+  JUG_LOADING=true; JUG_ERROR=null;
+  fetch(WORKER_LIVE_URL+'/live/player-library')
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(function(d){ JUG_DATA=d; JUG_LOADING=false; if(PG==='jugadores') go('jugadores'); })
+    .catch(function(e){ JUG_ERROR=e.message||'error'; JUG_LOADING=false; if(PG==='jugadores') go('jugadores'); });
+}
+function jugSignalName(s){
+  return s==='goleador_caliente' ? '🎯 Goleador caliente (tiros a puerta → gol)'
+       : s==='riesgo_expulsion'  ? '🟨 Riesgo de expulsión (amonestado + faltas → roja)'
+       : s;
+}
+function pgJugadores(){
+  if(!JUG_DATA && !JUG_LOADING && !JUG_ERROR) loadJugadores();
+  var h='<div style="padding:14px 14px 90px">';
+  h+='<div style="font-size:19px;font-weight:900;margin-bottom:4px">👤 Señales de Jugadores</div>';
+  h+='<div style="font-size:11.5px;color:#8B93A7;line-height:1.5;margin-bottom:14px">Biblioteca que aprende sola: cada señal detectada en directo (solo grandes ligas y Mundial) se verifica con los eventos oficiales al acabar el partido. Los picks de jugador se activarán cuando una señal acumule <b style="color:#00D4FF">30+ muestras verificadas</b> y su % real bata a la cuota.</div>';
+  if(JUG_LOADING || (!JUG_DATA && !JUG_ERROR)){
+    h+='<div style="text-align:center;padding:44px 0;color:#6B7490">Cargando biblioteca…</div></div>';
+    return h;
+  }
+  if(JUG_ERROR){
+    h+='<div style="text-align:center;padding:34px 12px;color:#8B93A7">No se pudo cargar la biblioteca ahora mismo.<br><br><button onclick="JUG_ERROR=null;JUG_DATA=null;go(\'jugadores\')" style="background:#1A2035;border:1px solid #A855F7;color:#A855F7;font-weight:800;border-radius:10px;padding:9px 18px;font-size:13px">↻ Reintentar</button></div></div>';
+    return h;
+  }
+  var sen=(JUG_DATA.senales||[]);
+  if(!sen.length){
+    h+='<div style="background:#12151F;border:1px solid #1E2330;border-radius:14px;padding:18px;text-align:center;color:#8B93A7;font-size:12.5px;line-height:1.6">La biblioteca acaba de nacer 🐣<br>En cuanto haya picks en partidos de grandes ligas, las señales de jugadores empezarán a registrarse y verificarse aquí solas.</div>';
+  } else {
+    sen.forEach(function(s){
+      var pct=(s.aciertosReales||'n/d');
+      var ok=s.muestras>=30;
+      h+='<div style="background:#12151F;border:1px solid '+(ok?'rgba(0,255,135,.35)':'#1E2330')+';border-radius:14px;padding:14px;margin-bottom:10px">'
+        +'<div style="font-weight:800;font-size:13.5px;margin-bottom:6px">'+jugSignalName(s.senal)+'</div>'
+        +'<div style="display:flex;gap:14px;font-size:12px;color:#8B93A7">'
+        +'<span>Muestras: <b style="color:#E8EAF0">'+s.muestras+'</b></span>'
+        +'<span>Acierto real: <b style="color:'+(ok?'#00FF87':'#FFD600')+'">'+pct+'</b></span></div>'
+        +'<div style="font-size:11px;color:'+(ok?'#00FF87':'#6B7490')+';margin-top:6px">'+(s.estado||'')+'</div></div>';
+    });
+  }
+  var rec=(JUG_DATA.observacionesRecientes||[]);
+  if(rec.length){
+    h+='<div style="font-weight:900;font-size:14px;margin:18px 0 8px">🕐 Observaciones recientes</div>';
+    rec.forEach(function(o){
+      h+='<div style="background:#0E111A;border:1px solid #1E2330;border-radius:11px;padding:10px 12px;margin-bottom:7px;font-size:12px">'
+        +'<div style="display:flex;justify-content:space-between;gap:8px"><b>'+(o.jugador||'')+'</b><span>'+(o.resultado||'')+'</span></div>'
+        +'<div style="color:#8B93A7;margin-top:3px">'+(o.equipo||'')+' · '+jugSignalName(o.senal)+' · '+(o.dato||'')+'</div></div>';
+    });
+  }
+  h+='</div>';
+  return h;
+}
+
 function navColor(pg){
   var m={home:'#00D4FF',live:'#FF3B5C',esports:'#A855F7',horses:'#CD853F',tennis:'#00FF87',
          stats:'#FF6B00',highOdds:'#FFD600',allsport:'#00D4FF',history:'#FFD600',
-         tipsters:'#00D4FF',smartmoney:'#FF3B5C'};
+         tipsters:'#00D4FF',smartmoney:'#FF3B5C',jugadores:'#A855F7'};
   return m[pg]||'#00D4FF';
 }
 
@@ -1768,6 +1829,7 @@ function go(pg){
   else if(pg==='allsport') html=pgAll();
   else if(pg==='history')  html=pgHist();
   else if(pg==='ligas')    html=pgLigas();
+  else if(pg==='jugadores')html=pgJugadores();
   else if(pg==='tipsters') html=pgTips();
 
   var m=document.getElementById('main');
