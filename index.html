@@ -10,7 +10,7 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 <title>Smart Money Pro</title>
-<!-- BUILD: v3-fix-quota-onesignal -->
+<!-- BUILD: v39-excelencia -->
 <style>
 :root{--bg:#060810;--bg2:#0B0E18;--bg3:#111525;--border:#1A2035;--sharp:#FF3B5C;--value:#00FF87;--warn:#FFD600;--info:#00D4FF;--purple:#A855F7;--text:#F0F2F7;--muted:#5A6785;--sub:#8896AA}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -133,7 +133,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto}
 
 <div id="hdr">
   <div class="hdr-top">
-    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v38</span></div>
+    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v39</span></div>
     <div id="pulse"><div class="pdot" id="pdot"></div><span id="ptxt">Iniciando...</span></div>
   </div>
   <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;font-size:11px;color:var(--muted)">
@@ -159,20 +159,32 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto}
 
 <script>
 // ============================================================
-// SMART MONEY PRO — v38 (fix cuota The Odds API)
+// SMART MONEY PRO — v39 "Excelencia"
 //
-// CAMBIO PRINCIPAL DE ESTA VERSIÓN:
-// El contador de cuota (REQ.theOdds) solo sumaba +1 por ESCANEO, pero
-// fetchTheOdds() hace en realidad 1 petición HTTP real por cada liga
-// consultada (hasta 16 antes: 15 ligas + 1 de lista de deportes). Eso
-// agotaba la cuota mensual real (500 req/mes) en horas mientras el panel
-// seguía mostrando "1/500" — de ahí los 401 "Usage quota has been reached"
-// en cascada que llevabas días viendo.
-// Ahora: REQ.theOdds se incrementa UNA VEZ POR PETICIÓN HTTP REAL dentro de
-// fetchTheOdds, y el número de ligas por escaneo bajó de 15 a 3 + el
-// intervalo subió de 2h a 6h. Con esto: ~4 escaneos/día x 4 peticiones
-// (3 ligas + 1 lista de deportes, esta última cacheada 24h así que casi
-// siempre son solo 3) = bien por debajo de 500/mes.
+// CAMBIOS DE ESTA VERSIÓN:
+// 1) BUG CRÍTICO DE CUOTA OddsPapi: el intervalo real era de 10 MINUTOS
+//    (600000 ms) mientras el panel decía "4h". A 2 peticiones por escaneo
+//    eso son ~288 peticiones/día contra un límite de 250/MES: la cuota de
+//    Pinnacle moría en un día, el cruce EV+ se quedaba sin referencia y la
+//    app "dejaba de funcionar". Ahora: fútbol cada 8h, esports cada 72h
+//    (~230 req/mes de 250, compartiendo clave).
+// 2) Enrutado OddsPapi: ya no se intentan los Workers de Cloudflare (sus
+//    IPs están bloqueadas por el CDN de OddsPapi — solo quemaban 30s de
+//    timeouts por petición). Ahora: directo → proxies públicos.
+// 3) Las claves personales guardadas YA NO se borran al cambiar de versión
+//    (antes cada bump de smp_keys_version machacaba tus claves y el
+//    historial de picks y volvía a las claves compartidas por defecto).
+// 4) HISTORY persistido en localStorage: las señales Sharp/Steam ahora
+//    sobreviven a recargas de la PWA (antes cada recarga en iPhone
+//    borraba la memoria de cuotas y las señales casi nunca saltaban).
+// 5) Contadores de cuota reales por petición HTTP en TODAS las fuentes
+//    (Odds-API.io hacía hasta 8 peticiones/escaneo y contaba 1).
+// 6) Eliminada la "apuesta sugerida" en alertas Sharp: se calculaba con un
+//    Pinnacle inventado (cuota×0,95), lo que SIEMPRE daba Kelly positivo.
+//    Era matemáticamente engañoso.
+// 7) Integración TELEGRAM: alertas prioritarias (arbitraje, movimiento
+//    masivo, alto volumen) a un canal privado, directo desde el navegador.
+// 8) Textos de umbral coherentes con los detectores reales (3%/4%).
 // ============================================================
 
 var DEFAULT_KEYS = {
@@ -185,17 +197,19 @@ var DEFAULT_KEYS = {
 var DEFAULT_WORKER_URL = 'https://smart-money-pro.k8mwkbp68y.workers.dev/';
 
 try {
-  if (localStorage.getItem('smp_keys_version') !== 'v44') {
-    localStorage.removeItem('smp_keys');
-    localStorage.removeItem('smp_picklog');
-    localStorage.setItem('smp_keys_version', 'v44');
-  }
+  // v39: el cambio de versión YA NO borra las claves personales ni el
+  // historial de picks. Solo se registra la versión.
+  localStorage.setItem('smp_keys_version', 'v45');
 } catch(e) {}
 
 function loadKeys() {
   try {
-    var saved = JSON.parse(localStorage.getItem('smp_keys')||'null');
-    return saved || Object.assign({}, DEFAULT_KEYS);
+    var saved = JSON.parse(localStorage.getItem('smp_keys')||'null') || {};
+    // Fusión: los valores por defecto solo rellenan campos vacíos.
+    // Las claves personales guardadas SIEMPRE tienen prioridad.
+    var merged = Object.assign({}, DEFAULT_KEYS);
+    Object.keys(saved).forEach(function(k){ if (saved[k]) merged[k] = saved[k]; });
+    return merged;
   } catch(e) { return Object.assign({}, DEFAULT_KEYS); }
 }
 function saveKeys(keys) {
@@ -239,11 +253,17 @@ function calcStake(oddsBet365, oddsPinnacle) {
 }
 
 function saveReq(){ try{localStorage.setItem('smp_req',JSON.stringify(REQ));}catch(e){} }
+// v39: contar cuota UNA vez por petición HTTP REAL, en el momento de hacerla.
+function countReq(k){ REQ[k]=(REQ[k]||0)+1; saveReq(); }
 
 // FIX: intervalo de theOdds subido de 2h (7200000) a 6h (21600000) — con
 // menos ligas por escaneo (ver fetchTheOdds) esto mantiene el consumo
 // mensual real bien dentro del límite de 500 req/mes.
-var INTERVALS = {theOdds:21600000, oddsApi:720000, oddsPapi:600000, sgo:900000, sharpApi:90000, oddsPapiEsports:122040000};
+// FIX CRÍTICO v39: oddsPapi estaba a 600000 (10 MIN) con el panel diciendo
+// "4h". 2 req/escaneo x 144 escaneos/día = ~288 req/día contra 250/MES.
+// La cuota de Pinnacle moría en <1 día y el EV+ se quedaba ciego.
+// Ahora: fútbol 8h (6 req/día = 180/mes) + esports 72h (~50/mes) = ~230/250.
+var INTERVALS = {theOdds:21600000, oddsApi:720000, oddsPapi:28800000, sgo:900000, sharpApi:90000, oddsPapiEsports:259200000};
 var lastFetch  = {theOdds:0, oddsApi:0, oddsPapi:0, sgo:0, sharpApi:0, oddsPapiEsports:0};
 var apiStatus  = {theOdds:'idle', oddsApi:'idle', oddsPapi:'idle', sgo:'idle', sharpApi:'idle', oddsPapiEsports:'idle'};
 
@@ -253,7 +273,26 @@ var SHARP   = [];
 var VALUEB  = [];
 var ARB     = [];
 var MONITOR = [];
+// v39: HISTORY persistido — antes vivía solo en memoria y cada recarga de la
+// PWA (constante en iPhone) borraba la referencia de cuotas anteriores, por
+// lo que las señales Sharp/Steam/Divergencia casi nunca podían saltar.
 var HISTORY = {};
+try { HISTORY = JSON.parse(localStorage.getItem('smp_history_v1')||'{}') || {}; } catch(e) { HISTORY = {}; }
+function saveHistory() {
+  try {
+    var cutoff = Date.now() - 24*3600*1000;
+    var pruned = {};
+    Object.keys(HISTORY).forEach(function(k){ if ((HISTORY[k].t||0) >= cutoff) pruned[k] = HISTORY[k]; });
+    var ks = Object.keys(pruned);
+    if (ks.length > 300) {
+      ks.sort(function(a,b){ return (pruned[b].t||0)-(pruned[a].t||0); });
+      var trimmed = {}; ks.slice(0,300).forEach(function(k){ trimmed[k]=pruned[k]; });
+      pruned = trimmed;
+    }
+    HISTORY = pruned;
+    localStorage.setItem('smp_history_v1', JSON.stringify(HISTORY));
+  } catch(e) {}
+}
 
 var PICK_LOG = JSON.parse(localStorage.getItem('smp_picklog')||'[]');
 function savePickLog() {
@@ -293,6 +332,39 @@ var FETCH_RUNNING = false;
 var WORKER_URL = loadWorkerUrl();
 var WORKER_URL_BACKUP = 'https://smart-money-proxy-backup.alvarogavilanart.workers.dev';
 
+// ── TELEGRAM (canal privado de alertas) — v39 ───────────────
+// La API de bots de Telegram permite CORS desde el navegador, así que se
+// envía DIRECTO, sin pasar por el Worker.
+var TG = (function(){ try { return JSON.parse(localStorage.getItem('smp_tg')||'{"token":"","chat":""}') || {token:'',chat:''}; } catch(e){ return {token:'',chat:''}; } })();
+var TG_SENT = (function(){ try { return JSON.parse(localStorage.getItem('smp_tg_sent')||'[]') || []; } catch(e){ return []; } })();
+function saveTg(){ try{ localStorage.setItem('smp_tg', JSON.stringify(TG)); }catch(e){} }
+function tgReady(){ return !!(TG.token && TG.chat); }
+async function tgSend(text) {
+  if (!tgReady()) return false;
+  try {
+    var url = 'https://api.telegram.org/bot'+TG.token+'/sendMessage?chat_id='+encodeURIComponent(TG.chat)+'&parse_mode=HTML&disable_web_page_preview=true&text='+encodeURIComponent(text);
+    var r = await fetchWithTimeout(url, 12000);
+    var j = await r.json();
+    if (j && j.ok) { addDiag('✓ Telegram enviado'); return true; }
+    addDiag('✗ Telegram: '+(((j&&j.description)||'error sin detalle')).substring(0,70));
+    return false;
+  } catch(e) { addDiag('✗ Telegram: '+e.message.substring(0,50)); return false; }
+}
+function tgNotifyAlert(a) {
+  if (!tgReady() || !a || !a.key) return;
+  if (TG_SENT.indexOf(a.key) > -1) return;
+  var head = a.type==='arb' ? '🎯 ARBITRAJE' : a.type==='value' ? '📊 EV+' : '💰 SHARP MONEY';
+  var lines = ['🚨 <b>Smart Money Pro</b> — '+head];
+  lines.push((a.sport||'')+' <b>'+(a.match||'')+'</b>'+(a.ko?' · '+fko(a.ko):''));
+  if (a.signal) lines.push(a.signal);
+  if (a.from && a.to && !a.arbDetails) lines.push('Cuota: '+a.from+' → <b>'+a.to+'</b>'+((a.book||a.bestBook)?' ('+(a.book||a.bestBook)+')':''));
+  if (a.arbDetails) lines.push(a.arbDetails.bookA+' '+a.arbDetails.oddsA.toFixed(2)+' ("'+a.arbDetails.outcomeA+'") + '+a.arbDetails.bookB+' '+a.arbDetails.oddsB.toFixed(2)+' ("'+a.arbDetails.outcomeB+'")');
+  tgSend(lines.join('\n'));
+  TG_SENT.push(a.key);
+  if (TG_SENT.length > 300) TG_SENT = TG_SENT.slice(-300);
+  try{ localStorage.setItem('smp_tg_sent', JSON.stringify(TG_SENT)); }catch(e){}
+}
+
 var FALLBACK_PROXIES = [
   {name:'corsproxy.io', fn:function(u){ return 'https://corsproxy.io/?'+encodeURIComponent(u); }},
   {name:'AllOrigins',   fn:function(u){ return 'https://api.allorigins.win/raw?url='+encodeURIComponent(u); }},
@@ -323,8 +395,11 @@ async function fetchWithTimeout(url, ms) {
 
 async function proxyFetch(targetUrl, label, apiKeyForHeader) {
   addDiag('→ '+label);
+  var isOddsPapi = label.indexOf('OddsPapi') > -1;
 
-  if (label.indexOf('OddsPapi') === -1) {
+  // v39: el intento directo se hace SIEMPRE (también para OddsPapi: la IP
+  // del navegador no está bloqueada; si falla por CORS, seguimos con proxies).
+  {
   try {
     var rDirect = await fetchWithTimeout(targetUrl, 15000);
     if (rDirect.ok) {
@@ -347,8 +422,15 @@ async function proxyFetch(targetUrl, label, apiKeyForHeader) {
   }
 
   var workersToTry = [];
-  if (WORKER_URL && WORKER_URL !== 'YOUR-WORKER-URL') workersToTry.push({url: WORKER_URL, name: 'Worker principal'});
-  workersToTry.push({url: WORKER_URL_BACKUP, name: 'Worker backup'});
+  // v39: OddsPapi bloquea las IPs de los datacenters de Cloudflare, así que
+  // pasar por los Workers es tiempo perdido garantizado (2x15s de timeout por
+  // petición). Para OddsPapi se salta directo a los proxies públicos.
+  if (isOddsPapi) {
+    addDiag('  OddsPapi: Workers de Cloudflare omitidos (IPs bloqueadas por su CDN)');
+  } else {
+    if (WORKER_URL && WORKER_URL !== 'YOUR-WORKER-URL') workersToTry.push({url: WORKER_URL, name: 'Worker principal'});
+    workersToTry.push({url: WORKER_URL_BACKUP, name: 'Worker backup'});
+  }
 
   for (var wi = 0; wi < workersToTry.length; wi++) {
     var workerEntry = workersToTry[wi];
@@ -406,10 +488,8 @@ async function proxyFetch(targetUrl, label, apiKeyForHeader) {
 async function fetchTheOdds() {
   if (!window._cachedSports || Date.now() - (window._sportsCacheTime||0) > 86400000) {
     var sportsUrl = 'https://api.the-odds-api.com/v4/sports/?apiKey=' + KEYS.theOdds;
+    countReq('theOdds');
     var sportsData = await proxyFetch(sportsUrl, 'The Odds API (sports list)');
-    // FIX: esta llamada SÍ consume cuota real de The Odds API aunque sea "gratis"
-    // según su documentación antigua — contarla también evita sorpresas.
-    REQ.theOdds = (REQ.theOdds||0) + 1;
     if (sportsData && Array.isArray(sportsData)) {
       window._cachedSports = sportsData.filter(function(s){return s.active;}).map(function(s){return s.key;});
       window._sportsCacheTime = Date.now();
@@ -463,11 +543,8 @@ async function fetchTheOdds() {
     var url = 'https://api.the-odds-api.com/v4/sports/' + sportKey + '/odds/?apiKey='
       + KEYS.theOdds + '&regions=eu,uk,fr&markets=h2h&oddsFormat=decimal'
       + '&commenceTimeTo=' + future.toISOString().split('.')[0] + 'Z';
+    countReq('theOdds');
     var data = await proxyFetch(url, 'The Odds API ('+sportKey+')');
-    // FIX: contar AQUÍ, una vez por petición HTTP real — esto es lo que antes
-    // faltaba. Antes solo se incrementaba +1 por escaneo entero en runFetch,
-    // sin importar cuántas ligas se pidieran dentro.
-    REQ.theOdds = (REQ.theOdds||0) + 1;
     if (!data || !Array.isArray(data)) continue;
     apiStatus.theOdds = 'ok';
     var noBookCoverage = 0;
@@ -509,6 +586,7 @@ async function fetchOddsApiIo() {
     var sportIcon = sport==='football'?'⚽' : sport==='basketball'?'🏀' : sport==='tennis'?'🎾' : '🏆';
 
     var leaguesUrl = 'https://api.odds-api.io/v3/leagues?apiKey=' + KEYS.oddsApi + '&sport=' + sport + '&all=true';
+    countReq('oddsApi');
     var leagues = await proxyFetch(leaguesUrl, 'Odds-API.io (leagues '+sport+')');
     if (!leagues || !Array.isArray(leagues) || !leagues.length) continue;
 
@@ -523,6 +601,7 @@ async function fetchOddsApiIo() {
 
     var eventsUrl = 'https://api.odds-api.io/v3/events?apiKey=' + KEYS.oddsApi
       + '&sport=' + sport + '&league=' + league.slug + '&status=pending&bookmaker=Bet365';
+    countReq('oddsApi');
     var events = await proxyFetch(eventsUrl, 'Odds-API.io (events '+sport+')');
     if (!events || !Array.isArray(events) || !events.length) continue;
     apiStatus.oddsApi = 'ok';
@@ -532,6 +611,7 @@ async function fetchOddsApiIo() {
       var ev = toFetch[i];
       var oddsUrl = 'https://api.odds-api.io/v3/odds?apiKey=' + KEYS.oddsApi
         + '&eventId=' + ev.id + '&bookmakers=Bet365,Winamax FR';
+      countReq('oddsApi');
       var oddsData = await proxyFetch(oddsUrl, 'Odds-API.io (odds '+sport+')');
       if (!oddsData) continue;
 
@@ -569,10 +649,12 @@ function americanToDecimal(american) {
 
 async function fetchSGO() {
   var url = 'https://api.sportsgameodds.com/v2/events?leagueID=NBA,NFL,MLB,NHL,MLS,UEFA_CHAMPIONS_LEAGUE&oddsAvailable=true&limit=25&apiKey=' + KEYS.sgo;
+  countReq('sgo');
   var data = await proxyFetch(url, 'SportsGameOdds');
   if (!data || data.success===false) {
     addDiag('  SGO: fallback a NBA-only (alguna liga no disponible en el plan)');
     var fallbackUrl = 'https://api.sportsgameodds.com/v2/events?leagueID=NBA,MLB&oddsAvailable=true&limit=25&apiKey=' + KEYS.sgo;
+    countReq('sgo');
     data = await proxyFetch(fallbackUrl, 'SportsGameOdds (NBA/MLB fallback)');
   }
   if (!data || data.success===false) return [];
@@ -647,6 +729,7 @@ async function fetchSGO() {
 async function fetchSharpApi() {
   if (!KEYS.sharpApi) return [];
   var url = 'https://api.sharpapi.io/api/v1/odds?league=NBA&market_type=moneyline';
+  countReq('sharpApi');
   var data = await proxyFetch(url, 'SharpAPI', KEYS.sharpApi);
   if (!data || !data.data) return [];
   apiStatus.sharpApi = 'ok';
@@ -680,6 +763,7 @@ async function fetchOddsPapiEsports() {
     var today = new Date().toISOString().split('T')[0];
     var weekOut = new Date(Date.now() + 7*24*60*60*1000).toISOString().split('T')[0];
     var fixturesUrl = 'https://api.oddspapi.io/v4/fixtures?sportId='+cfg.id+'&from='+today+'&to='+weekOut+'&hasOdds=true&apiKey=' + KEYS.oddsPapi;
+    countReq('oddsPapi'); countReq('oddsPapiEsports');
     var fixtures = await proxyFetch(fixturesUrl, 'OddsPapi Esports ('+cfg.icon+')');
     if (!fixtures || !Array.isArray(fixtures) || !fixtures.length) continue;
 
@@ -693,6 +777,7 @@ async function fetchOddsPapiEsports() {
   for (var i=0; i<allResults.length; i++) {
     var fx = allResults[i];
     var oddsUrl = 'https://api.oddspapi.io/v4/odds?fixtureId='+fx.fixtureId+'&bookmakers=pinnacle,bet365&apiKey=' + KEYS.oddsPapi;
+    countReq('oddsPapi'); countReq('oddsPapiEsports');
     var data = await proxyFetch(oddsUrl, 'OddsPapi Esports odds');
     if (!data || !data.bookmakerOdds) continue;
 
@@ -729,6 +814,7 @@ async function fetchOddsPapi() {
   for (var si=0; si<SPORT_CONFIG.length; si++) {
     var sc = SPORT_CONFIG[si];
     var fixturesUrl = 'https://api.oddspapi.io/v4/fixtures?sportId='+sc.id+'&from='+todayPapi+'&to='+hoursOutPapi+'&hasOdds=true&apiKey=' + KEYS.oddsPapi;
+    countReq('oddsPapi');
     var fixtures = await proxyFetch(fixturesUrl, 'OddsPapi (fixtures '+sc.icon+')');
     if (!fixtures || !Array.isArray(fixtures) || !fixtures.length) continue;
     apiStatus.oddsPapi = 'ok';
@@ -738,6 +824,7 @@ async function fetchOddsPapi() {
 
     var oddsUrl = 'https://api.oddspapi.io/v4/odds-by-tournaments?tournamentIds='
       + tournamentIds.join(',') + '&bookmakers=pinnacle,bet365,winamax&apiKey=' + KEYS.oddsPapi;
+    countReq('oddsPapi');
     var oddsData = await proxyFetch(oddsUrl, 'OddsPapi (odds '+sc.icon+')');
     if (!oddsData || !Array.isArray(oddsData)) continue;
 
@@ -770,8 +857,8 @@ async function fetchOddsPapi() {
 
 function shouldFetch(api) { return Date.now()-lastFetch[api] >= INTERVALS[api]; }
 
-async function runFetch() {
-  if (FETCH_RUNNING) { addDiag('Ya hay un escaneo en curso...'); return; }
+async function runFetch(manual) {
+  if (FETCH_RUNNING) { if (manual) addDiag('Ya hay un escaneo en curso...'); return; }
   FETCH_RUNNING = true;
   LOADING = true;
   setPulse('loading');
@@ -780,7 +867,7 @@ async function runFetch() {
   try {
     var apis = ['theOdds','oddsApi','sgo','sharpApi','oddsPapi','oddsPapiEsports'].filter(shouldFetch);
     if (!apis.length) {
-      addDiag('Nada que actualizar todavía (esperando intervalos)');
+      if (manual) addDiag('Nada que actualizar todavía (esperando intervalos)');
       LOADING=false; FETCH_RUNNING=false; setPulse('live'); renderPage(); return;
     }
     addDiag('Escaneando: '+apis.join(', '));
@@ -790,11 +877,11 @@ async function runFetch() {
     // FIX: theOdds ya NO incrementa REQ.theOdds aquí — ahora se cuenta dentro
     // de fetchTheOdds(), una vez por petición HTTP real, no una vez por escaneo.
     if (apis.includes('theOdds'))  jobs.push(fetchTheOdds().then(function(r){results.theOdds=r||[]; lastFetch.theOdds=Date.now();}).catch(function(e){addDiag('✗ theOdds: '+e.message.substring(0,40)); apiStatus.theOdds='error';}));
-    if (apis.includes('oddsApi'))  jobs.push(fetchOddsApiIo().then(function(r){results.oddsApi=r||[]; lastFetch.oddsApi=Date.now(); REQ.oddsApi=(REQ.oddsApi||0)+1;}).catch(function(e){addDiag('✗ oddsApi: '+e.message.substring(0,40)); apiStatus.oddsApi='error';}));
-    if (apis.includes('sgo'))      jobs.push(fetchSGO().then(function(r){results.sgo=r||[]; lastFetch.sgo=Date.now(); REQ.sgo=(REQ.sgo||0)+1;}).catch(function(e){addDiag('✗ sgo: '+e.message.substring(0,40)); apiStatus.sgo='error';}));
-    if (apis.includes('sharpApi'))  jobs.push(fetchSharpApi().then(function(r){results.sharpApi=r||[]; lastFetch.sharpApi=Date.now(); REQ.sharpApi=(REQ.sharpApi||0)+1;}).catch(function(e){addDiag('✗ sharpApi: '+e.message.substring(0,40)); apiStatus.sharpApi='error';}));
-    if (apis.includes('oddsPapi')) jobs.push(fetchOddsPapi().then(function(r){results.oddsPapi=r||[]; lastFetch.oddsPapi=Date.now(); REQ.oddsPapi=(REQ.oddsPapi||0)+1;}).catch(function(e){addDiag('✗ oddsPapi: '+e.message.substring(0,40)); apiStatus.oddsPapi='error';}));
-    if (apis.includes('oddsPapiEsports')) jobs.push(fetchOddsPapiEsports().then(function(r){results.oddsPapiEsports=r||[]; lastFetch.oddsPapiEsports=Date.now(); REQ.oddsPapiEsports=(REQ.oddsPapiEsports||0)+1;}).catch(function(e){addDiag('✗ esports: '+e.message.substring(0,40)); apiStatus.oddsPapiEsports='error';}));
+    if (apis.includes('oddsApi'))  jobs.push(fetchOddsApiIo().then(function(r){results.oddsApi=r||[]; lastFetch.oddsApi=Date.now();}).catch(function(e){addDiag('✗ oddsApi: '+e.message.substring(0,40)); apiStatus.oddsApi='error';}));
+    if (apis.includes('sgo'))      jobs.push(fetchSGO().then(function(r){results.sgo=r||[]; lastFetch.sgo=Date.now();}).catch(function(e){addDiag('✗ sgo: '+e.message.substring(0,40)); apiStatus.sgo='error';}));
+    if (apis.includes('sharpApi'))  jobs.push(fetchSharpApi().then(function(r){results.sharpApi=r||[]; lastFetch.sharpApi=Date.now();}).catch(function(e){addDiag('✗ sharpApi: '+e.message.substring(0,40)); apiStatus.sharpApi='error';}));
+    if (apis.includes('oddsPapi')) jobs.push(fetchOddsPapi().then(function(r){results.oddsPapi=r||[]; lastFetch.oddsPapi=Date.now();}).catch(function(e){addDiag('✗ oddsPapi: '+e.message.substring(0,40)); apiStatus.oddsPapi='error';}));
+    if (apis.includes('oddsPapiEsports')) jobs.push(fetchOddsPapiEsports().then(function(r){results.oddsPapiEsports=r||[]; lastFetch.oddsPapiEsports=Date.now();}).catch(function(e){addDiag('✗ esports: '+e.message.substring(0,40)); apiStatus.oddsPapiEsports='error';}));
 
     await Promise.allSettled(jobs);
     saveReq();
@@ -952,7 +1039,13 @@ function processDirectResults(results) {
     addDiag('  Pinnacle: '+pinnacleList.length+' eventos disponibles, '+withPinCount+' cruzados con éxito');
   }
 
-  newAlerts.forEach(function(a) { if(!ALERTS.find(function(x){return x.key===a.key;})) ALERTS.unshift(a); });
+  newAlerts.forEach(function(a) {
+    if(!ALERTS.find(function(x){return x.key===a.key;})) {
+      ALERTS.unshift(a);
+      // v39: alertas prioritarias -> canal privado de Telegram (con dedupe)
+      if (a.type==='arb' || a.priority==='extreme' || a.priority==='highvolume') tgNotifyAlert(a);
+    }
+  });
   var sixHoursAgo = Date.now() - 6*60*60*1000;
   ALERTS = ALERTS.filter(function(a){ return (a.t||0) >= sixHoursAgo; });
   var priorityRank = {highvolume:-1, extreme:0, high:1, normal:2, undefined:2};
@@ -968,6 +1061,7 @@ function processDirectResults(results) {
   VALUEB=newValue.sort(function(a,b){return b.evNum-a.evNum;}).slice(0,20);
   ARB=newArb.sort(function(a,b){return b.profitPct-a.profitPct;}).slice(0,15);
   MONITOR=newMon.slice(0,30);
+  saveHistory();
 }
 
 // ── DETECTORS (sin cambios respecto a la versión anterior) ─
@@ -1343,7 +1437,7 @@ function pgAlerts() {
     +'<div style="font-size:11px;color:var(--sharp);font-weight:800;letter-spacing:.8px;margin-bottom:4px">🚨 ALERTAS EN TIEMPO REAL</div>'
     +'<div style="font-size:12px;color:var(--sub)">El resumen ejecutivo. Cuando Sharp$ o EV+ detectan algo importante aparece aquí primero.</div>'
     +'<div style="display:flex;justify-content:space-between;margin-top:6px">'
-    +'<div style="font-size:11px;color:var(--muted)">4 APIs · 700+ casas</div>'
+    +'<div style="font-size:11px;color:var(--muted)">6 fuentes de datos · 700+ casas</div>'
     +'<div style="font-size:11px;color:var(--muted)">'+(LAST_UP?ago(LAST_UP):'nunca')+'</div>'
     +'</div></div>';
 
@@ -1406,7 +1500,7 @@ function pgBestBet() {
 
   return '<div class="card" style="border:2px solid '+col+';box-shadow:0 0 18px '+col+'40;margin-bottom:14px">'
     +'<div style="font-size:11px;font-weight:900;color:'+col+';letter-spacing:.6px;margin-bottom:8px">'+label+'</div>'
-    +'<div class="mt">'+(top.sport||'')+' '+(top.match||'').replace('vs',' vs ')+'</div>'
+    +'<div class="mt">'+(top.sport||'')+' '+(top.match||'')+'</div>'
     +'<div style="font-size:13px;color:var(--text);font-weight:700;margin:6px 0">'+(top.signal||'')+'</div>'
     +'<div style="display:flex;align-items:center;gap:10px;margin:10px 0">'
     +'<div style="flex:1;background:var(--bg3);border-radius:8px;height:8px;overflow:hidden"><div style="height:100%;width:'+top.confidence+'%;background:'+col+';border-radius:8px"></div></div>'
@@ -1422,7 +1516,7 @@ function howItWorks() {
   return '<div class="card cn" style="margin-bottom:12px">'
     +'<div style="font-size:10px;color:var(--muted);font-weight:800;letter-spacing:.8px;margin-bottom:8px">🧠 CÓMO DETECTAMOS SEÑALES (MÉTODO BILLY WALTERS)</div>'
     +'<div style="display:flex;flex-direction:column;gap:7px">'
-    +'<div style="font-size:12px;color:var(--sub)">📉 <strong style="color:var(--text)">Caída >5% sin noticia</strong> → alguien apostó antes que tú</div>'
+    +'<div style="font-size:12px;color:var(--sub)">📉 <strong style="color:var(--text)">Caída >3% sin noticia</strong> → alguien apostó antes que tú</div>'
     +'<div style="font-size:12px;color:var(--sub)">📊 <strong style="color:var(--text)">Bet365 paga más que Pinnacle</strong> → la casa está equivocada</div>'
     +'<div style="font-size:12px;color:var(--sub)">⚡ <strong style="color:var(--text)">Velocidad</strong> → actúa antes de que la cuota corrija</div>'
     +'</div></div>';
@@ -1452,7 +1546,7 @@ function aCard(a) {
     +(isHighVol?'<div style="font-size:10px;font-weight:900;color:#00FF87;margin-bottom:6px;letter-spacing:.5px">🏆 PATRÓN DE ALTO VOLUMEN — magnitud + velocidad inusuales</div>':'')
     +(isExtreme&&!isHighVol?'<div style="font-size:10px;font-weight:900;color:#FFD600;margin-bottom:6px;letter-spacing:.5px">⚡ PRIORIDAD MÁXIMA — INVESTIGAR AHORA</div>':'')
     +'<div class="badge '+(isS?'bs':'bv')+'">'+badgeTxt+'</div>'
-    +'<div class="mt">'+(a.sport||'')+' '+(a.match||'').replace('vs',' vs ')+'</div>'
+    +'<div class="mt">'+(a.sport||'')+' '+(a.match||'')+'</div>'
     +'<div class="ms">'+(a.ko?fko(a.ko)+' · ':'')+( a.t?ago(a.t):'')+'</div>'
     +'<div style="background:var(--bg3);border-left:3px solid '+col+';border-radius:0 8px 8px 0;padding:9px 12px;margin-bottom:9px">'
     +'<div style="font-size:11px;color:'+col+';font-weight:700;margin-bottom:3px">📡 '+(a.signal||'')+'</div>'
@@ -1492,9 +1586,12 @@ function botTxt(a) {
   }
   if(a.type==='sharp'){var c=parseFloat(a.chg||0);
     var bookName = a.coordinated ? 'Bet365 Y Winamax' : (a.book || 'tu casa');
-    var stakeInfo = calcStake(parseFloat(a.to), parseFloat(a.to)*0.95);
     var marketTxtSharp = a.market ? ' a "'+a.market+'"' : '';
-    var stakeTxt = stakeInfo ? ' <strong style="color:var(--value)">Apuesta sugerida: '+stakeInfo.stake.toFixed(0)+'€</strong> ('+stakeInfo.pct.toFixed(1)+'% de tu banca) en '+bookName+marketTxtSharp+'.' : '';
+    // v39: eliminada la "apuesta sugerida" en señales Sharp. Se calculaba con
+    // un Pinnacle ficticio (cuota×0,95) que SIEMPRE producía Kelly positivo:
+    // sugería stake incluso sin ventaja real. Sin referencia sharp verdadera
+    // para este mercado, el stake debe decidirse manualmente.
+    var stakeTxt = a.market ? ' Mercado'+marketTxtSharp+'. Stake: a tu criterio (sin Pinnacle simultáneo no hay Kelly riguroso).' : '';
     if(a.coordinated) return 'EJECUTAR AHORA — Movimiento coordinado del '+c.toFixed(1)+'% en ambas casas a la vez. Esto es más fiable que un movimiento aislado: indica que el mercado entero está corrigiendo, no solo una casa.'+stakeTxt;
     if(c>15) return 'EJECUTAR AHORA — Caída del '+c+'% en '+bookName+' es señal sharp muy fuerte. Como haría Walters: actúa inmediatamente antes de que la cuota siga bajando.'+stakeTxt;
     if(c>8) return 'EJECUTAR — Movimiento del '+c+'% en '+bookName+'. Dinero profesional confirmado. Cuota '+a.to+' todavía con valor.'+stakeTxt;
@@ -1517,17 +1614,17 @@ function pgSharp() {
     +'<div style="font-size:12px;color:var(--sub);line-height:1.65">'
     +'Cuando una cuota cae bruscamente sin que haya una noticia que lo explique, es porque alguien con mucho dinero ha apostado. Billy Walters ganó $200M haciendo exactamente esto: <strong style="color:var(--text)">detectar el movimiento y actuar antes de que la cuota baje más.</strong>'
     +'</div>'
-    +'<div style="margin-top:8px;font-size:11px;color:var(--muted)">Detectamos caídas >5% entre consultas · Tus casas: Bet365 + Winamax</div>'
+    +'<div style="margin-top:8px;font-size:11px;color:var(--muted)">Detectamos caídas >3% (>6% en ligas menores) entre consultas · Tus casas: Bet365 + Winamax</div>'
     +'</div>';
 
   if(LOADING&&!SHARP.length) return h+'<div class="loadbox"><div class="spin"></div>Analizando movimientos de línea...</div>';
-  if(!SHARP.length) return h+'<div class="empty"><div class="ei">📡</div><h3>Sin movimientos detectados aún</h3><p>La app compara cada actualización con la anterior. En cuanto una cuota baje >5% sin noticia pública, aparecerá aquí con la alerta y la decisión del bot.</p></div>';
+  if(!SHARP.length) return h+'<div class="empty"><div class="ei">📡</div><h3>Sin movimientos detectados aún</h3><p>La app compara cada actualización con la anterior. En cuanto una cuota baje >3% sin noticia pública, aparecerá aquí con la alerta y la decisión del bot.</p></div>';
 
   SHARP.forEach(function(s) {
     var isD=s.dir==='BAJADA'; var col=isD?'var(--sharp)':'var(--value)';
     h+='<div class="card '+(isD?'cs':'cv')+'">'
       +'<div class="badge '+(isD?'bs':'bv')+'">'+(isD?'▼ CUOTA BAJA '+s.chg+'%':'▲ CUOTA SUBE '+s.chg+'%')+' · '+(s.book||'')+'</div>'
-      +'<div class="mt">'+(s.sport||'')+' '+(s.match||'').replace('vs',' vs ')+'</div>'
+      +'<div class="mt">'+(s.sport||'')+' '+(s.match||'')+'</div>'
       +'<div class="ms">'+(fko(s.ko)||'')+(s.t?' · '+ago(s.t):'')+'</div>'
       +'<div style="font-size:11px;color:var(--muted);margin-bottom:9px">Mercado: <strong style="color:var(--text)">'+s.market+'</strong> en <strong style="color:var(--text)">'+(s.book||'')+'</strong></div>'
       +'<div style="display:flex;gap:8px;align-items:center;margin-bottom:9px">'
@@ -1545,9 +1642,8 @@ function pgSharp() {
       +'<div class="bot" style="border-left-color:'+col+'">'
       +'<div class="bot-l" style="color:'+col+'">🤖 DECISIÓN</div>'
       +'<div class="bot-t">'+(function(){
-        var si = calcStake(parseFloat(s.to), parseFloat(s.to)*0.95);
-        var marketTxtSh = s.market ? ' a "'+s.market+'"' : '';
-        var st = si ? ' <strong style="color:var(--value)">Apuesta sugerida: '+si.stake.toFixed(0)+'€</strong> ('+si.pct.toFixed(1)+'%) en '+(s.book||'')+marketTxtSh+'.' : '';
+        // v39: sin stake inventado (ver nota en botTxt)
+        var st = '';
         if (isD&&parseFloat(s.chg)>10) return 'EJECUTAR — Caída del '+s.chg+'% en '+(s.book||'')+' = sharp money confirmado. Actúa en cuota '+s.to+' ahora antes de que siga bajando.'+st;
         if (isD) return 'VIGILAR — Caída del '+s.chg+'% en '+(s.book||'')+'. Si continúa en la próxima actualización, ejecutar.';
         return 'ANALIZAR — Subida del '+s.chg+'% en '+(s.book||'')+'. Puede indicar dinero saliendo o corrección. No ejecutar todavía.';
@@ -1568,7 +1664,7 @@ function pgValue() {
     +'<div style="font-size:12px;color:var(--sub);line-height:1.65">'
     +'<strong style="color:var(--text)">Pinnacle</strong> es el libro de apuestas de referencia mundial. Los profesionales apuestan allí porque no limita. Sus cuotas son las más eficientes. Cuando Bet365 paga <em>más</em> que Pinnacle para el mismo evento, Bet365 está equivocada. Ese es el valor. <strong style="color:var(--value)">Bill Benter construyó un algoritmo para hacer esto exactamente y ganó $118M en un solo día.</strong>'
     +'</div>'
-    +'<div style="margin-top:8px;font-size:11px;color:var(--muted)">EV+ = (Bet365/Pinnacle - 1) × 100. Umbral mínimo: 5%</div>'
+    +'<div style="margin-top:8px;font-size:11px;color:var(--muted)">EV+ = (cuota × prob. justa Pinnacle − 1) × 100. Se muestra desde 3% · Alerta desde 4%</div>'
     +'<div style="margin-top:6px;font-size:11px;color:'+freshnessColor+';font-weight:700">🕐 '+freshnessTxt+(pinAgeH!==null&&pinAgeH>=3?' — cuota de referencia algo desactualizada, el EV+ real puede haber cambiado':'')+'</div>'
     +'</div>';
 
@@ -1580,7 +1676,7 @@ function pgValue() {
       monitoredHtml = '<div class="shdr">👁️ MONITOREADOS SIN EV+ SUFICIENTE · '+monitoredList.length+'</div>'
         + monitoredList.slice(0,10).map(function(m){
             return '<div class="card cn" style="padding:10px 14px"><div style="font-size:12px;color:var(--sub)">'+(m.sport||'')+' '+m.match+'</div>'
-              + '<div style="font-size:10px;color:var(--muted)">Tiene Pinnacle de referencia pero sin discrepancia ≥5% con tus casas ahora mismo</div></div>';
+              + '<div style="font-size:10px;color:var(--muted)">Tiene Pinnacle de referencia pero sin EV+ ≥3% contra tus casas ahora mismo</div></div>';
           }).join('');
     }
     return h+'<div class="empty"><div class="ei">💎</div><h3>Buscando valor...</h3><p>Comparamos Bet365 y Winamax vs Pinnacle en tiempo real. Verás ambas cuotas juntas para que decidas dónde apostar.</p></div>'+monitoredHtml;
@@ -1589,13 +1685,13 @@ function pgValue() {
   VALUEB.forEach(function(v) {
     var ev=parseFloat(v.ev); var col=ev>20?'var(--sharp)':ev>12?'var(--warn)':'var(--value)';
     var grade=ev>20?'🔥 ENORME':ev>12?'⭐ BUENO':'✓ VÁLIDO';
-    var bHasEv = v.b365ev!==null && v.b365ev>=5;
-    var wHasEv = v.winamaxEv!==null && v.winamaxEv>=5;
+    var bHasEv = v.b365ev!==null && v.b365ev>=3;
+    var wHasEv = v.winamaxEv!==null && v.winamaxEv>=3;
     h+='<div class="card cv">'
       +'<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px">'
       +'<div style="flex:1;min-width:0">'
       +'<div class="badge bv">'+grade+' · EV+'+ev.toFixed(1)+'%</div>'
-      +'<div class="mt">'+(v.sport||'')+' '+(v.match||'').replace('vs',' vs ')+'</div>'
+      +'<div class="mt">'+(v.sport||'')+' '+(v.match||'')+'</div>'
       +'<div class="ms">'+(v.ko?fko(v.ko):'')+'</div>'
       +'<div style="font-size:13px;color:var(--value);font-weight:800;margin-top:4px">🎯 Apuesta: '+v.market+'</div>'
       +'</div>'
@@ -1654,7 +1750,7 @@ function pgArb() {
     h+='<div class="card cv">'
       +'<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px">'
       +'<div style="flex:1"><div class="badge bv">🎯 ARBITRAJE +'+a.profitPct.toFixed(1)+'%</div>'
-      +'<div class="mt">'+(a.sport||'')+' '+(a.match||'').replace('vs',' vs ')+'</div>'
+      +'<div class="mt">'+(a.sport||'')+' '+(a.match||'')+'</div>'
       +'<div class="ms">'+(a.ko?fko(a.ko):'')+'</div></div>'
       +'<div class="evpill" style="background:linear-gradient(135deg,#00FF87,#00D4FF)">+'+a.profitPct.toFixed(1)+'%</div>'
       +'</div>'
@@ -1805,10 +1901,10 @@ function pgConfig() {
   var apis=[
     {k:'theOdds',  name:'The Odds API',    col:'var(--info)',   lim:500,    per:'mes',     iv:'6h',  cv:'3 ligas top'},
     {k:'oddsApi',  name:'Odds-API.io',     col:'var(--value)',  lim:100,    per:'hora',    iv:'12min', cv:'Fútbol/Tenis'},
-    {k:'oddsPapi', name:'OddsPapi (Pinnacle)',col:'var(--purple)',lim:250,  per:'mes',     iv:'4h',  cv:'Pinnacle sharp'},
+    {k:'oddsPapi', name:'OddsPapi (Pinnacle)',col:'var(--purple)',lim:250,  per:'mes',     iv:'8h',  cv:'Pinnacle sharp'},
     {k:'sgo',      name:'SportsGameOdds',  col:'var(--warn)',   lim:999999, per:'ilimitado',iv:'60s', cv:'NBA/NFL/MLB'},
     {k:'sharpApi', name:'SharpAPI'+(KEYS.sharpApi?'':' (sin clave)'), col:'#06b6d4', lim:17280, per:'día', iv:'90s', cv:'NBA/NFL/MLB/NHL extra'},
-    {k:'oddsPapiEsports', name:'OddsPapi Esports (CS2+LoL)', col:'#FF6B35', lim:250, per:'mes (compartida c/fútbol)', iv:'34h', cv:'CS2+LoL vs Pinnacle/Bet365'},
+    {k:'oddsPapiEsports', name:'OddsPapi Esports (CS2+LoL)', col:'#FF6B35', lim:250, per:'mes (compartida c/fútbol)', iv:'72h', cv:'CS2+LoL vs Pinnacle/Bet365'},
   ];
 
   var h='<div class="card ci" style="margin-bottom:12px">'
@@ -1834,9 +1930,21 @@ function pgConfig() {
     +'<button onclick="activarNotificaciones()" style="width:100%;background:linear-gradient(135deg,#00FF87,#00D4FF);border:none;border-radius:10px;padding:12px;color:#000;font-weight:800;font-size:13px;cursor:pointer">🔔 Activar notificaciones</button>'
     +'<div id="notifStatus" style="margin-top:8px;font-size:11px;color:var(--muted);text-align:center"></div>'
     +'</div><div class="card ci" style="margin-bottom:12px">'
+    +'<div style="font-size:11px;color:#2AABEE;font-weight:800;letter-spacing:.8px;margin-bottom:6px">📨 TELEGRAM — CANAL PRIVADO DE ALERTAS</div>'
+    +'<div style="font-size:12px;color:var(--sub);margin-bottom:10px;line-height:1.6">Mucho más fiable que las notificaciones web en iPhone. Las alertas prioritarias (🎯 arbitrajes, 🚨 movimientos masivos, 🏆 alto volumen) se envían automáticamente a tu canal privado mientras la app esté abierta. Cada alerta se envía una sola vez.</div>'
+    +'<div style="margin-bottom:8px"><label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px">Token del bot (de @BotFather)</label>'
+    +'<input id="cfgTgToken" type="text" value="'+(TG.token||'')+'" placeholder="123456789:AAF..." style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px;color:var(--text);font-size:12px"></div>'
+    +'<div style="margin-bottom:10px"><label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px">Chat ID del canal (los canales privados empiezan por -100)</label>'
+    +'<input id="cfgTgChat" type="text" value="'+(TG.chat||'')+'" placeholder="-1001234567890" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px;color:var(--text);font-size:12px"></div>'
+    +'<div style="display:flex;gap:8px">'
+    +'<button onclick="guardarTelegram()" style="flex:1;background:linear-gradient(135deg,#2AABEE,#229ED9);border:none;border-radius:10px;padding:12px;color:#fff;font-weight:800;font-size:13px;cursor:pointer">💾 Guardar</button>'
+    +'<button onclick="probarTelegram()" style="flex:1;background:var(--bg3);border:1.5px solid #2AABEE;border-radius:10px;padding:12px;color:#2AABEE;font-weight:800;font-size:13px;cursor:pointer">📨 Enviar prueba</button>'
+    +'</div>'
+    +'<div id="tgStatus" style="margin-top:8px;font-size:11px;color:'+(tgReady()?'var(--value)':'var(--muted)')+';text-align:center">'+(tgReady()?'✅ Telegram configurado y activo':'Sin configurar todavía')+'</div>'
+    +'</div><div class="card ci" style="margin-bottom:12px">'
     +'<button onclick="PAGE=&quot;legendsview&quot;;renderPage()" style="width:100%;background:linear-gradient(135deg,#FFD600,#FF8800);border:none;border-radius:10px;padding:12px;color:#000;font-weight:800;font-size:13px;cursor:pointer">🏆 Ver Leyendas de las apuestas profesionales</button>'
     +'</div><div class="card ci" style="margin-bottom:12px">'
-    +'<div style="font-size:11px;color:var(--info);font-weight:800;letter-spacing:.8px;margin-bottom:4px">⚙️ ESTADO DE LAS 4 APIS</div>'
+    +'<div style="font-size:11px;color:var(--info);font-weight:800;letter-spacing:.8px;margin-bottom:4px">⚙️ ESTADO DE LAS 6 FUENTES</div>'
     +'<div style="font-size:12px;color:var(--sub)">700+ casas · Escaneos realizados: '+(REQ.scanCount||0)+' · Última: '+(LAST_UP?ago(LAST_UP):'nunca')+'</div>'
     +'</div>';
 
@@ -1862,13 +1970,13 @@ function pgConfig() {
   h+='<button class="btn-s" onclick="resetCounters()">🗑 Resetear contadores (inicio de mes)</button>';
 
   h+='<div style="background:rgba(0,255,135,.06);border:1px solid rgba(0,255,135,.2);border-radius:11px;padding:12px 14px;margin-top:10px">'
-    +'<div style="font-size:10px;color:var(--value);font-weight:800;letter-spacing:.8px;margin-bottom:7px">💡 ESTRATEGIA PARA DURAR TODO EL MES 24/7 (v38)</div>'
+    +'<div style="font-size:10px;color:var(--value);font-weight:800;letter-spacing:.8px;margin-bottom:7px">💡 ESTRATEGIA PARA DURAR TODO EL MES 24/7 (v39)</div>'
     +'<div style="font-size:11px;color:var(--sub);line-height:1.75">'
-    +'• <strong style="color:var(--text)">Odds-API.io:</strong> cada 12min, 2 deportes → ~80 req/h de 100 permitidas ✅<br>'
-    +'• <strong style="color:var(--text)">SportsGameOdds:</strong> cada 60s → ilimitado ✅<br>'
-    +'• <strong style="color:var(--text)">The Odds API:</strong> cada 6h, 3 ligas → ~360-450 req/mes de 500 ✅ (antes: 15 ligas cada 2h = agotaba la cuota en horas, ESTE era el bug de los 401)<br>'
-    +'• <strong style="color:var(--text)">OddsPapi Pinnacle:</strong> cada 4h → ~180 req/mes de 250 ✅<br>'
-    +'<br><strong style="color:var(--value)">Activa las 24h · 7 días · sin agotar límites.</strong>'
+    +'• <strong style="color:var(--text)">Odds-API.io:</strong> cada 12min, ~8 peticiones reales/escaneo → ~40 req/h de 100 ✅<br>'
+    +'• <strong style="color:var(--text)">SportsGameOdds:</strong> cada 15min → sin límite práctico ✅<br>'
+    +'• <strong style="color:var(--text)">The Odds API:</strong> cada 6h, 3 ligas → ~360-450 req/mes de 500 ✅<br>'
+    +'• <strong style="color:var(--text)">OddsPapi Pinnacle:</strong> fútbol cada 8h + esports cada 72h → ~230 req/mes de 250 ✅ (en v38 el intervalo real era de 10 MIN: la cuota moría en un día — ESTE era el motivo de que el EV+ dejara de funcionar)<br>'
+    +'<br>⚠️ <strong style="color:var(--warn)">Ojo:</strong> si el Worker cron (smart-money-cron) usa las MISMAS claves cada 10 minutos, él solo puede agotar estas cuotas independientemente de la app. Revisa sus intervalos internos.'
     +'</div></div>';
 
   if (ERRORS.length) {
@@ -1893,7 +2001,7 @@ function forceRefresh() {
   Object.keys(lastFetch).forEach(function(k){lastFetch[k]=0;});
   setPulse('loading');
   renderPage();
-  setTimeout(runFetch, 100);
+  setTimeout(function(){ runFetch(true); }, 100);
 }
 function resetCounters() {
   if (confirm('¿Resetear contadores? Solo al inicio del mes.')) {
@@ -1962,6 +2070,27 @@ function guardarClavesPropias() {
   setTimeout(function(){ location.reload(); }, 1200);
 }
 
+function guardarTelegram() {
+  var el = document.getElementById('tgStatus');
+  TG.token = (document.getElementById('cfgTgToken').value||'').trim();
+  TG.chat = (document.getElementById('cfgTgChat').value||'').trim();
+  saveTg();
+  if (el) {
+    el.innerHTML = tgReady() ? '✅ Guardado. Pulsa "Enviar prueba" para verificar la conexión.' : '⚠️ Faltan datos: se necesitan el token del bot Y el chat ID del canal.';
+    el.style.color = tgReady() ? 'var(--value)' : 'var(--warn)';
+  }
+}
+async function probarTelegram() {
+  var el = document.getElementById('tgStatus');
+  if (!tgReady()) { if (el) { el.innerHTML='⚠️ Guarda primero el token y el chat ID.'; el.style.color='var(--warn)'; } return; }
+  if (el) { el.innerHTML='⏳ Enviando mensaje de prueba...'; el.style.color='var(--muted)'; }
+  var ok = await tgSend('✅ <b>Smart Money Pro</b> conectado a este canal.\nRecibirás aquí las alertas prioritarias: arbitrajes, movimientos masivos y perfiles de alto volumen.');
+  if (el) {
+    el.innerHTML = ok ? '✅ Enviado — revisa tu canal de Telegram.' : '❌ No se pudo enviar. Comprueba: 1) que el bot es ADMINISTRADOR del canal, 2) que el chat ID es correcto (canales privados: empieza por -100), 3) que el token no tiene espacios.';
+    el.style.color = ok ? 'var(--value)' : 'var(--sharp)';
+  }
+}
+
 async function activarNotificaciones() {
   var statusEl = document.getElementById('notifStatus');
   if (!statusEl) return;
@@ -2017,7 +2146,7 @@ function init() {
   if (bi) bi.value = BANKROLL;
   renderPage();
   setTimeout(function() {
-    runFetch();
+    runFetch(true);
   }, 500);
 }
 
