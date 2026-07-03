@@ -10,7 +10,7 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 <title>Smart Money Pro</title>
-<!-- BUILD: v39-excelencia -->
+<!-- BUILD: v39.2-telegram-preconfigurado -->
 <style>
 :root{--bg:#060810;--bg2:#0B0E18;--bg3:#111525;--border:#1A2035;--sharp:#FF3B5C;--value:#00FF87;--warn:#FFD600;--info:#00D4FF;--purple:#A855F7;--text:#F0F2F7;--muted:#5A6785;--sub:#8896AA}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -133,7 +133,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto}
 
 <div id="hdr">
   <div class="hdr-top">
-    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v39</span></div>
+    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v39.2</span></div>
     <div id="pulse"><div class="pdot" id="pdot"></div><span id="ptxt">Iniciando...</span></div>
   </div>
   <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;font-size:11px;color:var(--muted)">
@@ -335,7 +335,16 @@ var WORKER_URL_BACKUP = 'https://smart-money-proxy-backup.alvarogavilanart.worke
 // ── TELEGRAM (canal privado de alertas) — v39 ───────────────
 // La API de bots de Telegram permite CORS desde el navegador, así que se
 // envía DIRECTO, sin pasar por el Worker.
-var TG = (function(){ try { return JSON.parse(localStorage.getItem('smp_tg')||'{"token":"","chat":""}') || {token:'',chat:''}; } catch(e){ return {token:'',chat:''}; } })();
+// v39.2: Telegram preconfigurado de fábrica (canal privado de Álvaro).
+// Si algún día se guardan valores distintos en "APIs → Telegram", esos
+// tienen prioridad sobre estos.
+var TG_DEFAULTS = {token:'8663389636:AAFrv18JrE9RZWu4QLZmBiDQ8-8E-ullqlU', chat:'-1004476828218'};
+var TG = (function(){
+  try {
+    var saved = JSON.parse(localStorage.getItem('smp_tg')||'null') || {};
+    return {token: saved.token || TG_DEFAULTS.token, chat: saved.chat || TG_DEFAULTS.chat};
+  } catch(e){ return Object.assign({}, TG_DEFAULTS); }
+})();
 var TG_SENT = (function(){ try { return JSON.parse(localStorage.getItem('smp_tg_sent')||'[]') || []; } catch(e){ return []; } })();
 function saveTg(){ try{ localStorage.setItem('smp_tg', JSON.stringify(TG)); }catch(e){} }
 function tgReady(){ return !!(TG.token && TG.chat); }
@@ -350,6 +359,60 @@ async function tgSend(text) {
     return false;
   } catch(e) { addDiag('✗ Telegram: '+e.message.substring(0,50)); return false; }
 }
+// ── AUTOGESTOR (estado del Worker cron 24/7) — v39.1 ────────
+var CRON_URL = (function(){ try { return localStorage.getItem('smp_cron_url') || 'https://smart-money-cron.k8mwkbp68y.workers.dev'; } catch(e){ return 'https://smart-money-cron.k8mwkbp68y.workers.dev'; } })();
+function guardarCronUrl() {
+  var v = (document.getElementById('cfgCron').value||'').trim().replace(/\/+$/,'');
+  if (!v) return;
+  CRON_URL = v;
+  try { localStorage.setItem('smp_cron_url', v); } catch(e){}
+  verAutogestor();
+}
+function agEstadoTxt(e) {
+  if (e === 'ok') return '🟢 OK';
+  if (e === 'con_fallos') return '🟡 Con fallos';
+  if (e === 'degradada') return '🔴 Degradada (backoff activo)';
+  if (e === 'pausada_por_cuota') return '⛔ Pausada por cuota';
+  return '⚪ ' + (e||'desconocido');
+}
+async function verAutogestor() {
+  var panel = document.getElementById('agPanel');
+  if (!panel) return;
+  panel.innerHTML = '<div style="font-size:11px;color:var(--muted)">⏳ Consultando el Worker cron...</div>';
+  try {
+    var r = await fetchWithTimeout(CRON_URL + '/status', 12000);
+    var j = await r.json();
+    if (!j || !j.salud) throw new Error('respuesta sin datos de salud');
+    var s = j.salud;
+    var html = '';
+    Object.keys(s.fuentes||{}).forEach(function(k){
+      var f = s.fuentes[k];
+      var okAgo = f.ultimaOk ? ago(f.ultimaOk) : 'nunca';
+      var errTxt = (f.ultimoError && f.ultimoError.detalle) ? '<div style="font-size:10px;color:var(--sharp);margin-top:2px">Último error: '+f.ultimoError.detalle.substring(0,90)+' ('+ago(f.ultimoError.t)+')</div>' : '';
+      html += '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:9px 11px;margin-bottom:6px">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;font-weight:800;color:var(--text)">'+f.nombre+'</span><span style="font-size:11px;font-weight:700">'+agEstadoTxt(f.estado)+'</span></div>'
+        + '<div style="font-size:10px;color:var(--muted);margin-top:3px">Última OK: '+okAgo+' · Fallos seguidos: '+(f.fallosSeguidos||0)+' · Intervalo: '+(f.intervaloMin>=60?Math.round(f.intervaloMin/60)+'h':f.intervaloMin+'min')+'</div>'
+        + errTxt + '</div>';
+    });
+    var q = s.cuotaTheOddsWorker || {};
+    var qpct = q.limite ? Math.min(100, (q.usadas||0)/q.limite*100) : 0;
+    html += '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:9px 11px;margin-bottom:6px">'
+      + '<div style="font-size:11px;font-weight:800;color:var(--text)">⛽ Cuota The Odds API (Worker) — '+(q.mes||'')+'</div>'
+      + '<div style="font-size:10px;color:var(--muted);margin-top:3px">'+(q.usadas||0)+' / '+(q.limite||'?')+' peticiones'+(s.footballPausado?' · <strong style="color:var(--sharp)">FÚTBOL PAUSADO</strong>':'')+'</div>'
+      + '<div class="rbar"><div class="rfill" style="width:'+qpct+'%;background:'+(qpct>80?'var(--sharp)':qpct>50?'var(--warn)':'var(--value)')+'"></div></div></div>';
+    html += '<div style="font-size:10px;color:'+(j.telegramConfigurado?'var(--value)':'var(--warn)')+';margin-bottom:6px">'+(j.telegramConfigurado?'✅ Telegram configurado en el Worker (alertas 24/7 activas)':'⚠️ Telegram SIN configurar en el Worker — añade TELEGRAM_BOT_TOKEN y TELEGRAM_CHAT_ID en sus variables')+'</div>';
+    if (j.ultimoEscaneo && j.ultimoEscaneo.log) {
+      html += '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">Último escaneo del Worker: '+ago(j.ultimoEscaneo.t)+'</div>'
+        + '<div style="max-height:140px;overflow-y:auto;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px;font-family:monospace">'
+        + j.ultimoEscaneo.log.slice(0,20).map(function(l){ var col = l.indexOf('EV+')===0||l.indexOf('SHARP')===0?'var(--value)':l.includes('error')||l.includes('fallo')?'var(--sharp)':'var(--sub)'; return '<div style="font-size:9px;color:'+col+';padding:1px 0">'+l+'</div>'; }).join('')
+        + '</div>';
+    }
+    panel.innerHTML = html;
+  } catch(e) {
+    panel.innerHTML = '<div style="font-size:11px;color:var(--sharp)">❌ No se pudo consultar el Worker: '+e.message.substring(0,80)+'.<br><span style="color:var(--muted)">Comprueba la URL y que el Worker v7 esté implementado (el v6 no tiene /status).</span></div>';
+  }
+}
+
 function tgNotifyAlert(a) {
   if (!tgReady() || !a || !a.key) return;
   if (TG_SENT.indexOf(a.key) > -1) return;
@@ -1941,6 +2004,13 @@ function pgConfig() {
     +'<button onclick="probarTelegram()" style="flex:1;background:var(--bg3);border:1.5px solid #2AABEE;border-radius:10px;padding:12px;color:#2AABEE;font-weight:800;font-size:13px;cursor:pointer">📨 Enviar prueba</button>'
     +'</div>'
     +'<div id="tgStatus" style="margin-top:8px;font-size:11px;color:'+(tgReady()?'var(--value)':'var(--muted)')+';text-align:center">'+(tgReady()?'✅ Telegram configurado y activo':'Sin configurar todavía')+'</div>'
+    +'</div><div class="card cp" style="margin-bottom:12px">'
+    +'<div style="font-size:11px;color:var(--purple);font-weight:800;letter-spacing:.8px;margin-bottom:6px">🩺 AUTOGESTOR — SALUD DEL SISTEMA 24/7</div>'
+    +'<div style="font-size:12px;color:var(--sub);margin-bottom:10px;line-height:1.6">El Worker cron vigila sus propias fuentes: cuenta fallos, aplica backoff, protege la cuota mensual y avisa por Telegram si algo se degrada o se recupera. Aquí consultas su estado en tiempo real (sin gastar cuota).</div>'
+    +'<div style="margin-bottom:8px"><label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px">URL del Worker cron</label>'
+    +'<input id="cfgCron" type="text" value="'+CRON_URL+'" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px;color:var(--text);font-size:12px" onchange="guardarCronUrl()"></div>'
+    +'<button onclick="verAutogestor()" style="width:100%;background:linear-gradient(135deg,#A855F7,#6366F1);border:none;border-radius:10px;padding:12px;color:#fff;font-weight:800;font-size:13px;cursor:pointer;margin-bottom:8px">🩺 Consultar estado del sistema</button>'
+    +'<div id="agPanel"><div style="font-size:11px;color:var(--muted);text-align:center">Pulsa el botón para ver la salud de las fuentes, la cuota del Worker y su último escaneo.</div></div>'
     +'</div><div class="card ci" style="margin-bottom:12px">'
     +'<button onclick="PAGE=&quot;legendsview&quot;;renderPage()" style="width:100%;background:linear-gradient(135deg,#FFD600,#FF8800);border:none;border-radius:10px;padding:12px;color:#000;font-weight:800;font-size:13px;cursor:pointer">🏆 Ver Leyendas de las apuestas profesionales</button>'
     +'</div><div class="card ci" style="margin-bottom:12px">'
