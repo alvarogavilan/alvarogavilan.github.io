@@ -296,7 +296,12 @@ function pgTop(){
 var SERVER_LOG = null;
 var histRange = 'all'; // 'day' | 'week' | 'month' | 'all' — filtro de fechas en Historial
 var HIST_EXPANDED = {}; // qué picks del Historial están desplegados (clave estable por pick, persiste entre renders)
-function toggleHistExpand(key){ HIST_EXPANDED[key] = !HIST_EXPANDED[key]; go('history', true); }
+function toggleHistExpand(key){
+  HIST_EXPANDED[key] = !HIST_EXPANDED[key];
+  var d = document.getElementById('hd_'+key), a = document.getElementById('ha_'+key);
+  if(d) d.style.display = HIST_EXPANDED[key] ? 'block' : 'none';
+  if(a) a.textContent = HIST_EXPANDED[key] ? '▲' : '▼';
+}
 var SERVER_LOG_LOADING = false;
 var SERVER_SIGNAL_STATS = {};
 var SERVER_TG_LOG = null; // SOLO los picks realmente enviados a Telegram — usado por la Banca
@@ -508,6 +513,7 @@ function topForecastCard(t, idx){
     +'<span style="background:'+(idx===0?'#FFD600':'#1E2330')+';color:'+(idx===0?'#000':'#F0F2F7')+';font-weight:800;font-size:11px;padding:2px 8px;border-radius:6px">'+t.confidence+'%</span>'
     +'</div>'
     +(tier.label?'<div style="font-size:10px;color:'+tier.color+';font-weight:800;margin-bottom:4px">'+tier.label+'</div>':'')
+    +(t.confidence<65?'<div style="font-size:10.5px;color:#8896AA;background:#1A1000;border:1px solid #3A2E00;border-radius:7px;padding:5px 8px;margin-bottom:6px">⚠️ No alcanza el 65% necesario para notificar — no se ha enviado ni se enviará a Telegram. Se muestra solo como referencia.</div>':'')
     +'<div style="color:#F0F2F7;font-weight:800;font-size:14px">'+(idx===0?'⭐ ':'')+(t.market||t.pick)+'</div>'
     +(realOdd?'<div style="color:#00FF87;font-size:11px;margin-top:3px">✅ Cuota real verificada (Bet365): '+realOdd.toFixed(2)+'</div>':'')
     +(t.marketComparison && t.marketComparison.length?'<div style="margin-top:8px;border-top:1px solid #1E2330;padding-top:8px"><div style="font-size:10px;color:#00FF87;font-weight:800;margin-bottom:5px">💰 COMPARATIVA CON EL MERCADO REAL</div>'+t.marketComparison.map(function(b){return '<div style="font-size:11px;color:#8896AA;margin-bottom:3px">'+b.market+': '+b.values.map(function(v){return v.tag+' <b style="color:#FFD600">'+v.odd+'</b>';}).join(' · ')+'</div>';}).join('')+'</div>':'')
@@ -2243,7 +2249,17 @@ function svBancaInicial(){var v=parseFloat((document.getElementById('bi')||{}).v
 function edBancaInicial(){if(confirm('¿Reiniciar banca? Esto no borra tu historial de apuestas, solo el saldo.')){setBank(0);ST.startBank=0;ST.peakBank=0;saveST();go('banca');}}
 
 var LIGA_ABIERTA = null; // qué liga está desplegada en la pestaña Ligas (una a la vez)
-function toggleLiga(nombre){ LIGA_ABIERTA = (LIGA_ABIERTA===nombre) ? null : nombre; go('ligas', true); }
+function toggleLiga(nombre, domId){
+  LIGA_ABIERTA = (LIGA_ABIERTA===nombre) ? null : nombre;
+  var isOpenNow = LIGA_ABIERTA === nombre;
+  document.querySelectorAll('[id^="liga_"]').forEach(function(el){
+    if(el.id === domId){ el.style.display = isOpenNow ? 'block' : 'none'; }
+    else { el.style.display = 'none'; } // solo una liga abierta a la vez, igual que antes
+  });
+  document.querySelectorAll('[id^="arrow_"]').forEach(function(el){
+    el.style.transform = (el.id === 'arrow_'+domId && isOpenNow) ? 'rotate(180deg)' : 'rotate(0deg)';
+  });
+}
 // Genera un literal JS (con comillas dobles) seguro para meter dentro de un atributo HTML
 // delimitado por comillas SIMPLES — antes se usaba JSON.stringify directo dentro de un atributo
 // onclick="..." con comillas dobles, y como JSON.stringify también usa comillas dobles, cualquier
@@ -2333,31 +2349,34 @@ function pgLigas(){
     var wrColor = lg.winRate===null ? '#5A6785' : lg.winRate>=65 ? '#00FF87' : lg.winRate>=45 ? '#FFD600' : '#FF3B5C';
     var wrTxt = lg.winRate===null ? 'sin verificar' : lg.winRate+'%';
     var fiable = lg.graded>=15;
+    var ligaKey = jsAttrLiteral(lg.name);
+    var ligaDomId = 'liga_' + lg.name.replace(/[^a-zA-Z0-9]/g, '_');
     html += '<div class="card" style="border-color:'+(open?'#00D4FF55':'#1E2330')+';padding:0;overflow:hidden">'
-      +'<div onclick=\'toggleLiga('+jsAttrLiteral(lg.name)+')\' style="padding:13px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer">'
+      +'<div onclick=\'toggleLiga('+ligaKey+',"'+ligaDomId+'")\' style="padding:13px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer">'
       +'<div style="min-width:0"><div style="color:#F0F2F7;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+lg.name+'</div>'
       +'<div style="color:#5A6785;font-size:11px;margin-top:2px">'+lg.total+' pronósticos'+(lg.graded?' · '+lg.graded+' verificados':'')+(!fiable&&lg.graded>0?' · muestra pequeña':'')+'</div></div>'
       +'<div style="display:flex;align-items:center;gap:10px;flex-shrink:0">'
       +'<div style="text-align:right"><div style="color:'+wrColor+';font-weight:900;font-size:16px">'+wrTxt+'</div></div>'
-      +'<span style="color:#5A6785;font-size:14px;transform:rotate('+(open?'180':'0')+'deg);transition:.2s">▾</span>'
+      +'<span id="arrow_'+ligaDomId+'" style="color:#5A6785;font-size:14px;transform:rotate('+(open?'180':'0')+'deg);transition:.2s">▾</span>'
       +'</div></div>';
 
-    if(open){
-      var itemsDesc = lg.items.slice().sort(function(a,b){return (b.loggedAt||0)-(a.loggedAt||0);});
-      html += '<div style="padding:0 12px 12px">';
-      itemsDesc.slice(0,50).forEach(function(f){
-        var badge = (!f.graded) ? '<span style="color:#FFD600;font-size:10px;font-weight:700">⏳ Pendiente</span>'
-          : f.hit===null ? '<span style="color:#5A6785;font-size:10px;font-weight:700">➖ Sin datos</span>'
-          : f.hit ? '<span style="color:#00FF87;font-size:10px;font-weight:700">✅ Acertó ('+(f.finalScore||'')+')</span>'
-          : '<span style="color:#FF3B5C;font-size:10px;font-weight:700">❌ Falló ('+(f.finalScore||'')+')</span>';
-        html += '<div style="border-top:1px solid #171B28;padding:9px 0">'
-          +'<div style="color:#C9D2E3;font-size:12px;font-weight:600">'+translateTeam(f.home||'')+' vs '+translateTeam(f.away||'')+'</div>'
-          +'<div style="color:#00D4FF;font-size:11px;margin-top:1px">'+(f.market||f.pick||'')+' · '+(f.confidence||0)+'%'+((f.betReal&&f.betReal.exists&&f.betReal.odd)?' · cuota '+f.betReal.odd:'')+'</div>'
-          +'<div style="margin-top:2px">'+badge+'</div></div>';
-      });
-      if(lg.items.length>50) html += '<div style="color:#5A6785;font-size:10px;padding-top:6px">…y '+(lg.items.length-50)+' más</div>';
-      html += '</div>';
-    }
+    // Igual que en Historial: el contenido SIEMPRE se genera (oculto si está cerrado), y el
+    // toggle es JS puro sobre el DOM — nunca vuelve a llamar a go(), así que no puede saltar
+    // el scroll al desplegar una liga.
+    var itemsDesc = lg.items.slice().sort(function(a,b){return (b.loggedAt||0)-(a.loggedAt||0);});
+    html += '<div id="'+ligaDomId+'" style="display:'+(open?'block':'none')+';padding:0 12px 12px">';
+    itemsDesc.slice(0,50).forEach(function(f){
+      var badge = (!f.graded) ? '<span style="color:#FFD600;font-size:10px;font-weight:700">⏳ Pendiente</span>'
+        : f.hit===null ? '<span style="color:#5A6785;font-size:10px;font-weight:700">➖ Sin datos</span>'
+        : f.hit ? '<span style="color:#00FF87;font-size:10px;font-weight:700">✅ Acertó ('+(f.finalScore||'')+')</span>'
+        : '<span style="color:#FF3B5C;font-size:10px;font-weight:700">❌ Falló ('+(f.finalScore||'')+')</span>';
+      html += '<div style="border-top:1px solid #171B28;padding:9px 0">'
+        +'<div style="color:#C9D2E3;font-size:12px;font-weight:600">'+translateTeam(f.home||'')+' vs '+translateTeam(f.away||'')+'</div>'
+        +'<div style="color:#00D4FF;font-size:11px;margin-top:1px">'+(f.market||f.pick||'')+' · '+(f.confidence||0)+'%'+((f.betReal&&f.betReal.exists&&f.betReal.odd)?' · cuota '+f.betReal.odd:'')+'</div>'
+        +'<div style="margin-top:2px">'+badge+'</div></div>';
+    });
+    if(lg.items.length>50) html += '<div style="color:#5A6785;font-size:10px;padding-top:6px">…y '+(lg.items.length-50)+' más</div>';
+    html += '</div>';
     html += '</div>';
   });
 
@@ -2485,6 +2504,10 @@ function pgHist(){
       var hKey = 'h'+(f.id||'x')+'_'+(f.loggedAt||idx)+'_'+idx;
       var isOpen = !!HIST_EXPANDED[hKey];
       var kickoffTxt = (typeof fmtKickoff==='function' ? fmtKickoff(f.kickoff) : '');
+      // El detalle SIEMPRE se genera en el HTML (oculto con display:none si está cerrado). El
+      // toggle es JS puro sobre el DOM ya existente — NO vuelve a llamar a go() ni redibuja la
+      // página, así que es IMPOSIBLE que salte el scroll al desplegar (antes, redibujar toda la
+      // pantalla al desplegar sí lo provocaba, incluso intentando restaurar la posición después).
       html += '<div class="card" style="border-color:'+tc+'33;padding:11px 13px;margin-bottom:8px;cursor:pointer" onclick="toggleHistExpand(\''+hKey+'\')">'
         +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">'
         +'<div style="flex:1;min-width:0">'
@@ -2495,16 +2518,14 @@ function pgHist(){
         +'<div style="text-align:center;flex-shrink:0;background:'+tc+'15;border:1.5px solid '+tc+';border-radius:9px;padding:5px 8px">'
         +'<div style="color:'+tc+';font-weight:900;font-size:16px;line-height:1">'+f.confidence+'%</div>'
         +'</div>'
-        +'<div style="flex-shrink:0;color:#5A6785;font-size:11px;align-self:center">'+(isOpen?'▲':'▼')+'</div>'
+        +'<div id="ha_'+hKey+'" style="flex-shrink:0;color:#5A6785;font-size:11px;align-self:center">'+(isOpen?'▲':'▼')+'</div>'
         +'</div>'
-        +(isOpen ?
-          '<div style="margin-top:10px;padding-top:10px;border-top:1px solid #1E2330">'
+        +'<div id="hd_'+hKey+'" style="display:'+(isOpen?'block':'none')+';margin-top:10px;padding-top:10px;border-top:1px solid #1E2330">'
           +'<div style="color:#A855F7;font-weight:800;font-size:11px;margin-bottom:4px">🧠 POR QUÉ ESTE PRONÓSTICO</div>'
           +'<div style="color:#C9D2E3;font-size:12.5px;line-height:1.5">'+(f.chosenReason ? f.chosenReason : 'Este pick es anterior a que empezáramos a guardar la explicación detallada de cada señal — a partir de ahora todos los nuevos la incluyen aquí.')+'</div>'
           +(f.supportCount>0 ? '<div style="color:#6B7490;font-size:11px;margin-top:5px">+ '+f.supportCount+' señal(es) adicional(es) apuntando en la misma dirección</div>' : '')
           +(f.proyeccion ? '<div style="color:#00D4FF;font-size:12px;margin-top:8px;padding-top:8px;border-top:1px solid #1E2330">'+f.proyeccion+' <span style="color:#5A6785;font-size:10.5px">(orientativa, no es un pick ni se verifica)</span></div>' : '')
           +'</div>'
-          : '')
         +'</div>';
     });
   } else {
