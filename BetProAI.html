@@ -1792,8 +1792,10 @@ function pgJugadores(){
     h+='<div style="font-size:11px;color:#6B7490;line-height:1.5;margin-bottom:8px">🧪 Las observaciones son <b style="color:#8B93A7">muestras de aprendizaje</b>, no picks: por eso no llevan cuota. Cuando una señal alcance 30+ muestras y su % real bata a la cuota, los picks de jugador saldrán con su pronóstico y su <b style="color:#8B93A7">cuota Bet365 real</b>, como los demás.</div>';
     rec.forEach(function(o){
       var pron=o.pronostico||(o.senal==='goleador_caliente'?'Marcará gol antes del final':o.senal==='riesgo_expulsion'?'Verá la roja antes del final':(o.dato||''));
+      var partidoTxt = o.partido ? translateTeam(String(o.partido).split(' vs ')[0])+' vs '+translateTeam(String(o.partido).split(' vs ')[1]||'') : '';
       h+='<div style="background:#0E111A;border:1px solid #1E2330;border-radius:11px;padding:10px 12px;margin-bottom:7px;font-size:12px">'
         +'<div style="display:flex;justify-content:space-between;gap:8px"><b>'+(o.jugador||'')+'</b><span>'+(o.resultado||'')+'</span></div>'
+        +(partidoTxt?'<div style="color:#00D4FF;margin-top:4px;font-size:11.5px">⚽ '+partidoTxt+'</div>':'')
         +'<div style="color:#C8CDDA;margin-top:4px">📋 Pronóstico: '+pron+'</div>'
         +'<div style="color:#8B93A7;margin-top:3px">'+(o.equipo||'')+' · '+jugSignalName(o.senal)+'</div>'
         +'<div style="color:#5A6178;font-size:10.5px;margin-top:4px">🧪 Observación de aprendizaje · sin cuota (aún no es pick)</div></div>';
@@ -2287,7 +2289,7 @@ function loadLeagueProfiles(){
 function renderLeagueProfilesSection(){
   if(!LEAGUE_PROFILES_DATA && !LEAGUE_PROFILES_LOADING && !LEAGUE_PROFILES_ERROR) loadLeagueProfiles();
   var h = '<div class="shdr">📊 BASE DE DATOS HISTÓRICA (perfiles por liga)</div>'
-    +'<div style="font-size:11px;color:#5A6785;margin-bottom:12px">Resultados finales OFICIALES de partidos ya jugados — goles, córners, tarjetas. Se siembra manualmente desde /live/backfill-league-profiles y crece con el tiempo.</div>';
+    +'<div style="font-size:11px;color:#5A6785;margin-bottom:12px">Resultados finales OFICIALES de partidos ya jugados — goles, córners, tarjetas. Se siembra <b style="color:#00FF87">sola</b>: el sistema añade un poco de histórico en cada ciclo (cada 15 min), sin que tengas que hacer nada.</div>';
   if(LEAGUE_PROFILES_LOADING || (!LEAGUE_PROFILES_DATA && !LEAGUE_PROFILES_ERROR)){
     h += '<div style="text-align:center;padding:24px 0;color:#6B7490;font-size:12.5px">Cargando base de datos…</div>';
     return h;
@@ -2298,7 +2300,7 @@ function renderLeagueProfilesSection(){
   }
   var ligas = (LEAGUE_PROFILES_DATA.ligas || []);
   if(!ligas.length){
-    h += '<div style="background:#12151F;border:1px solid #1E2330;border-radius:14px;padding:18px;text-align:center;color:#8B93A7;font-size:12.5px;line-height:1.6">Todavía no se ha sembrado ninguna fecha 🌱<br>Visita <b style="color:#00D4FF">/live/backfill-league-profiles?desde=AAAA-MM-DD&hasta=AAAA-MM-DD</b> desde el navegador para rellenar esta base con partidos ya jugados.</div>';
+    h += '<div style="background:#12151F;border:1px solid #1E2330;border-radius:14px;padding:18px;text-align:center;color:#8B93A7;font-size:12.5px;line-height:1.6">La base histórica se está sembrando sola 🌱<br>El sistema añade partidos ya jugados en cada ciclo (cada 15 min). En unas horas estará llena de ligas — no tienes que hacer nada.</div>';
     return h;
   }
   ligas.slice(0,30).forEach(function(l){
