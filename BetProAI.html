@@ -295,6 +295,8 @@ function pgTop(){
 
 var SERVER_LOG = null;
 var histRange = 'all'; // 'day' | 'week' | 'month' | 'all' — filtro de fechas en Historial
+var HIST_EXPANDED = {}; // qué picks del Historial están desplegados (clave estable por pick, persiste entre renders)
+function toggleHistExpand(key){ HIST_EXPANDED[key] = !HIST_EXPANDED[key]; go('history'); }
 var SERVER_LOG_LOADING = false;
 var SERVER_SIGNAL_STATS = {};
 var SERVER_TG_LOG = null; // SOLO los picks realmente enviados a Telegram — usado por la Banca
@@ -2144,6 +2146,16 @@ function periodPnl(filterFn){
 }
 
 var bancaPeriod = 'day';
+// Formatea la fecha/hora del evento (kickoff ISO) en formato corto es-ES, hora de España.
+// Devuelve '' si no hay dato (picks antiguos, anteriores a que se empezara a guardar kickoff).
+function fmtKickoff(iso){
+  if(!iso) return '';
+  try {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleString('es-ES', { timeZone:'Europe/Madrid', day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }) + 'h';
+  } catch(e) { return ''; }
+}
 function pgBanca(){
   if(SERVER_TG_LOG===null && !SERVER_TG_LOG_LOADING) fetchTelegramLog();
   var html = '';
@@ -2214,7 +2226,7 @@ function pgBanca(){
         +'<div style="display:flex;justify-content:space-between;align-items:flex-start">'
         +'<div><div style="color:#F0F2F7;font-weight:700;font-size:13px">'+translateTeam(f.home||'')+' vs '+translateTeam(f.away||'')+'</div>'
         +'<div style="color:#00D4FF;font-size:12px;margin-top:2px">'+(f.market||'')+' @'+f.odd+'</div>'
-        +'<div style="color:#5A6785;font-size:10px;margin-top:2px">'+(f.league||'')+' · Apostado: '+stakeTxt+' · Banca tras esto: '+row.bankAfter.toFixed(2)+'€</div></div>'
+        +'<div style="color:#5A6785;font-size:10px;margin-top:2px">'+(f.league||'')+(fmtKickoff(f.kickoff)?' · 🕒 '+fmtKickoff(f.kickoff):'')+' · Apostado: '+stakeTxt+' · Banca tras esto: '+row.bankAfter.toFixed(2)+'€</div></div>'
         +'<div style="text-align:right"><div style="color:'+hc+';font-weight:900;font-size:15px">'+(won?'✅':'❌')+'</div>'
         +'<div style="color:'+hc+';font-size:12px;font-weight:700">'+pVal+'</div></div></div></div>';
     });
@@ -2415,7 +2427,7 @@ function pgHist(){
     if (!visibleLog.length) {
       html += '<div style="text-align:center;padding:30px 0;color:#6B7490;font-size:13px">No hay pronósticos en este rango de fechas. Prueba con "Todo".</div>';
     }
-    visibleLog.slice(0, 60).forEach(function(f){
+    visibleLog.slice(0, 60).forEach(function(f, idx){
       var when = new Date(f.loggedAt).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
       var tc = f.confidence>=80?'#00FF87':f.confidence>=65?'#FFD600':'#FF9F40';
       var verifyBadge = '';
@@ -2424,16 +2436,30 @@ function pgHist(){
         else if(f.hit===false) verifyBadge = '<span style="background:rgba(255,59,92,.15);color:#FF3B5C;font-size:10px;font-weight:800;border-radius:5px;padding:2px 7px;margin-left:6px">❌ FALLÓ ('+f.finalScore+')</span>';
         else verifyBadge = '<span style="background:#1A2035;color:#6B7490;font-size:10px;font-weight:700;border-radius:5px;padding:2px 7px;margin-left:6px">— no evaluable</span>';
       }
-      html += '<div class="card" style="border-color:'+tc+'33;padding:11px 13px;margin-bottom:8px">'
+      var hKey = 'h'+(f.id||'x')+'_'+(f.loggedAt||idx)+'_'+idx;
+      var isOpen = !!HIST_EXPANDED[hKey];
+      var kickoffTxt = (typeof fmtKickoff==='function' ? fmtKickoff(f.kickoff) : '');
+      html += '<div class="card" style="border-color:'+tc+'33;padding:11px 13px;margin-bottom:8px;cursor:pointer" onclick="toggleHistExpand(\''+hKey+'\')">'
         +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">'
         +'<div style="flex:1;min-width:0">'
-        +'<div style="font-size:10px;color:#5A6785;margin-bottom:3px">'+when+' · '+translateTeam(f.home||'')+' vs '+translateTeam(f.away||'')+' · '+(f.score||'')+(f.minute!=null?(' · '+f.minute+"'"):'')+'</div>'
+        +'<div style="font-size:10px;color:#5A6785;margin-bottom:3px">'+when+(kickoffTxt?' · 🕒 '+kickoffTxt:'')+' · '+translateTeam(f.home||'')+' vs '+translateTeam(f.away||'')+' · '+(f.score||'')+(f.minute!=null?(' · '+f.minute+"'"):'')+'</div>'
         +'<div style="color:#F0F2F7;font-weight:800;font-size:14px">'+(f.market||f.pick)+verifyBadge+'</div>'
         +(f.minOdds?'<div style="color:#FFD600;font-size:11px;margin-top:2px">Cuota mínima: '+f.minOdds+'</div>':'')
         +'</div>'
         +'<div style="text-align:center;flex-shrink:0;background:'+tc+'15;border:1.5px solid '+tc+';border-radius:9px;padding:5px 8px">'
         +'<div style="color:'+tc+';font-weight:900;font-size:16px;line-height:1">'+f.confidence+'%</div>'
-        +'</div></div></div>';
+        +'</div>'
+        +'<div style="flex-shrink:0;color:#5A6785;font-size:11px;align-self:center">'+(isOpen?'▲':'▼')+'</div>'
+        +'</div>'
+        +(isOpen ?
+          '<div style="margin-top:10px;padding-top:10px;border-top:1px solid #1E2330">'
+          +'<div style="color:#A855F7;font-weight:800;font-size:11px;margin-bottom:4px">🧠 POR QUÉ ESTE PRONÓSTICO</div>'
+          +'<div style="color:#C9D2E3;font-size:12.5px;line-height:1.5">'+(f.chosenReason ? f.chosenReason : 'Este pick es anterior a que empezáramos a guardar la explicación detallada de cada señal — a partir de ahora todos los nuevos la incluyen aquí.')+'</div>'
+          +(f.supportCount>0 ? '<div style="color:#6B7490;font-size:11px;margin-top:5px">+ '+f.supportCount+' señal(es) adicional(es) apuntando en la misma dirección</div>' : '')
+          +(f.proyeccion ? '<div style="color:#00D4FF;font-size:12px;margin-top:8px;padding-top:8px;border-top:1px solid #1E2330">'+f.proyeccion+' <span style="color:#5A6785;font-size:10.5px">(orientativa, no es un pick ni se verifica)</span></div>' : '')
+          +'</div>'
+          : '')
+        +'</div>';
     });
   } else {
     html += '<div style="text-align:center;padding:55px 0;color:#6B7490"><div style="font-size:38px;margin-bottom:11px">📅</div><div style="font-weight:700">Aún no hay pronósticos registrados</div><div style="font-size:13px;margin-top:5px">El bot los guarda solo, en segundo plano</div></div>';
