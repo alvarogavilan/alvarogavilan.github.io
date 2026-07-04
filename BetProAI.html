@@ -1793,6 +1793,7 @@ function pgJugadores(){
     rec.forEach(function(o){
       var pron=o.pronostico||(o.senal==='goleador_caliente'?'Marcará gol antes del final':o.senal==='riesgo_expulsion'?'Verá la roja antes del final':(o.dato||''));
       var partidoTxt = o.partido ? translateTeam(String(o.partido).split(' vs ')[0])+' vs '+translateTeam(String(o.partido).split(' vs ')[1]||'') : '';
+      if(partidoTxt && o.fecha) partidoTxt += ' · '+o.fecha;
       h+='<div style="background:#0E111A;border:1px solid #1E2330;border-radius:11px;padding:10px 12px;margin-bottom:7px;font-size:12px">'
         +'<div style="display:flex;justify-content:space-between;gap:8px"><b>'+(o.jugador||'')+'</b><span>'+(o.resultado||'')+'</span></div>'
         +(partidoTxt?'<div style="color:#00D4FF;margin-top:4px;font-size:11.5px">⚽ '+partidoTxt+'</div>':'')
