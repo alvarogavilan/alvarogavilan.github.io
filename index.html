@@ -10,7 +10,7 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 <title>Smart Money Pro</title>
-<!-- BUILD: v39.2-telegram-preconfigurado -->
+<!-- BUILD: v40.3-sgo-clave-nueva -->
 <style>
 :root{--bg:#060810;--bg2:#0B0E18;--bg3:#111525;--border:#1A2035;--sharp:#FF3B5C;--value:#00FF87;--warn:#FFD600;--info:#00D4FF;--purple:#A855F7;--text:#F0F2F7;--muted:#5A6785;--sub:#8896AA}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -133,7 +133,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto}
 
 <div id="hdr">
   <div class="hdr-top">
-    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v39.2</span></div>
+    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v40.3</span></div>
     <div id="pulse"><div class="pdot" id="pdot"></div><span id="ptxt">Iniciando...</span></div>
   </div>
   <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;font-size:11px;color:var(--muted)">
@@ -191,7 +191,7 @@ var DEFAULT_KEYS = {
   theOdds:  '8682d02fa435e17e5b531b5c8631bd0f',
   oddsApi:  '54a869df6080c65fd4230946cb8db844f34fd41a3db8c48602864eacf5a22af3',
   oddsPapi: 'e94cfac5-ebc3-45e1-abf5-ca58edf3fbc0',
-  sgo:      'dfc93969fac28e8fdbe1cd587cbeaec1',
+  sgo:      'eac62e26345efd99880d220d630dc60e', // v40.3: clave nueva (la anterior agotó sus 1.000 objetos/mes)
   sharpApi: 'sk_live_GM2sZ6KuXyw4FdngDLgpq2', // clave personal del usuario, confirmada directamente en su dashboard de sharpapi.io
 };
 var DEFAULT_WORKER_URL = 'https://smart-money-pro.k8mwkbp68y.workers.dev/';
@@ -209,6 +209,9 @@ function loadKeys() {
     // Las claves personales guardadas SIEMPRE tienen prioridad.
     var merged = Object.assign({}, DEFAULT_KEYS);
     Object.keys(saved).forEach(function(k){ if (saved[k]) merged[k] = saved[k]; });
+    // v40.3: migración — la clave SGO antigua agotó su cuota mensual de
+    // objetos; si sigue guardada, se sustituye por la nueva por defecto.
+    if (merged.sgo === 'dfc93969fac28e8fdbe1cd587cbeaec1') merged.sgo = DEFAULT_KEYS.sgo;
     return merged;
   } catch(e) { return Object.assign({}, DEFAULT_KEYS); }
 }
@@ -263,7 +266,12 @@ function countReq(k){ REQ[k]=(REQ[k]||0)+1; saveReq(); }
 // "4h". 2 req/escaneo x 144 escaneos/día = ~288 req/día contra 250/MES.
 // La cuota de Pinnacle moría en <1 día y el EV+ se quedaba ciego.
 // Ahora: fútbol 8h (6 req/día = 180/mes) + esports 72h (~50/mes) = ~230/250.
-var INTERVALS = {theOdds:21600000, oddsApi:720000, oddsPapi:28800000, sgo:900000, sharpApi:90000, oddsPapiEsports:259200000};
+// v40: theOdds a 8h con 5 ligas × 1 crédito = 15 créditos/día ≈ 450/mes ✓
+// v40.2: SGO NO es ilimitado — su plan gratis son 1.000 OBJETOS/mes (cada
+// evento devuelto = 1 objeto). A 25 eventos cada 15 min quemábamos ~2.400
+// objetos/día: la cuota moría el primer día del mes (los 429 que estás
+// viendo). Ahora: cada 8h con 10 eventos = ~30 objetos/día ≈ 900/mes ✓.
+var INTERVALS = {theOdds:28800000, oddsApi:720000, oddsPapi:28800000, sgo:28800000, sharpApi:90000, oddsPapiEsports:259200000};
 var lastFetch  = {theOdds:0, oddsApi:0, oddsPapi:0, sgo:0, sharpApi:0, oddsPapiEsports:0};
 var apiStatus  = {theOdds:'idle', oddsApi:'idle', oddsPapi:'idle', sgo:'idle', sharpApi:'idle', oddsPapiEsports:'idle'};
 
@@ -413,16 +421,69 @@ async function verAutogestor() {
   }
 }
 
+function tgEsc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+var TG_SEP = '━━━━━━━━━━━━━━';
+// v40.1: mensajes profesionales — explicación completa del pick, cuota real
+// de la casa, referencia de Pinnacle y stake recomendado (¼ Kelly sobre la
+// banca configurada, con tope del 5%).
 function tgNotifyAlert(a) {
   if (!tgReady() || !a || !a.key) return;
   if (TG_SENT.indexOf(a.key) > -1) return;
-  var head = a.type==='arb' ? '🎯 ARBITRAJE' : a.type==='value' ? '📊 EV+' : '💰 SHARP MONEY';
-  var lines = ['🚨 <b>Smart Money Pro</b> — '+head];
-  lines.push((a.sport||'')+' <b>'+(a.match||'')+'</b>'+(a.ko?' · '+fko(a.ko):''));
-  if (a.signal) lines.push(a.signal);
-  if (a.from && a.to && !a.arbDetails) lines.push('Cuota: '+a.from+' → <b>'+a.to+'</b>'+((a.book||a.bestBook)?' ('+(a.book||a.bestBook)+')':''));
-  if (a.arbDetails) lines.push(a.arbDetails.bookA+' '+a.arbDetails.oddsA.toFixed(2)+' ("'+a.arbDetails.outcomeA+'") + '+a.arbDetails.bookB+' '+a.arbDetails.oddsB.toFixed(2)+' ("'+a.arbDetails.outcomeB+'")');
-  tgSend(lines.join('\n'));
+  var L = [];
+  var cab = (a.sport||'')+' <b>'+tgEsc(a.match)+'</b>'+(a.ko?'\n🕐 '+tgEsc(fko(a.ko)):'');
+
+  if (a.type === 'value') {
+    var cuota = parseFloat(a.to), pinRef = parseFloat(a.from);
+    var casa = a.bestBook || a.book || 'la casa';
+    var si = calcStake(cuota, pinRef);
+    var probJusta = pinRef > 1 ? (100/pinRef) : null;
+    L.push('📊 <b>PICK — VALOR DETECTADO (EV+'+tgEsc(a.ev)+'%)</b>');
+    L.push(cab);
+    L.push(TG_SEP);
+    L.push('🎯 Apuesta: <b>'+tgEsc(a.market)+'</b>');
+    L.push('🏠 Casa: <b>'+tgEsc(casa)+'</b> — cuota real <b>'+cuota.toFixed(2)+'</b>');
+    L.push('📐 Referencia Pinnacle: '+pinRef.toFixed(2)+(probJusta?' (prob. implícita ~'+probJusta.toFixed(1)+'%)':''));
+    L.push(TG_SEP);
+    if (si) {
+      L.push('💰 <b>Stake recomendado: '+si.stake.toFixed(2)+' €</b> ('+si.pct.toFixed(1)+'% de tu banca de '+BANKROLL+' €)');
+      L.push('📏 Método: ¼ de Kelly (Kelly completo: '+si.kellyFull.toFixed(1)+'%), tope de seguridad 5%.');
+    } else {
+      L.push('💰 Stake: no calculable con rigor en este pick.');
+    }
+    L.push(TG_SEP);
+    L.push('🧠 <b>Por qué:</b> '+tgEsc(casa)+' paga '+cuota.toFixed(2)+' por un resultado que Pinnacle (la referencia del dinero profesional, con los límites más altos del mercado) cotiza a '+pinRef.toFixed(2)+'. Esa diferencia implica que la casa está pagando de más: en expectativa, cada 100 € apostados valen ~'+(100*(1+parseFloat(a.ev)/100)).toFixed(0)+' €.');
+    L.push('⚠️ El valor puede desaparecer en minutos si la casa corrige la cuota. Verifica la cuota antes de apostar.');
+  } else if (a.type === 'arb' && a.arbDetails) {
+    var d = a.arbDetails;
+    var total = Math.max(20, Math.round(BANKROLL*0.10));
+    var st = calcArbStakes(d.oddsA, d.oddsB, total);
+    L.push('🎯 <b>ARBITRAJE — BENEFICIO ASEGURADO ('+d.profitPct.toFixed(1)+'%)</b>');
+    L.push(cab);
+    L.push(TG_SEP);
+    L.push('1️⃣ <b>'+tgEsc(d.outcomeA)+'</b> en '+tgEsc(d.bookA)+' a <b>'+d.oddsA.toFixed(2)+'</b>'+(st?' → apuesta <b>'+st.stakeA.toFixed(2)+' €</b>':''));
+    L.push('2️⃣ <b>'+tgEsc(d.outcomeB)+'</b> en '+tgEsc(d.bookB)+' a <b>'+d.oddsB.toFixed(2)+'</b>'+(st?' → apuesta <b>'+st.stakeB.toFixed(2)+' €</b>':''));
+    if (st) L.push(TG_SEP+'\n💰 Con '+total+' € en total (10% de banca), beneficio asegurado: <b>+'+st.profit.toFixed(2)+' €</b> pase lo que pase.');
+    L.push('🧠 <b>Por qué:</b> las dos cuotas combinadas suman menos del 100% de probabilidad implícita. Apostando a ambos resultados a la vez el beneficio es matemático, no una predicción.');
+    L.push('⚠️ Ejecuta las DOS apuestas casi a la vez y verifica ambas cuotas antes: si una cambia, el arbitraje puede evaporarse.');
+  } else if (a.type === 'sharp') {
+    var chg = a.chg ? Math.abs(parseFloat(a.chg)).toFixed(1) : null;
+    L.push('💰 <b>SHARP MONEY — MOVIMIENTO PROFESIONAL</b>');
+    L.push(cab);
+    L.push(TG_SEP);
+    L.push('🎯 Mercado: <b>'+tgEsc(a.market||'')+'</b>'+(a.book||a.coordinated?' · '+(a.coordinated?'Bet365 y Winamax a la vez':tgEsc(a.book)):''));
+    if (a.from && a.to) L.push('📉 Cuota: '+tgEsc(a.from)+' → <b>'+tgEsc(a.to)+'</b>'+(chg?' ('+chg+'%)':''));
+    if (a.signal) L.push('🔎 Señal: '+tgEsc(a.signal));
+    L.push(TG_SEP);
+    L.push('🧠 <b>Por qué importa:</b> una caída de cuota de este calibre sin noticia pública suele reflejar entrada de dinero informado — las casas mueven la línea porque apostadores profesionales están cargando ese lado.');
+    L.push('💰 <b>Stake:</b> sin cuota simultánea de Pinnacle no se puede calcular un Kelly riguroso para esta señal. Si decides entrar, hazlo con stake plano y prudente (máx. 1% de banca: ~'+(BANKROLL*0.01).toFixed(0)+' €) y solo si la cuota actual sigue teniendo sentido para ti.');
+  } else {
+    L.push('🚨 <b>Smart Money Pro</b>');
+    L.push(cab);
+    if (a.signal) L.push(tgEsc(a.signal));
+    if (a.detail) L.push(tgEsc(a.detail));
+  }
+
+  tgSend(L.join('\n'));
   TG_SENT.push(a.key);
   if (TG_SENT.length > 300) TG_SENT = TG_SENT.slice(-300);
   try{ localStorage.setItem('smp_tg_sent', JSON.stringify(TG_SENT)); }catch(e){}
@@ -583,14 +644,14 @@ async function fetchTheOdds() {
     return !k.includes('world_cup') && priorityKeywords.some(function(kw){ return k.includes(kw); });
   });
   var soccerKeys = worldCupKeys.concat(otherKeys);
-  soccerKeys = soccerKeys.slice(0,3); // FIX: de 15 a 3 — esto es lo que agotaba la cuota
+  soccerKeys = soccerKeys.slice(0,5); // v40: de 3 a 5 ligas (cada llamada ahora cuesta 1 crédito, no 3)
   if (!soccerKeys.length) {
-    soccerKeys = validSoccerLeagues.slice(0,3);
+    soccerKeys = validSoccerLeagues.slice(0,5);
   }
-  addDiag('  Ligas de fútbol activas ahora ('+allSoccerAvailable.length+'), usando 3: '+soccerKeys.join(', '));
+  addDiag('  Ligas de fútbol activas ahora ('+allSoccerAvailable.length+'), usando 5: '+soccerKeys.join(', '));
 
   var targets = soccerKeys;
-  if (!targets.length) targets = all.filter(function(k){return k.indexOf('soccer_')===0;}).slice(0,3);
+  if (!targets.length) targets = all.filter(function(k){return k.indexOf('soccer_')===0;}).slice(0,5);
   addDiag('  Ligas a consultar: '+targets.length+' ('+targets.join(', ')+')');
 
   var allResults = [];
@@ -604,7 +665,14 @@ async function fetchTheOdds() {
     // espaciados varios días.
     var future = new Date(now.getTime() + 10*24*60*60*1000);
     var url = 'https://api.the-odds-api.com/v4/sports/' + sportKey + '/odds/?apiKey='
-      + KEYS.theOdds + '&regions=eu,uk,fr&markets=h2h&oddsFormat=decimal'
+      + KEYS.theOdds
+      // v40: 'bookmakers' en vez de 'regions=eu,uk,fr'. Según la docu oficial,
+      // el coste = mercados × regiones, así que cada llamada nos costaba 3
+      // créditos. Con hasta 10 casas nombradas, el grupo cuenta como 1 sola
+      // región → 1 crédito por llamada Y exactamente las casas que queremos
+      // (objetivos + 5 testigos para señales Steam).
+      + '&bookmakers=bet365,winamax,pinnacle,unibet_eu,williamhill,betclic,marathonbet,betsson'
+      + '&markets=h2h&oddsFormat=decimal'
       + '&commenceTimeTo=' + future.toISOString().split('.')[0] + 'Z';
     countReq('theOdds');
     var data = await proxyFetch(url, 'The Odds API ('+sportKey+')');
@@ -669,7 +737,7 @@ async function fetchOddsApiIo() {
     if (!events || !Array.isArray(events) || !events.length) continue;
     apiStatus.oddsApi = 'ok';
 
-    var toFetch = events.slice(0, 2);
+    var toFetch = events.slice(0, 4); // v40: de 2 a 4 eventos (60/h de 100 permitidas)
     for (var i = 0; i < toFetch.length; i++) {
       var ev = toFetch[i];
       var oddsUrl = 'https://api.odds-api.io/v3/odds?apiKey=' + KEYS.oddsApi
@@ -711,12 +779,12 @@ function americanToDecimal(american) {
 }
 
 async function fetchSGO() {
-  var url = 'https://api.sportsgameodds.com/v2/events?leagueID=NBA,NFL,MLB,NHL,MLS,UEFA_CHAMPIONS_LEAGUE&oddsAvailable=true&limit=25&apiKey=' + KEYS.sgo;
+  var url = 'https://api.sportsgameodds.com/v2/events?leagueID=NBA,NFL,MLB,NHL,MLS,WNBA,UEFA_CHAMPIONS_LEAGUE&oddsAvailable=true&limit=10&apiKey=' + KEYS.sgo; // v40.2: limit 25→10 (cada evento = 1 objeto de cuota)
   countReq('sgo');
   var data = await proxyFetch(url, 'SportsGameOdds');
   if (!data || data.success===false) {
     addDiag('  SGO: fallback a NBA-only (alguna liga no disponible en el plan)');
-    var fallbackUrl = 'https://api.sportsgameodds.com/v2/events?leagueID=NBA,MLB&oddsAvailable=true&limit=25&apiKey=' + KEYS.sgo;
+    var fallbackUrl = 'https://api.sportsgameodds.com/v2/events?leagueID=MLB,WNBA&oddsAvailable=true&limit=10&apiKey=' + KEYS.sgo;
     countReq('sgo');
     data = await proxyFetch(fallbackUrl, 'SportsGameOdds (NBA/MLB fallback)');
   }
@@ -789,9 +857,19 @@ async function fetchSGO() {
   }).filter(function(e){return Object.keys(e.b365).length>0 || Object.keys(e.pin).length>0;});
 }
 
+var SHARP_ROT = 0;
+function sharpLigasActivas() {
+  // v40: liga según temporada — consultar NBA en julio devolvía siempre vacío
+  var m = new Date().getMonth() + 1;
+  if (m >= 5 && m <= 9) return ['MLB','WNBA'];          // verano
+  if (m === 4 || m === 10) return ['NBA','MLB','NHL'];  // solape
+  return ['NBA','NFL','NHL'];                            // invierno
+}
 async function fetchSharpApi() {
   if (!KEYS.sharpApi) return [];
-  var url = 'https://api.sharpapi.io/api/v1/odds?league=NBA&market_type=moneyline';
+  var ligas = sharpLigasActivas();
+  var liga = ligas[SHARP_ROT++ % ligas.length]; // rotación entre escaneos (90s)
+  var url = 'https://api.sharpapi.io/api/v1/odds?league=' + liga + '&market_type=moneyline';
   countReq('sharpApi');
   var data = await proxyFetch(url, 'SharpAPI', KEYS.sharpApi);
   if (!data || !data.data) return [];
@@ -882,7 +960,9 @@ async function fetchOddsPapi() {
     if (!fixtures || !Array.isArray(fixtures) || !fixtures.length) continue;
     apiStatus.oddsPapi = 'ok';
 
-    var tournamentIds = [...new Set(fixtures.slice(0,20).map(function(f){return f.tournamentId;}).filter(Boolean))].slice(0,5);
+    // v40: la petición de cuotas admite varios torneos por EL MISMO coste (1
+    // req). Subimos de 5 a 12 torneos y examinamos más fixtures para extraerlos.
+    var tournamentIds = [...new Set(fixtures.slice(0,60).map(function(f){return f.tournamentId;}).filter(Boolean))].slice(0,12);
     if (!tournamentIds.length) continue;
 
     var oddsUrl = 'https://api.oddspapi.io/v4/odds-by-tournaments?tournamentIds='
@@ -904,7 +984,7 @@ async function fetchOddsPapi() {
       return out;
     }
 
-    var mapped = oddsData.slice(0,30).map(function(fx) {
+    var mapped = oddsData.slice(0,80).map(function(fx) { // v40: 30→80, sin coste extra
       var bk = fx.bookmakerOdds || {};
       var pin = extractMoneyline(bk.pinnacle);
       var b365 = extractMoneyline(bk.bet365);
@@ -1105,8 +1185,12 @@ function processDirectResults(results) {
   newAlerts.forEach(function(a) {
     if(!ALERTS.find(function(x){return x.key===a.key;})) {
       ALERTS.unshift(a);
-      // v39: alertas prioritarias -> canal privado de Telegram (con dedupe)
-      if (a.type==='arb' || a.priority==='extreme' || a.priority==='highvolume') tgNotifyAlert(a);
+      // v40: TODAS las alertas nuevas van al canal (EV+, Sharp, arbitrajes...).
+      // Antes solo iban arbitrajes y "extremas": los picks normales de EV+ y
+      // Sharp nunca llegaban a Telegram — este era el motivo principal de que
+      // el canal estuviera en silencio con la app abierta. El dedupe (TG_SENT)
+      // garantiza que cada pick se envía una sola vez.
+      tgNotifyAlert(a);
     }
   });
   var sixHoursAgo = Date.now() - 6*60*60*1000;
@@ -1962,10 +2046,10 @@ function pgLegends() {
 
 function pgConfig() {
   var apis=[
-    {k:'theOdds',  name:'The Odds API',    col:'var(--info)',   lim:500,    per:'mes',     iv:'6h',  cv:'3 ligas top'},
+    {k:'theOdds',  name:'The Odds API',    col:'var(--info)',   lim:500,    per:'mes',     iv:'8h',  cv:'5 ligas · 8 casas (1 crédito/llamada)'},
     {k:'oddsApi',  name:'Odds-API.io',     col:'var(--value)',  lim:100,    per:'hora',    iv:'12min', cv:'Fútbol/Tenis'},
     {k:'oddsPapi', name:'OddsPapi (Pinnacle)',col:'var(--purple)',lim:250,  per:'mes',     iv:'8h',  cv:'Pinnacle sharp'},
-    {k:'sgo',      name:'SportsGameOdds',  col:'var(--warn)',   lim:999999, per:'ilimitado',iv:'60s', cv:'NBA/NFL/MLB'},
+    {k:'sgo',      name:'SportsGameOdds',  col:'var(--warn)',   lim:100,    per:'consultas/mes (1.000 objetos)', iv:'8h', cv:'US + WNBA · 10 eventos/consulta'},
     {k:'sharpApi', name:'SharpAPI'+(KEYS.sharpApi?'':' (sin clave)'), col:'#06b6d4', lim:17280, per:'día', iv:'90s', cv:'NBA/NFL/MLB/NHL extra'},
     {k:'oddsPapiEsports', name:'OddsPapi Esports (CS2+LoL)', col:'#FF6B35', lim:250, per:'mes (compartida c/fútbol)', iv:'72h', cv:'CS2+LoL vs Pinnacle/Bet365'},
   ];
@@ -2042,9 +2126,9 @@ function pgConfig() {
   h+='<div style="background:rgba(0,255,135,.06);border:1px solid rgba(0,255,135,.2);border-radius:11px;padding:12px 14px;margin-top:10px">'
     +'<div style="font-size:10px;color:var(--value);font-weight:800;letter-spacing:.8px;margin-bottom:7px">💡 ESTRATEGIA PARA DURAR TODO EL MES 24/7 (v39)</div>'
     +'<div style="font-size:11px;color:var(--sub);line-height:1.75">'
-    +'• <strong style="color:var(--text)">Odds-API.io:</strong> cada 12min, ~8 peticiones reales/escaneo → ~40 req/h de 100 ✅<br>'
-    +'• <strong style="color:var(--text)">SportsGameOdds:</strong> cada 15min → sin límite práctico ✅<br>'
-    +'• <strong style="color:var(--text)">The Odds API:</strong> cada 6h, 3 ligas → ~360-450 req/mes de 500 ✅<br>'
+    +'• <strong style="color:var(--text)">Odds-API.io:</strong> cada 12min, 4 eventos/liga → ~60 req/h de 100 ✅<br>'
+    +'• <strong style="color:var(--text)">SportsGameOdds:</strong> cada 8h, 10 eventos/consulta → ~900 objetos/mes de 1.000 ✅ (su plan gratis cuenta OBJETOS devueltos, no peticiones — a 15min moría en un día)<br>'
+    +'• <strong style="color:var(--text)">The Odds API:</strong> cada 8h, 5 ligas con casas nombradas (1 crédito/llamada en vez de 3 con regiones) → ~450 créditos/mes de 500 ✅<br>'
     +'• <strong style="color:var(--text)">OddsPapi Pinnacle:</strong> fútbol cada 8h + esports cada 72h → ~230 req/mes de 250 ✅ (en v38 el intervalo real era de 10 MIN: la cuota moría en un día — ESTE era el motivo de que el EV+ dejara de funcionar)<br>'
     +'<br>⚠️ <strong style="color:var(--warn)">Ojo:</strong> si el Worker cron (smart-money-cron) usa las MISMAS claves cada 10 minutos, él solo puede agotar estas cuotas independientemente de la app. Revisa sus intervalos internos.'
     +'</div></div>';
