@@ -296,7 +296,7 @@ function pgTop(){
 var SERVER_LOG = null;
 var histRange = 'all'; // 'day' | 'week' | 'month' | 'all' — filtro de fechas en Historial
 var HIST_EXPANDED = {}; // qué picks del Historial están desplegados (clave estable por pick, persiste entre renders)
-function toggleHistExpand(key){ HIST_EXPANDED[key] = !HIST_EXPANDED[key]; go('history'); }
+function toggleHistExpand(key){ HIST_EXPANDED[key] = !HIST_EXPANDED[key]; go('history', true); }
 var SERVER_LOG_LOADING = false;
 var SERVER_SIGNAL_STATS = {};
 var SERVER_TG_LOG = null; // SOLO los picks realmente enviados a Telegram — usado por la Banca
@@ -1800,7 +1800,7 @@ function navColor(pg){
   return m[pg]||'#00D4FF';
 }
 
-function go(pg){
+function go(pg, keepScroll){
   PG=pg;
   LIVE_PICKS=buildLivePicks(); ES_PICKS=buildESPicks(); ALL_PICKS=buildAllPicks();
   if(pg==='tennis') TENNIS_PICKS=buildTennisPicks();
@@ -1835,8 +1835,9 @@ function go(pg){
   else if(pg==='tipsters') html=pgTips();
 
   var m=document.getElementById('main');
-  if(m){m.innerHTML=html; m.scrollTop=0;}
-  window.scrollTo(0,0);
+  var prevScroll = keepScroll && m ? m.scrollTop : 0;
+  if(m){m.innerHTML=html; m.scrollTop = keepScroll ? prevScroll : 0;}
+  if(!keepScroll) window.scrollTo(0,0);
   updPin(); updSub();
 }
 
@@ -2242,7 +2243,7 @@ function svBancaInicial(){var v=parseFloat((document.getElementById('bi')||{}).v
 function edBancaInicial(){if(confirm('¿Reiniciar banca? Esto no borra tu historial de apuestas, solo el saldo.')){setBank(0);ST.startBank=0;ST.peakBank=0;saveST();go('banca');}}
 
 var LIGA_ABIERTA = null; // qué liga está desplegada en la pestaña Ligas (una a la vez)
-function toggleLiga(nombre){ LIGA_ABIERTA = (LIGA_ABIERTA===nombre) ? null : nombre; go('ligas'); }
+function toggleLiga(nombre){ LIGA_ABIERTA = (LIGA_ABIERTA===nombre) ? null : nombre; go('ligas', true); }
 // Genera un literal JS (con comillas dobles) seguro para meter dentro de un atributo HTML
 // delimitado por comillas SIMPLES — antes se usaba JSON.stringify directo dentro de un atributo
 // onclick="..." con comillas dobles, y como JSON.stringify también usa comillas dobles, cualquier
@@ -2250,10 +2251,55 @@ function toggleLiga(nombre){ LIGA_ABIERTA = (LIGA_ABIERTA===nombre) ? null : nom
 // que pudiera aparecer en el texto, para que nunca choque con el delimitador del atributo.
 function jsAttrLiteral(s){ return JSON.stringify(String(s)).replace(/'/g, "\\u0027"); }
 
+// ============ PERFILES HISTÓRICOS DE LIGA (backfill) ============
+// Distinto de "rendimiento por liga" de arriba (que son NUESTROS picks): esto es la base de datos
+// de resultados FINALES oficiales sembrada con /live/backfill-league-profiles. Vive en el worker,
+// no en el navegador — se recarga cada vez que se abre la pestaña.
+var LEAGUE_PROFILES_DATA=null, LEAGUE_PROFILES_LOADING=false, LEAGUE_PROFILES_ERROR=null;
+function loadLeagueProfiles(){
+  if(LEAGUE_PROFILES_LOADING) return;
+  LEAGUE_PROFILES_LOADING=true; LEAGUE_PROFILES_ERROR=null;
+  fetch(WORKER_LIVE_URL+'/live/league-profiles')
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(function(d){ LEAGUE_PROFILES_DATA=d; LEAGUE_PROFILES_LOADING=false; if(PG==='ligas') go('ligas', true); })
+    .catch(function(e){ LEAGUE_PROFILES_ERROR=e.message||'error'; LEAGUE_PROFILES_LOADING=false; if(PG==='ligas') go('ligas', true); });
+}
+function renderLeagueProfilesSection(){
+  if(!LEAGUE_PROFILES_DATA && !LEAGUE_PROFILES_LOADING && !LEAGUE_PROFILES_ERROR) loadLeagueProfiles();
+  var h = '<div class="shdr">📊 BASE DE DATOS HISTÓRICA (perfiles por liga)</div>'
+    +'<div style="font-size:11px;color:#5A6785;margin-bottom:12px">Resultados finales OFICIALES de partidos ya jugados — goles, córners, tarjetas. Se siembra manualmente desde /live/backfill-league-profiles y crece con el tiempo.</div>';
+  if(LEAGUE_PROFILES_LOADING || (!LEAGUE_PROFILES_DATA && !LEAGUE_PROFILES_ERROR)){
+    h += '<div style="text-align:center;padding:24px 0;color:#6B7490;font-size:12.5px">Cargando base de datos…</div>';
+    return h;
+  }
+  if(LEAGUE_PROFILES_ERROR){
+    h += '<div style="text-align:center;padding:20px 12px;color:#8B93A7;font-size:12.5px">No se pudo cargar ahora mismo.<br><br><button onclick="LEAGUE_PROFILES_ERROR=null;go(\'ligas\')" style="background:#1A2035;border:1px solid #00D4FF;color:#00D4FF;font-weight:800;border-radius:10px;padding:8px 16px;font-size:12px">↻ Reintentar</button></div>';
+    return h;
+  }
+  var ligas = (LEAGUE_PROFILES_DATA.ligas || []);
+  if(!ligas.length){
+    h += '<div style="background:#12151F;border:1px solid #1E2330;border-radius:14px;padding:18px;text-align:center;color:#8B93A7;font-size:12.5px;line-height:1.6">Todavía no se ha sembrado ninguna fecha 🌱<br>Visita <b style="color:#00D4FF">/live/backfill-league-profiles?desde=AAAA-MM-DD&hasta=AAAA-MM-DD</b> desde el navegador para rellenar esta base con partidos ya jugados.</div>';
+    return h;
+  }
+  ligas.slice(0,30).forEach(function(l){
+    h += '<div style="background:#12151F;border:1px solid #1E2330;border-radius:12px;padding:12px 14px;margin-bottom:8px">'
+      +'<div style="font-weight:800;font-size:13px;margin-bottom:6px">'+l.liga+' <span style="color:#5A6785;font-weight:600;font-size:11px">('+l.partidosAnalizados+' partidos)</span></div>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:#8B93A7">'
+      +'<span>⚽ '+l.mediaGolesPorPartido+' goles/p.</span>'
+      +'<span>+2.5: '+l.pctMasDe2_5Goles+'</span>'
+      +'<span>BTTS: '+l.pctAmbosMarcan+'</span>'
+      +'<span>🚩 '+l.mediaCornersPorPartido+' córners</span>'
+      +'<span>🟨 '+l.mediaTarjetasPorPartido+' tarj.</span>'
+      +'</div></div>';
+  });
+  return h;
+}
+
 function pgLigas(){
   if(SERVER_LOG===null && !SERVER_LOG_LOADING) fetchServerHistory();
   var log = SERVER_LOG || [];
-  var html = '<div class="shdr" style="margin-top:0">🌍 RENDIMIENTO POR LIGA</div>'
+  var html = renderLeagueProfilesSection()
+    + '<div class="shdr">🌍 RENDIMIENTO POR LIGA (nuestros picks)</div>'
     +'<div style="font-size:11px;color:#5A6785;margin-bottom:12px">Todo lo acumulado en el historial, agrupado por liga. Toca una liga para ver sus pronósticos.</div>';
 
   if(!log.length){
