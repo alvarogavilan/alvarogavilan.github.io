@@ -1789,10 +1789,14 @@ function pgJugadores(){
   var rec=(JUG_DATA.observacionesRecientes||[]);
   if(rec.length){
     h+='<div style="font-weight:900;font-size:14px;margin:18px 0 8px">🕐 Observaciones recientes</div>';
+    h+='<div style="font-size:11px;color:#6B7490;line-height:1.5;margin-bottom:8px">🧪 Las observaciones son <b style="color:#8B93A7">muestras de aprendizaje</b>, no picks: por eso no llevan cuota. Cuando una señal alcance 30+ muestras y su % real bata a la cuota, los picks de jugador saldrán con su pronóstico y su <b style="color:#8B93A7">cuota Bet365 real</b>, como los demás.</div>';
     rec.forEach(function(o){
+      var pron=o.pronostico||(o.senal==='goleador_caliente'?'Marcará gol antes del final':o.senal==='riesgo_expulsion'?'Verá la roja antes del final':(o.dato||''));
       h+='<div style="background:#0E111A;border:1px solid #1E2330;border-radius:11px;padding:10px 12px;margin-bottom:7px;font-size:12px">'
         +'<div style="display:flex;justify-content:space-between;gap:8px"><b>'+(o.jugador||'')+'</b><span>'+(o.resultado||'')+'</span></div>'
-        +'<div style="color:#8B93A7;margin-top:3px">'+(o.equipo||'')+' · '+jugSignalName(o.senal)+' · '+(o.dato||'')+'</div></div>';
+        +'<div style="color:#C8CDDA;margin-top:4px">📋 Pronóstico: '+pron+'</div>'
+        +'<div style="color:#8B93A7;margin-top:3px">'+(o.equipo||'')+' · '+jugSignalName(o.senal)+'</div>'
+        +'<div style="color:#5A6178;font-size:10.5px;margin-top:4px">🧪 Observación de aprendizaje · sin cuota (aún no es pick)</div></div>';
     });
   }
   h+='</div>';
@@ -2413,8 +2417,8 @@ function pgHist(){
 
   var byTier = {alta:0, media:0, baja:0};
   log.forEach(function(f){
-    if(f.confidence>=80) byTier.alta++;
-    else if(f.confidence>=65) byTier.media++;
+    if(f.confidence>=78) byTier.alta++;
+    else if(f.confidence>=62) byTier.media++;
     else byTier.baja++;
   });
 
@@ -2494,7 +2498,7 @@ function pgHist(){
     }
     visibleLog.slice(0, 60).forEach(function(f, idx){
       var when = new Date(f.loggedAt).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
-      var tc = f.confidence>=80?'#00FF87':f.confidence>=65?'#FFD600':'#FF9F40';
+      var tc = f.confidence>=78?'#00FF87':f.confidence>=62?'#FFD600':'#FF9F40';
       var verifyBadge = '';
       if(f.graded){
         if(f.hit===true) verifyBadge = '<span style="background:rgba(0,255,135,.15);color:#00FF87;font-size:10px;font-weight:800;border-radius:5px;padding:2px 7px;margin-left:6px">✅ ACERTÓ ('+f.finalScore+')</span>';
