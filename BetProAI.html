@@ -1756,6 +1756,10 @@ function loadJugadores(){
 function jugSignalName(s){
   return s==='goleador_caliente' ? '🎯 Goleador caliente (tiros a puerta → gol)'
        : s==='riesgo_expulsion'  ? '🟨 Riesgo de expulsión (amonestado + faltas → roja)'
+       : s==='muchas_faltas'     ? '⚠️ Muchas faltas (alta probabilidad de 2ª tarjeta)'
+       : s==='muchos_tackles'    ? '🛡️ Muchas entradas (defensor muy activo)'
+       : s==='muchos_remates'    ? '🎲 Muchos remates (amenaza constante al arco)'
+       : s==='faltas_recibidas'  ? '😤 Faltas recibidas (rival lo marca cerrado, lesión/protesta)'
        : s;
 }
 function pgJugadores(){
@@ -2420,8 +2424,8 @@ function pgHist(){
 
   var byTier = {alta:0, media:0, baja:0};
   log.forEach(function(f){
-    if(f.confidence>=78) byTier.alta++;
-    else if(f.confidence>=62) byTier.media++;
+    if(f.confidence>=80) byTier.alta++;
+    else if(f.confidence>=65) byTier.media++;
     else byTier.baja++;
   });
 
@@ -2501,7 +2505,7 @@ function pgHist(){
     }
     visibleLog.slice(0, 60).forEach(function(f, idx){
       var when = new Date(f.loggedAt).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
-      var tc = f.confidence>=78?'#00FF87':f.confidence>=62?'#FFD600':'#FF9F40';
+      var tc = f.confidence>=80?'#00FF87':f.confidence>=65?'#FFD600':'#FF9F40';
       var verifyBadge = '';
       if(f.graded){
         if(f.hit===true) verifyBadge = '<span style="background:rgba(0,255,135,.15);color:#00FF87;font-size:10px;font-weight:800;border-radius:5px;padding:2px 7px;margin-left:6px">✅ ACERTÓ ('+f.finalScore+')</span>';
