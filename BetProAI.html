@@ -844,7 +844,7 @@ function updPin(){
 // MARCADOR DE VERSIÓN — visible en la cabecera de la app, junto a la fecha. Súbelo cada vez que
 // subas un HTML nuevo a GitHub: si tras recargar la app el texto no cambia, GitHub Pages/el
 // navegador está sirviendo la versión antigua (caché), no es un fallo del código en sí.
-var APP_BUILD_VERSION = '2026-07-06-v48';
+var APP_BUILD_VERSION = '2026-07-06-v50';
 function updSub(){
   var el=document.getElementById('hsub');
   if(el) el.textContent=todayStr()+' · '+APP_BUILD_VERSION;
@@ -2403,6 +2403,32 @@ function pgBanca(){
     if (streak >= 3) {
       html += '<div style="background:'+(streakWin?'rgba(0,255,135,.08)':'rgba(255,59,92,.08)')+';border:1px solid '+(streakWin?'rgba(0,255,135,.3)':'rgba(255,59,92,.3)')+';border-radius:10px;padding:9px 13px;margin-bottom:16px;font-size:12px;color:'+(streakWin?'#00FF87':'#FF3B5C')+';font-weight:700">'+(streakWin?'🔥 Racha de '+streak+' aciertos seguidos':'⚠️ '+streak+' fallos seguidos — el sistema seguirá siendo prudente con el stake')+'</div>';
     }
+  }
+
+  if (decided >= 5) {
+    // 🎁 PROYECCIÓN DE BANCA — extrapola tu ritmo de crecimiento REAL de este mes (compuesto,
+    // igual que el resto de la Banca) a 30 y 90 días. Es una estimación, no una promesa: se dice
+    // explícitamente y con el mismo tono responsable del resto de la app. Solo se muestra con 5+
+    // picks verificados este mes — con menos, el dato no dice nada fiable todavía.
+    var diasTranscurridos = Math.max(1, now.getDate());
+    var crecimientoTotalPct = ST.startBank > 0 ? (currentBank / ST.startBank - 1) : 0;
+    var tasaDiaria = Math.pow(1 + Math.max(crecimientoTotalPct, -0.95), 1 / diasTranscurridos) - 1;
+    var proy30 = currentBank * Math.pow(1 + tasaDiaria, 30);
+    var proy90 = currentBank * Math.pow(1 + tasaDiaria, 90);
+    var proyColor = tasaDiaria >= 0 ? '#00FF87' : '#FF3B5C';
+    html += '<div class="bcard" style="margin-top:12px;margin-bottom:16px;border-color:'+proyColor+'40">'
+      +'<div style="font-size:11px;color:'+proyColor+';font-weight:800;letter-spacing:1px;margin-bottom:8px">🚀 PROYECCIÓN — SI MANTIENES ESTE RITMO</div>'
+      +'<div style="display:flex;gap:10px">'
+      +'<div style="flex:1;background:#0B0E15;border-radius:10px;padding:10px;text-align:center">'
+        +'<div style="color:#5A6785;font-size:10.5px;margin-bottom:3px">En 30 días</div>'
+        +'<div style="color:'+proyColor+';font-weight:900;font-size:18px">'+proy30.toFixed(2)+'€</div>'
+      +'</div>'
+      +'<div style="flex:1;background:#0B0E15;border-radius:10px;padding:10px;text-align:center">'
+        +'<div style="color:#5A6785;font-size:10.5px;margin-bottom:3px">En 90 días</div>'
+        +'<div style="color:'+proyColor+';font-weight:900;font-size:18px">'+proy90.toFixed(2)+'€</div>'
+      +'</div></div>'
+      +'<div style="color:#5A6785;font-size:10px;margin-top:8px;line-height:1.5">Estimación calculada extrapolando tu crecimiento compuesto REAL de '+mesNombre+' ('+winRate+'% win rate en '+decided+' picks) — no es una promesa ni garantía de resultado futuro. El rendimiento pasado no asegura el rendimiento futuro.</div>'
+      +'</div>';
   }
 
   if(timelineDesc.length){
