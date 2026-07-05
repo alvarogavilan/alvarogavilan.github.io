@@ -10,7 +10,7 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 <title>Smart Money Pro</title>
-<!-- BUILD: v40.3-sgo-clave-nueva -->
+<!-- BUILD: v40.5-final -->
 <style>
 :root{--bg:#060810;--bg2:#0B0E18;--bg3:#111525;--border:#1A2035;--sharp:#FF3B5C;--value:#00FF87;--warn:#FFD600;--info:#00D4FF;--purple:#A855F7;--text:#F0F2F7;--muted:#5A6785;--sub:#8896AA}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -133,7 +133,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto}
 
 <div id="hdr">
   <div class="hdr-top">
-    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v40.3</span></div>
+    <div><span class="logo">Smart Money Pro</span><span class="logo-b">BETA v40.5</span></div>
     <div id="pulse"><div class="pdot" id="pdot"></div><span id="ptxt">Iniciando...</span></div>
   </div>
   <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;font-size:11px;color:var(--muted)">
@@ -671,7 +671,9 @@ async function fetchTheOdds() {
       // créditos. Con hasta 10 casas nombradas, el grupo cuenta como 1 sola
       // región → 1 crédito por llamada Y exactamente las casas que queremos
       // (objetivos + 5 testigos para señales Steam).
-      + '&bookmakers=bet365,winamax,pinnacle,unibet_eu,williamhill,betclic,marathonbet,betsson'
+      // v40.4: la clave correcta de Winamax es 'winamax_fr' (con 'winamax' a
+      // secas perdíamos TODAS sus cuotas — la mitad de los EV+ posibles)
+      + '&bookmakers=bet365,winamax_fr,winamax_de,pinnacle,unibet_eu,williamhill,betclic,marathonbet,betsson'
       + '&markets=h2h&oddsFormat=decimal'
       + '&commenceTimeTo=' + future.toISOString().split('.')[0] + 'Z';
     countReq('theOdds');
@@ -779,12 +781,12 @@ function americanToDecimal(american) {
 }
 
 async function fetchSGO() {
-  var url = 'https://api.sportsgameodds.com/v2/events?leagueID=NBA,NFL,MLB,NHL,MLS,WNBA,UEFA_CHAMPIONS_LEAGUE&oddsAvailable=true&limit=10&apiKey=' + KEYS.sgo; // v40.2: limit 25→10 (cada evento = 1 objeto de cuota)
+  var url = 'https://api.sportsgameodds.com/v2/events?leagueID=NBA,NFL,MLB,NHL,MLS,UEFA_CHAMPIONS_LEAGUE&oddsAvailable=true&limit=10&apiKey=' + KEYS.sgo; // v40.4: WNBA fuera — NO está en el plan gratis de SGO y su presencia hacía fallar la petición ENTERA
   countReq('sgo');
   var data = await proxyFetch(url, 'SportsGameOdds');
   if (!data || data.success===false) {
     addDiag('  SGO: fallback a NBA-only (alguna liga no disponible en el plan)');
-    var fallbackUrl = 'https://api.sportsgameodds.com/v2/events?leagueID=MLB,WNBA&oddsAvailable=true&limit=10&apiKey=' + KEYS.sgo;
+    var fallbackUrl = 'https://api.sportsgameodds.com/v2/events?leagueID=MLB&oddsAvailable=true&limit=10&apiKey=' + KEYS.sgo;
     countReq('sgo');
     data = await proxyFetch(fallbackUrl, 'SportsGameOdds (NBA/MLB fallback)');
   }
@@ -1377,7 +1379,7 @@ function detectEV(id,sport,match,ko,b365,winamax,pin,outV,outA,src) {
     if (bEv!==null && bEv>=3) logPick(key+'_Bet365', {sport:sport, match:match, market:name, book:'Bet365', odds:bVal, pinnacle:p, ev:bEv.toFixed(1), ko:ko});
     if (wEv!==null && wEv>=3) logPick(key+'_Winamax', {sport:sport, match:match, market:name, book:'Winamax', odds:wVal, pinnacle:p, ev:wEv.toFixed(1), ko:ko});
 
-    if (bestEv>4) {
+    if (bestEv>3) { // v40.5: umbral de alerta 4→3 (las cuotas de Pinnacle y las casas llegan sincronizadas en la misma respuesta, el 3% es fiable)
       var bestBook = (wEv||-999) > (bEv||-999) ? 'Winamax' : 'Bet365';
       var bestOdds = bestBook==='Winamax' ? wVal : bVal;
       outA.push({key:'ev_'+key,type:'value',sport:sport,match:match,ko:ko,
@@ -1811,7 +1813,7 @@ function pgValue() {
     +'<div style="font-size:12px;color:var(--sub);line-height:1.65">'
     +'<strong style="color:var(--text)">Pinnacle</strong> es el libro de apuestas de referencia mundial. Los profesionales apuestan allí porque no limita. Sus cuotas son las más eficientes. Cuando Bet365 paga <em>más</em> que Pinnacle para el mismo evento, Bet365 está equivocada. Ese es el valor. <strong style="color:var(--value)">Bill Benter construyó un algoritmo para hacer esto exactamente y ganó $118M en un solo día.</strong>'
     +'</div>'
-    +'<div style="margin-top:8px;font-size:11px;color:var(--muted)">EV+ = (cuota × prob. justa Pinnacle − 1) × 100. Se muestra desde 3% · Alerta desde 4%</div>'
+    +'<div style="margin-top:8px;font-size:11px;color:var(--muted)">EV+ = (cuota × prob. justa Pinnacle − 1) × 100. Se muestra desde 3% · Alerta y Telegram desde 3%</div>'
     +'<div style="margin-top:6px;font-size:11px;color:'+freshnessColor+';font-weight:700">🕐 '+freshnessTxt+(pinAgeH!==null&&pinAgeH>=3?' — cuota de referencia algo desactualizada, el EV+ real puede haber cambiado':'')+'</div>'
     +'</div>';
 
@@ -2049,7 +2051,7 @@ function pgConfig() {
     {k:'theOdds',  name:'The Odds API',    col:'var(--info)',   lim:500,    per:'mes',     iv:'8h',  cv:'5 ligas · 8 casas (1 crédito/llamada)'},
     {k:'oddsApi',  name:'Odds-API.io',     col:'var(--value)',  lim:100,    per:'hora',    iv:'12min', cv:'Fútbol/Tenis'},
     {k:'oddsPapi', name:'OddsPapi (Pinnacle)',col:'var(--purple)',lim:250,  per:'mes',     iv:'8h',  cv:'Pinnacle sharp'},
-    {k:'sgo',      name:'SportsGameOdds',  col:'var(--warn)',   lim:100,    per:'consultas/mes (1.000 objetos)', iv:'8h', cv:'US + WNBA · 10 eventos/consulta'},
+    {k:'sgo',      name:'SportsGameOdds',  col:'var(--warn)',   lim:100,    per:'consultas/mes (1.000 objetos)', iv:'8h', cv:'US · 10 eventos/consulta'},
     {k:'sharpApi', name:'SharpAPI'+(KEYS.sharpApi?'':' (sin clave)'), col:'#06b6d4', lim:17280, per:'día', iv:'90s', cv:'NBA/NFL/MLB/NHL extra'},
     {k:'oddsPapiEsports', name:'OddsPapi Esports (CS2+LoL)', col:'#FF6B35', lim:250, per:'mes (compartida c/fútbol)', iv:'72h', cv:'CS2+LoL vs Pinnacle/Bet365'},
   ];
