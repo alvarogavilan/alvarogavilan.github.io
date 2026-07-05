@@ -1755,11 +1755,10 @@ function loadJugadores(){
 }
 function jugSignalName(s){
   return s==='goleador_caliente' ? '🎯 Goleador caliente (tiros a puerta → gol)'
+       : s==='muchos_remates'    ? '🎲 Muchos remates (tiros totales → gol)'
        : s==='riesgo_expulsion'  ? '🟨 Riesgo de expulsión (amonestado + faltas → roja)'
-       : s==='muchas_faltas'     ? '⚠️ Muchas faltas (alta probabilidad de 2ª tarjeta)'
-       : s==='muchos_tackles'    ? '🛡️ Muchas entradas (defensor muy activo)'
-       : s==='muchos_remates'    ? '🎲 Muchos remates (amenaza constante al arco)'
-       : s==='faltas_recibidas'  ? '😤 Faltas recibidas (rival lo marca cerrado, lesión/protesta)'
+       : s==='muchas_faltas'     ? '⚠️ Muchas faltas (→ riesgo de tarjeta)'
+       : s==='muchos_tackles'    ? '🛡️ Muchas entradas (→ riesgo de tarjeta)'
        : s;
 }
 function pgJugadores(){
