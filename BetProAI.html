@@ -2270,6 +2270,18 @@ function toggleLiga(nombre, domId){
     el.style.transform = (el.id === 'arrow_'+domId && isOpenNow) ? 'rotate(180deg)' : 'rotate(0deg)';
   });
 }
+var PERFIL_ABIERTO = null; // qué perfil de liga histórico está desplegado (uno a la vez)
+function togglePerfilLiga(nombre, domId){
+  PERFIL_ABIERTO = (PERFIL_ABIERTO===nombre) ? null : nombre;
+  var isOpenNow = PERFIL_ABIERTO === nombre;
+  document.querySelectorAll('[id^="perfilliga_"]').forEach(function(el){
+    if(el.id === domId){ el.style.display = isOpenNow ? 'block' : 'none'; }
+    else { el.style.display = 'none'; }
+  });
+  document.querySelectorAll('[id^="parrow_"]').forEach(function(el){
+    el.style.transform = (el.id === 'parrow_'+domId && isOpenNow) ? 'rotate(180deg)' : 'rotate(0deg)';
+  });
+}
 // Genera un literal JS (con comillas dobles) seguro para meter dentro de un atributo HTML
 // delimitado por comillas SIMPLES — antes se usaba JSON.stringify directo dentro de un atributo
 // onclick="..." con comillas dobles, y como JSON.stringify también usa comillas dobles, cualquier
@@ -2290,6 +2302,89 @@ function loadLeagueProfiles(){
     .then(function(d){ LEAGUE_PROFILES_DATA=d; LEAGUE_PROFILES_LOADING=false; if(PG==='ligas') go('ligas', true); })
     .catch(function(e){ LEAGUE_PROFILES_ERROR=e.message||'error'; LEAGUE_PROFILES_LOADING=false; if(PG==='ligas') go('ligas', true); });
 }
+var TEAM_PROFILES_DATA=null, TEAM_PROFILES_LOADING=false, TEAM_PROFILES_ERROR=null, TEAM_SEARCH_TEXT='';
+var EQUIPO_ABIERTO = null;
+function loadTeamProfiles(buscar){
+  TEAM_PROFILES_LOADING=true; TEAM_PROFILES_ERROR=null;
+  var url = WORKER_LIVE_URL+'/live/team-profiles' + (buscar ? ('?buscar='+encodeURIComponent(buscar)) : '');
+  fetch(url)
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(function(d){ TEAM_PROFILES_DATA=d; TEAM_PROFILES_LOADING=false; if(PG==='ligas') go('ligas', true); })
+    .catch(function(e){ TEAM_PROFILES_ERROR=e.message||'error'; TEAM_PROFILES_LOADING=false; if(PG==='ligas') go('ligas', true); });
+}
+function buscarEquipo(){
+  var input = document.getElementById('teamSearchInput');
+  TEAM_SEARCH_TEXT = input ? input.value : '';
+  loadTeamProfiles(TEAM_SEARCH_TEXT);
+}
+function toggleEquipo(nombre, domId){
+  EQUIPO_ABIERTO = (EQUIPO_ABIERTO===nombre) ? null : nombre;
+  var isOpenNow = EQUIPO_ABIERTO === nombre;
+  document.querySelectorAll('[id^="equipoperfil_"]').forEach(function(el){
+    if(el.id === domId){ el.style.display = isOpenNow ? 'block' : 'none'; }
+    else { el.style.display = 'none'; }
+  });
+  document.querySelectorAll('[id^="earrow_"]').forEach(function(el){
+    el.style.transform = (el.id === 'earrow_'+domId && isOpenNow) ? 'rotate(180deg)' : 'rotate(0deg)';
+  });
+}
+function renderTeamProfilesSection(){
+  if(!TEAM_PROFILES_DATA && !TEAM_PROFILES_LOADING && !TEAM_PROFILES_ERROR) loadTeamProfiles('');
+  var h = '<div class="shdr">🔎 EQUIPOS INDIVIDUALES</div>'
+    +'<div style="font-size:11px;color:#5A6785;margin-bottom:10px">No es lo mismo el promedio de toda una liga que el de un equipo concreto — aquí cada equipo tiene su propia media de goles, córners y tarjetas, separada entre jugar en <b style="color:#00D4FF">casa</b> y <b style="color:#00D4FF">fuera</b>.</div>'
+    +'<div style="display:flex;gap:8px;margin-bottom:12px">'
+    +'<input id="teamSearchInput" type="text" placeholder="Buscar equipo (ej: Real Madrid)" value="'+(TEAM_SEARCH_TEXT||'').replace(/"/g,'&quot;')+'" onkeydown="if(event.key===\'Enter\')buscarEquipo()" style="flex:1;background:#12151F;border:1px solid #1E2330;border-radius:10px;padding:9px 12px;color:#F0F2F7;font-size:12.5px">'
+    +'<button onclick="buscarEquipo()" style="background:#00D4FF;border:none;border-radius:10px;padding:0 16px;color:#04121A;font-weight:800;font-size:12.5px">Buscar</button>'
+    +'</div>';
+  if(TEAM_PROFILES_LOADING){
+    h += '<div style="text-align:center;padding:20px 0;color:#6B7490;font-size:12.5px">Buscando…</div>';
+    return h;
+  }
+  if(TEAM_PROFILES_ERROR){
+    h += '<div style="text-align:center;padding:16px;color:#8B93A7;font-size:12.5px">No se pudo cargar ahora mismo.</div>';
+    return h;
+  }
+  var equipos = (TEAM_PROFILES_DATA && TEAM_PROFILES_DATA.equipos) || [];
+  if(!equipos.length){
+    h += '<div style="background:#12151F;border:1px solid #1E2330;border-radius:14px;padding:16px;text-align:center;color:#8B93A7;font-size:12.5px;line-height:1.6">'
+      + (TEAM_SEARCH_TEXT ? 'Ningún equipo encontrado con ese nombre todavía en la base.' : 'La base de equipos se está llenando sola, igual que la de ligas — vuelve en unas horas.')
+      +'</div>';
+    return h;
+  }
+  equipos.forEach(function(t, idx){
+    var open = EQUIPO_ABIERTO === t.id;
+    var domId = 'equipoperfil_' + idx + '_' + String(t.id).replace(/[^a-zA-Z0-9]/g, '_');
+    var teamKey = jsAttrLiteral(t.id);
+    h += '<div style="background:#12151F;border:1px solid '+(open?'#00D4FF55':'#1E2330')+';border-radius:12px;padding:0;margin-bottom:8px;overflow:hidden">'
+      +'<div onclick=\'toggleEquipo('+teamKey+',"'+domId+'")\' style="padding:12px 14px;cursor:pointer">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+      +'<div style="font-weight:800;font-size:13px">'+(t.nombre||'')+' <span style="color:#5A6785;font-weight:600;font-size:11px">('+t.partidos+' partidos: '+t.enCasa+' casa / '+t.fuera+' fuera)</span></div>'
+      +'<span style="color:#5A6785;font-size:13px;transform:rotate('+(open?'180':'0')+'deg);transition:.2s" id="earrow_'+domId+'">▾</span>'
+      +'</div>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:#8B93A7">'
+      +'<span>⚽ '+t.golesAFavorMedia+' a favor/p.</span>'
+      +'<span>🥅 '+t.golesEnContraMedia+' en contra/p.</span>'
+      +'<span>+2.5: '+t.pctMasDe2_5Goles+'</span>'
+      +'</div></div>';
+    h += '<div id="'+domId+'" style="display:'+(open?'block':'none')+';padding:0 14px 14px;border-top:1px solid #1E2330">'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;font-size:11.5px;color:#C9D2E3;margin-top:10px">'
+      +'<div>🏠 Goles a favor en casa: <b>'+t.golesAFavorEnCasa+'</b></div>'
+      +'<div>🏠 Goles en contra en casa: <b>'+t.golesEnContraEnCasa+'</b></div>'
+      +'<div>✈️ Goles a favor fuera: <b>'+t.golesAFavorFuera+'</b></div>'
+      +'<div>✈️ Goles en contra fuera: <b>'+t.golesEnContraFuera+'</b></div>'
+      +'<div>📊 +1.5 goles: <b>'+t.pctMasDe1_5Goles+'</b></div>'
+      +'<div>📊 +3.5 goles: <b>'+t.pctMasDe3_5Goles+'</b></div>'
+      +'<div>🤝 Ambos marcan: <b>'+t.pctAmbosMarcan+'</b></div>'
+      +'<div>🕐 Goles 1ª parte a favor: <b>'+t.mediaGoles1aParteAFavor+'</b></div>'
+      +'<div>🕐 Goles 1ª parte en contra: <b>'+t.mediaGoles1aParteEnContra+'</b></div>'
+      +'<div>🚩 Córners a favor: <b>'+t.mediaCornersAFavor+'</b></div>'
+      +'<div>🚩 Córners en contra: <b>'+t.mediaCornersEnContra+'</b></div>'
+      +'<div>🟨 Tarjetas (media): <b>'+t.mediaTarjetas+'</b></div>'
+      +'<div>🎯 Tiros a puerta a favor: <b>'+t.mediaTirosAPuertaAFavor+'</b></div>'
+      +'</div></div>';
+  });
+  return h;
+}
 function renderLeagueProfilesSection(){
   if(!LEAGUE_PROFILES_DATA && !LEAGUE_PROFILES_LOADING && !LEAGUE_PROFILES_ERROR) loadLeagueProfiles();
   var h = '<div class="shdr">📊 BASE DE DATOS HISTÓRICA (perfiles por liga)</div>'
@@ -2307,15 +2402,42 @@ function renderLeagueProfilesSection(){
     h += '<div style="background:#12151F;border:1px solid #1E2330;border-radius:14px;padding:18px;text-align:center;color:#8B93A7;font-size:12.5px;line-height:1.6">La base histórica se está sembrando sola 🌱<br>El sistema añade partidos ya jugados en cada ciclo (cada 15 min). En unas horas estará llena de ligas — no tienes que hacer nada.</div>';
     return h;
   }
-  ligas.slice(0,30).forEach(function(l){
-    h += '<div style="background:#12151F;border:1px solid #1E2330;border-radius:12px;padding:12px 14px;margin-bottom:8px">'
-      +'<div style="font-weight:800;font-size:13px;margin-bottom:6px">'+l.liga+' <span style="color:#5A6785;font-weight:600;font-size:11px">('+l.partidosAnalizados+' partidos)</span></div>'
+  ligas.slice(0,30).forEach(function(l, idx){
+    var open = PERFIL_ABIERTO === l.liga;
+    var domId = 'perfilliga_' + idx + '_' + l.liga.replace(/[^a-zA-Z0-9]/g, '_');
+    var ligaKey = jsAttrLiteral(l.liga);
+    h += '<div style="background:#12151F;border:1px solid '+(open?'#00D4FF55':'#1E2330')+';border-radius:12px;padding:0;margin-bottom:8px;overflow:hidden">'
+      +'<div onclick=\'togglePerfilLiga('+ligaKey+',"'+domId+'")\' style="padding:12px 14px;cursor:pointer">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+      +'<div style="font-weight:800;font-size:13px">'+l.liga+' <span style="color:#5A6785;font-weight:600;font-size:11px">('+l.partidosAnalizados+' partidos)</span></div>'
+      +'<span style="color:#5A6785;font-size:13px;transform:rotate('+(open?'180':'0')+'deg);transition:.2s" id="parrow_'+domId+'">▾</span>'
+      +'</div>'
       +'<div style="display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:#8B93A7">'
       +'<span>⚽ '+l.mediaGolesPorPartido+' goles/p.</span>'
       +'<span>+2.5: '+l.pctMasDe2_5Goles+'</span>'
       +'<span>BTTS: '+l.pctAmbosMarcan+'</span>'
       +'<span>🚩 '+l.mediaCornersPorPartido+' córners</span>'
       +'<span>🟨 '+l.mediaTarjetasPorPartido+' tarj.</span>'
+      +'</div></div>';
+    // Detalle completo, oculto por defecto — TODOS los datos que ya calcula el backend y que
+    // antes se pedían pero nunca se mostraban en ningún sitio de la app.
+    h += '<div id="'+domId+'" style="display:'+(open?'block':'none')+';padding:0 14px 14px;border-top:1px solid #1E2330">'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;font-size:11.5px;color:#C9D2E3;margin-top:10px">'
+      +'<div>📊 +1.5 goles: <b>'+l.pctMasDe1_5Goles+'</b></div>'
+      +'<div>📊 +3.5 goles: <b>'+l.pctMasDe3_5Goles+'</b></div>'
+      +'<div>🕐 Goles 1ª parte (media): <b>'+l.mediaGoles1aParte+'</b></div>'
+      +'<div>🕐 +0.5 goles 1ª parte: <b>'+l.pctMasDe0_5Goles1aParte+'</b></div>'
+      +'<div>🕑 +0.5 goles 2ª parte: <b>'+l.pctMasDe0_5Goles2aParte+'</b></div>'
+      +'<div>🚩 +8.5 córners: <b>'+l.pctMasDe8_5Corners+'</b></div>'
+      +'<div>🚩 +10.5 córners: <b>'+l.pctMasDe10_5Corners+'</b></div>'
+      +'<div>🟨 +3.5 tarjetas: <b>'+l.pctMasDe3_5Tarjetas+'</b></div>'
+      +'<div>🟥 Rojas (media): <b>'+l.mediaRojasPorPartido+'</b></div>'
+      +'<div>🎯 Tiros a puerta (media): <b>'+l.mediaTirosAPuerta+'</b></div>'
+      +'<div>🎯 Tiros totales (media): <b>'+l.mediaTirosTotales+'</b></div>'
+      +'<div>⚠️ Faltas (media): <b>'+l.mediaFaltasPorPartido+'</b></div>'
+      +'<div>🚫 Fueras de juego (media): <b>'+l.mediaFuerasDeJuego+'</b></div>'
+      +'<div>🚫 +3.5 fueras de juego: <b>'+l.pctMasDe3_5FueraDeJuego+'</b></div>'
+      +'<div>⚖️ Diferencia de posesión: <b>'+l.diferenciaMediaPosesion+'</b></div>'
       +'</div></div>';
   });
   return h;
@@ -2325,6 +2447,7 @@ function pgLigas(){
   if(SERVER_LOG===null && !SERVER_LOG_LOADING) fetchServerHistory();
   var log = SERVER_LOG || [];
   var html = renderLeagueProfilesSection()
+    + renderTeamProfilesSection()
     + '<div class="shdr">🌍 RENDIMIENTO POR LIGA (nuestros picks)</div>'
     +'<div style="font-size:11px;color:#5A6785;margin-bottom:12px">Todo lo acumulado en el historial, agrupado por liga. Toca una liga para ver sus pronósticos.</div>';
 
