@@ -844,7 +844,7 @@ function updPin(){
 // MARCADOR DE VERSIÓN — visible en la cabecera de la app, junto a la fecha. Súbelo cada vez que
 // subas un HTML nuevo a GitHub: si tras recargar la app el texto no cambia, GitHub Pages/el
 // navegador está sirviendo la versión antigua (caché), no es un fallo del código en sí.
-var APP_BUILD_VERSION = '2026-07-05-v45';
+var APP_BUILD_VERSION = '2026-07-06-v48';
 function updSub(){
   var el=document.getElementById('hsub');
   if(el) el.textContent=todayStr()+' · '+APP_BUILD_VERSION;
@@ -1752,6 +1752,8 @@ var JUG_DATA=null, JUG_LOADING=false, JUG_ERROR=null;
 var JUG_NIVEL_LIGA_ABIERTA = null; // qué liga está desplegada en Jugadores (una a la vez)
 var JUG_NIVEL_EQUIPO_ABIERTO = null; // qué equipo está desplegado dentro de esa liga
 var JUG_TEAMS_CACHE_BY_LIGA = {}; // equipos ya consultados por liga (evita repetir peticiones)
+var JUG_NIVEL_SENAL_ABIERTA = null; // qué señal (Goleador caliente, etc.) está desplegada arriba
+var JUG_OBS_CACHE_BY_SENAL = {}; // observaciones ya consultadas por señal (evita repetir peticiones)
 var JUG_OBS_CACHE_BY_TEAM = {}; // observaciones ya consultadas por equipo
 function loadJugadores(){
   JUG_LOADING=true; JUG_ERROR=null;
@@ -1770,6 +1772,45 @@ function jugSignalName(s){
 }
 // ---------- CASCADA: Liga -> Equipos de esa liga -> Observaciones de ese equipo ----------
 // Misma filosofía que la pestaña Ligas: nada de buscadores de texto sueltos, se navega tocando.
+// PEDIDO EXPLÍCITO: poder tocar una señal ("Goleador caliente", etc.) arriba del todo y ver
+// quiénes concretamente forman esas muestras. Mismo patrón de ID ya corregido para toggleJugLiga
+// (el id real del contenedor y el que se busca deben construirse EXACTAMENTE igual, sin prefijos
+// añadidos por un lado y no por otro).
+function jugSenalDomId(senal){ return 'jugsenal_'+String(senal).replace(/[^a-zA-Z0-9]/g,'_'); }
+function toggleJugSenal(senal){
+  JUG_NIVEL_SENAL_ABIERTA = (JUG_NIVEL_SENAL_ABIERTA===senal) ? null : senal;
+  var isOpenNow = JUG_NIVEL_SENAL_ABIERTA === senal;
+  var domId = jugSenalDomId(senal);
+  document.querySelectorAll('[id^="jugsenal_"]').forEach(function(el){
+    el.style.display = (el.id === domId && isOpenNow) ? 'block' : 'none';
+  });
+  if(isOpenNow) cargarObservacionesDeSenal(senal, domId);
+}
+function cargarObservacionesDeSenal(senal, domId){
+  var cont = document.getElementById(domId);
+  if(!cont) return;
+  if(JUG_OBS_CACHE_BY_SENAL[senal]){
+    cont.innerHTML = renderObservacionesJugHTML(JUG_OBS_CACHE_BY_SENAL[senal]);
+    return;
+  }
+  cont.innerHTML = '<div style="color:#6B7490;font-size:11.5px;padding:8px 0">Cargando…</div>';
+  fetch(WORKER_LIVE_URL+'/live/player-library?senal='+encodeURIComponent(senal))
+    .then(function(r){
+      return r.json().catch(function(){ return null; }).then(function(body){
+        if(!r.ok || !body || body.ok === false) {
+          var motivo = (body && (body.error || body.mensaje)) || ('HTTP ' + r.status + ' sin más detalle');
+          throw new Error(motivo);
+        }
+        return body;
+      });
+    })
+    .then(function(d){
+      var obs = (d && d.observacionesRecientes) || [];
+      JUG_OBS_CACHE_BY_SENAL[senal] = obs;
+      if(JUG_NIVEL_SENAL_ABIERTA === senal){ cont.innerHTML = renderObservacionesJugHTML(obs); }
+    })
+    .catch(function(e){ cont.innerHTML = '<div style="color:#8B93A7;font-size:11.5px;padding:8px 0">No se pudieron cargar las observaciones: <b>'+(e.message||'error desconocido')+'</b></div>'; });
+}
 function toggleJugLiga(ligaNombre, domId){
   JUG_NIVEL_LIGA_ABIERTA = (JUG_NIVEL_LIGA_ABIERTA===ligaNombre) ? null : ligaNombre;
   JUG_NIVEL_EQUIPO_ABIERTO = null; // al cambiar de liga, se cierra cualquier equipo abierto
@@ -1893,12 +1934,19 @@ function pgJugadores(){
     sen.forEach(function(s){
       var pct=(s.aciertosReales||'n/d');
       var ok=s.muestras>=30;
-      h+='<div style="background:#12151F;border:1px solid '+(ok?'rgba(0,255,135,.35)':'#1E2330')+';border-radius:14px;padding:14px;margin-bottom:10px">'
-        +'<div style="font-weight:800;font-size:13.5px;margin-bottom:6px">'+jugSignalName(s.senal)+'</div>'
+      var open = JUG_NIVEL_SENAL_ABIERTA === s.senal;
+      var senalKey = jsAttrLiteral(s.senal);
+      h+='<div style="background:#12151F;border:1px solid '+(open?'#A855F755':(ok?'rgba(0,255,135,.35)':'#1E2330'))+';border-radius:14px;padding:0;margin-bottom:10px;overflow:hidden">'
+        +'<div onclick=\'toggleJugSenal('+senalKey+')\' style="padding:14px;cursor:pointer">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+        +'<div style="font-weight:800;font-size:13.5px">'+jugSignalName(s.senal)+'</div>'
+        +'<span style="color:#5A6785;font-size:13px;transform:rotate('+(open?'180':'0')+'deg);transition:.2s">▾</span></div>'
         +'<div style="display:flex;gap:14px;font-size:12px;color:#8B93A7">'
         +'<span>Muestras: <b style="color:#E8EAF0">'+s.muestras+'</b></span>'
         +'<span>Acierto real: <b style="color:'+(ok?'#00FF87':'#FFD600')+'">'+pct+'</b></span></div>'
-        +'<div style="font-size:11px;color:'+(ok?'#00FF87':'#6B7490')+';margin-top:6px">'+(s.estado||'')+'</div></div>';
+        +'<div style="font-size:11px;color:'+(ok?'#00FF87':'#6B7490')+';margin-top:6px">'+(s.estado||'')+'</div></div>'
+        +'<div id="'+jugSenalDomId(s.senal)+'" style="display:'+(open?'block':'none')+';padding:0 14px 14px;border-top:1px solid #1E2330"></div>'
+        +'</div>';
     });
   }
   // NAVEGACIÓN EN CASCADA — igual que en Ligas: toca una liga -> equipos de esa liga -> toca un
@@ -2762,7 +2810,7 @@ function pgHist(){
         +'<div style="flex:1;min-width:0">'
         +'<div style="font-size:10px;color:#5A6785;margin-bottom:3px">'+when+(kickoffTxt?' · 🕒 '+kickoffTxt:'')+' · '+translateTeam(f.home||'')+' vs '+translateTeam(f.away||'')+' · '+(f.score||'')+(f.minute!=null?(' · '+f.minute+"'"):'')+'</div>'
         +'<div style="color:#F0F2F7;font-weight:800;font-size:14px">'+(f.market||f.pick)+verifyBadge+'</div>'
-        +(f.minOdds?'<div style="color:#FFD600;font-size:11px;margin-top:2px">Cuota mínima: '+f.minOdds+'</div>':'')
+        +(f.betReal && f.betReal.exists && f.betReal.odd ? '<div style="color:#00D4FF;font-size:11px;margin-top:2px">💰 Cuota real (Bet365): <b>'+f.betReal.odd+'</b>'+(f.minOdds?'  ·  mínima: '+f.minOdds:'')+'</div>' : (f.minOdds?'<div style="color:#FFD600;font-size:11px;margin-top:2px">Cuota mínima: '+f.minOdds+'</div>':''))
         +'</div>'
         +'<div style="text-align:center;flex-shrink:0;background:'+tc+'15;border:1.5px solid '+tc+';border-radius:9px;padding:5px 8px">'
         +'<div style="color:'+tc+';font-weight:900;font-size:16px;line-height:1">'+f.confidence+'%</div>'
@@ -2772,7 +2820,9 @@ function pgHist(){
         +'<div id="hd_'+hKey+'" style="display:'+(isOpen?'block':'none')+';margin-top:10px;padding-top:10px;border-top:1px solid #1E2330">'
           +'<div style="color:#A855F7;font-weight:800;font-size:11px;margin-bottom:4px">🧠 POR QUÉ ESTE PRONÓSTICO</div>'
           +'<div style="color:#C9D2E3;font-size:12.5px;line-height:1.5">'+(f.chosenReason ? f.chosenReason : 'Este pick es anterior a que empezáramos a guardar la explicación detallada de cada señal — a partir de ahora todos los nuevos la incluyen aquí.')+'</div>'
-          +(f.supportCount>0 ? '<div style="color:#6B7490;font-size:11px;margin-top:5px">+ '+f.supportCount+' señal(es) adicional(es) detectada(s) en el partido</div>' : '')
+          +((f.supportTags && f.supportTags.length) ? '<div style="color:#6B7490;font-size:11px;margin-top:5px">+ '+f.supportTags.length+' señal(es) adicional(es): '+f.supportTags.join(', ')+'</div>' : (f.supportCount>0 ? '<div style="color:#6B7490;font-size:11px;margin-top:5px">+ '+f.supportCount+' señal(es) adicional(es) detectada(s) en el partido</div>' : ''))
+          +(f.dbInsightLine ? '<div style="color:#00FF87;font-size:12px;margin-top:8px;padding-top:8px;border-top:1px solid #1E2330">📚 <b>Respaldo del histórico:</b> '+f.dbInsightLine+'</div>' : '')
+          +(f.signalHistoryLine ? '<div style="color:#FFD600;font-size:12px;margin-top:6px">📈 <b>Historial de esta señal:</b> '+f.signalHistoryLine+'</div>' : '')
           +(f.proyeccion ? '<div style="color:#00D4FF;font-size:12px;margin-top:8px;padding-top:8px;border-top:1px solid #1E2330">'+f.proyeccion+' <span style="color:#5A6785;font-size:10.5px">(orientativa, no es un pick ni se verifica)</span></div>' : '')
           +'</div>'
         +'</div>';
