@@ -1788,13 +1788,21 @@ function cargarEquiposDeLigaJug(ligaNombre, domId){
   }
   cont.innerHTML = '<div style="color:#6B7490;font-size:11.5px;padding:8px 0">Cargando equipos de esta liga…</div>';
   fetch(WORKER_LIVE_URL+'/live/player-library?liga='+encodeURIComponent(ligaNombre))
-    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(function(r){
+      return r.json().catch(function(){ return null; }).then(function(body){
+        if(!r.ok || !body || body.ok === false) {
+          var motivo = (body && (body.error || body.mensaje)) || ('HTTP ' + r.status + ' sin más detalle');
+          throw new Error(motivo);
+        }
+        return body;
+      });
+    })
     .then(function(d){
       var equipos = (d && d.porEquipo) || [];
       JUG_TEAMS_CACHE_BY_LIGA[ligaNombre] = equipos;
       if(JUG_NIVEL_LIGA_ABIERTA === ligaNombre){ cont.innerHTML = renderEquiposJugHTML(equipos, domId); }
     })
-    .catch(function(){ cont.innerHTML = '<div style="color:#8B93A7;font-size:11.5px;padding:8px 0">No se pudieron cargar los equipos de esta liga ahora mismo.</div>'; });
+    .catch(function(e){ cont.innerHTML = '<div style="color:#8B93A7;font-size:11.5px;padding:8px 0">No se pudieron cargar los equipos de esta liga: <b>'+(e.message||'error desconocido')+'</b></div>'; });
 }
 function renderEquiposJugHTML(equipos, ligaDomId){
   if(!equipos.length) return '<div style="color:#6B7490;font-size:11.5px;padding:8px 0">Todavía no hay señales de jugador de ningún equipo de esta liga.</div>';
@@ -2401,7 +2409,18 @@ function cargarEquiposDeLiga(ligaKey, domId){
   }
   cont.innerHTML = '<div style="color:#6B7490;font-size:11.5px;padding:8px 0">Cargando equipos de esta liga…</div>';
   fetch(WORKER_LIVE_URL+'/live/team-profiles?liga='+encodeURIComponent(ligaKey))
-    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(function(r){
+      // DIAGNÓSTICO REAL: antes, cualquier fallo (incluso un error 500 con motivo exacto en el
+      // cuerpo) se convertía en el mismo mensaje genérico, escondiendo la causa real. Ahora, si
+      // el Worker respondió con JSON (aunque sea un error), se lee y se muestra tal cual.
+      return r.json().catch(function(){ return null; }).then(function(body){
+        if(!r.ok || !body || body.ok === false) {
+          var motivo = (body && (body.error || body.mensaje)) || ('HTTP ' + r.status + ' sin más detalle');
+          throw new Error(motivo);
+        }
+        return body;
+      });
+    })
     .then(function(d){
       var equipos = (d && d.equipos) || [];
       TEAMS_CACHE_BY_LIGA[ligaKey] = equipos;
@@ -2409,7 +2428,7 @@ function cargarEquiposDeLiga(ligaKey, domId){
       // haber cambiado de contenido si abrió otra liga entre medias).
       if(PERFIL_ABIERTO === ligaKey){ cont.innerHTML = renderEquiposDeLigaHTML(equipos, domId); }
     })
-    .catch(function(){ cont.innerHTML = '<div style="color:#8B93A7;font-size:11.5px;padding:8px 0">No se pudieron cargar los equipos de esta liga ahora mismo.</div>'; });
+    .catch(function(e){ cont.innerHTML = '<div style="color:#8B93A7;font-size:11.5px;padding:8px 0">No se pudieron cargar los equipos de esta liga: <b>'+(e.message||'error desconocido')+'</b></div>'; });
 }
 function renderEquiposDeLigaHTML(equipos, ligaDomId){
   if(!equipos.length) return '<div style="color:#6B7490;font-size:11.5px;padding:8px 0">Todavía no hay equipos de esta liga en la base — se irán añadiendo solos.</div>';
