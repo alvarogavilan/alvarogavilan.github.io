@@ -844,7 +844,7 @@ function updPin(){
 // MARCADOR DE VERSIÓN — visible en la cabecera de la app, junto a la fecha. Súbelo cada vez que
 // subas un HTML nuevo a GitHub: si tras recargar la app el texto no cambia, GitHub Pages/el
 // navegador está sirviendo la versión antigua (caché), no es un fallo del código en sí.
-var APP_BUILD_VERSION = '2026-07-05-v42';
+var APP_BUILD_VERSION = '2026-07-05-v45';
 function updSub(){
   var el=document.getElementById('hsub');
   if(el) el.textContent=todayStr()+' · '+APP_BUILD_VERSION;
@@ -1910,14 +1910,14 @@ function pgJugadores(){
   } else {
     porLg.forEach(function(l, idx){
       var open = JUG_NIVEL_LIGA_ABIERTA === l.nombre;
-      var domId = 'jl_'+idx+'_'+String(l.nombre).replace(/[^a-zA-Z0-9]/g,'_');
+      var domId = 'jugliga_'+idx+'_'+String(l.nombre).replace(/[^a-zA-Z0-9]/g,'_'); // prefijo YA incluido (mismo patrón que perfilliga_ en Ligas, que sí funciona)
       var ligaKey = jsAttrLiteral(l.nombre);
       h+='<div style="background:#12151F;border:1px solid '+(open?'#A855F755':'#1E2330')+';border-radius:12px;padding:0;margin-bottom:8px;overflow:hidden">'
         +'<div onclick=\'toggleJugLiga('+ligaKey+',"'+domId+'")\' style="padding:12px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center">'
         +'<div style="font-weight:800;font-size:13px">'+l.nombre+'</div>'
         +'<div style="display:flex;align-items:center;gap:10px"><span style="color:#8B93A7;font-size:11.5px">'+l.muestras+' muestras · '+l.aciertoReal+'</span>'
         +'<span style="color:#5A6785;font-size:13px;transform:rotate('+(open?'180':'0')+'deg);transition:.2s" id="jugarrowl_'+domId+'">▾</span></div></div>'
-        +'<div id="jugliga_'+domId+'" style="display:'+(open?'block':'none')+';padding:0 14px 14px;border-top:1px solid #1E2330">'
+        +'<div id="'+domId+'" style="display:'+(open?'block':'none')+';padding:0 14px 14px;border-top:1px solid #1E2330">'
         +'<div id="jugteams_'+domId+'"></div>'
         +'</div></div>';
     });
@@ -2329,6 +2329,14 @@ function pgBanca(){
     +'</div>';
 
   html += '<div style="font-size:11px;color:#5A6785;margin-bottom:6px">'+decided+' picks verificados este mes con cuota real</div>';
+  // Picks de HOY que ya se enviaron pero aún no tienen resultado confirmado — sin esto, parece
+  // que "faltan" picks de hoy en Banca, cuando en realidad están esperando a que su partido
+  // termine y pase la verificación (normal: puede tardar hasta ~100 minutos tras el pitido final).
+  var todayKeyBanca = new Date().toISOString().slice(0,10);
+  var pendientesHoy = (SERVER_TG_LOG||[]).filter(function(f){ return f.dateKey===todayKeyBanca && !f.graded; }).length;
+  if (pendientesHoy > 0) {
+    html += '<div style="background:#1A1208;border:1px solid #3A2E0A;border-radius:10px;padding:9px 12px;margin-bottom:10px;font-size:11.5px;color:#FFD600">⏳ '+pendientesHoy+' pick'+(pendientesHoy>1?'s':'')+' de hoy pendiente'+(pendientesHoy>1?'s':'')+' de verificar — aparecerá'+(pendientesHoy>1?'n':'')+' aquí en cuanto termine su partido y se confirme el resultado (normal, no es un fallo).</div>';
+  }
   html += '<div class="g4" style="margin:0 0 14px">'
     +'<div class="sb"><div class="sv" style="color:'+(monthUnitsEUR>=0?'#00FF87':'#FF3B5C')+'">'+(monthUnitsEUR>=0?'+':'')+monthUnitsEUR.toFixed(2)+'€</div><div class="sl">Este mes</div></div>'
     +'<div class="sb"><div class="sv" style="color:#00D4FF">'+(winRate!==null?winRate+'%':'—')+'</div><div class="sl">Win rate</div></div>'
