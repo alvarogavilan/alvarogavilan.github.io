@@ -844,7 +844,7 @@ function updPin(){
 // MARCADOR DE VERSIÓN — visible en la cabecera de la app, junto a la fecha. Súbelo cada vez que
 // subas un HTML nuevo a GitHub: si tras recargar la app el texto no cambia, GitHub Pages/el
 // navegador está sirviendo la versión antigua (caché), no es un fallo del código en sí.
-var APP_BUILD_VERSION = '2026-07-06-v62';
+var APP_BUILD_VERSION = '2026-07-06-v63';
 function updSub(){
   var el=document.getElementById('hsub');
   if(el) el.textContent=todayStr()+' · '+APP_BUILD_VERSION;
@@ -1870,7 +1870,7 @@ function pdbEquipoDomId(ligaDomId, idx){ return 'pdbequipo_'+ligaDomId+'_'+idx; 
 function togglePdbEquipo(equipoDomId){
   PDB_EQUIPO_ABIERTO = (PDB_EQUIPO_ABIERTO===equipoDomId) ? null : equipoDomId;
   PDB_JUGADOR_ABIERTO = null; // al cambiar de equipo, cierra cualquier jugador que estuviera abierto
-  go('jugadores');
+  go('jugadores', true);
 }
 function renderPdbJugadoresHTML(jugadores, ligaDomId){
   if(!jugadores.length) return '<div style="color:#6B7490;font-size:11.5px;padding:8px 0">Todavía no hay jugadores de esta liga en la base.</div>';
@@ -1932,7 +1932,7 @@ function pdbStat(label, val){
 }
 function togglePdbJugador(domId){
   PDB_JUGADOR_ABIERTO = (PDB_JUGADOR_ABIERTO===domId) ? null : domId;
-  go('jugadores');
+  go('jugadores', true);
 }
 
 function toggleJugLiga(ligaNombre, domId){
