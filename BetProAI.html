@@ -844,7 +844,7 @@ function updPin(){
 // MARCADOR DE VERSIÓN — visible en la cabecera de la app, junto a la fecha. Súbelo cada vez que
 // subas un HTML nuevo a GitHub: si tras recargar la app el texto no cambia, GitHub Pages/el
 // navegador está sirviendo la versión antigua (caché), no es un fallo del código en sí.
-var APP_BUILD_VERSION = '2026-07-06-v59';
+var APP_BUILD_VERSION = '2026-07-06-v62';
 function updSub(){
   var el=document.getElementById('hsub');
   if(el) el.textContent=todayStr()+' · '+APP_BUILD_VERSION;
@@ -1758,6 +1758,7 @@ var PDB_DATA = null, PDB_LOADING = false, PDB_ERROR = null; // base de datos com
 var PDB_LIGA_ABIERTA = null; // qué liga está desplegada en la base de datos completa
 var PDB_JUGADORES_CACHE = {}; // jugadores ya consultados por liga (evita repetir peticiones)
 var PDB_JUGADOR_ABIERTO = null; // qué jugador tiene el detalle desplegado ahora mismo
+var PDB_EQUIPO_ABIERTO = null; // qué equipo, dentro de la liga abierta, está desplegado ahora mismo
 var JUG_OBS_CACHE_BY_TEAM = {}; // observaciones ya consultadas por equipo
 function loadJugadores(){
   JUG_LOADING=true; JUG_ERROR=null;
@@ -1836,6 +1837,7 @@ function pdbLigaDomId(liga, idx){ return 'pdbliga_'+idx+'_'+String(liga).replace
 function togglePdbLiga(liga, domId){
   PDB_LIGA_ABIERTA = (PDB_LIGA_ABIERTA===liga) ? null : liga;
   var isOpenNow = PDB_LIGA_ABIERTA === liga;
+  PDB_EQUIPO_ABIERTO = null; PDB_JUGADOR_ABIERTO = null; // liga nueva: se cierra cualquier equipo/jugador de la anterior
   document.querySelectorAll('[id^="pdbliga_"]').forEach(function(el){
     el.style.display = (el.id === domId && isOpenNow) ? 'block' : 'none';
   });
@@ -1863,30 +1865,63 @@ function cargarPdbJugadoresDeLiga(liga, domId){
     })
     .catch(function(e){ cont.innerHTML = '<div style="color:#8B93A7;font-size:11.5px;padding:8px 0">No se pudieron cargar los jugadores: <b>'+(e.message||'error desconocido')+'</b></div>'; });
 }
-function pdbJugadorDomId(ligaDomId, idx){ return 'pdbjug_'+ligaDomId+'_'+idx; }
+function pdbJugadorDomId(equipoDomId, idx){ return 'pdbjug_'+equipoDomId+'_'+idx; }
+function pdbEquipoDomId(ligaDomId, idx){ return 'pdbequipo_'+ligaDomId+'_'+idx; }
+function togglePdbEquipo(equipoDomId){
+  PDB_EQUIPO_ABIERTO = (PDB_EQUIPO_ABIERTO===equipoDomId) ? null : equipoDomId;
+  PDB_JUGADOR_ABIERTO = null; // al cambiar de equipo, cierra cualquier jugador que estuviera abierto
+  go('jugadores');
+}
 function renderPdbJugadoresHTML(jugadores, ligaDomId){
   if(!jugadores.length) return '<div style="color:#6B7490;font-size:11.5px;padding:8px 0">Todavía no hay jugadores de esta liga en la base.</div>';
+  // PEDIDO EXPLÍCITO: agrupar por EQUIPO dentro de la liga, igual que en Ligas — imprescindible
+  // en cuanto lleguen ligas de clubes con muchos equipos, no solo el Mundial (donde cada "equipo"
+  // es un país). Los jugadores llegan en una lista plana con su campo `equipo`; se agrupan aquí,
+  // en el cliente, sin pedir nada nuevo al servidor.
+  var porEquipo = {};
+  var ordenEquipos = [];
+  jugadores.forEach(function(j){
+    var eq = j.equipo || '(equipo sin identificar)';
+    if(!porEquipo[eq]){ porEquipo[eq] = []; ordenEquipos.push(eq); }
+    porEquipo[eq].push(j);
+  });
   var h = '';
-  jugadores.forEach(function(j, idx){
-    var domId = pdbJugadorDomId(ligaDomId, idx);
-    var open = PDB_JUGADOR_ABIERTO === domId;
-    h += '<div style="background:#0B0E15;border:1px solid '+(open?'#00D4FF55':'#1E2330')+';border-radius:10px;padding:0;margin:8px 0;overflow:hidden">'
-      +'<div onclick=\'togglePdbJugador("'+domId+'")\' style="padding:10px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center">'
-      +'<div><div style="font-weight:800;font-size:12.5px">'+j.nombre+'</div>'
-      +'<div style="color:#5A6785;font-size:10.5px;margin-top:1px">'+(j.equipo||'')+' · '+j.partidos+' partido'+(j.partidos!==1?'s':'')+'</div></div>'
-      +'<span style="color:#5A6785;font-size:12px;transform:rotate('+(open?'180':'0')+'deg);transition:.2s">▾</span>'
-      +'</div>'
-      +'<div style="display:'+(open?'grid':'none')+';grid-template-columns:1fr 1fr 1fr;gap:8px;padding:0 12px 12px">'
-      +pdbStat('⚽ Goles', j.goles)
-      +pdbStat('🎯 Tiros a puerta', j.shotsOn)
-      +pdbStat('👟 Tiros totales', j.shotsTotal)
-      +pdbStat('⚠️ Faltas cometidas', j.foulsCommitted)
-      +pdbStat('🤕 Faltas recibidas', j.foulsDrawn)
-      +pdbStat('🛡️ Entradas', j.tackles)
-      +pdbStat('🟨 Amarillas', j.yellow)
-      +pdbStat('🟥 Rojas', j.red)
-      +pdbStat('⏱️ Minutos', j.minutos)
-      +'</div></div>';
+  ordenEquipos.forEach(function(equipoNombre, idx){
+    var equipoDomId = pdbEquipoDomId(ligaDomId, idx);
+    var openEquipo = PDB_EQUIPO_ABIERTO === equipoDomId;
+    var jugadoresDeEquipo = porEquipo[equipoNombre];
+    h += '<div style="background:#0E1119;border:1px solid '+(openEquipo?'#A855F755':'#1E2330')+';border-radius:10px;padding:0;margin:8px 0;overflow:hidden">'
+      +'<div onclick=\'togglePdbEquipo("'+equipoDomId+'")\' style="padding:10px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center">'
+      +'<div style="font-weight:800;font-size:12.5px">'+equipoNombre+'</div>'
+      +'<div style="display:flex;align-items:center;gap:8px"><span style="color:#8B93A7;font-size:11px">'+jugadoresDeEquipo.length+' jugador'+(jugadoresDeEquipo.length!==1?'es':'')+'</span>'
+      +'<span style="color:#5A6785;font-size:12px;transform:rotate('+(openEquipo?'180':'0')+'deg);transition:.2s">▾</span></div>'
+      +'</div>';
+    if(openEquipo){
+      h += '<div style="padding:0 12px 10px">';
+      jugadoresDeEquipo.forEach(function(j, jIdx){
+        var domId = pdbJugadorDomId(equipoDomId, jIdx);
+        var open = PDB_JUGADOR_ABIERTO === domId;
+        h += '<div style="background:#0B0E15;border:1px solid '+(open?'#00D4FF55':'#1E2330')+';border-radius:10px;padding:0;margin-top:8px;overflow:hidden">'
+          +'<div onclick=\'togglePdbJugador("'+domId+'")\' style="padding:10px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center">'
+          +'<div><div style="font-weight:800;font-size:12.5px">'+j.nombre+'</div>'
+          +'<div style="color:#5A6785;font-size:10.5px;margin-top:1px">'+j.partidos+' partido'+(j.partidos!==1?'s':'')+'</div></div>'
+          +'<span style="color:#5A6785;font-size:12px;transform:rotate('+(open?'180':'0')+'deg);transition:.2s">▾</span>'
+          +'</div>'
+          +'<div style="display:'+(open?'grid':'none')+';grid-template-columns:1fr 1fr 1fr;gap:8px;padding:0 12px 12px">'
+          +pdbStat('⚽ Goles', j.goles)
+          +pdbStat('🎯 Tiros a puerta', j.shotsOn)
+          +pdbStat('👟 Tiros totales', j.shotsTotal)
+          +pdbStat('⚠️ Faltas cometidas', j.foulsCommitted)
+          +pdbStat('🤕 Faltas recibidas', j.foulsDrawn)
+          +pdbStat('🛡️ Entradas', j.tackles)
+          +pdbStat('🟨 Amarillas', j.yellow)
+          +pdbStat('🟥 Rojas', j.red)
+          +pdbStat('⏱️ Minutos', j.minutos)
+          +'</div></div>';
+      });
+      h += '</div>';
+    }
+    h += '</div>';
   });
   return h;
 }
