@@ -844,7 +844,7 @@ function updPin(){
 // MARCADOR DE VERSIÓN — visible en la cabecera de la app, junto a la fecha. Súbelo cada vez que
 // subas un HTML nuevo a GitHub: si tras recargar la app el texto no cambia, GitHub Pages/el
 // navegador está sirviendo la versión antigua (caché), no es un fallo del código en sí.
-var APP_BUILD_VERSION = '2026-07-06-v51';
+var APP_BUILD_VERSION = '2026-07-06-v57';
 function updSub(){
   var el=document.getElementById('hsub');
   if(el) el.textContent=todayStr()+' · '+APP_BUILD_VERSION;
@@ -2369,6 +2369,11 @@ function pgBanca(){
     +'<button onclick="edBancaInicial()" style="background:#1A2035;border:1px solid #1E2330;color:#00D4FF;font-weight:700;font-size:11px;border-radius:9px;padding:6px 10px">✏️</button>'
     +'</div></div>';
 
+  html += '<div class="bcard" style="margin-top:12px;text-align:center">'
+    +'<div id="certifStatus" style="font-size:11.5px;color:#8B93A7;margin-bottom:8px">📤 Genera una prueba visual de tus resultados verificados, lista para compartir donde quieras.</div>'
+    +'<button onclick="compartirCertificado()" style="background:linear-gradient(135deg,#00D4FF,#A855F7);border:none;color:#0A0C12;font-weight:900;font-size:13px;border-radius:11px;padding:11px 20px;width:100%">📊 Compartir mis resultados verificados</button>'
+    +'</div>';
+
   var mesNombre = now.toLocaleDateString('es-ES',{month:'long',year:'numeric'});
   html += '<div class="bcard" style="margin-top:12px">'
     +'<div style="font-size:11px;color:#A855F7;font-weight:800;letter-spacing:1px;margin-bottom:2px">📊 EVOLUCIÓN — '+mesNombre.toUpperCase()+'</div>'
@@ -2457,6 +2462,34 @@ function pgBanca(){
 
 function svBancaInicial(){var v=parseFloat((document.getElementById('bi')||{}).value||0);if(v>0){setBank(v);ST.startBank=v;saveST();go('banca');}}
 function edBancaInicial(){if(confirm('¿Reiniciar banca? Esto no borra tu historial de apuestas, solo el saldo.')){setBank(0);ST.startBank=0;ST.peakBank=0;saveST();go('banca');}}
+
+function compartirCertificado(){
+  var el = document.getElementById('certifStatus');
+  if(el) el.textContent = '⏳ Generando...';
+  fetch(WORKER_LIVE_URL+'/live/certificado')
+    .then(function(r){
+      return r.json().catch(function(){ return null; }).then(function(body){
+        if(!r.ok || !body || body.ok === false){
+          throw new Error((body && body.error) || ('HTTP '+r.status));
+        }
+        return body;
+      });
+    })
+    .then(function(d){
+      if(el) el.textContent = '📤 Genera una prueba visual de tus resultados verificados, lista para compartir donde quieras.';
+      if(navigator.share){
+        navigator.share({ title:'BetPro LIVE — resultados verificados', text:d.textoParaCompartir, url:d.imagenUrl })
+          .catch(function(){});
+      } else {
+        window.open(d.imagenUrl, '_blank');
+        try{ navigator.clipboard && navigator.clipboard.writeText(d.textoParaCompartir); }catch(e){}
+        alert('Imagen abierta en una pestaña nueva. El texto para compartir ya se copió al portapapeles (si tu navegador lo permite):\n\n'+d.textoParaCompartir);
+      }
+    })
+    .catch(function(e){
+      if(el) el.textContent = '⚠️ '+(e.message||'No se pudo generar el certificado ahora mismo.');
+    });
+}
 
 var LIGA_ABIERTA = null; // qué liga está desplegada en la pestaña Ligas (una a la vez)
 function toggleLiga(nombre, domId){
