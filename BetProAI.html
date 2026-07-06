@@ -515,7 +515,7 @@ function topForecastCard(t, idx){
     +(tier.label?'<div style="font-size:10px;color:'+tier.color+';font-weight:800;margin-bottom:4px">'+tier.label+'</div>':'')
     +(t.confidence<65?'<div style="font-size:10.5px;color:#8896AA;background:#1A1000;border:1px solid #3A2E00;border-radius:7px;padding:5px 8px;margin-bottom:6px">⚠️ No alcanza el 65% necesario para notificar — no se ha enviado ni se enviará a Telegram. Se muestra solo como referencia.</div>':'')
     +'<div style="color:#F0F2F7;font-weight:800;font-size:14px">'+(idx===0?'⭐ ':'')+(t.market||t.pick)+'</div>'
-    +(realOdd?'<div style="color:#00FF87;font-size:11px;margin-top:3px">✅ Cuota real verificada (Bet365): '+realOdd.toFixed(2)+'</div>':'')
+    +(realOdd?'<div style="color:#00FF87;font-size:11px;margin-top:3px">✅ Cuota real verificada'+((t.betReal&&t.betReal.bookieName)?' ('+t.betReal.bookieName+')':'')+': '+realOdd.toFixed(2)+'</div>':'')
     +(t.marketComparison && t.marketComparison.length?'<div style="margin-top:8px;border-top:1px solid #1E2330;padding-top:8px"><div style="font-size:10px;color:#00FF87;font-weight:800;margin-bottom:5px">💰 COMPARATIVA CON EL MERCADO REAL</div>'+t.marketComparison.map(function(b){return '<div style="font-size:11px;color:#8896AA;margin-bottom:3px">'+b.market+': '+b.values.map(function(v){return v.tag+' <b style="color:#FFD600">'+v.odd+'</b>';}).join(' · ')+'</div>';}).join('')+'</div>':'')
     +(t.reasoning?'<div style="color:#8896AA;font-size:11px;margin-top:6px;line-height:1.5;border-top:1px solid #1E2330;padding-top:6px">'+t.reasoning+'</div>':'')
     +'<div style="margin-top:9px;font-size:10px;color:#5A6785">💼 Si este pick se confirma y verifica, aparecerá solo en tu Banca — no hace falta registrarlo a mano.</div>'
@@ -600,12 +600,12 @@ function liveDetailView(){
     +'<div style="display:flex;gap:10px;margin-bottom:10px">'
     +'<div style="flex:1;background:#0B0E15;border-radius:8px;padding:8px;text-align:center"><div style="font-size:10px;color:#5A6785">FIABILIDAD</div><div style="color:#00FF87;font-weight:800;font-size:18px">'+(f.confidence||0)+'%</div></div>'
     + (verified
-        ? '<div style="flex:1;background:#0B0E15;border-radius:8px;padding:8px;text-align:center"><div style="font-size:10px;color:#5A6785">CUOTA REAL (BET365)</div><div style="color:#00FF87;font-weight:800;font-size:18px">'+realOdd.toFixed(2)+'</div></div>'
+        ? '<div style="flex:1;background:#0B0E15;border-radius:8px;padding:8px;text-align:center"><div style="font-size:10px;color:#5A6785">CUOTA REAL'+(f.betReal.bookieName?' ('+f.betReal.bookieName.toUpperCase()+')':'')+'</div><div style="color:#00FF87;font-weight:800;font-size:18px">'+realOdd.toFixed(2)+'</div></div>'
         : '<div style="flex:1;background:#0B0E15;border-radius:8px;padding:8px;text-align:center"><div style="font-size:10px;color:#5A6785">CUOTA REAL</div><div style="color:#FF3B5C;font-weight:800;font-size:16px">No disponible</div></div>')
     +'</div>'
     + (!verified
-        ? '<div style="color:#FF3B5C;font-size:12px;background:#1A0810;border:1px solid rgba(255,59,92,.3);border-radius:8px;padding:10px;margin-bottom:8px;font-weight:600">🚫 Esta línea no existe (o no cumple la cuota mínima) en Bet365 ahora mismo. No es una apuesta recomendada — es una señal detectada por el motor que todavía no se puede confirmar contra el mercado real. No apuestes esto.</div>'
-        : (f.betReal.snapped ? '<div style="color:#FFD600;font-size:11px;background:#1A1208;border-radius:8px;padding:8px 10px;margin-bottom:8px">ℹ️ Línea ajustada automáticamente a la más cercana real de Bet365.</div>' : ''))
+        ? '<div style="color:#FF3B5C;font-size:12px;background:#1A0810;border:1px solid rgba(255,59,92,.3);border-radius:8px;padding:10px;margin-bottom:8px;font-weight:600">🚫 Esta línea no existe (o no cumple la cuota mínima) en el mercado real ahora mismo. No es una apuesta recomendada — es una señal detectada por el motor que todavía no se puede confirmar. No apuestes esto.</div>'
+        : (f.betReal.snapped ? '<div style="color:#FFD600;font-size:11px;background:#1A1208;border-radius:8px;padding:8px 10px;margin-bottom:8px">ℹ️ Línea ajustada automáticamente a la más cercana real de '+(f.betReal.bookieName||'el mercado')+'.</div>' : ''))
     +'<div style="color:#5A6785;font-size:11px">'+((f.allSignals||[]).length)+' patrón(es) detectado(s) en este partido</div>'
     +'</div>';
 
@@ -734,22 +734,22 @@ function oddsRow(p,idx){
     var c=o<1.50?'#FFD600':'#F0F2F7';
     return '<div style="display:flex;gap:8px;margin-bottom:4px">'
       +'<div style="flex:1;background:#0B0E15;border:1.5px solid rgba(0,255,135,.35);border-radius:10px;padding:9px 10px;text-align:center">'
-      +'<div style="font-size:9px;color:#00FF87;font-weight:800;letter-spacing:.5px;margin-bottom:3px">✅ BET365 · CUOTA REAL VERIFICADA</div>'
+      +'<div style="font-size:9px;color:#00FF87;font-weight:800;letter-spacing:.5px;margin-bottom:3px">✅ '+(br.bookieName?br.bookieName.toUpperCase():'MERCADO REAL')+' · CUOTA REAL VERIFICADA</div>'
       +'<div style="color:'+c+';font-weight:900;font-size:26px;line-height:1;letter-spacing:-1px">'+o.toFixed(2)+'</div>'
       +'</div>'
       +'</div>'
-      +'<div style="font-size:9px;color:#5A6785;margin:-2px 0 8px 2px">Cuota confirmada en Bet365 en el momento del análisis — puede moverse, compruébala antes de apostar.</div>';
+      +'<div style="font-size:9px;color:#5A6785;margin:-2px 0 8px 2px">Cuota confirmada en '+(br.bookieName||'el mercado en vivo')+' en el momento del análisis — puede moverse, compruébala antes de apostar.</div>';
   }
   // No verificado: este es justo el caso de "+1.5 tarjetas" que no existía como línea real.
   // Mostramos el aviso en vez de una cuota inventada, y más abajo el botón de registrar se oculta.
   var reasonTxt = (br && br.checked && br.marketFound && !br.lineFound)
-    ? 'Esta línea concreta no está disponible en Bet365 ahora mismo.'
+    ? 'Esta línea concreta no está disponible en el mercado real ahora mismo.'
     : (br && br.checked && !br.marketFound)
-    ? 'Este mercado no aparece entre los mercados en vivo de Bet365 para este partido.'
-    : 'No se ha podido confirmar esta cuota contra Bet365 en este momento.';
+    ? 'Este mercado no aparece entre los mercados en vivo para este partido.'
+    : 'No se ha podido confirmar esta cuota contra ninguna casa real en este momento.';
   var closest = (br && br.closestLine) ? ' Línea más cercana disponible: '+br.closestLine.tag+' @ '+br.closestLine.odd+'.' : '';
   return '<div style="background:#1A0F08;border:1px dashed rgba(255,107,0,.4);border-radius:10px;padding:10px 12px;margin-bottom:8px">'
-    +'<div style="font-size:11px;color:#FF6B00;font-weight:800;margin-bottom:3px">⚠️ NO VERIFICABLE EN BET365</div>'
+    +'<div style="font-size:11px;color:#FF6B00;font-weight:800;margin-bottom:3px">⚠️ NO VERIFICABLE EN EL MERCADO REAL</div>'
     +'<div style="font-size:11px;color:#8896AA;line-height:1.5">'+reasonTxt+closest+' No apuestes esto hasta comprobarlo tú mismo.</div>'
     +'</div>';
 }
@@ -844,7 +844,7 @@ function updPin(){
 // MARCADOR DE VERSIÓN — visible en la cabecera de la app, junto a la fecha. Súbelo cada vez que
 // subas un HTML nuevo a GitHub: si tras recargar la app el texto no cambia, GitHub Pages/el
 // navegador está sirviendo la versión antigua (caché), no es un fallo del código en sí.
-var APP_BUILD_VERSION = '2026-07-06-v57';
+var APP_BUILD_VERSION = '2026-07-06-v58';
 function updSub(){
   var el=document.getElementById('hsub');
   if(el) el.textContent=todayStr()+' · '+APP_BUILD_VERSION;
@@ -2869,7 +2869,7 @@ function pgHist(){
         +'<div style="flex:1;min-width:0">'
         +'<div style="font-size:10px;color:#5A6785;margin-bottom:3px">'+when+(kickoffTxt?' · 🕒 '+kickoffTxt:'')+' · '+translateTeam(f.home||'')+' vs '+translateTeam(f.away||'')+' · '+(f.score||'')+(f.minute!=null?(' · '+f.minute+"'"):'')+'</div>'
         +'<div style="color:#F0F2F7;font-weight:800;font-size:14px">'+(f.market||f.pick)+verifyBadge+'</div>'
-        +(f.betReal && f.betReal.exists && f.betReal.odd ? '<div style="color:#00D4FF;font-size:11px;margin-top:2px">💰 Cuota real (Bet365): <b>'+f.betReal.odd+'</b>'+(f.minOdds?'  ·  mínima: '+f.minOdds:'')+'</div>' : (f.minOdds?'<div style="color:#FFD600;font-size:11px;margin-top:2px">⚠️ Sin cuota real confirmada en Bet365 para esta línea — umbral matemático: '+f.minOdds+' (análisis interno, no se envió como pick verificado)</div>':''))
+        +(f.betReal && f.betReal.exists && f.betReal.odd ? '<div style="color:#00D4FF;font-size:11px;margin-top:2px">💰 Cuota real'+(f.betReal.bookieName?' ('+f.betReal.bookieName+')':'')+': <b>'+f.betReal.odd+'</b>'+(f.minOdds?'  ·  mínima: '+f.minOdds:'')+'</div>' : (f.minOdds?'<div style="color:#FFD600;font-size:11px;margin-top:2px">⚠️ Sin cuota real confirmada para esta línea — umbral matemático: '+f.minOdds+' (análisis interno, no se envió como pick verificado)</div>':''))
         +'</div>'
         +'<div style="text-align:center;flex-shrink:0;background:'+tc+'15;border:1.5px solid '+tc+';border-radius:9px;padding:5px 8px">'
         +'<div style="color:'+tc+';font-weight:900;font-size:16px;line-height:1">'+f.confidence+'%</div>'
