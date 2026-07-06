@@ -844,7 +844,7 @@ function updPin(){
 // MARCADOR DE VERSIÓN — visible en la cabecera de la app, junto a la fecha. Súbelo cada vez que
 // subas un HTML nuevo a GitHub: si tras recargar la app el texto no cambia, GitHub Pages/el
 // navegador está sirviendo la versión antigua (caché), no es un fallo del código en sí.
-var APP_BUILD_VERSION = '2026-07-06-v58';
+var APP_BUILD_VERSION = '2026-07-06-v59';
 function updSub(){
   var el=document.getElementById('hsub');
   if(el) el.textContent=todayStr()+' · '+APP_BUILD_VERSION;
@@ -1754,6 +1754,10 @@ var JUG_NIVEL_EQUIPO_ABIERTO = null; // qué equipo está desplegado dentro de e
 var JUG_TEAMS_CACHE_BY_LIGA = {}; // equipos ya consultados por liga (evita repetir peticiones)
 var JUG_NIVEL_SENAL_ABIERTA = null; // qué señal (Goleador caliente, etc.) está desplegada arriba
 var JUG_OBS_CACHE_BY_SENAL = {}; // observaciones ya consultadas por señal (evita repetir peticiones)
+var PDB_DATA = null, PDB_LOADING = false, PDB_ERROR = null; // base de datos completa de jugadores (nivel raíz: ligas)
+var PDB_LIGA_ABIERTA = null; // qué liga está desplegada en la base de datos completa
+var PDB_JUGADORES_CACHE = {}; // jugadores ya consultados por liga (evita repetir peticiones)
+var PDB_JUGADOR_ABIERTO = null; // qué jugador tiene el detalle desplegado ahora mismo
 var JUG_OBS_CACHE_BY_TEAM = {}; // observaciones ya consultadas por equipo
 function loadJugadores(){
   JUG_LOADING=true; JUG_ERROR=null;
@@ -1811,6 +1815,91 @@ function cargarObservacionesDeSenal(senal, domId){
     })
     .catch(function(e){ cont.innerHTML = '<div style="color:#8B93A7;font-size:11.5px;padding:8px 0">No se pudieron cargar las observaciones: <b>'+(e.message||'error desconocido')+'</b></div>'; });
 }
+// ---------- BASE DE DATOS COMPLETA DE JUGADORES (liga -> jugadores -> detalle completo) ----------
+// PEDIDO EXPLÍCITO: distinto de las señales de arriba (que son observaciones de UN tipo concreto
+// de apuesta) — esto es el perfil COMPLETO acumulado de cada jugador (goles, tiros, faltas,
+// tarjetas, entradas, minutos), igual que ya existe para equipos en la pestaña Ligas.
+function loadPdb(){
+  if(PDB_LOADING) return;
+  PDB_LOADING = true; PDB_ERROR = null;
+  fetch(WORKER_LIVE_URL+'/live/player-profiles')
+    .then(function(r){
+      return r.json().catch(function(){ return null; }).then(function(body){
+        if(!r.ok || !body || body.ok === false){ throw new Error((body && body.error) || ('HTTP '+r.status)); }
+        return body;
+      });
+    })
+    .then(function(d){ PDB_DATA = d; PDB_LOADING = false; go('jugadores'); })
+    .catch(function(e){ PDB_ERROR = e.message || 'error desconocido'; PDB_LOADING = false; go('jugadores'); });
+}
+function pdbLigaDomId(liga, idx){ return 'pdbliga_'+idx+'_'+String(liga).replace(/[^a-zA-Z0-9]/g,'_'); }
+function togglePdbLiga(liga, domId){
+  PDB_LIGA_ABIERTA = (PDB_LIGA_ABIERTA===liga) ? null : liga;
+  var isOpenNow = PDB_LIGA_ABIERTA === liga;
+  document.querySelectorAll('[id^="pdbliga_"]').forEach(function(el){
+    el.style.display = (el.id === domId && isOpenNow) ? 'block' : 'none';
+  });
+  document.querySelectorAll('[id^="pdbarrow_"]').forEach(function(el){
+    el.style.transform = (el.id === 'pdbarrow_'+domId && isOpenNow) ? 'rotate(180deg)' : 'rotate(0deg)';
+  });
+  if(isOpenNow) cargarPdbJugadoresDeLiga(liga, domId);
+}
+function cargarPdbJugadoresDeLiga(liga, domId){
+  var cont = document.getElementById(domId);
+  if(!cont) return;
+  if(PDB_JUGADORES_CACHE[liga]){ cont.innerHTML = renderPdbJugadoresHTML(PDB_JUGADORES_CACHE[liga], domId); return; }
+  cont.innerHTML = '<div style="color:#6B7490;font-size:11.5px;padding:8px 0">Cargando…</div>';
+  fetch(WORKER_LIVE_URL+'/live/player-profiles?liga='+encodeURIComponent(liga))
+    .then(function(r){
+      return r.json().catch(function(){ return null; }).then(function(body){
+        if(!r.ok || !body || body.ok === false){ throw new Error((body && body.error) || ('HTTP '+r.status)); }
+        return body;
+      });
+    })
+    .then(function(d){
+      var jugadores = (d && d.jugadores) || [];
+      PDB_JUGADORES_CACHE[liga] = jugadores;
+      if(PDB_LIGA_ABIERTA === liga){ cont.innerHTML = renderPdbJugadoresHTML(jugadores, domId); }
+    })
+    .catch(function(e){ cont.innerHTML = '<div style="color:#8B93A7;font-size:11.5px;padding:8px 0">No se pudieron cargar los jugadores: <b>'+(e.message||'error desconocido')+'</b></div>'; });
+}
+function pdbJugadorDomId(ligaDomId, idx){ return 'pdbjug_'+ligaDomId+'_'+idx; }
+function renderPdbJugadoresHTML(jugadores, ligaDomId){
+  if(!jugadores.length) return '<div style="color:#6B7490;font-size:11.5px;padding:8px 0">Todavía no hay jugadores de esta liga en la base.</div>';
+  var h = '';
+  jugadores.forEach(function(j, idx){
+    var domId = pdbJugadorDomId(ligaDomId, idx);
+    var open = PDB_JUGADOR_ABIERTO === domId;
+    h += '<div style="background:#0B0E15;border:1px solid '+(open?'#00D4FF55':'#1E2330')+';border-radius:10px;padding:0;margin:8px 0;overflow:hidden">'
+      +'<div onclick=\'togglePdbJugador("'+domId+'")\' style="padding:10px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center">'
+      +'<div><div style="font-weight:800;font-size:12.5px">'+j.nombre+'</div>'
+      +'<div style="color:#5A6785;font-size:10.5px;margin-top:1px">'+(j.equipo||'')+' · '+j.partidos+' partido'+(j.partidos!==1?'s':'')+'</div></div>'
+      +'<span style="color:#5A6785;font-size:12px;transform:rotate('+(open?'180':'0')+'deg);transition:.2s">▾</span>'
+      +'</div>'
+      +'<div style="display:'+(open?'grid':'none')+';grid-template-columns:1fr 1fr 1fr;gap:8px;padding:0 12px 12px">'
+      +pdbStat('⚽ Goles', j.goles)
+      +pdbStat('🎯 Tiros a puerta', j.shotsOn)
+      +pdbStat('👟 Tiros totales', j.shotsTotal)
+      +pdbStat('⚠️ Faltas cometidas', j.foulsCommitted)
+      +pdbStat('🤕 Faltas recibidas', j.foulsDrawn)
+      +pdbStat('🛡️ Entradas', j.tackles)
+      +pdbStat('🟨 Amarillas', j.yellow)
+      +pdbStat('🟥 Rojas', j.red)
+      +pdbStat('⏱️ Minutos', j.minutos)
+      +'</div></div>';
+  });
+  return h;
+}
+function pdbStat(label, val){
+  return '<div style="background:#12151F;border-radius:8px;padding:7px 6px;text-align:center">'
+    +'<div style="color:#5A6785;font-size:9px;margin-bottom:2px">'+label+'</div>'
+    +'<div style="color:#E8EAF0;font-weight:800;font-size:14px">'+(val!=null?val:0)+'</div></div>';
+}
+function togglePdbJugador(domId){
+  PDB_JUGADOR_ABIERTO = (PDB_JUGADOR_ABIERTO===domId) ? null : domId;
+  go('jugadores');
+}
+
 function toggleJugLiga(ligaNombre, domId){
   JUG_NIVEL_LIGA_ABIERTA = (JUG_NIVEL_LIGA_ABIERTA===ligaNombre) ? null : ligaNombre;
   JUG_NIVEL_EQUIPO_ABIERTO = null; // al cambiar de liga, se cierra cualquier equipo abierto
@@ -1971,6 +2060,37 @@ function pgJugadores(){
     });
   }
   h+='<div style="font-size:10.5px;color:#5A6785;margin-top:10px;line-height:1.5">🧪 Las observaciones son <b style="color:#8B93A7">muestras de aprendizaje</b>, no picks: por eso no llevan cuota. Cuando una señal alcance 30+ muestras y su % real bata a la cuota, los picks de jugador saldrán con su pronóstico y su <b style="color:#8B93A7">cuota Bet365 real</b>, como los demás.</div>';
+
+  // ---------- BASE DE DATOS COMPLETA DE JUGADORES ----------
+  h+='<div style="font-weight:900;font-size:14px;margin:22px 0 4px">📊 Base de datos completa de jugadores</div>';
+  h+='<div style="font-size:11px;color:#8B93A7;margin-bottom:10px">Goles, tiros, faltas, tarjetas, entradas y minutos de cada jugador, acumulados partido a partido — igual que con los equipos en Ligas.</div>';
+  if(!PDB_DATA && !PDB_LOADING && !PDB_ERROR) loadPdb();
+  if(PDB_LOADING || (!PDB_DATA && !PDB_ERROR)){
+    h+='<div style="text-align:center;padding:20px 0;color:#6B7490;font-size:12px">Cargando…</div>';
+  } else if(PDB_ERROR){
+    h+='<div style="color:#8B93A7;font-size:11.5px;padding:8px 0">No se pudo cargar: <b>'+PDB_ERROR+'</b></div>';
+  } else {
+    var pdbLigas = (PDB_DATA.ligas||[]);
+    if(!pdbLigas.length){
+      h+='<div style="background:#12151F;border:1px solid #1E2330;border-radius:14px;padding:16px;text-align:center;color:#8B93A7;font-size:12.5px;line-height:1.6">Todavía no hay jugadores en la base — se irá llenando sola.</div>';
+    } else {
+      pdbLigas.forEach(function(l, idx){
+        var open = PDB_LIGA_ABIERTA === l.liga;
+        var domId = pdbLigaDomId(l.liga, idx);
+        var ligaKey = jsAttrLiteral(l.liga);
+        var innerHtml = '';
+        if(open && PDB_JUGADORES_CACHE[l.liga]) innerHtml = renderPdbJugadoresHTML(PDB_JUGADORES_CACHE[l.liga], domId);
+        h+='<div style="background:#12151F;border:1px solid '+(open?'#00D4FF55':'#1E2330')+';border-radius:12px;padding:0;margin-bottom:8px;overflow:hidden">'
+          +'<div onclick=\'togglePdbLiga('+ligaKey+',"'+domId+'")\' style="padding:12px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center">'
+          +'<div style="font-weight:800;font-size:13px">'+l.liga+'</div>'
+          +'<div style="display:flex;align-items:center;gap:10px"><span style="color:#8B93A7;font-size:11.5px">'+l.jugadores+' jugador'+(l.jugadores!==1?'es':'')+'</span>'
+          +'<span style="color:#5A6785;font-size:13px;transform:rotate('+(open?'180':'0')+'deg);transition:.2s" id="pdbarrow_'+domId+'">▾</span></div></div>'
+          +'<div id="'+domId+'" style="display:'+(open?'block':'none')+';padding:0 14px 14px;border-top:1px solid #1E2330">'+innerHtml+'</div>'
+          +'</div>';
+      });
+    }
+  }
+
   h+='</div>';
   return h;
 }
