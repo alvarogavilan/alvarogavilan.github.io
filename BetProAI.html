@@ -208,6 +208,7 @@ var LIVE_PICKS=[], ES_PICKS=[], ALL_PICKS=[], TENNIS_PICKS=[], STATS_PICKS=[];
 // LIVE REAL — BetPro Live (API-Football / API-Basketball vía Worker)
 // ============================================================
 var WORKER_LIVE_URL = 'https://betpro-live.k8mwkbp68y.workers.dev';
+var PDB_LAST_SYNCED_BANK = null; // último valor de banca ya mandado al Worker — evita repetir la llamada si no ha cambiado
 var LIVE_MATCHES = [];
 var LIVE_DETAIL = null;
 var LIVE_LOADING = false;
@@ -844,7 +845,7 @@ function updPin(){
 // MARCADOR DE VERSIÓN — visible en la cabecera de la app, junto a la fecha. Súbelo cada vez que
 // subas un HTML nuevo a GitHub: si tras recargar la app el texto no cambia, GitHub Pages/el
 // navegador está sirviendo la versión antigua (caché), no es un fallo del código en sí.
-var APP_BUILD_VERSION = '2026-07-06-v66';
+var APP_BUILD_VERSION = '2026-07-07-v81-sync-banca';
 function updSub(){
   var el=document.getElementById('hsub');
   if(el) el.textContent=todayStr()+' · '+APP_BUILD_VERSION;
@@ -2515,6 +2516,16 @@ function pgBanca(){
   var winRate = decided>0 ? Math.round(monthWins/decided*100) : null;
   var currentBank = bt.finalBank; // banca real compuesta con TODO el historial de picks enviados
   ST.bank = currentBank;
+  // PEDIDO EXPLÍCITO tras la confusión real (dos "bancas" que nunca se hablaban entre sí): esta
+  // es la banca de la APP (se calcula en el móvil, a partir del Historial) — la de tu Alert de
+  // Telegram vive en el Worker, en un valor totalmente aparte, y nunca se sincronizaban solas.
+  // Ahora, cada vez que se recalcula esta banca, se manda también al Worker en segundo plano
+  // (solo si cambió de verdad, para no llamar de más) — a partir de ahora, configurar una
+  // configura la otra automáticamente, sin tener que acordarte de nada.
+  if (Math.abs((PDB_LAST_SYNCED_BANK||0) - currentBank) >= 0.01) {
+    PDB_LAST_SYNCED_BANK = currentBank;
+    fetch(WORKER_LIVE_URL+'/live/set-bankroll?amount='+encodeURIComponent(currentBank.toFixed(2))).catch(function(){});
+  }
 
   var gr = ST.startBank>0 ? ((currentBank/ST.startBank-1)*100).toFixed(1) : '0.0';
   html += '<div class="bcard"><div style="display:flex;justify-content:space-between;align-items:flex-start">'
@@ -3034,8 +3045,9 @@ function pgHist(){
         +'<div id="hd_'+hKey+'" style="display:'+(isOpen?'block':'none')+';margin-top:10px;padding-top:10px;border-top:1px solid #1E2330">'
           +'<div style="color:#A855F7;font-weight:800;font-size:11px;margin-bottom:4px">🧠 POR QUÉ ESTE PRONÓSTICO</div>'
           +'<div style="color:#C9D2E3;font-size:12.5px;line-height:1.5">'+(f.chosenReason ? f.chosenReason : 'Este pick es anterior a que empezáramos a guardar la explicación detallada de cada señal — a partir de ahora todos los nuevos la incluyen aquí.')+'</div>'
-          +((f.supportTags && f.supportTags.length) ? '<div style="color:#6B7490;font-size:11px;margin-top:5px">+ '+f.supportTags.length+' señal(es) adicional(es): '+f.supportTags.join(', ')+'</div>' : (f.supportCount>0 ? '<div style="color:#6B7490;font-size:11px;margin-top:5px">+ '+f.supportCount+' señal(es) adicional(es) detectada(s) en el partido</div>' : ''))
+          +((f.supportTags && f.supportTags.length) ? '<div style="color:#6B7490;font-size:11px;margin-top:6px">+ '+f.supportTags.length+' señal(es) adicional(es):</div>'+f.supportTags.map(function(t){return '<div style="color:#6B7490;font-size:11px;margin-top:2px;padding-left:8px">• '+t+'</div>';}).join('') : (f.supportCount>0 ? '<div style="color:#6B7490;font-size:11px;margin-top:5px">+ '+f.supportCount+' señal(es) adicional(es) detectada(s) en el partido</div>' : ''))
           +(f.dbInsightLine ? '<div style="color:#00FF87;font-size:12px;margin-top:8px;padding-top:8px;border-top:1px solid #1E2330">📚 <b>Respaldo del histórico:</b> '+f.dbInsightLine+'</div>' : '')
+          +(f.teamInsightLine ? '<div style="color:#00D4FF;font-size:12px;margin-top:6px">⚔️ <b>Estos dos equipos:</b> '+f.teamInsightLine+'</div>' : '')
           +(f.signalHistoryLine ? '<div style="color:#FFD600;font-size:12px;margin-top:6px">📈 <b>Historial de esta señal:</b> '+f.signalHistoryLine+'</div>' : '')
           +(f.proyeccion ? '<div style="color:#00D4FF;font-size:12px;margin-top:8px;padding-top:8px;border-top:1px solid #1E2330">'+f.proyeccion+' <span style="color:#5A6785;font-size:10.5px">(orientativa, no es un pick ni se verifica)</span></div>' : '')
           +'</div>'
