@@ -1,9 +1,9 @@
 name: Loterias AI Euromillones Official Financial Tournament
-# refreshed after 480-draw SELAE economics backfill
 on:
   push:
     paths:
       - 'loterias-ai/scripts/euromillones-official-financial-tournament.mjs'
+      - 'loterias-ai/scripts/euromillones-official-financial-tournament-v2.mjs'
       - 'loterias-ai/data/archive/euromillones/**'
       - '.github/workflows/loterias-ai-euromillones-official-financial-tournament.yml'
   workflow_dispatch:
@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node loterias-ai/scripts/euromillones-official-financial-tournament.mjs
+      - run: node loterias-ai/scripts/euromillones-official-financial-tournament-v2.mjs
       - name: Persist result safely
         run: |
           cp loterias-ai/data/backtests/euromillones-official-financial-tournament.json /tmp/result.json
@@ -28,7 +28,7 @@ jobs:
             git reset --hard origin/main
             cp /tmp/result.json loterias-ai/data/backtests/euromillones-official-financial-tournament.json
             git add loterias-ai/data/backtests/euromillones-official-financial-tournament.json
-            git commit -m 'data(loterias-ai): persist Euromillones official financial tournament' || exit 0
+            git commit -m 'data(loterias-ai): persist corrected Euromillones official financial tournament' || exit 0
             if git push origin HEAD:main; then exit 0; fi
             sleep $((attempt * 2))
           done
