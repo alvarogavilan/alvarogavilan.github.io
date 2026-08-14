@@ -20,11 +20,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Enrich several bounded batches
+      - name: Enrich large bounded batches
         shell: bash
         run: |
-          for i in 1 2 3; do
-            BATCH_LIMIT=70 node loterias-ai/scripts/enrich-quiniela-elige8-official.mjs || break
+          for i in 1 2 3 4; do
+            BATCH_LIMIT=500 node loterias-ai/scripts/enrich-quiniela-elige8-official.mjs
             sleep 2
           done
       - name: Persist safely
