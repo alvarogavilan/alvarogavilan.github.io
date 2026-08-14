@@ -6,6 +6,7 @@ on:
   push:
     paths:
       - 'loterias-ai/scripts/enrich-nacional-detailed-crosschecked.mjs'
+      - 'loterias-ai/scripts/nacional-research-tournament.mjs'
       - '.github/workflows/loterias-ai-nacional-detailed-crosscheck.yml'
 permissions:
   contents: write
@@ -23,21 +24,25 @@ jobs:
         run: |
           BATCH_LIMIT=400 node loterias-ai/scripts/enrich-nacional-detailed-crosschecked.mjs
           BATCH_LIMIT=400 node loterias-ai/scripts/enrich-nacional-detailed-crosschecked.mjs
+          node loterias-ai/scripts/nacional-research-tournament.mjs
       - name: Persist safely
         run: |
           mkdir -p /tmp/nacional-cross
           cp -r loterias-ai/data/archive/loteria-nacional /tmp/nacional-cross/
           cp loterias-ai/data/archive/_meta/nacional-detailed-crosschecked.json /tmp/nacional-cross/summary.json
+          cp loterias-ai/data/backtests/nacional-research-tournament.json /tmp/nacional-cross/research.json
           git fetch origin main
           git reset --hard origin/main
           rm -rf loterias-ai/data/archive/loteria-nacional
           cp -r /tmp/nacional-cross/loteria-nacional loterias-ai/data/archive/
           cp /tmp/nacional-cross/summary.json loterias-ai/data/archive/_meta/nacional-detailed-crosschecked.json
+          mkdir -p loterias-ai/data/backtests
+          cp /tmp/nacional-cross/research.json loterias-ai/data/backtests/nacional-research-tournament.json
           node loterias-ai/scripts/build-national-archive-index.mjs
           node loterias-ai/scripts/build-completeness-index.mjs
           node loterias-ai/scripts/audit-national-archive.mjs
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add loterias-ai/data/archive
-          git commit -m 'data(loterias-ai): persist Nacional detailed crosschecked archive' || exit 0
+          git add loterias-ai/data/archive loterias-ai/data/backtests/nacional-research-tournament.json
+          git commit -m 'data(loterias-ai): persist Nacional detailed research evaluation' || exit 0
           git push origin HEAD:main
