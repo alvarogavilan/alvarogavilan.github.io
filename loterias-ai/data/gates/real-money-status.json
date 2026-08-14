@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-14T22:30:35.781Z",
+  "generatedAt": "2026-08-14T23:32:10.133Z",
   "policy": {
     "realMoneyRequires": "official economics + locked holdout + positive ROI + matched random baselines + sufficient sample + prospective shadow before allocation",
     "defaultAllocationEUR": 0
@@ -137,16 +137,28 @@
       "name": "Lotería Nacional",
       "status": "BLOCKED",
       "realMoneyPass": false,
-      "officialEconomicDraws": null,
-      "holdoutDraws": null,
-      "holdoutStake": null,
-      "holdoutReturn": null,
-      "holdoutPL": null,
-      "holdoutROI": null,
-      "selected": {},
-      "baseline": null,
-      "source": null,
-      "reason": "SELAE official data stored so far does not expose enough concrete 5/4/3/2-digit extraction values to reconstruct the full payout of an arbitrary decimo. First/second prize and reintegros alone are insufficient for an honest ROI gate."
+      "officialEconomicDraws": 27,
+      "holdoutDraws": 27,
+      "holdoutStake": 820,
+      "holdoutReturn": 326,
+      "holdoutPL": -494,
+      "holdoutROI": -0.6024390243902439,
+      "selected": {
+        "strategy": "POSITIONAL_SUFFIX_WALK_FORWARD",
+        "tickets": 5,
+        "trainingDraws": 250
+      },
+      "baseline": {
+        "draws": 27,
+        "ticketsPerDraw": 5,
+        "stake": 820,
+        "return": 481,
+        "pl": -339,
+        "roi": -0.4134146341463415,
+        "winningDraws": 27
+      },
+      "source": "SELAE premioDecimoWeb + fechav3; archive used only for strictly prior training",
+      "reason": "Insufficient official reconstructable data"
     },
     {
       "id": "quiniela",
