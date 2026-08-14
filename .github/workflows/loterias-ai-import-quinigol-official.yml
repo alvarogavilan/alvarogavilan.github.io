@@ -6,6 +6,7 @@ on:
   push:
     paths:
       - 'loterias-ai/scripts/import-quinigol-official-progressive.mjs'
+      - 'loterias-ai/scripts/quinigol-official-financial-tournament.mjs'
       - '.github/workflows/loterias-ai-import-quinigol-official.yml'
 permissions:
   contents: write
@@ -30,7 +31,7 @@ jobs:
             sleep 2
           done
           test "$passes" -ge 1
-      - name: Persist safely
+      - name: Persist safely and evaluate
         shell: bash
         run: |
           mkdir -p /tmp/quinigol
@@ -43,11 +44,13 @@ jobs:
           cp -r /tmp/quinigol/quinigol loterias-ai/data/archive/
           cp /tmp/quinigol-links.json loterias-ai/data/archive/_meta/quinigol-link-index.json
           cp /tmp/quinigol-summary.json loterias-ai/data/archive/_meta/quinigol-ingestion.json
+          node loterias-ai/scripts/quinigol-official-financial-tournament.mjs
           node loterias-ai/scripts/build-national-archive-index.mjs
           node loterias-ai/scripts/build-completeness-index.mjs
           node loterias-ai/scripts/audit-national-archive.mjs
+          node loterias-ai/scripts/build-real-money-status.mjs
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add loterias-ai/data/archive
-          git commit -m 'data(loterias-ai): persist official Quinigol history' || exit 0
+          git add loterias-ai/data/archive loterias-ai/data/backtests/quinigol-official-financial-tournament.json loterias-ai/data/gates
+          git commit -m 'data(loterias-ai): persist and evaluate official Quinigol history' || exit 0
           git push origin HEAD:main
