@@ -1,0 +1,45 @@
+name: Loterias AI Nacional Official Resultados2
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '25 8 * * *'
+  push:
+    paths:
+      - 'loterias-ai/scripts/enrich-nacional-official-resultados2.mjs'
+      - '.github/workflows/loterias-ai-nacional-official-resultados2.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-nacional-official-resultados2
+  cancel-in-progress: false
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Backfill official SELAE result arrays
+        run: |
+          BATCH_LIMIT=400 node loterias-ai/scripts/enrich-nacional-official-resultados2.mjs
+          BATCH_LIMIT=400 node loterias-ai/scripts/enrich-nacional-official-resultados2.mjs
+          BATCH_LIMIT=400 node loterias-ai/scripts/enrich-nacional-official-resultados2.mjs
+          BATCH_LIMIT=400 node loterias-ai/scripts/enrich-nacional-official-resultados2.mjs
+      - name: Persist safely
+        run: |
+          mkdir -p /tmp/nacional-official
+          cp -r loterias-ai/data/archive/loteria-nacional /tmp/nacional-official/
+          cp loterias-ai/data/archive/_meta/nacional-official-resultados2.json /tmp/nacional-official/summary.json
+          git fetch origin main
+          git reset --hard origin/main
+          rm -rf loterias-ai/data/archive/loteria-nacional
+          cp -r /tmp/nacional-official/loteria-nacional loterias-ai/data/archive/
+          cp /tmp/nacional-official/summary.json loterias-ai/data/archive/_meta/nacional-official-resultados2.json
+          node loterias-ai/scripts/build-national-archive-index.mjs
+          node loterias-ai/scripts/build-completeness-index.mjs
+          node loterias-ai/scripts/audit-national-archive.mjs
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/archive
+          git commit -m 'data(loterias-ai): persist full official Nacional extractions' || exit 0
+          git push origin HEAD:main
