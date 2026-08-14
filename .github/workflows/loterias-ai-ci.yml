@@ -21,6 +21,8 @@ jobs:
           node-version: '22'
       - name: Core deterministic tests
         run: node loterias-ai/tests/core.test.mjs
+      - name: Evidence gate tests
+        run: node loterias-ai/tests/evidence.test.mjs
       - name: Validate JSON data files
         run: |
           node - <<'NODE'
@@ -37,5 +39,6 @@ jobs:
           if(!fs.existsSync(p)) process.exit(0);
           const s=JSON.parse(fs.readFileSync(p,'utf8'));
           if(s.overallStatus==='READY_FOR_REAL_DAILY_USE' && (!s.gates || s.gates.some(g=>g.status!=='PASS'))) throw new Error('readiness gate violation');
+          if(s.realMoneyRecommendationEnabled===true && s.gates.some(g=>g.status!=='PASS')) throw new Error('real money enabled before evidence gates');
           console.log('Readiness gate: PASS');
           NODE
