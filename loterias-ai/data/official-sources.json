@@ -1,0 +1,20 @@
+{
+  "version":"2026-08-14.1",
+  "authority":"SELAE",
+  "verificationPolicy":"Official SELAE pages are primary. Every imported draw must retain gameId, drawDate, sourceUrl, fetchedAt and checksum before becoming eligible for modeling.",
+  "sources":[
+    {"gameId":"bonoloto","type":"statistics","url":"https://www.loteriasyapuestas.es/es/bonoloto/estadisticas","observedHistoricalDraws":9337,"observedAt":"2026-08-14"},
+    {"gameId":"euromillones","type":"statistics","url":"https://www.loteriasyapuestas.es/es/euromillones/estadisticas","observedHistoricalDraws":1965,"observedAt":"2026-08-14"},
+    {"gameId":"euromillones","type":"results","url":"https://www.loteriasyapuestas.es/es/euromillones/resultados"},
+    {"gameId":"loteria-nacional","type":"statistics","url":"https://www.loteriasyapuestas.es/es/loteria-nacional/estadisticas","statisticsStartDate":"2009-01-01"},
+    {"gameId":"all","type":"results-index","url":"https://www.loteriasyapuestas.es/es/resultados"}
+  ],
+  "integrityGates":[
+    "source must be official SELAE",
+    "draw date must be parseable and unique within game",
+    "numbers must satisfy the configured game universe",
+    "duplicates inside one numeric combination are rejected when the game forbids them",
+    "future-dated records are rejected",
+    "modeling dataset must be immutable during one backtest run"
+  ]
+}
