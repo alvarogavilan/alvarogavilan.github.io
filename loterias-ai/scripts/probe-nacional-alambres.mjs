@@ -4,9 +4,10 @@ const api=`https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LNAC&fecha
 const ar=await fetch(api,{headers:{'user-agent':'Mozilla/5.0 LoteriasAI official probe','accept':'*/*'}});const j=await ar.json(),row=Array.isArray(j)?j[0]:j;
 const id=String(row?.id_sorteo||''),drawId=id.length>=5?`${id.slice(0,-4)}9102`:null,url=`https://www.loteriasyapuestas.es/es/loteria-nacional/tablas-y-alambres?drawId=${drawId}`;
 const r=await fetch(url,{headers:{'user-agent':'Mozilla/5.0 LoteriasAI official archive','accept':'text/html,*/*'}}),html=await r.text();
-const attrs=[...html.matchAll(/\b(data-[a-z0-9_-]*(?:url|service|draw|json|ajax)[a-z0-9_-]*)=["']([^"']*)["']/gi)].map(m=>({name:m[1],value:m[2]}));
-const elements=[...html.matchAll(/<[^>]{0,1500}(?:tablaDetalle|alambres|tablas-extracciones|data-[^>]*(?:draw|url|service))[^>]*>/gi)].map(m=>m[0]).slice(0,120);
-const paths=[...new Set((html.match(/(?:\/servicios\/|\/f\/[^"'\s<>]+|render\/component[^"'\s<>]*)/gi)||[]))].slice(0,150);
-const scripts=[...new Set([...html.matchAll(/<script[^>]+src=["']([^"']+)["']/gi)].map(m=>new URL(m[1],url).href))];
-const out={generatedAt:new Date().toISOString(),date,id_sorteo:id,num_sorteo:row?.num_sorteo,first:row?.combinacion?.primer_premio,second:row?.combinacion?.segundo_premio,drawId,url,status:r.status,htmlLength:html.length,attrs,elements,paths,scripts};
-fs.mkdirSync('loterias-ai/data/probes',{recursive:true});fs.writeFileSync('loterias-ai/data/probes/nacional-alambres-mapping.json',JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify({drawId,attrs:attrs.length,elements:elements.length,paths:paths.length,scripts:scripts.length},null,2));
+const helperUrl='https://www.loteriasyapuestas.es/f/loterias/estaticos/js/utils-json-lnac.js';
+const hr=await fetch(helperUrl,{headers:{'user-agent':'Mozilla/5.0 LoteriasAI official probe'}}),helper=await hr.text();
+const helperHits=[...helper.matchAll(/.{0,300}(?:servicios|json|draw|alambre|tabla|premio|url).{0,700}/gi)].map(m=>m[0]).slice(0,120);
+const quoted=[...new Set([...helper.matchAll(/["']([^"']{3,300})["']/g)].map(m=>m[1]).filter(x=>/servicio|json|alambre|tabla|premio|draw|lnac/i.test(x)))].slice(0,150);
+const inline=[...html.matchAll(/.{0,350}(?:utils-json-lnac|json|service|alambre|tabla).{0,700}/gi)].map(m=>m[0]).slice(0,120);
+const out={generatedAt:new Date().toISOString(),date,id_sorteo:id,num_sorteo:row?.num_sorteo,first:row?.combinacion?.primer_premio,second:row?.combinacion?.segundo_premio,drawId,url,status:r.status,helperUrl,helperStatus:hr.status,helperLength:helper.length,helperHits,quoted,inline};
+fs.mkdirSync('loterias-ai/data/probes',{recursive:true});fs.writeFileSync('loterias-ai/data/probes/nacional-alambres-mapping.json',JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify({drawId,helperStatus:hr.status,helperLength:helper.length,helperHits:helperHits.length,quoted},null,2));
