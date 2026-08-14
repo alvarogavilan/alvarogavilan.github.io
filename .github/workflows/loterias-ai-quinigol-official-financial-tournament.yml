@@ -1,0 +1,30 @@
+name: Loterias AI Quinigol Official Financial Tournament
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/quinigol-official-financial-tournament.mjs'
+      - 'loterias-ai/data/archive/quinigol/**'
+      - '.github/workflows/loterias-ai-quinigol-official-financial-tournament.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  tournament:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/quinigol-official-financial-tournament.mjs
+      - name: Persist safely
+        run: |
+          cp loterias-ai/data/backtests/quinigol-official-financial-tournament.json /tmp/result.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/backtests
+          cp /tmp/result.json loterias-ai/data/backtests/quinigol-official-financial-tournament.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/backtests/quinigol-official-financial-tournament.json
+          git commit -m 'data(loterias-ai): persist Quinigol official financial tournament' || exit 0
+          git push origin HEAD:main
