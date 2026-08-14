@@ -15,6 +15,7 @@ on:
       - 'loterias-ai/scripts/enrich-eurodreams-full-economics.mjs'
       - 'loterias-ai/scripts/build-special-draw-indexes.mjs'
       - 'loterias-ai/scripts/build-national-archive-index.mjs'
+      - 'loterias-ai/scripts/build-completeness-index.mjs'
       - 'loterias-ai/scripts/audit-national-archive.mjs'
 
 permissions:
@@ -48,10 +49,12 @@ jobs:
         shell: bash
         run: |
           BATCH_LIMIT=10 node loterias-ai/scripts/enrich-eurodreams-full-economics.mjs || echo 'EuroDreams source temporarily incomplete; archive remains valid'
-      - name: Rebuild Navidad and Niño reference indexes
+      - name: Rebuild seasonal reference indexes
         run: node loterias-ai/scripts/build-special-draw-indexes.mjs
-      - name: Rebuild archive manifest
-        run: node loterias-ai/scripts/build-national-archive-index.mjs
+      - name: Rebuild archive manifest and completeness
+        run: |
+          node loterias-ai/scripts/build-national-archive-index.mjs
+          node loterias-ai/scripts/build-completeness-index.mjs
       - name: Audit archive integrity and recent economics coverage
         run: node loterias-ai/scripts/audit-national-archive.mjs
       - name: Persist archive changes
