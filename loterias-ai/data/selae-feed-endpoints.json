@@ -1,0 +1,16 @@
+{
+  "version":"2026-08-14.1",
+  "purpose":"Machine-readable discovery layer for official SELAE result feeds. Endpoints are candidates until parser validation confirms stable payload shape.",
+  "feeds":[
+    {"gameId":"primitiva","resultsPage":"https://www.loteriasyapuestas.es/es/la-primitiva/resultados","jsonCandidate":"https://www.loteriasyapuestas.es/es/la-primitiva/resultados/.formatoJSON","xmlCandidate":"https://www.loteriasyapuestas.es/es/la-primitiva/resultados/.xml","rssCandidate":"https://www.loteriasyapuestas.es/es/la-primitiva/resultados/.formatoRSSa","status":"DISCOVERED"},
+    {"gameId":"bonoloto","resultsPage":"https://www.loteriasyapuestas.es/es/bonoloto/resultados","status":"DISCOVERY_PENDING"},
+    {"gameId":"euromillones","resultsPage":"https://www.loteriasyapuestas.es/es/euromillones/resultados","status":"DISCOVERY_PENDING"},
+    {"gameId":"eurodreams","resultsPage":"https://www.loteriasyapuestas.es/es/eurodreams/resultados","status":"DISCOVERY_PENDING"},
+    {"gameId":"loteria-nacional","resultsPage":"https://www.loteriasyapuestas.es/es/loteria-nacional/resultados","status":"DISCOVERY_PENDING"}
+  ],
+  "policy":[
+    "Never assume a candidate endpoint is JSON/XML solely from its suffix; parser must inspect and validate the payload.",
+    "The canonical stored record is created only after detail-page or feed evidence passes schema checks.",
+    "Feed discovery is not equivalent to historical completeness."
+  ]
+}
