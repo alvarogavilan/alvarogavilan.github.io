@@ -1,0 +1,42 @@
+name: Loterias AI Core Number Games Official Economics
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/enrich-core-number-game-official-economics.mjs'
+      - '.github/workflows/loterias-ai-core-number-games-official-economics.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Enrich Bonoloto
+        run: |
+          for i in 1 2 3 4; do GAME=bonoloto BATCH_LIMIT=120 node loterias-ai/scripts/enrich-core-number-game-official-economics.mjs || exit 1; done
+      - name: Enrich El Gordo
+        run: |
+          for i in 1 2 3 4; do GAME=gordo BATCH_LIMIT=120 node loterias-ai/scripts/enrich-core-number-game-official-economics.mjs || exit 1; done
+      - name: Persist safely
+        run: |
+          mkdir -p /tmp/loterias-ai
+          cp -R loterias-ai/data/archive/bonoloto /tmp/loterias-ai/bonoloto
+          cp -R loterias-ai/data/archive/gordo-primitiva /tmp/loterias-ai/gordo-primitiva
+          cp loterias-ai/data/archive/_meta/bonoloto-official-economics.json /tmp/loterias-ai/bonoloto-official-economics.json
+          cp loterias-ai/data/archive/_meta/gordo-primitiva-official-economics.json /tmp/loterias-ai/gordo-primitiva-official-economics.json
+          git fetch origin main
+          git reset --hard origin/main
+          rm -rf loterias-ai/data/archive/bonoloto loterias-ai/data/archive/gordo-primitiva
+          cp -R /tmp/loterias-ai/bonoloto loterias-ai/data/archive/bonoloto
+          cp -R /tmp/loterias-ai/gordo-primitiva loterias-ai/data/archive/gordo-primitiva
+          cp /tmp/loterias-ai/bonoloto-official-economics.json loterias-ai/data/archive/_meta/bonoloto-official-economics.json
+          cp /tmp/loterias-ai/gordo-primitiva-official-economics.json loterias-ai/data/archive/_meta/gordo-primitiva-official-economics.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/archive/bonoloto loterias-ai/data/archive/gordo-primitiva loterias-ai/data/archive/_meta/bonoloto-official-economics.json loterias-ai/data/archive/_meta/gordo-primitiva-official-economics.json
+          git commit -m 'data(loterias-ai): enrich Bonoloto and El Gordo official economics' || exit 0
+          git push origin HEAD:main
