@@ -1,0 +1,31 @@
+name: Loterias AI EuroDreams Official Economics
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/enrich-eurodreams-official-economics.mjs'
+      - '.github/workflows/loterias-ai-eurodreams-official-economics.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: BATCH_LIMIT=290 node loterias-ai/scripts/enrich-eurodreams-official-economics.mjs
+      - name: Persist safely
+        run: |
+          mkdir -p /tmp/eurodreams
+          cp loterias-ai/data/archive/eurodreams/*.json /tmp/eurodreams/
+          cp loterias-ai/data/archive/_meta/eurodreams-official-economics.json /tmp/eurodreams-meta.json
+          git fetch origin main
+          git reset --hard origin/main
+          cp /tmp/eurodreams/*.json loterias-ai/data/archive/eurodreams/
+          cp /tmp/eurodreams-meta.json loterias-ai/data/archive/_meta/eurodreams-official-economics.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/archive/eurodreams loterias-ai/data/archive/_meta/eurodreams-official-economics.json
+          git commit -m 'data(loterias-ai): persist EuroDreams official economics' || exit 0
+          git push origin HEAD:main
