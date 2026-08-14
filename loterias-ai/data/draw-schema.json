@@ -1,0 +1,19 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "title":"Loterias AI verified draw",
+  "type":"object",
+  "required":["gameId","drawId","drawDate","numbers","sourceUrl","fetchedAt","verified"],
+  "properties":{
+    "gameId":{"type":"string"},
+    "drawId":{"type":"string"},
+    "drawDate":{"type":"string","format":"date"},
+    "numbers":{"type":"array","items":{"type":"integer"}},
+    "extras":{"type":"array","items":{"type":"integer"}},
+    "winningNumber":{"type":"string","pattern":"^[0-9]{5}$"},
+    "sourceUrl":{"type":"string"},
+    "fetchedAt":{"type":"string"},
+    "verified":{"const":true},
+    "checksum":{"type":"string"}
+  },
+  "additionalProperties":true
+}
