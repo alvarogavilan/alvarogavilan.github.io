@@ -1,0 +1,30 @@
+{
+  "version": "2026-08-14.1",
+  "name": "Jackpot Exploration Lane",
+  "purpose": "Pursue rare high-prize outcomes separately from the profitability lane without allowing jackpot research to override negative financial evidence.",
+  "status": "RESEARCH_ONLY_UNTIL_SIGNAL",
+  "rules": {
+    "maxTicketsPerGamePerDraw": 1,
+    "onlyOnActualDrawDays": true,
+    "separateFromProfitabilityPortfolio": true,
+    "neverLabelAsInvestment": true,
+    "neverLabelAsSafeOrLikelyWin": true,
+    "realMoneyActivationRequiresAny": [
+      "jackpotProximitySignalBeatsAllMatchedRandomBaselinesOutOfSample",
+      "independentlyValidatedPositiveExpectedValueAtCurrentJackpotAfterPrizeSharingAssumptions"
+    ],
+    "ifNoActivationSignal": "0 EUR",
+    "bankrollProtection": {
+      "startingBankrollEUR": 50,
+      "profitabilityLaneHasPriority": true,
+      "jackpotLaneCannotBorrowFromReservedProfitabilityCapital": true
+    }
+  },
+  "currentEvidence": {
+    "primitiva": {"draws": 200, "maxMainHits": 3, "oneAway": 0, "twoAway": 0, "signal": false},
+    "bonoloto": {"draws": 200, "maxMainHits": 3, "oneAway": 0, "twoAway": 0, "signal": false},
+    "gordoPrimitiva": {"draws": 200, "maxMainHits": 3, "oneAway": 0, "twoAway": 2, "signal": false},
+    "euromillones": {"draws": 200, "maxMainHits": 3, "oneAway": 0, "twoAway": 1, "signal": false}
+  },
+  "note": "A large jackpot changes payout size, not the physical probability of the drawn combination. Any jackpot-size activation must be based on expected-value analysis, not intuition."
+}
