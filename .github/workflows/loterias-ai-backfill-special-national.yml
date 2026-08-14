@@ -1,0 +1,54 @@
+name: Loterias AI Backfill Special National Draws
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/backfill-special-national-draws.mjs'
+      - '.github/workflows/loterias-ai-backfill-special-national.yml'
+permissions:
+  contents: write
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Backfill several safe batches
+        shell: bash
+        run: |
+          for pass in 1 2 3 4; do
+            BATCH_LIMIT=6 node loterias-ai/scripts/backfill-special-national-draws.mjs || true
+            sleep 3
+          done
+      - run: node loterias-ai/scripts/build-special-draw-indexes.mjs
+      - run: node loterias-ai/scripts/build-national-archive-index.mjs
+      - run: node loterias-ai/scripts/audit-national-archive.mjs
+      - name: Persist safely
+        shell: bash
+        run: |
+          mkdir -p /tmp/special-national
+          cp -r loterias-ai/data/archive/loteria-nacional /tmp/special-national/
+          cp -r loterias-ai/data/archive/specials /tmp/special-national/
+          cp loterias-ai/data/archive/_meta/special-national-backfill.json /tmp/special-national/ || true
+          cp loterias-ai/data/archive/manifest.json /tmp/special-national/manifest.json
+          cp loterias-ai/data/archive/_meta/archive-audit.json /tmp/special-national/archive-audit.json
+          git fetch origin main
+          git reset --hard origin/main
+          rm -rf loterias-ai/data/archive/loteria-nacional loterias-ai/data/archive/specials
+          cp -r /tmp/special-national/loteria-nacional loterias-ai/data/archive/
+          cp -r /tmp/special-national/specials loterias-ai/data/archive/
+          [ ! -f /tmp/special-national/special-national-backfill.json ] || cp /tmp/special-national/special-national-backfill.json loterias-ai/data/archive/_meta/
+          cp /tmp/special-national/manifest.json loterias-ai/data/archive/manifest.json
+          cp /tmp/special-national/archive-audit.json loterias-ai/data/archive/_meta/archive-audit.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/archive
+          git commit -m 'data(loterias-ai): backfill Navidad and Niño draws' || exit 0
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git rebase --abort || true
+            sleep $((attempt*3))
+          done
+          exit 1
