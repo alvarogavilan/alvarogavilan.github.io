@@ -1,0 +1,39 @@
+{
+  "generatedAt":"2026-08-14T18:23:00+02:00",
+  "gameId":"primitiva",
+  "decision":"CANDIDATE_SHADOW_PRIORITY",
+  "realMoneyAllocation":0,
+  "shadowAllocation":4,
+  "frozenConfiguration":{"strategy":"frequency","tickets":4,"ticketCost":1},
+  "evidence":{
+    "historyDraws":4173,
+    "predictiveHoldoutDraws":1177,
+    "predictiveModelHitRateAtLeast3":0.09855564995751911,
+    "predictiveRandomHitRateAtLeast3":0.0637213254035684,
+    "predictiveRelativeLift":0.5466666666666667,
+    "predictivePaired95Lower":0.012634416861440186,
+    "predictivePaired95Upper":0.057034232246461265,
+    "predictiveBeats100Baselines":true,
+    "financialHoldoutDraws":15,
+    "financialHoldoutStake":60,
+    "financialHoldoutReturn":85.16,
+    "financialHoldoutPL":25.16,
+    "financialHoldoutROI":0.4193333333333333,
+    "financialRandomAverageROI":-0.7888916666666664,
+    "financialRandomMaxROI":0.3909999999999999
+  },
+  "hardGates":{
+    "history":true,
+    "lockedPredictiveHoldout":true,
+    "predictiveMultiBaselineStress":true,
+    "positiveFinancialHoldout":true,
+    "beats100FinancialBaselines":true,
+    "financialSampleSufficient":false,
+    "prospectiveShadowProfitability":false
+  },
+  "minimumFinancialHoldoutDraws":50,
+  "promotionRule":"REAL_MONEY_ELIGIBLE requires at least 50 predeclared financial holdout draws with the frozen configuration, continued positive ROI versus matched random baselines, and supportive prospective Shadow Ledger. No retrospective strategy changes are allowed after observing new results.",
+  "nextDraw":"2026-08-15",
+  "nextStatus":"SHADOW_PRIORITY",
+  "reason":"This is the strongest current candidate: predictive holdout and 100-baseline stress pass, and the first locked financial holdout is positive. The 15-draw financial sample is too small to release real bankroll."
+}
