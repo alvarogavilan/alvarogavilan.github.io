@@ -1,0 +1,63 @@
+{
+  "version": "2026-08-14.1",
+  "policy": {
+    "noGuaranteedWins": true,
+    "noFabricatedProbabilities": true,
+    "preDrawSealRequired": true,
+    "historicalBacktestRequired": true
+  },
+  "cabinets": [
+    {
+      "id": "navidad-specialist",
+      "gameId": "navidad",
+      "name": "Gabinete Especialista Lotería de Navidad",
+      "status": "DATA_PENDING",
+      "minimumHistoricalDraws": 50,
+      "models": [
+        "digit-position-frequency",
+        "terminal-frequency",
+        "decade-distribution",
+        "repetition-distance",
+        "entropy-by-position",
+        "historical-prize-distribution",
+        "candidate-diversification"
+      ],
+      "outputs": [
+        "candidate-numbers",
+        "internal-model-score",
+        "historical-sample-size",
+        "backtest-roi",
+        "drawdown",
+        "cost-simulation",
+        "methodology-version"
+      ],
+      "rule": "No candidate number is released until the historical dataset passes integrity and minimum-sample gates. Internal scores are not represented as the true probability of a future number."
+    },
+    {
+      "id": "nino-specialist",
+      "gameId": "nino",
+      "name": "Gabinete Especialista Sorteo de El Niño",
+      "status": "DATA_PENDING",
+      "minimumHistoricalDraws": 50,
+      "models": [
+        "digit-position-frequency",
+        "terminal-frequency",
+        "decade-distribution",
+        "repetition-distance",
+        "entropy-by-position",
+        "historical-prize-distribution",
+        "candidate-diversification"
+      ],
+      "outputs": [
+        "candidate-numbers",
+        "internal-model-score",
+        "historical-sample-size",
+        "backtest-roi",
+        "drawdown",
+        "cost-simulation",
+        "methodology-version"
+      ],
+      "rule": "El Niño is modeled independently from Christmas and ordinary Lotería Nacional; datasets and fitted parameters must never be pooled without an explicit validated experiment."
+    }
+  ]
+}
