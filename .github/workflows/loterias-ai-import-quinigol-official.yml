@@ -20,13 +20,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Ingest several official batches
+      - name: Ingest large official batches
         shell: bash
         run: |
           passes=0
-          for i in 1 2 3 4; do
+          for i in 1 2; do
             echo "Quinigol official pass $i"
-            if BATCH_LIMIT=30 node loterias-ai/scripts/import-quinigol-official-progressive.mjs; then passes=$((passes+1)); else break; fi
+            if BATCH_LIMIT=500 node loterias-ai/scripts/import-quinigol-official-progressive.mjs; then passes=$((passes+1)); else break; fi
             sleep 2
           done
           test "$passes" -ge 1
