@@ -1,0 +1,12 @@
+{
+  "version":"2026-08-14.1",
+  "purpose":"Prevent invalid comparisons across historical rule changes.",
+  "eras":[],
+  "requiredFields":["gameId","eraId","validFrom","validTo","mainPool","mainPick","secondaryPool","secondaryPick","source","verified"],
+  "policy":[
+    "No era is added without a verifiable rules source.",
+    "A draw must resolve to exactly one verified rule era before analytical use.",
+    "When rules change, cross-era models must explicitly normalize or segment the data.",
+    "Empty registry means historical era research is pending; it must never be guessed."
+  ]
+}
