@@ -1,0 +1,26 @@
+name: Loterias AI More Economics Probe
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/probe-more-economics-endpoints.mjs'
+      - '.github/workflows/loterias-ai-probe-more-economics.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/probe-more-economics-endpoints.mjs
+      - name: Persist safely
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/probes/more-economics-endpoints.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'data(loterias-ai): economics endpoint probe'
+          git pull --rebase origin main
+          git push origin HEAD:main
