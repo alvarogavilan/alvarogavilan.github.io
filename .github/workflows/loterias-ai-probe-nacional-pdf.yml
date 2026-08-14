@@ -23,13 +23,16 @@ jobs:
         run: |
           python -m pip install -q pypdf
           mkdir -p loterias-ai/data/probes
+          URL='https://www.loteriasyapuestas.es/f/loterias/documentos/Loter%C3%ADa%20Nacional/listas%20de%20premios/SM_LISTAOFICIAL.A2026.S065.pdf'
+          curl --fail --location --retry 3 --retry-delay 2 \
+            -A 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/126 Safari/537.36' \
+            -H 'Accept: application/pdf,*/*;q=0.8' \
+            -H 'Referer: https://www.loteriasyapuestas.es/es/resultados/loteria-nacional' \
+            -H 'Accept-Language: es-ES,es;q=0.9' \
+            "$URL" -o /tmp/nacional.pdf
           python - <<'PY'
-          import urllib.request
           from pypdf import PdfReader
           url='https://www.loteriasyapuestas.es/f/loterias/documentos/Loter%C3%ADa%20Nacional/listas%20de%20premios/SM_LISTAOFICIAL.A2026.S065.pdf'
-          req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0 LoteriasAI research archive'})
-          with urllib.request.urlopen(req,timeout=40) as r: data=r.read()
-          open('/tmp/nacional.pdf','wb').write(data)
           reader=PdfReader('/tmp/nacional.pdf')
           text='\n'.join((p.extract_text() or '') for p in reader.pages)
           out='SOURCE='+url+'\nPAGES='+str(len(reader.pages))+'\n\n'+text
