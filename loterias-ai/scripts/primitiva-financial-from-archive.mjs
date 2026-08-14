@@ -1,0 +1,6 @@
+import fs from 'node:fs';
+const dir='loterias-ai/data/archive/primitiva';let records=[];for(const f of fs.readdirSync(dir).filter(f=>/^\d{4}\.json$/.test(f)).sort()){records.push(...(JSON.parse(fs.readFileSync(`${dir}/${f}`,'utf8')).records||[]));}
+records=records.filter(r=>r.economics?.payouts&&Array.isArray(r.result?.main)&&r.result.main.length===6).sort((a,b)=>a.drawDate.localeCompare(b.drawDate));
+if(!records.length)throw new Error('No internal economics records');
+const summary={generatedAt:new Date().toISOString(),gameId:'primitiva',source:'NATIONAL_ARCHIVE_ONLY',economicsDraws:records.length,earliest:records[0].drawDate,latest:records.at(-1).drawDate,ticketCost:records.at(-1).economics.ticketCost,categories:Object.keys(records.at(-1).economics.payouts),externalFetches:0,readyForOfflineBacktest:true};
+fs.mkdirSync('loterias-ai/data/backtests',{recursive:true});fs.writeFileSync('loterias-ai/data/backtests/primitiva-archive-economics-status.json',JSON.stringify(summary,null,2)+'\n');console.log(JSON.stringify(summary,null,2));
