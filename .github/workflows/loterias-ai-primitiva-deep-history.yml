@@ -1,0 +1,29 @@
+name: Loterias AI Primitiva Deep History
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/probe-primitiva-deep-history.mjs'
+      - '.github/workflows/loterias-ai-primitiva-deep-history.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node loterias-ai/scripts/probe-primitiva-deep-history.mjs
+      - name: Persist safely
+        run: |
+          cp loterias-ai/data/probes/primitiva-deep-history.json /tmp/primitiva-deep-history.json
+          git fetch origin main
+          git reset --hard origin/main
+          cp /tmp/primitiva-deep-history.json loterias-ai/data/probes/primitiva-deep-history.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/probes/primitiva-deep-history.json
+          git commit -m 'data(loterias-ai): refresh deep Primitiva probe' || exit 0
+          git push origin HEAD:main
