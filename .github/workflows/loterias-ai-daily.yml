@@ -1,0 +1,39 @@
+name: Loterias AI Daily Cycle
+
+on:
+  schedule:
+    - cron: '15 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  daily:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Probe SELAE sources
+        run: node loterias-ai/scripts/probe-selae.mjs
+      - name: Build daily operating state
+        run: node loterias-ai/scripts/build-daily-state.mjs
+      - name: Validate core and evidence gates
+        run: |
+          node loterias-ai/tests/core.test.mjs
+          node loterias-ai/tests/evidence.test.mjs
+          node loterias-ai/tests/schedule.test.mjs
+      - name: Commit refreshed daily state
+        run: |
+          git config user.name "loterias-ai-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add loterias-ai/data/source-probe-latest.json loterias-ai/data/daily/latest.json loterias-ai/data/system-status.json || true
+          if git diff --cached --quiet; then
+            echo "No daily state changes"
+          else
+            git commit -m "chore(loterias-ai): refresh daily operating state"
+            git pull --rebase origin main
+            git push origin main
+          fi
