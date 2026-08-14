@@ -1,0 +1,36 @@
+name: Loterias AI Backfill Lototurf Legacy
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/backfill-lototurf-legacy.mjs'
+      - '.github/workflows/loterias-ai-backfill-lototurf-legacy.yml'
+permissions:
+  contents: write
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node loterias-ai/scripts/backfill-lototurf-legacy.mjs
+      - name: Persist safely
+        shell: bash
+        run: |
+          mkdir -p /tmp/lototurf-legacy
+          cp -r loterias-ai/data/archive/lototurf /tmp/lototurf-legacy/
+          cp loterias-ai/data/archive/_meta/lototurf-legacy-backfill.json /tmp/lototurf-legacy-summary.json
+          git fetch origin main
+          git reset --hard origin/main
+          rm -rf loterias-ai/data/archive/lototurf
+          cp -r /tmp/lototurf-legacy/lototurf loterias-ai/data/archive/
+          cp /tmp/lototurf-legacy-summary.json loterias-ai/data/archive/_meta/lototurf-legacy-backfill.json
+          node loterias-ai/scripts/build-national-archive-index.mjs
+          node loterias-ai/scripts/audit-national-archive.mjs
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/archive
+          git commit -m 'data(loterias-ai): persist Lototurf legacy history' || exit 0
+          git push origin HEAD:main
