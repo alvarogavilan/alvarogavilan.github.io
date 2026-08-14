@@ -1,0 +1,26 @@
+name: Loterias AI Bonoloto Financial
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/bonoloto-recent-financial-backtest.mjs'
+      - '.github/workflows/loterias-ai-bonoloto-financial.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  financial:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node loterias-ai/scripts/bonoloto-recent-financial-backtest.mjs
+      - name: Persist result
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/backtests/bonoloto-recent-financial.json
+          git commit -m 'data(loterias-ai): refresh Bonoloto recent financial backtest' || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
