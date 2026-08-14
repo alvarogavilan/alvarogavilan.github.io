@@ -15,7 +15,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node loterias-ai/scripts/enrich-national-archive-economics.mjs
+      - name: Persist economics into canonical archive
+        run: node loterias-ai/scripts/enrich-national-archive-economics.mjs
+      - name: Rebuild manifest and audit
+        run: |
+          node loterias-ai/scripts/build-national-archive-index.mjs
+          node loterias-ai/scripts/audit-national-archive.mjs
       - name: Persist safely
         run: |
           mkdir -p /tmp/archive-econ
