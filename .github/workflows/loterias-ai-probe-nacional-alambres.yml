@@ -1,0 +1,29 @@
+name: Loterias AI Probe Nacional Alambres
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/probe-nacional-alambres.mjs'
+      - '.github/workflows/loterias-ai-probe-nacional-alambres.yml'
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/probe-nacional-alambres.mjs
+      - name: Persist probe safely
+        run: |
+          cp loterias-ai/data/probes/nacional-alambres-mapping.json /tmp/nacional-alambres-mapping.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/probes
+          cp /tmp/nacional-alambres-mapping.json loterias-ai/data/probes/nacional-alambres-mapping.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/probes/nacional-alambres-mapping.json
+          git commit -m 'data(loterias-ai): persist Nacional alambres mapping probe' || exit 0
+          git push origin HEAD:main
