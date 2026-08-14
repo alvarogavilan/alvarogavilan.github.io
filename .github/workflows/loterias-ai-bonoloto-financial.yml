@@ -15,13 +15,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Run corrected financial walk-forward v2
+      - name: Run corrected financial walk-forward v3
         run: node loterias-ai/scripts/bonoloto-recent-financial-backtest.mjs
-      - name: Persist result
+      - name: Persist result safely
         run: |
+          cp loterias-ai/data/backtests/bonoloto-recent-financial.json /tmp/bonoloto-recent-financial.json
+          git fetch origin main
+          git reset --hard origin/main
+          cp /tmp/bonoloto-recent-financial.json loterias-ai/data/backtests/bonoloto-recent-financial.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add loterias-ai/data/backtests/bonoloto-recent-financial.json
           git commit -m 'data(loterias-ai): refresh Bonoloto recent financial backtest' || exit 0
-          git pull --rebase origin main
           git push origin HEAD:main
