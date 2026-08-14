@@ -10,7 +10,7 @@ const defs=[
  {id:'quiniela',name:'La Quiniela',file:null},
  {id:'elige8',name:'Elige8',file:null},
  {id:'quinigol',name:'Quinigol',file:null},
- {id:'lototurf',name:'Lototurf',file:null},
+ {id:'lototurf',name:'Lototurf',file:'lototurf-official-financial-tournament.json'},
  {id:'quintuple-plus',name:'Quíntuple Plus',file:null}
 ];
 const games=defs.map(d=>{if(!d.file||!fs.existsSync(`${root}/${d.file}`))return{id:d.id,name:d.name,status:'PENDING',realMoneyPass:false,reason:'Official financial gate not completed'};const j=JSON.parse(fs.readFileSync(`${root}/${d.file}`,'utf8')),h=j.holdout||{},official=j.officialEconomicDraws??null,pass=j.realMoneyPass===true;return{id:d.id,name:d.name,status:pass?'ELIGIBLE':'REJECTED',realMoneyPass:pass,officialEconomicDraws:official,holdoutDraws:h.draws??null,holdoutStake:h.stake??null,holdoutReturn:h.return??null,holdoutPL:h.pl??null,holdoutROI:h.roi??null,selected:j.selected??j.winner??{strategy:j.strategy,tickets:j.tickets},baseline:j.randomBaseline??null,source:j.source??null,reason:pass?'All completed official gates passed':'Completed official financial gate did not pass'}});
