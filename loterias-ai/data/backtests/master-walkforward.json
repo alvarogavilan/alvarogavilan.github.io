@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-14T15:40:42.558Z",
+  "generatedAt": "2026-08-14T15:54:08.216Z",
   "mode": "RESEARCH_ONLY",
   "methodology": "incremental-strict-chronological-walk-forward-v3-paired-baseline",
   "leakageGuard": "State is updated only AFTER scoring each target draw. Random baseline is deterministically seeded by target draw id and uses the same ticket count/diversification algorithm.",
@@ -239,36 +239,875 @@
       ]
     },
     "primitiva": {
-      "status": "insufficient_sample",
-      "draws": 1,
+      "status": "complete",
       "years": [
+        "1985",
+        "1986",
+        "1987",
+        "1988",
+        "1989",
+        "1990",
+        "1991",
+        "1992",
+        "1993",
+        "1994",
+        "1995",
+        "1996",
+        "1997",
+        "1998",
+        "1999",
+        "2000",
+        "2001",
+        "2002",
+        "2003",
+        "2004",
+        "2005",
+        "2006",
+        "2007",
+        "2008",
+        "2009",
+        "2010",
+        "2011",
+        "2012",
+        "2013",
+        "2014",
+        "2015",
+        "2016",
+        "2017",
+        "2018",
+        "2019",
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025",
         "2026"
       ],
-      "minHistory": 60
+      "draws": 4173,
+      "minHistory": 250,
+      "baseline": {
+        "id": "paired-random-diversified",
+        "drawsEvaluated": 3923,
+        "averageHits": 0.7286770328829952,
+        "bestTicketAverageHits": 1.3925567167983686,
+        "hitRateAtLeast2": 0.42059648228396634,
+        "hitRateAtLeast3": 0.06984450675503441,
+        "confidence95": {
+          "lower": 0.713694558080057,
+          "upper": 0.7436595076859335
+        }
+      },
+      "winner": {
+        "id": "frequency-heavy",
+        "drawsEvaluated": 3923,
+        "averageHits": 0.7330614325771082,
+        "bestTicketAverageHits": 1.6416008157022686,
+        "hitRateAtLeast2": 0.5595207749171552,
+        "hitRateAtLeast3": 0.08870762171807291,
+        "confidence95": {
+          "lower": 0.723007254007607,
+          "upper": 0.7431156111466094
+        },
+        "excessAverageHitsVsRandom": 0.00438439969411164,
+        "excessConfidence95": {
+          "lower": -0.013776006540031582,
+          "upper": 0.022544805928254863
+        },
+        "config": {
+          "id": "frequency-heavy",
+          "weights": {
+            "longFrequency": 0.35,
+            "shortMomentum": 0.25,
+            "gap": 0.05,
+            "stability": 0.15,
+            "pairAffinity": 0.08,
+            "entropy": 0.05,
+            "meanReversion": 0.07
+          }
+        }
+      },
+      "strategies": [
+        {
+          "id": "frequency-heavy",
+          "drawsEvaluated": 3923,
+          "averageHits": 0.7330614325771082,
+          "bestTicketAverageHits": 1.6416008157022686,
+          "hitRateAtLeast2": 0.5595207749171552,
+          "hitRateAtLeast3": 0.08870762171807291,
+          "confidence95": {
+            "lower": 0.723007254007607,
+            "upper": 0.7431156111466094
+          },
+          "excessAverageHitsVsRandom": 0.00438439969411164,
+          "excessConfidence95": {
+            "lower": -0.013776006540031582,
+            "upper": 0.022544805928254863
+          },
+          "config": {
+            "id": "frequency-heavy",
+            "weights": {
+              "longFrequency": 0.35,
+              "shortMomentum": 0.25,
+              "gap": 0.05,
+              "stability": 0.15,
+              "pairAffinity": 0.08,
+              "entropy": 0.05,
+              "meanReversion": 0.07
+            }
+          }
+        },
+        {
+          "id": "cooccurrence-heavy",
+          "drawsEvaluated": 3923,
+          "averageHits": 0.7311241396890111,
+          "bestTicketAverageHits": 1.7129747642110629,
+          "hitRateAtLeast2": 0.62375732857507,
+          "hitRateAtLeast3": 0.08641345908743309,
+          "confidence95": {
+            "lower": 0.7238791094600027,
+            "upper": 0.7383691699180196
+          },
+          "excessAverageHitsVsRandom": 0.002447106806015814,
+          "excessConfidence95": {
+            "lower": -0.014382413391811847,
+            "upper": 0.019276627003843475
+          },
+          "config": {
+            "id": "cooccurrence-heavy",
+            "weights": {
+              "longFrequency": 0.12,
+              "shortMomentum": 0.1,
+              "gap": 0.08,
+              "stability": 0.15,
+              "pairAffinity": 0.3,
+              "entropy": 0.1,
+              "meanReversion": 0.15
+            }
+          }
+        },
+        {
+          "id": "stability-heavy",
+          "drawsEvaluated": 3923,
+          "averageHits": 0.7295946979352526,
+          "bestTicketAverageHits": 1.7071119041549834,
+          "hitRateAtLeast2": 0.6150904919704308,
+          "hitRateAtLeast3": 0.0925312261024726,
+          "confidence95": {
+            "lower": 0.7213762834543337,
+            "upper": 0.7378131124161714
+          },
+          "excessAverageHitsVsRandom": 0.0009176650522559365,
+          "excessConfidence95": {
+            "lower": -0.01641311536136136,
+            "upper": 0.018248445465873234
+          },
+          "config": {
+            "id": "stability-heavy",
+            "weights": {
+              "longFrequency": 0.15,
+              "shortMomentum": 0.1,
+              "gap": 0.1,
+              "stability": 0.35,
+              "pairAffinity": 0.08,
+              "entropy": 0.07,
+              "meanReversion": 0.15
+            }
+          }
+        },
+        {
+          "id": "gap-heavy",
+          "drawsEvaluated": 3923,
+          "averageHits": 0.7281672189650771,
+          "bestTicketAverageHits": 1.6148355850114708,
+          "hitRateAtLeast2": 0.5429518225847566,
+          "hitRateAtLeast3": 0.0848840173336732,
+          "confidence95": {
+            "lower": 0.7170554305055349,
+            "upper": 0.7392790074246193
+          },
+          "excessAverageHitsVsRandom": -0.0005098139179199359,
+          "excessConfidence95": {
+            "lower": -0.019389563829801906,
+            "upper": 0.018369935993962035
+          },
+          "config": {
+            "id": "gap-heavy",
+            "weights": {
+              "longFrequency": 0.1,
+              "shortMomentum": 0.1,
+              "gap": 0.35,
+              "stability": 0.15,
+              "pairAffinity": 0.08,
+              "entropy": 0.07,
+              "meanReversion": 0.15
+            }
+          }
+        },
+        {
+          "id": "balanced",
+          "drawsEvaluated": 3923,
+          "averageHits": 0.7258730563344358,
+          "bestTicketAverageHits": 1.7027784858526638,
+          "hitRateAtLeast2": 0.6051491205709916,
+          "hitRateAtLeast3": 0.09559010960999235,
+          "confidence95": {
+            "lower": 0.7179970278461064,
+            "upper": 0.7337490848227651
+          },
+          "excessAverageHitsVsRandom": -0.0028039765485597524,
+          "excessConfidence95": {
+            "lower": -0.019933130926154546,
+            "upper": 0.01432517782903504
+          },
+          "config": {
+            "id": "balanced",
+            "weights": {
+              "longFrequency": 0.2,
+              "shortMomentum": 0.15,
+              "gap": 0.15,
+              "stability": 0.15,
+              "pairAffinity": 0.1,
+              "entropy": 0.1,
+              "meanReversion": 0.15
+            }
+          }
+        }
+      ]
     },
     "euromillones": {
-      "status": "insufficient_sample",
-      "draws": 4,
+      "status": "complete",
       "years": [
+        "2004",
+        "2005",
+        "2006",
+        "2007",
+        "2008",
+        "2009",
+        "2010",
+        "2011",
+        "2012",
+        "2013",
+        "2014",
+        "2015",
+        "2016",
+        "2017",
+        "2018",
+        "2019",
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025",
         "2026"
       ],
-      "minHistory": 60
+      "draws": 1970,
+      "minHistory": 250,
+      "baseline": {
+        "id": "paired-random-diversified",
+        "drawsEvaluated": 1720,
+        "averageHits": 0.5060465116279083,
+        "bestTicketAverageHits": 1.0854651162790698,
+        "hitRateAtLeast2": 0.2552325581395349,
+        "hitRateAtLeast3": 0.022093023255813953,
+        "confidence95": {
+          "lower": 0.4871117880130759,
+          "upper": 0.5249812352427407
+        }
+      },
+      "winner": {
+        "id": "cooccurrence-heavy",
+        "drawsEvaluated": 1720,
+        "averageHits": 0.5088372093023253,
+        "bestTicketAverageHits": 1.3546511627906976,
+        "hitRateAtLeast2": 0.3546511627906977,
+        "hitRateAtLeast3": 0.020348837209302327,
+        "confidence95": {
+          "lower": 0.49863011087511644,
+          "upper": 0.5190443077295342
+        },
+        "excessAverageHitsVsRandom": 0.0027906976744186147,
+        "excessConfidence95": {
+          "lower": -0.018771360990937312,
+          "upper": 0.024352756339774538
+        },
+        "config": {
+          "id": "cooccurrence-heavy",
+          "weights": {
+            "longFrequency": 0.12,
+            "shortMomentum": 0.1,
+            "gap": 0.08,
+            "stability": 0.15,
+            "pairAffinity": 0.3,
+            "entropy": 0.1,
+            "meanReversion": 0.15
+          }
+        }
+      },
+      "strategies": [
+        {
+          "id": "cooccurrence-heavy",
+          "drawsEvaluated": 1720,
+          "averageHits": 0.5088372093023253,
+          "bestTicketAverageHits": 1.3546511627906976,
+          "hitRateAtLeast2": 0.3546511627906977,
+          "hitRateAtLeast3": 0.020348837209302327,
+          "confidence95": {
+            "lower": 0.49863011087511644,
+            "upper": 0.5190443077295342
+          },
+          "excessAverageHitsVsRandom": 0.0027906976744186147,
+          "excessConfidence95": {
+            "lower": -0.018771360990937312,
+            "upper": 0.024352756339774538
+          },
+          "config": {
+            "id": "cooccurrence-heavy",
+            "weights": {
+              "longFrequency": 0.12,
+              "shortMomentum": 0.1,
+              "gap": 0.08,
+              "stability": 0.15,
+              "pairAffinity": 0.3,
+              "entropy": 0.1,
+              "meanReversion": 0.15
+            }
+          }
+        },
+        {
+          "id": "balanced",
+          "drawsEvaluated": 1720,
+          "averageHits": 0.5051162790697675,
+          "bestTicketAverageHits": 1.3459302325581395,
+          "hitRateAtLeast2": 0.3430232558139535,
+          "hitRateAtLeast3": 0.027906976744186046,
+          "confidence95": {
+            "lower": 0.49496986978272767,
+            "upper": 0.5152626883568074
+          },
+          "excessAverageHitsVsRandom": -0.0009302325581395293,
+          "excessConfidence95": {
+            "lower": -0.02233783525834682,
+            "upper": 0.02047737014206776
+          },
+          "config": {
+            "id": "balanced",
+            "weights": {
+              "longFrequency": 0.2,
+              "shortMomentum": 0.15,
+              "gap": 0.15,
+              "stability": 0.15,
+              "pairAffinity": 0.1,
+              "entropy": 0.1,
+              "meanReversion": 0.15
+            }
+          }
+        },
+        {
+          "id": "stability-heavy",
+          "drawsEvaluated": 1720,
+          "averageHits": 0.503720930232559,
+          "bestTicketAverageHits": 1.3261627906976745,
+          "hitRateAtLeast2": 0.32790697674418606,
+          "hitRateAtLeast3": 0.02441860465116279,
+          "confidence95": {
+            "lower": 0.49302948354285525,
+            "upper": 0.5144123769222628
+          },
+          "excessAverageHitsVsRandom": -0.00232558139534884,
+          "excessConfidence95": {
+            "lower": -0.02427239468417949,
+            "upper": 0.01962123189348181
+          },
+          "config": {
+            "id": "stability-heavy",
+            "weights": {
+              "longFrequency": 0.15,
+              "shortMomentum": 0.1,
+              "gap": 0.1,
+              "stability": 0.35,
+              "pairAffinity": 0.08,
+              "entropy": 0.07,
+              "meanReversion": 0.15
+            }
+          }
+        },
+        {
+          "id": "frequency-heavy",
+          "drawsEvaluated": 1720,
+          "averageHits": 0.5008139534883725,
+          "bestTicketAverageHits": 1.2825581395348837,
+          "hitRateAtLeast2": 0.3174418604651163,
+          "hitRateAtLeast3": 0.02558139534883721,
+          "confidence95": {
+            "lower": 0.48793402628180893,
+            "upper": 0.5136938806949362
+          },
+          "excessAverageHitsVsRandom": -0.005232558139534873,
+          "excessConfidence95": {
+            "lower": -0.028375855634097946,
+            "upper": 0.017910739355028196
+          },
+          "config": {
+            "id": "frequency-heavy",
+            "weights": {
+              "longFrequency": 0.35,
+              "shortMomentum": 0.25,
+              "gap": 0.05,
+              "stability": 0.15,
+              "pairAffinity": 0.08,
+              "entropy": 0.05,
+              "meanReversion": 0.07
+            }
+          }
+        },
+        {
+          "id": "gap-heavy",
+          "drawsEvaluated": 1720,
+          "averageHits": 0.49720930232558247,
+          "bestTicketAverageHits": 1.255232558139535,
+          "hitRateAtLeast2": 0.2982558139534884,
+          "hitRateAtLeast3": 0.029651162790697676,
+          "confidence95": {
+            "lower": 0.4833916682472624,
+            "upper": 0.5110269364039026
+          },
+          "excessAverageHitsVsRandom": -0.008837209302325592,
+          "excessConfidence95": {
+            "lower": -0.03223379926122591,
+            "upper": 0.014559380656574724
+          },
+          "config": {
+            "id": "gap-heavy",
+            "weights": {
+              "longFrequency": 0.1,
+              "shortMomentum": 0.1,
+              "gap": 0.35,
+              "stability": 0.15,
+              "pairAffinity": 0.08,
+              "entropy": 0.07,
+              "meanReversion": 0.15
+            }
+          }
+        }
+      ]
     },
     "eurodreams": {
-      "status": "insufficient_sample",
-      "draws": 1,
+      "status": "complete",
       "years": [
+        "2023",
+        "2024",
+        "2025",
         "2026"
       ],
-      "minHistory": 60
+      "draws": 290,
+      "minHistory": 101,
+      "baseline": {
+        "id": "paired-random-diversified",
+        "drawsEvaluated": 189,
+        "averageHits": 0.8698412698412699,
+        "bestTicketAverageHits": 1.5238095238095237,
+        "hitRateAtLeast2": 0.4603174603174603,
+        "hitRateAtLeast3": 0.10052910052910052,
+        "confidence95": {
+          "lower": 0.7888989343433349,
+          "upper": 0.9507836053392048
+        }
+      },
+      "winner": {
+        "id": "frequency-heavy",
+        "drawsEvaluated": 189,
+        "averageHits": 0.9153439153439158,
+        "bestTicketAverageHits": 1.8835978835978835,
+        "hitRateAtLeast2": 0.6825396825396826,
+        "hitRateAtLeast3": 0.18518518518518517,
+        "confidence95": {
+          "lower": 0.8636405503327532,
+          "upper": 0.9670472803550784
+        },
+        "excessAverageHitsVsRandom": 0.045502645502645475,
+        "excessConfidence95": {
+          "lower": -0.05041138268205261,
+          "upper": 0.14141667368734356
+        },
+        "config": {
+          "id": "frequency-heavy",
+          "weights": {
+            "longFrequency": 0.35,
+            "shortMomentum": 0.25,
+            "gap": 0.05,
+            "stability": 0.15,
+            "pairAffinity": 0.08,
+            "entropy": 0.05,
+            "meanReversion": 0.07
+          }
+        }
+      },
+      "strategies": [
+        {
+          "id": "frequency-heavy",
+          "drawsEvaluated": 189,
+          "averageHits": 0.9153439153439158,
+          "bestTicketAverageHits": 1.8835978835978835,
+          "hitRateAtLeast2": 0.6825396825396826,
+          "hitRateAtLeast3": 0.18518518518518517,
+          "confidence95": {
+            "lower": 0.8636405503327532,
+            "upper": 0.9670472803550784
+          },
+          "excessAverageHitsVsRandom": 0.045502645502645475,
+          "excessConfidence95": {
+            "lower": -0.05041138268205261,
+            "upper": 0.14141667368734356
+          },
+          "config": {
+            "id": "frequency-heavy",
+            "weights": {
+              "longFrequency": 0.35,
+              "shortMomentum": 0.25,
+              "gap": 0.05,
+              "stability": 0.15,
+              "pairAffinity": 0.08,
+              "entropy": 0.05,
+              "meanReversion": 0.07
+            }
+          }
+        },
+        {
+          "id": "balanced",
+          "drawsEvaluated": 189,
+          "averageHits": 0.891005291005291,
+          "bestTicketAverageHits": 1.9312169312169312,
+          "hitRateAtLeast2": 0.783068783068783,
+          "hitRateAtLeast3": 0.14285714285714285,
+          "confidence95": {
+            "lower": 0.8513911346688363,
+            "upper": 0.9306194473417457
+          },
+          "excessAverageHitsVsRandom": 0.021164021164021156,
+          "excessConfidence95": {
+            "lower": -0.06612604980345849,
+            "upper": 0.10845409213150081
+          },
+          "config": {
+            "id": "balanced",
+            "weights": {
+              "longFrequency": 0.2,
+              "shortMomentum": 0.15,
+              "gap": 0.15,
+              "stability": 0.15,
+              "pairAffinity": 0.1,
+              "entropy": 0.1,
+              "meanReversion": 0.15
+            }
+          }
+        },
+        {
+          "id": "gap-heavy",
+          "drawsEvaluated": 189,
+          "averageHits": 0.8761904761904763,
+          "bestTicketAverageHits": 1.835978835978836,
+          "hitRateAtLeast2": 0.6666666666666666,
+          "hitRateAtLeast3": 0.15873015873015872,
+          "confidence95": {
+            "lower": 0.8285606982707667,
+            "upper": 0.9238202541101859
+          },
+          "excessAverageHitsVsRandom": 0.006349206349206369,
+          "excessConfidence95": {
+            "lower": -0.08821602860358087,
+            "upper": 0.1009144413019936
+          },
+          "config": {
+            "id": "gap-heavy",
+            "weights": {
+              "longFrequency": 0.1,
+              "shortMomentum": 0.1,
+              "gap": 0.35,
+              "stability": 0.15,
+              "pairAffinity": 0.08,
+              "entropy": 0.07,
+              "meanReversion": 0.15
+            }
+          }
+        },
+        {
+          "id": "cooccurrence-heavy",
+          "drawsEvaluated": 189,
+          "averageHits": 0.8751322751322749,
+          "bestTicketAverageHits": 1.9259259259259258,
+          "hitRateAtLeast2": 0.8042328042328042,
+          "hitRateAtLeast3": 0.1164021164021164,
+          "confidence95": {
+            "lower": 0.8428935050727063,
+            "upper": 0.9073710451918434
+          },
+          "excessAverageHitsVsRandom": 0.005291005291005291,
+          "excessConfidence95": {
+            "lower": -0.07713154509249778,
+            "upper": 0.08771355567450836
+          },
+          "config": {
+            "id": "cooccurrence-heavy",
+            "weights": {
+              "longFrequency": 0.12,
+              "shortMomentum": 0.1,
+              "gap": 0.08,
+              "stability": 0.15,
+              "pairAffinity": 0.3,
+              "entropy": 0.1,
+              "meanReversion": 0.15
+            }
+          }
+        },
+        {
+          "id": "stability-heavy",
+          "drawsEvaluated": 189,
+          "averageHits": 0.8687830687830681,
+          "bestTicketAverageHits": 1.835978835978836,
+          "hitRateAtLeast2": 0.6931216931216931,
+          "hitRateAtLeast3": 0.14285714285714285,
+          "confidence95": {
+            "lower": 0.8291810442696386,
+            "upper": 0.9083850932964976
+          },
+          "excessAverageHitsVsRandom": -0.0010582010582010544,
+          "excessConfidence95": {
+            "lower": -0.08852424969128711,
+            "upper": 0.08640784757488501
+          },
+          "config": {
+            "id": "stability-heavy",
+            "weights": {
+              "longFrequency": 0.15,
+              "shortMomentum": 0.1,
+              "gap": 0.1,
+              "stability": 0.35,
+              "pairAffinity": 0.08,
+              "entropy": 0.07,
+              "meanReversion": 0.15
+            }
+          }
+        }
+      ]
     },
     "gordo-primitiva": {
-      "status": "insufficient_sample",
-      "draws": 1,
+      "status": "complete",
       "years": [
+        "2005",
+        "2006",
+        "2007",
+        "2008",
+        "2009",
+        "2010",
+        "2011",
+        "2012",
+        "2013",
+        "2014",
+        "2015",
+        "2016",
+        "2017",
+        "2018",
+        "2019",
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025",
         "2026"
       ],
-      "minHistory": 60
+      "draws": 1113,
+      "minHistory": 250,
+      "baseline": {
+        "id": "paired-random-diversified",
+        "drawsEvaluated": 863,
+        "averageHits": 0.457473928157589,
+        "bestTicketAverageHits": 1.0034762456546928,
+        "hitRateAtLeast2": 0.22595596755504055,
+        "hitRateAtLeast3": 0.011587485515643106,
+        "confidence95": {
+          "lower": 0.43256899696639817,
+          "upper": 0.4823788593487799
+        }
+      },
+      "winner": {
+        "id": "frequency-heavy",
+        "drawsEvaluated": 863,
+        "averageHits": 0.46859791425260566,
+        "bestTicketAverageHits": 1.2398609501738123,
+        "hitRateAtLeast2": 0.2885283893395133,
+        "hitRateAtLeast3": 0.01853997682502897,
+        "confidence95": {
+          "lower": 0.45099269529638447,
+          "upper": 0.48620313320882685
+        },
+        "excessAverageHitsVsRandom": 0.011123986095017375,
+        "excessConfidence95": {
+          "lower": -0.019537712536504572,
+          "upper": 0.04178568472653932
+        },
+        "config": {
+          "id": "frequency-heavy",
+          "weights": {
+            "longFrequency": 0.35,
+            "shortMomentum": 0.25,
+            "gap": 0.05,
+            "stability": 0.15,
+            "pairAffinity": 0.08,
+            "entropy": 0.05,
+            "meanReversion": 0.07
+          }
+        }
+      },
+      "strategies": [
+        {
+          "id": "frequency-heavy",
+          "drawsEvaluated": 863,
+          "averageHits": 0.46859791425260566,
+          "bestTicketAverageHits": 1.2398609501738123,
+          "hitRateAtLeast2": 0.2885283893395133,
+          "hitRateAtLeast3": 0.01853997682502897,
+          "confidence95": {
+            "lower": 0.45099269529638447,
+            "upper": 0.48620313320882685
+          },
+          "excessAverageHitsVsRandom": 0.011123986095017375,
+          "excessConfidence95": {
+            "lower": -0.019537712536504572,
+            "upper": 0.04178568472653932
+          },
+          "config": {
+            "id": "frequency-heavy",
+            "weights": {
+              "longFrequency": 0.35,
+              "shortMomentum": 0.25,
+              "gap": 0.05,
+              "stability": 0.15,
+              "pairAffinity": 0.08,
+              "entropy": 0.05,
+              "meanReversion": 0.07
+            }
+          }
+        },
+        {
+          "id": "stability-heavy",
+          "drawsEvaluated": 863,
+          "averageHits": 0.458864426419466,
+          "bestTicketAverageHits": 1.2966396292004636,
+          "hitRateAtLeast2": 0.320973348783314,
+          "hitRateAtLeast3": 0.01738122827346466,
+          "confidence95": {
+            "lower": 0.4446711299564968,
+            "upper": 0.4730577228824352
+          },
+          "excessAverageHitsVsRandom": 0.0013904982618771788,
+          "excessConfidence95": {
+            "lower": -0.027647141782197154,
+            "upper": 0.030428138305951515
+          },
+          "config": {
+            "id": "stability-heavy",
+            "weights": {
+              "longFrequency": 0.15,
+              "shortMomentum": 0.1,
+              "gap": 0.1,
+              "stability": 0.35,
+              "pairAffinity": 0.08,
+              "entropy": 0.07,
+              "meanReversion": 0.15
+            }
+          }
+        },
+        {
+          "id": "cooccurrence-heavy",
+          "drawsEvaluated": 863,
+          "averageHits": 0.4558516801853987,
+          "bestTicketAverageHits": 1.2699884125144845,
+          "hitRateAtLeast2": 0.2908458864426419,
+          "hitRateAtLeast3": 0.019698725376593278,
+          "confidence95": {
+            "lower": 0.4418013173476202,
+            "upper": 0.4699020430231772
+          },
+          "excessAverageHitsVsRandom": -0.00162224797219003,
+          "excessConfidence95": {
+            "lower": -0.030670502978407607,
+            "upper": 0.027426007034027547
+          },
+          "config": {
+            "id": "cooccurrence-heavy",
+            "weights": {
+              "longFrequency": 0.12,
+              "shortMomentum": 0.1,
+              "gap": 0.08,
+              "stability": 0.15,
+              "pairAffinity": 0.3,
+              "entropy": 0.1,
+              "meanReversion": 0.15
+            }
+          }
+        },
+        {
+          "id": "balanced",
+          "drawsEvaluated": 863,
+          "averageHits": 0.45561993047508637,
+          "bestTicketAverageHits": 1.2896871378910777,
+          "hitRateAtLeast2": 0.3163383545770568,
+          "hitRateAtLeast3": 0.012746234067207415,
+          "confidence95": {
+            "lower": 0.4414119867739074,
+            "upper": 0.4698278741762653
+          },
+          "excessAverageHitsVsRandom": -0.0018539976825028871,
+          "excessConfidence95": {
+            "lower": -0.030784620306322712,
+            "upper": 0.027076624941316938
+          },
+          "config": {
+            "id": "balanced",
+            "weights": {
+              "longFrequency": 0.2,
+              "shortMomentum": 0.15,
+              "gap": 0.15,
+              "stability": 0.15,
+              "pairAffinity": 0.1,
+              "entropy": 0.1,
+              "meanReversion": 0.15
+            }
+          }
+        },
+        {
+          "id": "gap-heavy",
+          "drawsEvaluated": 863,
+          "averageHits": 0.44333719582850384,
+          "bestTicketAverageHits": 1.1390498261877173,
+          "hitRateAtLeast2": 0.23870220162224798,
+          "hitRateAtLeast3": 0.01853997682502897,
+          "confidence95": {
+            "lower": 0.42378618566794435,
+            "upper": 0.46288820598906333
+          },
+          "excessAverageHitsVsRandom": -0.014136732329084599,
+          "excessConfidence95": {
+            "lower": -0.04644950505523287,
+            "upper": 0.01817604039706367
+          },
+          "config": {
+            "id": "gap-heavy",
+            "weights": {
+              "longFrequency": 0.1,
+              "shortMomentum": 0.1,
+              "gap": 0.35,
+              "stability": 0.15,
+              "pairAffinity": 0.08,
+              "entropy": 0.07,
+              "meanReversion": 0.15
+            }
+          }
+        }
+      ]
     }
   }
 }
