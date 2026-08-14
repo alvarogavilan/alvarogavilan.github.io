@@ -1,0 +1,50 @@
+name: Loterias AI Quiniela Elige8 Official
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '25 7 * * *'
+  push:
+    paths:
+      - 'loterias-ai/scripts/enrich-quiniela-elige8-official.mjs'
+      - '.github/workflows/loterias-ai-quiniela-elige8-official.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-quiniela-elige8-official
+  cancel-in-progress: false
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Enrich several bounded batches
+        shell: bash
+        run: |
+          for i in 1 2 3; do
+            BATCH_LIMIT=70 node loterias-ai/scripts/enrich-quiniela-elige8-official.mjs || break
+            sleep 2
+          done
+      - name: Persist safely
+        shell: bash
+        run: |
+          mkdir -p /tmp/q8
+          cp -r loterias-ai/data/archive/quiniela /tmp/q8/
+          cp -r loterias-ai/data/archive/elige8 /tmp/q8/
+          cp loterias-ai/data/archive/_meta/quiniela-elige8-official-enrichment.json /tmp/q8/summary.json
+          git fetch origin main
+          git reset --hard origin/main
+          rm -rf loterias-ai/data/archive/quiniela loterias-ai/data/archive/elige8
+          cp -r /tmp/q8/quiniela loterias-ai/data/archive/
+          cp -r /tmp/q8/elige8 loterias-ai/data/archive/
+          cp /tmp/q8/summary.json loterias-ai/data/archive/_meta/quiniela-elige8-official-enrichment.json
+          node loterias-ai/scripts/build-national-archive-index.mjs
+          node loterias-ai/scripts/build-completeness-index.mjs
+          node loterias-ai/scripts/audit-national-archive.mjs
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/archive
+          git commit -m 'data(loterias-ai): update official Quiniela and Elige8 archive' || exit 0
+          git push origin HEAD:main
