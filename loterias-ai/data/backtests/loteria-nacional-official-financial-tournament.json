@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-08-14T23:33:23.816Z",
+  "generatedAt": "2026-08-14T23:34:52.487Z",
   "gameId": "loteria-nacional",
   "status": "INSUFFICIENT_SAMPLE",
   "realMoneyPass": false,
-  "source": "SELAE premioDecimoWeb + fechav3; archive used only for strictly prior training",
+  "source": "SELAE premioDecimoWeb + fresh fechav3 for every evaluated draw; archive used only for strictly prior training",
   "officialEconomicDraws": 26,
   "holdout": {
     "draws": 26,
@@ -882,5 +882,5 @@
       "baselineReturnEUR": 6
     }
   ],
-  "truth": "Every payout is taken directly from SELAE premioDecimoWeb. Each model ticket is generated only from draws preceding the evaluated draw. No synthetic payout or future leakage is allowed."
+  "truth": "Every payout is taken directly from SELAE premioDecimoWeb and every evaluated draw id is freshly resolved through SELAE fechav3. Each model ticket is generated only from preceding draws. No synthetic payout or future leakage is allowed."
 }
