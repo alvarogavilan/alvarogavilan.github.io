@@ -1,0 +1,28 @@
+{
+  "version":"2026-08-14.1",
+  "name":"Conviction Score",
+  "purpose":"Measure evidential support for a proposed lottery portfolio. This is not the probability of winning a prize.",
+  "scale":{"min":0,"max":100},
+  "components":[
+    {"id":"data-completeness","weight":20,"requiredForRealMoney":true},
+    {"id":"rule-era-integrity","weight":10,"requiredForRealMoney":true},
+    {"id":"walk-forward-performance","weight":20,"requiredForRealMoney":true},
+    {"id":"baseline-outperformance","weight":20,"requiredForRealMoney":true},
+    {"id":"prospective-shadow-ledger","weight":15,"requiredForRealMoney":true},
+    {"id":"drawdown-stability","weight":10,"requiredForRealMoney":true},
+    {"id":"source-health","weight":5,"requiredForRealMoney":true}
+  ],
+  "thresholds":{
+    "research":0,
+    "watch":60,
+    "highConviction":80,
+    "realMoneyEligible":85
+  },
+  "hardRules":[
+    "A score is evidence confidence, never a claimed probability of winning.",
+    "Real-money eligibility requires score >= 85 and every required component to pass independently.",
+    "No weighted average may compensate for a failed hard gate.",
+    "If no game is eligible, the optimal real-money allocation is 0 EUR.",
+    "Portfolio confidence must be recalculated after every verified draw."
+  ]
+}
