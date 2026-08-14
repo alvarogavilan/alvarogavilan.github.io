@@ -1,0 +1,23 @@
+name: Loterias AI Probe Elige8
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/probe-elige8-fechav3.mjs'
+      - '.github/workflows/loterias-ai-probe-elige8.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/probe-elige8-fechav3.mjs
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/probes/elige8-fechav3.json
+          git commit -m 'data(loterias-ai): persist Elige8 SELAE probe' || exit 0
+          git push origin HEAD:main
