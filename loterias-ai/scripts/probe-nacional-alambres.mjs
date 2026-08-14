@@ -1,12 +1,14 @@
 import fs from 'node:fs';
-const date='20260808';
-const api=`https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LNAC&fecha_sorteo=${date}`;
-const ar=await fetch(api,{headers:{'user-agent':'Mozilla/5.0 LoteriasAI official probe','accept':'*/*'}});const j=await ar.json(),row=Array.isArray(j)?j[0]:j;
-const id=String(row?.id_sorteo||''),drawId=id.length>=5?`${id.slice(0,-4)}9102`:null,url=`https://www.loteriasyapuestas.es/es/loteria-nacional/tablas-y-alambres?drawId=${drawId}`;
-const r=await fetch(url,{headers:{'user-agent':'Mozilla/5.0 LoteriasAI official archive','accept':'text/html,*/*'}}),html=await r.text();
-const srcs=[...new Set([...html.matchAll(/<script[^>]+src=["']([^"']+)["']/gi)].map(m=>new URL(m[1],url).href))];
-const needle=/urlServicioResultadosLNACTramoI|urlResultadosLNACTramoII|resultados1|resultados2|premioDecimoWeb|resultadoLNAC|drawId/gi;
-const scriptHits=[];for(const src of srcs){try{const sr=await fetch(src,{headers:{'user-agent':'Mozilla/5.0 LoteriasAI probe'}});if(!sr.ok)continue;const text=await sr.text();if(needle.test(text)){needle.lastIndex=0;const hits=[...text.matchAll(/.{0,600}(?:urlServicioResultadosLNACTramoI|urlResultadosLNACTramoII|resultados1|resultados2|premioDecimoWeb|resultadoLNAC|drawId).{0,1200}/gi)].map(m=>m[0]).slice(0,80);scriptHits.push({src,length:text.length,hits})}}catch{}}
-const inlineHits=[...html.matchAll(/.{0,600}(?:urlServicioResultadosLNACTramoI|urlResultadosLNACTramoII|resultados1|resultados2|premioDecimoWeb|resultadoLNAC|drawId).{0,1200}/gi)].map(m=>m[0]).slice(0,120);
-const out={generatedAt:new Date().toISOString(),date,id_sorteo:id,num_sorteo:row?.num_sorteo,first:row?.combinacion?.primer_premio,second:row?.combinacion?.segundo_premio,drawId,url,status:r.status,scriptHits,inlineHits};
-fs.mkdirSync('loterias-ai/data/probes',{recursive:true});fs.writeFileSync('loterias-ai/data/probes/nacional-alambres-mapping.json',JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify({drawId,scriptHits:scriptHits.map(x=>({src:x.src,hits:x.hits.length})),inlineHits:inlineHits.length},null,2));
+const date='20260808',first='57521',second='23381',id='1318809064',drawId='1318809102',num='64',year='2026';
+const base='https://www.loteriasyapuestas.es';
+const queries=[
+  `drawId=${drawId}`,`id_sorteo=${id}`,`game_id=LNAC&fecha_sorteo=${date}`,
+  `game_id=LNAC&drawId=${drawId}`,`game_id=LNAC&id_sorteo=${id}`,
+  `sorteo=${num}&anyo=${year}`,`num_sorteo=${num}&anyo=${year}`,
+  `game_id=LNAC&num_sorteo=${num}&anyo=${year}`
+];
+const endpoints=['/servicios/resultados1','/servicios/resultados2','/servicios/escrutinio1'];
+const attempts=[];
+for(const ep of endpoints)for(const q of queries){const url=`${base}${ep}?${q}`;try{const r=await fetch(url,{redirect:'follow',headers:{'user-agent':'Mozilla/5.0 LoteriasAI official probe','accept':'application/json,text/plain,*/*','referer':`${base}/es/loteria-nacional/tablas-y-alambres?drawId=${drawId}`}});const text=await r.text();attempts.push({ep,q,status:r.status,contentType:r.headers.get('content-type'),length:text.length,containsFirst:text.includes(first),containsSecond:text.includes(second),preview:text.slice(0,900)})}catch(e){attempts.push({ep,q,error:String(e)})}}
+const hits=attempts.filter(x=>x.containsFirst||x.containsSecond||x.length>1000&&x.status===200);
+const out={generatedAt:new Date().toISOString(),date,first,second,id_sorteo:id,drawId,attempts,hits};fs.mkdirSync('loterias-ai/data/probes',{recursive:true});fs.writeFileSync('loterias-ai/data/probes/nacional-alambres-mapping.json',JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify({attempts:attempts.length,hits:hits.map(x=>({ep:x.ep,q:x.q,status:x.status,length:x.length,containsFirst:x.containsFirst,containsSecond:x.containsSecond,preview:x.preview?.slice(0,180)}))},null,2));
