@@ -1,0 +1,36 @@
+name: Loterias AI Final Data Gates
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/loteria-nacional-official-financial-tournament.mjs'
+      - 'loterias-ai/scripts/elige8-official-financial-tournament.mjs'
+      - '.github/workflows/loterias-ai-final-data-gates.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/loteria-nacional-official-financial-tournament.mjs
+      - run: node loterias-ai/scripts/elige8-official-financial-tournament.mjs
+      - run: node loterias-ai/scripts/build-real-money-status.mjs
+      - name: Persist safely
+        run: |
+          mkdir -p /tmp/finalgates
+          cp loterias-ai/data/backtests/loteria-nacional-official-financial-tournament.json /tmp/finalgates/
+          cp loterias-ai/data/backtests/elige8-official-financial-tournament.json /tmp/finalgates/
+          cp loterias-ai/data/gates/real-money-status.json /tmp/finalgates/
+          git fetch origin main
+          git reset --hard origin/main
+          cp /tmp/finalgates/loteria-nacional-official-financial-tournament.json loterias-ai/data/backtests/
+          cp /tmp/finalgates/elige8-official-financial-tournament.json loterias-ai/data/backtests/
+          cp /tmp/finalgates/real-money-status.json loterias-ai/data/gates/
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/backtests loterias-ai/data/gates
+          git commit -m 'data(loterias-ai): finalize Nacional and Elige8 gates' || exit 0
+          git push origin HEAD:main
