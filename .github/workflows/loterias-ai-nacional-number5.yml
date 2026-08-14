@@ -1,0 +1,35 @@
+name: Loterias AI Nacional Number5 Engine
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/nacional-number5-engine.mjs'
+      - 'loterias-ai/data/archive/loteria-nacional/**'
+      - '.github/workflows/loterias-ai-nacional-number5.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-nacional-number5
+  cancel-in-progress: true
+jobs:
+  model:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node loterias-ai/scripts/nacional-number5-engine.mjs
+      - name: Persist model safely
+        shell: bash
+        run: |
+          cp loterias-ai/data/models/loteria-nacional-number5.json /tmp/nacional-number5.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/models
+          cp /tmp/nacional-number5.json loterias-ai/data/models/loteria-nacional-number5.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/models/loteria-nacional-number5.json
+          git commit -m 'data(loterias-ai): update Nacional number5 model' || exit 0
+          git push origin HEAD:main
