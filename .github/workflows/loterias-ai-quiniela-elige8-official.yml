@@ -7,6 +7,7 @@ on:
     paths:
       - 'loterias-ai/scripts/enrich-quiniela-elige8-official.mjs'
       - 'loterias-ai/scripts/quiniela-official-financial-tournament.mjs'
+      - 'loterias-ai/scripts/elige8-official-financial-tournament.mjs'
       - '.github/workflows/loterias-ai-quiniela-elige8-official.yml'
 permissions:
   contents: write
@@ -42,12 +43,13 @@ jobs:
           cp -r /tmp/q8/elige8 loterias-ai/data/archive/
           cp /tmp/q8/summary.json loterias-ai/data/archive/_meta/quiniela-elige8-official-enrichment.json
           node loterias-ai/scripts/quiniela-official-financial-tournament.mjs
+          node loterias-ai/scripts/elige8-official-financial-tournament.mjs
           node loterias-ai/scripts/build-national-archive-index.mjs
           node loterias-ai/scripts/build-completeness-index.mjs
           node loterias-ai/scripts/audit-national-archive.mjs
           node loterias-ai/scripts/build-real-money-status.mjs
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add loterias-ai/data/archive loterias-ai/data/backtests/quiniela-official-financial-tournament.json loterias-ai/data/gates
-          git commit -m 'data(loterias-ai): update and evaluate official Quiniela archive' || exit 0
+          git add loterias-ai/data/archive loterias-ai/data/backtests/quiniela-official-financial-tournament.json loterias-ai/data/backtests/elige8-official-financial-tournament.json loterias-ai/data/gates
+          git commit -m 'data(loterias-ai): update and evaluate official Quiniela and Elige8 archive' || exit 0
           git push origin HEAD:main
