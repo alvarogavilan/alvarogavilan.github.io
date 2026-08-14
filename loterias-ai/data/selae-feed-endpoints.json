@@ -1,16 +1,27 @@
 {
-  "version":"2026-08-14.1",
-  "purpose":"Machine-readable discovery layer for official SELAE result feeds. Endpoints are candidates until parser validation confirms stable payload shape.",
+  "version":"2026-08-14.2",
+  "purpose":"Official SELAE machine-readable/datable result source registry.",
+  "officialDocumentation":"https://www.loteriasyapuestas.es/es/resultados-ultimos-sorteos",
+  "datedEndpointBase":"https://www.loteriasyapuestas.es/f/loterias/resultados/",
   "feeds":[
-    {"gameId":"primitiva","resultsPage":"https://www.loteriasyapuestas.es/es/la-primitiva/resultados","jsonCandidate":"https://www.loteriasyapuestas.es/es/la-primitiva/resultados/.formatoJSON","xmlCandidate":"https://www.loteriasyapuestas.es/es/la-primitiva/resultados/.xml","rssCandidate":"https://www.loteriasyapuestas.es/es/la-primitiva/resultados/.formatoRSSa","status":"DISCOVERED"},
-    {"gameId":"bonoloto","resultsPage":"https://www.loteriasyapuestas.es/es/bonoloto/resultados","status":"DISCOVERY_PENDING"},
-    {"gameId":"euromillones","resultsPage":"https://www.loteriasyapuestas.es/es/euromillones/resultados","status":"DISCOVERY_PENDING"},
-    {"gameId":"eurodreams","resultsPage":"https://www.loteriasyapuestas.es/es/eurodreams/resultados","status":"DISCOVERY_PENDING"},
-    {"gameId":"loteria-nacional","resultsPage":"https://www.loteriasyapuestas.es/es/loteria-nacional/resultados","status":"DISCOVERY_PENDING"}
+    {"gameId":"euromillones","selaeGameId":"EMIL","template":"euromillones.html?game_id=EMIL&fecha_sorteo={YYYYMMDD}","status":"OFFICIALLY_DOCUMENTED"},
+    {"gameId":"primitiva","selaeGameId":"LAPR","template":"primitiva.html?game_id=LAPR&fecha_sorteo={YYYYMMDD}","status":"OFFICIALLY_DOCUMENTED"},
+    {"gameId":"bonoloto","selaeGameId":"BONO","template":"bonoloto.html?game_id=BONO&fecha_sorteo={YYYYMMDD}","status":"OFFICIALLY_DOCUMENTED"},
+    {"gameId":"gordo-primitiva","selaeGameId":"ELGR","template":"gordo.html?game_id=ELGR&fecha_sorteo={YYYYMMDD}","status":"OFFICIALLY_DOCUMENTED"},
+    {"gameId":"eurodreams","selaeGameId":"EDMS","template":"eurodreams.html?game_id=EDMS&fecha_sorteo={YYYYMMDD}","status":"OFFICIALLY_DOCUMENTED"},
+    {"gameId":"loteria-nacional","selaeGameId":"LNAC","template":"lnac.html?game_id=LNAC&fecha_sorteo={YYYYMMDD}","status":"OFFICIALLY_DOCUMENTED"},
+    {"gameId":"quiniela","selaeGameId":"LAQU","template":"quiniela.html?game_id=LAQU&fecha_sorteo={YYYYMMDD}","status":"OFFICIALLY_DOCUMENTED"},
+    {"gameId":"quinigol","selaeGameId":"QGOL","template":"quinigol.html?game_id=QGOL&fecha_sorteo={YYYYMMDD}","status":"OFFICIALLY_DOCUMENTED"},
+    {"gameId":"lototurf","selaeGameId":"LOTU","template":"lototurf.html?game_id=LOTU&fecha_sorteo={YYYYMMDD}","status":"OFFICIALLY_DOCUMENTED"},
+    {"gameId":"quintuple-plus","selaeGameId":"QUPL","template":"quintuple.html?game_id=QUPL&fecha_sorteo={YYYYMMDD}","status":"OFFICIALLY_DOCUMENTED"}
+  ],
+  "secondaryDiscovery":[
+    {"gameId":"primitiva","jsonCandidate":"https://www.loteriasyapuestas.es/es/la-primitiva/resultados/.formatoJSON","rssCandidate":"https://www.loteriasyapuestas.es/es/la-primitiva/resultados/.formatoRSSa","status":"DISCOVERED"}
   ],
   "policy":[
-    "Never assume a candidate endpoint is JSON/XML solely from its suffix; parser must inspect and validate the payload.",
-    "The canonical stored record is created only after detail-page or feed evidence passes schema checks.",
+    "Official dated endpoints are preferred for canonical per-draw evidence.",
+    "A successful HTTP response is not sufficient: payload must pass game-specific parser validation.",
+    "Christmas and El Nino require identification from Loteria Nacional extraordinary draw metadata and remain separate analytical datasets.",
     "Feed discovery is not equivalent to historical completeness."
   ]
 }
