@@ -1,0 +1,55 @@
+name: Loterias AI Import Nacional History
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/loterias-ai-import-nacional-history.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-nacional-history
+  cancel-in-progress: false
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Import annual canonical cores
+        shell: bash
+        run: |
+          for y in $(seq 2012 2025); do
+            echo "Importing Nacional $y"
+            YEAR="$y" DETAIL_LIMIT=0 node loterias-ai/scripts/import-nacional-year.mjs
+            sleep 1
+          done
+      - run: node loterias-ai/scripts/build-special-draw-indexes.mjs
+      - run: node loterias-ai/scripts/build-national-archive-index.mjs
+      - run: node loterias-ai/scripts/audit-national-archive.mjs
+      - name: Persist safely
+        shell: bash
+        run: |
+          mkdir -p /tmp/nacional-history
+          cp -r loterias-ai/data/archive/loteria-nacional /tmp/nacional-history/
+          cp -r loterias-ai/data/archive/specials /tmp/nacional-history/
+          cp loterias-ai/data/archive/manifest.json /tmp/nacional-history/manifest.json
+          cp loterias-ai/data/archive/_meta/archive-audit.json /tmp/nacional-history/archive-audit.json
+          git fetch origin main
+          git reset --hard origin/main
+          rm -rf loterias-ai/data/archive/loteria-nacional loterias-ai/data/archive/specials
+          cp -r /tmp/nacional-history/loteria-nacional loterias-ai/data/archive/
+          cp -r /tmp/nacional-history/specials loterias-ai/data/archive/
+          cp /tmp/nacional-history/manifest.json loterias-ai/data/archive/manifest.json
+          cp /tmp/nacional-history/archive-audit.json loterias-ai/data/archive/_meta/archive-audit.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/archive
+          git commit -m 'data(loterias-ai): import Nacional annual history 2012-2025' || exit 0
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git rebase --abort || true
+            sleep $((attempt*3))
+          done
+          exit 1
