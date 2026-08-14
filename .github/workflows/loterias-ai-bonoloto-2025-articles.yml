@@ -1,0 +1,32 @@
+name: Loterias AI Bonoloto 2025 Articles
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/backfill-bonoloto-articles-2025.mjs'
+      - '.github/workflows/loterias-ai-bonoloto-2025-articles.yml'
+  workflow_dispatch:
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Backfill Bonoloto 2025 official article pages
+        run: node loterias-ai/scripts/backfill-bonoloto-articles-2025.mjs
+      - name: Require useful historical volume
+        run: |
+          node - <<'NODE'
+          const s=require('./loterias-ai/data/archive/bonoloto/2025-articles-summary.json');if(s.validatedDraws<300)throw new Error('Expected >=300 validated Bonoloto draws, got '+s.validatedDraws);console.log(s)
+          NODE
+      - name: Persist Bonoloto historical partition
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/archive/bonoloto
+          git commit -m 'data(loterias-ai): backfill Bonoloto 2025 official articles' || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
