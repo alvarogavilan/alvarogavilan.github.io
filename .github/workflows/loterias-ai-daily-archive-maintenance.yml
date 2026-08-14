@@ -1,0 +1,53 @@
+name: Loterias AI Daily Archive Maintenance
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '45 22 * * *'
+    - cron: '15 6 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-archive-maintenance
+  cancel-in-progress: false
+
+jobs:
+  maintain:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Refresh persistent draw histories
+        run: |
+          node loterias-ai/scripts/import-bonoloto-full-history.mjs
+          node loterias-ai/scripts/import-core-full-history.mjs
+      - name: Persist available economics into archive
+        run: node loterias-ai/scripts/enrich-national-archive-economics.mjs
+      - name: Rebuild archive manifest
+        run: node loterias-ai/scripts/build-national-archive-index.mjs
+      - name: Audit archive integrity and recent economics coverage
+        run: node loterias-ai/scripts/audit-national-archive.mjs
+      - name: Persist archive changes
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/archive
+          if git diff --cached --quiet; then
+            echo 'No archive changes'
+            exit 0
+          fi
+          git commit -m 'data(loterias-ai): daily national archive refresh'
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git rebase --abort || true
+            sleep $((attempt * 3))
+          done
+          echo 'Unable to publish archive refresh after retries' >&2
+          exit 1
