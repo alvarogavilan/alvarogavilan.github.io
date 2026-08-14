@@ -11,9 +11,10 @@ permissions:
   contents: write
 concurrency:
   group: loterias-ai-nacional-official-resultados2
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   enrich:
+    if: github.event_name != 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,10 +22,7 @@ jobs:
         with: {node-version: 22}
       - name: Backfill official SELAE result arrays
         run: |
-          BATCH_LIMIT=400 node loterias-ai/scripts/enrich-nacional-official-resultados2.mjs
-          BATCH_LIMIT=400 node loterias-ai/scripts/enrich-nacional-official-resultados2.mjs
-          BATCH_LIMIT=400 node loterias-ai/scripts/enrich-nacional-official-resultados2.mjs
-          BATCH_LIMIT=400 node loterias-ai/scripts/enrich-nacional-official-resultados2.mjs
+          BATCH_LIMIT=100 node loterias-ai/scripts/enrich-nacional-official-resultados2.mjs
       - name: Persist safely
         run: |
           mkdir -p /tmp/nacional-official
