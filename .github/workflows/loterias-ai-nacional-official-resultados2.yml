@@ -14,16 +14,21 @@ concurrency:
   cancel-in-progress: true
 jobs:
   enrich:
-    if: github.event_name != 'push'
     runs-on: ubuntu-latest
     steps:
+      - name: Yield on configuration push
+        if: github.event_name == 'push'
+        run: echo 'Bulk SELAE enrichment intentionally yielded to the authoritative financial holdout.'
       - uses: actions/checkout@v4
+        if: github.event_name != 'push'
       - uses: actions/setup-node@v4
+        if: github.event_name != 'push'
         with: {node-version: 22}
       - name: Backfill official SELAE result arrays
-        run: |
-          BATCH_LIMIT=100 node loterias-ai/scripts/enrich-nacional-official-resultados2.mjs
+        if: github.event_name != 'push'
+        run: BATCH_LIMIT=100 node loterias-ai/scripts/enrich-nacional-official-resultados2.mjs
       - name: Persist safely
+        if: github.event_name != 'push'
         run: |
           mkdir -p /tmp/nacional-official
           cp -r loterias-ai/data/archive/loteria-nacional /tmp/nacional-official/
