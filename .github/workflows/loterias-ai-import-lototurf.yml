@@ -1,0 +1,38 @@
+name: Loterias AI Import Lototurf
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/import-lototurf-full-history.mjs'
+      - '.github/workflows/loterias-ai-import-lototurf.yml'
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node loterias-ai/scripts/import-lototurf-full-history.mjs
+      - run: node loterias-ai/scripts/build-national-archive-index.mjs
+      - run: node loterias-ai/scripts/audit-national-archive.mjs
+      - name: Persist safely
+        shell: bash
+        run: |
+          mkdir -p /tmp/lototurf
+          cp -r loterias-ai/data/archive/lototurf /tmp/lototurf/
+          cp loterias-ai/data/archive/_meta/lototurf-import.json /tmp/lototurf-summary.json
+          git fetch origin main
+          git reset --hard origin/main
+          rm -rf loterias-ai/data/archive/lototurf
+          cp -r /tmp/lototurf/lototurf loterias-ai/data/archive/
+          cp /tmp/lototurf-summary.json loterias-ai/data/archive/_meta/lototurf-import.json
+          node loterias-ai/scripts/build-national-archive-index.mjs
+          node loterias-ai/scripts/audit-national-archive.mjs
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/archive
+          git commit -m 'data(loterias-ai): persist Lototurf history' || exit 0
+          git push origin HEAD:main
