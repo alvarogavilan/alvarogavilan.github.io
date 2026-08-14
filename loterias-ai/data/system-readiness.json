@@ -1,0 +1,20 @@
+{
+  "version":"2026-08-14.1",
+  "status":"NOT_READY_FOR_REAL_DAILY_ALLOCATION",
+  "gates":[
+    {"id":"ui-pwa","state":"READY"},
+    {"id":"game-catalog","state":"READY"},
+    {"id":"specialist-cabinets","state":"READY"},
+    {"id":"capital-committee","state":"READY"},
+    {"id":"portfolio-optimizer","state":"READY"},
+    {"id":"treasury-engine","state":"READY"},
+    {"id":"append-only-ledger","state":"READY"},
+    {"id":"archive-schema-integrity","state":"READY"},
+    {"id":"complete-historical-backfill","state":"BLOCKED","reason":"All recoverable official historical draws are not yet imported and validated."},
+    {"id":"walk-forward-backtests","state":"BLOCKED","reason":"Requires validated historical depth per game."},
+    {"id":"shadow-ledger-evidence","state":"BLOCKED","reason":"Requires sealed pre-draw candidates over time."},
+    {"id":"real-allocation","state":"BLOCKED","reason":"No demonstrated edge with required confidence."}
+  ],
+  "activationRule":"Real daily allocation becomes eligible only when the relevant game passes historical completeness, walk-forward evidence, baseline comparison, shadow-ledger and treasury risk gates.",
+  "truthRule":"Never display 100% complete while any required evidence gate is blocked."
+}
