@@ -1,0 +1,24 @@
+name: Loterias AI Probe LNAC Shape
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/probe-lnac-official-shape.mjs'
+      - '.github/workflows/loterias-ai-probe-lnac-shape.yml'
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node loterias-ai/scripts/probe-lnac-official-shape.mjs
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/archive/_meta/lnac-official-shape.json
+          git commit -m 'data(loterias-ai): persist LNAC official shape probe' || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
