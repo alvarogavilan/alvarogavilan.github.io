@@ -1,0 +1,23 @@
+{
+  "version":"2026-08-14.1",
+  "name":"Conviction Gate",
+  "purpose":"Block any real-money recommendation unless evidence is statistically credible and independently corroborated.",
+  "requiredGates":[
+    {"id":"archive_complete_enough","rule":"validated historical sample meets per-game minimum and has no unresolved critical gaps"},
+    {"id":"walk_forward_positive","rule":"chronological out-of-sample backtest is positive after ticket costs"},
+    {"id":"beats_random_baseline","rule":"excess ROI versus reproducible random baseline is positive"},
+    {"id":"confidence_lower_bound_positive","rule":"lower confidence bound for excess ROI is > 0"},
+    {"id":"shadow_ledger_positive","rule":"sealed pre-draw Shadow Ledger is positive after a minimum evidence window"},
+    {"id":"drawdown_within_limit","rule":"maximum drawdown stays within treasury risk limits"},
+    {"id":"model_stability","rule":"performance is stable across time windows and rule eras"},
+    {"id":"source_integrity","rule":"all training and evaluation records are official-source validated"}
+  ],
+  "states":["BLOCKED","RESEARCH_ONLY","EVIDENCE_QUALIFIED"],
+  "hardRules":[
+    "No state is described as 100% guaranteed profit.",
+    "If any required gate fails, recommendedRealStake must be 0.",
+    "A model score cannot substitute for a probability of profit.",
+    "Positive historical results without out-of-sample confirmation do not qualify.",
+    "Human-readable UI must show the exact failing gates."
+  ]
+}
