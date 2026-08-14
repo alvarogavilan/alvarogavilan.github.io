@@ -1,0 +1,33 @@
+name: Loterias AI Nacional PDF Probe
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/loterias-ai-probe-nacional-pdf.yml'
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PDF text tools
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
+      - name: Download official SELAE PDF and extract text
+        shell: bash
+        run: |
+          mkdir -p loterias-ai/data/probes
+          url='https://www.loteriasyapuestas.es/f/loterias/documentos/Loter%C3%ADa%20Nacional/listas%20de%20premios/SM_LISTAOFICIAL.A2024.S103.pdf'
+          curl -fL --retry 3 "$url" -o /tmp/nacional.pdf
+          pdftotext -layout /tmp/nacional.pdf loterias-ai/data/probes/nacional-official-pdf-sample.txt
+          { echo "SOURCE=$url"; echo; head -n 220 loterias-ai/data/probes/nacional-official-pdf-sample.txt; } > /tmp/out
+          mv /tmp/out loterias-ai/data/probes/nacional-official-pdf-sample.txt
+          test -s loterias-ai/data/probes/nacional-official-pdf-sample.txt
+      - name: Persist
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/probes/nacional-official-pdf-sample.txt
+          git commit -m 'data(loterias-ai): persist official Nacional PDF sample' || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
