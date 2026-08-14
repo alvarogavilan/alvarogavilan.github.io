@@ -1,0 +1,31 @@
+name: Loterias AI Probe Quinigol Official
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/probe-quinigol-official.mjs'
+      - '.github/workflows/loterias-ai-probe-quinigol-official.yml'
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node loterias-ai/scripts/probe-quinigol-official.mjs
+      - name: Persist probe safely
+        shell: bash
+        run: |
+          cp loterias-ai/data/probes/quinigol-official.json /tmp/quinigol-official.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/probes
+          cp /tmp/quinigol-official.json loterias-ai/data/probes/quinigol-official.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/probes/quinigol-official.json
+          git commit -m 'data(loterias-ai): persist Quinigol official probe' || exit 0
+          git push origin HEAD:main
