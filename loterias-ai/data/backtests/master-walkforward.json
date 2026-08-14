@@ -1,31 +1,232 @@
 {
-  "generatedAt": "2026-08-14T15:29:05.163Z",
+  "generatedAt": "2026-08-14T15:39:28.486Z",
   "mode": "RESEARCH_ONLY",
-  "methodology": "strict-chronological-multi-year-walk-forward",
+  "methodology": "incremental-strict-chronological-walk-forward-v2",
+  "leakageGuard": "State is updated only AFTER scoring each target draw.",
   "games": {
     "bonoloto": {
-      "status": "insufficient_sample",
-      "draws": 0,
-      "years": [],
-      "minHistory": 60
+      "status": "complete",
+      "years": [
+        "1988",
+        "1989",
+        "1990",
+        "1991",
+        "1992",
+        "1993",
+        "1994",
+        "1995",
+        "1996",
+        "1997",
+        "1998",
+        "1999",
+        "2000",
+        "2001",
+        "2002",
+        "2003",
+        "2004",
+        "2005",
+        "2006",
+        "2007",
+        "2008",
+        "2009",
+        "2010",
+        "2011",
+        "2012",
+        "2013",
+        "2014",
+        "2015",
+        "2016",
+        "2017",
+        "2018",
+        "2019",
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025",
+        "2026"
+      ],
+      "draws": 9354,
+      "minHistory": 250,
+      "winner": {
+        "id": "frequency-heavy",
+        "drawsEvaluated": 9104,
+        "averageHits": 0.7358304042179423,
+        "bestTicketAverageHits": 1.6653119507908611,
+        "hitRateAtLeast2": 0.57798769771529,
+        "hitRateAtLeast3": 0.09215729349736379,
+        "confidence95": {
+          "lower": 0.7292818585377434,
+          "upper": 0.7423789498981412
+        },
+        "config": {
+          "id": "frequency-heavy",
+          "weights": {
+            "longFrequency": 0.35,
+            "shortMomentum": 0.25,
+            "gap": 0.05,
+            "stability": 0.15,
+            "pairAffinity": 0.08,
+            "entropy": 0.05,
+            "meanReversion": 0.07
+          }
+        }
+      },
+      "strategies": [
+        {
+          "id": "frequency-heavy",
+          "drawsEvaluated": 9104,
+          "averageHits": 0.7358304042179423,
+          "bestTicketAverageHits": 1.6653119507908611,
+          "hitRateAtLeast2": 0.57798769771529,
+          "hitRateAtLeast3": 0.09215729349736379,
+          "confidence95": {
+            "lower": 0.7292818585377434,
+            "upper": 0.7423789498981412
+          },
+          "config": {
+            "id": "frequency-heavy",
+            "weights": {
+              "longFrequency": 0.35,
+              "shortMomentum": 0.25,
+              "gap": 0.05,
+              "stability": 0.15,
+              "pairAffinity": 0.08,
+              "entropy": 0.05,
+              "meanReversion": 0.07
+            }
+          }
+        },
+        {
+          "id": "stability-heavy",
+          "drawsEvaluated": 9104,
+          "averageHits": 0.7334578207381669,
+          "bestTicketAverageHits": 1.694420035149385,
+          "hitRateAtLeast2": 0.601164323374341,
+          "hitRateAtLeast3": 0.09248681898066784,
+          "confidence95": {
+            "lower": 0.7278903276941294,
+            "upper": 0.7390253137822044
+          },
+          "config": {
+            "id": "stability-heavy",
+            "weights": {
+              "longFrequency": 0.15,
+              "shortMomentum": 0.1,
+              "gap": 0.1,
+              "stability": 0.35,
+              "pairAffinity": 0.08,
+              "entropy": 0.07,
+              "meanReversion": 0.15
+            }
+          }
+        },
+        {
+          "id": "balanced",
+          "drawsEvaluated": 9104,
+          "averageHits": 0.7330404217926564,
+          "bestTicketAverageHits": 1.718695079086116,
+          "hitRateAtLeast2": 0.6192882249560633,
+          "hitRateAtLeast3": 0.09633128295254834,
+          "confidence95": {
+            "lower": 0.7279681495433019,
+            "upper": 0.7381126940420109
+          },
+          "config": {
+            "id": "balanced",
+            "weights": {
+              "longFrequency": 0.2,
+              "shortMomentum": 0.15,
+              "gap": 0.15,
+              "stability": 0.15,
+              "pairAffinity": 0.1,
+              "entropy": 0.1,
+              "meanReversion": 0.15
+            }
+          }
+        },
+        {
+          "id": "cooccurrence-heavy",
+          "drawsEvaluated": 9104,
+          "averageHits": 0.7307117750439821,
+          "bestTicketAverageHits": 1.7283611599297013,
+          "hitRateAtLeast2": 0.6301625659050967,
+          "hitRateAtLeast3": 0.09578207381370826,
+          "confidence95": {
+            "lower": 0.726029205800638,
+            "upper": 0.7353943442873262
+          },
+          "config": {
+            "id": "cooccurrence-heavy",
+            "weights": {
+              "longFrequency": 0.12,
+              "shortMomentum": 0.1,
+              "gap": 0.08,
+              "stability": 0.15,
+              "pairAffinity": 0.3,
+              "entropy": 0.1,
+              "meanReversion": 0.15
+            }
+          }
+        },
+        {
+          "id": "gap-heavy",
+          "drawsEvaluated": 9104,
+          "averageHits": 0.7302504393673164,
+          "bestTicketAverageHits": 1.617750439367311,
+          "hitRateAtLeast2": 0.5436072056239016,
+          "hitRateAtLeast3": 0.08699472759226713,
+          "confidence95": {
+            "lower": 0.7229795184100638,
+            "upper": 0.7375213603245689
+          },
+          "config": {
+            "id": "gap-heavy",
+            "weights": {
+              "longFrequency": 0.1,
+              "shortMomentum": 0.1,
+              "gap": 0.35,
+              "stability": 0.15,
+              "pairAffinity": 0.08,
+              "entropy": 0.07,
+              "meanReversion": 0.15
+            }
+          }
+        }
+      ]
     },
     "primitiva": {
       "status": "insufficient_sample",
-      "draws": 0,
-      "years": [],
+      "draws": 1,
+      "years": [
+        "2026"
+      ],
       "minHistory": 60
     },
     "euromillones": {
-      "status": "archive_missing"
+      "status": "insufficient_sample",
+      "draws": 4,
+      "years": [
+        "2026"
+      ],
+      "minHistory": 60
     },
     "eurodreams": {
       "status": "insufficient_sample",
-      "draws": 0,
-      "years": [],
+      "draws": 1,
+      "years": [
+        "2026"
+      ],
       "minHistory": 60
     },
     "gordo-primitiva": {
-      "status": "archive_missing"
+      "status": "insufficient_sample",
+      "draws": 1,
+      "years": [
+        "2026"
+      ],
+      "minHistory": 60
     }
   }
 }
