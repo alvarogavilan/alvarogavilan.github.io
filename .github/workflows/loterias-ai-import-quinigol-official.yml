@@ -1,0 +1,53 @@
+name: Loterias AI Import Quinigol Official
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '35 6 * * *'
+  push:
+    paths:
+      - 'loterias-ai/scripts/import-quinigol-official-progressive.mjs'
+      - '.github/workflows/loterias-ai-import-quinigol-official.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-quinigol-official
+  cancel-in-progress: false
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Ingest several official batches
+        shell: bash
+        run: |
+          passes=0
+          for i in 1 2 3 4; do
+            echo "Quinigol official pass $i"
+            if BATCH_LIMIT=30 node loterias-ai/scripts/import-quinigol-official-progressive.mjs; then passes=$((passes+1)); else break; fi
+            sleep 2
+          done
+          test "$passes" -ge 1
+      - name: Persist safely
+        shell: bash
+        run: |
+          mkdir -p /tmp/quinigol
+          cp -r loterias-ai/data/archive/quinigol /tmp/quinigol/
+          cp loterias-ai/data/archive/_meta/quinigol-link-index.json /tmp/quinigol-links.json
+          cp loterias-ai/data/archive/_meta/quinigol-ingestion.json /tmp/quinigol-summary.json
+          git fetch origin main
+          git reset --hard origin/main
+          rm -rf loterias-ai/data/archive/quinigol
+          cp -r /tmp/quinigol/quinigol loterias-ai/data/archive/
+          cp /tmp/quinigol-links.json loterias-ai/data/archive/_meta/quinigol-link-index.json
+          cp /tmp/quinigol-summary.json loterias-ai/data/archive/_meta/quinigol-ingestion.json
+          node loterias-ai/scripts/build-national-archive-index.mjs
+          node loterias-ai/scripts/build-completeness-index.mjs
+          node loterias-ai/scripts/audit-national-archive.mjs
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/archive
+          git commit -m 'data(loterias-ai): persist official Quinigol history' || exit 0
+          git push origin HEAD:main
