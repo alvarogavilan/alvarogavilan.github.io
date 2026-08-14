@@ -1,0 +1,15 @@
+{
+  "version":"2026-08-14.1",
+  "purpose":"Define how historical ticket costs and prize payouts must be represented before financial backtests are considered valid.",
+  "rules":[
+    "Every backtested draw must resolve to exactly one verified rule/prize era.",
+    "Ticket cost must be the cost valid on the historical draw date.",
+    "Prize evaluation must use the official category and payout for that exact draw whenever payout is variable.",
+    "Fixed-prize eras may use verified category tables scoped by validity dates.",
+    "Any draw lacking verified cost or prize data is excluded from financial ROI calculations and reported as a gap.",
+    "Jackpot amount alone is never used as expected return.",
+    "Baseline comparisons must use the same number of tickets, same ticket cost and same draw set as the model."
+  ],
+  "requiredPerDraw":["gameId","drawId","drawDate","ticketCost","officialPrizeTableOrPayouts","source","verified"],
+  "status":"AWAITING_MASS_PRIZE_BACKFILL"
+}
