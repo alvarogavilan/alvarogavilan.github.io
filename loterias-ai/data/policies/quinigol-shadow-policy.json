@@ -1,0 +1,29 @@
+{
+  "version": "2026-08-14",
+  "gameId": "quinigol",
+  "status": "PROSPECTIVE_SHADOW_REQUIRED",
+  "realStakeEUR": 0,
+  "frozenModel": {
+    "window": 320,
+    "ticketsPerDraw": 2,
+    "sourceBacktest": "data/backtests/quinigol-official-financial-tournament.json"
+  },
+  "historicalEvidence": {
+    "officialEconomicDraws": 689,
+    "holdoutDraws": 207,
+    "holdoutStakeEUR": 414,
+    "holdoutReturnEUR": 583.93,
+    "holdoutROI": 0.4104589371980678,
+    "fullHistoricalGatePassed": false,
+    "whyNot": "Positive locked holdout but did not beat the maximum ROI observed among all 100 matched random portfolios."
+  },
+  "prospectiveRequirements": {
+    "minimumNewJornadas": 30,
+    "noParameterChangesDuringShadow": true,
+    "positiveNetROIRequired": true,
+    "minimumProfitableJornadas": 5,
+    "maximumRealAllocationBeforePromotionEUR": 0,
+    "promotionRequiresFreshCommitteeReview": true
+  },
+  "truth": "This policy freezes the promising historical model and prevents retrospective tuning. Shadow predictions must be timestamped before each future jornada and scored only after official SELAE results arrive."
+}
