@@ -7,6 +7,9 @@ on:
       - '.github/workflows/loterias-ai-eurodreams-full-economics.yml'
 permissions:
   contents: write
+concurrency:
+  group: loterias-ai-eurodreams-economics
+  cancel-in-progress: false
 jobs:
   enrich:
     runs-on: ubuntu-latest
@@ -15,7 +18,21 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node loterias-ai/scripts/enrich-eurodreams-full-economics.mjs
+      - name: Accumulate several bounded batches
+        shell: bash
+        run: |
+          successes=0
+          for pass in 1 2 3 4; do
+            echo "EuroDreams economics pass $pass"
+            if BATCH_LIMIT=20 node loterias-ai/scripts/enrich-eurodreams-full-economics.mjs; then
+              successes=$((successes+1))
+            else
+              echo "Provider stopped this pass; preserving earlier batches"
+              break
+            fi
+            sleep 3
+          done
+          test "$successes" -ge 1
       - run: node loterias-ai/scripts/build-national-archive-index.mjs
       - run: node loterias-ai/scripts/audit-national-archive.mjs
       - name: Persist safely
@@ -35,6 +52,10 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add loterias-ai/data/archive
-          git commit -m 'data(loterias-ai): persist full EuroDreams economics archive' || exit 0
-          for attempt in 1 2 3 4 5; do git pull --rebase origin main && git push origin HEAD:main && exit 0; git rebase --abort || true; sleep $((attempt*3)); done
+          git commit -m 'data(loterias-ai): persist EuroDreams economics batches' || exit 0
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git rebase --abort || true
+            sleep $((attempt*3))
+          done
           exit 1
