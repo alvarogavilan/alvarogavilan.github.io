@@ -22,9 +22,9 @@ jobs:
         with:
           node-version: 22
       - name: Enrich Lototurf from SELAE
-        run: BATCH_LIMIT=100 node loterias-ai/scripts/enrich-lototurf-official-fechav3.mjs
+        run: BATCH_LIMIT=500 node loterias-ai/scripts/enrich-lototurf-official-fechav3.mjs
       - name: Discover Quíntuple Plus on racing dates
-        run: BATCH_LIMIT=120 node loterias-ai/scripts/import-quintuple-from-lototurf-dates.mjs
+        run: BATCH_LIMIT=500 node loterias-ai/scripts/import-quintuple-from-lototurf-dates.mjs
       - name: Persist safely on fresh main
         shell: bash
         run: |
