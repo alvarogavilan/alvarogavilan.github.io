@@ -1,0 +1,27 @@
+{
+  "version":"2026-08-14.1",
+  "name":"Archivo Nacional Completo de Sorteos",
+  "objective":"Preserve every recoverable official draw for every covered Spanish state lottery game, from the earliest verifiable record through the present, and append every future draw after official publication.",
+  "scope":[
+    "euromillones","primitiva","bonoloto","gordo-primitiva","eurodreams","loteria-nacional","navidad","nino","quiniela","elige8","quinigol","lototurf","quintuple-plus"
+  ],
+  "principles":[
+    "Official SELAE evidence is the primary source.",
+    "Never silently invent or interpolate a missing draw.",
+    "Historical gaps remain explicitly marked until verified.",
+    "Raw source evidence and normalized records are preserved separately.",
+    "Corrections are append-only and auditable; previous values are never silently overwritten.",
+    "Each record carries game, draw identifier, date, result payload, source URL, retrieval timestamp, verification state and checksum.",
+    "Christmas, El Nino and ordinary Loteria Nacional remain distinct analytical datasets.",
+    "Rule changes create model eras so historical draws are interpreted under the rules valid at that time."
+  ],
+  "layers":[
+    {"id":"raw","purpose":"immutable captured official evidence"},
+    {"id":"normalized","purpose":"canonical per-game draw records"},
+    {"id":"validated","purpose":"records passing schema, range, uniqueness and source checks"},
+    {"id":"features","purpose":"derived statistics; always rebuildable from validated data"}
+  ],
+  "completenessStates":["NOT_STARTED","PARTIAL","GAPS_DETECTED","COMPLETE_TO_EARLIEST_VERIFIABLE","CURRENT"],
+  "futureUpdatePolicy":"After an official result is published, ingest, validate, checksum, append, refresh completeness metrics, then recompute dependent features and shadow-ledger evaluations.",
+  "analyticsRule":"Models may train only on VALIDATED records and backtests must be chronological/walk-forward."
+}
