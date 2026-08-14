@@ -1,0 +1,30 @@
+name: Loterias AI Primitiva Model
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/build-primitiva-model-next.mjs'
+      - '.github/workflows/loterias-ai-primitiva-model.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node loterias-ai/scripts/build-primitiva-model-next.mjs
+      - name: Persist result safely
+        run: |
+          cp loterias-ai/data/daily/primitiva-model-next.json /tmp/primitiva-model-next.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/daily
+          cp /tmp/primitiva-model-next.json loterias-ai/data/daily/primitiva-model-next.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/daily/primitiva-model-next.json
+          git commit -m 'data(loterias-ai): seal Primitiva next-draw candidate' || exit 0
+          git push origin HEAD:main
