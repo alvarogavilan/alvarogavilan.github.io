@@ -1,0 +1,30 @@
+name: Loterias AI Archive Economics
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/enrich-national-archive-economics.mjs'
+      - '.github/workflows/loterias-ai-archive-economics.yml'
+permissions:
+  contents: write
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node loterias-ai/scripts/enrich-national-archive-economics.mjs
+      - name: Persist safely
+        run: |
+          mkdir -p /tmp/archive-econ
+          cp -r loterias-ai/data/archive/* /tmp/archive-econ/
+          git fetch origin main
+          git reset --hard origin/main
+          cp -r /tmp/archive-econ/* loterias-ai/data/archive/
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/archive
+          git commit -m 'data(loterias-ai): enrich national archive economics' || exit 0
+          git push origin HEAD:main
