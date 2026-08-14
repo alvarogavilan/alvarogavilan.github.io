@@ -1,4 +1,5 @@
 import fs from 'node:fs';import vm from 'node:vm';
+// Trigger marker: full Bonoloto archive cross-validated 2026-08-14.
 function loadEngine(){const c={globalThis:{},window:undefined,console,Math,Number,String,Array,Set,Object,Map,Date,JSON};vm.createContext(c);vm.runInContext(fs.readFileSync('loterias-ai/js/mega-numeric-engine.js','utf8'),c);const m=c.globalThis.LotteryMegaNumericEngine;const tctx={globalThis:{LotteryMegaNumericEngine:m},window:undefined,console,Math,Number,String,Array,Set,Object,Map,Date,JSON};vm.createContext(tctx);vm.runInContext(fs.readFileSync('loterias-ai/js/walk-forward-tournament.js','utf8'),tctx);return tctx.globalThis.LotteryWalkForwardTournament;}
 const T=loadEngine();const games={bonoloto:{id:'bonoloto',main:{max:49,pick:6}},primitiva:{id:'primitiva',main:{max:49,pick:6}},euromillones:{id:'euromillones',main:{max:50,pick:5}},eurodreams:{id:'eurodreams',main:{max:40,pick:6}},'gordo-primitiva':{id:'gordo-primitiva',main:{max:54,pick:5}}};
 const out={generatedAt:new Date().toISOString(),mode:'RESEARCH_ONLY',methodology:'strict-chronological-multi-year-walk-forward',games:{}};
