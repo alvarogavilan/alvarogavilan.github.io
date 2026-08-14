@@ -1,0 +1,30 @@
+name: Loterias AI Bonoloto Model
+on:
+  push:
+    paths:
+      - 'loterias-ai/data/archive/bonoloto/**'
+      - 'loterias-ai/data/backtests/master-walkforward.json'
+      - 'loterias-ai/scripts/build-bonoloto-model-today.mjs'
+      - 'loterias-ai/js/mega-numeric-engine.js'
+      - '.github/workflows/loterias-ai-bonoloto-model.yml'
+  workflow_dispatch:
+jobs:
+  model:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build audited Bonoloto model portfolio
+        run: node loterias-ai/scripts/build-bonoloto-model-today.mjs
+      - name: Persist model output
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/daily/bonoloto-model-latest.json
+          git commit -m 'data(loterias-ai): refresh Bonoloto model portfolio' || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
