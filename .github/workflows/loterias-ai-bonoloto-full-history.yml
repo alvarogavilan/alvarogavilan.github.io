@@ -1,0 +1,27 @@
+name: Loterias AI Bonoloto Full History
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/import-bonoloto-full-history.mjs'
+      - '.github/workflows/loterias-ai-bonoloto-full-history.yml'
+  workflow_dispatch:
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Import and cross-validate complete Bonoloto history
+        run: node loterias-ai/scripts/import-bonoloto-full-history.mjs
+      - name: Persist canonical annual archive
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/archive/bonoloto
+          git commit -m 'data(loterias-ai): import cross-validated Bonoloto full history' || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
