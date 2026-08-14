@@ -1,11 +1,62 @@
 {
-  "generatedAt": "2026-08-14T22:28:58.435Z",
+  "generatedAt": "2026-08-14T22:30:35.078Z",
   "gameId": "elige8",
-  "status": "INSUFFICIENT_SAMPLE",
+  "officialEconomicDraws": 445,
+  "discoveryTournament": [
+    {
+      "window": 160,
+      "draws": 251,
+      "stake": 125.5,
+      "return": 46.88,
+      "pl": -78.62,
+      "roi": -0.6264541832669323
+    },
+    {
+      "window": 320,
+      "draws": 251,
+      "stake": 125.5,
+      "return": 2.21,
+      "pl": -123.29,
+      "roi": -0.982390438247012
+    },
+    {
+      "window": 30,
+      "draws": 251,
+      "stake": 125.5,
+      "return": 0,
+      "pl": -125.5,
+      "roi": -1
+    },
+    {
+      "window": 80,
+      "draws": 251,
+      "stake": 125.5,
+      "return": 0,
+      "pl": -125.5,
+      "roi": -1
+    }
+  ],
+  "winner": {
+    "window": 160,
+    "discoveryROI": -0.6264541832669323
+  },
+  "holdout": {
+    "draws": 134,
+    "stake": 67,
+    "return": 0,
+    "pl": -67,
+    "roi": -1
+  },
+  "randomBaseline": {
+    "runs": 100,
+    "averageROI": 0.3523253731343284,
+    "maxROI": 132.17044776119403
+  },
+  "gates": {
+    "minimumHoldoutDraws": 100,
+    "positiveROI": true,
+    "beatAll100Random": true
+  },
   "realMoneyPass": false,
-  "officialEconomicDraws": 0,
-  "minimumRequiredForTournament": 250,
-  "reason": "Official Elige8 archive exists but does not yet contain 250 jornadas with all 14 selectable matches and payout table.",
-  "nextAction": "Continue progressive SELAE Elige8 ingestion and rerun automatically.",
-  "truth": "No edge is inferred until the independent sample threshold is reached."
+  "truth": "Each ticket selects the eight most historically confident positions among the fourteen selectable Quiniela matches. Winner selected on discovery only; official holdout evaluated once."
 }
