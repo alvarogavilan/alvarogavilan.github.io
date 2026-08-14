@@ -33,29 +33,30 @@ jobs:
             sleep 3
           done
           test "$successes" -ge 1
-      - run: node loterias-ai/scripts/build-national-archive-index.mjs
-      - run: node loterias-ai/scripts/audit-national-archive.mjs
-      - name: Persist safely
+      - name: Persist against fresh main and rebuild derived files
+        shell: bash
         run: |
-          mkdir -p /tmp/eurodreams
-          cp -r loterias-ai/data/archive/eurodreams /tmp/eurodreams/
-          cp loterias-ai/data/archive/_meta/eurodreams-economics-ingestion.json /tmp/eurodreams-summary.json
-          cp loterias-ai/data/archive/manifest.json /tmp/manifest.json
-          cp loterias-ai/data/archive/_meta/archive-audit.json /tmp/archive-audit.json
-          git fetch origin main
-          git reset --hard origin/main
-          rm -rf loterias-ai/data/archive/eurodreams
-          cp -r /tmp/eurodreams/eurodreams loterias-ai/data/archive/
-          cp /tmp/eurodreams-summary.json loterias-ai/data/archive/_meta/eurodreams-economics-ingestion.json
-          cp /tmp/manifest.json loterias-ai/data/archive/manifest.json
-          cp /tmp/archive-audit.json loterias-ai/data/archive/_meta/archive-audit.json
+          rm -rf /tmp/eurodreams-save
+          mkdir -p /tmp/eurodreams-save
+          cp -r loterias-ai/data/archive/eurodreams /tmp/eurodreams-save/
+          cp loterias-ai/data/archive/_meta/eurodreams-economics-ingestion.json /tmp/eurodreams-save/eurodreams-economics-ingestion.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add loterias-ai/data/archive
-          git commit -m 'data(loterias-ai): persist EuroDreams economics batches' || exit 0
           for attempt in 1 2 3 4 5; do
-            git pull --rebase origin main && git push origin HEAD:main && exit 0
-            git rebase --abort || true
+            git fetch origin main
+            git reset --hard origin/main
+            rm -rf loterias-ai/data/archive/eurodreams
+            cp -r /tmp/eurodreams-save/eurodreams loterias-ai/data/archive/
+            cp /tmp/eurodreams-save/eurodreams-economics-ingestion.json loterias-ai/data/archive/_meta/eurodreams-economics-ingestion.json
+            node loterias-ai/scripts/build-national-archive-index.mjs
+            node loterias-ai/scripts/audit-national-archive.mjs
+            git add loterias-ai/data/archive
+            if git diff --cached --quiet; then
+              echo 'EuroDreams data already present on main'
+              exit 0
+            fi
+            git commit -m 'data(loterias-ai): persist EuroDreams economics batches'
+            if git push origin HEAD:main; then exit 0; fi
             sleep $((attempt*3))
           done
           exit 1
