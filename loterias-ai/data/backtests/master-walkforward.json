@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-08-14T15:39:28.486Z",
+  "generatedAt": "2026-08-14T15:40:42.558Z",
   "mode": "RESEARCH_ONLY",
-  "methodology": "incremental-strict-chronological-walk-forward-v2",
-  "leakageGuard": "State is updated only AFTER scoring each target draw.",
+  "methodology": "incremental-strict-chronological-walk-forward-v3-paired-baseline",
+  "leakageGuard": "State is updated only AFTER scoring each target draw. Random baseline is deterministically seeded by target draw id and uses the same ticket count/diversification algorithm.",
   "games": {
     "bonoloto": {
       "status": "complete",
@@ -49,6 +49,18 @@
       ],
       "draws": 9354,
       "minHistory": 250,
+      "baseline": {
+        "id": "paired-random-diversified",
+        "drawsEvaluated": 9104,
+        "averageHits": 0.7390817223198562,
+        "bestTicketAverageHits": 1.4013620386643233,
+        "hitRateAtLeast2": 0.4258567662565905,
+        "hitRateAtLeast3": 0.07644991212653779,
+        "confidence95": {
+          "lower": 0.7290929836165263,
+          "upper": 0.7490704610231862
+        }
+      },
       "winner": {
         "id": "frequency-heavy",
         "drawsEvaluated": 9104,
@@ -59,6 +71,11 @@
         "confidence95": {
           "lower": 0.7292818585377434,
           "upper": 0.7423789498981412
+        },
+        "excessAverageHitsVsRandom": -0.0032513181019332245,
+        "excessConfidence95": {
+          "lower": -0.015122052632322306,
+          "upper": 0.008619416428455855
         },
         "config": {
           "id": "frequency-heavy",
@@ -85,6 +102,11 @@
             "lower": 0.7292818585377434,
             "upper": 0.7423789498981412
           },
+          "excessAverageHitsVsRandom": -0.0032513181019332245,
+          "excessConfidence95": {
+            "lower": -0.015122052632322306,
+            "upper": 0.008619416428455855
+          },
           "config": {
             "id": "frequency-heavy",
             "weights": {
@@ -108,6 +130,11 @@
           "confidence95": {
             "lower": 0.7278903276941294,
             "upper": 0.7390253137822044
+          },
+          "excessAverageHitsVsRandom": -0.005623901581722342,
+          "excessConfidence95": {
+            "lower": -0.017000054767185628,
+            "upper": 0.005752251603740945
           },
           "config": {
             "id": "stability-heavy",
@@ -133,6 +160,11 @@
             "lower": 0.7279681495433019,
             "upper": 0.7381126940420109
           },
+          "excessAverageHitsVsRandom": -0.00604130052724078,
+          "excessConfidence95": {
+            "lower": -0.0171842615884771,
+            "upper": 0.00510166053399554
+          },
           "config": {
             "id": "balanced",
             "weights": {
@@ -157,6 +189,11 @@
             "lower": 0.726029205800638,
             "upper": 0.7353943442873262
           },
+          "excessAverageHitsVsRandom": -0.00836994727592266,
+          "excessConfidence95": {
+            "lower": -0.019360808701385793,
+            "upper": 0.0026209141495404722
+          },
           "config": {
             "id": "cooccurrence-heavy",
             "weights": {
@@ -180,6 +217,11 @@
           "confidence95": {
             "lower": 0.7229795184100638,
             "upper": 0.7375213603245689
+          },
+          "excessAverageHitsVsRandom": -0.008831282952548352,
+          "excessConfidence95": {
+            "lower": -0.021156648509108197,
+            "upper": 0.0034940826040114926
           },
           "config": {
             "id": "gap-heavy",
