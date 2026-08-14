@@ -1,25 +1,29 @@
 {
-  "generatedAt":"2026-08-14T18:04:30+02:00",
+  "generatedAt":"2026-08-14T18:12:00+02:00",
   "gameId":"bonoloto",
-  "decision":"REAL_MONEY_BLOCKED",
+  "decision":"MODEL_REJECTED_FOR_REAL_MONEY",
   "realMoneyAllocation":0,
   "shadowAllocation":2.5,
   "reasons":[
     "Full archive available: 9354 draws through 2026-08-13.",
     "Locked 70/30 chronological holdout passed for probability of at least one ticket with >=3 main hits across five tickets.",
     "Locked holdout model hit rate >=3: 10.1391% vs paired random 7.8697%; relative lift 28.84%; paired 95% CI on absolute excess +0.77pp to +3.77pp.",
-    "Stress test passed against 100 independent deterministic random baselines; model beat all 100 on the same holdout metric.",
-    "However, recent walk-forward using 51 real prize tables returned 20.00 EUR on 127.50 EUR stake: P/L -107.50 EUR, ROI -84.31%, excluding hypothetical terminal-assigned reintegro.",
-    "Therefore hit-rate evidence does not yet demonstrate monetary profitability."
+    "Stress test passed against 100 independent deterministic random baselines on the >=3-hit metric.",
+    "Recent strict walk-forward using 51 real prize tables returned 20.00 EUR on 127.50 EUR stake: P/L -107.50 EUR, ROI -84.31%, excluding hypothetical terminal-assigned reintegro.",
+    "Financial tournament tested 25 model/ticket-count configurations using 70% discovery and 30% locked holdout.",
+    "Discovery selected cooccurrence with 1 ticket, but locked holdout returned 0.00 EUR on 8.00 EUR stake: ROI -100%.",
+    "Therefore the current Bonoloto model is rejected for real-money allocation. Hit-rate lift alone is not monetizable evidence."
   ],
   "hardGates":{
     "history":true,
     "lockedHoldout":true,
     "multiBaselineStress":true,
     "positiveFinancialROI":false,
+    "financialTournamentHoldout":false,
     "prospectiveShadowProfitability":false
   },
-  "promotionRule":"REAL_MONEY_ELIGIBLE only when positive financial ROI is demonstrated on a sufficiently large chronological holdout with real historical prize tables and prospective Shadow Ledger remains supportive.",
+  "promotionRule":"A future Bonoloto model may become REAL_MONEY_ELIGIBLE only after a newly specified model passes a separate discovery/holdout financial test with real prize tables and then remains positive prospectively in Shadow Ledger. The rejected model must not be reused as if validated.",
   "todayModel":"balanced",
-  "todayStatus":"SHADOW_ONLY"
+  "todayStatus":"SHADOW_ONLY",
+  "nextAction":"Do not allocate real bankroll to Bonoloto. Continue Shadow measurement and prioritize other games for evidence discovery."
 }
