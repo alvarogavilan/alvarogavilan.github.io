@@ -5,6 +5,14 @@ on:
   schedule:
     - cron: '45 22 * * *'
     - cron: '15 6 * * *'
+  push:
+    paths:
+      - '.github/workflows/loterias-ai-daily-archive-maintenance.yml'
+      - 'loterias-ai/scripts/import-bonoloto-full-history.mjs'
+      - 'loterias-ai/scripts/import-core-full-history.mjs'
+      - 'loterias-ai/scripts/enrich-national-archive-economics.mjs'
+      - 'loterias-ai/scripts/build-national-archive-index.mjs'
+      - 'loterias-ai/scripts/audit-national-archive.mjs'
 
 permissions:
   contents: write
