@@ -7,6 +7,12 @@ const S={
 };
 const date=s=>{const m=String(s).trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);if(!m)return null;return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`};
 const split=line=>line.split(',').map(x=>x.trim().replace(/^"|"$/g,''));
+function mergePreserved(path,newRecords){
+  if(!fs.existsSync(path))return newRecords;
+  let old;try{old=JSON.parse(fs.readFileSync(path,'utf8'));}catch{return newRecords;}
+  const prev=new Map((old.records||[]).map(r=>[r.drawDate,r]));
+  return newRecords.map(r=>{const p=prev.get(r.drawDate);if(!p)return r;return {...r,economics:p.economics??r.economics,verification:p.verification??r.verification,modelMetadata:p.modelMetadata??r.modelMetadata,internalValidation:p.internalValidation??r.internalValidation,source:{...r.source,archivePreviousSource:p.source??null}};});
+}
 const allSummary={generatedAt:new Date().toISOString(),source:'Lotoideas CSV',validation:'range-uniqueness-date-shape',games:{}};
 for(const [gameId,cfg] of Object.entries(S)){
  let lines=[];for(const url of cfg.urls){const r=await fetch(url,{redirect:'follow'});if(!r.ok)throw new Error(`${gameId} source ${r.status}`);const t=await r.text();lines.push(...t.replace(/^\uFEFF/,'').split(/\r?\n/).filter(Boolean).slice(1));}
@@ -21,7 +27,7 @@ for(const [gameId,cfg] of Object.entries(S)){
   records.push({drawId:id,gameId,drawDate,result,source:{provider:'Lotoideas CSV',tier:'secondary-history',validation:'pending-official-cross-check'}});
  }
  records.sort((a,b)=>a.drawDate.localeCompare(b.drawDate));const years={};for(const r of records)(years[r.drawDate.slice(0,4)]??=[]).push(r);
- const dir=`loterias-ai/data/archive/${gameId}`;fs.mkdirSync(dir,{recursive:true});for(const [y,rs] of Object.entries(years))fs.writeFileSync(`${dir}/${y}.json`,JSON.stringify({gameId,year:+y,records:rs},null,2)+'\n');
- const summary={totalRecords:records.length,rejected,earliest:records[0]?.drawDate||null,latest:records.at(-1)?.drawDate||null,years:Object.keys(years).map(Number),yearCounts:Object.fromEntries(Object.entries(years).map(([y,rs])=>[y,rs.length])),validation:{rangeAndUniqueness:'PASS',officialCrossCheck:'PENDING'}};fs.writeFileSync(`${dir}/full-history-summary.json`,JSON.stringify(summary,null,2)+'\n');allSummary.games[gameId]=summary;console.log(gameId,summary.totalRecords,summary.earliest,summary.latest);
+ const dir=`loterias-ai/data/archive/${gameId}`;fs.mkdirSync(dir,{recursive:true});for(const [y,rs] of Object.entries(years)){const p=`${dir}/${y}.json`,merged=mergePreserved(p,rs);fs.writeFileSync(p,JSON.stringify({gameId,year:+y,records:merged},null,2)+'\n');}
+ const summary={totalRecords:records.length,rejected,earliest:records[0]?.drawDate||null,latest:records.at(-1)?.drawDate||null,years:Object.keys(years).map(Number),yearCounts:Object.fromEntries(Object.entries(years).map(([y,rs])=>[y,rs.length])),validation:{rangeAndUniqueness:'PASS',officialCrossCheck:'PENDING'},refreshSemantics:'MERGE_PRESERVE_ECONOMICS_AND_INTERNAL_METADATA'};fs.writeFileSync(`${dir}/full-history-summary.json`,JSON.stringify(summary,null,2)+'\n');allSummary.games[gameId]=summary;console.log(gameId,summary.totalRecords,summary.earliest,summary.latest);
 }
 fs.writeFileSync('loterias-ai/data/archive/core-full-history-summary.json',JSON.stringify(allSummary,null,2)+'\n');
