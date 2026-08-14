@@ -1,0 +1,6 @@
+import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
+const code=fs.readFileSync('loterias-ai/js/financial-backtest.js','utf8');const ctx={globalThis:{},window:undefined,console,Date,Math,JSON,Number,String,Array,Set,Object,Error};vm.createContext(ctx);vm.runInContext(code,ctx);const B=ctx.globalThis.LotteryFinancialBacktest;
+const draws=[1,2,3,4,5].map(i=>({drawId:String(i),drawDate:`2025-01-0${i}`,numbers:[i,i+1,i+2]}));
+const seen=[];const out=B.run({draws,minHistory:2,ticketsPerDraw:1,openingBankroll:50,generateTickets:({training,targetMeta})=>{seen.push({training:training.length,target:targetMeta.drawId,last:training.at(-1)?.drawId});return [{numbers:[1,2,3]}]},priceForDraw:()=>1,prizeForTicket:()=>0});
+assert.equal(out.drawsEvaluated,3);assert.equal(out.totalStake,3);assert.equal(out.totalPrize,0);assert.equal(out.pnl,-3);assert.equal(out.closingBankroll,47);assert.equal(out.roi,-1);assert.deepEqual(seen,[{training:2,target:'3',last:'2'},{training:3,target:'4',last:'3'},{training:4,target:'5',last:'4'}]);
+console.log('financial backtest tests: PASS');
