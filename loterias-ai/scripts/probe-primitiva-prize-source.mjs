@@ -1,10 +1,8 @@
 import fs from 'node:fs';
-const url='https://www.azarysuerte.es/Historico.php';
-const r=await fetch(url,{headers:{'user-agent':'LoteriasAI/1.0 research','accept':'text/html'}});const html=await r.text();
-const hrefs=[...html.matchAll(/href=["']([^"']+)["']/gi)].map(m=>m[1]);
-const srcs=[...html.matchAll(/src=["']([^"']+)["']/gi)].map(m=>m[1]);
-const forms=[...html.matchAll(/<form\b[^>]*>/gi)].map(m=>m[0]);
-const actions=forms.map(x=>(x.match(/action=["']([^"']+)["']/i)||[])[1]).filter(Boolean);
-const interesting=[...new Set([...hrefs,...srcs,...actions].filter(x=>/histor|primit|ajax|result|premi|php|js/i.test(x)))];
-const keywords={primitiva:[...html.matchAll(/.{0,100}primitiva.{0,180}/gi)].slice(0,20).map(m=>m[0]),ajax:[...html.matchAll(/.{0,100}(?:ajax|fetch\(|xmlhttprequest|\.php\?)[\s\S]{0,180}/gi)].slice(0,30).map(m=>m[0])};
-const out={generatedAt:new Date().toISOString(),url,status:r.status,bytes:html.length,forms,interesting,keywords};fs.mkdirSync('loterias-ai/data/probes',{recursive:true});fs.writeFileSync('loterias-ai/data/probes/primitiva-prize-source.json',JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify({status:r.status,bytes:html.length,interesting,forms},null,2));
+const indexUrl='https://www.azarysuerte.es/Historico.php';const detailUrl='https://www.azarysuerte.es/HistoricoPR.php';
+const headers={'user-agent':'LoteriasAI/1.0 research','accept':'text/html'};
+const r=await fetch(indexUrl,{headers});const html=await r.text();const d=await fetch(detailUrl,{headers});const detail=await d.text();
+const hrefs=[...html.matchAll(/href=["']([^"']+)["']/gi)].map(m=>m[1]);const srcs=[...html.matchAll(/src=["']([^"']+)["']/gi)].map(m=>m[1]);const forms=[...html.matchAll(/<form\b[^>]*>/gi)].map(m=>m[0]);const actions=forms.map(x=>(x.match(/action=["']([^"']+)["']/i)||[])[1]).filter(Boolean);const interesting=[...new Set([...hrefs,...srcs,...actions].filter(x=>/histor|primit|ajax|result|premi|php|js/i.test(x)))];
+const anchors=[...detail.matchAll(/Premios_colapse\(([^)]+)\)/g)].slice(0,12).map(m=>({token:m[1],index:m.index,excerpt:detail.slice(Math.max(0,m.index-900),Math.min(detail.length,m.index+2200))}));
+const classes=[...new Set([...detail.matchAll(/class=["']([^"']+)["']/gi)].map(m=>m[1]).filter(x=>/nc|prem|result|numero|primit/i.test(x)))].slice(0,80);
+const out={generatedAt:new Date().toISOString(),index:{url:indexUrl,status:r.status,bytes:html.length,forms,interesting},detail:{url:detailUrl,status:d.status,bytes:detail.length,classes,anchors}};fs.mkdirSync('loterias-ai/data/probes',{recursive:true});fs.writeFileSync('loterias-ai/data/probes/primitiva-prize-source.json',JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify({indexStatus:r.status,detailStatus:d.status,detailBytes:detail.length,classes,anchorCount:anchors.length},null,2));
