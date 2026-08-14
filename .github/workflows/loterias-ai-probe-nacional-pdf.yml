@@ -11,18 +11,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install PDF text tools
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
-      - name: Download official SELAE PDF and extract text
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Extract official SELAE PDF text
         shell: bash
         run: |
+          python -m pip install -q pypdf
           mkdir -p loterias-ai/data/probes
+          python - <<'PY'
+          import urllib.request
+          from pypdf import PdfReader
           url='https://www.loteriasyapuestas.es/f/loterias/documentos/Loter%C3%ADa%20Nacional/listas%20de%20premios/SM_LISTAOFICIAL.A2024.S103.pdf'
-          curl -fL --retry 3 "$url" -o /tmp/nacional.pdf
-          pdftotext -layout /tmp/nacional.pdf loterias-ai/data/probes/nacional-official-pdf-sample.txt
-          { echo "SOURCE=$url"; echo; head -n 220 loterias-ai/data/probes/nacional-official-pdf-sample.txt; } > /tmp/out
-          mv /tmp/out loterias-ai/data/probes/nacional-official-pdf-sample.txt
-          test -s loterias-ai/data/probes/nacional-official-pdf-sample.txt
+          req=urllib.request.Request(url,headers={'User-Agent':'LoteriasAI/1.0 research archive'})
+          with urllib.request.urlopen(req,timeout=40) as r: data=r.read()
+          open('/tmp/nacional.pdf','wb').write(data)
+          reader=PdfReader('/tmp/nacional.pdf')
+          text='\n'.join((p.extract_text() or '') for p in reader.pages)
+          out='SOURCE='+url+'\nPAGES='+str(len(reader.pages))+'\n\n'+text[:30000]
+          open('loterias-ai/data/probes/nacional-official-pdf-sample.txt','w',encoding='utf-8').write(out)
+          if len(text.strip())<100: raise SystemExit('PDF text extraction too short')
+          print({'pages':len(reader.pages),'chars':len(text)})
+          PY
       - name: Persist
         run: |
           git config user.name 'github-actions[bot]'
