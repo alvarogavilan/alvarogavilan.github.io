@@ -1,0 +1,23 @@
+{
+  "version":"2026-08-14.1",
+  "overallStatus":"BUILDING_EVIDENCE",
+  "capitalEUR":50,
+  "coveredGames":13,
+  "gates":[
+    {"id":"ui-pwa","status":"PASS"},
+    {"id":"specialist-cabinets","status":"PASS"},
+    {"id":"capital-committee","status":"PASS"},
+    {"id":"portfolio-optimizer","status":"PASS"},
+    {"id":"treasury-ledger","status":"PASS"},
+    {"id":"archive-schema-integrity","status":"PASS"},
+    {"id":"selae-multigame-parser","status":"PASS"},
+    {"id":"historical-backfill-complete","status":"BLOCKED","blocker":"Archive is not yet complete for all games."},
+    {"id":"rule-era-registry-complete","status":"BLOCKED","blocker":"Historical rule eras still require verified source mapping."},
+    {"id":"mass-walk-forward-backtests","status":"BLOCKED","blocker":"Requires validated historical volume."},
+    {"id":"baseline-outperformance","status":"BLOCKED","blocker":"No statistically demonstrated edge yet."},
+    {"id":"shadow-ledger-evidence","status":"BLOCKED","blocker":"Insufficient sealed prospective sample."}
+  ],
+  "realMoneyRecommendationEnabled":false,
+  "reason":"No game may receive a real-money recommendation until historical completeness, backtesting, baseline comparison and prospective evidence gates pass.",
+  "nextBlocker":"historical-backfill-complete"
+}
