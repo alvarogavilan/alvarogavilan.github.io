@@ -1,115 +1,626 @@
 {
-  "generatedAt": "2026-08-14T17:52:04.186Z",
+  "generatedAt": "2026-08-14T17:56:52.425Z",
+  "source": "SELAE /servicios/fechav3",
   "tests": [
     {
       "id": "lototurf-2017",
-      "url": "https://www.loteriasyapuestas.es/f/loterias/resultados/lototurf.html?game_id=LOTU&fecha_sorteo=20171231",
+      "game": "LOTU",
+      "date": "20171231",
+      "wrapper": "https://www.loteriasyapuestas.es/f/loterias/resultados/lototurf.html?game_id=LOTU&fecha_sorteo=20171231",
+      "service": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LOTU&fecha_sorteo=20171231",
       "status": 200,
       "ok": true,
-      "bytes": 2718,
-      "text": "Resultados último sorteo",
-      "srcs": [
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/css/styles.css",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.js",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.jsonp.js",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/img/LOTOTURF.png"
+      "bytes": 1038,
+      "json": [
+        {
+          "fecha_sorteo": "2017-12-31 19:21:00",
+          "dia_semana": "domingo",
+          "id_sorteo": "1004603080",
+          "game_id": "LOTU",
+          "anyo": "2017",
+          "premio_bote": "1864000",
+          "cdc": "10046",
+          "apuestas": "71779",
+          "recaudacion": "71779",
+          "combinacion": "1 - 5 - 11 - 15 - 19 - 28 C(9) R(8)",
+          "premios": "39478",
+          "fondo_bote": "1856859",
+          "escrutinio": [
+            {
+              "tipo": "1ª  (6 Números + Caballo Ganador) ",
+              "categoria": 1,
+              "premio": "0",
+              "ganadores": "0"
+            },
+            {
+              "tipo": "2ª  (6 Números) ",
+              "categoria": 2,
+              "premio": "0",
+              "ganadores": "0"
+            },
+            {
+              "tipo": "3ª  (5 Números + Caballo Ganador) ",
+              "categoria": 3,
+              "premio": "1076,69",
+              "ganadores": "2"
+            },
+            {
+              "tipo": "4ª  (5 Números) ",
+              "categoria": 4,
+              "premio": "239,26",
+              "ganadores": "12"
+            },
+            {
+              "tipo": "5ª  (4 Números + Caballo Ganador) ",
+              "categoria": 5,
+              "premio": "16,5",
+              "ganadores": "87"
+            },
+            {
+              "tipo": "6ª  (4 Números) ",
+              "categoria": 6,
+              "premio": "6,84",
+              "ganadores": "420"
+            },
+            {
+              "tipo": "7ª  (3 Números + Caballo Ganador) ",
+              "categoria": 7,
+              "premio": "3,35",
+              "ganadores": "857"
+            },
+            {
+              "tipo": "Reintegro",
+              "categoria": 8,
+              "premio": "1",
+              "ganadores": "6805"
+            }
+          ]
+        }
       ],
-      "embeddedUrls": [
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/css/styles.css",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.js",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.jsonp.js",
-        "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/img/LOTOTURF.png"
-      ],
-      "raw": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"> <html> <head> <meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"> <meta name=\"generator\" content=\"PSPad editor, www.pspad.com\"> <title></title> <link href=\"https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/css/styles.css\" rel='stylesheet' type='text/css'> </head> <body> <script src=\"https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.js\"></script> <script src=\"https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.jsonp.js\"></script> <script type=\"text/javascript\"> $( document ).ready(function() { $.urlParam = function(name){ var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href); if (results == null){ return null; } else { return decodeURI(results[1]) || 0; } } var fechaSorteo = $.urlParam('fecha_sorteo'); // var game_id = $.urlParam('game_id'); // iniciarEstadisticas(fechaSorteo,game_id); function formatoFecha(str) { var dateSrt = str.split(' ')[0]; var dateSrtGuiones = dateSrt.split('-'); return dateSrtGuiones[2]+\"/\"+ dateSrtGuiones[1]+\"/\"+ dateSrtGuiones[0]; } function iniciarEstadisticas(fechaSorteo,game_id) { var urlServicioResultadosCMS = \"https://www.loteriasyapuestas.es/servicios/fechav3?game_id=\"+game_id; urlServicioResultadosCMS=urlServicioResultadosCMS+\"&fecha_sorteo=\"+fechaSorteo; $.ajax({ url:urlServicioResultadosCMS, cache:true, crossDomain: true, contentType: \"application/json\", async: false, beforeSend: function() { }, success: function(salida) { if(typeof salida =='object') { $(\".resultado\").html(salida[0].combinacion); $(\".Juego\").html(game_id); $(\".fecha_sorteo\").html(formatoFecha(salida[0].fecha_sorteo)); $(\".joker\").html(salida[0].joker.combinacion); } }, error: function(jq,status,message) { console.log(\"ddd\"+message); } }); } }); </script> <div class=\"contenedor\"> <div class=\"flex\"></div> <div class=\"contenido\"> <div style=\"display:none;\" class=\"Juego\"></div> <img style=\"text-align: center;width:200px;\" src=\"https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/img/LOTOTURF.png\"> <h1>Resultados último sorteo</h1> <div class=\"contenedor-fecha\"> <div style=\"margin-left:6px;\" class=\"fecha_sorteo\"></div></div> <div class=\"resultado\"></div> </div> </div> </body></html>"
+      "raw": "[{\"fecha_sorteo\":\"2017-12-31 19:21:00\",\"dia_semana\":\"domingo\",\"id_sorteo\":\"1004603080\",\"game_id\":\"LOTU\",\"anyo\":\"2017\",\"premio_bote\":\"1864000\",\"cdc\":\"10046\",\"apuestas\":\"71779\",\"recaudacion\":\"71779\",\"combinacion\":\"1 - 5 - 11 - 15 - 19 - 28 C(9) R(8)\",\"premios\":\"39478\",\"fondo_bote\":\"1856859\",\"escrutinio\":[{\"tipo\":\"1\\u00aa  (6 N\\u00fameros + Caballo Ganador) \",\"categoria\":1,\"premio\":\"0\",\"ganadores\":\"0\"},{\"tipo\":\"2\\u00aa  (6 N\\u00fameros) \",\"categoria\":2,\"premio\":\"0\",\"ganadores\":\"0\"},{\"tipo\":\"3\\u00aa  (5 N\\u00fameros + Caballo Ganador) \",\"categoria\":3,\"premio\":\"1076,69\",\"ganadores\":\"2\"},{\"tipo\":\"4\\u00aa  (5 N\\u00fameros) \",\"categoria\":4,\"premio\":\"239,26\",\"ganadores\":\"12\"},{\"tipo\":\"5\\u00aa  (4 N\\u00fameros + Caballo Ganador) \",\"categoria\":5,\"premio\":\"16,5\",\"ganadores\":\"87\"},{\"tipo\":\"6\\u00aa  (4 N\\u00fameros) \",\"categoria\":6,\"premio\":\"6,84\",\"ganadores\":\"420\"},{\"tipo\":\"7\\u00aa  (3 N\\u00fameros + Caballo Ganador) \",\"categoria\":7,\"premio\":\"3,35\",\"ganadores\":\"857\"},{\"tipo\":\"Reintegro\",\"categoria\":8,\"premio\":\"1\",\"ganadores\":\"6805\"}]}]"
     },
     {
       "id": "lototurf-2010",
-      "url": "https://www.loteriasyapuestas.es/f/loterias/resultados/lototurf.html?game_id=LOTU&fecha_sorteo=20101226",
+      "game": "LOTU",
+      "date": "20101226",
+      "wrapper": "https://www.loteriasyapuestas.es/f/loterias/resultados/lototurf.html?game_id=LOTU&fecha_sorteo=20101226",
+      "service": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LOTU&fecha_sorteo=20101226",
       "status": 200,
       "ok": true,
-      "bytes": 2718,
-      "text": "Resultados último sorteo",
-      "srcs": [
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/css/styles.css",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.js",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.jsonp.js",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/img/LOTOTURF.png"
+      "bytes": 1031,
+      "json": [
+        {
+          "fecha_sorteo": "2010-12-26 21:30:00",
+          "dia_semana": "domingo",
+          "id_sorteo": "748403001",
+          "game_id": "LOTU",
+          "anyo": "2010",
+          "premio_bote": "0",
+          "cdc": "7484",
+          "apuestas": "122486",
+          "recaudacion": "122486",
+          "combinacion": "3 - 5 - 18 - 25 - 26 - 27 C(11) R(3)",
+          "premios": "67367",
+          "fondo_bote": "1747110",
+          "escrutinio": [
+            {
+              "tipo": "1ª  (6 Números + Caballo Ganador) ",
+              "categoria": 1,
+              "premio": "0",
+              "ganadores": "0"
+            },
+            {
+              "tipo": "2ª  (6 Números) ",
+              "categoria": 2,
+              "premio": "0",
+              "ganadores": "0"
+            },
+            {
+              "tipo": "3ª  (5 Números + Caballo Ganador) ",
+              "categoria": 3,
+              "premio": "0",
+              "ganadores": "0"
+            },
+            {
+              "tipo": "4ª  (5 Números) ",
+              "categoria": 4,
+              "premio": "306,22",
+              "ganadores": "28"
+            },
+            {
+              "tipo": "5ª  (4 Números + Caballo Ganador) ",
+              "categoria": 5,
+              "premio": "102,07",
+              "ganadores": "24"
+            },
+            {
+              "tipo": "6ª  (4 Números) ",
+              "categoria": 6,
+              "premio": "7,01",
+              "ganadores": "699"
+            },
+            {
+              "tipo": "7ª  (3 Números + Caballo Ganador) ",
+              "categoria": 7,
+              "premio": "18,56",
+              "ganadores": "264"
+            },
+            {
+              "tipo": "Reintegro",
+              "categoria": 8,
+              "premio": "1",
+              "ganadores": "11845"
+            }
+          ]
+        }
       ],
-      "embeddedUrls": [
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/css/styles.css",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.js",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.jsonp.js",
-        "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/img/LOTOTURF.png"
+      "raw": "[{\"fecha_sorteo\":\"2010-12-26 21:30:00\",\"dia_semana\":\"domingo\",\"id_sorteo\":\"748403001\",\"game_id\":\"LOTU\",\"anyo\":\"2010\",\"premio_bote\":\"0\",\"cdc\":\"7484\",\"apuestas\":\"122486\",\"recaudacion\":\"122486\",\"combinacion\":\"3 - 5 - 18 - 25 - 26 - 27 C(11) R(3)\",\"premios\":\"67367\",\"fondo_bote\":\"1747110\",\"escrutinio\":[{\"tipo\":\"1\\u00aa  (6 N\\u00fameros + Caballo Ganador) \",\"categoria\":1,\"premio\":\"0\",\"ganadores\":\"0\"},{\"tipo\":\"2\\u00aa  (6 N\\u00fameros) \",\"categoria\":2,\"premio\":\"0\",\"ganadores\":\"0\"},{\"tipo\":\"3\\u00aa  (5 N\\u00fameros + Caballo Ganador) \",\"categoria\":3,\"premio\":\"0\",\"ganadores\":\"0\"},{\"tipo\":\"4\\u00aa  (5 N\\u00fameros) \",\"categoria\":4,\"premio\":\"306,22\",\"ganadores\":\"28\"},{\"tipo\":\"5\\u00aa  (4 N\\u00fameros + Caballo Ganador) \",\"categoria\":5,\"premio\":\"102,07\",\"ganadores\":\"24\"},{\"tipo\":\"6\\u00aa  (4 N\\u00fameros) \",\"categoria\":6,\"premio\":\"7,01\",\"ganadores\":\"699\"},{\"tipo\":\"7\\u00aa  (3 N\\u00fameros + Caballo Ganador) \",\"categoria\":7,\"premio\":\"18,56\",\"ganadores\":\"264\"},{\"tipo\":\"Reintegro\",\"categoria\":8,\"premio\":\"1\",\"ganadores\":\"11845\"}]}]"
+    },
+    {
+      "id": "lototurf-2009",
+      "game": "LOTU",
+      "date": "20091227",
+      "wrapper": "https://www.loteriasyapuestas.es/f/loterias/resultados/lototurf.html?game_id=LOTU&fecha_sorteo=20091227",
+      "service": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LOTU&fecha_sorteo=20091227",
+      "status": 200,
+      "ok": true,
+      "bytes": 1035,
+      "json": [
+        {
+          "fecha_sorteo": "2009-12-27 21:30:00",
+          "dia_semana": "domingo",
+          "id_sorteo": "712003001",
+          "game_id": "LOTU",
+          "anyo": "2009",
+          "premio_bote": "0",
+          "cdc": "7120",
+          "apuestas": "154191",
+          "recaudacion": "154191",
+          "combinacion": "3 - 4 - 10 - 13 - 16 - 29 C(2) R(1)",
+          "premios": "84805",
+          "fondo_bote": "1190610",
+          "escrutinio": [
+            {
+              "tipo": "1ª  (6 Números + Caballo Ganador) ",
+              "categoria": 1,
+              "premio": "0",
+              "ganadores": "0"
+            },
+            {
+              "tipo": "2ª  (6 Números) ",
+              "categoria": 2,
+              "premio": "0",
+              "ganadores": "0"
+            },
+            {
+              "tipo": "3ª  (5 Números + Caballo Ganador) ",
+              "categoria": 3,
+              "premio": "1541,91",
+              "ganadores": "3"
+            },
+            {
+              "tipo": "4ª  (5 Números) ",
+              "categoria": 4,
+              "premio": "166,69",
+              "ganadores": "37"
+            },
+            {
+              "tipo": "5ª  (4 Números + Caballo Ganador) ",
+              "categoria": 5,
+              "premio": "33,52",
+              "ganadores": "92"
+            },
+            {
+              "tipo": "6ª  (4 Números) ",
+              "categoria": 6,
+              "premio": "7,55",
+              "ganadores": "817"
+            },
+            {
+              "tipo": "7ª  (3 Números + Caballo Ganador) ",
+              "categoria": 7,
+              "premio": "6,02",
+              "ganadores": "1024"
+            },
+            {
+              "tipo": "Reintegro",
+              "categoria": 8,
+              "premio": "1",
+              "ganadores": "16014"
+            }
+          ]
+        }
       ],
-      "raw": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"> <html> <head> <meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"> <meta name=\"generator\" content=\"PSPad editor, www.pspad.com\"> <title></title> <link href=\"https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/css/styles.css\" rel='stylesheet' type='text/css'> </head> <body> <script src=\"https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.js\"></script> <script src=\"https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.jsonp.js\"></script> <script type=\"text/javascript\"> $( document ).ready(function() { $.urlParam = function(name){ var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href); if (results == null){ return null; } else { return decodeURI(results[1]) || 0; } } var fechaSorteo = $.urlParam('fecha_sorteo'); // var game_id = $.urlParam('game_id'); // iniciarEstadisticas(fechaSorteo,game_id); function formatoFecha(str) { var dateSrt = str.split(' ')[0]; var dateSrtGuiones = dateSrt.split('-'); return dateSrtGuiones[2]+\"/\"+ dateSrtGuiones[1]+\"/\"+ dateSrtGuiones[0]; } function iniciarEstadisticas(fechaSorteo,game_id) { var urlServicioResultadosCMS = \"https://www.loteriasyapuestas.es/servicios/fechav3?game_id=\"+game_id; urlServicioResultadosCMS=urlServicioResultadosCMS+\"&fecha_sorteo=\"+fechaSorteo; $.ajax({ url:urlServicioResultadosCMS, cache:true, crossDomain: true, contentType: \"application/json\", async: false, beforeSend: function() { }, success: function(salida) { if(typeof salida =='object') { $(\".resultado\").html(salida[0].combinacion); $(\".Juego\").html(game_id); $(\".fecha_sorteo\").html(formatoFecha(salida[0].fecha_sorteo)); $(\".joker\").html(salida[0].joker.combinacion); } }, error: function(jq,status,message) { console.log(\"ddd\"+message); } }); } }); </script> <div class=\"contenedor\"> <div class=\"flex\"></div> <div class=\"contenido\"> <div style=\"display:none;\" class=\"Juego\"></div> <img style=\"text-align: center;width:200px;\" src=\"https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/img/LOTOTURF.png\"> <h1>Resultados último sorteo</h1> <div class=\"contenedor-fecha\"> <div style=\"margin-left:6px;\" class=\"fecha_sorteo\"></div></div> <div class=\"resultado\"></div> </div> </div> </body></html>"
+      "raw": "[{\"fecha_sorteo\":\"2009-12-27 21:30:00\",\"dia_semana\":\"domingo\",\"id_sorteo\":\"712003001\",\"game_id\":\"LOTU\",\"anyo\":\"2009\",\"premio_bote\":\"0\",\"cdc\":\"7120\",\"apuestas\":\"154191\",\"recaudacion\":\"154191\",\"combinacion\":\"3 - 4 - 10 - 13 - 16 - 29 C(2) R(1)\",\"premios\":\"84805\",\"fondo_bote\":\"1190610\",\"escrutinio\":[{\"tipo\":\"1\\u00aa  (6 N\\u00fameros + Caballo Ganador) \",\"categoria\":1,\"premio\":\"0\",\"ganadores\":\"0\"},{\"tipo\":\"2\\u00aa  (6 N\\u00fameros) \",\"categoria\":2,\"premio\":\"0\",\"ganadores\":\"0\"},{\"tipo\":\"3\\u00aa  (5 N\\u00fameros + Caballo Ganador) \",\"categoria\":3,\"premio\":\"1541,91\",\"ganadores\":\"3\"},{\"tipo\":\"4\\u00aa  (5 N\\u00fameros) \",\"categoria\":4,\"premio\":\"166,69\",\"ganadores\":\"37\"},{\"tipo\":\"5\\u00aa  (4 N\\u00fameros + Caballo Ganador) \",\"categoria\":5,\"premio\":\"33,52\",\"ganadores\":\"92\"},{\"tipo\":\"6\\u00aa  (4 N\\u00fameros) \",\"categoria\":6,\"premio\":\"7,55\",\"ganadores\":\"817\"},{\"tipo\":\"7\\u00aa  (3 N\\u00fameros + Caballo Ganador) \",\"categoria\":7,\"premio\":\"6,02\",\"ganadores\":\"1024\"},{\"tipo\":\"Reintegro\",\"categoria\":8,\"premio\":\"1\",\"ganadores\":\"16014\"}]}]"
     },
     {
       "id": "quintuple-2026",
-      "url": "https://www.loteriasyapuestas.es/f/loterias/resultados/quintuple.html?game_id=QUPL&fecha_sorteo=20260719",
+      "game": "QUPL",
+      "date": "20260719",
+      "wrapper": "https://www.loteriasyapuestas.es/f/loterias/resultados/quintuple.html?game_id=QUPL&fecha_sorteo=20260719",
+      "service": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=QUPL&fecha_sorteo=20260719",
       "status": 200,
       "ok": true,
-      "bytes": 2723,
-      "text": "Resultados último sorteo",
-      "srcs": [
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/css/styles.css",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.js",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.jsonp.js",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/img/QUINTUPLEPLUS.png"
+      "bytes": 777,
+      "json": [
+        {
+          "fecha_sorteo": "2026-07-19 20:06:00",
+          "dia_semana": "domingo",
+          "id_sorteo": "1316808042",
+          "game_id": "QUPL",
+          "anyo": "2026",
+          "premio_bote": "42000",
+          "cdc": "13168",
+          "apuestas": "19524",
+          "recaudacion": "19524",
+          "combinacion": "1 - 6 - 2 - 7 - 1 C(2)",
+          "premios": "10738",
+          "fondo_bote": "0",
+          "escrutinio": [
+            {
+              "tipo": "Especial (1 solo resguardo de 1ª Cat) ",
+              "categoria": 1,
+              "premio": "0",
+              "ganadores": "0"
+            },
+            {
+              "tipo": "1ª (5 Caballos Gan+2º de 5ªCarrera) ",
+              "categoria": 2,
+              "premio": "0",
+              "ganadores": "0"
+            },
+            {
+              "tipo": "2ª (5 Caballos Ganadores) ",
+              "categoria": 3,
+              "premio": "0",
+              "ganadores": "0"
+            },
+            {
+              "tipo": "3ª (4 Caballos Gan+2º de 5ªCarrera) ",
+              "categoria": 4,
+              "premio": "80,39",
+              "ganadores": "17"
+            },
+            {
+              "tipo": "4ª (4 Caballos Ganadores) ",
+              "categoria": 5,
+              "premio": "37,96",
+              "ganadores": "36"
+            }
+          ]
+        }
       ],
-      "embeddedUrls": [
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/css/styles.css",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.js",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.jsonp.js",
-        "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/img/QUINTUPLEPLUS.png"
+      "raw": "[{\"fecha_sorteo\":\"2026-07-19 20:06:00\",\"dia_semana\":\"domingo\",\"id_sorteo\":\"1316808042\",\"game_id\":\"QUPL\",\"anyo\":\"2026\",\"premio_bote\":\"42000\",\"cdc\":\"13168\",\"apuestas\":\"19524\",\"recaudacion\":\"19524\",\"combinacion\":\"1 - 6 - 2 - 7 - 1 C(2)\",\"premios\":\"10738\",\"fondo_bote\":\"0\",\"escrutinio\":[{\"tipo\":\"Especial (1 solo resguardo de 1\\u00aa Cat) \",\"categoria\":1,\"premio\":\"0\",\"ganadores\":\"0\"},{\"tipo\":\"1\\u00aa (5 Caballos Gan+2\\u00ba de 5\\u00aaCarrera) \",\"categoria\":2,\"premio\":\"0\",\"ganadores\":\"0\"},{\"tipo\":\"2\\u00aa (5 Caballos Ganadores) \",\"categoria\":3,\"premio\":\"0\",\"ganadores\":\"0\"},{\"tipo\":\"3\\u00aa (4 Caballos Gan+2\\u00ba de 5\\u00aaCarrera) \",\"categoria\":4,\"premio\":\"80,39\",\"ganadores\":\"17\"},{\"tipo\":\"4\\u00aa (4 Caballos Ganadores) \",\"categoria\":5,\"premio\":\"37,96\",\"ganadores\":\"36\"}]}]"
+    },
+    {
+      "id": "quintuple-2020",
+      "game": "QUPL",
+      "date": "20201227",
+      "wrapper": "https://www.loteriasyapuestas.es/f/loterias/resultados/quintuple.html?game_id=QUPL&fecha_sorteo=20201227",
+      "service": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=QUPL&fecha_sorteo=20201227",
+      "status": 200,
+      "ok": true,
+      "bytes": 780,
+      "json": [
+        {
+          "fecha_sorteo": "2020-12-27 15:15:00",
+          "dia_semana": "domingo",
+          "id_sorteo": "1113808080",
+          "game_id": "QUPL",
+          "anyo": "2020",
+          "premio_bote": "7000",
+          "cdc": "11138",
+          "apuestas": "13444",
+          "recaudacion": "13444",
+          "combinacion": "3 - 2 - 3 - 1 - 3 C(2)",
+          "premios": "7394",
+          "fondo_bote": "0",
+          "escrutinio": [
+            {
+              "tipo": "Especial (1 solo resguardo de 1ª Cat) ",
+              "categoria": 1,
+              "premio": "0",
+              "ganadores": "0"
+            },
+            {
+              "tipo": "1ª (5 Caballos Gan+2º de 5ªCarrera) ",
+              "categoria": 2,
+              "premio": "0",
+              "ganadores": "0"
+            },
+            {
+              "tipo": "2ª (5 Caballos Ganadores) ",
+              "categoria": 3,
+              "premio": "125,48",
+              "ganadores": "9"
+            },
+            {
+              "tipo": "3ª (4 Caballos Gan+2º de 5ªCarrera) ",
+              "categoria": 4,
+              "premio": "125,48",
+              "ganadores": "6"
+            },
+            {
+              "tipo": "4ª (4 Caballos Ganadores) ",
+              "categoria": 5,
+              "premio": "5,44",
+              "ganadores": "173"
+            }
+          ]
+        }
       ],
-      "raw": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"> <html> <head> <meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"> <meta name=\"generator\" content=\"PSPad editor, www.pspad.com\"> <title></title> <link href=\"https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/css/styles.css\" rel='stylesheet' type='text/css'> </head> <body> <script src=\"https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.js\"></script> <script src=\"https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.jsonp.js\"></script> <script type=\"text/javascript\"> $( document ).ready(function() { $.urlParam = function(name){ var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href); if (results == null){ return null; } else { return decodeURI(results[1]) || 0; } } var fechaSorteo = $.urlParam('fecha_sorteo'); // var game_id = $.urlParam('game_id'); // iniciarEstadisticas(fechaSorteo,game_id); function formatoFecha(str) { var dateSrt = str.split(' ')[0]; var dateSrtGuiones = dateSrt.split('-'); return dateSrtGuiones[2]+\"/\"+ dateSrtGuiones[1]+\"/\"+ dateSrtGuiones[0]; } function iniciarEstadisticas(fechaSorteo,game_id) { var urlServicioResultadosCMS = \"https://www.loteriasyapuestas.es/servicios/fechav3?game_id=\"+game_id; urlServicioResultadosCMS=urlServicioResultadosCMS+\"&fecha_sorteo=\"+fechaSorteo; $.ajax({ url:urlServicioResultadosCMS, cache:true, crossDomain: true, contentType: \"application/json\", async: false, beforeSend: function() { }, success: function(salida) { if(typeof salida =='object') { $(\".resultado\").html(salida[0].combinacion); $(\".Juego\").html(game_id); $(\".fecha_sorteo\").html(formatoFecha(salida[0].fecha_sorteo)); $(\".joker\").html(salida[0].joker.combinacion); } }, error: function(jq,status,message) { console.log(\"ddd\"+message); } }); } }); </script> <div class=\"contenedor\"> <div class=\"flex\"></div> <div class=\"contenido\"> <div style=\"display:none;\" class=\"Juego\"></div> <img style=\"text-align: center;width:200px;\" src=\"https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/img/QUINTUPLEPLUS.png\"> <h1>Resultados último sorteo</h1> <div class=\"contenedor-fecha\"> <div style=\"margin-left:6px;\" class=\"fecha_sorteo\"></div></div> <div class=\"resultado\"></div> </div> </div> </body></html>"
+      "raw": "[{\"fecha_sorteo\":\"2020-12-27 15:15:00\",\"dia_semana\":\"domingo\",\"id_sorteo\":\"1113808080\",\"game_id\":\"QUPL\",\"anyo\":\"2020\",\"premio_bote\":\"7000\",\"cdc\":\"11138\",\"apuestas\":\"13444\",\"recaudacion\":\"13444\",\"combinacion\":\"3 - 2 - 3 - 1 - 3 C(2)\",\"premios\":\"7394\",\"fondo_bote\":\"0\",\"escrutinio\":[{\"tipo\":\"Especial (1 solo resguardo de 1\\u00aa Cat) \",\"categoria\":1,\"premio\":\"0\",\"ganadores\":\"0\"},{\"tipo\":\"1\\u00aa (5 Caballos Gan+2\\u00ba de 5\\u00aaCarrera) \",\"categoria\":2,\"premio\":\"0\",\"ganadores\":\"0\"},{\"tipo\":\"2\\u00aa (5 Caballos Ganadores) \",\"categoria\":3,\"premio\":\"125,48\",\"ganadores\":\"9\"},{\"tipo\":\"3\\u00aa (4 Caballos Gan+2\\u00ba de 5\\u00aaCarrera) \",\"categoria\":4,\"premio\":\"125,48\",\"ganadores\":\"6\"},{\"tipo\":\"4\\u00aa (4 Caballos Ganadores) \",\"categoria\":5,\"premio\":\"5,44\",\"ganadores\":\"173\"}]}]"
     },
     {
       "id": "quinigol-2026",
-      "url": "https://www.loteriasyapuestas.es/f/loterias/resultados/quinigol.html?game_id=QGOL&fecha_sorteo=20260809",
+      "game": "QGOL",
+      "date": "20260809",
+      "wrapper": "https://www.loteriasyapuestas.es/f/loterias/resultados/quinigol.html?game_id=QGOL&fecha_sorteo=20260809",
+      "service": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=QGOL&fecha_sorteo=20260809",
       "status": 200,
       "ok": true,
-      "bytes": 2716,
-      "text": "Resultados último sorteo",
-      "srcs": [
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/css/styles.css",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.js",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.jsonp.js",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/img/QUINIGOL.png"
+      "bytes": 1211,
+      "json": [
+        {
+          "fecha_sorteo": "2026-08-09 21:30:00",
+          "dia_semana": "domingo",
+          "id_sorteo": "1318907053",
+          "game_id": "QGOL",
+          "anyo": "2026",
+          "premio_bote": "40000",
+          "cdc": "13189",
+          "apuestas": "67693",
+          "recaudacion": "67693",
+          "combinacion": " 12 - 21 - 21 - 12 - 02 - M2",
+          "premios": "37231",
+          "fondo_bote": "34237",
+          "escrutinio": [
+            {
+              "tipo": "1ª  (6 Aciertos) ",
+              "categoria": 1,
+              "premio": "0",
+              "ganadores": "0"
+            },
+            {
+              "tipo": "2ª  (5 Aciertos) ",
+              "categoria": 2,
+              "premio": "0",
+              "ganadores": "0"
+            },
+            {
+              "tipo": "3ª  (4 Aciertos) ",
+              "categoria": 3,
+              "premio": "410,99",
+              "ganadores": "28"
+            },
+            {
+              "tipo": "4ª  (3 Aciertos) ",
+              "categoria": 4,
+              "premio": "10,87",
+              "ganadores": "498"
+            },
+            {
+              "tipo": "5ª  (2 Aciertos) ",
+              "categoria": 5,
+              "premio": "2,51",
+              "ganadores": "5391"
+            }
+          ],
+          "partidos": [
+            {
+              "local": "Valerenga",
+              "visitante": "Bodo Glimt",
+              "signo": "1-2",
+              "marcador": "1 - 2"
+            },
+            {
+              "local": "Viking",
+              "visitante": "Sarpsborg 08",
+              "signo": "2-1",
+              "marcador": "2 - 1"
+            },
+            {
+              "local": "Kristiansund",
+              "visitante": "Molde",
+              "signo": "2-1",
+              "marcador": "2 - 1"
+            },
+            {
+              "local": "Malmo",
+              "visitante": "Degerfors",
+              "signo": "1-2",
+              "marcador": "1 - 2"
+            },
+            {
+              "local": "Halmstads",
+              "visitante": "Gais",
+              "signo": "0-2",
+              "marcador": "0 - 2"
+            },
+            {
+              "local": "Goteborg",
+              "visitante": "Kalmar",
+              "signo": "M-2",
+              "marcador": "3 - 2"
+            }
+          ],
+          "temporada": "2025-2026",
+          "jornada": "88"
+        }
       ],
-      "embeddedUrls": [
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/css/styles.css",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.js",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.jsonp.js",
-        "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/img/QUINIGOL.png"
-      ],
-      "raw": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"> <html> <head> <meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"> <meta name=\"generator\" content=\"PSPad editor, www.pspad.com\"> <title></title> <link href=\"https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/css/styles.css\" rel='stylesheet' type='text/css'> </head> <body> <script src=\"https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.js\"></script> <script src=\"https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.jsonp.js\"></script> <script type=\"text/javascript\"> $( document ).ready(function() { $.urlParam = function(name){ var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href); if (results == null){ return null; } else { return decodeURI(results[1]) || 0; } } var fechaSorteo = $.urlParam('fecha_sorteo'); // var game_id = $.urlParam('game_id'); // iniciarEstadisticas(fechaSorteo,game_id); function formatoFecha(str) { var dateSrt = str.split(' ')[0]; var dateSrtGuiones = dateSrt.split('-'); return dateSrtGuiones[2]+\"/\"+ dateSrtGuiones[1]+\"/\"+ dateSrtGuiones[0]; } function iniciarEstadisticas(fechaSorteo,game_id) { var urlServicioResultadosCMS = \"https://www.loteriasyapuestas.es/servicios/fechav3?game_id=\"+game_id; urlServicioResultadosCMS=urlServicioResultadosCMS+\"&fecha_sorteo=\"+fechaSorteo; $.ajax({ url:urlServicioResultadosCMS, cache:true, crossDomain: true, contentType: \"application/json\", async: false, beforeSend: function() { }, success: function(salida) { if(typeof salida =='object') { $(\".resultado\").html(salida[0].combinacion); $(\".Juego\").html(game_id); $(\".fecha_sorteo\").html(formatoFecha(salida[0].fecha_sorteo)); $(\".joker\").html(salida[0].joker.combinacion); } }, error: function(jq,status,message) { console.log(\"ddd\"+message); } }); } }); </script> <div class=\"contenedor\"> <div class=\"flex\"></div> <div class=\"contenido\"> <div style=\"display:none;\" class=\"Juego\"></div> <img style=\"text-align: center;width:200px;\" src=\"https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/img/QUINIGOL.png\"> <h1>Resultados último sorteo</h1> <div class=\"contenedor-fecha\"> <div style=\"margin-left:6px;\" class=\"fecha_sorteo\"></div></div> <div class=\"resultado\"></div> </div> </div> </body></html>"
+      "raw": "[{\"fecha_sorteo\":\"2026-08-09 21:30:00\",\"dia_semana\":\"domingo\",\"id_sorteo\":\"1318907053\",\"game_id\":\"QGOL\",\"anyo\":\"2026\",\"premio_bote\":\"40000\",\"cdc\":\"13189\",\"apuestas\":\"67693\",\"recaudacion\":\"67693\",\"combinacion\":\" 12 - 21 - 21 - 12 - 02 - M2\",\"premios\":\"37231\",\"fondo_bote\":\"34237\",\"escrutinio\":[{\"tipo\":\"1\\u00aa  (6 Aciertos) \",\"categoria\":1,\"premio\":\"0\",\"ganadores\":\"0\"},{\"tipo\":\"2\\u00aa  (5 Aciertos) \",\"categoria\":2,\"premio\":\"0\",\"ganadores\":\"0\"},{\"tipo\":\"3\\u00aa  (4 Aciertos) \",\"categoria\":3,\"premio\":\"410,99\",\"ganadores\":\"28\"},{\"tipo\":\"4\\u00aa  (3 Aciertos) \",\"categoria\":4,\"premio\":\"10,87\",\"ganadores\":\"498\"},{\"tipo\":\"5\\u00aa  (2 Aciertos) \",\"categoria\":5,\"premio\":\"2,51\",\"ganadores\":\"5391\"}],\"partidos\":[{\"local\":\"Valerenga\",\"visitante\":\"Bodo Glimt\",\"signo\":\"1-2\",\"marcador\":\"1 - 2\"},{\"local\":\"Viking\",\"visitante\":\"Sarpsborg 08\",\"signo\":\"2-1\",\"marcador\":\"2 - 1\"},{\"local\":\"Kristiansund\",\"visitante\":\"Molde\",\"signo\":\"2-1\",\"marcador\":\"2 - 1\"},{\"local\":\"Malmo\",\"visitante\":\"Degerfors\",\"signo\":\"1-2\",\"marcador\":\"1 - 2\"},{\"local\":\"Halmstads\",\"visitante\":\"Gais\",\"signo\":\"0-2\",\"marcador\":\"0 - 2\"},{\"local\":\"Goteborg\",\"visitante\":\"Kalmar\",\"signo\":\"M-2\",\"marcador\":\"3 - 2\"}],\"temporada\":\"2025-2026\",\"jornada\":\"88\"}]"
     },
     {
       "id": "quiniela-2026",
-      "url": "https://www.loteriasyapuestas.es/f/loterias/resultados/quiniela.html?game_id=LAQU&fecha_sorteo=20260809",
+      "game": "LAQU",
+      "date": "20260809",
+      "wrapper": "https://www.loteriasyapuestas.es/f/loterias/resultados/quiniela.html?game_id=LAQU&fecha_sorteo=20260809",
+      "service": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAQU&fecha_sorteo=20260809",
       "status": 200,
       "ok": true,
-      "bytes": 2718,
-      "text": "Resultados último sorteo",
-      "srcs": [
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/css/styles.css",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.js",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.jsonp.js",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/img/QUINIELA.png"
+      "bytes": 2165,
+      "json": [
+        {
+          "fecha_sorteo": "2026-08-09 20:55:00",
+          "dia_semana": "domingo",
+          "id_sorteo": "1318906045",
+          "game_id": "LAQU",
+          "anyo": "2026",
+          "premio_bote": "0",
+          "cdc": "13189",
+          "apuestas": "678514",
+          "recaudacion": "508885",
+          "combinacion": "2 - 2 - 1 - 2 - 2 - X - 1 - 2 - 2 - 1 - 2 - 2 - 1 - X - 10",
+          "premios": "279887",
+          "fondo_bote": "0",
+          "escrutinio": [
+            {
+              "tipo": "Pleno al 15 ",
+              "categoria": 1,
+              "premio": "0",
+              "ganadores": "0"
+            },
+            {
+              "tipo": "1ª (14 Aciertos) ",
+              "categoria": 2,
+              "premio": "0",
+              "ganadores": "0"
+            },
+            {
+              "tipo": "2ª (13 Aciertos) ",
+              "categoria": 3,
+              "premio": "38166,41",
+              "ganadores": "1"
+            },
+            {
+              "tipo": "3ª (12 Aciertos) ",
+              "categoria": 4,
+              "premio": "1467,94",
+              "ganadores": "26"
+            },
+            {
+              "tipo": "4ª (11 Aciertos) ",
+              "categoria": 5,
+              "premio": "144,57",
+              "ganadores": "264"
+            },
+            {
+              "tipo": "5ª (10 Aciertos) ",
+              "categoria": 6,
+              "premio": "20,79",
+              "ganadores": "2203"
+            }
+          ],
+          "partidos": [
+            {
+              "local": "Sandefjord",
+              "visitante": "Kfum Oslo",
+              "signo": "2 ",
+              "marcador": "0 - 1"
+            },
+            {
+              "local": "Valerenga",
+              "visitante": "Bodo Glimt",
+              "signo": "2 ",
+              "marcador": "1 - 2"
+            },
+            {
+              "local": "Viking",
+              "visitante": "Sarpsborg 08",
+              "signo": "1 ",
+              "marcador": "2 - 1"
+            },
+            {
+              "local": "Start",
+              "visitante": "Fredrikstad",
+              "signo": "2 ",
+              "marcador": "0 - 1"
+            },
+            {
+              "local": "Lillestrom",
+              "visitante": "Rosenborg",
+              "signo": "2 ",
+              "marcador": "0 - 2"
+            },
+            {
+              "local": "Hamkam",
+              "visitante": "Aalesund",
+              "signo": "X ",
+              "marcador": "1 - 1"
+            },
+            {
+              "local": "Kristiansund",
+              "visitante": "Molde",
+              "signo": "1 ",
+              "marcador": "2 - 1"
+            },
+            {
+              "local": "Orgryte",
+              "visitante": "Aik",
+              "signo": "2 ",
+              "marcador": "3 - 4"
+            },
+            {
+              "local": "Mjallby",
+              "visitante": "Elfsborg",
+              "signo": "2 ",
+              "marcador": "0 - 1"
+            },
+            {
+              "local": "Hammarby",
+              "visitante": "Hacken",
+              "signo": "1 ",
+              "marcador": "3 - 0"
+            },
+            {
+              "local": "Malmo",
+              "visitante": "Degerfors",
+              "signo": "2 ",
+              "marcador": "1 - 2"
+            },
+            {
+              "local": "Halmstads",
+              "visitante": "Gais",
+              "signo": "2 ",
+              "marcador": "0 - 2"
+            },
+            {
+              "local": "Goteborg",
+              "visitante": "Kalmar",
+              "signo": "1 ",
+              "marcador": "3 - 2"
+            },
+            {
+              "local": "Sirius",
+              "visitante": "Brommapojkarna",
+              "signo": "X ",
+              "marcador": "2 - 2"
+            },
+            {
+              "local": "Vasteras",
+              "visitante": "Djurgardens",
+              "signo": "1-0",
+              "marcador": "1 - 0"
+            }
+          ],
+          "temporada": "2025-2026",
+          "jornada": "76",
+          "elige8": {
+            "gameid": "ELG8",
+            "relsorteoid_asociado": "1318913045",
+            "activo": "1"
+          },
+          "escrutinioElige8": [
+            {
+              "tipo": "8 Acertados 8 ",
+              "categoria": 1,
+              "premio": "6095,1",
+              "ganadores": "2"
+            }
+          ]
+        }
       ],
-      "embeddedUrls": [
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/css/styles.css",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.js",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.jsonp.js",
-        "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=",
-        "https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/img/QUINIELA.png"
-      ],
-      "raw": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"> <html> <head> <meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"> <meta name=\"generator\" content=\"PSPad editor, www.pspad.com\"> <title></title> <link href=\"https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/css/styles.css\" rel='stylesheet' type='text/css'> </head> <body> <script src=\"https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.js\"></script> <script src=\"https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/js/jquery.jsonp.js\"></script> <script type=\"text/javascript\"> $( document ).ready(function() { $.urlParam = function(name){ var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href); if (results == null){ return null; } else { return decodeURI(results[1]) || 0; } } var fechaSorteo = $.urlParam('fecha_sorteo'); // var game_id = $.urlParam('game_id'); // iniciarEstadisticas(fechaSorteo,game_id); function formatoFecha(str) { var dateSrt = str.split(' ')[0]; var dateSrtGuiones = dateSrt.split('-'); return dateSrtGuiones[2]+\"/\"+ dateSrtGuiones[1]+\"/\"+ dateSrtGuiones[0]; } function iniciarEstadisticas(fechaSorteo,game_id) { var urlServicioResultadosCMS = \"https://www.loteriasyapuestas.es/servicios/fechav3?game_id=\"+game_id; urlServicioResultadosCMS=urlServicioResultadosCMS+\"&fecha_sorteo=\"+fechaSorteo; $.ajax({ url:urlServicioResultadosCMS, cache:true, crossDomain: true, contentType: \"application/json\", async: false, beforeSend: function() { }, success: function(salida) { if(typeof salida =='object') { $(\".resultado\").html(salida[0].combinacion); $(\".Juego\").html(game_id); $(\".fecha_sorteo\").html(formatoFecha(salida[0].fecha_sorteo)); $(\".joker\").html(salida[0].joker.combinacion); } }, error: function(jq,status,message) { console.log(\"ddd\"+message); } }); } }); </script> <div class=\"contenedor\"> <div class=\"flex\"></div> <div class=\"contenido\"> <div style=\"display:none;\" class=\"Juego\"></div> <img style=\"text-align: center;width:200px;\" src=\"https://www.loteriasyapuestas.es/f/loterias/paginas_libres/Resultados-sorteos/img/QUINIELA.png\"> <h1>Resultados último sorteo</h1> <div class=\"contenedor-fecha\"> <div style=\"margin-left:6px;\" class=\"fecha_sorteo\"></div></div> <div class=\"resultado\"></div> </div> </div> </body></html>"
+      "raw": "[{\"fecha_sorteo\":\"2026-08-09 20:55:00\",\"dia_semana\":\"domingo\",\"id_sorteo\":\"1318906045\",\"game_id\":\"LAQU\",\"anyo\":\"2026\",\"premio_bote\":\"0\",\"cdc\":\"13189\",\"apuestas\":\"678514\",\"recaudacion\":\"508885\",\"combinacion\":\"2 - 2 - 1 - 2 - 2 - X - 1 - 2 - 2 - 1 - 2 - 2 - 1 - X - 10\",\"premios\":\"279887\",\"fondo_bote\":\"0\",\"escrutinio\":[{\"tipo\":\"Pleno al 15 \",\"categoria\":1,\"premio\":\"0\",\"ganadores\":\"0\"},{\"tipo\":\"1\\u00aa (14 Aciertos) \",\"categoria\":2,\"premio\":\"0\",\"ganadores\":\"0\"},{\"tipo\":\"2\\u00aa (13 Aciertos) \",\"categoria\":3,\"premio\":\"38166,41\",\"ganadores\":\"1\"},{\"tipo\":\"3\\u00aa (12 Aciertos) \",\"categoria\":4,\"premio\":\"1467,94\",\"ganadores\":\"26\"},{\"tipo\":\"4\\u00aa (11 Aciertos) \",\"categoria\":5,\"premio\":\"144,57\",\"ganadores\":\"264\"},{\"tipo\":\"5\\u00aa (10 Aciertos) \",\"categoria\":6,\"premio\":\"20,79\",\"ganadores\":\"2203\"}],\"partidos\":[{\"local\":\"Sandefjord\",\"visitante\":\"Kfum Oslo\",\"signo\":\"2 \",\"marcador\":\"0 - 1\"},{\"local\":\"Valerenga\",\"visitante\":\"Bodo Glimt\",\"signo\":\"2 \",\"marcador\":\"1 - 2\"},{\"local\":\"Viking\",\"visitante\":\"Sarpsborg 08\",\"signo\":\"1 \",\"marcador\":\"2 - 1\"},{\"local\":\"Start\",\"visitante\":\"Fredrikstad\",\"signo\":\"2 \",\"marcador\":\"0 - 1\"},{\"local\":\"Lillestrom\",\"visitante\":\"Rosenborg\",\"signo\":\"2 \",\"marcador\":\"0 - 2\"},{\"local\":\"Hamkam\",\"visitante\":\"Aalesund\",\"signo\":\"X \",\"marcador\":\"1 - 1\"},{\"local\":\"Kristiansund\",\"visitante\":\"Molde\",\"signo\":\"1 \",\"marcador\":\"2 - 1\"},{\"local\":\"Orgryte\",\"visitante\":\"Aik\",\"signo\":\"2 \",\"marcador\":\"3 - 4\"},{\"local\":\"Mjallby\",\"visitante\":\"Elfsborg\",\"signo\":\"2 \",\"marcador\":\"0 - 1\"},{\"local\":\"Hammarby\",\"visitante\":\"Hacken\",\"signo\":\"1 \",\"marcador\":\"3 - 0\"},{\"local\":\"Malmo\",\"visitante\":\"Degerfors\",\"signo\":\"2 \",\"marcador\":\"1 - 2\"},{\"local\":\"Halmstads\",\"visitante\":\"Gais\",\"signo\":\"2 \",\"marcador\":\"0 - 2\"},{\"local\":\"Goteborg\",\"visitante\":\"Kalmar\",\"signo\":\"1 \",\"marcador\":\"3 - 2\"},{\"local\":\"Sirius\",\"visitante\":\"Brommapojkarna\",\"signo\":\"X \",\"marcador\":\"2 - 2\"},{\"local\":\"Vasteras\",\"visitante\":\"Djurgardens\",\"signo\":\"1-0\",\"marcador\":\"1 - 0\"}],\"temporada\":\"2025-2026\",\"jornada\":\"76\",\"elige8\":{\"gameid\":\"ELG8\",\"relsorteoid_asociado\":\"1318913045\",\"activo\":\"1\"},\"escrutinioElige8\":[{\"tipo\":\"8 Acertados 8 \",\"categoria\":1,\"premio\":\"6095,1\",\"ganadores\":\"2\"}]}]"
     }
   ]
 }
