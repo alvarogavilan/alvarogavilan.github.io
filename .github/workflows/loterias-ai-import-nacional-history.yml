@@ -17,14 +17,30 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Import annual canonical cores
+      - name: Import every available annual canonical core
         shell: bash
         run: |
-          for y in $(seq 2012 2025); do
+          mkdir -p loterias-ai/data/archive/_meta
+          : > /tmp/nacional-years-ok
+          : > /tmp/nacional-years-failed
+          for y in $(seq 2025 -1 2012); do
             echo "Importing Nacional $y"
-            YEAR="$y" DETAIL_LIMIT=0 node loterias-ai/scripts/import-nacional-year.mjs
-            sleep 1
+            if YEAR="$y" DETAIL_LIMIT=0 node loterias-ai/scripts/import-nacional-year.mjs; then
+              echo "$y" >> /tmp/nacional-years-ok
+            else
+              echo "$y" >> /tmp/nacional-years-failed
+              echo "Year $y unavailable in this pass; continuing"
+            fi
+            sleep 2
           done
+          python - <<'PY'
+          import json, pathlib, datetime
+          ok=pathlib.Path('/tmp/nacional-years-ok').read_text().split()
+          failed=pathlib.Path('/tmp/nacional-years-failed').read_text().split()
+          p=pathlib.Path('loterias-ai/data/archive/_meta/nacional-history-backfill.json')
+          p.write_text(json.dumps({'generatedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'successfulYears':ok,'failedYears':failed,'partialSuccess':bool(ok)},indent=2)+'\n')
+          if not ok: raise SystemExit('No historical year imported')
+          PY
       - run: node loterias-ai/scripts/build-special-draw-indexes.mjs
       - run: node loterias-ai/scripts/build-national-archive-index.mjs
       - run: node loterias-ai/scripts/audit-national-archive.mjs
@@ -34,6 +50,7 @@ jobs:
           mkdir -p /tmp/nacional-history
           cp -r loterias-ai/data/archive/loteria-nacional /tmp/nacional-history/
           cp -r loterias-ai/data/archive/specials /tmp/nacional-history/
+          cp loterias-ai/data/archive/_meta/nacional-history-backfill.json /tmp/nacional-history/
           cp loterias-ai/data/archive/manifest.json /tmp/nacional-history/manifest.json
           cp loterias-ai/data/archive/_meta/archive-audit.json /tmp/nacional-history/archive-audit.json
           git fetch origin main
@@ -41,12 +58,13 @@ jobs:
           rm -rf loterias-ai/data/archive/loteria-nacional loterias-ai/data/archive/specials
           cp -r /tmp/nacional-history/loteria-nacional loterias-ai/data/archive/
           cp -r /tmp/nacional-history/specials loterias-ai/data/archive/
+          cp /tmp/nacional-history/nacional-history-backfill.json loterias-ai/data/archive/_meta/nacional-history-backfill.json
           cp /tmp/nacional-history/manifest.json loterias-ai/data/archive/manifest.json
           cp /tmp/nacional-history/archive-audit.json loterias-ai/data/archive/_meta/archive-audit.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add loterias-ai/data/archive
-          git commit -m 'data(loterias-ai): import Nacional annual history 2012-2025' || exit 0
+          git commit -m 'data(loterias-ai): import available Nacional annual history' || exit 0
           for attempt in 1 2 3 4 5; do
             git pull --rebase origin main && git push origin HEAD:main && exit 0
             git rebase --abort || true
