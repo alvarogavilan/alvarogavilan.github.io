@@ -1,0 +1,35 @@
+name: Loterias AI Elige8 Backfill
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/backfill-elige8-from-official-quiniela.mjs'
+      - '.github/workflows/loterias-ai-elige8-backfill.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: BATCH_LIMIT=400 node loterias-ai/scripts/backfill-elige8-from-official-quiniela.mjs
+      - run: node loterias-ai/scripts/elige8-official-financial-tournament.mjs
+      - name: Persist safely
+        run: |
+          mkdir -p /tmp/e8
+          cp -r loterias-ai/data/archive/elige8 /tmp/e8/
+          cp loterias-ai/data/archive/_meta/elige8-backfill.json /tmp/e8/meta.json
+          cp loterias-ai/data/backtests/elige8-official-financial-tournament.json /tmp/e8/result.json
+          git fetch origin main
+          git reset --hard origin/main
+          rm -rf loterias-ai/data/archive/elige8
+          cp -r /tmp/e8/elige8 loterias-ai/data/archive/
+          cp /tmp/e8/meta.json loterias-ai/data/archive/_meta/elige8-backfill.json
+          cp /tmp/e8/result.json loterias-ai/data/backtests/elige8-official-financial-tournament.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/archive/elige8 loterias-ai/data/archive/_meta/elige8-backfill.json loterias-ai/data/backtests/elige8-official-financial-tournament.json
+          git commit -m 'data(loterias-ai): persist official Elige8 archive and gate' || exit 0
+          git push origin HEAD:main
