@@ -1,0 +1,5 @@
+import fs from 'node:fs';
+const base=fs.readFileSync('loterias-ai/scripts/euromillones-official-financial-tournament.mjs','utf8');
+const patched=base.replace("const catMap={'5+2':1,'5+1':2,'5+0':3,'4+2':4,'4+1':5,'3+2':6,'4+0':7,'2+2':8,'3+1':9,'3+0':10,'1+2':11,'2+1':12,'2+0':13};function prize(rec,t){const hm=t.main.filter(n=>rec.result.main.map(Number).includes(n)).length,hs=t.stars.filter(n=>rec.result.stars.map(Number).includes(n)).length,cat=catMap[`${hm}+${hs}`];if(!cat)return 0;return Number(rec.economics.categories.find(x=>Number(x.category)===cat)?.prize||0)}", "function prize(rec,t){const hm=t.main.filter(n=>rec.result.main.map(Number).includes(n)).length,hs=t.stars.filter(n=>rec.result.stars.map(Number).includes(n)).length,key=`${hm}+${hs}`;const row=rec.economics.categories.find(x=>String(x.label||'').replace(/\\s+/g,'').includes(key));return Number(row?.prize||0)}");
+if(patched===base)throw new Error('Euromillones patch target not found');
+const tmp='loterias-ai/scripts/.euromillones-tournament-v2-runtime.mjs';fs.writeFileSync(tmp,patched);await import(new URL('./.euromillones-tournament-v2-runtime.mjs',import.meta.url));fs.unlinkSync(tmp);
