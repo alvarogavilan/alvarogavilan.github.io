@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+// Full multi-game rerun trigger: 2026-08-14 core-history import complete.
 const mean=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:0;
 const sd=a=>{if(a.length<2)return 0;const m=mean(a);return Math.sqrt(a.reduce((s,x)=>s+(x-m)**2,0)/(a.length-1));};
 const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
