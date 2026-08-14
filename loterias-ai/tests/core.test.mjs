@@ -17,8 +17,9 @@ const treasury=load('loterias-ai/js/treasury-engine.js').LotteryTreasury;
 const archive=load('loterias-ai/js/archive-integrity.js').LotteryArchiveIntegrity;
 
 assert.equal(adapter.toDateISO('20/07/2026'),'2026-07-20');
-assert.equal(adapter.validateNumericDraw({drawDate:'2026-07-20',main:[5,22,28,33,39,46]},{pick:6,max:49}).ok,true);
-assert.equal(adapter.validateNumericDraw({drawDate:'2026-07-20',main:[5,5,28,33,39,46]},{pick:6,max:49}).ok,false);
+assert.equal(adapter.validateNumericDraw({gameId:'bonoloto',drawDate:'2026-07-20',main:[5,22,28,33,39,46]}).ok,true);
+assert.equal(adapter.validateNumericDraw({gameId:'bonoloto',drawDate:'2026-07-20',main:[5,5,28,33,39,46]}).ok,false);
+assert.equal(adapter.validateNumericDraw({gameId:'euromillones',drawDate:'2026-07-17',main:[12,21,23,34,40],secondary:[9,10]}).ok,true);
 
 const batches=backfill.plan('bonoloto',2024,2026);
 assert.equal(batches.length,3);
