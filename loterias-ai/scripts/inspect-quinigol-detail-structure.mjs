@@ -1,0 +1,7 @@
+import fs from 'node:fs';
+const url='https://www.loteriasyapuestas.es/ca/el-quinigol/resultados/el-quinigol-resultados-del-12-de-julio-de-2026';
+const r=await fetch(url,{redirect:'follow',signal:AbortSignal.timeout(25000),headers:{'user-agent':'LoteriasAI/1.0 research archive','accept':'text/html'}});if(!r.ok)throw new Error(`HTTP ${r.status}`);const html=await r.text();
+const clean=s=>String(s).replace(/<[^>]+>/g,' ').replace(/&nbsp;|&#160;/gi,' ').replace(/&aacute;/gi,'á').replace(/&eacute;/gi,'é').replace(/&iacute;/gi,'í').replace(/&oacute;/gi,'ó').replace(/&uacute;/gi,'ú').replace(/\s+/g,' ').trim();
+const lists=[];for(const [i,m] of [...html.matchAll(/<ul([^>]*)>([\s\S]*?)<\/ul>/gi)].entries()){const items=[...m[2].matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)].map(x=>clean(x[1])).filter(Boolean);if(items.length)lists.push({i,attrs:m[1].trim(),items,raw:m[0].replace(/\s+/g,' ').slice(0,2000)})}
+const divs=[];for(const [i,m] of [...html.matchAll(/<div([^>]*)>([\s\S]{0,2500}?)<\/div>/gi)].entries()){const text=clean(m[2]);if(/España|Bélgica|2-1|M\s*-\s*1|resultados correspondientes/i.test(text))divs.push({i,attrs:m[1].trim(),text:text.slice(0,1500)})}
+const out={generatedAt:new Date().toISOString(),url,bytes:html.length,lists,divs:divs.slice(0,40)};fs.mkdirSync('loterias-ai/data/probes',{recursive:true});fs.writeFileSync('loterias-ai/data/probes/quinigol-detail-structure.json',JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify({bytes:html.length,lists:lists.map(x=>({i:x.i,attrs:x.attrs,items:x.items})),divs:out.divs},null,2));
