@@ -1,6 +1,21 @@
 {
-  "generatedAt": "2026-08-14T18:13:45.536Z",
+  "generatedAt": "2026-08-14T18:17:59.515Z",
   "purpose": "inspect official SELAE Nacional sales/prize distribution geography",
+  "jsProbe": {
+    "url": "https://www.loteriasyapuestas.es/f/loterias/estaticos/js/ventas_y_consignacion.js",
+    "status": 200,
+    "bytes": 2495,
+    "candidateUrls": [
+      "Resultados - Peticion a JSON de Ventas fallida: ",
+      "Resultados - Peticion a JSON de Consignacion fallida: ",
+      ";\r\n\t\t\r\n\treturn elementHTML;\r\n}\r\n\r\nfunction isOdd(num) { \r\n\treturn num % 2;\r\n}\r\n\r\nfunction isValidInformationFromJson(info){\r\n\tvar isValid = false;\r\n\tif(info != null){\r\n\t\tvar infoProvinces = info.provincias;\r\n\t\tvar infoCommunities = info.comunidades;\r\n\t\tif((infoProvinces != null) && (infoCommunities != null)){\r\n\t\t\tif((infoProvinces.length > 0) && (infoCommunities.length > 0)){\r\n\t\t\t\tisValid = true;\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n\treturn isValid;\r\n}\r\n\r\nfunction showErrorMessage(){\r\n\tjQuery("
+    ],
+    "candidateCalls": [
+      "urlSalesLNAC,function (infoSales) {\r",
+      "urlConsignationLNAC, function (infoConsignment) {\r"
+    ],
+    "sample": "\r\nfunction placeSales(){\r\n\tjQuery.getJSON(urlSalesLNAC,function (infoSales) {\r\n\t\tplaceInfoInHTMLFromJson(infoSales);\r\n\t}).fail(function( jqxhr, textStatus, error ){\r\n\t\tvar err = textStatus + \", \" + error;\r\n\t\tconsole.log( \"Resultados - Peticion a JSON de Ventas fallida: \" + err );\r\n\t\tshowErrorMessage();\r\n\t});\r\n}\r\n\t\t\t\r\nfunction placeConsignment(){\r\n\tjQuery.getJSON(urlConsignationLNAC, function (infoConsignment) {\r\n\t\tplaceInfoInHTMLFromJson(infoConsignment);\r\n\t}).fail(function( jqxhr, textStatus, error ){\r\n\t\tvar err = textStatus + \", \" + error;\r\n\t\tconsole.log( \"Resultados - Peticion a JSON de Consignacion fallida: \" + err );\r\n\t\tshowErrorMessage();\r\n\t});\r\n}\r\n\r\nfunction placeInfoInHTMLFromJson(info){\r\n\tif(isValidInformationFromJson(info)){\t\r\n\t\tplaceProvinces(info.provincias);\r\n\t\tplaceCommunities(info.comunidades);\r\n\t} else {\r\n\t\tshowErrorMessage();\r\n\t}\r\n}\r\n\r\nfunction placeProvinces(listProvinces){\r\n\tfor(var i=0; i < listProvinces.length; i++){\r\n\t\tvar province = listProvinces[i];\r\n\t\tvar element = createElementList(province, i);\r\n\t\tjQuery('#provinces tr:last').after(element);\r\n\t}\r\n}\r\n\r\nfunction placeCommunities(listCommunities){\r\n\tfor(var i=0; i < listCommunities.length; i++){\r\n\t\tvar community = listCommunities[i];\r\n\t\tvar element = createElementList(community, i);\r\n\t\tjQuery('#communities tr:last').after(element);\r\n\t}\r\n}\r\n\r\nfunction createElementList(element, index){\r\n\tvar nameCommunity = element.name;\r\n\tvar serieCommunity = element.serie;\r\n\tvar totalCommunity = element.total;\r\n\tvar isOddNumber = isOdd(index);\r\n\r\n\tvar elementHTML =  \"<tr class=\";\r\n\tif(isOddNumber){\r\n\t\telementHTML += \"impar\";\r\n\t} else {\r\n\t\telementHTML += \"par\";\r\n\t}\r\n\telementHTML += \">\";\r\n\t\telementHTML += \"<td>\";\r\n\t\t\telementHTML += nameCommunity;\r\n\t\telementHTML += \"</td>\";\r\n\t\telementHTML += \"<td>\";\r\n\t\t\telementHTML += serieCommunity;\r\n\t\telementHTML += \"</td>\";\r\n\t\telementHTML += \"<td>\"\r\n\t\t\telementHTML += totalCommunity;\r\n\t\telementHTML += \"</td>\"\r\n\telementHTML += \"</tr>\";\r\n\t\t\r\n\treturn elementHTML;\r\n}\r\n\r\nfunction isOdd(num) { \r\n\treturn num % 2;\r\n}\r\n\r\nfunction isValidInformationFromJson(info){\r\n\tvar isValid = false;\r\n\tif(info != null){\r\n\t\tvar infoProvinces = info.provincias;\r\n\t\tvar infoCommunities = info.comunidades;\r\n\t\tif((infoProvinces != null) && (infoCommunities != null)){\r\n\t\t\tif((infoProvinces.length > 0) && (infoCommunities.length > 0)){\r\n\t\t\t\tisValid = true;\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n\treturn isValid;\r\n}\r\n\r\nfunction showErrorMessage(){\r\n\tjQuery('#bodyContent').hide();\r\n\tjQuery('#messageNoInfo').show();\r\n}"
+  },
   "draws": [
     {
       "date": "2026-08-13",
