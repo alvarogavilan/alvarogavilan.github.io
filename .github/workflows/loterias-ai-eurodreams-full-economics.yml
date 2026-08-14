@@ -1,0 +1,40 @@
+name: Loterias AI EuroDreams Full Economics
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/enrich-eurodreams-full-economics.mjs'
+      - '.github/workflows/loterias-ai-eurodreams-full-economics.yml'
+permissions:
+  contents: write
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node loterias-ai/scripts/enrich-eurodreams-full-economics.mjs
+      - run: node loterias-ai/scripts/build-national-archive-index.mjs
+      - run: node loterias-ai/scripts/audit-national-archive.mjs
+      - name: Persist safely
+        run: |
+          mkdir -p /tmp/eurodreams
+          cp -r loterias-ai/data/archive/eurodreams /tmp/eurodreams/
+          cp loterias-ai/data/archive/_meta/eurodreams-economics-ingestion.json /tmp/eurodreams-summary.json
+          cp loterias-ai/data/archive/manifest.json /tmp/manifest.json
+          cp loterias-ai/data/archive/_meta/archive-audit.json /tmp/archive-audit.json
+          git fetch origin main
+          git reset --hard origin/main
+          rm -rf loterias-ai/data/archive/eurodreams
+          cp -r /tmp/eurodreams/eurodreams loterias-ai/data/archive/
+          cp /tmp/eurodreams-summary.json loterias-ai/data/archive/_meta/eurodreams-economics-ingestion.json
+          cp /tmp/manifest.json loterias-ai/data/archive/manifest.json
+          cp /tmp/archive-audit.json loterias-ai/data/archive/_meta/archive-audit.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/archive
+          git commit -m 'data(loterias-ai): persist full EuroDreams economics archive' || exit 0
+          for attempt in 1 2 3 4 5; do git pull --rebase origin main && git push origin HEAD:main && exit 0; git rebase --abort || true; sleep $((attempt*3)); done
+          exit 1
