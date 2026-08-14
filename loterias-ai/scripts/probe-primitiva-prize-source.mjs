@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+const url='https://www.azarysuerte.es/Historico.php';
+const r=await fetch(url,{headers:{'user-agent':'LoteriasAI/1.0 research','accept':'text/html'}});const html=await r.text();
+const hrefs=[...html.matchAll(/href=["']([^"']+)["']/gi)].map(m=>m[1]);
+const srcs=[...html.matchAll(/src=["']([^"']+)["']/gi)].map(m=>m[1]);
+const forms=[...html.matchAll(/<form\b[^>]*>/gi)].map(m=>m[0]);
+const actions=forms.map(x=>(x.match(/action=["']([^"']+)["']/i)||[])[1]).filter(Boolean);
+const interesting=[...new Set([...hrefs,...srcs,...actions].filter(x=>/histor|primit|ajax|result|premi|php|js/i.test(x)))];
+const keywords={primitiva:[...html.matchAll(/.{0,100}primitiva.{0,180}/gi)].slice(0,20).map(m=>m[0]),ajax:[...html.matchAll(/.{0,100}(?:ajax|fetch\(|xmlhttprequest|\.php\?)[\s\S]{0,180}/gi)].slice(0,30).map(m=>m[0])};
+const out={generatedAt:new Date().toISOString(),url,status:r.status,bytes:html.length,forms,interesting,keywords};fs.mkdirSync('loterias-ai/data/probes',{recursive:true});fs.writeFileSync('loterias-ai/data/probes/primitiva-prize-source.json',JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify({status:r.status,bytes:html.length,interesting,forms},null,2));
