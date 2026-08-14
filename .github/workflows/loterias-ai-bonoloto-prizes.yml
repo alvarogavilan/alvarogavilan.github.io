@@ -1,0 +1,26 @@
+name: Loterias AI Bonoloto Prize Tables
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/bonoloto-recent-prize-parser.mjs'
+      - '.github/workflows/loterias-ai-bonoloto-prizes.yml'
+  workflow_dispatch:
+jobs:
+  parse:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node loterias-ai/scripts/bonoloto-recent-prize-parser.mjs
+      - name: Persist parsed prize tables
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/prizes
+          git commit -m 'data(loterias-ai): add recent Bonoloto prize tables' || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
