@@ -1,8 +1,11 @@
 {
-  "version":"2026-08-14.2",
+  "version":"2026-08-14.3",
   "purpose":"Official SELAE machine-readable/datable result source registry.",
   "officialDocumentation":"https://www.loteriasyapuestas.es/es/resultados-ultimos-sorteos",
   "datedEndpointBase":"https://www.loteriasyapuestas.es/f/loterias/resultados/",
+  "dataServiceBase":"https://www.loteriasyapuestas.es/servicios/fechav3",
+  "dataServiceTemplate":"?game_id={GAME_ID}&fecha_sorteo={YYYYMMDD}",
+  "dataServiceDiscovery":{"evidence":"Official SELAE result templates invoke /servicios/fechav3 with game_id and fecha_sorteo to populate draw date and result.","status":"DISCOVERED_FROM_OFFICIAL_TEMPLATE"},
   "feeds":[
     {"gameId":"euromillones","selaeGameId":"EMIL","template":"euromillones.html?game_id=EMIL&fecha_sorteo={YYYYMMDD}","status":"OFFICIALLY_DOCUMENTED"},
     {"gameId":"primitiva","selaeGameId":"LAPR","template":"primitiva.html?game_id=LAPR&fecha_sorteo={YYYYMMDD}","status":"OFFICIALLY_DOCUMENTED"},
@@ -15,13 +18,6 @@
     {"gameId":"lototurf","selaeGameId":"LOTU","template":"lototurf.html?game_id=LOTU&fecha_sorteo={YYYYMMDD}","status":"OFFICIALLY_DOCUMENTED"},
     {"gameId":"quintuple-plus","selaeGameId":"QUPL","template":"quintuple.html?game_id=QUPL&fecha_sorteo={YYYYMMDD}","status":"OFFICIALLY_DOCUMENTED"}
   ],
-  "secondaryDiscovery":[
-    {"gameId":"primitiva","jsonCandidate":"https://www.loteriasyapuestas.es/es/la-primitiva/resultados/.formatoJSON","rssCandidate":"https://www.loteriasyapuestas.es/es/la-primitiva/resultados/.formatoRSSa","status":"DISCOVERED"}
-  ],
-  "policy":[
-    "Official dated endpoints are preferred for canonical per-draw evidence.",
-    "A successful HTTP response is not sufficient: payload must pass game-specific parser validation.",
-    "Christmas and El Nino require identification from Loteria Nacional extraordinary draw metadata and remain separate analytical datasets.",
-    "Feed discovery is not equivalent to historical completeness."
-  ]
+  "secondaryDiscovery":[{"gameId":"primitiva","jsonCandidate":"https://www.loteriasyapuestas.es/es/la-primitiva/resultados/.formatoJSON","rssCandidate":"https://www.loteriasyapuestas.es/es/la-primitiva/resultados/.formatoRSSa","status":"DISCOVERED"}],
+  "policy":["Prefer the fechav3 service for machine ingestion once payload validation passes.","A successful HTTP response is not sufficient: payload must pass game-specific parser validation.","Christmas and El Nino require identification from Loteria Nacional extraordinary draw metadata and remain separate analytical datasets.","Feed discovery is not equivalent to historical completeness."]
 }
