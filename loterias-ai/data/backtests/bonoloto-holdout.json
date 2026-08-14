@@ -1,0 +1,53 @@
+{
+  "generatedAt": "2026-08-14T15:42:04.784Z",
+  "gameId": "bonoloto",
+  "methodology": "locked-70-30-chronological-holdout-v1",
+  "history": {
+    "total": 9354,
+    "minHistory": 250,
+    "discoveryEvaluations": 6372,
+    "holdoutEvaluations": 2732,
+    "holdoutStartDate": "2018-05-07",
+    "holdoutEndDate": "2026-08-13"
+  },
+  "discoveryRanking": [
+    {
+      "id": "balanced",
+      "rate": 0.09416195856873823,
+      "n": 6372
+    },
+    {
+      "id": "cooccurrence-heavy",
+      "rate": 0.09322033898305085,
+      "n": 6372
+    },
+    {
+      "id": "stability-heavy",
+      "rate": 0.09259259259259259,
+      "n": 6372
+    },
+    {
+      "id": "frequency-heavy",
+      "rate": 0.08945386064030132,
+      "n": 6372
+    },
+    {
+      "id": "gap-heavy",
+      "rate": 0.08584431889516635,
+      "n": 6372
+    }
+  ],
+  "selectedStrategy": "balanced",
+  "holdout": {
+    "modelHitRateAtLeast3": 0.1013909224011713,
+    "randomHitRateAtLeast3": 0.07869692532942898,
+    "absoluteExcess": 0.022693997071742314,
+    "relativeLift": 0.28837209302325584,
+    "paired95CI": {
+      "lower": 0.007700834707563197,
+      "upper": 0.03768715943592143
+    },
+    "pass": true
+  },
+  "truth": "Strategy was selected using discovery period only and locked before scoring the chronological holdout. PASS requires paired 95% lower bound > 0."
+}
