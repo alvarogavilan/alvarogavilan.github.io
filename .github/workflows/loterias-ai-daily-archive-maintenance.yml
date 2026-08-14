@@ -10,7 +10,10 @@ on:
       - '.github/workflows/loterias-ai-daily-archive-maintenance.yml'
       - 'loterias-ai/scripts/import-bonoloto-full-history.mjs'
       - 'loterias-ai/scripts/import-core-full-history.mjs'
+      - 'loterias-ai/scripts/import-nacional-year.mjs'
       - 'loterias-ai/scripts/enrich-national-archive-economics.mjs'
+      - 'loterias-ai/scripts/enrich-eurodreams-full-economics.mjs'
+      - 'loterias-ai/scripts/build-special-draw-indexes.mjs'
       - 'loterias-ai/scripts/build-national-archive-index.mjs'
       - 'loterias-ai/scripts/audit-national-archive.mjs'
 
@@ -31,12 +34,22 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Refresh persistent draw histories
+      - name: Refresh persistent numerical histories
         run: |
           node loterias-ai/scripts/import-bonoloto-full-history.mjs
           node loterias-ai/scripts/import-core-full-history.mjs
-      - name: Persist available economics into archive
+      - name: Refresh current-year Nacional core and a few full details
+        shell: bash
+        run: |
+          YEAR="$(date -u +%Y)" DETAIL_LIMIT=3 node loterias-ai/scripts/import-nacional-year.mjs
+      - name: Persist available fixed-jackpot economics
         run: node loterias-ai/scripts/enrich-national-archive-economics.mjs
+      - name: Progress EuroDreams economics without blocking maintenance
+        shell: bash
+        run: |
+          BATCH_LIMIT=10 node loterias-ai/scripts/enrich-eurodreams-full-economics.mjs || echo 'EuroDreams source temporarily incomplete; archive remains valid'
+      - name: Rebuild Navidad and Niño reference indexes
+        run: node loterias-ai/scripts/build-special-draw-indexes.mjs
       - name: Rebuild archive manifest
         run: node loterias-ai/scripts/build-national-archive-index.mjs
       - name: Audit archive integrity and recent economics coverage
