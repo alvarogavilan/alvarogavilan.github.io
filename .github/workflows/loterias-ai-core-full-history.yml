@@ -1,0 +1,35 @@
+name: Loterias AI Core Full History
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/import-core-full-history.mjs'
+      - '.github/workflows/loterias-ai-core-full-history.yml'
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Import four complete histories
+        run: node loterias-ai/scripts/import-core-full-history.mjs
+      - name: Require useful sample sizes
+        run: |
+          node - <<'NODE'
+          const s=require('./loterias-ai/data/archive/core-full-history-summary.json').games;
+          const mins={primitiva:4000,euromillones:1900,'gordo-primitiva':1000,eurodreams:250};
+          for(const [g,m] of Object.entries(mins)) if((s[g]?.totalRecords||0)<m) throw new Error(`${g}: ${(s[g]?.totalRecords||0)} < ${m}`);
+          console.log('history gates passed');
+          NODE
+      - name: Persist archive
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/archive/primitiva loterias-ai/data/archive/euromillones loterias-ai/data/archive/gordo-primitiva loterias-ai/data/archive/eurodreams loterias-ai/data/archive/core-full-history-summary.json
+          git commit -m 'data(loterias-ai): import four core full histories' || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
