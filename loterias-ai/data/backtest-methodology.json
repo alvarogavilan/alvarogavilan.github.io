@@ -1,0 +1,25 @@
+{
+  "version":"2026-08-14.1",
+  "name":"Protocolo de Demostración de Rentabilidad",
+  "objective":"Test every covered game draw-by-draw as if the future were unknown, using only information available before each historical draw.",
+  "games":"ALL_COVERED_GAMES",
+  "requiredPerDraw":["verified draw result","verified rules era","verified ticket price","verified prize table or verified payout evaluator","training history strictly before target draw","sealed model version","generated ticket set","stake","prize","profit","bankroll after draw"],
+  "metrics":["total stake","total prizes","net P/L","ROI","profitable draw rate","max drawdown","closing bankroll","hit distribution","excess ROI vs random baseline","confidence interval","subperiod stability"],
+  "antiOverfitRules":[
+    "Never tune a model using the result of the draw it is being tested on.",
+    "Freeze model parameters before evaluating a held-out period.",
+    "Report failed periods as well as successful periods.",
+    "Compare against a reproducible random baseline with the same number and cost of tickets.",
+    "Segment historical rule eras when game mechanics changed.",
+    "Use historical ticket prices and historical prize rules valid on the target date.",
+    "A method is not called profitable unless out-of-sample evidence remains positive after all costs and confidence bounds."
+  ],
+  "proofLevels":[
+    {"id":"DESCRIPTIVE","requirement":"Historical retrospective only; no claim of edge."},
+    {"id":"WALK_FORWARD_POSITIVE","requirement":"Positive net ROI in chronological walk-forward simulation."},
+    {"id":"BASELINE_OUTPERFORMANCE","requirement":"Positive excess ROI against reproducible random portfolios of identical cost."},
+    {"id":"ROBUST_OUT_OF_SAMPLE","requirement":"Positive held-out performance across multiple subperiods with confidence interval lower bound above zero."},
+    {"id":"PROSPECTIVE_CONFIRMED","requirement":"Positive sealed Shadow Ledger after deployment."}
+  ],
+  "truth":"Even the highest proof level is evidence of historical/prospective performance, not a mathematical guarantee of future profit."
+}
