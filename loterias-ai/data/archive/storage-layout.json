@@ -1,0 +1,15 @@
+{
+  "version":"2026-08-14.1",
+  "strategy":"game-year-partitions",
+  "canonicalPathTemplate":"loterias-ai/data/archive/{gameId}/{year}.json",
+  "indexPathTemplate":"loterias-ai/data/archive/{gameId}/index.json",
+  "partitionSchema":{"gameId":"string","year":"integer","drawCount":"integer","validatedCount":"integer","earliest":"YYYY-MM-DD|null","latest":"YYYY-MM-DD|null","checksum":"sha256","draws":"array"},
+  "indexSchema":{"gameId":"string","earliestVerifiable":"YYYY-MM-DD|null","latestValidated":"YYYY-MM-DD|null","totalDraws":"integer","validatedDraws":"integer","years":"array","gaps":"array","completenessState":"string"},
+  "rules":[
+    "Do not store one GitHub file per draw; aggregate canonical validated records by game and year.",
+    "Raw evidence may be stored separately and referenced from canonical records.",
+    "Each yearly partition receives a deterministic checksum after normalization.",
+    "Indexes must be rebuildable from yearly partitions.",
+    "Analytical features are derived artifacts and never replace canonical draw history."
+  ]
+}
