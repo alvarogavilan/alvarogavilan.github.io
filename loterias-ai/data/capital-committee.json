@@ -1,0 +1,45 @@
+{
+  "version":"2026-08-14.1",
+  "name":"Comité Diario de Capital y Selección",
+  "mode":"research-only",
+  "objective":"Compare all eligible game cabinets and produce an auditable daily research allocation without claiming guaranteed profit.",
+  "requiredInputs":[
+    "verified-draw-history",
+    "official-game-rules",
+    "ticket-cost",
+    "prize-structure",
+    "cabinet-backtest",
+    "shadow-ledger-performance",
+    "model-calibration"
+  ],
+  "metrics":[
+    "jackpot-base-probability",
+    "any-prize-base-probability-when-verifiable",
+    "cost-per-entry",
+    "historical-backtest-roi",
+    "shadow-ledger-roi",
+    "maximum-drawdown",
+    "sample-size",
+    "model-stability",
+    "data-quality"
+  ],
+  "decisionStates":["NO_ACTION","RESEARCH_CANDIDATE","DATA_BLOCKED"],
+  "hardRules":[
+    "Never invent a profit percentage.",
+    "Never convert an internal model score into a claimed true win probability.",
+    "Allow a zero-euro research allocation when no model has sufficient evidence.",
+    "Seal every candidate before the official draw.",
+    "Keep Christmas, El Nino and ordinary Loteria Nacional as independent cabinets."
+  ],
+  "dailyReportFields":[
+    "date",
+    "games-reviewed",
+    "games-blocked",
+    "research-candidates",
+    "candidate-combinations",
+    "simulated-entry-count",
+    "simulated-cost",
+    "evidence-summary",
+    "shadow-ledger-status"
+  ]
+}
