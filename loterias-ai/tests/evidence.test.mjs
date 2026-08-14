@@ -1,0 +1,10 @@
+import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
+const code=fs.readFileSync('loterias-ai/js/evidence-gate.js','utf8');
+const c={globalThis:{},console,Number,Array,Object};c.window=undefined;vm.createContext(c);vm.runInContext(code,c);
+const g=c.globalThis.LotteryEvidenceGate;
+const blocked=g.evaluate({dataComplete:false,validatedDraws:10,minimumDraws:250,ruleEraVerified:false,walkForwardComplete:false,baselineComplete:false,excessRoiLowerCI:-1,shadowLedgerSufficient:false,dataQuality:.8});
+assert.equal(blocked.eligible,false);assert.ok(blocked.reasons.length>=7);
+const pass=g.evaluate({dataComplete:true,validatedDraws:1000,minimumDraws:250,ruleEraVerified:true,walkForwardComplete:true,baselineComplete:true,excessRoiLowerCI:.2,shadowLedgerSufficient:true,dataQuality:.99});
+assert.equal(pass.eligible,true);
+const ranked=g.rank([{id:'a',dataComplete:true,validatedDraws:1000,minimumDraws:250,ruleEraVerified:true,walkForwardComplete:true,baselineComplete:true,excessRoiLowerCI:.2,shadowLedgerSufficient:true,dataQuality:.99,shadowRoi:1,drawdown:5},{id:'b',dataComplete:true,validatedDraws:1000,minimumDraws:250,ruleEraVerified:true,walkForwardComplete:true,baselineComplete:true,excessRoiLowerCI:.4,shadowLedgerSufficient:true,dataQuality:.99,shadowRoi:.5,drawdown:7}]);
+assert.equal(ranked[0].input.id,'b');console.log('Loterías AI evidence tests: PASS');
