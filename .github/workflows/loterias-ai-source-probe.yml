@@ -4,6 +4,11 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '17 4 * * *'
+  push:
+    paths:
+      - 'loterias-ai/scripts/probe-selae.mjs'
+      - 'loterias-ai/data/selae-feed-endpoints.json'
+      - '.github/workflows/loterias-ai-source-probe.yml'
 
 permissions:
   contents: write
