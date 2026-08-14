@@ -2,6 +2,23 @@
 (function(root){
   'use strict';
   function pct(v){const n=Number(v);return Number.isFinite(n)?Math.round(n*10000)/100:null;}
+  function explainNumber(n){
+    const raw=n?.raw||{},signals=n?.signals||{};
+    return {
+      number:n?.number??null,
+      score:pct(n?.score),
+      facts:{
+        historicalAppearances:raw.countAll??null,
+        recent20:raw.count20??null,
+        recent50:raw.count50??null,
+        recent100:raw.count100??null,
+        gapDraws:raw.gapDraws??null
+      },
+      signals:Object.fromEntries(Object.entries(signals).map(([k,v])=>[k,pct(v)])),
+      explanation:Array.isArray(n?.explanation)?n.explanation:[],
+      interpretation:'Estas métricas explican por qué el modelo puntúa el número; no significan por sí solas que esté “debido”. Solo el rendimiento walk-forward puede convertir una señal descriptiva en evidencia predictiva.'
+    };
+  }
   function explain(input){
     const x=input||{};
     const signals=[];
@@ -22,13 +39,15 @@
       modelScore:pct(modelScore),
       evidenceLevel:x.evidenceLevel||'RESEARCH_ONLY',
       signals,
+      perNumberEvidence:(x.numberEvidence||[]).map(explainNumber),
       foundation:x.foundation||[],
       limitations:x.limitations||[
         'En un sorteo aleatorio, cualquier combinación válida conserva la misma probabilidad matemática base salvo reglas específicas del juego.',
         'Frecuencia histórica y retraso no demuestran causalidad predictiva.',
+        'Una frase como “hoy debe salir” solo puede aparecer como interpretación del modelo cuando una regla concreta haya demostrado rendimiento fuera de muestra; nunca como certeza matemática.',
         'El score del modelo mide respaldo del proceso, no probabilidad garantizada de premio.'
       ]
     };
   }
-  root.LotteryExplanationEngine={explain};
+  root.LotteryExplanationEngine={explain,explainNumber};
 })(typeof window!=='undefined'?window:globalThis);
