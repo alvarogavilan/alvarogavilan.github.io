@@ -1,0 +1,52 @@
+name: Loterias AI Horse Official Archive
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '55 6 * * *'
+  push:
+    paths:
+      - 'loterias-ai/scripts/enrich-lototurf-official-fechav3.mjs'
+      - 'loterias-ai/scripts/import-quintuple-from-lototurf-dates.mjs'
+      - '.github/workflows/loterias-ai-horse-official-archive.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-horse-official-archive
+  cancel-in-progress: false
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Enrich Lototurf from SELAE
+        run: BATCH_LIMIT=100 node loterias-ai/scripts/enrich-lototurf-official-fechav3.mjs
+      - name: Discover Quíntuple Plus on racing dates
+        run: BATCH_LIMIT=120 node loterias-ai/scripts/import-quintuple-from-lototurf-dates.mjs
+      - name: Persist safely on fresh main
+        shell: bash
+        run: |
+          mkdir -p /tmp/horse
+          cp -r loterias-ai/data/archive/lototurf /tmp/horse/
+          cp -r loterias-ai/data/archive/quintuple-plus /tmp/horse/
+          cp loterias-ai/data/archive/_meta/lototurf-official-enrichment.json /tmp/horse/lototurf-summary.json
+          cp loterias-ai/data/archive/_meta/quintuple-ingestion.json /tmp/horse/quintuple-summary.json
+          cp loterias-ai/data/archive/_meta/quintuple-scan-state.json /tmp/horse/quintuple-state.json
+          git fetch origin main
+          git reset --hard origin/main
+          rm -rf loterias-ai/data/archive/lototurf loterias-ai/data/archive/quintuple-plus
+          cp -r /tmp/horse/lototurf loterias-ai/data/archive/
+          cp -r /tmp/horse/quintuple-plus loterias-ai/data/archive/
+          cp /tmp/horse/lototurf-summary.json loterias-ai/data/archive/_meta/lototurf-official-enrichment.json
+          cp /tmp/horse/quintuple-summary.json loterias-ai/data/archive/_meta/quintuple-ingestion.json
+          cp /tmp/horse/quintuple-state.json loterias-ai/data/archive/_meta/quintuple-scan-state.json
+          node loterias-ai/scripts/build-national-archive-index.mjs
+          node loterias-ai/scripts/build-completeness-index.mjs
+          node loterias-ai/scripts/audit-national-archive.mjs
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/archive
+          git commit -m 'data(loterias-ai): update official horse-game archive' || exit 0
+          git push origin HEAD:main
