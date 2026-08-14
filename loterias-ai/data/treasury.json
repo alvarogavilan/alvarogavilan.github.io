@@ -1,0 +1,30 @@
+{
+  "version":"2026-08-14.1",
+  "name":"Departamento Económico y Tesorería",
+  "mode":"manual-execution-research-ledger",
+  "currency":"EUR",
+  "initialBankroll":50,
+  "currentBankroll":50,
+  "realizedProfitLoss":0,
+  "unrealizedProfitLoss":0,
+  "totalSpent":0,
+  "totalReturned":0,
+  "dailySpendCapPolicy":"dynamic",
+  "reservePolicy":{
+    "allowCashReserve":true,
+    "minimumReservePct":20,
+    "reason":"Never force full deployment when evidence is weak or opportunity set is poor."
+  },
+  "controls":[
+    "No daily proposal may exceed available bankroll.",
+    "No game receives capital while DATA_BLOCKED.",
+    "NO_DEMONSTRATED_EDGE permits 0 EUR allocation.",
+    "Every stake proposal is simulated until manually confirmed as actually played by the user.",
+    "Only confirmed played stakes affect real treasury spent.",
+    "Only verified official prize results affect realized returns.",
+    "Never assume a prize was collected until confirmed or automatically verifiable from the recorded ticket/result."
+  ],
+  "metrics":["bankroll","available-cash","daily-stake","daily-return","daily-pnl","cumulative-pnl","roi","drawdown","peak-bankroll","capital-at-risk","reserve-cash"],
+  "allocationInputs":["portfolio-optimizer","opportunity-ranking","ticket-cost","bankroll","drawdown","confidence-interval","shadow-ledger-roi","data-quality"],
+  "ledgerPolicy":"append-only"
+}
