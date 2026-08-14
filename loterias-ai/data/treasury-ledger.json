@@ -1,0 +1,15 @@
+{
+  "version":"2026-08-14.1",
+  "currency":"EUR",
+  "openingBankroll":50,
+  "entries":[],
+  "entryTypes":["STAKE_CONFIRMED","PRIZE_VERIFIED","MANUAL_ADJUSTMENT"],
+  "requiredFields":["entryId","timestamp","type","amount","gameId","drawId","evidence","createdBy"],
+  "policy":[
+    "STAKE_CONFIRMED amounts are negative.",
+    "PRIZE_VERIFIED amounts are positive and require official result evidence.",
+    "Entries are append-only.",
+    "Corrections are new compensating entries; never edit historical entries silently.",
+    "The real bankroll is derived from openingBankroll plus the sum of ledger entries."
+  ]
+}
