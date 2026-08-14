@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Loterias AI National Archive Record",
+  "type": "object",
+  "required": ["drawId", "gameId", "drawDate", "result", "source"],
+  "properties": {
+    "drawId": {"type": "string"},
+    "gameId": {"type": "string"},
+    "drawDate": {"type": "string", "format": "date"},
+    "drawTimeLocal": {"type": ["string", "null"]},
+    "result": {
+      "type": "object",
+      "required": ["main"],
+      "properties": {
+        "main": {"type": "array", "items": {"type": "integer"}},
+        "stars": {"type": "array", "items": {"type": "integer"}},
+        "complementary": {"type": ["integer", "null"]},
+        "reintegro": {"type": ["integer", "null"]},
+        "key": {"type": ["string", "number", "null"]}
+      },
+      "additionalProperties": true
+    },
+    "economics": {
+      "type": "object",
+      "properties": {
+        "ticketPrice": {"type": ["number", "null"]},
+        "revenue": {"type": ["number", "null"]},
+        "jackpot": {"type": ["number", "null"]},
+        "payouts": {"type": "object", "additionalProperties": {"type": ["number", "null"]}}
+      },
+      "additionalProperties": true
+    },
+    "rulesEra": {"type": ["string", "null"]},
+    "source": {
+      "type": "object",
+      "required": ["provider"],
+      "properties": {
+        "provider": {"type": "string"},
+        "tier": {"type": ["string", "null"]},
+        "url": {"type": ["string", "null"]},
+        "retrievedAt": {"type": ["string", "null"]},
+        "validation": {"type": ["string", "null"]},
+        "validatedAgainst": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
