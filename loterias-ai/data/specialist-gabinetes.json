@@ -1,10 +1,11 @@
 {
-  "version": "2026-08-14.1",
+  "version": "2026-08-14.2",
   "policy": {
     "noGuaranteedWins": true,
     "noFabricatedProbabilities": true,
     "preDrawSealRequired": true,
-    "historicalBacktestRequired": true
+    "historicalBacktestRequired": true,
+    "signalMustBeatBaseline": true
   },
   "cabinets": [
     {
@@ -20,14 +21,29 @@
         "repetition-distance",
         "entropy-by-position",
         "historical-prize-distribution",
-        "candidate-diversification"
+        "candidate-diversification",
+        "prize-location-history",
+        "administration-prize-history",
+        "province-prize-history",
+        "sales-volume-normalized-location-rate",
+        "population-normalized-location-rate",
+        "ticket-distribution-normalized-location-rate"
       ],
+      "geographicPolicy": {
+        "useRawPrizeCounts": false,
+        "normalizersRequired": ["sales-volume","population","tickets-or-decimos-distributed-when-verifiable"],
+        "rule": "A place with more historical prizes is not treated as more predictive unless the excess survives normalization and out-of-sample testing."
+      },
       "outputs": [
         "candidate-numbers",
         "internal-model-score",
         "historical-sample-size",
         "backtest-roi",
+        "baseline-roi",
+        "excess-roi",
         "drawdown",
+        "geographic-signal-score",
+        "geographic-signal-confidence",
         "cost-simulation",
         "methodology-version"
       ],
@@ -46,13 +62,17 @@
         "repetition-distance",
         "entropy-by-position",
         "historical-prize-distribution",
-        "candidate-diversification"
+        "candidate-diversification",
+        "prize-location-history",
+        "sales-volume-normalized-location-rate"
       ],
       "outputs": [
         "candidate-numbers",
         "internal-model-score",
         "historical-sample-size",
         "backtest-roi",
+        "baseline-roi",
+        "excess-roi",
         "drawdown",
         "cost-simulation",
         "methodology-version"
