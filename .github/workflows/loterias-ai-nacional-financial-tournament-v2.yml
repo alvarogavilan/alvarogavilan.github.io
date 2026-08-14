@@ -1,0 +1,38 @@
+name: Loterias AI Nacional Financial Tournament V2
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/loteria-nacional-official-financial-tournament-v2.mjs'
+      - '.github/workflows/loterias-ai-nacional-financial-tournament-v2.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-nacional-financial-tournament-v2
+  cancel-in-progress: false
+jobs:
+  tournament:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Run strict official holdout
+        run: node loterias-ai/scripts/loteria-nacional-official-financial-tournament-v2.mjs
+      - name: Rebuild central real-money gate
+        run: node loterias-ai/scripts/build-real-money-status.mjs
+      - name: Persist safely
+        run: |
+          cp loterias-ai/data/backtests/loteria-nacional-official-financial-tournament.json /tmp/nacional-tournament.json
+          cp loterias-ai/data/gates/real-money-status.json /tmp/real-money-status.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/backtests loterias-ai/data/gates
+          cp /tmp/nacional-tournament.json loterias-ai/data/backtests/loteria-nacional-official-financial-tournament.json
+          cp /tmp/real-money-status.json loterias-ai/data/gates/real-money-status.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/backtests/loteria-nacional-official-financial-tournament.json loterias-ai/data/gates/real-money-status.json
+          git commit -m 'data(loterias-ai): persist official Nacional financial holdout' || exit 0
+          git push origin HEAD:main
