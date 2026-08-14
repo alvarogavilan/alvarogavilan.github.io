@@ -1,0 +1,27 @@
+name: Loterias AI Bonoloto Financial Audit
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/bonoloto-recent-financial-audit.mjs'
+      - 'loterias-ai/data/prizes/bonoloto-recent.json'
+      - '.github/workflows/loterias-ai-bonoloto-financial-audit.yml'
+  workflow_dispatch:
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node loterias-ai/scripts/bonoloto-recent-financial-audit.mjs
+      - name: Persist financial audit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/backtests/bonoloto-recent-financial.json
+          git commit -m 'data(loterias-ai): add recent Bonoloto financial audit' || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
