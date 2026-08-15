@@ -1,0 +1,37 @@
+{
+  "updatedAt": "2026-08-15",
+  "currency": "EUR",
+  "scope": "ALL_GAMES_AND_DRAWS",
+  "bankrollStage": "STARTUP_CAPITAL_PROTECTION",
+  "limits": {
+    "preferredStakePerGameEUR": 10,
+    "hardMaxStakePerGameEUR": 15,
+    "allowAboveHardMax": false
+  },
+  "rules": [
+    "No real-money ticket, system, multiple, reduced system or portfolio may exceed 15 EUR for one game/draw.",
+    "Prefer 10 EUR or less when comparable expected coverage is available.",
+    "If a research-optimal system costs more than 15 EUR, keep the full system in SHADOW and generate a budget-constrained playable version at or below 15 EUR.",
+    "Never increase stake to chase losses.",
+    "The cap may only be reviewed after realised winnings increase the bankroll; no automatic increase is allowed."
+  ],
+  "quiniela": {
+    "officialUnitStakeEUR": 0.75,
+    "maxDirectColumnsAtHardCap": 20,
+    "currentResearchSystem": {
+      "doubles": 3,
+      "triples": 3,
+      "directColumns": 216,
+      "directCostEUR": 162,
+      "realMoneyEligible": false,
+      "reason": "EXCEEDS_15_EUR_HARD_CAP"
+    },
+    "officialReducedExamples": [
+      {"name": "reduction_1", "structure": "4 triples", "columns": 9, "costEUR": 6.75, "withinBudget": true},
+      {"name": "reduction_2", "structure": "7 doubles", "columns": 16, "costEUR": 12, "withinBudget": true},
+      {"name": "reduction_3", "structure": "3 doubles + 3 triples", "columns": 24, "costEUR": 18, "withinBudget": false}
+    ],
+    "playablePolicy": "Optimise signs/doubles/triples under the hard 15 EUR cap; never recommend the 216-column direct development for real money."
+  },
+  "realMoneyPass": false
+}
