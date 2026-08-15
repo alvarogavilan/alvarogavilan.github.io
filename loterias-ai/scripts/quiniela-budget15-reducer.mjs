@@ -1,7 +1,8 @@
 import fs from 'node:fs';import crypto from 'node:crypto';
+// Hard practical cap: at most 20 equivalent Quiniela columns x 0.75 EUR = 15 EUR.
 const CUR='loterias-ai/data/shadow/quiniela-current-combination.json',LED='loterias-ai/data/shadow/quiniela-meta-pleno-ledger.json',OUT='loterias-ai/data/shadow/quiniela-current-budget15.json';
 if(!fs.existsSync(CUR)||!fs.existsSync(LED)){console.log(JSON.stringify({status:'AWAITING_CURRENT_QUINIELA'}));process.exit(0)}
-const cur=JSON.parse(fs.readFileSync(CUR,'utf8')),led=JSON.parse(fs.readFileSync(LED,'utf8'));const p15=cur.pleno15?.coveredMarkers||[];if(!cur.system?.matches?.length||p15.length<1){console.log(JSON.stringify({status:'AWAITING_FROZEN_SYSTEM_OR_P15'}));process.exit(0)}
+const cur=JSON.parse(fs.readFileSync(CUR,'utf8'));JSON.parse(fs.readFileSync(LED,'utf8'));const p15=cur.pleno15?.coveredMarkers||[];if(!cur.system?.matches?.length||p15.length<1){console.log(JSON.stringify({status:'AWAITING_FROZEN_SYSTEM_OR_P15'}));process.exit(0)}
 const allowed=cur.system.matches.map(m=>m.signs);const cart=[];function rec(i,a){if(i===allowed.length){cart.push([...a]);return}for(const s of allowed[i]){a.push(s);rec(i+1,a);a.pop()}}rec(0,[]);
 const desiredBase=Math.max(1,Math.floor(20/p15.length));const first=allowed.map(x=>x[0]);const key=c=>c.join('');const hd=(a,b)=>a.reduce((n,x,i)=>n+(x!==b[i]),0);const covered=Array.from({length:allowed.length},()=>new Set());const selected=[];
 function gain(c){let g=0;for(let i=0;i<c.length;i++)if(!covered[i].has(c[i]))g++;return g}function primary(c){return c.reduce((n,x,i)=>n+(x===first[i]),0)}
