@@ -1,0 +1,23 @@
+name: Loterias AI MetaPleno v130 Cross Family Near Pleno
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v130-cross-family-nearpleno]
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v130-cross-family-nearpleno.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v130-cross-family-nearpleno.yml'
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    permissions: {contents: write}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - run: node loterias-ai/scripts/meta-pleno-v130-cross-family-nearpleno.mjs
+      - run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v130-cross-family-nearpleno.json
+          git diff --cached --quiet || git commit -m 'data(loterias-ai): persist v130 cross-family near-pleno audit'
+          git push
