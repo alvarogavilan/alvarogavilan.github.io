@@ -1,0 +1,32 @@
+name: Loterias AI MetaPleno v66 Master Research Registry
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v66-master-research-registry.mjs'
+      - 'loterias-ai/data/research/scientific-library-v63.json'
+      - '.github/workflows/loterias-ai-meta-pleno-v66-master-research-registry.yml'
+permissions:
+  contents: write
+jobs:
+  registry:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node loterias-ai/scripts/meta-pleno-v66-master-research-registry.mjs
+      - name: Persist registry safely
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git pull --rebase origin main
+          git add loterias-ai/data/research/meta-pleno-v66-master-research-registry.json
+          git diff --cached --quiet && exit 0
+          git commit -m "data(loterias-ai): update master research registry v66"
+          for i in 1 2 3 4 5; do
+            git push origin HEAD:main && exit 0
+            git pull --rebase origin main
+          done
+          exit 1
