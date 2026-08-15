@@ -24,6 +24,7 @@ jobs:
           for i in 1 2 3 4; do GAME=bonoloto BATCH_LIMIT=120 node loterias-ai/scripts/enrich-core-number-game-official-economics.mjs || exit 1; done
       - name: Enrich El Gordo
         run: |
+          # Four bounded passes cover the current remainder while keeping SELAE request rate conservative.
           for i in 1 2 3 4; do GAME=gordo BATCH_LIMIT=120 node loterias-ai/scripts/enrich-core-number-game-official-economics.mjs || exit 1; done
       - name: Persist safely
         run: |
