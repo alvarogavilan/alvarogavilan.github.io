@@ -1,0 +1,29 @@
+name: Loterias AI Settle Bonoloto MetaPleno 2026-08-15
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 20,21,22 15 8 *'
+permissions:
+  contents: write
+jobs:
+  settle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Refresh Bonoloto archive if available
+        run: node loterias-ai/scripts/backfill-core-2026.mjs || true
+      - name: Settle frozen panels
+        run: node loterias-ai/scripts/settle-bonoloto-metapleno-2026-08-15.mjs
+      - name: Persist settlement if created
+        run: |
+          test -f loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-settlement.json || exit 0
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/archive/bonoloto/2026.json loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-settlement.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'data(loterias-ai): settle Aug 15 Bonoloto MetaPleno shadows'
+          for i in 1 2 3 4 5; do git pull --rebase origin main && git push origin HEAD:main && exit 0; sleep $((i*3)); done
+          exit 1
