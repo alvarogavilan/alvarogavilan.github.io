@@ -1,0 +1,67 @@
+name: Loterias AI Financial Artifact Recovery
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/run-fixed-financial-aggregator.mjs'
+      - '.github/workflows/loterias-ai-financial-artifact-recovery.yml'
+permissions:
+  actions: read
+  contents: write
+jobs:
+  recover-quinigol:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: quinigol-*
+          path: /tmp/quinigol-shards
+          merge-multiple: true
+          run-id: 31870568818
+          github-token: ${{ github.token }}
+      - run: node loterias-ai/scripts/run-fixed-financial-aggregator.mjs loterias-ai/scripts/quinigol-mass-financial-aggregate.mjs
+      - name: Persist safely
+        run: |
+          cp loterias-ai/data/backtests/quinigol-mass-financial-search.json /tmp/q.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/backtests
+          cp /tmp/q.json loterias-ai/data/backtests/quinigol-mass-financial-search.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/backtests/quinigol-mass-financial-search.json
+          git commit -m 'data(loterias-ai): persist Quinigol recovered financial holdout' || exit 0
+          git push origin HEAD:main
+  recover-lototurf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: lototurf-*
+          path: /tmp/lototurf-shards
+          merge-multiple: true
+          run-id: 31870604033
+          github-token: ${{ github.token }}
+      - run: node loterias-ai/scripts/run-fixed-financial-aggregator.mjs loterias-ai/scripts/lototurf-mass-financial-aggregate.mjs
+      - name: Persist safely
+        run: |
+          cp loterias-ai/data/backtests/lototurf-mass-financial-search.json /tmp/l.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/backtests
+          cp /tmp/l.json loterias-ai/data/backtests/lototurf-mass-financial-search.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/backtests/lototurf-mass-financial-search.json
+          git commit -m 'data(loterias-ai): persist Lototurf recovered financial holdout' || exit 0
+          git push origin HEAD:main
