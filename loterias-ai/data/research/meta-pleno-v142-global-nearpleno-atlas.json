@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-08-15T20:02:29.195Z",
+  "generatedAt": "2026-08-15T20:04:02.882Z",
   "version": "v142",
   "gameId": "bonoloto-focused-global-atlas",
   "methodology": "Repository-wide extraction of persisted MetaPleno near-pleno/full events. Events are deduplicated by date+winning+pool+hits. No inference from summary counters. Cross-family rescue means the missing winner from one persisted 5/6 pool was independently present in another persisted pool on the same date; exploratory only because source families were developed sequentially.",
-  "filesScanned": 147,
-  "rawEvents": 964,
+  "filesScanned": 148,
+  "rawEvents": 970,
   "deduplicatedEvents": 492,
   "uniqueDates": 257,
   "summary": {
@@ -10925,7 +10925,7 @@
     },
     {
       "date": "2024-03-05",
-      "source": "meta-pleno-v130-cross-family-nearpleno.json",
+      "source": "meta-pleno-v145-bonoloto-missing-calibration.json",
       "missing": 17,
       "supportingModels": 1,
       "support": [
@@ -25173,39 +25173,6 @@
     },
     {
       "date": "2024-03-05",
-      "source": "meta-pleno-v130-cross-family-nearpleno.json",
-      "family": "Exploratory cross-family deduplicated near-pleno audit of two discovery-selected leaders: v123 c12 and v128 structural lambda leader. Null is deliberately conservative: each draw is assigned probability 2*q for >=5 in either pool, where q is exact fair-draw probability for one fixed 8-number pool; this upper-bounds union probability even if pools overlap. Because this cross-family combination was examined after seeing family results, the p-value is exploratory and not a confirmatory promotion test.",
-      "trail": "leaders.0.events.1",
-      "winning": [
-        17,
-        20,
-        22,
-        31,
-        34,
-        46
-      ],
-      "pool": [
-        20,
-        22,
-        31,
-        34,
-        39,
-        41,
-        45,
-        46
-      ],
-      "hits": 5,
-      "missing": [
-        17
-      ],
-      "falsePositives": [
-        39,
-        41,
-        45
-      ]
-    },
-    {
-      "date": "2024-03-05",
       "source": "meta-pleno-v132-c12-structural-budget8.json",
       "family": "Single-budget integration of frozen v123 c12 number scoring with Pattern-Atlas structural nonconformity. Lambda selected on discovery only; every prediction uses only prior draws. One 8-number pool per draw, 28 complete combinations, 14 EUR theoretical cost.",
       "trail": "leaders.2.hold.events.1",
@@ -25231,6 +25198,39 @@
       "missing": [],
       "falsePositives": [
         39,
+        45
+      ]
+    },
+    {
+      "date": "2024-03-05",
+      "source": "meta-pleno-v145-bonoloto-missing-calibration.json",
+      "family": "NESTED_MISSING_WINNER_CALIBRATION",
+      "trail": "leaders.2.mid.events.0",
+      "winning": [
+        17,
+        20,
+        22,
+        31,
+        34,
+        46
+      ],
+      "pool": [
+        20,
+        22,
+        31,
+        34,
+        39,
+        41,
+        45,
+        46
+      ],
+      "hits": 5,
+      "missing": [
+        17
+      ],
+      "falsePositives": [
+        39,
+        41,
         45
       ]
     },
@@ -27176,9 +27176,9 @@
     },
     {
       "date": "2025-06-21",
-      "source": "meta-pleno-v130-cross-family-nearpleno.json",
-      "family": "Exploratory cross-family deduplicated near-pleno audit of two discovery-selected leaders: v123 c12 and v128 structural lambda leader. Null is deliberately conservative: each draw is assigned probability 2*q for >=5 in either pool, where q is exact fair-draw probability for one fixed 8-number pool; this upper-bounds union probability even if pools overlap. Because this cross-family combination was examined after seeing family results, the p-value is exploratory and not a confirmatory promotion test.",
-      "trail": "leaders.0.events.2",
+      "source": "meta-pleno-v145-bonoloto-missing-calibration.json",
+      "family": "NESTED_MISSING_WINNER_CALIBRATION",
+      "trail": "leaders.2.late.events.0",
       "winning": [
         32,
         34,

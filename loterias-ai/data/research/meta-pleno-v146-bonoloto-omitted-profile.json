@@ -1,0 +1,181 @@
+{
+  "generatedAt": "2026-08-15T20:04:04.275Z",
+  "version": "v146",
+  "gameId": "bonoloto",
+  "family": "OMITTED_WINNER_PROFILE_RESCUER",
+  "methodology": "Train a linear discriminant profile of sole omitted winners using only v142 near-pleno events from 2018-2020. Positive samples are missing winners; negatives are non-winning c12 frontier candidates ranked 9-20 on the same pre-draw state. Alpha is selected on 2021-2022, then frozen before 2023-2024 and 2025-latest. Re-ranking is restricted to c12 top20 and emits one Budget8 pool.",
+  "training": {
+    "events": 53,
+    "positiveSamples": 53,
+    "negativeSamples": 583,
+    "delta": {
+      "longFrequency": -0.9873371605997965,
+      "shortMomentum": -0.024404806075160105,
+      "gap": 0.06797958482534594,
+      "stability": -0.20996053902087383,
+      "pairAffinity": -0.575846546740528,
+      "entropy": -0.92411954588963,
+      "meanReversion": -0.12654621745987385
+    }
+  },
+  "candidatePool": {
+    "alphas": [
+      0,
+      0.01,
+      0.02,
+      0.05,
+      0.1,
+      0.2,
+      0.4,
+      1
+    ],
+    "nominal": 8,
+    "effective": 8
+  },
+  "selection": {
+    "start": "2021-01-01",
+    "end": "2022-12-31",
+    "frozen": 3
+  },
+  "leaders": [
+    {
+      "alpha": 0.2,
+      "select": {
+        "n": 640,
+        "h4": 6,
+        "h5": 1,
+        "h6": 0,
+        "sum": 619
+      },
+      "mid": {
+        "n": 731,
+        "h4": 3,
+        "h5": 0,
+        "h6": 0,
+        "sum": 755,
+        "events": []
+      },
+      "late": {
+        "n": 590,
+        "h4": 2,
+        "h5": 0,
+        "h6": 0,
+        "sum": 596,
+        "events": []
+      }
+    },
+    {
+      "alpha": 0.1,
+      "select": {
+        "n": 640,
+        "h4": 4,
+        "h5": 1,
+        "h6": 0,
+        "sum": 611
+      },
+      "mid": {
+        "n": 731,
+        "h4": 8,
+        "h5": 1,
+        "h6": 0,
+        "sum": 734,
+        "events": [
+          {
+            "date": "2024-03-05",
+            "winning": [
+              17,
+              20,
+              22,
+              31,
+              34,
+              46
+            ],
+            "pool": [
+              17,
+              20,
+              21,
+              22,
+              31,
+              40,
+              41,
+              46
+            ],
+            "hits": 5
+          }
+        ]
+      },
+      "late": {
+        "n": 590,
+        "h4": 2,
+        "h5": 0,
+        "h6": 0,
+        "sum": 574,
+        "events": []
+      }
+    },
+    {
+      "alpha": 0.02,
+      "select": {
+        "n": 640,
+        "h4": 6,
+        "h5": 0,
+        "h6": 0,
+        "sum": 621
+      },
+      "mid": {
+        "n": 731,
+        "h4": 1,
+        "h5": 0,
+        "h6": 0,
+        "sum": 687,
+        "events": []
+      },
+      "late": {
+        "n": 590,
+        "h4": 1,
+        "h5": 1,
+        "h6": 0,
+        "sum": 560,
+        "events": [
+          {
+            "date": "2025-06-21",
+            "winning": [
+              32,
+              34,
+              36,
+              37,
+              39,
+              48
+            ],
+            "pool": [
+              10,
+              31,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "hits": 5
+          }
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "midFullModels": 0,
+    "lateFullModels": 0,
+    "mid5PlusModels": 1,
+    "late5PlusModels": 1,
+    "repeat5PlusModels": 0
+  },
+  "budget": {
+    "poolSize": 8,
+    "playableCombinations": 28,
+    "theoreticalStakeEUR": 14,
+    "realStakeEUR": 0
+  },
+  "realMoneyPass": false,
+  "decision": "RESEARCH_ONLY_REQUIRE_NULL_AND_PROSPECTIVE"
+}
