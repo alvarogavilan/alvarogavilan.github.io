@@ -1,0 +1,23 @@
+name: Loterias AI Patch Hoy Pricing Cap
+on:
+  workflow_dispatch:
+  push:
+    branches: [fix/loterias-ai-ticket-pricing-quiniela-cap]
+    paths: ['loterias-ai/scripts/patch-hoy-ticket-pricing-quiniela-cap.mjs']
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    permissions: {contents: write}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - run: node loterias-ai/scripts/patch-hoy-ticket-pricing-quiniela-cap.mjs
+      - run: |
+          grep -q 'Precio de esta apuesta' loterias-ai/hoy/index.html
+          grep -q 'Descartada para apostar' loterias-ai/hoy/index.html
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/hoy/index.html
+          git diff --cached --quiet || git commit -m 'fix(loterias-ai): clarify per-ticket price and hide over-budget Quiniela'
+          git push
