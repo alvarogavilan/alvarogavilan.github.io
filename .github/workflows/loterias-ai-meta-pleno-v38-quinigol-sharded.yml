@@ -1,0 +1,72 @@
+name: Loterias AI MetaPleno v38 Quinigol Sharded
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v38-quinigol-shard.mjs'
+      - 'loterias-ai/scripts/meta-pleno-v38-quinigol-aggregate.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v38-quinigol-sharded.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-metapleno-v38-quinigol
+  cancel-in-progress: true
+
+jobs:
+  search:
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0,1,2,3,4,5,6,7,8,9]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Search 50k deterministic Quinigol candidates
+        env:
+          SHARD: ${{ matrix.shard }}
+          CANDIDATES: 50000
+        run: node loterias-ai/scripts/meta-pleno-v38-quinigol-shard.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v38-quinigol-${{ matrix.shard }}
+          path: loterias-ai/data/research/meta-pleno-v38-quinigol-shards/shard-${{ matrix.shard }}.json
+  aggregate:
+    needs: search
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v38-quinigol-*
+          path: loterias-ai/data/research/meta-pleno-v38-quinigol-shards
+          merge-multiple: true
+      - run: node loterias-ai/scripts/meta-pleno-v38-quinigol-aggregate.mjs
+      - name: Persist result and reusable finalists safely
+        shell: bash
+        run: |
+          cp loterias-ai/data/research/meta-pleno-v38-quinigol-sharded.json /tmp/v38.json
+          cp -R loterias-ai/data/research/meta-pleno-v38-quinigol-shards /tmp/v38-shards
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p loterias-ai/data/research/meta-pleno-v38-quinigol-shards
+            cp /tmp/v38.json loterias-ai/data/research/meta-pleno-v38-quinigol-sharded.json
+            cp /tmp/v38-shards/*.json loterias-ai/data/research/meta-pleno-v38-quinigol-shards/
+            git add loterias-ai/data/research/meta-pleno-v38-quinigol-sharded.json loterias-ai/data/research/meta-pleno-v38-quinigol-shards
+            git commit -m 'data(loterias-ai): persist MetaPleno v38 Quinigol sharded search' || exit 0
+            git push origin HEAD:main && exit 0
+            sleep $((i*2))
+          done
+          exit 1
