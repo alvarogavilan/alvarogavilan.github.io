@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import {spawnSync} from 'node:child_process';
+const srcPath='loterias-ai/scripts/meta-pleno-v189-primitiva-dynamic-experts.mjs';
+const tmp='/tmp/meta-pleno-v190-primitiva-dynamic-experts-corrected.mjs';
+let src=fs.readFileSync(srcPath,'utf8');
+src=src.replace("OUT='loterias-ai/data/research/meta-pleno-v189-primitiva-dynamic-experts.json'","OUT='loterias-ai/data/research/meta-pleno-v190-primitiva-dynamic-experts-corrected.json'");
+src=src.replace("if(ph===5&&rows[i].drawDate>='2017-01-01')snaps.push",'if(ph===5)snaps.push');
+src=src.replace("version:'v189'","version:'v190'");
+src=src.replace("training:'c46 5/6 events 2017-2022 only; expert weights use only hits before each event'","training:'all c46 5/6 events before 2023; expert weights use only hits strictly before each event; DROP remains 2017-2022'");
+src=src.replace("family:'DYNAMIC_RECENT_EXPERT_WEIGHTING'","family:'DYNAMIC_RECENT_EXPERT_WEIGHTING_CORRECTED'");
+fs.writeFileSync(tmp,src);
+const r=spawnSync(process.execPath,[tmp],{stdio:'inherit'});if(r.status!==0)process.exit(r.status??1);
