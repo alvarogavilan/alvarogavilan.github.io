@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import {spawnSync} from 'node:child_process';
+const source='loterias-ai/scripts/meta-pleno-v191-primitiva-fullgrid-minority.mjs';
+const tmp='/tmp/meta-pleno-v191a-primitiva-feature-audit.mjs';
+let s=fs.readFileSync(source,'utf8');
+s=s.replace("OUT='loterias-ai/data/research/meta-pleno-v191-primitiva-fullgrid-minority.json'","OUT='loterias-ai/data/research/meta-pleno-v191a-primitiva-feature-audit.json'");
+s=s.replace("const ranked=cfg.map((c,id)=>({id,c,e:ev(c,train)})).sort((a,b)=>b.e.top1-a.e.top1||b.e.mrr-a.e.mrr||a.id-b.id),leader=ranked[0];","const ranked=cfg.map((c,id)=>({id,c,e:ev(c,train)})).sort((a,b)=>b.e.top1-a.e.top1||b.e.mrr-a.e.mrr||a.id-b.id),leader=ranked[0];const featureDiagnostics=Object.fromEntries(['best','sup8','sup12','dis','avg'].map(k=>{const c={best:0,sup8:0,sup12:0,dis:0,avg:0};c[k]=1;return[k,{train:ev(c,train),test:ev(c,test)}]}));");
+s=s.replace("version:'v191'","version:'v191a'");
+s=s.replace("family:'FULL_GRID_MINORITY_EXTREMUM_RESCUE'","family:'FULL_GRID_SINGLE_FEATURE_AUDIT'");
+s=s.replace("methodology:'Use the complete pre-specified", "featureDiagnostics,methodology:'Audit pure single-feature rankings without changing the v191 leader. Use the complete pre-specified");
+fs.writeFileSync(tmp,s);const r=spawnSync(process.execPath,[tmp],{stdio:'inherit'});process.exit(r.status??1);
