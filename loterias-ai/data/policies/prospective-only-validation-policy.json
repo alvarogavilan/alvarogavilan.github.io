@@ -1,0 +1,40 @@
+{
+  "version": "2026-08-15-v1",
+  "effectiveAt": "2026-08-15T13:41:00+02:00",
+  "purpose": "Prevent historical holdout reuse from being misrepresented as fresh predictive evidence after many MetaPleno generations have inspected 2023-2026.",
+  "historicalPeriods": {
+    "through2022": "TRAIN_VALIDATION_RESEARCH_ALLOWED",
+    "2023_to_2026_08_14": "RESEARCH_REUSED_NOT_PRISTINE_FINAL_HOLDOUT"
+  },
+  "finalEvidenceRule": {
+    "status": "PROSPECTIVE_ONLY",
+    "startsAfter": "2026-08-15T13:41:00+02:00",
+    "requirements": [
+      "ticket or policy frozen before target draw result exists",
+      "cryptographic seal persisted in repository",
+      "no parameter retuning after freeze",
+      "official SELAE settlement",
+      "matched-cost random baseline",
+      "complete ticket auxiliaries included",
+      "all real stakes and theoretical stakes logged",
+      "no additional overlapping tickets added after seeing partial evidence"
+    ]
+  },
+  "existingFrozenExperiments": [
+    {
+      "game": "bonoloto",
+      "drawDate": "2026-08-15",
+      "references": [
+        "loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-v7.json",
+        "loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-v10-compact.json"
+      ]
+    },
+    {
+      "game": "gordo-primitiva",
+      "drawDate": "2026-08-16",
+      "reference": "loterias-ai/data/shadow/gordo-2026-08-16-metapleno-v14.json"
+    }
+  ],
+  "realMoneyPass": false,
+  "note": "Historical ROI and p-values remain useful research diagnostics, but final promotion requires new prospective evidence after this policy takes effect."
+}
