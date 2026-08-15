@@ -31,7 +31,14 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq poppler-utils
-          curl -fL --retry 3 'https://www.loteriasyapuestas.es/f/loterias/documentos/Quiniela/Calendarios/Proximas_jornadas_deportivas.pdf' -o /tmp/proximas-jornadas.pdf
+          curl -fL --retry 3 --compressed \
+            -A 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/140 Safari/537.36' \
+            -H 'Accept: application/pdf,text/html;q=0.9,*/*;q=0.8' \
+            -H 'Accept-Language: es-ES,es;q=0.9' \
+            -H 'Referer: https://www.loteriasyapuestas.es/es/centro-de-ayuda/centro-de-informacion-y-ayuda' \
+            'https://www.loteriasyapuestas.es/f/loterias/documentos/Quiniela/Calendarios/Proximas_jornadas_deportivas.pdf' \
+            -o /tmp/proximas-jornadas.pdf
+          test "$(stat -c%s /tmp/proximas-jornadas.pdf)" -gt 1000
           pdftotext -layout /tmp/proximas-jornadas.pdf /tmp/proximas-jornadas.txt
       - name: Parse official future program
         run: PROGRAM_TEXT=/tmp/proximas-jornadas.txt node loterias-ai/scripts/quiniela-official-program-watch.mjs
