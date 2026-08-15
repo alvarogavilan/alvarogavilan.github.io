@@ -1,0 +1,52 @@
+{
+  "generatedAt": "2026-08-15T19:52:42.462Z",
+  "version": "v140",
+  "gameId": "bonoloto",
+  "methodology": "Conservative family-wide near-pleno null. For a fixed 8-number pool, computes exact P(pool contains >=5 of 6). For m frozen models, uses the union bound q<=m*p per draw rather than assuming model independence; then a Binomial(n,qUpper) tail is used as an upper-chance calibration across holdout draws. This is not a global multiple-family correction and cannot promote real-money use.",
+  "families": [
+    {
+      "version": "v138",
+      "family": "DYNAMIC_COOCCURRENCE_GRAPH_TOPOLOGY",
+      "sourceFile": "loterias-ai/data/research/meta-pleno-v138-bonoloto-graph-topology.json",
+      "frozenModels": 12,
+      "holdoutDraws": 2717,
+      "observedUnique5PlusDates": 6,
+      "uniqueDates": [
+        "2021-05-01",
+        "2020-09-14",
+        "2021-08-24",
+        "2021-03-12",
+        "2020-08-15",
+        "2022-01-31"
+      ],
+      "singleBudget8Probability5Plus": 0.0001661921180885103,
+      "perDrawUnionProbabilityUpperBound": 0.0019943054170621236,
+      "expectedEventsUnderUnionUpperBound": 5.41852781815779,
+      "pValueUpperBoundBinomial": 0.4571397467797262,
+      "interpretation": "NOT_SIGNIFICANT_UNDER_CONSERVATIVE_FAMILY_UNION_NULL"
+    },
+    {
+      "version": "v139",
+      "family": "MINIMUM_DESCRIPTION_LENGTH_BINARY_MARKOV",
+      "sourceFile": "loterias-ai/data/research/meta-pleno-v139-bonoloto-mdl.json",
+      "frozenModels": 6,
+      "holdoutDraws": 2717,
+      "observedUnique5PlusDates": 6,
+      "uniqueDates": [
+        "2024-06-24",
+        "2022-02-18",
+        "2023-08-14",
+        "2025-05-06",
+        "2021-11-19",
+        "2022-06-02"
+      ],
+      "singleBudget8Probability5Plus": 0.0001661921180885103,
+      "perDrawUnionProbabilityUpperBound": 0.0009971527085310618,
+      "expectedEventsUnderUnionUpperBound": 2.709263909078895,
+      "pValueUpperBoundBinomial": 0.057386508137717396,
+      "interpretation": "NOT_SIGNIFICANT_UNDER_CONSERVATIVE_FAMILY_UNION_NULL"
+    }
+  ],
+  "decision": "NO_FAMILY_NEARPLENO_SIGNAL_SURVIVES_CONSERVATIVE_UNION_NULL",
+  "realMoneyPass": false
+}
