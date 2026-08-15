@@ -13,17 +13,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Rebuild frozen family leaders
-        run: |
-          node loterias-ai/scripts/meta-pleno-v79-primitiva-gap-shape-budget15.mjs
-          node loterias-ai/scripts/meta-pleno-v108-primitiva-kalman-budget15.mjs
-      - name: Run v186
+      - name: Run v186 self-contained cross-family audit
         run: node loterias-ai/scripts/meta-pleno-v186-primitiva-cross-family-rescue.mjs
-      - name: Persist v186 only
+      - name: Persist v186
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git checkout -- loterias-ai/data/research/meta-pleno-v79-primitiva-gap-shape-budget15.json || true
           git add loterias-ai/data/research/meta-pleno-v186-primitiva-cross-family-rescue.json
           git diff --cached --quiet || git commit -m "research(loterias-ai): persist v186 Primitiva cross-family rescue"
           git push
