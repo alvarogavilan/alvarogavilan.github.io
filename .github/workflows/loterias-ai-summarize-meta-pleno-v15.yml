@@ -1,0 +1,26 @@
+name: Loterias AI Summarize MetaPleno v15
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/summarize-meta-pleno-v15.mjs'
+      - '.github/workflows/loterias-ai-summarize-meta-pleno-v15.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  summarize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node loterias-ai/scripts/summarize-meta-pleno-v15.mjs
+      - name: Persist
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/meta-pleno-v15-summary.json
+          git commit -m 'data(loterias-ai): persist v15 set-capture summary' || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
