@@ -1,7 +1,11 @@
 import fs from 'node:fs';
 const BASE='https://www.loteriasyapuestas.es/servicios/fechav3';
-const END=new Date('2026-08-14T00:00:00Z');
 const START=new Date('2026-01-01T00:00:00Z');
+const endInput=process.env.LOTERIAS_BACKFILL_END||new Date().toISOString().slice(0,10);
+const END=new Date(`${endInput}T00:00:00Z`);
+if(Number.isNaN(END.getTime()))throw new Error(`Invalid LOTERIAS_BACKFILL_END: ${endInput}`);
+if(END<START)throw new Error(`Backfill end ${endInput} precedes 2026 start`);
+const GAME_FILTER=(process.env.LOTERIAS_BACKFILL_GAME||'').trim();
 const specs={
   bonoloto:{gid:'BONO',days:[0,1,2,3,4,5,6],pick:6,max:49},
   primitiva:{gid:'LAPR',days:[1,4,6],pick:6,max:49},
@@ -10,6 +14,7 @@ const specs={
   'gordo-primitiva':{gid:'ELGR',days:[0],pick:5,max:54,secondaryPick:1},
   'loteria-nacional':{gid:'LNAC',days:[4,6],number5:true}
 };
+if(GAME_FILTER&&!specs[GAME_FILTER])throw new Error(`Unknown LOTERIAS_BACKFILL_GAME: ${GAME_FILTER}`);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const ymd=d=>d.toISOString().slice(0,10).replaceAll('-','');
 const iso=s=>String(s||'').slice(0,10);
@@ -37,8 +42,9 @@ async function fetchDate(game,spec,d){
   const raw=await r.json().catch(()=>[]);const rows=Array.isArray(raw)?raw:[];
   return rows.filter(x=>x&&x.game_id===spec.gid).map(x=>normalize(game,x,spec,url));
 }
-const summary={generatedAt:new Date().toISOString(),period:{start:'2026-01-01',end:'2026-08-14'},games:{}};
-for(const [game,spec] of Object.entries(specs)){
+const selected=Object.entries(specs).filter(([game])=>!GAME_FILTER||game===GAME_FILTER);
+const summary={generatedAt:new Date().toISOString(),period:{start:'2026-01-01',end:END.toISOString().slice(0,10)},gameFilter:GAME_FILTER||null,games:{}};
+for(const [game,spec] of selected){
   const records=[],errors=[];let requests=0;
   for(let d=new Date(START);d<=END;d.setUTCDate(d.getUTCDate()+1)){
     if(!spec.days.includes(d.getUTCDay()))continue;requests++;
