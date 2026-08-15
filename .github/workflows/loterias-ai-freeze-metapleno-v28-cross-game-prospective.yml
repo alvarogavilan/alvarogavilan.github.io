@@ -1,0 +1,35 @@
+name: Loterias AI Freeze MetaPleno v28 Cross Game
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/freeze-metapleno-v28-cross-game-prospective.mjs'
+      - '.github/workflows/loterias-ai-freeze-metapleno-v28-cross-game-prospective.yml'
+permissions:
+  contents: write
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/freeze-metapleno-v28-cross-game-prospective.mjs
+      - name: Persist safely
+        run: |
+          mkdir -p /tmp/v28
+          cp loterias-ai/data/shadow/eurodreams-2026-08-17-metapleno-v28.json /tmp/v28/
+          cp loterias-ai/data/shadow/euromillones-2026-08-18-metapleno-v28.json /tmp/v28/
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/v28/*.json loterias-ai/data/shadow/
+            git add loterias-ai/data/shadow/*-metapleno-v28.json
+            git commit -m 'data(loterias-ai): freeze MetaPleno v28 cross-game prospective tickets' || exit 0
+            git push origin HEAD:main && exit 0
+            sleep $((i*2))
+          done
+          exit 1
