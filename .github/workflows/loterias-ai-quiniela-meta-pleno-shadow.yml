@@ -1,6 +1,9 @@
 name: Loterias AI Quiniela MetaPleno Shadow
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ['Loterias AI Backfill Quiniela Official']
+    types: [completed]
   push:
     paths:
       - 'loterias-ai/data/archive/quiniela/**'
@@ -13,6 +16,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   shadow:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
