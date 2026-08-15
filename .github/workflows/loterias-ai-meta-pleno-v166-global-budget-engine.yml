@@ -1,0 +1,26 @@
+name: Loterias AI MetaPleno v166 Global Budget Engine
+on:
+  workflow_dispatch:
+  push:
+    branches: [feat/loterias-ai-v166-global-budget-engine]
+    paths:
+      - 'loterias-ai/data/treasury/global-budget-policy.json'
+      - 'loterias-ai/scripts/meta-pleno-v166-global-budget-engine.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v166-global-budget-engine.yml'
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/meta-pleno-v166-global-budget-engine.mjs
+      - name: Persist v166
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v166-global-budget-engine.json
+          git diff --cached --quiet || git commit -m 'data(loterias-ai): persist v166 global budget engine'
+          git push
