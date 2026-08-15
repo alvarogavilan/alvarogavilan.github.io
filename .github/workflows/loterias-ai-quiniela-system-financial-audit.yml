@@ -1,0 +1,35 @@
+name: Loterias AI Quiniela System Financial Audit
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/quiniela-system-financial-audit.mjs'
+      - '.github/workflows/loterias-ai-quiniela-system-financial-audit.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-quiniela-system-financial-audit
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Liquidate frozen 288-column champion on official SELAE economics
+        run: node loterias-ai/scripts/quiniela-system-financial-audit.mjs
+      - name: Persist financial evidence safely
+        run: |
+          cp loterias-ai/data/backtests/quiniela-system-financial-audit.json /tmp/quiniela-system-financial-audit.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/backtests
+          cp /tmp/quiniela-system-financial-audit.json loterias-ai/data/backtests/quiniela-system-financial-audit.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/backtests/quiniela-system-financial-audit.json
+          git commit -m 'data(loterias-ai): persist Quiniela system financial audit' || exit 0
+          git push origin HEAD:main
