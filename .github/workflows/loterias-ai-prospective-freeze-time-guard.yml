@@ -1,0 +1,35 @@
+name: Loterias AI Prospective Freeze Time Guard
+on:
+  push:
+    paths:
+      - 'loterias-ai/data/prospective/**'
+      - 'loterias-ai/config/prospective-freeze-policy.json'
+      - 'loterias-ai/scripts/validate-prospective-freeze-timing.mjs'
+      - '.github/workflows/loterias-ai-prospective-freeze-time-guard.yml'
+  pull_request:
+    paths:
+      - 'loterias-ai/data/prospective/**'
+      - 'loterias-ai/config/prospective-freeze-policy.json'
+      - 'loterias-ai/scripts/validate-prospective-freeze-timing.mjs'
+      - '.github/workflows/loterias-ai-prospective-freeze-time-guard.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Validate freeze timestamps
+        run: node loterias-ai/scripts/validate-prospective-freeze-timing.mjs
+      - name: Persist audit on branch pushes
+        if: github.event_name == 'push'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/prospective-freeze-timing-validation.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'data(loterias-ai): persist prospective freeze timing audit'
+          git push
