@@ -1,0 +1,266 @@
+{
+  "generatedAt": "2026-08-15T19:09:03.596Z",
+  "version": "v128",
+  "gameId": "bonoloto",
+  "methodology": "Pattern-Atlas structural conformal reranker. Hyperparameter lambda selected on discovery only. Each pre-draw prediction uses only prior winning combinations. Candidate pools are deterministic one-swap variants of the base top8 frontier; structural nonconformity uses sum, range, parity, consecutive count, decade concentration and gap dispersion.",
+  "candidatePool": {
+    "nominal": 7,
+    "effective": 7
+  },
+  "selection": {
+    "start": "1989-05-16",
+    "end": "2018-05-07",
+    "frozen": 3
+  },
+  "holdout": {
+    "start": "2018-05-08",
+    "end": "2026-08-14",
+    "evaluations": 2732
+  },
+  "leaders": [
+    {
+      "lambda": 4,
+      "disc": {
+        "n": 6373,
+        "h4": 25,
+        "h5": 1,
+        "h6": 0,
+        "sum": 6265
+      },
+      "hold": {
+        "n": 2732,
+        "h4": 23,
+        "h5": 2,
+        "h6": 0,
+        "sum": 2726,
+        "events": [
+          {
+            "date": "2018-06-11",
+            "winning": [
+              22,
+              28,
+              31,
+              33,
+              36,
+              37
+            ],
+            "pool": [
+              1,
+              2,
+              19,
+              22,
+              28,
+              31,
+              33,
+              36
+            ],
+            "hits": 5
+          },
+          {
+            "date": "2024-06-24",
+            "winning": [
+              27,
+              30,
+              37,
+              38,
+              41,
+              48
+            ],
+            "pool": [
+              10,
+              13,
+              27,
+              30,
+              34,
+              37,
+              41,
+              48
+            ],
+            "hits": 5
+          }
+        ]
+      }
+    },
+    {
+      "lambda": 0,
+      "disc": {
+        "n": 6373,
+        "h4": 25,
+        "h5": 1,
+        "h6": 0,
+        "sum": 6235
+      },
+      "hold": {
+        "n": 2732,
+        "h4": 17,
+        "h5": 3,
+        "h6": 0,
+        "sum": 2741,
+        "events": [
+          {
+            "date": "2018-06-11",
+            "winning": [
+              22,
+              28,
+              31,
+              33,
+              36,
+              37
+            ],
+            "pool": [
+              22,
+              33,
+              36,
+              28,
+              2,
+              31,
+              19,
+              46
+            ],
+            "hits": 5
+          },
+          {
+            "date": "2024-06-24",
+            "winning": [
+              27,
+              30,
+              37,
+              38,
+              41,
+              48
+            ],
+            "pool": [
+              27,
+              34,
+              41,
+              30,
+              13,
+              37,
+              48,
+              19
+            ],
+            "hits": 5
+          },
+          {
+            "date": "2026-05-05",
+            "winning": [
+              10,
+              23,
+              41,
+              42,
+              44,
+              47
+            ],
+            "pool": [
+              47,
+              46,
+              22,
+              45,
+              10,
+              41,
+              23,
+              42
+            ],
+            "hits": 5
+          }
+        ]
+      }
+    },
+    {
+      "lambda": 0.1,
+      "disc": {
+        "n": 6373,
+        "h4": 25,
+        "h5": 1,
+        "h6": 0,
+        "sum": 6234
+      },
+      "hold": {
+        "n": 2732,
+        "h4": 18,
+        "h5": 3,
+        "h6": 0,
+        "sum": 2742,
+        "events": [
+          {
+            "date": "2018-06-11",
+            "winning": [
+              22,
+              28,
+              31,
+              33,
+              36,
+              37
+            ],
+            "pool": [
+              22,
+              33,
+              36,
+              28,
+              2,
+              31,
+              19,
+              46
+            ],
+            "hits": 5
+          },
+          {
+            "date": "2024-06-24",
+            "winning": [
+              27,
+              30,
+              37,
+              38,
+              41,
+              48
+            ],
+            "pool": [
+              27,
+              34,
+              41,
+              30,
+              13,
+              37,
+              48,
+              19
+            ],
+            "hits": 5
+          },
+          {
+            "date": "2026-05-05",
+            "winning": [
+              10,
+              23,
+              41,
+              42,
+              44,
+              47
+            ],
+            "pool": [
+              47,
+              46,
+              22,
+              45,
+              10,
+              41,
+              23,
+              42
+            ],
+            "hits": 5
+          }
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "holdoutFullModels": 0,
+    "holdout5PlusModels": 3
+  },
+  "budget": {
+    "poolSize": 8,
+    "playableCombinations": 28,
+    "theoreticalStakeEUR": 14,
+    "realStakeEUR": 0
+  },
+  "realMoneyPass": false
+}
