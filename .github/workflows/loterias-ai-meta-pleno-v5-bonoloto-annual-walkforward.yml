@@ -1,0 +1,49 @@
+name: Loterias AI MetaPleno v5 Bonoloto Annual Walkforward
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v5-bonoloto-annual-walkforward.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v5-bonoloto-annual-walkforward.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  walkforward:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Download v5 shards
+        uses: actions/download-artifact@v4
+        with:
+          pattern: meta-pleno-v5-*
+          path: /tmp/meta-v5
+          merge-multiple: false
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: 31878379467
+      - name: Restore shards
+        run: |
+          rm -rf loterias-ai/data/research/meta-pleno-v5-shards
+          mkdir -p loterias-ai/data/research/meta-pleno-v5-shards
+          find /tmp/meta-v5 -name '*.json' -exec cp {} loterias-ai/data/research/meta-pleno-v5-shards/ \;
+      - name: Run annual walk-forward
+        run: node loterias-ai/scripts/meta-pleno-v5-bonoloto-annual-walkforward.mjs
+      - name: Persist safely
+        run: |
+          cp loterias-ai/data/research/meta-pleno-v5-bonoloto-annual-walkforward.json /tmp/wf.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/wf.json loterias-ai/data/research/meta-pleno-v5-bonoloto-annual-walkforward.json
+            git add loterias-ai/data/research/meta-pleno-v5-bonoloto-annual-walkforward.json
+            git commit -m 'data(loterias-ai): persist Bonoloto annual walk-forward' || exit 0
+            git push origin HEAD:main && exit 0
+            sleep $((i*3))
+          done
+          exit 1
