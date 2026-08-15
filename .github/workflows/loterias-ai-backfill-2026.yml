@@ -18,6 +18,9 @@ on:
         description: 'Optional YYYY-MM-DD end date (blank = today)'
         required: false
         default: ''
+concurrency:
+  group: loterias-ai-backfill-2026-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   backfill:
     runs-on: ubuntu-latest
@@ -29,6 +32,9 @@ jobs:
       LOTERIAS_BACKFILL_END: ${{ github.event_name == 'workflow_dispatch' && inputs.end_date || '' }}
     steps:
       - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - name: Sync current branch before generating data
+        run: git pull --rebase origin "${GITHUB_REF_NAME}"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -49,5 +55,4 @@ jobs:
           git add loterias-ai/data/archive
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'data(loterias-ai): backfill official 2026 core draws'
-          for i in 1 2 3 4 5; do git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin HEAD:"${GITHUB_REF_NAME}" && exit 0; sleep $((i*3)); done
-          exit 1
+          git push origin HEAD:"${GITHUB_REF_NAME}"
