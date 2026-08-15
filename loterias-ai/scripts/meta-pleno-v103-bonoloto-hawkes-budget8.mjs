@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+const DIR='loterias-ai/data/archive/bonoloto',OUT='loterias-ai/data/research/meta-pleno-v103-bonoloto-hawkes-budget8.json';
+let rows=[];for(const f of fs.readdirSync(DIR).filter(x=>/^\d{4}\.json$/.test(x)).sort())rows.push(...(JSON.parse(fs.readFileSync(`${DIR}/${f}`,'utf8')).records||[]));
+rows=rows.filter(r=>r.drawDate&&Array.isArray(r.result?.main)&&r.result.main.length===6).sort((a,b)=>a.drawDate.localeCompare(b.drawDate));
+const sets=rows.map(r=>[...r.result.main].sort((a,b)=>a-b)),truth=sets.map(x=>new Set(x));
+function ids(a,b){const z=[];for(let i=1;i<rows.length;i++)if(rows[i].drawDate>=a&&rows[i].drawDate<=b)z.push(i);return z}
+const sel=ids('2020-01-01','2022-12-31'),mid=ids('2023-01-01','2024-12-31'),late=ids('2025-01-01','9999-12-31');
+const cfgs=[];for(const tau of [2,4,8,16,32])for(const self of [-1,-.5,0,.5,1,2])for(const cross of [-.5,0,.25,.5,1])for(const window of [24,48,96,192])cfgs.push({tau,self,cross,window});
+function predict(i,c){const s=Array(50).fill(0),start=Math.max(0,i-c.window);for(let j=start;j<i;j++){const age=i-j,w=Math.exp(-age/c.tau),cur=sets[j];for(let n=1;n<=49;n++){if(cur.includes(n))s[n]+=c.self*w;else if(c.cross!==0){let co=0;for(const m of cur)co+=1/(1+Math.abs(n-m));s[n]+=c.cross*w*co/6}}}return Array.from({length:49},(_,k)=>k+1).sort((a,b)=>s[b]-s[a]||a-b).slice(0,8).sort((a,b)=>a-b)}
+function ev(c,L){let full=0,h5=0,score=0;const events=[];for(const i of L){const p=predict(i,c);let h=0;for(const n of p)if(truth[i].has(n))h++;score+=h*h*h;if(h===6){full++;events.push({date:rows[i].drawDate,pool:p,truth:sets[i]})}if(h>=5)h5++}return{full,h5,score,events}}
+const ranked=cfgs.map((c,id)=>({id,c,sel:ev(c,sel)})).sort((a,b)=>b.sel.full-a.sel.full||b.sel.h5-a.sel.h5||b.sel.score-a.sel.score||a.id-b.id);const frozen=ranked.slice(0,25).map(x=>({...x,mid:ev(x.c,mid),late:ev(x.c,late)}));
+const summary={configurations:cfgs.length,frozen:frozen.length,midFullModels:frozen.filter(x=>x.mid.full).length,lateFullModels:frozen.filter(x=>x.late.full).length,repeatFullModels:frozen.filter(x=>x.mid.full&&x.late.full).length,repeat5PlusModels:frozen.filter(x=>x.mid.h5&&x.late.h5).length};
+const out={generatedAt:new Date().toISOString(),engine:'MetaPleno-v103-bonoloto-hawkes-budget8',methodology:'Hawkes-like self/cross excitation over prior draws. Hyperparameters ranked only on 2020-2022; top25 frozen before 2023-2024 and 2025-latest.',budget:{poolSize:8,combinations:28,theoreticalCostEUR:14,maxEUR:15,realStakeEUR:0},summary,leaders:frozen.slice(0,25),realMoneyPass:false};fs.mkdirSync('loterias-ai/data/research',{recursive:true});fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify(summary));
