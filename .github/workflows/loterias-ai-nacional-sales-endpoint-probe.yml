@@ -1,0 +1,31 @@
+name: Loterias AI Nacional Sales Endpoint Probe
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/probe-nacional-sales-endpoint.mjs'
+      - '.github/workflows/loterias-ai-nacional-sales-endpoint-probe.yml'
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/probe-nacional-sales-endpoint.mjs
+      - name: Persist probe
+        run: |
+          cp loterias-ai/data/probes/nacional-sales-endpoint.json /tmp/nacional-sales-probe.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/probes
+          cp /tmp/nacional-sales-probe.json loterias-ai/data/probes/nacional-sales-endpoint.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/probes/nacional-sales-endpoint.json
+          git commit -m 'data(loterias-ai): persist Nacional sales endpoint probe' || exit 0
+          git push origin HEAD:main
