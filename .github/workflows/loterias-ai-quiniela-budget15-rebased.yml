@@ -1,0 +1,29 @@
+name: Loterias AI Quiniela Budget15 Rebased
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, feat/quiniela-budget15-rebased]
+    paths:
+      - 'loterias-ai/scripts/quiniela-budget15-reducer.mjs'
+      - 'loterias-ai/scripts/patch-hoy-budget15-ui.mjs'
+      - 'loterias-ai/hoy/budget15-ui.js'
+      - '.github/workflows/loterias-ai-quiniela-budget15-rebased.yml'
+      - 'loterias-ai/data/shadow/quiniela-current-combination.json'
+jobs:
+  reduce:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/quiniela-budget15-reducer.mjs
+      - run: node loterias-ai/scripts/patch-hoy-budget15-ui.mjs
+      - name: Persist reduced system and UI injection
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/shadow/quiniela-current-budget15.json loterias-ai/hoy/index.html
+          git diff --cached --quiet || git commit -m 'data(loterias-ai): persist rebased Quiniela Budget15 and UI'
+          git push
