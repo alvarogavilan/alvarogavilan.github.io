@@ -1,0 +1,60 @@
+name: Loterias AI Lototurf Sharded Search
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/lototurf-mass-financial-shard.mjs'
+      - 'loterias-ai/scripts/lototurf-mass-financial-aggregate.mjs'
+      - '.github/workflows/loterias-ai-lototurf-sharded-search.yml'
+permissions:
+  contents: write
+jobs:
+  search:
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0,1,2,3,4]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Search 50,000 Lototurf strategies
+        env:
+          SHARD: ${{ matrix.shard }}
+          CANDIDATES: 50000
+        run: node loterias-ai/scripts/lototurf-mass-financial-shard.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lototurf-${{ matrix.shard }}
+          path: /tmp/lototurf-shards/${{ matrix.shard }}.json
+          retention-days: 2
+  aggregate:
+    needs: search
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: lototurf-*
+          path: /tmp/lototurf-shards
+          merge-multiple: true
+      - run: node loterias-ai/scripts/lototurf-mass-financial-aggregate.mjs
+      - name: Persist evidence safely
+        run: |
+          cp loterias-ai/data/backtests/lototurf-mass-financial-search.json /tmp/l.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/backtests
+          cp /tmp/l.json loterias-ai/data/backtests/lototurf-mass-financial-search.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/backtests/lototurf-mass-financial-search.json
+          git commit -m 'data(loterias-ai): persist sharded Lototurf mass search' || exit 0
+          git push origin HEAD:main
