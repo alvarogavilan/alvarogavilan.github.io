@@ -1,0 +1,47 @@
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+import {execFileSync} from 'node:child_process';
+
+const HELP='https://www.loteriasyapuestas.es/es/centro-de-ayuda/centro-de-informacion-y-ayuda';
+const PDF='https://www.loteriasyapuestas.es/f/loterias/documentos/Quiniela/Calendarios/Proximas_jornadas_deportivas.pdf';
+const DIR='loterias-ai/data/archive/quiniela';
+const UPC='loterias-ai/data/official/quiniela-upcoming.json';
+const META='loterias-ai/data/official/quiniela-upcoming-sync.json';
+const LEDGER='loterias-ai/data/shadow/quiniela-meta-pleno-ledger.json';
+const V41='loterias-ai/data/research/meta-pleno-v41-quiniela-pleno15-coverage-audit.json';
+const NOT_BEFORE='2026-08-16';
+const B=['0','1','2','M'];
+const CODES=[];for(const a of B)for(const b of B)CODES.push(`${a}-${b}`);
+const sha=x=>crypto.createHash('sha256').update(typeof x==='string'?x:JSON.stringify(x)).digest('hex');
+const now=new Date(),today=now.toISOString().slice(0,10);
+fs.mkdirSync('loterias-ai/data/official',{recursive:true});
+
+async function fetchText(url){const r=await fetch(url,{redirect:'follow',signal:AbortSignal.timeout(20000),headers:{'user-agent':'Mozilla/5.0 LoteriasAI official-only prospective research','accept':'text/html,application/xhtml+xml,*/*'}});return{status:r.status,url:r.url,ct:r.headers.get('content-type')||'',text:await r.text()}}
+async function fetchBytes(url){const r=await fetch(url,{redirect:'follow',signal:AbortSignal.timeout(25000),headers:{'user-agent':'Mozilla/5.0 LoteriasAI official-only prospective research','accept':'application/pdf,*/*'}});return{status:r.status,url:r.url,ct:r.headers.get('content-type')||'',bytes:Buffer.from(await r.arrayBuffer())}}
+function meta(status,extra={}){const o={generatedAt:new Date().toISOString(),status,officialOnly:true,helpUrl:HELP,pdfUrl:PDF,...extra};fs.writeFileSync(META,JSON.stringify(o,null,2)+'\n');console.log(JSON.stringify(o,null,2));return o}
+
+let help;try{help=await fetchText(HELP)}catch(e){meta('OFFICIAL_HELP_UNAVAILABLE',{error:String(e)});process.exit(0)}
+if(help.status!==200||!/Pr[oó]ximas\s+jornadas/i.test(help.text)){meta('OFFICIAL_HELP_INVALID',{httpStatus:help.status,finalUrl:help.url,contentType:help.ct});process.exit(0)}
+let pdf;try{pdf=await fetchBytes(PDF)}catch(e){meta('OFFICIAL_PDF_UNAVAILABLE',{error:String(e)});process.exit(0)}
+if(pdf.status!==200||pdf.bytes.subarray(0,5).toString()!=='%PDF-'){meta('OFFICIAL_PDF_BLOCKED_OR_NOT_PDF',{httpStatus:pdf.status,finalUrl:pdf.url,contentType:pdf.ct,bodyPrefix:pdf.bytes.subarray(0,80).toString('utf8').replace(/\s+/g,' ')});process.exit(0)}
+const pdfHash=sha(pdf.bytes);fs.writeFileSync('/tmp/quiniela-upcoming.pdf',pdf.bytes);
+let text='';try{text=execFileSync('pdftotext',['-layout','/tmp/quiniela-upcoming.pdf','-'],{encoding:'utf8',maxBuffer:8*1024*1024})}catch(e){meta('OFFICIAL_PDF_TEXT_EXTRACTION_FAILED',{pdfHash,error:String(e)});process.exit(0)}
+const lines=text.split(/\r?\n/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean);
+function parseDate(s){let m=s.match(/(\d{1,2})[\/-](\d{1,2})[\/-](20\d{2})/);if(m)return`${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;const months={enero:1,febrero:2,marzo:3,abril:4,mayo:5,junio:6,julio:7,agosto:8,septiembre:9,octubre:10,noviembre:11,diciembre:12};m=s.toLowerCase().match(/(\d{1,2})\s+de\s+([a-záéíóúñ]+)\s+de\s+(20\d{2})/);if(m&&months[m[2]])return`${m[3]}-${String(months[m[2]]).padStart(2,'0')}-${m[1].padStart(2,'0')}`;return null}
+const sections=[];let cur=null;for(const line of lines){const jm=line.match(/\bJORNADA\s+(\d{1,3})\b/i);if(jm){if(cur)sections.push(cur);cur={jornada:Number(jm[1]),header:line,date:parseDate(line),matches:[]};continue}if(!cur)continue;if(!cur.date){const d=parseDate(line);if(d)cur.date=d}let m=line.match(/^(?:P[- ]?15|15|1[.]?5)[.:\s-]+(.+?)\s+-\s+(.+)$/i);if(m){cur.matches[14]={position:15,home:m[1].trim(),away:m[2].trim()};continue}m=line.match(/^(\d{1,2})[.)\s:-]+(.+?)\s+-\s+(.+)$/);if(m){const p=Number(m[1]);if(p>=1&&p<=15)cur.matches[p-1]={position:p,home:m[2].trim(),away:m[3].trim()}}}
+if(cur)sections.push(cur);
+const complete=sections.filter(s=>s.date&&s.matches.filter(Boolean).length===15&&s.date>=NOT_BEFORE).sort((a,b)=>a.date.localeCompare(b.date)||a.jornada-b.jornada);
+if(!complete.length){meta('OFFICIAL_PDF_PARSE_INCOMPLETE',{pdfHash,sections:sections.map(s=>({jornada:s.jornada,date:s.date,matches:s.matches.filter(Boolean).length})).slice(0,20),textHash:sha(text)});process.exit(0)}
+const next=complete.find(s=>s.date>=today)||complete[0];const upcoming={generatedAt:new Date().toISOString(),verificationLevel:'OFFICIAL_SELAE_UPCOMING_PDF',source:{provider:'SELAE',url:PDF,helpUrl:HELP,pdfHash,textHash:sha(text),capturedAt:new Date().toISOString()},jornada:next.jornada,targetDate:next.date,matches:next.matches,fixtureHash:sha({jornada:next.jornada,targetDate:next.date,matches:next.matches})};fs.writeFileSync(UPC,JSON.stringify(upcoming,null,2)+'\n');
+
+if(!fs.existsSync(V41)||!fs.existsSync(LEDGER)){meta('OFFICIAL_FIXTURE_CAPTURED_BUT_RESEARCH_INPUT_MISSING',{pdfHash,fixtureHash:upcoming.fixtureHash,targetDate:next.date,jornada:next.jornada});process.exit(0)}
+const v41=JSON.parse(fs.readFileSync(V41,'utf8')),strict=v41.strictestHistoricalPleno15;if(!strict||strict.covers!==2)throw new Error('v41 strict coverage-2 champion missing');const spec={...strict.champion.spec,covers:2};
+function outcomes(r){if(Array.isArray(r.result?.outcomes)&&r.result.outcomes.length>=15)return r.result.outcomes.map(String);if(Array.isArray(r.result?.matches)&&r.result.matches.length>=15)return r.result.matches.map(m=>String(m?.sign??m?.result??m?.outcome??''));return null}
+let rows=[];for(const f of fs.readdirSync(DIR).filter(x=>/^\d{4}\.json$/.test(x)).sort())rows.push(...(JSON.parse(fs.readFileSync(`${DIR}/${f}`,'utf8')).records||[]));rows=rows.map(r=>({...r,_o:outcomes(r)})).filter(r=>r.drawDate&&r._o&&CODES.includes(r._o[14])).sort((a,b)=>String(a.drawDate).localeCompare(String(b.drawDate)));
+const latest=rows.at(-1)?.drawDate||null;if(!latest||next.date<=latest){meta('OFFICIAL_FIXTURE_NOT_FUTURE',{fixtureHash:upcoming.fixtureHash,targetDate:next.date,latestArchiveDate:latest});process.exit(0)}
+function mix(x){x|=0;x=Math.imul(x^(x>>>16),0x45d9f3b);x=Math.imul(x^(x>>>16),0x45d9f3b);return(x^(x>>>16))>>>0}
+function featuresFuture(w,match){const g=Object.fromEntries(CODES.map(c=>[c,1])),recent=Object.fromEntries(CODES.map(c=>[c,1])),home=new Map(),away=new Map();for(let j=Math.max(0,rows.length-w);j<rows.length;j++){const code=rows[j]._o[14],m=rows[j].result?.matches?.[14]||{},h=String(m.home||'').toLowerCase(),a=String(m.away||'').toLowerCase();g[code]++;if(j>=rows.length-Math.min(12,w))recent[code]++;if(h){if(!home.has(h))home.set(h,Object.fromEntries(CODES.map(c=>[c,1])));home.get(h)[code]++}if(a){if(!away.has(a))away.set(a,Object.fromEntries(CODES.map(c=>[c,1])));away.get(a)[code]++}}const prior=()=>Object.fromEntries(CODES.map(c=>[c,1])),hp=home.get(String(match.home||'').toLowerCase())||prior(),ap=away.get(String(match.away||'').toLowerCase())||prior(),sum=o=>Object.values(o).reduce((s,x)=>s+x,0),gt=sum(g),rt=sum(recent),ht=sum(hp),at=sum(ap);return Object.fromEntries(CODES.map((c,ci)=>[c,[g[c]/gt,recent[c]/rt,hp[c]/ht,ap[c]/at,ci/15,c.split('-')[0]===c.split('-')[1]?1:0]]))}
+const F=featuresFuture(spec.window,next.matches[14]);const prediction=CODES.map(code=>{let z=0;for(let q=0;q<6;q++)z+=spec.w[q]*F[code][q];z+=((mix(spec.id^code.charCodeAt(0)*31^code.charCodeAt(2)*73)%1000)/1000-.5)*1e-5;return[z,code]}).sort((a,b)=>b[0]-a[0]||a[1].localeCompare(b[1])).slice(0,2).map(x=>x[1]);
+let ledger=JSON.parse(fs.readFileSync(LEDGER,'utf8'));const active=(ledger.entries||[]).find(e=>e.status==='PENDING');if(!active){meta('OFFICIAL_FIXTURE_CAPTURED_NO_ACTIVE_14_SHADOW',{fixtureHash:upcoming.fixtureHash,targetDate:next.date,jornada:next.jornada,p15Prediction:prediction});process.exit(0)}
+if(active.pleno15?.status==='PROSPECTIVE_SHADOW_FROZEN_FULL15'){meta('FULL15_ALREADY_FROZEN',{fixtureHash:upcoming.fixtureHash,targetDate:next.date,jornada:next.jornada,full15Hash:active.pleno15.full15Hash});process.exit(0)}
+const full15={status:'PROSPECTIVE_SHADOW_FROZEN_FULL15',frozenAt:new Date().toISOString(),targetDate:next.date,jornada:next.jornada,match15:next.matches[14],markerSpec:spec,coveredMarkers:prediction,markerCoverage:2,officialFixtureHash:upcoming.fixtureHash,source:upcoming.source,theoreticalEquivalentColumns:(active.columnsCount||216)*2,theoreticalStakeEUR:(active.columnsCount||216)*2*0.75,realStakeEUR:0,realMoneyPass:false};full15.full15Hash=sha({ruleHash:ledger.ruleHash,forecastHash:active.forecastHash,officialFixtureHash:upcoming.fixtureHash,markerSpec:spec,coveredMarkers:prediction,targetDate:next.date,jornada:next.jornada});active.officialTarget={targetDate:next.date,jornada:next.jornada,fixtureHash:upcoming.fixtureHash};active.pleno15=full15;active.target=`OFFICIAL_QUINIELA_J${next.jornada}_${next.date}_FULL15`;ledger.updatedAt=new Date().toISOString();fs.writeFileSync(LEDGER,JSON.stringify(ledger,null,2)+'\n');meta('PROSPECTIVE_FULL15_FROZEN',{pdfHash,fixtureHash:upcoming.fixtureHash,targetDate:next.date,jornada:next.jornada,p15Prediction:prediction,full15Hash:full15.full15Hash,theoreticalEquivalentColumns:full15.theoreticalEquivalentColumns,theoreticalStakeEUR:full15.theoreticalStakeEUR,realStakeEUR:0});
