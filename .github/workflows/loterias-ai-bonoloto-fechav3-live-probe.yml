@@ -11,15 +11,15 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with: {node-version: 22}
-      - name: Probe known and current Bonoloto dates
+      - name: Probe historical Bonoloto dates with pacing
         run: |
           node - <<'NODE'
-          const dates=['20260720','20260811','20260814','20260815'];
+          const dates=['20260101','20260102','20260103','20260104','20260720','20260815'];
           for(const date of dates){
             const url=`https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=${date}`;
-            const r=await fetch(url,{headers:{'user-agent':'LoteriasAI-LiveProbe/1.0','accept':'application/json,text/plain,*/*'}});
-            const text=await r.text();
-            let p=null;try{p=JSON.parse(text)}catch{}
-            console.log(JSON.stringify({date,status:r.status,contentType:r.headers.get('content-type'),bytes:text.length,array:Array.isArray(p),length:Array.isArray(p)?p.length:null,gameIds:Array.isArray(p)?[...new Set(p.map(x=>x?.game_id).filter(Boolean))]:[],sample:Array.isArray(p)&&p[0]?{fecha_sorteo:p[0].fecha_sorteo,game_id:p[0].game_id,combinacion:p[0].combinacion}:text.slice(0,160)}));
+            const r=await fetch(url,{headers:{'user-agent':'LoteriasAI-LiveProbe/1.1','accept':'application/json,text/plain,*/*'}});
+            const text=await r.text();let p=null;try{p=JSON.parse(text)}catch{}
+            console.log(JSON.stringify({date,status:r.status,bytes:text.length,length:Array.isArray(p)?p.length:null,gameIds:Array.isArray(p)?[...new Set(p.map(x=>x?.game_id).filter(Boolean))]:[],sample:Array.isArray(p)&&p[0]?{fecha_sorteo:p[0].fecha_sorteo,combinacion:p[0].combinacion}:text.slice(0,120)}));
+            await new Promise(r=>setTimeout(r,1500));
           }
           NODE
