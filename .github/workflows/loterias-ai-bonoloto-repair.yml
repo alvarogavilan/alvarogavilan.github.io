@@ -1,0 +1,45 @@
+name: Loterias AI Bonoloto Official Repair
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/repair-bonoloto-2022-06-24-official.mjs'
+      - '.github/workflows/loterias-ai-bonoloto-repair.yml'
+permissions:
+  contents: write
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Guarded official result repair
+        run: node loterias-ai/scripts/repair-bonoloto-2022-06-24-official.mjs
+      - name: Re-enrich repaired draw
+        env:
+          GAME: bonoloto
+          BATCH_LIMIT: 5
+        run: node loterias-ai/scripts/enrich-core-number-game-official-economics.mjs
+      - name: Persist safely
+        run: |
+          mkdir -p /tmp/bono-repair
+          cp loterias-ai/data/archive/bonoloto/2022.json /tmp/bono-repair/2022.json
+          cp loterias-ai/data/archive/_meta/bonoloto-official-economics.json /tmp/bono-repair/meta.json
+          cp loterias-ai/data/archive/_meta/bonoloto-official-conflicts.json /tmp/bono-repair/conflicts.json
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/bono-repair/2022.json loterias-ai/data/archive/bonoloto/2022.json
+            cp /tmp/bono-repair/meta.json loterias-ai/data/archive/_meta/bonoloto-official-economics.json
+            cp /tmp/bono-repair/conflicts.json loterias-ai/data/archive/_meta/bonoloto-official-conflicts.json
+            git config user.name github-actions[bot]
+            git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+            git add loterias-ai/data/archive/bonoloto/2022.json loterias-ai/data/archive/_meta/bonoloto-official-economics.json loterias-ai/data/archive/_meta/bonoloto-official-conflicts.json
+            git commit -m 'data(loterias-ai): repair Bonoloto 2022-06-24 official result' || exit 0
+            git push origin HEAD:main && exit 0
+            sleep $((i*3))
+          done
+          exit 1
