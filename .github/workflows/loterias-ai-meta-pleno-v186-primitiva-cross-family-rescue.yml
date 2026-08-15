@@ -15,10 +15,13 @@ jobs:
           node-version: '20'
       - name: Run v186 self-contained cross-family audit
         run: node loterias-ai/scripts/meta-pleno-v186-primitiva-cross-family-rescue.mjs
-      - name: Persist v186
+      - name: Persist v186 safely
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add loterias-ai/data/research/meta-pleno-v186-primitiva-cross-family-rescue.json
-          git diff --cached --quiet || git commit -m "research(loterias-ai): persist v186 Primitiva cross-family rescue"
-          git push
+          if ! git diff --cached --quiet; then
+            git commit -m "research(loterias-ai): persist v186 Primitiva cross-family rescue"
+            git pull --rebase origin "$GITHUB_REF_NAME"
+            git push origin HEAD:"$GITHUB_REF_NAME"
+          fi
