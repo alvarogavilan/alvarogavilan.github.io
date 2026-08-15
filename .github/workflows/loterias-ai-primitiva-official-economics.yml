@@ -13,16 +13,16 @@ concurrency:
 jobs:
   enrich:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Enrich multiple bounded batches
+      - name: Enrich sixteen bounded official batches
         shell: bash
         run: |
-          for i in 1 2 3 4; do
+          for i in $(seq 1 16); do
             BATCH_LIMIT=120 node loterias-ai/scripts/enrich-primitiva-official-economics.mjs || exit 1
           done
       - name: Persist safely
@@ -31,6 +31,6 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add loterias-ai/data/archive/primitiva loterias-ai/data/archive/_meta/primitiva-official-economics.json
-          git commit -m 'data(loterias-ai): enrich Primitiva official economics' || exit 0
+          git commit -m 'data(loterias-ai): expand Primitiva official economics' || exit 0
           git pull --rebase origin main
           git push origin HEAD:main
