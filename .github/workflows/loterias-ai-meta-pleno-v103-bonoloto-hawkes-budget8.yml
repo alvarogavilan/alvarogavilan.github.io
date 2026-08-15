@@ -1,0 +1,22 @@
+name: Loterias AI MetaPleno v103 Bonoloto Hawkes Budget8
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v103-bonoloto-hawkes-budget8.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v103-bonoloto-hawkes-budget8.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node loterias-ai/scripts/meta-pleno-v103-bonoloto-hawkes-budget8.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v103-bonoloto-hawkes-budget8
+          path: loterias-ai/data/research/meta-pleno-v103-bonoloto-hawkes-budget8.json
