@@ -1,0 +1,39 @@
+name: Loterias AI MetaPleno v40 Quiniela Pleno15
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v40-quiniela-pleno15-compact.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v40-quiniela-pleno15.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Search pre-2018 marker-15 models and open modern archive
+        run: CANDIDATES=100000 node loterias-ai/scripts/meta-pleno-v40-quiniela-pleno15-compact.mjs
+      - name: Persist safely
+        shell: bash
+        run: |
+          cp loterias-ai/data/research/meta-pleno-v40-quiniela-pleno15.json /tmp/v40.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/v40.json loterias-ai/data/research/meta-pleno-v40-quiniela-pleno15.json
+            git add loterias-ai/data/research/meta-pleno-v40-quiniela-pleno15.json
+            git commit -m 'data(loterias-ai): persist MetaPleno v40 Quiniela Pleno15 audit' || exit 0
+            git push origin HEAD:main && exit 0
+            sleep $((i*2))
+          done
+          exit 1
