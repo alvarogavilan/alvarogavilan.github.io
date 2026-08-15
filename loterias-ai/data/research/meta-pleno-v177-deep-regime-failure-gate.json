@@ -1,0 +1,75 @@
+{
+  "generatedAt": "2026-08-15T22:07:32.597Z",
+  "version": "v177",
+  "gameId": "bonoloto",
+  "family": "DEEP_REGIME_FAILURE_GATE",
+  "purpose": "Detect pre-draw conditions where the fixed c12 ranking is at elevated risk of a broad miss; intended for ABSTAIN/SWITCH research, not posthoc number replacement.",
+  "methodology": "Thresholds calibrated only on 2013-2017. Gate identity selected only on 2018-2022 with <=25% abstention, prioritizing catastrophic top16-miss recall, then deep top8-miss recall, while penalizing abstention on near-plenos. 2023-2025 is holdout. 2026, including 2026-08-15 which motivated this architecture, is exploratory only and cannot validate the gate.",
+  "thresholds": {
+    "avg30": 0.8333333333333334,
+    "avg100": 0.8899999999999999,
+    "deep20": 1,
+    "deep50": 0.98,
+    "margin89": 0.0005684508627580077,
+    "spread8": 0.022046399050250253,
+    "vol30": 0.924755326447544
+  },
+  "candidateGates": 49,
+  "leader": {
+    "id": "lowSpread",
+    "selection": {
+      "n": 1520,
+      "flagged": 374,
+      "flagRate": 0.24605263157894736,
+      "catastrophic": 1089,
+      "catCaptured": 278,
+      "deep": 1432,
+      "deepCaptured": 358,
+      "near": 1,
+      "nearFlagged": 0
+    },
+    "holdout": {
+      "n": 1096,
+      "flagged": 289,
+      "flagRate": 0.2636861313868613,
+      "catastrophic": 775,
+      "catCaptured": 209,
+      "deep": 1055,
+      "deepCaptured": 277,
+      "near": 2,
+      "nearFlagged": 0
+    },
+    "current2026": {
+      "n": 226,
+      "flagged": 59,
+      "flagRate": 0.2610619469026549,
+      "catastrophic": 163,
+      "catCaptured": 35,
+      "deep": 216,
+      "deepCaptured": 53,
+      "near": 0,
+      "nearFlagged": 0
+    }
+  },
+  "target20260815": {
+    "features": {
+      "avg10": 0.8,
+      "avg30": 0.8666666666666667,
+      "avg100": 0.97,
+      "deep20": 0.95,
+      "deep50": 0.96,
+      "vol30": 0.7302967433402214,
+      "margin89": 0.0011605369432945434,
+      "spread8": 0.029008784616403105,
+      "spread16": 0.04170021965457538
+    },
+    "hitsTop8": 2,
+    "hitsTop16": 2,
+    "catastrophic": true,
+    "flaggedByLeader": false,
+    "classification": "POSTHOC_CASE_STUDY_ONLY"
+  },
+  "decision": "HOLDOUT_FAILURE_DETECTION_SIGNAL_REQUIRES_NULL_AND_PROSPECTIVE",
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
