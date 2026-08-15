@@ -1,0 +1,109 @@
+{
+  "generatedAt": "2026-08-15T23:38:54.186Z",
+  "version": "v192",
+  "gameId": "primitiva",
+  "family": "FULL_GRID_NEARMISS_TEMPORAL_CALIBRATOR",
+  "experts": {
+    "gap": 60,
+    "kalman": 168,
+    "total": 228
+  },
+  "configsTested": 1023,
+  "trainEvents": 13,
+  "validationEvents": 1,
+  "testEvents": 2,
+  "leader": {
+    "best": 0.5,
+    "sup8": 0.5,
+    "sup12": 0.5,
+    "dis": 0,
+    "avg": 0,
+    "training": {
+      "top1": 2,
+      "mrr": 0.2506983314675622
+    },
+    "validation": {
+      "top1": 0,
+      "mrr": 0.25
+    }
+  },
+  "methodology": "Use all c46 4/6 and 5/6 near-miss events to increase training evidence. Train feature-weight candidates on pre-2021 events, retain top 100, select only on 2021-2022 validation, then freeze and evaluate exclusively 2023+ c46 5/6 events. Full 228-model v79+v108 evidence features; DROP and 5 EUR ticket ranking remain the pre-2023 v184 rule.",
+  "events": [
+    {
+      "date": "2024-01-11",
+      "truth": [
+        7,
+        12,
+        15,
+        22,
+        35,
+        48
+      ],
+      "missing": 22,
+      "chosenAdd": 11,
+      "addCorrect": false,
+      "missingExternalRank": 28,
+      "missingEvidence": {
+        "c": 29,
+        "min": 2,
+        "gapMin": 4,
+        "kalMin": 2,
+        "sup8Count": 43
+      },
+      "chosenEvidence": {
+        "c": 17,
+        "min": 1,
+        "gapMin": 1,
+        "kalMin": 1,
+        "sup8Count": 117
+      },
+      "drop": 40,
+      "dropCorrect": true,
+      "rescuedPoolHits": 5,
+      "bestPlayable5EUR": 5,
+      "fullPlayable5EUR": false
+    },
+    {
+      "date": "2026-07-25",
+      "truth": [
+        28,
+        37,
+        38,
+        40,
+        43,
+        48
+      ],
+      "missing": 38,
+      "chosenAdd": 18,
+      "addCorrect": false,
+      "missingExternalRank": 12,
+      "missingEvidence": {
+        "c": 20,
+        "min": 2,
+        "gapMin": 2,
+        "kalMin": 5,
+        "sup8Count": 80
+      },
+      "chosenEvidence": {
+        "c": 29,
+        "min": 1,
+        "gapMin": 1,
+        "kalMin": 1,
+        "sup8Count": 165
+      },
+      "drop": 22,
+      "dropCorrect": true,
+      "rescuedPoolHits": 5,
+      "bestPlayable5EUR": 5,
+      "fullPlayable5EUR": false
+    }
+  ],
+  "summary": {
+    "addCorrect": 0,
+    "dropCorrect": 2,
+    "rescuedPoolFull": 0,
+    "fullPlayable5EUR": 0
+  },
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
