@@ -6,6 +6,7 @@ on:
       - 'loterias-ai/scripts/meta-pleno-v3-portfolios.mjs'
       - '.github/workflows/loterias-ai-meta-pleno-v3-portfolios.yml'
 permissions:
+  actions: read
   contents: write
 concurrency:
   group: loterias-ai-meta-pleno-v3-portfolios
@@ -19,6 +20,20 @@ jobs:
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: 22}
+      - name: Recover exact MetaPleno v2 shards from authoritative run
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 31877153346
+          pattern: meta-pleno-v2-*
+          path: /tmp/meta-pleno-v2
+      - name: Collect recovered v2 shards
+        run: |
+          rm -rf loterias-ai/data/research/meta-pleno-v2-shards
+          mkdir -p loterias-ai/data/research/meta-pleno-v2-shards
+          find /tmp/meta-pleno-v2 -name '*.json' -exec cp {} loterias-ai/data/research/meta-pleno-v2-shards/ \;
+          test "$(find loterias-ai/data/research/meta-pleno-v2-shards -name '*.json' | wc -l)" -eq 20
       - name: Evaluate MetaPleno ensemble portfolios
         run: node loterias-ai/scripts/meta-pleno-v3-portfolios.mjs
       - name: Persist safely
