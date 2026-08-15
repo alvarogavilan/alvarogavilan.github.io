@@ -1,0 +1,70 @@
+{
+  "generatedAt": "2026-08-15T23:16:32.572Z",
+  "version": "v188",
+  "gameId": "primitiva",
+  "family": "STACKED_DEEP_WINNER_RETRIEVER",
+  "training": "2017-2020 all draws/all 49 labels",
+  "validation": "2021-2022",
+  "test": "2023+",
+  "lambdasTried": [
+    0,
+    0.001,
+    0.01,
+    0.05,
+    0.1,
+    0.5
+  ],
+  "leader": {
+    "lambda": 0.001,
+    "weights": [
+      -0.020555250150741437,
+      0.06987453854882612,
+      0.0308346460636502,
+      0.08390154745212888,
+      0.06281314999652034,
+      0.013924688918911018
+    ],
+    "validation": {
+      "draws": 234,
+      "hits": 235,
+      "meanHits": 1.0042735042735043,
+      "winnerMRR": 0.09475940270552735
+    }
+  },
+  "methodology": "Temporal stacked logistic calibrator using only reciprocal ranks from frozen c46, v79 gap/shape and v108 Kalman plus disagreement terms. Train on all 49 winner/non-winner labels in 2017-2020, choose regularization only on 2021-2022, then freeze and evaluate ADD on c46 5/6 events from 2023 onward. DROP and 5-ticket portfolio remain pre-2023 v184 rules.",
+  "events": [
+    {
+      "date": "2024-01-11",
+      "missing": 22,
+      "chosenAdd": 28,
+      "addCorrect": false,
+      "missingExternalRank": 24,
+      "drop": 40,
+      "dropCorrect": true,
+      "rescuedPoolHits": 5,
+      "bestPlayable5EUR": 5,
+      "fullPlayable5EUR": false
+    },
+    {
+      "date": "2026-07-25",
+      "missing": 38,
+      "chosenAdd": 17,
+      "addCorrect": false,
+      "missingExternalRank": 15,
+      "drop": 22,
+      "dropCorrect": true,
+      "rescuedPoolHits": 5,
+      "bestPlayable5EUR": 5,
+      "fullPlayable5EUR": false
+    }
+  ],
+  "summary": {
+    "testFiveSixEvents": 2,
+    "addCorrect": 0,
+    "dropCorrect": 2,
+    "rescuedPoolFull": 0,
+    "fullPlayable5EUR": 0
+  },
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
