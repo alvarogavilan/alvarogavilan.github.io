@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+const SRC='loterias-ai/data/research/meta-pleno-v162-inverted-route-gate.json';
+const OUT='loterias-ai/data/research/meta-pleno-v163-v162-conservative-null.json';
+const v162=JSON.parse(fs.readFileSync(SRC,'utf8'));
+const n=(v162.leaders?.[0]?.mid?.n||0)+(v162.leaders?.[0]?.late?.n||0);
+const m=v162.selection?.thresholds?.length||1;
+const comb=(n,k)=>{let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r};
+const pFull=comb(8,6)/comb(49,6);
+const pGe5=(comb(8,6)+comb(8,5)*comb(41,1))/comb(49,6);
+const qFull=Math.min(1,m*pFull),qGe5=Math.min(1,m*pGe5);
+const binTail=(nn,p,k)=>{let s=0;for(let x=k;x<=nn;x++){const logc=(()=>{let z=0;for(let i=1;i<=x;i++)z+=Math.log(nn-x+i)-Math.log(i);return z})();const lp=logc+x*Math.log(p)+(nn-x)*Math.log1p(-p);s+=Math.exp(lp)}return Math.min(1,s)};
+const observedMaxFull=Math.max(...(v162.leaders||[]).map(x=>(x.mid?.h6||0)+(x.late?.h6||0)),0);
+const observedMaxGe5=Math.max(...(v162.leaders||[]).map(x=>(x.mid?.h5||0)+(x.late?.h5||0)),0);
+const out={generatedAt:new Date().toISOString(),version:'v163',gameId:'bonoloto',source:'v162',methodology:'Conservative local threshold-family audit. For each draw an 8-number pool has exact fair-draw full6 and >=5 probabilities. To avoid assuming independence across the threshold family, per-draw probability is upper-bounded by the union bound m*p, then a Binomial(n,qUpper) tail is reported for the maximum observed count. This only corrects the v162 threshold family. It does NOT correct the much larger architecture search that led to v162, whose rank9 route was conceived after inspecting 2025; therefore it cannot promote the result to confirmatory evidence or real-money use.',thresholdModels:m,validationDraws:n,observed:{maxFull6PerThreshold:observedMaxFull,maxGe5PerThreshold:observedMaxGe5,bothEraFullModels:v162.summary?.bothEraFullModels||0},singlePoolNull:{pFull6:pFull,pGe5},conservativeThresholdFamilyNull:{perDrawFullUpper:qFull,perDrawGe5Upper:qGe5,expectedFullUpper:n*qFull,expectedGe5Upper:n*qGe5,pAtLeastObservedFullUpper:binTail(n,qFull,observedMaxFull),pAtLeastObservedGe5Upper:binTail(n,qGe5,observedMaxGe5)},interpretation:'LOCAL_THRESHOLD_FAMILY_ONLY_GLOBAL_ARCHITECTURE_POSTHOC_CONTAMINATION_REMAINS',realMoneyPass:false,realStakeEUR:0};
+fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify(out,null,2));
