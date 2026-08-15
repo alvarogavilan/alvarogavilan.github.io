@@ -1,0 +1,26 @@
+name: Loterias AI MetaPleno v100 Audit v99 Late Fulls
+
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v100-audit-v99-late-fulls.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v100-audit-v99.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node loterias-ai/scripts/meta-pleno-v100-audit-v99-late-fulls.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v100-audit-v99-late-fulls
+          path: loterias-ai/data/research/meta-pleno-v100-audit-v99-late-fulls.json
