@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+const TARGET='2026-08-15';
+const archive=JSON.parse(fs.readFileSync('loterias-ai/data/archive/bonoloto/2026.json','utf8'));
+const rec=(archive.records||[]).find(r=>r.drawDate===TARGET);
+const outPath='loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-settlement.json';
+if(!rec||!Array.isArray(rec.result?.main)||rec.result.main.length!==6){console.log(JSON.stringify({status:'AWAITING_OFFICIAL_RESULT',target:TARGET}));process.exit(0)}
+const truth=[...rec.result.main].sort((a,b)=>a-b);const comp=rec.result.complementary??rec.result.complementario??null;const rei=rec.result.reintegro??null;
+const files=[['v7','loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-v7.json'],['v10-compact','loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-v10-compact.json']];
+function score(ticket){const hits=ticket.numbers.filter(n=>truth.includes(n)).length;const missingTruth=truth.filter(n=>!ticket.numbers.includes(n));const hasComp=comp!=null&&ticket.numbers.includes(comp);let tier=hits===6?'6/6':hits===5&&hasComp?'5+C':hits===5?'5/6':`${hits}/6`;return{...ticket,hits,hasComplementario:hasComp,tier,missingTruth}}
+const panels={};for(const [id,p] of files){if(!fs.existsSync(p))continue;const d=JSON.parse(fs.readFileSync(p,'utf8'));const tickets=(d.tickets||[]).map(score);tickets.sort((a,b)=>b.hits-a.hits||Number(b.hasComplementario)-Number(a.hasComplementario));panels[id]={engine:d.engine,panelSize:d.panelSize,theoreticalCostEUR:d.theoreticalCostEUR,realStakeEUR:d.realStakeEUR,sealSHA256:d.sealSHA256,best:tickets[0]||null,distribution:{six:tickets.filter(x=>x.hits===6).length,fivePlusComplementario:tickets.filter(x=>x.hits===5&&x.hasComplementario).length,five:tickets.filter(x=>x.hits===5&&!x.hasComplementario).length,four:tickets.filter(x=>x.hits===4).length,three:tickets.filter(x=>x.hits===3).length},tickets}}
+const out={generatedAt:new Date().toISOString(),targetDrawDate:TARGET,status:'SETTLED_OFFICIAL_ARCHIVE',truth:{main:truth,complementario:comp,reintegro:rei},source:rec.economics?.validation?.officialSELAE?'SELAE_OFFICIAL_ARCHIVE':'ARCHIVE_RESULT_PENDING_OFFICIAL_ECONOMICS_CROSSCHECK',panels,comparison:{compactCostEUR:panels['v10-compact']?.theoreticalCostEUR??null,fullCostEUR:panels.v7?.theoreticalCostEUR??null,compactBestHits:panels['v10-compact']?.best?.hits??null,fullBestHits:panels.v7?.best?.hits??null},realMoneyPass:false};
+fs.writeFileSync(outPath,JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify(out,null,2));
