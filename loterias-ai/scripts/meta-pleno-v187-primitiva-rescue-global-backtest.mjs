@@ -1,0 +1,29 @@
+import fs from 'node:fs';
+
+const MAX=49,MIN_HISTORY=250,UNIT=1;
+const C46={longFrequency:.2436021948629059,shortMomentum:.23052522678219245,gap:.1375835356389871,stability:.25253420687920874,pairAffinity:.07113006157102063,entropy:.07939597515272907,meanReversion:.24348168524738867};
+const mean=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:0;
+const sd=a=>{if(a.length<2)return 0;const m=mean(a);return Math.sqrt(a.reduce((s,x)=>s+(x-m)**2,0)/(a.length-1))};
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const unit=z=>.5+.5*Math.tanh(z/2);
+const z=(c,n)=>{const v=c.slice(1),m=mean(v),s=sd(v);return s?(c[n]-m)/s:0};
+const choose=(n,k)=>{if(k<0||k>n)return 0;k=Math.min(k,n-k);let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return Math.round(r)};
+function features(st,i){const gaps=Array(MAX+1).fill(0);let gm=1;for(let n=1;n<=MAX;n++){gaps[n]=st.last[n]<0?i:i-1-st.last[n];gm=Math.max(gm,gaps[n])}const total=st.all.slice(1).reduce((a,b)=>a+b,0)||1,o=[];for(let n=1;n<=MAX;n++){const za=z(st.all,n),z20=z(st.c20,n),z50=z(st.c50,n),z100=z(st.c100,n),lf=unit(za),sm=clamp(.6*unit(z20)+.4*unit(z50)),gap=clamp(gaps[n]/gm),stab=clamp(1-(Math.abs(z20-z50)+Math.abs(z50-z100)+Math.abs(z100-za))/8);let pa=0;if(st.all[n])for(let x=1;x<=MAX;x++)if(x!==n)pa=Math.max(pa,st.pairs[n][x]/st.all[n]);const p=st.all[n]/total,ent=clamp((p>0?-p*Math.log(p):0)*8),mr=clamp(1-Math.abs(unit(za)-.5)*2);o.push({number:n,f:{longFrequency:lf,shortMomentum:sm,gap,stability:stab,pairAffinity:clamp(pa),entropy:ent,meanReversion:mr}})}return o}
+function rank(fr,w){const den=Object.values(w).reduce((a,b)=>a+b,0)||1;return fr.map(x=>({number:x.number,score:Object.entries(w).reduce((s,[k,v])=>s+(x.f[k]||0)*v,0)/den})).sort((a,b)=>b.score-a.score||a.number-b.number)}
+function add(st,ns,i){st.q20.push(ns);st.q50.push(ns);st.q100.push(ns);for(const n of ns){st.all[n]++;st.c20[n]++;st.c50[n]++;st.c100[n]++;st.last[n]=i;for(const x of ns)if(x!==n)st.pairs[n][x]++}for(const[q,c,l]of[[st.q20,st.c20,20],[st.q50,st.c50,50],[st.q100,st.c100,100]])if(q.length>l)for(const n of q.shift())c[n]--}
+let rows=[];for(const f of fs.readdirSync('loterias-ai/data/archive/primitiva').filter(f=>/^\d{4}\.json$/.test(f)).sort())rows.push(...(JSON.parse(fs.readFileSync(`loterias-ai/data/archive/primitiva/${f}`,'utf8')).records||[]));rows=[...new Map(rows.map(r=>[r.drawId,r])).values()].filter(r=>r.result?.main?.length===6).sort((a,b)=>a.drawDate.localeCompare(b.drawDate));
+const st={all:Array(50).fill(0),c20:Array(50).fill(0),c50:Array(50).fill(0),c100:Array(50).fill(0),last:Array(50).fill(-1),pairs:Array.from({length:50},()=>Array(50).fill(0)),q20:[],q50:[],q100:[]};
+const variants=Array.from({length:9},(_,extras)=>({extras,draws:0,poolHits:{},fullCoverage:0,atLeast5:0,totalPoolSize:0,totalCombinationTickets:0,target2024:null,target2026:null}));
+for(let i=0;i<rows.length;i++){
+ const r=rows[i],truth=r.result.main.map(Number),T=new Set(truth);
+ if(i>=MIN_HISTORY){
+  const fr=features(st,i),base=rank(fr,C46).slice(0,8).map(x=>x.number),lf=rank(fr,{longFrequency:1}).map(x=>x.number),outside=lf.filter(n=>!base.includes(n));
+  for(const v of variants){const pool=[...base,...outside.slice(0,v.extras)],hits=pool.filter(n=>T.has(n)).length;v.draws++;v.poolHits[hits]=(v.poolHits[hits]||0)+1;if(hits===6)v.fullCoverage++;if(hits>=5)v.atLeast5++;v.totalPoolSize+=pool.length;v.totalCombinationTickets+=choose(pool.length,6);if(r.drawDate==='2024-01-11')v.target2024={hits,poolSize:pool.length,contains22:pool.includes(22),extraNumbers:outside.slice(0,v.extras)};if(r.drawDate==='2026-07-25')v.target2026={hits,poolSize:pool.length,contains38:pool.includes(38),extraNumbers:outside.slice(0,v.extras)}}
+ }
+ add(st,truth,i);
+}
+for(const v of variants){v.fullCoverageRate=v.fullCoverage/v.draws;v.atLeast5Rate=v.atLeast5/v.draws;v.avgPoolSize=v.totalPoolSize/v.draws;v.avgCombinationTickets=v.totalCombinationTickets/v.draws;v.avgFullWheelCostEUR=v.avgCombinationTickets*UNIT;v.incrementalFullCoverageVsBase=v.fullCoverage-variants[0].fullCoverage;v.incrementalAtLeast5VsBase=v.atLeast5-variants[0].atLeast5}
+const efficient=variants.filter(v=>v.extras>0).sort((a,b)=>{const ea=a.incrementalFullCoverage/(a.avgCombinationTickets-variants[0].avgCombinationTickets||1),eb=b.incrementalFullCoverage/(b.avgCombinationTickets-variants[0].avgCombinationTickets||1);return eb-ea||a.extras-b.extras})[0];
+const out={generatedAt:new Date().toISOString(),version:'v187',gameId:'primitiva',family:'C46_PLUS_LONG_FREQUENCY_RESCUE_GLOBAL_BACKTEST',methodology:'Leakage-safe full-history walk-forward. Base is frozen c46 top-8. Variants add the first 1..8 long-frequency-ranked numbers not already in c46. No target-date fitting. Reports coverage and combinatorial full-wheel cost; no claim of profitability without prize settlement.',unitStakeEURForCostIllustration:UNIT,variants,efficiencyCandidate:efficient?{extras:efficient.extras,fullCoverage:efficient.fullCoverage,incrementalFullCoverageVsBase:efficient.incrementalFullCoverageVsBase,atLeast5:efficient.atLeast5,avgPoolSize:efficient.avgPoolSize,avgCombinationTickets:efficient.avgCombinationTickets,avgFullWheelCostEUR:efficient.avgFullWheelCostEUR,target2024:efficient.target2024,target2026:efficient.target2026}:null,realMoneyPass:false,realStakeEUR:0};
+fs.writeFileSync('loterias-ai/data/research/meta-pleno-v187-primitiva-rescue-global-backtest.json',JSON.stringify(out,null,2)+'\n');
+console.log('V187_RESULT '+JSON.stringify({base:{draws:variants[0].draws,fullCoverage:variants[0].fullCoverage,atLeast5:variants[0].atLeast5,avgTickets:variants[0].avgCombinationTickets},variants:variants.map(v=>({extras:v.extras,full:v.fullCoverage,deltaFull:v.incrementalFullCoverageVsBase,ge5:v.atLeast5,delta5:v.incrementalAtLeast5VsBase,avgTickets:v.avgCombinationTickets,target2024:v.target2024,target2026:v.target2026})),efficiencyCandidate:out.efficiencyCandidate}));
