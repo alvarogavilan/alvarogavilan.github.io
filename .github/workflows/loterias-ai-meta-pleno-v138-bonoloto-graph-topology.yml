@@ -1,0 +1,25 @@
+name: Loterias AI MetaPleno v138 Bonoloto Graph Topology
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v138-bonoloto-graph-topology]
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v138-bonoloto-graph-topology.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v138-bonoloto-graph-topology.yml'
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/meta-pleno-v138-bonoloto-graph-topology.mjs
+      - name: Persist v138 result
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v138-bonoloto-graph-topology.json
+          git diff --cached --quiet || git commit -m 'data(loterias-ai): persist v138 graph-topology result'
+          git push
