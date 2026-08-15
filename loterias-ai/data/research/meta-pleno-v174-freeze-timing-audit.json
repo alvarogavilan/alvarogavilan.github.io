@@ -1,0 +1,48 @@
+{
+  "generatedAt": "2026-08-15T21:13:00Z",
+  "version": "v174",
+  "gameId": "bonoloto",
+  "family": "PROSPECTIVE_FREEZE_TIMING_AUDIT",
+  "officialSchedule": {
+    "source": "SELAE official live draw schedule",
+    "localDrawTime": "21:30 Europe/Madrid",
+    "targetDate": "2026-08-15",
+    "targetDrawUtc": "2026-08-15T19:30:00Z"
+  },
+  "policy": {
+    "scientificPreDrawRequirement": "freeze timestamp must be strictly earlier than targetDrawUtc",
+    "futureOperationalSafetyBufferMinutes": 30,
+    "futureOperationalDeadlineUtc": "2026-08-15T19:00:00Z",
+    "resultNotIngestedIsNotSufficient": true,
+    "postDrawPreIngestionNeverCountsAsProspective": true
+  },
+  "audited": [
+    {
+      "version": "v135",
+      "generatedAt": "2026-08-15T19:23:53.939Z",
+      "secondsBeforeDraw": 366.061,
+      "classification": "SCIENTIFIC_PRE_DRAW_SHADOW",
+      "operational30MinBufferPass": false,
+      "prospectiveEvidenceEligible": true
+    },
+    {
+      "version": "v164",
+      "generatedAt": "2026-08-15T20:39:56.044Z",
+      "secondsAfterDraw": 4196.044,
+      "classification": "POST_DRAW_PRE_OFFICIAL_INGESTION_NOT_PROSPECTIVE",
+      "operational30MinBufferPass": false,
+      "prospectiveEvidenceEligible": false
+    },
+    {
+      "version": "v173",
+      "generatedAt": "2026-08-15T21:12:08.422Z",
+      "secondsAfterDraw": 6128.422,
+      "classification": "POST_DRAW_PRE_OFFICIAL_INGESTION_NOT_PROSPECTIVE",
+      "operational30MinBufferPass": false,
+      "prospectiveEvidenceEligible": false
+    }
+  ],
+  "decision": "ONLY_V135_COUNTS_AS_PRE_DRAW_FOR_2026_08_15; FUTURE FREEZES REQUIRE_CLOCK_GUARD_NOT_INGESTION_GUARD",
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
