@@ -1,0 +1,136 @@
+{
+  "generatedAt": "2026-08-15T14:04:06.068Z",
+  "engine": "MetaPleno-v37-quiniela-cross-era-full-audit",
+  "purpose": "Quantify the four-block 14/14 repeatability pattern of the frozen Quiniela rule: one full in discovery, one in validation, one in frozen holdout, and one in the subsequently imported 2018-2026 archive. The fourth block was not available to the original search code but is historical, not prospective.",
+  "frozenSpec": {
+    "id": 271818,
+    "lookback": 40,
+    "doubles": 3,
+    "triples": 3,
+    "columns": 216,
+    "mode": "mixed",
+    "w": [
+      -0.89,
+      0.051,
+      0.664,
+      -0.637,
+      0.239,
+      -0.044
+    ]
+  },
+  "candidatePool": 500000,
+  "blocks": [
+    {
+      "name": "discovery",
+      "draws": 36,
+      "full14": 1,
+      "selectionRole": "SEARCH"
+    },
+    {
+      "name": "validation",
+      "draws": 42,
+      "full14": 1,
+      "selectionRole": "SELECTION"
+    },
+    {
+      "name": "holdout",
+      "draws": 255,
+      "full14": 1,
+      "selectionRole": "FROZEN_HOLDOUT"
+    },
+    {
+      "name": "postBackfill2018_2026",
+      "draws": 589,
+      "full14": 1,
+      "selectionRole": "POST_FREEZE_REPLICATION"
+    }
+  ],
+  "postFreezeFull14Event": {
+    "date": "2018-12-05",
+    "hits": 14,
+    "outcomes": [
+      "1",
+      "1",
+      "2",
+      "1",
+      "1",
+      "1",
+      "1",
+      "1",
+      "1",
+      "1",
+      "1",
+      "X",
+      "2",
+      "1"
+    ]
+  },
+  "nullModel": {
+    "assumption": "Equiprobable independent 1/X/2 signs and 216 covered columns per draw; blocks treated independent. This is a simplified reference null, not a complete global research-family correction.",
+    "perDrawFull14Probability": 0.0000451602341558141,
+    "blockAtLeastOneFull14Probability": {
+      "discovery": 0.0016244842355193079,
+      "validation": 0.0018949749277568095,
+      "holdout": 0.0114500630554204,
+      "postBackfill2018_2026": 0.026249315215655877
+    },
+    "singleCandidateAtLeastOneFull14InAllFourBlocks": 9.25219603264736e-10,
+    "selectionAwareAtLeastOneOf500kCandidatesShowsFourBlockPattern": 0.0004625027966197459,
+    "bonferroniUpperBound": 0.000462609801632368
+  },
+  "supportingEvidence": {
+    "temporalPermutationV36": "See meta-pleno-v36-quiniela-temporal-permutation.json",
+    "modernReplicationRandomBaseline": {
+      "runs": 1000,
+      "maxFull14": 2,
+      "meanFull14": 0.029,
+      "maxAtLeast13": 3,
+      "meanAtLeast13": 0.461,
+      "maxAtLeast12": 11,
+      "meanAtLeast12": 4.065,
+      "percentiles": {
+        "full14": 0.999,
+        "atLeast13": 1,
+        "atLeast12": 1,
+        "meanHits": 1
+      }
+    },
+    "modernReplicationOverall": {
+      "full14": 1,
+      "atLeast13": 4,
+      "atLeast12": 25,
+      "meanMaxHits": 8.893039049235993,
+      "samples": [
+        {
+          "date": "2018-12-05",
+          "hits": 14,
+          "outcomes": [
+            "1",
+            "1",
+            "2",
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "1",
+            "X",
+            "2",
+            "1"
+          ]
+        }
+      ]
+    }
+  },
+  "classification": "EXTREME_CROSS_ERA_RESEARCH_ANOMALY_REQUIRES_PROSPECTIVE_CONFIRMATION",
+  "limitations": [
+    "2018-2026 is post-freeze relative to this research pipeline but historically known in the real world, so it is not prospective evidence.",
+    "500,000 candidate systems are dependent, and many other project research families create additional global multiple-testing burden.",
+    "Equiprobable-sign null does not model football market probabilities or favourite/underdog structure.",
+    "216 columns imply substantial theoretical stake; full-hit evidence does not imply positive ROI.",
+    "Only draws on/after 2026-08-16 in the immutable Shadow ledger count as true prospective evidence."
+  ],
+  "realMoneyPass": false
+}
