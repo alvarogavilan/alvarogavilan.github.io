@@ -1,0 +1,38 @@
+name: Loterias AI MetaPleno v51 Bonoloto Conditional Hazard
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v51-bonoloto-conditional-hazard.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v51-bonoloto-conditional-hazard.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-meta-pleno-v51-bonoloto-conditional-hazard
+  cancel-in-progress: false
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Run conditional-hazard research
+        run: node loterias-ai/scripts/meta-pleno-v51-bonoloto-conditional-hazard.mjs
+      - name: Persist result safely
+        run: |
+          cp loterias-ai/data/research/meta-pleno-v51-bonoloto-conditional-hazard.json /tmp/v51.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/v51.json loterias-ai/data/research/meta-pleno-v51-bonoloto-conditional-hazard.json
+            git add loterias-ai/data/research/meta-pleno-v51-bonoloto-conditional-hazard.json
+            git commit -m 'data(loterias-ai): persist MetaPleno v51 Bonoloto conditional-hazard result' || exit 0
+            git push origin HEAD:main && exit 0
+            sleep $((i*3))
+          done
+          exit 1
