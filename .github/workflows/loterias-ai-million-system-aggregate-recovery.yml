@@ -1,0 +1,40 @@
+name: Loterias AI Million System Aggregate Recovery
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/loterias-ai-million-system-aggregate-recovery.yml'
+permissions:
+  actions: read
+  contents: write
+jobs:
+  aggregate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: systems-*
+          path: /tmp/systems
+          merge-multiple: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 31869708968
+      - name: Aggregate already-evaluated one-million system candidates
+        run: node loterias-ai/scripts/aggregate-mass-system-strategies.mjs
+      - name: Persist recovered evidence safely
+        run: |
+          cp loterias-ai/data/research/mass-system-strategy-search.json /tmp/mass-system-strategy-search.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/research
+          cp /tmp/mass-system-strategy-search.json loterias-ai/data/research/mass-system-strategy-search.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/mass-system-strategy-search.json
+          git commit -m 'data(loterias-ai): persist recovered one-million system search' || exit 0
+          git push origin HEAD:main
