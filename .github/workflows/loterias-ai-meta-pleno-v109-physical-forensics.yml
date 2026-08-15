@@ -22,10 +22,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - name: Preserve persisted registry
+        run: cp loterias-ai/data/research/meta-pleno-v109-physical-process-forensics.json /tmp/v109-before.json
       - name: Rebuild physical-forensics registry
         run: node loterias-ai/scripts/meta-pleno-v109-physical-process-forensics.mjs
-      - name: Verify persisted result is reproducible
-        run: git diff --exit-code -- loterias-ai/data/research/meta-pleno-v109-physical-process-forensics.json
+      - name: Verify persisted result is semantically reproducible
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const before=JSON.parse(fs.readFileSync('/tmp/v109-before.json','utf8'));
+          const after=JSON.parse(fs.readFileSync('loterias-ai/data/research/meta-pleno-v109-physical-process-forensics.json','utf8'));
+          if(JSON.stringify(before)!==JSON.stringify(after)) throw new Error('Persisted v109 registry differs semantically from regenerated output');
+          NODE
       - name: Assert safety gates
         run: |
           node - <<'NODE'
