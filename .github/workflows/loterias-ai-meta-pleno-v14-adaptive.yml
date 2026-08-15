@@ -8,6 +8,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: loterias-ai-meta-pleno-v14-adaptive
+  cancel-in-progress: true
 jobs:
   shard:
     strategy:
