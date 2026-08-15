@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-08-15T06:09:47.621Z",
+  "generatedAt": "2026-08-15T06:10:31.618Z",
   "gameId": "loteria-nacional",
-  "status": "REJECTED",
-  "validatedDraws": 4,
+  "status": "PASS",
+  "validatedDraws": 5,
   "requestedDraws": 5,
   "totalCompared": 500000,
-  "totalMismatches": 2,
+  "totalMismatches": 0,
   "draws": [
     {
       "date": "20260730",
@@ -82,26 +82,14 @@
         },
         "approximationRawCents": {
           "first": 210000,
-          "second": 120000
+          "second": 120000,
+          "third-0": 62250
         }
       },
       "compared": 100000,
-      "mismatchCount": 2,
-      "exactMatch": false,
-      "mismatchSamples": [
-        {
-          "number": "86797",
-          "predictedRawCents": 9000,
-          "officialRawCents": 71250,
-          "delta": -62250
-        },
-        {
-          "number": "86799",
-          "predictedRawCents": 10500,
-          "officialRawCents": 72750,
-          "delta": -62250
-        }
-      ]
+      "mismatchCount": 0,
+      "exactMatch": true,
+      "mismatchSamples": []
     },
     {
       "date": "20260806",
@@ -221,5 +209,5 @@
       "mismatchSamples": []
     }
   ],
-  "truth": "PASS requires reconstruction of every one of the 100,000 possible ticket numbers to equal SELAE premioDecimoWeb exactly on every validation draw. Exact 5-digit extraction entries are grouped by number and treated as SELAE cumulative exact overrides using the maximum official prize value; lower extraction/reintegro components are therefore not double-counted. Calibration is validation-only and is not permission to extrapolate historical payout rules."
+  "truth": "PASS requires reconstruction of every one of the 100,000 possible ticket numbers to equal SELAE premioDecimoWeb exactly on every validation draw. Exact 5-digit extraction entries are grouped by number and treated as SELAE cumulative exact overrides using the maximum official prize value; lower extraction/reintegro components are therefore not double-counted. Hundred and adjacent-prize rules are validated for every high-prize category exposed by resultados2. Calibration is validation-only and is not permission to extrapolate historical payout rules."
 }
