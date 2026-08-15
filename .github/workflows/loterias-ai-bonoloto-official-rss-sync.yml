@@ -1,0 +1,46 @@
+name: Loterias AI Bonoloto Official SELAE RSS Sync
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '11 */3 * * *'
+  push:
+    paths:
+      - 'loterias-ai/scripts/bonoloto-official-rss-sync.mjs'
+      - '.github/workflows/loterias-ai-bonoloto-official-rss-sync.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-bonoloto-official-rss-sync
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Fetch and validate fresh official Bonoloto results
+        run: node loterias-ai/scripts/bonoloto-official-rss-sync.mjs
+      - name: Persist official archive update safely
+        run: |
+          YEAR=$(date -u +%Y)
+          mkdir -p /tmp/bono-official
+          cp loterias-ai/data/official/bonoloto-rss-sync-status.json /tmp/bono-official/status.json
+          if [ -f loterias-ai/data/archive/bonoloto/${YEAR}.json ]; then cp loterias-ai/data/archive/bonoloto/${YEAR}.json /tmp/bono-official/year.json; fi
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p loterias-ai/data/official loterias-ai/data/archive/bonoloto
+            cp /tmp/bono-official/status.json loterias-ai/data/official/bonoloto-rss-sync-status.json
+            git add loterias-ai/data/official/bonoloto-rss-sync-status.json
+            if [ -f /tmp/bono-official/year.json ]; then cp /tmp/bono-official/year.json loterias-ai/data/archive/bonoloto/${YEAR}.json; git add loterias-ai/data/archive/bonoloto/${YEAR}.json; fi
+            git diff --cached --quiet && exit 0
+            git commit -m 'data(loterias-ai): sync Bonoloto from official SELAE RSS'
+            git push origin HEAD:main && exit 0
+            sleep $((i*3))
+          done
+          exit 1
