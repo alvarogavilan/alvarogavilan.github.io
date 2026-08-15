@@ -1,0 +1,27 @@
+{
+  "version": "2026-08-15",
+  "objective": "Search specifically for strategies that maximize exact full-hit incidence, independently from ROI-oriented tournaments.",
+  "scope": ["primitiva", "bonoloto", "euromillones", "eurodreams", "gordo-primitiva", "quiniela", "quinigol", "lototurf", "quintuple-plus", "loteria-nacional"],
+  "ranking": [
+    "exactFullHits",
+    "outOfSampleExactFullHits",
+    "nearFullHits",
+    "ticketsPerExactFullHit",
+    "stakePerExactFullHit"
+  ],
+  "rules": {
+    "gameSpecificMechanicsRequired": true,
+    "discoveryValidationHoldoutSeparationRequired": true,
+    "retrospectiveFullHitIsResearchOnly": true,
+    "holdoutFullHitCreatesQuarantinedSignalOnly": true,
+    "prospectiveReplicationRequiredBeforeAnyPromotion": true,
+    "realMoneyGateRemainsIndependent": true,
+    "multipleTestingMustBeRecorded": true,
+    "doNotRelaxExistingGates": true
+  },
+  "promotion": {
+    "researchSignal": "At least one exact full hit in locked validation or holdout, with model frozen before that segment is opened.",
+    "prospectiveCandidate": "A research signal whose exact model and ticket-generation policy are sealed before future draws.",
+    "realMoney": "Never from a full hit alone; requires the existing financial, statistical, bankroll and prospective gates."
+  }
+}
