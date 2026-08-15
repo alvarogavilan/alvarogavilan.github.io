@@ -8,20 +8,15 @@ const CFG={
 };
 const ROOT='loterias-ai/data/research/meta-pleno-v15-shards';
 const OUT='loterias-ai/data/research/meta-pleno-v33-forward-set-capture.json';
+const SUMMARY='loterias-ai/data/research/meta-pleno-v33-forward-set-capture-summary.json';
 const comb=(n,k)=>{let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return Math.round(r)};
 
 function load(c){
   let rows=[];
-  for(const f of fs.readdirSync(`loterias-ai/data/archive/${c.dir}`).filter(x=>/^\d{4}\.json$/.test(x)).sort()){
-    rows.push(...(JSON.parse(fs.readFileSync(`loterias-ai/data/archive/${c.dir}/${f}`,'utf8')).records||[]));
-  }
+  for(const f of fs.readdirSync(`loterias-ai/data/archive/${c.dir}`).filter(x=>/^\d{4}\.json$/.test(x)).sort())rows.push(...(JSON.parse(fs.readFileSync(`loterias-ai/data/archive/${c.dir}/${f}`,'utf8')).records||[]));
   rows=rows.filter(r=>r.drawDate&&Array.isArray(r.result?.main)&&r.result.main.length===c.k&&new Set(r.result.main).size===c.k).sort((a,b)=>a.drawDate.localeCompare(b.drawDate));
-  const sets=rows.map(r=>new Set(r.result.main)),prefix=Array(rows.length+1),gaps=Array(rows.length);prefix[0]=new Uint32Array(c.max+1);
-  const last=new Int32Array(c.max+1);last.fill(-1);
-  for(let i=0;i<rows.length;i++){
-    const p=new Uint32Array(prefix[i]);for(const n of rows[i].result.main)p[n]++;prefix[i+1]=p;
-    const g=new Uint16Array(c.max+1);for(let n=1;n<=c.max;n++)g[n]=last[n]<0?65535:Math.min(65534,i-last[n]);gaps[i]=g;for(const n of rows[i].result.main)last[n]=i;
-  }
+  const sets=rows.map(r=>new Set(r.result.main)),prefix=Array(rows.length+1),gaps=Array(rows.length);prefix[0]=new Uint32Array(c.max+1);const last=new Int32Array(c.max+1);last.fill(-1);
+  for(let i=0;i<rows.length;i++){const p=new Uint32Array(prefix[i]);for(const n of rows[i].result.main)p[n]++;prefix[i+1]=p;const g=new Uint16Array(c.max+1);for(let n=1;n<=c.max;n++)g[n]=last[n]<0?65535:Math.min(65534,i-last[n]);gaps[i]=g;for(const n of rows[i].result.main)last[n]=i}
   return{rows,sets,prefix,gaps};
 }
 function features(i,s,n,c,d){const as=Math.max(0,i-s.sw),al=Math.max(0,i-s.lw),cs=d.prefix[i][n]-d.prefix[as][n],cl=d.prefix[i][n]-d.prefix[al][n],gap=Math.min(s.gapCap,d.gaps[i][n]===65535?s.gapCap:d.gaps[i][n]);return[cs/Math.max(1,i-as),cl/Math.max(1,i-al),gap/s.gapCap,d.sets[i-1]?.has(n)?1:0,d.sets[i-2]?.has(n)?1:0,n/c.max,(n%2?1:-1),(n<=c.max/2?1:-1)]}
@@ -30,17 +25,14 @@ function evalRange(s,c,d,from,to){let draws=0,all=0,minus1=0,sum=0;const byYear=
 
 const out={generatedAt:new Date().toISOString(),engine:'MetaPleno-v33-forward-set-capture',method:'Candidate pool inherited from v15 shards. Candidate ranking uses only 2023-01-01..2024-12-31. Top candidates are then opened on 2025-01-01..latest archive without re-ranking. Historical forward test only; prospective confirmation remains mandatory.',games:{},realMoneyPass:false};
 for(const[game,c]of Object.entries(CFG)){
-  let pool=[];
-  if(!fs.existsSync(ROOT)){out.games[game]={status:'NO_SHARDS'};continue}
-  for(const f of fs.readdirSync(ROOT).filter(x=>x.startsWith(`${game}-`)&&x.endsWith('.json'))){pool.push(...(JSON.parse(fs.readFileSync(`${ROOT}/${f}`,'utf8')).top||[]))}
-  const seen=new Set();pool=pool.filter(x=>{const k=JSON.stringify(x.spec);if(seen.has(k))return false;seen.add(k);return true});
-  const d=load(c);const ranked=[];
-  for(const x of pool){const sel=evalRange(x.spec,c,d,'2023-01-01','2024-12-31');const size=x.spec.setSize,combinations=comb(size,c.k),cost=combinations*c.unit;const rank=sel.all*1e12+sel.minus1*1e9+sel.meanHits*1e6-cost;ranked.push({spec:x.spec,selection:sel,setSize:size,combinations,costPerDrawEUR:cost,rank})}
-  ranked.sort((a,b)=>b.rank-a.rank);
-  const finalists=ranked.slice(0,25).map(x=>({...x,forward:evalRange(x.spec,c,d,'2025-01-01','9999-12-31')}));
-  finalists.sort((a,b)=>b.forward.all-a.forward.all||b.forward.minus1-a.forward.minus1||b.forward.meanHits-a.forward.meanHits||a.costPerDrawEUR-b.costPerDrawEUR);
-  const fullForward=finalists.filter(x=>x.forward.all>0);
+  let pool=[];if(!fs.existsSync(ROOT)){out.games[game]={status:'NO_SHARDS'};continue}
+  for(const f of fs.readdirSync(ROOT).filter(x=>x.startsWith(`${game}-`)&&x.endsWith('.json')))pool.push(...(JSON.parse(fs.readFileSync(`${ROOT}/${f}`,'utf8')).top||[]));
+  const seen=new Set();pool=pool.filter(x=>{const k=JSON.stringify(x.spec);if(seen.has(k))return false;seen.add(k);return true});const d=load(c),ranked=[];
+  for(const x of pool){const sel=evalRange(x.spec,c,d,'2023-01-01','2024-12-31'),size=x.spec.setSize,combinations=comb(size,c.k),cost=combinations*c.unit,rank=sel.all*1e12+sel.minus1*1e9+sel.meanHits*1e6-cost;ranked.push({spec:x.spec,selection:sel,setSize:size,combinations,costPerDrawEUR:cost,rank})}
+  ranked.sort((a,b)=>b.rank-a.rank);const finalists=ranked.slice(0,25).map(x=>({...x,forward:evalRange(x.spec,c,d,'2025-01-01','9999-12-31')}));finalists.sort((a,b)=>b.forward.all-a.forward.all||b.forward.minus1-a.forward.minus1||b.forward.meanHits-a.forward.meanHits||a.costPerDrawEUR-b.costPerDrawEUR);const fullForward=finalists.filter(x=>x.forward.all>0);
   out.games[game]={candidatePool:pool.length,selectedTopN:25,fullForwardCount:fullForward.length,best:finalists[0]||null,fullForward:fullForward.slice(0,10),top:finalists.slice(0,10)};
 }
 fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
-console.log(JSON.stringify(Object.fromEntries(Object.entries(out.games).map(([g,v])=>[g,{pool:v.candidatePool,fullForwardCount:v.fullForwardCount,best:v.best?{setSize:v.best.setSize,cost:v.best.costPerDrawEUR,selection:v.best.selection,forward:v.best.forward}:null}])),null,2));
+const summary={generatedAt:out.generatedAt,engine:out.engine,selectionPeriod:'2023-01-01..2024-12-31',forwardPeriod:'2025-01-01..latest archive',games:{},realMoneyPass:false};
+for(const[g,v]of Object.entries(out.games)){summary.games[g]=v.status?{status:v.status}:{candidatePool:v.candidatePool,selectedTopN:v.selectedTopN,fullForwardCount:v.fullForwardCount,best:v.best?{specId:v.best.spec.id,setSize:v.best.setSize,combinations:v.best.combinations,costPerDrawEUR:v.best.costPerDrawEUR,selection:{draws:v.best.selection.draws,all:v.best.selection.all,minus1:v.best.selection.minus1,byYear:v.best.selection.byYear},forward:{draws:v.best.forward.draws,all:v.best.forward.all,minus1:v.best.forward.minus1,byYear:v.best.forward.byYear,events:v.best.forward.events}}:null,fullForward:v.fullForward.map(x=>({specId:x.spec.id,setSize:x.setSize,costPerDrawEUR:x.costPerDrawEUR,forwardAll:x.forward.all,forwardMinus1:x.forward.minus1,events:x.forward.events}))}}
+fs.writeFileSync(SUMMARY,JSON.stringify(summary,null,2)+'\n');console.log(JSON.stringify(summary,null,2));
