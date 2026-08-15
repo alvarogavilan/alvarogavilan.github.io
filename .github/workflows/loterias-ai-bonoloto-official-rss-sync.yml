@@ -7,6 +7,7 @@ on:
     paths:
       - 'loterias-ai/scripts/bonoloto-official-rss-sync.mjs'
       - 'loterias-ai/scripts/meta-pleno-v54-bonoloto-budget8-prospective-freeze.mjs'
+      - 'loterias-ai/scripts/meta-pleno-v91-bonoloto-v58-ensemble-prospective-freeze.mjs'
       - 'loterias-ai/scripts/evaluate-bonoloto-2026-08-15-metapleno-v10.mjs'
       - '.github/workflows/loterias-ai-bonoloto-official-rss-sync.yml'
 permissions:
@@ -27,8 +28,10 @@ jobs:
         run: node loterias-ai/scripts/bonoloto-official-rss-sync.mjs
       - name: Evaluate immutable 15 Aug prospective shadow if official result exists
         run: node loterias-ai/scripts/evaluate-bonoloto-2026-08-15-metapleno-v10.mjs
-      - name: Evaluate Budget8 prospective freeze against refreshed archive
+      - name: Evaluate v54 Budget8 prospective freeze against refreshed archive
         run: node loterias-ai/scripts/meta-pleno-v54-bonoloto-budget8-prospective-freeze.mjs
+      - name: Evaluate v91 v58 ensemble Budget8 prospective freeze against refreshed archive
+        run: node loterias-ai/scripts/meta-pleno-v91-bonoloto-v58-ensemble-prospective-freeze.mjs
       - name: Persist official archive and prospective state safely
         run: |
           YEAR=$(date -u +%Y)
@@ -36,7 +39,9 @@ jobs:
           cp loterias-ai/data/official/bonoloto-rss-sync-status.json /tmp/bono-official/status.json
           if [ -f loterias-ai/data/archive/bonoloto/${YEAR}.json ]; then cp loterias-ai/data/archive/bonoloto/${YEAR}.json /tmp/bono-official/year.json; fi
           cp loterias-ai/data/shadow/bonoloto-v54-budget8-freeze-status.json /tmp/bono-shadow/v54-status.json
+          cp loterias-ai/data/shadow/bonoloto-v91-v58-ensemble-freeze-status.json /tmp/bono-shadow/v91-status.json
           if [ -f loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v54-budget8.json ]; then cp loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v54-budget8.json /tmp/bono-shadow/v54-freeze.json; fi
+          if [ -f loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v91-v58-ensemble-budget8.json ]; then cp loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v91-v58-ensemble-budget8.json /tmp/bono-shadow/v91-freeze.json; fi
           if [ -f loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-v10-evaluation.json ]; then cp loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-v10-evaluation.json /tmp/bono-shadow/v10-eval.json; fi
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
@@ -48,8 +53,10 @@ jobs:
             git add loterias-ai/data/official/bonoloto-rss-sync-status.json
             if [ -f /tmp/bono-official/year.json ]; then cp /tmp/bono-official/year.json loterias-ai/data/archive/bonoloto/${YEAR}.json; git add loterias-ai/data/archive/bonoloto/${YEAR}.json; fi
             cp /tmp/bono-shadow/v54-status.json loterias-ai/data/shadow/bonoloto-v54-budget8-freeze-status.json
-            git add loterias-ai/data/shadow/bonoloto-v54-budget8-freeze-status.json
+            cp /tmp/bono-shadow/v91-status.json loterias-ai/data/shadow/bonoloto-v91-v58-ensemble-freeze-status.json
+            git add loterias-ai/data/shadow/bonoloto-v54-budget8-freeze-status.json loterias-ai/data/shadow/bonoloto-v91-v58-ensemble-freeze-status.json
             if [ -f /tmp/bono-shadow/v54-freeze.json ]; then cp /tmp/bono-shadow/v54-freeze.json loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v54-budget8.json; git add loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v54-budget8.json; fi
+            if [ -f /tmp/bono-shadow/v91-freeze.json ]; then cp /tmp/bono-shadow/v91-freeze.json loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v91-v58-ensemble-budget8.json; git add loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v91-v58-ensemble-budget8.json; fi
             if [ -f /tmp/bono-shadow/v10-eval.json ]; then cp /tmp/bono-shadow/v10-eval.json loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-v10-evaluation.json; git add loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-v10-evaluation.json; fi
             git diff --cached --quiet && exit 0
             git commit -m 'data(loterias-ai): sync official Bonoloto and refresh prospective evidence'
