@@ -1,0 +1,27 @@
+name: Loterias AI MetaPleno v135 Prospective Freeze
+on:
+  push:
+    branches:
+      - research/metapleno-v135-prospective-freeze
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v135-prospective-freeze.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v135-prospective-freeze.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node loterias-ai/scripts/meta-pleno-v135-prospective-freeze.mjs
+      - name: Persist freeze artifact
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/prospective/bonoloto-v135-freeze.json
+          git diff --cached --quiet || git commit -m "data(loterias-ai): persist v135 prospective freeze"
+          git push
