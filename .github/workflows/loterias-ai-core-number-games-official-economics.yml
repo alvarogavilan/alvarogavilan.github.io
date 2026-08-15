@@ -7,9 +7,13 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: loterias-ai-core-number-games-official-economics
+  cancel-in-progress: false
 jobs:
   enrich:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
