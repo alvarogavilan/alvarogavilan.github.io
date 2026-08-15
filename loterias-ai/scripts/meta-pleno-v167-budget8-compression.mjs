@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+
+const OUT='loterias-ai/data/research/meta-pleno-v167-budget8-compression.json';
+const budgets=[1,2,3,5,10,14];
+const unit=0.5;
+const pool=[1,2,3,4,5,6,7,8];
+function comb(a,k){const o=[];function r(s,p){if(p.length===k){o.push([...p]);return;}for(let i=s;i<a.length;i++){p.push(a[i]);r(i+1,p);p.pop();}}r(0,[]);return o;}
+const tickets=comb(pool,6);
+const pairKeys=comb(pool,2).map(x=>x.join('-'));
+function scoreSet(sel){const nCount=Object.fromEntries(pool.map(n=>[n,0]));const pCount=Object.fromEntries(pairKeys.map(k=>[k,0]));for(const t of sel){for(const n of t)nCount[n]++;for(const p of comb(t,2))pCount[p.join('-')]++;}
+ const nv=Object.values(nCount),pv=Object.values(pCount);const spread=a=>Math.max(...a)-Math.min(...a);return {numberSpread:spread(nv),pairSpread:spread(pv),minNumberCoverage:Math.min(...nv),minPairCoverage:Math.min(...pv),numberCounts:nCount,pairCounts:pCount};}
+function choose(k){const sel=[],left=[...tickets];while(sel.length<k){let best=null,bestKey=null;for(const t of left){const s=scoreSet([...sel,t]);const key=[s.numberSpread,s.pairSpread,-s.minNumberCoverage,-s.minPairCoverage,t.join(',')];if(!bestKey||key.join('|')<bestKey.join('|')){best=t;bestKey=key;}}sel.push(best);left.splice(left.findIndex(x=>x.join(',')===best.join(',')),1);}return sel;}
+const tiers=budgets.map(eur=>{const k=Math.min(28,Math.floor(eur/unit+1e-9)),sel=choose(k),cov=scoreSet(sel);return {budgetEUR:eur,tickets:k,costEUR:k*unit,conditionalFull6Coverage:k/28,conditionalFull6CoveragePct:+(100*k/28).toFixed(2),coverageQuality:{numberSpread:cov.numberSpread,pairSpread:cov.pairSpread,minNumberCoverage:cov.minNumberCoverage,minPairCoverage:cov.minPairCoverage},templateTickets:sel};});
+const out={generatedAt:new Date().toISOString(),version:'v167',family:'BUDGET8_COST_COMPRESSION',methodology:'Pure combinatorial compression of an already-selected 8-number Bonoloto pool. The 28 six-number subsets are reduced to balanced ticket portfolios at 1/2/3/5/10/14 EUR. Selection is outcome-agnostic and balances number/pair coverage. Without an independently validated within-pool ranking, exact conditional 6/6 coverage cannot exceed tickets/28; no claim of retained full coverage is allowed below 14 EUR.',unitStakeEUR:unit,fullBudget8:{poolSize:8,tickets:28,costEUR:14,conditionalFull6Coverage:1},tiers,operationalInterpretation:{preferredResearchQuestion:'Can a validated within-pool sextet ranker outperform the linear tickets/28 jackpot-retention law?',currentRecommendation:'Do not spend 14 EUR routinely. Use compressed tiers only after evidence gating; 0 EUR remains valid.',realMoneyPass:false,realStakeEUR:0},decision:'COMPRESSION_QUANTIFIED_NO_FREE_LUNCH_BELOW_28_TICKETS'};
+fs.mkdirSync('loterias-ai/data/research',{recursive:true});fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify(tiers.map(x=>({budget:x.budgetEUR,tickets:x.tickets,coveragePct:x.conditionalFull6CoveragePct})),null,2));
