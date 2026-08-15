@@ -1,0 +1,26 @@
+import fs from 'node:fs';
+const GAME=process.env.GAME,SHARD=Number(process.env.SHARD||0),N=Number(process.env.CANDIDATES||50000);
+const cfgs={
+ primitiva:{dir:'primitiva',max:49,k:6,aux:{kind:'scalar',field:'reintegro',min:0,max:9}},
+ bonoloto:{dir:'bonoloto',max:49,k:6,aux:{kind:'scalar',field:'reintegro',min:0,max:9}},
+ euromillones:{dir:'euromillones',max:50,k:5,aux:{kind:'array',field:'stars',min:1,max:12,k:2}},
+ eurodreams:{dir:'eurodreams',max:40,k:6,aux:{kind:'scalar',field:'dream',min:1,max:5}},
+ 'gordo-primitiva':{dir:'gordo-primitiva',max:54,k:5,aux:{kind:'scalar',field:'key',min:0,max:9}}
+};
+const c=cfgs[GAME];if(!c)throw new Error('bad GAME');
+let rows=[];const root=`loterias-ai/data/archive/${c.dir}`;for(const f of fs.readdirSync(root).filter(x=>/^\d{4}\.json$/.test(x)).sort())rows.push(...(JSON.parse(fs.readFileSync(`${root}/${f}`,'utf8')).records||[]));rows=rows.filter(r=>r.drawDate&&Array.isArray(r.result?.main)&&r.result.main.length===c.k).sort((a,b)=>a.drawDate.localeCompare(b.drawDate));
+const n=rows.length,trainEnd=Math.floor(n*.6),valEnd=Math.floor(n*.8),windows=[12,20,32,50,80,120,200,320,500,800];
+function rng(seed){let x=seed>>>0;return()=>{x^=x<<13;x^=x>>>17;x^=x<<5;return(x>>>0)/4294967296}}const R=rng((0x85ebca6b^SHARD^(GAME.length*2654435761))>>>0);
+const sample=(a,b,count)=>{const out=[];if(b-a<=count){for(let i=a;i<b;i++)out.push(i);return out}for(let z=0;z<count;z++)out.push(a+Math.floor(z*(b-a)/count));return[...new Set(out)]};
+const dIdx=sample(Math.max(120,0),trainEnd,40),vIdx=sample(trainEnd,valEnd,40),evalIdx=[...new Set([...dIdx,...vIdx])];
+const pairKey=(a,b)=>a<b?`${a}-${b}`:`${b}-${a}`;
+const cache=new Map();
+function buildState(i,w){const freq=new Float64Array(c.max+1),last=new Int32Array(c.max+1);last.fill(-9999);const pair=new Map();for(let j=Math.max(0,i-w);j<i;j++){const m=rows[j].result.main;for(const x of m){freq[x]++;last[x]=j}for(let a=0;a<m.length;a++)for(let b=a+1;b<m.length;b++){const k=pairKey(m[a],m[b]);pair.set(k,(pair.get(k)||0)+1)}}const prev=rows[i-1]?.result?.main||[],feat=Array(c.max+1);for(let x=1;x<=c.max;x++){let ps=0;for(const y of prev)if(y!==x)ps+=(pair.get(pairKey(x,y))||0)/Math.max(1,w);feat[x]=[freq[x]/Math.max(1,w),Math.min(250,i-last[x])/250,ps,prev.includes(x)?1:0,x%2?1:-1,x<=c.max/2?1:-1,x/c.max]}
+ const ac=c.aux,auxFeat=[];if(ac.kind==='scalar'){for(let x=ac.min;x<=ac.max;x++){let ct=0,lastA=-9999;for(let j=Math.max(0,i-w);j<i;j++){const v=Number(rows[j].result?.[ac.field]);if(v===x){ct++;lastA=j}}auxFeat.push({x,f:ct/Math.max(1,w),gap:Math.min(250,i-lastA)/250})}}else{for(let x=ac.min;x<=ac.max;x++){let ct=0,lastA=-9999;for(let j=Math.max(0,i-w);j<i;j++){const a=rows[j].result?.[ac.field]||[];if(a.map(Number).includes(x)){ct++;lastA=j}}auxFeat.push({x,f:ct/Math.max(1,w),gap:Math.min(250,i-lastA)/250})}}
+ return{feat,auxFeat}}
+for(const w of windows)for(const i of evalIdx)cache.set(`${w}:${i}`,buildState(i,w));
+function pred(i,s){const st=cache.get(`${s.window}:${i}`),score=[];for(let x=1;x<=c.max;x++){const f=st.feat[x];const jitter=((((x*2654435761)^(s.seed*2246822519))>>>0)%10000)/1e10;score.push([s.wf*f[0]+s.wg*f[1]+s.wp*f[2]+s.wprev*f[3]+s.wpar*f[4]+s.wlow*f[5]+s.widx*f[6]+jitter,x])}score.sort((a,b)=>b[0]-a[0]);const main=score.slice(0,c.k).map(z=>z[1]).sort((a,b)=>a-b);const as=st.auxFeat.map(o=>[s.waf*o.f+s.wag*o.gap+((((o.x+17)*1103515245+s.seed)>>>0)%1000)/1e9,o.x]).sort((a,b)=>b[0]-a[0]);const aux=c.aux.kind==='scalar'?as[0][1]:as.slice(0,c.aux.k).map(z=>z[1]).sort((a,b)=>a-b);return{main,aux}}
+function hits(a,b){let h=0;for(const x of a)if(b.includes(x))h++;return h}function auxExact(p,r){const a=c.aux;if(a.kind==='scalar')return Number(p)===Number(r.result?.[a.field]);const t=(r.result?.[a.field]||[]).map(Number).sort((x,y)=>x-y);return JSON.stringify(p)===JSON.stringify(t)}
+function evalSet(idxs,s){let exact=0,full=0,near=0,sum=0;for(const i of idxs){const p=pred(i,s),h=hits(p.main,rows[i].result.main);sum+=h;if(h===c.k){exact++;if(auxExact(p.aux,rows[i]))full++}if(h>=c.k-1)near++}return{exactMain:exact,exactFull:full,near,meanHits:sum/Math.max(1,idxs.length)}}
+const top=[];for(let z=0;z<N;z++){const s={window:windows[Math.floor(R()*windows.length)],wf:R()*8-4,wg:R()*8-4,wp:R()*10-5,wprev:R()*5-2.5,wpar:R()*3-1.5,wlow:R()*3-1.5,widx:R()*3-1.5,waf:R()*8-4,wag:R()*8-4,seed:SHARD*N+z+1};const d=evalSet(dIdx,s),v=evalSet(vIdx,s);const rank=v.exactFull*1e12+v.exactMain*1e10+v.near*1e7+v.meanHits*1e5+d.exactFull*1e4+d.exactMain*1e3+d.near*10+d.meanHits;const cand={rank,spec:s,discovery:d,validation:v};if(top.length<40||rank>top.at(-1).rank){top.push(cand);top.sort((a,b)=>b.rank-a.rank);if(top.length>40)top.length=40}}
+const out={generatedAt:new Date().toISOString(),engine:'MetaPleno-v2',game:GAME,shard:SHARD,candidatesActuallyTested:N,historyDraws:n,split:{trainEnd,valEnd},sampled:{discovery:dIdx.length,validation:vIdx.length},top};fs.mkdirSync('loterias-ai/data/research/meta-pleno-v2-shards',{recursive:true});fs.writeFileSync(`loterias-ai/data/research/meta-pleno-v2-shards/${GAME}-${SHARD}.json`,JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify({game:GAME,shard:SHARD,tested:N,best:top[0]},null,2));
