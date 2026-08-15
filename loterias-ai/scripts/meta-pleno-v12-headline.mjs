@@ -1,0 +1,4 @@
+import fs from 'node:fs';
+const j=JSON.parse(fs.readFileSync('loterias-ai/data/research/meta-pleno-v12-summary.json','utf8'));
+const out={generatedAt:new Date().toISOString(),games:{}};
+for(const[g,v]of Object.entries(j.games||{})){const tests=v.allTests||[];const best=tests.slice().sort((a,b)=>b.testFull-a.testFull||b.testHigh-a.testHigh||a.panelSize-b.panelSize)[0]||{};out.games[g]={candidatePool:v.candidatePool,stableSingleCount:v.stableSingleCount,bestPanelSize:best.panelSize??null,testFull:best.testFull??0,testHigh:best.testHigh??0,testByYear:best.testByYear??{}}}out.realMoneyPass=false;fs.writeFileSync('loterias-ai/data/research/meta-pleno-v12-headline.json',JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify(out));
