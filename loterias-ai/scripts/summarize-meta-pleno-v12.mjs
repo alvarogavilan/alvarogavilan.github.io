@@ -1,5 +1,4 @@
 import fs from 'node:fs';
-// Triggered after MetaPleno v12 completed successfully.
 const p='loterias-ai/data/research/meta-pleno-v12-multiyear-stability.json';
 const j=JSON.parse(fs.readFileSync(p,'utf8'));
 const out={generatedAt:new Date().toISOString(),engine:'MetaPleno-v12-summary',games:{},realMoneyPass:false};
@@ -11,4 +10,7 @@ for(const [g,v] of Object.entries(j.games||{})){
   out.games[g]={candidatePool:v.candidatePool,stableSingleCount:(v.topTraining||[]).filter(x=>Object.values(x.years||{}).filter(y=>y.high>0).length>=2).length,stableSingles:stableSingle,bestTest:best,allTests:tests.map(x=>({panelSize:x.panelSize,testFull:x.testFull,testHigh:x.testHigh,testByYear:x.testByYear}))};
 }
 fs.writeFileSync('loterias-ai/data/research/meta-pleno-v12-summary.json',JSON.stringify(out,null,2)+'\n');
-console.log(JSON.stringify(out,null,2));
+const headline={generatedAt:new Date().toISOString(),games:{},realMoneyPass:false};
+for(const[g,v]of Object.entries(out.games)){const best=(v.allTests||[]).slice().sort((a,b)=>b.testFull-a.testFull||b.testHigh-a.testHigh||a.panelSize-b.panelSize)[0]||{};headline.games[g]={candidatePool:v.candidatePool,stableSingleCount:v.stableSingleCount,bestPanelSize:best.panelSize??null,testFull:best.testFull??0,testHigh:best.testHigh??0,testByYear:best.testByYear??{}}}
+fs.writeFileSync('loterias-ai/data/research/meta-pleno-v12-headline.json',JSON.stringify(headline,null,2)+'\n');
+console.log(JSON.stringify(headline));
