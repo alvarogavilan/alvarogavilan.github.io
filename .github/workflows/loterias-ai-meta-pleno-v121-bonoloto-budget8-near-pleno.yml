@@ -1,0 +1,22 @@
+name: Loterias AI MetaPleno v121 Bonoloto Budget8 Near Pleno
+on:
+  push:
+    branches:
+      - research/metapleno-v121-bonoloto-budget8-near-pleno
+  workflow_dispatch:
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run v121 Budget8 audit
+        run: node loterias-ai/scripts/meta-pleno-v121-bonoloto-budget8-near-pleno.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v121-bonoloto-budget8-near-pleno
+          path: loterias-ai/data/research/meta-pleno-v121-bonoloto-budget8-near-pleno.json
