@@ -1,0 +1,23 @@
+name: Loterias AI MetaPleno v182 Primitiva Ticket Ranker
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v182-primitiva-ticket-ranker]
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node loterias-ai/scripts/meta-pleno-v182-primitiva-ticket-ranker.mjs
+      - name: Persist v182
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v182-primitiva-ticket-ranker.json
+          git diff --cached --quiet || git commit -m "research(loterias-ai): persist v182 Primitiva ticket ranker"
+          git push
