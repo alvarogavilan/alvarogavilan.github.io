@@ -3,7 +3,7 @@ import {pathToFileURL} from 'node:url';
 const SRC='loterias-ai/scripts/meta-pleno-v157-pre2023-hybrid-selector.mjs';
 if(!fs.existsSync(SRC)) throw new Error('v157 source required');
 let s=fs.readFileSync(SRC,'utf8');
-s=s.replace("meta-pleno-v157-pre2023-hybrid-selector.json","/tmp/meta-pleno-v171-internal.json")
+s=s.replace("loterias-ai/data/research/meta-pleno-v157-pre2023-hybrid-selector.json","/tmp/meta-pleno-v171-internal.json")
  .replace("version:'v157'","version:'v171-internal'")
  .replace("family:'PRE2023_HYBRID_ROUTE_SELECTOR'","family:'V162_NATIVE_TICKET_RANKER_INTERNAL'")
  .replace("sd=a=>{if(a.length<2)return 1;const m=mean(a);return Math.sqrt(a.reduce((s,x)=>s+(x-m)**2,0)/(a.length-1))||1}","sd=a=>{if(!a.length)return 1;const m=mean(a);return Math.sqrt(mean(a.map(x=>(x-m)**2)))||1}")
