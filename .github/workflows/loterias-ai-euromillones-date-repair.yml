@@ -1,0 +1,38 @@
+name: Loterias AI Euromillones Date Repair
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/repair-euromillones-2012-07-30-date.mjs'
+      - '.github/workflows/loterias-ai-euromillones-date-repair.yml'
+permissions:
+  contents: write
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Guarded official date repair
+        run: node loterias-ai/scripts/repair-euromillones-2012-07-30-date.mjs
+      - name: Re-enrich corrected draw from SELAE
+        env:
+          BATCH_LIMIT: 5
+        run: node loterias-ai/scripts/enrich-euromillones-official-economics.mjs
+      - name: Persist repair safely
+        run: |
+          mkdir -p /tmp/euro-repair
+          cp loterias-ai/data/archive/euromillones/2012.json /tmp/euro-repair/2012.json
+          cp loterias-ai/data/archive/_meta/euromillones-official-economics.json /tmp/euro-repair/meta.json
+          git fetch origin main
+          git reset --hard origin/main
+          cp /tmp/euro-repair/2012.json loterias-ai/data/archive/euromillones/2012.json
+          cp /tmp/euro-repair/meta.json loterias-ai/data/archive/_meta/euromillones-official-economics.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/archive/euromillones/2012.json loterias-ai/data/archive/_meta/euromillones-official-economics.json
+          git commit -m 'data(loterias-ai): repair Euromillones 2012-07-31 official draw' || exit 0
+          git push origin HEAD:main
