@@ -1,0 +1,27 @@
+name: Loterias AI Pair Triple Novelty Rate Audit
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/audit-pair-triple-novelty-rate.mjs'
+      - '.github/workflows/loterias-ai-pair-triple-novelty-rate-audit.yml'
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - run: node loterias-ai/scripts/audit-pair-triple-novelty-rate.mjs
+      - name: Persist evidence safely
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/pair-triple-novelty-rate-audit.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'data(loterias-ai): persist pair-triple novelty rate audit'
+          git pull --rebase origin main
+          git push origin HEAD:main
