@@ -47,15 +47,23 @@ jobs:
           path: loterias-ai/data/research/meta-pleno-v15-shards
           merge-multiple: true
       - run: node loterias-ai/scripts/meta-pleno-v15-set-capture-aggregate.mjs
-      - name: Persist safely
+      - name: Persist aggregate and reusable candidate population safely
+        shell: bash
         run: |
+          rm -rf /tmp/meta-pleno-v15-shards
+          cp -R loterias-ai/data/research/meta-pleno-v15-shards /tmp/meta-pleno-v15-shards
           cp loterias-ai/data/research/meta-pleno-v15-set-capture.json /tmp/meta-pleno-v15-set-capture.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git fetch origin main
-          git reset --hard origin/main
-          cp /tmp/meta-pleno-v15-set-capture.json loterias-ai/data/research/meta-pleno-v15-set-capture.json
-          git add loterias-ai/data/research/meta-pleno-v15-set-capture.json
-          git commit -m 'data(loterias-ai): persist v15 multiple-system set-capture result' || exit 0
-          for i in 1 2 3 4 5; do git pull --rebase origin main && git push origin HEAD:main && exit 0; sleep $((i*3)); done
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            rm -rf loterias-ai/data/research/meta-pleno-v15-shards
+            cp -R /tmp/meta-pleno-v15-shards loterias-ai/data/research/meta-pleno-v15-shards
+            cp /tmp/meta-pleno-v15-set-capture.json loterias-ai/data/research/meta-pleno-v15-set-capture.json
+            git add loterias-ai/data/research/meta-pleno-v15-shards loterias-ai/data/research/meta-pleno-v15-set-capture.json
+            git commit -m 'data(loterias-ai): persist v15 set-capture population' || exit 0
+            git push origin HEAD:main && exit 0
+            sleep $((i*3))
+          done
           exit 1
