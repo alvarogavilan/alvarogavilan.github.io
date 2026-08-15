@@ -1,0 +1,41 @@
+name: Loterias AI Bonoloto 2026 Rebuild Once
+on:
+  push:
+    branches: [fix/loterias-ai-dynamic-backfill-end-date]
+    paths: ['.github/workflows/loterias-ai-bonoloto-2026-rebuild-once.yml']
+permissions:
+  contents: write
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    env:
+      LOTERIAS_BACKFILL_GAME: bonoloto
+      LOTERIAS_BACKFILL_START: '2026-01-01'
+      LOTERIAS_BACKFILL_END: '2026-08-15'
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - name: Sync branch
+        run: git pull --rebase origin "${GITHUB_REF_NAME}"
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Rebuild Bonoloto 2026 non-destructively
+        run: node loterias-ai/scripts/backfill-core-2026.mjs
+      - name: Validate archive depth
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const d=JSON.parse(fs.readFileSync('loterias-ai/data/archive/bonoloto/2026.json','utf8'));
+          const rows=d.records||[];
+          if(rows.length<150) throw new Error('Bonoloto 2026 rebuild unexpectedly shallow: '+rows.length);
+          if(rows.at(-1)?.drawDate!=='2026-08-15') throw new Error('Bonoloto latest draw mismatch: '+rows.at(-1)?.drawDate);
+          console.log({records:rows.length,earliest:rows[0]?.drawDate,latest:rows.at(-1)?.drawDate});
+          NODE
+      - name: Persist rebuilt archive
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/archive/bonoloto/2026.json loterias-ai/data/archive/backfill-2026-summary.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'data(loterias-ai): reconstruct Bonoloto 2026 official archive'
+          git push origin HEAD:"${GITHUB_REF_NAME}"
