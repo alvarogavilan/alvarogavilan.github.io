@@ -1,0 +1,23 @@
+name: Loterias AI MetaPleno v118 Winning Pattern Atlas
+on:
+  push:
+    branches:
+      - research/metapleno-v118-winning-patterns-geography
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v118-winning-pattern-atlas.mjs'
+      - 'loterias-ai/data/archive/**'
+      - '.github/workflows/loterias-ai-meta-pleno-v118-winning-pattern-atlas.yml'
+  workflow_dispatch:
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node loterias-ai/scripts/meta-pleno-v118-winning-pattern-atlas.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v118-winning-pattern-atlas
+          path: loterias-ai/data/research/meta-pleno-v118-winning-pattern-atlas.json
