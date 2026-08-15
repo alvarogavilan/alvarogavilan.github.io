@@ -1,26 +1,14 @@
 {
-  "generatedAt": "2026-08-15T23:12:04.993Z",
+  "generatedAt": "2026-08-15T23:27:07.431Z",
   "version": "v186",
   "gameId": "primitiva",
-  "familySetFixedBeforeTargetEvaluation": [
-    "v126-c46",
-    "v79-gap-shape-leader",
-    "v108-kalman-leader"
-  ],
-  "familyConfigs": {
-    "gapShape": {
-      "window": 120,
-      "k": 3,
-      "recent": 2
-    },
-    "kalman": {
-      "q": 0.1,
-      "r": 0.5,
-      "width": 3
-    }
+  "family": "CROSS_FAMILY_DEEP_RESCUE_ATLAS",
+  "selectionFreeze": {
+    "gapShape": "2020-01-01..2022-12-31 top20 using exact v79 ordering",
+    "kalman": "2020-01-01..2022-12-31 top24 using v108 family metrics"
   },
-  "methodology": "Existing orthogonal families fixed before target evaluation. Rank deep omitted winners pre-draw. ADD is fixed reciprocal-rank consensus of v79+v108 outside c46 top8; DROP is fixed highest pre-2023 c46 position miss-rate. Evaluate exact first five v79 playable tickets only.",
-  "budgetEUR": 5,
+  "effectiveFamilies": 2,
+  "nominalFrozenModels": 44,
   "events": [
     {
       "date": "2024-01-11",
@@ -32,82 +20,185 @@
         35,
         48
       ],
-      "missingWinner": 22,
-      "c46Pool": [
-        7,
-        14,
-        48,
-        12,
-        40,
-        35,
-        1,
-        15
-      ],
+      "missingNumber": 22,
       "c46MissingRank": 29,
-      "gapRank": 33,
-      "kalmanRank": 17,
-      "crossFamilyTop16": false,
-      "chosenAdd": 28,
-      "chosenAddRanks": {
-        "gap": 1,
-        "kalman": 19
+      "bestGap": {
+        "family": "v79-gap-shape",
+        "configId": 49,
+        "config": {
+          "window": 900,
+          "k": 5,
+          "recent": 2
+        },
+        "rank": 5,
+        "top8": true,
+        "top12": true,
+        "top16": true,
+        "poolHits": 2
       },
-      "drop": 40,
-      "dropPosition": 5,
-      "rescuedPool": [
-        7,
-        14,
-        48,
-        12,
-        28,
-        35,
-        1,
-        15
+      "bestKalman": {
+        "family": "v108-kalman",
+        "configId": 163,
+        "config": {
+          "q": 2,
+          "r": 8,
+          "width": 3
+        },
+        "rank": 5,
+        "top8": true,
+        "top12": true,
+        "top16": true,
+        "poolHits": 1
+      },
+      "gapTop8Models": 1,
+      "gapTop12Models": 1,
+      "gapTop16Models": 2,
+      "kalmanTop8Models": 2,
+      "kalmanTop12Models": 2,
+      "kalmanTop16Models": 4,
+      "gapTop5": [
+        {
+          "family": "v79-gap-shape",
+          "configId": 49,
+          "config": {
+            "window": 900,
+            "k": 5,
+            "recent": 2
+          },
+          "rank": 5,
+          "top8": true,
+          "top12": true,
+          "top16": true,
+          "poolHits": 2
+        },
+        {
+          "family": "v79-gap-shape",
+          "configId": 51,
+          "config": {
+            "window": 900,
+            "k": 10,
+            "recent": 1
+          },
+          "rank": 13,
+          "top8": false,
+          "top12": false,
+          "top16": true,
+          "poolHits": 1
+        },
+        {
+          "family": "v79-gap-shape",
+          "configId": 58,
+          "config": {
+            "window": 900,
+            "k": 40,
+            "recent": 2
+          },
+          "rank": 18,
+          "top8": false,
+          "top12": false,
+          "top16": false,
+          "poolHits": 1
+        },
+        {
+          "family": "v79-gap-shape",
+          "configId": 14,
+          "config": {
+            "window": 120,
+            "k": 40,
+            "recent": 3
+          },
+          "rank": 21,
+          "top8": false,
+          "top12": false,
+          "top16": false,
+          "poolHits": 1
+        },
+        {
+          "family": "v79-gap-shape",
+          "configId": 4,
+          "config": {
+            "window": 120,
+            "k": 5,
+            "recent": 2
+          },
+          "rank": 22,
+          "top8": false,
+          "top12": false,
+          "top16": false,
+          "poolHits": 1
+        }
       ],
-      "rescuedPoolHits": 5,
-      "top5BestHits": 5,
-      "fullPlayableTop5": false,
-      "top5Tickets": [
-        [
-          7,
-          14,
-          48,
-          12,
-          1,
-          15
-        ],
-        [
-          7,
-          14,
-          48,
-          12,
-          35,
-          1
-        ],
-        [
-          7,
-          14,
-          48,
-          12,
-          28,
-          1
-        ],
-        [
-          7,
-          14,
-          48,
-          12,
-          35,
-          15
-        ],
-        [
-          7,
-          14,
-          48,
-          12,
-          28,
-          15
-        ]
+      "kalmanTop5": [
+        {
+          "family": "v108-kalman",
+          "configId": 163,
+          "config": {
+            "q": 2,
+            "r": 8,
+            "width": 3
+          },
+          "rank": 5,
+          "top8": true,
+          "top12": true,
+          "top16": true,
+          "poolHits": 1
+        },
+        {
+          "family": "v108-kalman",
+          "configId": 80,
+          "config": {
+            "q": 0.25,
+            "r": 2,
+            "width": 1
+          },
+          "rank": 6,
+          "top8": true,
+          "top12": true,
+          "top16": true,
+          "poolHits": 2
+        },
+        {
+          "family": "v108-kalman",
+          "configId": 135,
+          "config": {
+            "q": 1,
+            "r": 4,
+            "width": 3
+          },
+          "rank": 14,
+          "top8": false,
+          "top12": false,
+          "top16": true,
+          "poolHits": 1
+        },
+        {
+          "family": "v108-kalman",
+          "configId": 159,
+          "config": {
+            "q": 2,
+            "r": 4,
+            "width": 3
+          },
+          "rank": 14,
+          "top8": false,
+          "top12": false,
+          "top16": true,
+          "poolHits": 0
+        },
+        {
+          "family": "v108-kalman",
+          "configId": 51,
+          "config": {
+            "q": 0.1,
+            "r": 0.5,
+            "width": 3
+          },
+          "rank": 17,
+          "top8": false,
+          "top12": false,
+          "top16": false,
+          "poolHits": 1
+        }
       ]
     },
     {
@@ -120,92 +211,212 @@
         43,
         48
       ],
-      "missingWinner": 38,
-      "c46Pool": [
-        37,
-        28,
-        10,
-        43,
-        22,
-        35,
-        40,
-        48
-      ],
+      "missingNumber": 38,
       "c46MissingRank": 20,
-      "gapRank": 42,
-      "kalmanRank": 10,
-      "crossFamilyTop16": true,
-      "chosenAdd": 18,
-      "chosenAddRanks": {
-        "gap": 1,
-        "kalman": 2
+      "bestGap": {
+        "family": "v79-gap-shape",
+        "configId": 51,
+        "config": {
+          "window": 900,
+          "k": 10,
+          "recent": 1
+        },
+        "rank": 3,
+        "top8": true,
+        "top12": true,
+        "top16": true,
+        "poolHits": 2
       },
-      "drop": 22,
-      "dropPosition": 5,
-      "rescuedPool": [
-        37,
-        28,
-        10,
-        43,
-        18,
-        35,
-        40,
-        48
+      "bestKalman": {
+        "family": "v108-kalman",
+        "configId": 80,
+        "config": {
+          "q": 0.25,
+          "r": 2,
+          "width": 1
+        },
+        "rank": 6,
+        "top8": true,
+        "top12": true,
+        "top16": true,
+        "poolHits": 2
+      },
+      "gapTop8Models": 4,
+      "gapTop12Models": 8,
+      "gapTop16Models": 10,
+      "kalmanTop8Models": 10,
+      "kalmanTop12Models": 18,
+      "kalmanTop16Models": 18,
+      "gapTop5": [
+        {
+          "family": "v79-gap-shape",
+          "configId": 51,
+          "config": {
+            "window": 900,
+            "k": 10,
+            "recent": 1
+          },
+          "rank": 3,
+          "top8": true,
+          "top12": true,
+          "top16": true,
+          "poolHits": 2
+        },
+        {
+          "family": "v79-gap-shape",
+          "configId": 10,
+          "config": {
+            "window": 120,
+            "k": 20,
+            "recent": 2
+          },
+          "rank": 6,
+          "top8": true,
+          "top12": true,
+          "top16": true,
+          "poolHits": 1
+        },
+        {
+          "family": "v79-gap-shape",
+          "configId": 14,
+          "config": {
+            "window": 120,
+            "k": 40,
+            "recent": 3
+          },
+          "rank": 7,
+          "top8": true,
+          "top12": true,
+          "top16": true,
+          "poolHits": 2
+        },
+        {
+          "family": "v79-gap-shape",
+          "configId": 36,
+          "config": {
+            "window": 480,
+            "k": 10,
+            "recent": 1
+          },
+          "rank": 8,
+          "top8": true,
+          "top12": true,
+          "top16": true,
+          "poolHits": 3
+        },
+        {
+          "family": "v79-gap-shape",
+          "configId": 8,
+          "config": {
+            "window": 120,
+            "k": 10,
+            "recent": 3
+          },
+          "rank": 9,
+          "top8": false,
+          "top12": true,
+          "top16": true,
+          "poolHits": 1
+        }
       ],
-      "rescuedPoolHits": 5,
-      "top5BestHits": 5,
-      "fullPlayableTop5": false,
-      "top5Tickets": [
-        [
-          37,
-          28,
-          10,
-          43,
-          40,
-          48
-        ],
-        [
-          37,
-          28,
-          10,
-          43,
-          35,
-          40
-        ],
-        [
-          37,
-          28,
-          10,
-          43,
-          18,
-          40
-        ],
-        [
-          37,
-          28,
-          10,
-          43,
-          35,
-          48
-        ],
-        [
-          37,
-          28,
-          10,
-          43,
-          18,
-          48
-        ]
+      "kalmanTop5": [
+        {
+          "family": "v108-kalman",
+          "configId": 80,
+          "config": {
+            "q": 0.25,
+            "r": 2,
+            "width": 1
+          },
+          "rank": 6,
+          "top8": true,
+          "top12": true,
+          "top16": true,
+          "poolHits": 2
+        },
+        {
+          "family": "v108-kalman",
+          "configId": 61,
+          "config": {
+            "q": 0.1,
+            "r": 4,
+            "width": 1.5
+          },
+          "rank": 7,
+          "top8": true,
+          "top12": true,
+          "top16": true,
+          "poolHits": 1
+        },
+        {
+          "family": "v108-kalman",
+          "configId": 88,
+          "config": {
+            "q": 0.25,
+            "r": 8,
+            "width": 1
+          },
+          "rank": 7,
+          "top8": true,
+          "top12": true,
+          "top16": true,
+          "poolHits": 1
+        },
+        {
+          "family": "v108-kalman",
+          "configId": 81,
+          "config": {
+            "q": 0.25,
+            "r": 2,
+            "width": 1.5
+          },
+          "rank": 8,
+          "top8": true,
+          "top12": true,
+          "top16": true,
+          "poolHits": 1
+        },
+        {
+          "family": "v108-kalman",
+          "configId": 79,
+          "config": {
+            "q": 0.25,
+            "r": 1,
+            "width": 3
+          },
+          "rank": 8,
+          "top8": true,
+          "top12": true,
+          "top16": true,
+          "poolHits": 1
+        }
       ]
     }
   ],
   "summary": {
-    "targets": 2,
-    "missingWinnerTop16AnyOrthogonal": 1,
-    "rescuedPoolFull": 0,
-    "playableFullAt5EUR": 0
+    "visible": [
+      {
+        "date": "2024-01-11",
+        "missing": 22,
+        "visibleTop8": true,
+        "visibleTop12": true,
+        "visibleTop16": true,
+        "bestRank": 5
+      },
+      {
+        "date": "2026-07-25",
+        "missing": 38,
+        "visibleTop8": true,
+        "visibleTop12": true,
+        "visibleTop16": true,
+        "bestRank": 3
+      }
+    ],
+    "allVisibleTop8": true,
+    "allVisibleTop12": true,
+    "allVisibleTop16": true
   },
-  "decision": "RESEARCH_ONLY",
+  "decision": "RESEARCH_ONLY_DEEP_RESCUE_VISIBILITY",
   "realMoneyPass": false,
   "realStakeEUR": 0
 }
