@@ -1,0 +1,29 @@
+name: Loterias AI MetaPleno v5 Highlights
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v5-highlights.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v5-highlights.yml'
+permissions:
+  contents: write
+jobs:
+  highlights:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/meta-pleno-v5-highlights.mjs
+      - name: Persist safely
+        run: |
+          cp loterias-ai/data/research/meta-pleno-v5-highlights.json /tmp/h.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git fetch origin main
+          git reset --hard origin/main
+          cp /tmp/h.json loterias-ai/data/research/meta-pleno-v5-highlights.json
+          git add loterias-ai/data/research/meta-pleno-v5-highlights.json
+          git commit -m 'data(loterias-ai): persist v5 highlights' || exit 0
+          git push origin HEAD:main
