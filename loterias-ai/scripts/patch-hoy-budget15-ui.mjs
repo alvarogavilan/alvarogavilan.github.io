@@ -1,0 +1,1 @@
+import fs from 'node:fs';const p='loterias-ai/hoy/index.html';let s=fs.readFileSync(p,'utf8');const tag='<script src="./budget15-ui.js?v=1"></script>';if(!s.includes(tag)){if(!s.includes('</body>'))throw new Error('Missing </body>');s=s.replace('</body>',tag+'</body>');fs.writeFileSync(p,s)}console.log(JSON.stringify({status:'OK',alreadyPresent:s.includes(tag)}));
