@@ -1,0 +1,36 @@
+name: Loterias AI Nacional Exposure Adjusted Geography
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/build-nacional-exposure-adjusted-geography.mjs'
+      - 'loterias-ai/data/archive/_meta/loteria-nacional-sales-points-2026.json'
+      - 'loterias-ai/data/archive/_meta/loteria-nacional-sales-exposure-2026.json'
+      - '.github/workflows/loterias-ai-nacional-exposure-adjusted-geography.yml'
+permissions:
+  contents: write
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Exposure-adjusted Monte Carlo test
+        env:
+          REPS: 2000
+        run: node loterias-ai/scripts/build-nacional-exposure-adjusted-geography.mjs
+      - name: Persist evidence safely
+        run: |
+          cp loterias-ai/data/research/nacional-exposure-adjusted-geography.json /tmp/nacional-adjusted.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/research
+          cp /tmp/nacional-adjusted.json loterias-ai/data/research/nacional-exposure-adjusted-geography.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/nacional-exposure-adjusted-geography.json
+          git commit -m 'data(loterias-ai): persist exposure-adjusted Nacional geography' || exit 0
+          git push origin HEAD:main
