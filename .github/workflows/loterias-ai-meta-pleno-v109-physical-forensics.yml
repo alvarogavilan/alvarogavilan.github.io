@@ -1,0 +1,47 @@
+name: Loterias AI MetaPleno v109 Physical Forensics
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/metapleno-v109-physical-forensics
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v109-physical-process-forensics.mjs'
+      - 'loterias-ai/data/research/meta-pleno-v109-physical-process-forensics.json'
+      - '.github/workflows/loterias-ai-meta-pleno-v109-physical-forensics.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Preserve persisted registry
+        run: cp loterias-ai/data/research/meta-pleno-v109-physical-process-forensics.json /tmp/v109-before.json
+      - name: Rebuild physical-forensics registry
+        run: node loterias-ai/scripts/meta-pleno-v109-physical-process-forensics.mjs
+      - name: Verify persisted result is semantically reproducible
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const before=JSON.parse(fs.readFileSync('/tmp/v109-before.json','utf8'));
+          const after=JSON.parse(fs.readFileSync('loterias-ai/data/research/meta-pleno-v109-physical-process-forensics.json','utf8'));
+          if(JSON.stringify(before)!==JSON.stringify(after)) throw new Error('Persisted v109 registry differs semantically from regenerated output');
+          NODE
+      - name: Assert safety gates
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const p='loterias-ai/data/research/meta-pleno-v109-physical-process-forensics.json';
+          const x=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(x.realMoneyPass!==false) throw new Error('realMoneyPass must remain false');
+          if(x.gates?.inventMetadata!==false) throw new Error('metadata fabrication gate must remain false');
+          if(x.gates?.hardwareConditionedBacktestAllowed!==false) throw new Error('hardware-conditioned modelling must stay blocked without verified series');
+          if(x.budget?.maxEURPerGameDraw!==15 || x.budget?.realStakeEUR!==0) throw new Error('budget safety gate changed');
+          NODE
