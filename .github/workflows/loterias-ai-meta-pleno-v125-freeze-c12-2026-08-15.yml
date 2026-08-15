@@ -1,0 +1,22 @@
+name: Loterias AI MetaPleno v125 Freeze C12 2026-08-15
+on:
+  push:
+    branches:
+      - research/metapleno-v125-bonoloto-c12-freeze-2026-08-15
+  workflow_dispatch:
+jobs:
+  freeze:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Seal v125 c12 Budget8
+        run: node loterias-ai/scripts/meta-pleno-v125-freeze-c12-2026-08-15.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v125-bonoloto-c12-freeze
+          path: loterias-ai/data/shadow/bonoloto-2026-08-15-v125-c12-budget8.json
