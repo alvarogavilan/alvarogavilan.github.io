@@ -1,0 +1,30 @@
+name: Loterias AI MetaPleno v188 Primitiva Stacked Retriever
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v186-primitiva-cross-family-rescue]
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Rebuild frozen orthogonal leaders
+        run: |
+          node loterias-ai/scripts/meta-pleno-v79-primitiva-gap-shape-budget15.mjs
+          node loterias-ai/scripts/meta-pleno-v108-primitiva-kalman-budget15.mjs
+      - name: Run v188
+        run: node loterias-ai/scripts/meta-pleno-v188-primitiva-stacked-deep-retriever.mjs
+      - name: Persist v188 only
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git checkout -- loterias-ai/data/research/meta-pleno-v79-primitiva-gap-shape-budget15.json || true
+          git add loterias-ai/data/research/meta-pleno-v188-primitiva-stacked-deep-retriever.json
+          git diff --cached --quiet || git commit -m "research(loterias-ai): persist v188 Primitiva stacked deep retriever"
+          git pull --rebase origin research/metapleno-v186-primitiva-cross-family-rescue
+          git push
