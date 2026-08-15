@@ -1,0 +1,38 @@
+name: Loterias AI MetaPleno v3 Portfolios
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v3-portfolios.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v3-portfolios.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-meta-pleno-v3-portfolios
+  cancel-in-progress: false
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Evaluate MetaPleno ensemble portfolios
+        run: node loterias-ai/scripts/meta-pleno-v3-portfolios.mjs
+      - name: Persist safely
+        run: |
+          cp loterias-ai/data/research/meta-pleno-v3-portfolios.json /tmp/meta-pleno-v3-portfolios.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/meta-pleno-v3-portfolios.json loterias-ai/data/research/meta-pleno-v3-portfolios.json
+            git add loterias-ai/data/research/meta-pleno-v3-portfolios.json
+            git commit -m 'data(loterias-ai): persist MetaPleno v3 portfolio evidence' || exit 0
+            git push origin HEAD:main && exit 0
+            sleep $((i*3))
+          done
+          exit 1
