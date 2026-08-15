@@ -1,0 +1,63 @@
+name: Loterias AI Million Regime Structure Search
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/mass-regime-structure-shard.mjs'
+      - 'loterias-ai/scripts/aggregate-mass-regime-structure.mjs'
+      - '.github/workflows/loterias-ai-million-regime-structure-search.yml'
+permissions:
+  contents: write
+jobs:
+  search:
+    strategy:
+      fail-fast: false
+      matrix:
+        game: [primitiva, bonoloto, euromillones, eurodreams, gordo-primitiva]
+        shard: [0, 1, 2, 3]
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Evaluate 50,000 temporal regime strategies
+        env:
+          GAME: ${{ matrix.game }}
+          SHARD: ${{ matrix.shard }}
+          CANDIDATES: 50000
+        run: node loterias-ai/scripts/mass-regime-structure-shard.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: regime-${{ matrix.game }}-${{ matrix.shard }}
+          path: /tmp/loterias-ai-regime/${{ matrix.game }}-${{ matrix.shard }}.json
+          retention-days: 2
+  aggregate:
+    needs: search
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: regime-*
+          path: /tmp/regime
+          merge-multiple: true
+      - name: Freeze champions and open final holdout
+        run: node loterias-ai/scripts/aggregate-mass-regime-structure.mjs
+      - name: Persist evidence safely
+        run: |
+          cp loterias-ai/data/research/mass-regime-structure-search.json /tmp/regime-result.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/research
+          cp /tmp/regime-result.json loterias-ai/data/research/mass-regime-structure-search.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/mass-regime-structure-search.json
+          git commit -m 'data(loterias-ai): persist million temporal regime search' || exit 0
+          git push origin HEAD:main
