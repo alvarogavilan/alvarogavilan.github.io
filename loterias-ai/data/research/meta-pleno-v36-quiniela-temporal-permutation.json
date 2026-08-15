@@ -1,7 +1,8 @@
 {
-  "generatedAt": "2026-08-15T14:01:22.714Z",
+  "generatedAt": "2026-08-15T14:03:05.473Z",
   "engine": "MetaPleno-v36-quiniela-temporal-permutation",
-  "purpose": "Permutation test for the frozen Quiniela champion. Predictions are computed from the real chronological history, then real 14-sign outcome vectors are shuffled among evaluation dates within each phase. This preserves the empirical outcome-vector distribution while breaking temporal alignment.",
+  "purpose": "Permutation test for the frozen Quiniela champion reconstructed on the exact pre-backfill universe available through 2017-08-13. Predictions are computed from that chronology, then real 14-sign outcome vectors are shuffled among evaluation dates within each original phase.",
+  "originalUniverseCutoff": "2017-08-13",
   "frozenSpec": {
     "id": 271818,
     "lookback": 40,
@@ -18,49 +19,49 @@
       -0.044
     ]
   },
-  "historyDraws": 1861,
+  "historyDraws": 1272,
   "phaseSizes": {
     "discovery": 36,
     "validation": 42,
-    "holdout": 373
+    "holdout": 255
   },
   "observed": {
     "discovery": {
       "draws": 36,
-      "full14": 0,
-      "atLeast13": 0,
-      "meanMaxHits": 8.472222222222221
+      "full14": 1,
+      "atLeast13": 1,
+      "meanMaxHits": 8.666666666666666
     },
     "validation": {
       "draws": 42,
-      "full14": 0,
-      "atLeast13": 0,
-      "meanMaxHits": 8.238095238095237
+      "full14": 1,
+      "atLeast13": 1,
+      "meanMaxHits": 9.285714285714286
     },
     "holdout": {
-      "draws": 373,
-      "full14": 0,
+      "draws": 255,
+      "full14": 1,
       "atLeast13": 2,
-      "meanMaxHits": 8.970509383378015
+      "meanMaxHits": 8.862745098039216
     }
   },
   "permutation": {
     "runs": 20000,
-    "triplePhaseAtLeastObserved": 20000,
-    "triplePhaseRate": 1,
-    "holdoutAtLeastObservedRate": 1,
-    "totalFullAtLeastObservedRate": 1,
+    "triplePhaseAtLeastObserved": 228,
+    "triplePhaseRate": 0.0114,
+    "holdoutAtLeastObservedRate": 0.33685,
+    "totalFullAtLeastObservedRate": 0.0197,
     "totalFullHistogram": {
-      "0": 13237,
-      "1": 5845,
-      "2": 859,
-      "3": 58,
-      "4": 1
+      "0": 8464,
+      "1": 8348,
+      "2": 2794,
+      "3": 374,
+      "4": 20
     }
   },
   "limitations": [
     "The candidate itself was selected from a large search, so this frozen-candidate permutation p-value is not selection-aware by itself.",
-    "Phase construction follows the original mass-search split and sampling rules.",
+    "Permutation keeps the empirical 14-sign outcome vectors but breaks their temporal alignment with forecasts.",
     "Prospective post-2026-08-16 draws remain decisive."
   ],
   "realMoneyPass": false
