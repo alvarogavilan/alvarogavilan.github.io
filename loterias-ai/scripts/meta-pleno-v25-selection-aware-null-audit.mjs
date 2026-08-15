@@ -14,7 +14,18 @@ const FINALISTS_OPENED_PER_GAME=240;
 function choose(n,k){if(k<0||k>n)return 0;k=Math.min(k,n-k);let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r}
 function hypergeomHitProb(N,K,h){return choose(K,h)*choose(N-K,K-h)/choose(N,K)}
 function pHitAtLeast(c,t){let p=0;for(let h=t;h<=c.k;h++)p+=hypergeomHitProb(c.max,c.k,h);return p}
-function binomTail(n,p,k){if(k<=0)return 1;if(k>n)return 0;let s=0;for(let x=k;x<=n;x++)s+=choose(n,x)*(p**x)*((1-p)**(n-x));return Math.min(1,s)}
+function binomTail(n,p,k){
+  if(k<=0)return 1;
+  if(k>n||p<=0)return 0;
+  if(p>=1)return 1;
+  if(k===1)return -Math.expm1(n*Math.log1p(-p));
+  let term=Math.exp(n*Math.log1p(-p)),cdf=term;
+  for(let x=0;x<k-1;x++){
+    term*=((n-x)/(x+1))*(p/(1-p));
+    cdf+=term;
+  }
+  return Math.max(0,Math.min(1,1-cdf));
+}
 function mod(x,m){return((x-1)%m+m)%m+1}
 function addUnique(o,v,step,max){let e=((step%max)+max)%max;if(e===0)e=1;let g=0;while(o.includes(v)&&g++<max)v=mod(v+e,max);g=0;while(o.includes(v)&&g++<max)v=mod(v+1,max);if(o.includes(v))throw new Error('cannot unique');o.push(v)}
 function loadRows(c){let rows=[];for(const f of fs.readdirSync(`${ROOT}/data/archive/${c.dir}`).filter(x=>/^\d{4}\.json$/.test(x)).sort()){rows.push(...(JSON.parse(fs.readFileSync(`${ROOT}/data/archive/${c.dir}/${f}`,'utf8')).records||[]))}return rows.filter(r=>r.drawDate&&Array.isArray(r.result?.main)&&r.result.main.length===c.k&&new Set(r.result.main).size===c.k).sort((a,b)=>a.drawDate.localeCompare(b.drawDate))}
