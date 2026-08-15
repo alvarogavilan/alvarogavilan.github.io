@@ -1,3 +1,4 @@
+// trigger: v71 evolutionary Budget8
 import fs from 'node:fs';
 const DIR='loterias-ai/data/archive/bonoloto';let rows=[];for(const f of fs.readdirSync(DIR).filter(x=>/^\d{4}\.json$/.test(x)).sort())rows.push(...(JSON.parse(fs.readFileSync(`${DIR}/${f}`,'utf8')).records||[]));rows=rows.filter(r=>r.drawDate&&r.result?.main?.length===6).sort((a,b)=>a.drawDate.localeCompare(b.drawDate));
 const H=(a,b)=>{const s=new Set(b);return a.filter(x=>s.has(x)).length};
