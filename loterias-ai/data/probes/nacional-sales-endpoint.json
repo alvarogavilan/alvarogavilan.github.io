@@ -1,48 +1,80 @@
 {
-  "generatedAt": "2026-08-15T08:53:37.696Z",
+  "generatedAt": "2026-08-15T08:54:21.293Z",
   "drawDate": "2026-01-01",
   "drawId": "1296909001",
   "pageUrl": "https://www.loteriasyapuestas.es/es/loteria-nacional/ventas?drawId=1296909001",
   "pageHttpStatus": 200,
   "pageBytes": 83311,
-  "assetUrl": "https://www.loteriasyapuestas.es/f/loterias/estaticos/js/ventas_y_consignacion.js",
-  "assetHttpStatus": 200,
-  "assetBytes": 2495,
-  "relevantStrings": [
-    "Resultados - Peticion a JSON de Ventas fallida: ",
-    "Resultados - Peticion a JSON de Consignacion fallida: "
-  ],
-  "serviceLike": [],
-  "contexts": [
-    {
-      "needle": "provincias",
-      "at": 769,
-      "text": " jQuery.getJSON(urlConsignationLNAC, function (infoConsignment) { placeInfoInHTMLFromJson(infoConsignment); }).fail(function( jqxhr, textStatus, error ){ var err = textStatus + \", \" + error; console.log( \"Resultados - Peticion a JSON de Consignacion fallida: \" + err ); showErrorMessage(); }); } function placeInfoInHTMLFromJson(info){ if(isValidInformationFromJson(info)){ placeProvinces(info.provincias); placeCommunities(info.comunidades); } else { showErrorMessage(); } } function placeProvinces(listProvinces){ for(var i=0; i < listProvinces.length; i++){ var province = listProvinces[i]; var element = createElementList(province, i); jQuery('#provinces tr:last').after(element); } } function placeCommunities(listCommunities){ for(var i=0; i < listCommunities.length; i++){ var community = listCommunities[i]; var element = createElementList(community, i); jQuery('#communities tr:last').after(element); } } function createElementList(element, index){ var nameCommunity = element.name; var serieCommunity = element.serie; var totalCommunity = element.total; var isOddNumber = isOdd(index); var elementHTML = \"<tr class=\"; if(isOddNumber){ elementHTML += \"impar\"; } else "
+  "salesRaw": "/f/loterias/ventas/2026/ventas1296909001.json",
+  "consignmentRaw": null,
+  "sales": {
+    "url": "https://www.loteriasyapuestas.es/f/loterias/ventas/2026/ventas1296909001.json",
+    "httpStatus": 200,
+    "contentType": "application/json",
+    "bytes": 6027,
+    "jsonShape": {
+      "provincias": [
+        {
+          "name": "ALAVA",
+          "serie": "1.086,10",
+          "total": "32.583,00"
+        },
+        {
+          "name": "ALBACETE",
+          "serie": "2.901,90",
+          "total": "87.057,00"
+        },
+        {
+          "name": "ALICANTE",
+          "serie": "12.688,50",
+          "total": "380.655,00"
+        },
+        {
+          "name": "ALMERIA",
+          "serie": "7.061,10",
+          "total": "211.833,00"
+        },
+        {
+          "name": "ASTURIAS",
+          "serie": "6.936,50",
+          "total": "208.095,00"
+        }
+      ],
+      "comunidades": [
+        {
+          "name": "ANDALUCÍA",
+          "serie": "64.084,00",
+          "total": "1.922.520,00"
+        },
+        {
+          "name": "ARAGÓN",
+          "serie": "5.277,50",
+          "total": "158.325,00"
+        },
+        {
+          "name": "ASTURIAS",
+          "serie": "6.936,50",
+          "total": "208.095,00"
+        },
+        {
+          "name": "BALEARES",
+          "serie": "4.822,20",
+          "total": "144.666,00"
+        },
+        {
+          "name": "CANARIAS",
+          "serie": "22.568,40",
+          "total": "677.052,00"
+        }
+      ]
     },
+    "bodySample": null
+  },
+  "consignment": null,
+  "assignmentContexts": [
     {
-      "needle": "provincias",
-      "at": 2152,
-      "text": " elementHTML += \"</td>\"; elementHTML += \"<td>\"; elementHTML += serieCommunity; elementHTML += \"</td>\"; elementHTML += \"<td>\" elementHTML += totalCommunity; elementHTML += \"</td>\" elementHTML += \"</tr>\"; return elementHTML; } function isOdd(num) { return num % 2; } function isValidInformationFromJson(info){ var isValid = false; if(info != null){ var infoProvinces = info.provincias; var infoCommunities = info.comunidades; if((infoProvinces != null) && (infoCommunities != null)){ if((infoProvinces.length > 0) && (infoCommunities.length > 0)){ isValid = true; } } } return isValid; } function showErrorMessage(){ jQuery('#bodyContent').hide(); jQuery('#messageNoInfo').show(); }"
-    },
-    {
-      "needle": "provincia",
-      "at": 769,
-      "text": " jQuery.getJSON(urlConsignationLNAC, function (infoConsignment) { placeInfoInHTMLFromJson(infoConsignment); }).fail(function( jqxhr, textStatus, error ){ var err = textStatus + \", \" + error; console.log( \"Resultados - Peticion a JSON de Consignacion fallida: \" + err ); showErrorMessage(); }); } function placeInfoInHTMLFromJson(info){ if(isValidInformationFromJson(info)){ placeProvinces(info.provincias); placeCommunities(info.comunidades); } else { showErrorMessage(); } } function placeProvinces(listProvinces){ for(var i=0; i < listProvinces.length; i++){ var province = listProvinces[i]; var element = createElementList(province, i); jQuery('#provinces tr:last').after(element); } } function placeCommunities(listCommunities){ for(var i=0; i < listCommunities.length; i++){ var community = listCommunities[i]; var element = createElementList(community, i); jQuery('#communities tr:last').after(element); } } function createElementList(element, index){ var nameCommunity = element.name; var serieCommunity = element.serie; var totalCommunity = element.total; var isOddNumber = isOdd(index); var elementHTML = \"<tr class=\"; if(isOddNumber){ elementHTML += \"impar\"; } else "
-    },
-    {
-      "needle": "provincia",
-      "at": 2152,
-      "text": " elementHTML += \"</td>\"; elementHTML += \"<td>\"; elementHTML += serieCommunity; elementHTML += \"</td>\"; elementHTML += \"<td>\" elementHTML += totalCommunity; elementHTML += \"</td>\" elementHTML += \"</tr>\"; return elementHTML; } function isOdd(num) { return num % 2; } function isValidInformationFromJson(info){ var isValid = false; if(info != null){ var infoProvinces = info.provincias; var infoCommunities = info.comunidades; if((infoProvinces != null) && (infoCommunities != null)){ if((infoProvinces.length > 0) && (infoCommunities.length > 0)){ isValid = true; } } } return isValid; } function showErrorMessage(){ jQuery('#bodyContent').hide(); jQuery('#messageNoInfo').show(); }"
-    },
-    {
-      "needle": "ventas",
-      "at": 254,
-      "text": " function placeSales(){ jQuery.getJSON(urlSalesLNAC,function (infoSales) { placeInfoInHTMLFromJson(infoSales); }).fail(function( jqxhr, textStatus, error ){ var err = textStatus + \", \" + error; console.log( \"Resultados - Peticion a JSON de Ventas fallida: \" + err ); showErrorMessage(); }); } function placeConsignment(){ jQuery.getJSON(urlConsignationLNAC, function (infoConsignment) { placeInfoInHTMLFromJson(infoConsignment); }).fail(function( jqxhr, textStatus, error ){ var err = textStatus + \", \" + error; console.log( \"Resultados - Peticion a JSON de Consignacion fallida: \" + err ); showErrorMessage(); }); } function placeInfoInHTMLFromJson(info){ if(isValidInformationFromJson(info)){ placeProvinces(info.provincias); placeCommunities(info.comunidades); } else { showErrorMessage(); } } function placeProvinces(listProvinces){ for(var i=0; i < listProvinces.length; i++){ var province = listProvinces[i]; var element = createElementList(province, i); jQuery('#provinces tr:last').after(element); } } function "
-    },
-    {
-      "needle": "consignacion",
-      "at": 597,
-      "text": " textStatus + \", \" + error; console.log( \"Resultados - Peticion a JSON de Ventas fallida: \" + err ); showErrorMessage(); }); } function placeConsignment(){ jQuery.getJSON(urlConsignationLNAC, function (infoConsignment) { placeInfoInHTMLFromJson(infoConsignment); }).fail(function( jqxhr, textStatus, error ){ var err = textStatus + \", \" + error; console.log( \"Resultados - Peticion a JSON de Consignacion fallida: \" + err ); showErrorMessage(); }); } function placeInfoInHTMLFromJson(info){ if(isValidInformationFromJson(info)){ placeProvinces(info.provincias); placeCommunities(info.comunidades); } else { showErrorMessage(); } } function placeProvinces(listProvinces){ for(var i=0; i < listProvinces.length; i++){ var province = listProvinces[i]; var element = createElementList(province, i); jQuery('#provinces tr:last').after(element); } } function placeCommunities(listCommunities){ for(var i=0; i < listCommunities.length; i++){ var community = listCommunities[i]; var element = createElementList(community, i); jQuery('#communities tr:last').after(element); } } function createElementList(element, index){ var nameCommunity = element.name; var serieCommunity = element"
+      "name": "urlSalesLNAC",
+      "text": "ass=\"volverSalesyConsign\"> <a title=\"volver\" href=\"javascript:history.back()\"> <p class=\"c-volver__texto\">Volver</p> </a> </div> </div> <script src=\"/f/loterias/estaticos/js/ventas_y_consignacion.js\"></script> <script> var urlSalesLNAC = \"/f/loterias/ventas/2026/ventas1296909001.json\"; placeSales(); </script></div> </div> <!-- Fin Contenido --> <!-- Pie --> <div class=\"contenedor pie subhome\"> <div class=\"r-pie\"> <div class=\"c-pie\"> <div class=\"c-pie__content\"> <div class=\"c-pie__item c-pie__item--descarga\"> <!-- <p class=\"c-pie__texto\" id=\"qa_pie_texto_descargaNuestraApp\"> </p> --> <div class=\"contenido-descargas\"> <a href=\"https://www.loteriasyapuestas.es/es/appselae\" class=\"c-pie__enlace-descarga\" id=\"qa_pie_boton_disponibleEnAndroidAppStore1\"> <img src=\"/f/loterias/estaticos/imagenes/sass/android.svg\" class=\"c-pie__imagen-descarga\" alt=\"App Android\" title=\"App Android\"><span class=\"c-pie__titulo-destacado\">Disponible para</span><span class"
     }
   ]
 }
