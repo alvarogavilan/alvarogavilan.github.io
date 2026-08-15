@@ -14,7 +14,9 @@ const folds=[
 function transformed(f){
   let s=original;
   const out=`/tmp/meta-pleno-v176-fold-${f.id}.json`;
-  s=s.replace("loterias-ai/data/research/meta-pleno-v172-dual-drop-ticket-ranker.json",out)
+  const nested=`let s=fs.readFileSync(SRC,'utf8');s=s.replaceAll('2018-01-01','${f.dropStart}').replaceAll('2020-12-31','${f.dropEnd}').replaceAll('2021-01-01','${f.selectStart}').replaceAll('2022-12-31','${f.selectEnd}').replaceAll('2024-12-31','${f.midEnd}');`;
+  s=s.replace("let s=fs.readFileSync(SRC,'utf8');",nested)
+     .replace("loterias-ai/data/research/meta-pleno-v172-dual-drop-ticket-ranker.json",out)
      .replace("version:'v172'",`version:'v176-fold-${f.id}'`)
      .replaceAll("2018-01-01",f.dropStart)
      .replaceAll("2020-12-31",f.dropEnd)
