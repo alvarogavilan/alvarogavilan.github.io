@@ -1,0 +1,66 @@
+name: Loterias AI Million Portfolio Search
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/mass-portfolio-strategy-shard.mjs'
+      - 'loterias-ai/scripts/aggregate-mass-portfolio-strategies.mjs'
+      - '.github/workflows/loterias-ai-million-portfolio-search.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-million-portfolio-search
+  cancel-in-progress: false
+jobs:
+  search:
+    strategy:
+      fail-fast: false
+      matrix:
+        game: [primitiva, bonoloto, euromillones, eurodreams, gordo-primitiva]
+        shard: [0, 1, 2, 3]
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Evaluate 50,000 diversified portfolios
+        env:
+          GAME: ${{ matrix.game }}
+          SHARD: ${{ matrix.shard }}
+          CANDIDATES: 50000
+        run: node loterias-ai/scripts/mass-portfolio-strategy-shard.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: portfolios-${{ matrix.game }}-${{ matrix.shard }}
+          path: /tmp/loterias-ai-portfolios/${{ matrix.game }}-${{ matrix.shard }}.json
+          retention-days: 2
+  aggregate:
+    needs: search
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: portfolios-*
+          path: /tmp/portfolios
+          merge-multiple: true
+      - name: Freeze portfolio champions and open final holdout
+        run: node loterias-ai/scripts/aggregate-mass-portfolio-strategies.mjs
+      - name: Persist evidence safely
+        run: |
+          cp loterias-ai/data/research/mass-portfolio-strategy-search.json /tmp/mass-portfolio-strategy-search.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/research
+          cp /tmp/mass-portfolio-strategy-search.json loterias-ai/data/research/mass-portfolio-strategy-search.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/mass-portfolio-strategy-search.json
+          git commit -m 'data(loterias-ai): persist one-million diversified portfolio search' || exit 0
+          git push origin HEAD:main
