@@ -1,0 +1,19 @@
+import fs from 'node:fs';
+
+const OUT='loterias-ai/data/research/unseen-combination-exclusion-audit.json';
+const cfgs={
+  primitiva:{dir:'primitiva',max:49,k:6,extras:[['reintegro',10,1,0]]},
+  bonoloto:{dir:'bonoloto',max:49,k:6,extras:[['reintegro',10,1,0]]},
+  euromillones:{dir:'euromillones',max:50,k:5,extras:[['stars',12,2,1]]},
+  eurodreams:{dir:'eurodreams',max:40,k:6,extras:[['dream',5,1,1]]},
+  'gordo-primitiva':{dir:'gordo-primitiva',max:54,k:5,extras:[['key',10,1,0]]}
+};
+function choose(n,k){n=BigInt(n);k=BigInt(k);if(k>n-k)k=n-k;let r=1n;for(let i=1n;i<=k;i++)r=r*(n-k+i)/i;return r}
+function num(x){return Number(x)}
+function extraVals(r,name){const v=r.result?.[name];if(Array.isArray(v))return v.map(Number).sort((a,b)=>a-b);return v==null?[]:[Number(v)]}
+function keyMain(r){return r.result.main.map(Number).slice().sort((a,b)=>a-b).join('-')}
+function keyFull(r,cfg){return [keyMain(r),...cfg.extras.map(([name])=>`${name}:${extraVals(r,name).join('-')}`)].join('|')}
+function load(game,cfg){const dir=`loterias-ai/data/archive/${cfg.dir}`;let rows=[];for(const f of fs.readdirSync(dir).filter(x=>/^\d{4}\.json$/.test(x)).sort()){const j=JSON.parse(fs.readFileSync(`${dir}/${f}`,'utf8'));rows.push(...(j.records||[]))}rows=rows.filter(r=>r.drawDate&&Array.isArray(r.result?.main)&&r.result.main.length===cfg.k).sort((a,b)=>String(a.drawDate).localeCompare(String(b.drawDate)));const uniq=new Map();for(const r of rows){const k=r.drawId?String(r.drawId):`${r.drawDate}|${keyFull(r,cfg)}`;if(!uniq.has(k))uniq.set(k,r)}return [...uniq.values()].sort((a,b)=>String(a.drawDate).localeCompare(String(b.drawDate)))}
+function auditSpace(rows,keyFn,space){const seen=new Set();let repeats=0,firsts=0,expectedUnseen=0,expectedUniform=0;const repeatSamples=[];for(const r of rows){const key=keyFn(r),already=seen.has(key),available=space-BigInt(seen.size);if(already){repeats++;if(repeatSamples.length<20)repeatSamples.push({drawDate:r.drawDate,combination:key})}else{firsts++;if(available>0n)expectedUnseen+=1/num(available)}expectedUniform+=1/num(space);seen.add(key)}const draws=rows.length,unseenPct=draws?firsts/draws*100:null,repeatPct=draws?repeats/draws*100:null;return{draws,distinctWinningCombinations:seen.size,repeatedWinningDraws:repeats,neverPreviouslySeenWinningDraws:firsts,neverPreviouslySeenPct:unseenPct,repeatPct,totalCombinationSpace:space.toString(),spaceEverObservedPct:num(BigInt(seen.size))*100/num(space),historicalExpectedExactHitsPerSingleBet:{unseenOnly:expectedUnseen,uniformUnrestricted:expectedUniform,relativeLift:expectedUniform?expectedUnseen/expectedUniform-1:null},repeatSamples}}
+const games={};for(const [game,cfg] of Object.entries(cfgs)){const rows=load(game,cfg);let fullSpace=choose(cfg.max,cfg.k);for(const[,max,count]of cfg.extras)fullSpace*=choose(max,count);const mainSpace=choose(cfg.max,cfg.k);games[game]={historyDraws:rows.length,mainCombinationOnly:auditSpace(rows,keyMain,mainSpace),fullTicketIncludingExtras:auditSpace(rows,r=>keyFull(r,cfg),fullSpace)}}
+const out={generatedAt:new Date().toISOString(),methodology:'unseen-winning-combination-exclusion-audit-v1',interpretation:{question:'Does excluding combinations that have already won make the next exact winner materially more likely?',important:'For an independent fair draw, a previously seen combination is not intrinsically less likely next time. This audit measures the historical non-repeat rate and the exact retrospective expected hit probability of uniformly betting only among combinations not previously seen.',promotion:'This is research evidence only. No real-money gate can pass from retrospective non-repetition alone.'},games,realMoneyPass:false};fs.mkdirSync('loterias-ai/data/research',{recursive:true});fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify(out,null,2));
