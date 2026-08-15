@@ -1,0 +1,28 @@
+import fs from 'node:fs';
+import {pathToFileURL} from 'node:url';
+const SRC='loterias-ai/scripts/meta-pleno-v157-pre2023-hybrid-selector.mjs';
+if(!fs.existsSync(SRC)) throw new Error('v157 source required');
+let s=fs.readFileSync(SRC,'utf8');
+s=s.replace("loterias-ai/data/research/meta-pleno-v157-pre2023-hybrid-selector.json","/tmp/meta-pleno-v172-internal.json")
+ .replace("version:'v157'","version:'v172-internal'")
+ .replace("family:'PRE2023_HYBRID_ROUTE_SELECTOR'","family:'V162_DUAL_DROP_INTERNAL'")
+ .replace("sd=a=>{if(a.length<2)return 1;const m=mean(a);return Math.sqrt(a.reduce((s,x)=>s+(x-m)**2,0)/(a.length-1))||1}","sd=a=>{if(!a.length)return 1;const m=mean(a);return Math.sqrt(mean(a.map(x=>(x-m)**2)))||1}")
+ .replace("Math.sqrt((S.structM2[j]/Math.max(1,S.structN-1))||1)","Math.sqrt((S.structM2[j]/Math.max(1,S.structN))||1)")
+ .replace("rawDays.push({date:d.date,winning:d.n,r,gr,base:r.slice(0,8).map(x=>x.n).sort((a,b)=>a-b)})","const sr=structuralRoute(r);rawDays.push({date:d.date,winning:d.n,r,gr,base:r.slice(0,8).map(x=>x.n).sort((a,b)=>a-b),sr})")
+ .replace("sr=structuralRoute(day.r),structHits=day.winning.filter(n=>sr.pool.includes(n)).length","sr=day.sr,structHits=day.winning.filter(n=>sr.pool.includes(n)).length")
+ .replace("const useFrontier=day.graphAdv>=s.threshold","const useFrontier=day.graphAdv<=s.threshold");
+const marker="const thresholds=[-999,0,4,8,12,16,20,24,28,32,36,40,999],stats=";
+if(!s.includes(marker))throw new Error('v172 marker missing');
+const inject=`
+const V172_OUT='loterias-ai/data/research/meta-pleno-v172-dual-drop-ticket-ranker.json',V172_THRESHOLD=40,V172_B=[1,2,3,5,10,14],V172_K=Object.fromEntries(V172_B.map(e=>[e,Math.round(e/.5)]));
+function v172Pool(day){return day.graphAdv<=V172_THRESHOLD?day.frontierPool:day.structPool}
+function v172F(day,n){const x=day.r.find(q=>q.n===n),rank=day.r.findIndex(q=>q.n===n)+1;return[1-rank/49,x?.score||0,1-(day.gr.get(n)||49)/49,...K.map(k=>x?.f?.[k]||0)]}
+const V172_TRAIN=[];for(const day of days.filter(x=>x.date>='2021-01-01'&&x.date<='2022-12-31')){const pool=v172Pool(day),win=new Set(day.winning);for(const n of pool)V172_TRAIN.push({f:v172F(day,n),bad:!win.has(n)})}
+const V172_POS=V172_TRAIN.filter(x=>x.bad).map(x=>x.f),V172_NEG=V172_TRAIN.filter(x=>!x.bad).map(x=>x.f),V172_COEF=[],V172_MN=[],V172_SC=[];for(let j=0;j<V172_POS[0].length;j++){const mp=mean(V172_POS.map(x=>x[j])),mn=mean(V172_NEG.map(x=>x[j])),sc=sd([...V172_POS.map(x=>x[j]),...V172_NEG.map(x=>x[j])]);V172_MN[j]=mn;V172_SC[j]=sc;V172_COEF[j]=(mp-mn)/sc}function v172Drop(day,n){const f=v172F(day,n);return f.reduce((z,v,j)=>z+V172_COEF[j]*(v-V172_MN[j])/V172_SC[j],0)}
+const V172_CFG=[];for(const a of [.25,.5,1,2,4])for(const b of [0,.25,.5,1,2])V172_CFG.push({id:'d'+a+'-div'+b,a,b});
+const V172_STATS=Object.fromEntries(V172_CFG.map(q=>[q.id,{config:q,select:{},mid:{},late:{}}]));for(const z of Object.values(V172_STATS))for(const ph of ['select','mid','late'])for(const e of V172_B)z[ph][e]={n:0,h5:0,h6:0,sumBest:0,fullEvents:[]};
+for(const day of days.filter(x=>x.date>='2021-01-01')){const pool=v172Pool(day),ph=day.date<='2022-12-31'?'select':day.date<='2024-12-31'?'mid':'late',pairs=comb(pool,2).map(p=>{const kept=pool.filter(n=>!p.includes(n)),d1=v172Drop(day,p[0]),d2=v172Drop(day,p[1]),div=Math.abs((day.r.find(x=>x.n===p[0])?.score||0)-(day.r.find(x=>x.n===p[1])?.score||0));return{omit:p,t:kept,d1,d2,div}});for(const q of V172_CFG){const ord=pairs.map(x=>({...x,score:q.a*(x.d1+x.d2)-q.b*x.div})).sort((x,y)=>y.score-x.score||x.omit.join(',').localeCompare(y.omit.join(',')));for(const e of V172_B){const top=ord.slice(0,V172_K[e]),best=Math.max(...top.map(x=>x.t.filter(n=>day.winning.includes(n)).length)),z=V172_STATS[q.id][ph][e];z.n++;z.sumBest+=best;if(best>=5)z.h5++;if(best===6){z.h6++;const exact=ord.findIndex(x=>x.t.slice().sort((a,b)=>a-b).join(',')===day.winning.slice().sort((a,b)=>a-b).join(','))+1;z.fullEvents.push({date:day.date,pool,winning:day.winning,winningRank:exact,winningOmitPair:exact>0?ord[exact-1].omit:null})}}}}
+function v172Score(x){let s=0;for(const e of [1,2,3,5,10]){const z=x.select[e];s+=z.h6*1e9+z.h5*1e6+z.sumBest/Math.max(1,z.n)}return s}const V172_L=[...Object.values(V172_STATS)].sort((a,b)=>v172Score(b)-v172Score(a)||a.config.id.localeCompare(b.config.id)).slice(0,10),V172_SUM={leaders:V172_L.length,bothEraFullByBudget:{}};for(const e of V172_B)V172_SUM.bothEraFullByBudget[e]=V172_L.filter(x=>x.mid[e].h6>0&&x.late[e].h6>0).length;
+const V172_O={generatedAt:new Date().toISOString(),version:'v172',gameId:'bonoloto',family:'V162_DUAL_FALSE_POSITIVE_DROP_TICKET_RANKER',methodology:'Within the exact pre-draw v162 threshold40 8-number pool, each 6-number ticket is represented by the pair of pool numbers it excludes. A false-positive discriminant is trained only on v162 pool members from 2021-2022. Pair-ranking formulas are selected only on that same pre-2023 interval; 2023-2024 and 2025-latest remain unopened until freeze. This directly targets the economic problem: identify the two extras so fewer than 28 tickets can retain the full6.',training:{start:'2021-01-01',end:'2022-12-31',positives:V172_POS.length,negatives:V172_NEG.length},candidateConfigs:V172_CFG.length,threshold:40,budgetsEUR:V172_B,leaders:V172_L,summary:V172_SUM,baselineConditionalCoverage:Object.fromEntries(V172_B.map(e=>[e,V172_K[e]/28])),realMoneyPass:false,realStakeEUR:0,decision:'EXPLORATORY_POSTHOC_ARCHITECTURE_REMAINS_REQUIRES_PROSPECTIVE_COMPRESSION_FREEZE'};fs.writeFileSync(V172_OUT,JSON.stringify(V172_O,null,2)+'\\n');console.log(JSON.stringify(V172_SUM,null,2));
+`;
+s=s.replace(marker,inject+'\n'+marker);const tmp='/tmp/meta-pleno-v172.mjs';fs.writeFileSync(tmp,s);await import(pathToFileURL(tmp).href);
