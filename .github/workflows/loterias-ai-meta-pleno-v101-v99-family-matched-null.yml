@@ -1,0 +1,23 @@
+name: Loterias AI MetaPleno v101 v99 Family Matched Null
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v101-v99-family-matched-null.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v101-v99-family-matched-null.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node loterias-ai/scripts/meta-pleno-v101-v99-family-matched-null.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v101-v99-family-matched-null
+          path: loterias-ai/data/research/meta-pleno-v101-v99-family-matched-null.json
