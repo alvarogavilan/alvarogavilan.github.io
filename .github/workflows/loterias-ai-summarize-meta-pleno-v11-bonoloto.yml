@@ -1,0 +1,27 @@
+name: Loterias AI Summarize MetaPleno v11 Bonoloto
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/summarize-meta-pleno-v11-bonoloto.mjs'
+      - '.github/workflows/loterias-ai-summarize-meta-pleno-v11-bonoloto.yml'
+permissions:
+  contents: write
+jobs:
+  summarize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/summarize-meta-pleno-v11-bonoloto.mjs
+      - name: Persist safely
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/meta-pleno-v11-bonoloto-summary.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'data(loterias-ai): summarize rolling compact Bonoloto'
+          for i in 1 2 3 4 5; do git pull --rebase origin main && git push origin HEAD:main && exit 0; sleep $((i*3)); done
+          exit 1
