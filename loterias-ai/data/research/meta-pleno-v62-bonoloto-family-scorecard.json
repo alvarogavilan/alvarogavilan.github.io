@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-15T16:35:32.242Z",
+  "generatedAt": "2026-08-15T17:19:27.703Z",
   "engine": "MetaPleno-v62-bonoloto-family-scorecard",
   "protocol": {
     "primaryObjective": "Repeated distinct-date 6/6 after temporal freeze, preferably prospective.",
@@ -10,6 +10,7 @@
       "No reranking after opening later era",
       "Budget <=15 EUR for any candidate intended as potentially playable",
       "Family matched-null p>=0.05 deprioritizes retrospective full-hit signals",
+      "Nominal hyperparameters that generate identical predictions count as one effective configuration",
       "Derived ensembles sharing the same jackpot cluster do not count as independent evidence",
       "Negative results remain persisted",
       "realMoneyPass remains false until sufficient prospective evidence"
@@ -61,6 +62,35 @@
         "maxUniqueFullDates": 1,
         "meanUniqueFullDates": 0.008207934336525308
       }
+    },
+    "v99StateNgram": {
+      "engine": "MetaPleno v101 v99 Family Matched Null",
+      "sourceRun": 31897561040,
+      "sourceFamily": "v99 state n-gram Budget8",
+      "lateDraws": 590,
+      "frozenModels": 25,
+      "observed": {
+        "uniqueFullEvents": 1,
+        "fullModels": 4
+      },
+      "null": {
+        "shifts": 589,
+        "geUnique": 223,
+        "geModels": 223,
+        "pUnique": 0.37966101694915255,
+        "pModels": 0.37966101694915255,
+        "maxUniqueFullEvents": 15,
+        "maxFullModels": 25
+      },
+      "decision": "DEPRIORITIZED_NOT_SIGNIFICANT_UNDER_FAMILY_MATCHED_NULL",
+      "budget": {
+        "poolSize": 8,
+        "combinations": 28,
+        "theoreticalCostEUR": 14,
+        "maxEUR": 15,
+        "realStakeEUR": 0
+      },
+      "realMoneyPass": false
     }
   },
   "families": [
@@ -133,6 +163,28 @@
       "familyMatchedNullPValue": 0.6060191518467852,
       "antiOverfitScore": 9110,
       "priority": "DEPRIORITIZED_AFTER_MATCHED_NULL",
+      "realMoneyPass": false
+    },
+    {
+      "id": "v99-state-ngram-budget8",
+      "file": "meta-pleno-v100-audit-v99-late-fulls-summary.json",
+      "status": "COMPLETE_AUDITED",
+      "engine": "MetaPleno v99 State N-gram Budget8",
+      "budgetEUR": 14,
+      "summary": {
+        "lateFullModels": 4,
+        "uniqueLateFullEvents": 1,
+        "effectiveConfigurations": 36,
+        "frozenEffectiveConfigurations": 7
+      },
+      "distinctPersistedFullEventClusters": 1,
+      "distinctPersistedFullDates": [
+        "2026-03-07"
+      ],
+      "familyMatchedNullPValue": 0.37966101694915255,
+      "antiOverfitScore": 9010,
+      "priority": "DEPRIORITIZED_AFTER_MATCHED_NULL",
+      "auditNote": "Nominal 144 configurations collapse to 36 mathematically effective configurations; frozen nominal top25 collapse to 7 effective configs. The four jackpot nominal IDs map to one effective config.",
       "realMoneyPass": false
     },
     {
@@ -338,6 +390,70 @@
         "lateFullModels": 0,
         "repeatFullModels": 0,
         "repeat5PlusModels": 0
+      },
+      "distinctPersistedFullEventClusters": 0,
+      "distinctPersistedFullDates": [],
+      "familyMatchedNullPValue": null,
+      "antiOverfitScore": 10,
+      "priority": "LOW_OR_RESEARCH_ONLY",
+      "realMoneyPass": false
+    },
+    {
+      "id": "v103-bernoulli-hmm-budget8",
+      "file": "meta-pleno-v103-bonoloto-bernoulli-hmm-budget8-summary.json",
+      "status": "COMPLETE",
+      "engine": "MetaPleno v103 Bernoulli HMM Budget8",
+      "budgetEUR": 14,
+      "summary": {
+        "engine": "MetaPleno v103 Bonoloto Bernoulli HMM Budget8",
+        "sourceRun": 31897747445,
+        "configurations": 16,
+        "frozen": 8,
+        "midFullModels": 0,
+        "lateFullModels": 0,
+        "repeatFullModels": 0,
+        "repeat5PlusModels": 0,
+        "decision": "DEPRIORITIZED_NO_POST_FREEZE_SIGNAL",
+        "budget": {
+          "poolSize": 8,
+          "combinations": 28,
+          "theoreticalCostEUR": 14,
+          "maxEUR": 15,
+          "realStakeEUR": 0
+        },
+        "realMoneyPass": false
+      },
+      "distinctPersistedFullEventClusters": 0,
+      "distinctPersistedFullDates": [],
+      "familyMatchedNullPValue": null,
+      "antiOverfitScore": 10,
+      "priority": "LOW_OR_RESEARCH_ONLY",
+      "realMoneyPass": false
+    },
+    {
+      "id": "v105-order-var-ridge-budget8",
+      "file": "meta-pleno-v105-bonoloto-order-var-ridge-budget8-summary.json",
+      "status": "COMPLETE",
+      "engine": "MetaPleno v105 Order VAR Ridge Budget8",
+      "budgetEUR": 14,
+      "summary": {
+        "engine": "MetaPleno v105 Bonoloto Order VAR Ridge Budget8",
+        "sourceRun": 31897898926,
+        "configurations": 64,
+        "frozen": 16,
+        "midFullModels": 0,
+        "lateFullModels": 0,
+        "repeatFullModels": 0,
+        "repeat5PlusModels": 0,
+        "decision": "DEPRIORITIZED_NO_POST_FREEZE_SIGNAL",
+        "budget": {
+          "poolSize": 8,
+          "combinations": 28,
+          "theoreticalCostEUR": 14,
+          "maxEUR": 15,
+          "realStakeEUR": 0
+        },
+        "realMoneyPass": false
       },
       "distinctPersistedFullEventClusters": 0,
       "distinctPersistedFullDates": [],
