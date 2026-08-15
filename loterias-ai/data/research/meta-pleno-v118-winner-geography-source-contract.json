@@ -1,0 +1,28 @@
+{
+  "engine": "MetaPleno-v118-winner-geography",
+  "status": "INGESTION_CONTRACT_READY",
+  "purpose": "Store official winner-location evidence for later exposure-adjusted analysis; geography is not assumed causal or predictive.",
+  "allowedSources": ["SELAE official result pages", "SELAE official draw press releases"],
+  "fields": ["game", "drawDate", "drawId", "category", "winnerCount", "locality", "province", "administrationNumber", "salesPointText", "sourceUrl", "sourceObservedAt"],
+  "forbiddenInference": [
+    "Do not infer winner location from media when SELAE is available.",
+    "Do not treat raw winner counts by place as edge.",
+    "Do not use post-draw winner geography to predict the same draw.",
+    "Do not rank administrations without an exposure denominator such as sales, tickets, stakes, population or another predeclared proxy.",
+    "Do not merge multiple prize categories into jackpot evidence without preserving category."
+  ],
+  "requiredNulls": [
+    "winner locations conditional on exposure",
+    "province-level overdispersion versus sales share",
+    "administration recurrence versus ticket-volume expectation",
+    "permutation of draw dates preserving location/exposure marginals"
+  ],
+  "prospectiveRule": "Any geographic feature must be computed using information available strictly before the target draw and frozen before evaluation.",
+  "officialEvidenceObserved": {
+    "SELAE_result_pages_expose_Agraciados_column": true,
+    "SELAE_result_pages_link_draw_press_releases": true,
+    "exampleVerified": "La Primitiva 2026-07-16 official result page records one first-category winner; locality must be ingested only if published by SELAE in the corresponding official detail/press release."
+  },
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
