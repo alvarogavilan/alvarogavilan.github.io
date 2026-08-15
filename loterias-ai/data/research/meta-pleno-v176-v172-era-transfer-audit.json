@@ -1,0 +1,236 @@
+{
+  "generatedAt": "2026-08-15T21:36:10.233Z",
+  "version": "v176",
+  "gameId": "bonoloto",
+  "family": "V172_ERA_TRANSFER_AUDIT",
+  "methodology": "Architecture-level temporal transfer audit. The v172 code and 25 dual-drop ranking configurations are reused without inventing a new model family, but its training/selection/validation cutoffs are shifted into three earlier chronological folds. Each fold learns false-positive drop behavior and selects its leader only before its later validation eras. This does not erase architecture-level discovery history, but tests whether the mechanism transfers beyond the 2024-2025 cases that motivated it.",
+  "folds": [
+    {
+      "fold": {
+        "id": "A",
+        "dropStart": "2010-01-01",
+        "dropEnd": "2012-12-31",
+        "selectStart": "2013-01-01",
+        "selectEnd": "2014-12-31",
+        "midEnd": "2016-12-31"
+      },
+      "candidateConfigs": 25,
+      "leaderConfig": {
+        "id": "d0.25-div2",
+        "a": 0.25,
+        "b": 2
+      },
+      "twoEUR": {
+        "select": {
+          "n": 418,
+          "h5": 0,
+          "h6": 0,
+          "sumBest": 384,
+          "fullEvents": []
+        },
+        "mid": {
+          "n": 603,
+          "h5": 0,
+          "h6": 0,
+          "sumBest": 569,
+          "fullEvents": []
+        },
+        "late": {
+          "n": 3153,
+          "h5": 0,
+          "h6": 0,
+          "sumBest": 2853,
+          "fullEvents": []
+        }
+      },
+      "fiveEUR": {
+        "select": {
+          "n": 418,
+          "h5": 0,
+          "h6": 0,
+          "sumBest": 404,
+          "fullEvents": []
+        },
+        "mid": {
+          "n": 603,
+          "h5": 0,
+          "h6": 0,
+          "sumBest": 597,
+          "fullEvents": []
+        },
+        "late": {
+          "n": 3153,
+          "h5": 2,
+          "h6": 0,
+          "sumBest": 3014,
+          "fullEvents": []
+        }
+      },
+      "summary": {
+        "leaders": 10,
+        "bothEraFullByBudget": {
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "5": 0,
+          "10": 0,
+          "14": 0
+        }
+      }
+    },
+    {
+      "fold": {
+        "id": "B",
+        "dropStart": "2012-01-01",
+        "dropEnd": "2014-12-31",
+        "selectStart": "2015-01-01",
+        "selectEnd": "2016-12-31",
+        "midEnd": "2018-12-31"
+      },
+      "candidateConfigs": 25,
+      "leaderConfig": {
+        "id": "d0.25-div2",
+        "a": 0.25,
+        "b": 2
+      },
+      "twoEUR": {
+        "select": {
+          "n": 603,
+          "h5": 0,
+          "h6": 0,
+          "sumBest": 574,
+          "fullEvents": []
+        },
+        "mid": {
+          "n": 625,
+          "h5": 0,
+          "h6": 0,
+          "sumBest": 572,
+          "fullEvents": []
+        },
+        "late": {
+          "n": 2528,
+          "h5": 0,
+          "h6": 0,
+          "sumBest": 2360,
+          "fullEvents": []
+        }
+      },
+      "fiveEUR": {
+        "select": {
+          "n": 603,
+          "h5": 0,
+          "h6": 0,
+          "sumBest": 587,
+          "fullEvents": []
+        },
+        "mid": {
+          "n": 625,
+          "h5": 2,
+          "h6": 0,
+          "sumBest": 588,
+          "fullEvents": []
+        },
+        "late": {
+          "n": 2528,
+          "h5": 1,
+          "h6": 0,
+          "sumBest": 2433,
+          "fullEvents": []
+        }
+      },
+      "summary": {
+        "leaders": 10,
+        "bothEraFullByBudget": {
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "5": 0,
+          "10": 0,
+          "14": 0
+        }
+      }
+    },
+    {
+      "fold": {
+        "id": "C",
+        "dropStart": "2014-01-01",
+        "dropEnd": "2016-12-31",
+        "selectStart": "2017-01-01",
+        "selectEnd": "2018-12-31",
+        "midEnd": "2020-12-31"
+      },
+      "candidateConfigs": 25,
+      "leaderConfig": {
+        "id": "d0.25-div2",
+        "a": 0.25,
+        "b": 2
+      },
+      "twoEUR": {
+        "select": {
+          "n": 625,
+          "h5": 0,
+          "h6": 0,
+          "sumBest": 555,
+          "fullEvents": []
+        },
+        "mid": {
+          "n": 567,
+          "h5": 0,
+          "h6": 0,
+          "sumBest": 560,
+          "fullEvents": []
+        },
+        "late": {
+          "n": 1961,
+          "h5": 1,
+          "h6": 0,
+          "sumBest": 1813,
+          "fullEvents": []
+        }
+      },
+      "fiveEUR": {
+        "select": {
+          "n": 625,
+          "h5": 1,
+          "h6": 0,
+          "sumBest": 589,
+          "fullEvents": []
+        },
+        "mid": {
+          "n": 567,
+          "h5": 0,
+          "h6": 0,
+          "sumBest": 584,
+          "fullEvents": []
+        },
+        "late": {
+          "n": 1961,
+          "h5": 2,
+          "h6": 0,
+          "sumBest": 1904,
+          "fullEvents": []
+        }
+      },
+      "summary": {
+        "leaders": 10,
+        "bothEraFullByBudget": {
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "5": 0,
+          "10": 0,
+          "14": 0
+        }
+      }
+    }
+  ],
+  "aggregate": {
+    "twoEURValidationFull": 0,
+    "twoEURValidation5": 1,
+    "foldsWithTwoEURValidationFull": 0
+  },
+  "interpretation": "NO_HISTORICAL_2EUR_FULL_TRANSFER_SIGNAL",
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
