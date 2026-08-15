@@ -1,0 +1,34 @@
+name: Loterias AI MetaPleno Shadow Freeze
+on:
+  push:
+    paths:
+      - 'loterias-ai/data/research/meta-pleno-v2.json'
+      - 'loterias-ai/scripts/freeze-meta-pleno-shadow.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-shadow-freeze.yml'
+permissions:
+  contents: write
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/freeze-meta-pleno-shadow.mjs
+      - name: Persist immutable shadow ledger
+        run: |
+          test -f loterias-ai/data/shadow/meta-pleno-ledger.json || exit 0
+          cp loterias-ai/data/shadow/meta-pleno-ledger.json /tmp/meta-pleno-ledger.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/meta-pleno-ledger.json loterias-ai/data/shadow/meta-pleno-ledger.json
+            git add loterias-ai/data/shadow/meta-pleno-ledger.json
+            git commit -m 'data(loterias-ai): freeze MetaPleno prospective shadow signal' || exit 0
+            git push origin HEAD:main && exit 0
+            sleep $((i*3))
+          done
+          exit 1
