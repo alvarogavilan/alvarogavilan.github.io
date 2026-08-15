@@ -1,0 +1,25 @@
+name: Loterias AI MetaPleno v111 Bonoloto BOCPD Budget8
+on:
+  push:
+    branches:
+      - research/metapleno-v111-bonoloto-bocpd
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v111-bonoloto-bocpd-budget8.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v111-bonoloto-bocpd-budget8.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node loterias-ai/scripts/meta-pleno-v111-bonoloto-bocpd-budget8.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v111-bonoloto-bocpd-budget8
+          path: loterias-ai/data/research/meta-pleno-v111-bonoloto-bocpd-budget8.json
