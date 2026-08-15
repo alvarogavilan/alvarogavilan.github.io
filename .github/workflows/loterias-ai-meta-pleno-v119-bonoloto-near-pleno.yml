@@ -1,0 +1,22 @@
+name: Loterias AI MetaPleno v119 Bonoloto Near Pleno
+on:
+  push:
+    branches:
+      - research/metapleno-v119-bonoloto-near-pleno-audit
+  workflow_dispatch:
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run v119 near-pleno audit
+        run: node loterias-ai/scripts/meta-pleno-v119-bonoloto-near-pleno-audit.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v119-bonoloto-near-pleno
+          path: loterias-ai/data/research/meta-pleno-v119-bonoloto-near-pleno-audit.json
