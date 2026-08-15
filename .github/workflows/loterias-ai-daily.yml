@@ -8,6 +8,7 @@ on:
     paths:
       - 'loterias-ai/scripts/build-daily-state.mjs'
       - 'loterias-ai/scripts/probe-selae.mjs'
+      - 'loterias-ai/scripts/settle-prospective-shadows.mjs'
       - 'loterias-ai/tests/core.test.mjs'
       - 'loterias-ai/tests/evidence.test.mjs'
       - 'loterias-ai/tests/schedule.test.mjs'
@@ -33,20 +34,22 @@ jobs:
         run: node loterias-ai/scripts/probe-selae.mjs
       - name: Build daily operating state
         run: node loterias-ai/scripts/build-daily-state.mjs
+      - name: Settle immutable prospective shadow picks when official archived results exist
+        run: node loterias-ai/scripts/settle-prospective-shadows.mjs
       - name: Validate core and evidence gates
         run: |
           node loterias-ai/tests/core.test.mjs
           node loterias-ai/tests/evidence.test.mjs
           node loterias-ai/tests/schedule.test.mjs
-      - name: Commit refreshed daily state
+      - name: Commit refreshed daily state and prospective settlements
         run: |
           git config user.name "loterias-ai-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add loterias-ai/data/source-probe-latest.json loterias-ai/data/daily/latest.json loterias-ai/data/system-status.json || true
+          git add loterias-ai/data/source-probe-latest.json loterias-ai/data/daily/latest.json loterias-ai/data/system-status.json loterias-ai/data/research/prospective/*.settlement.json || true
           if git diff --cached --quiet; then
             echo "No daily state changes"
           else
-            git commit -m "chore(loterias-ai): refresh daily operating state"
+            git commit -m "chore(loterias-ai): refresh daily state and settle shadows"
             git pull --rebase origin main
             git push origin main
           fi
