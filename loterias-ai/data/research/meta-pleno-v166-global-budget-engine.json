@@ -1,0 +1,317 @@
+{
+  "generatedAt": "2026-08-15T20:47:17.680Z",
+  "version": "v166",
+  "family": "GLOBAL_PORTFOLIO_CAPITAL_EFFICIENCY",
+  "methodology": "Inventory all SHADOW/PROSPECTIVE artifacts, deduplicate by game+target draw, and treat multiple strategies for one draw as alternatives rather than additive stakes. No real-money allocation is activated; monthly scenarios are capacity simulations only.",
+  "policy": {
+    "updatedAt": "2026-08-15",
+    "currency": "EUR",
+    "scope": "ALL_LOTERIAS_AI_GAMES_COMBINED",
+    "operationalMode": "SELECTIVE_ZERO_IS_VALID",
+    "researchMoney": "UNLIMITED_COMPUTE_ZERO_REAL_STAKE",
+    "realMoneyPass": false,
+    "realStakeEUR": 0,
+    "rules": [
+      "The existing 15 EUR per-game/per-draw cap is an exceptional ceiling, never a spending target.",
+      "All games compete for one future global bankroll; budgets are not additive game by game.",
+      "Zero EUR is always a valid and preferred decision when no candidate clears the evidence gate.",
+      "Multiple shadows for the same game and draw are research alternatives and must never be summed as separate real-money allocations.",
+      "No monthly real-money budget is activated until explicitly configured; research remains SHADOW/PAPER/PROSPECTIVE.",
+      "Never chase losses, increase cadence after losses, or convert retrospective significance into real-money approval.",
+      "Prefer fewer high-evidence draws over routine daily participation.",
+      "Any future allocation must be selected before the target result and remain inside both the global monthly cap and the per-game/per-draw hard cap."
+    ],
+    "limits": {
+      "hardMaxPerGameDrawEUR": 15,
+      "preferredPerSelectedGameDrawEUR": 5,
+      "monthlyRealMoneyCapEUR": null,
+      "monthlyCapRequiresExplicitConfiguration": true,
+      "allowAutomaticStakeEscalation": false,
+      "allowDailyMandatoryBetting": false
+    },
+    "researchBudgetScenariosEUR": [
+      25,
+      40,
+      50,
+      60,
+      75,
+      100
+    ],
+    "allocationPriority": [
+      "PROSPECTIVE_FULL_REPLICATION",
+      "PROSPECTIVE_REPEAT_5PLUS",
+      "CLEAN_POST_FREEZE_SIGNIFICANT",
+      "SHADOW_ONLY",
+      "NO_BET"
+    ]
+  },
+  "inventorySummary": {
+    "artifacts": 29,
+    "deduplicatedGameDrawSlots": 13,
+    "duplicateAlternatives": 16,
+    "realMoneyApprovedArtifacts": 0
+  },
+  "drawSlots": [
+    {
+      "key": "quiniela|2018-12-05",
+      "game": "quiniela",
+      "targetDate": "2018-12-05",
+      "alternatives": 1,
+      "evidenceTiers": [
+        "PROSPECTIVE"
+      ],
+      "minTheoreticalStakeEUR": null,
+      "maxTheoreticalStakeEUR": null,
+      "anyRealMoneyPass": false,
+      "files": [
+        "loterias-ai/data/shadow/quiniela-pleno15-model-freeze-2026-08-15.json"
+      ]
+    },
+    {
+      "key": "unknown|2019-02-19",
+      "game": "unknown",
+      "targetDate": "2019-02-19",
+      "alternatives": 1,
+      "evidenceTiers": [
+        "PROSPECTIVE"
+      ],
+      "minTheoreticalStakeEUR": null,
+      "maxTheoreticalStakeEUR": null,
+      "anyRealMoneyPass": false,
+      "files": [
+        "loterias-ai/data/shadow/meta-pleno-repeatability-candidates.json"
+      ]
+    },
+    {
+      "key": "bonoloto|2026-08-15",
+      "game": "bonoloto",
+      "targetDate": "2026-08-15",
+      "alternatives": 5,
+      "evidenceTiers": [
+        "PROSPECTIVE",
+        "SHADOW"
+      ],
+      "minTheoreticalStakeEUR": 1,
+      "maxTheoreticalStakeEUR": 14,
+      "anyRealMoneyPass": false,
+      "files": [
+        "loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-v10-compact.json",
+        "loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-v7.json",
+        "loterias-ai/data/shadow/bonoloto-2026-08-15-v125-c12-budget8.json",
+        "loterias-ai/data/prospective/bonoloto-v135-freeze.json",
+        "loterias-ai/data/prospective/v135-freeze-policy.json"
+      ]
+    },
+    {
+      "key": "unknown|2026-08-15",
+      "game": "unknown",
+      "targetDate": "2026-08-15",
+      "alternatives": 1,
+      "evidenceTiers": [
+        "PROSPECTIVE"
+      ],
+      "minTheoreticalStakeEUR": null,
+      "maxTheoreticalStakeEUR": null,
+      "anyRealMoneyPass": false,
+      "files": [
+        "loterias-ai/data/shadow/prospective-master-scoreboard.json"
+      ]
+    },
+    {
+      "key": "bonoloto|2026-08-16",
+      "game": "bonoloto",
+      "targetDate": "2026-08-16",
+      "alternatives": 4,
+      "evidenceTiers": [
+        "PROSPECTIVE"
+      ],
+      "minTheoreticalStakeEUR": 1.5,
+      "maxTheoreticalStakeEUR": 14,
+      "anyRealMoneyPass": false,
+      "files": [
+        "loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v27.json",
+        "loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v50-repeat5.json",
+        "loterias-ai/data/shadow/bonoloto-v54-budget8-freeze-status.json",
+        "loterias-ai/data/shadow/bonoloto-v91-v58-ensemble-freeze-status.json"
+      ]
+    },
+    {
+      "key": "gordo|2026-08-16",
+      "game": "gordo",
+      "targetDate": "2026-08-16",
+      "alternatives": 1,
+      "evidenceTiers": [
+        "PROSPECTIVE"
+      ],
+      "minTheoreticalStakeEUR": 1.5,
+      "maxTheoreticalStakeEUR": 1.5,
+      "anyRealMoneyPass": false,
+      "files": [
+        "loterias-ai/data/shadow/gordo-2026-08-16-metapleno-v14.json"
+      ]
+    },
+    {
+      "key": "quiniela|2026-08-16",
+      "game": "quiniela",
+      "targetDate": "2026-08-16",
+      "alternatives": 4,
+      "evidenceTiers": [
+        "PROSPECTIVE",
+        "SHADOW"
+      ],
+      "minTheoreticalStakeEUR": 15,
+      "maxTheoreticalStakeEUR": 324,
+      "anyRealMoneyPass": false,
+      "files": [
+        "loterias-ai/data/shadow/quiniela-2026-08-16-jornada-1-combination.json",
+        "loterias-ai/data/shadow/quiniela-current-budget15.json",
+        "loterias-ai/data/shadow/quiniela-current-combination.json",
+        "loterias-ai/data/shadow/quiniela-meta-pleno-ledger.json"
+      ]
+    },
+    {
+      "key": "eurodreams|2026-08-17",
+      "game": "eurodreams",
+      "targetDate": "2026-08-17",
+      "alternatives": 2,
+      "evidenceTiers": [
+        "PROSPECTIVE"
+      ],
+      "minTheoreticalStakeEUR": 2.5,
+      "maxTheoreticalStakeEUR": 2.5,
+      "anyRealMoneyPass": false,
+      "files": [
+        "loterias-ai/data/shadow/eurodreams-2026-08-17-metapleno-v28.json",
+        "loterias-ai/data/shadow/eurodreams-2026-08-17-metapleno-v29-complete.json"
+      ]
+    },
+    {
+      "key": "euromillones|2026-08-18",
+      "game": "euromillones",
+      "targetDate": "2026-08-18",
+      "alternatives": 2,
+      "evidenceTiers": [
+        "PROSPECTIVE"
+      ],
+      "minTheoreticalStakeEUR": 2.5,
+      "maxTheoreticalStakeEUR": 2.5,
+      "anyRealMoneyPass": false,
+      "files": [
+        "loterias-ai/data/shadow/euromillones-2026-08-18-metapleno-v28.json",
+        "loterias-ai/data/shadow/euromillones-2026-08-18-metapleno-v29-complete.json"
+      ]
+    },
+    {
+      "key": "bonoloto|NO_DATE",
+      "game": "bonoloto",
+      "targetDate": null,
+      "alternatives": 1,
+      "evidenceTiers": [
+        "PROSPECTIVE"
+      ],
+      "minTheoreticalStakeEUR": null,
+      "maxTheoreticalStakeEUR": null,
+      "anyRealMoneyPass": false,
+      "files": [
+        "loterias-ai/data/shadow/bonoloto-metapleno-v10-compact-specs.json"
+      ]
+    },
+    {
+      "key": "quiniela|NO_DATE",
+      "game": "quiniela",
+      "targetDate": null,
+      "alternatives": 3,
+      "evidenceTiers": [
+        "PROSPECTIVE"
+      ],
+      "minTheoreticalStakeEUR": 648,
+      "maxTheoreticalStakeEUR": 648,
+      "anyRealMoneyPass": false,
+      "files": [
+        "loterias-ai/data/shadow/quiniela-next-official-program.json",
+        "loterias-ai/data/shadow/quiniela-v43-robust-island-panel.json",
+        "loterias-ai/data/shadow/quiniela-v43-robust-neighbor-panel.json"
+      ]
+    },
+    {
+      "key": "quinigol|NO_DATE",
+      "game": "quinigol",
+      "targetDate": null,
+      "alternatives": 1,
+      "evidenceTiers": [
+        "SHADOW"
+      ],
+      "minTheoreticalStakeEUR": null,
+      "maxTheoreticalStakeEUR": null,
+      "anyRealMoneyPass": false,
+      "files": [
+        "loterias-ai/data/shadow/quinigol-ledger.json"
+      ]
+    },
+    {
+      "key": "unknown|NO_DATE",
+      "game": "unknown",
+      "targetDate": null,
+      "alternatives": 3,
+      "evidenceTiers": [
+        "PROSPECTIVE",
+        "SHADOW"
+      ],
+      "minTheoreticalStakeEUR": 1,
+      "maxTheoreticalStakeEUR": 1,
+      "anyRealMoneyPass": false,
+      "files": [
+        "loterias-ai/data/shadow/meta-pleno-v30-presealed-random-controls.json",
+        "loterias-ai/data/shadow/meta-pleno-v31-prospective-settlements.json",
+        "loterias-ai/data/shadow/metapleno-v28-v29-prospective-audit.json"
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "monthlyBudgetEUR": 25,
+      "maxSelectedDrawsAtPreferredStake": 5,
+      "maxSelectedDrawsAtHardCeiling": 1,
+      "averageWeeklyBudgetEUR": 5.75,
+      "averageDailyBudgetEUR": 0.82
+    },
+    {
+      "monthlyBudgetEUR": 40,
+      "maxSelectedDrawsAtPreferredStake": 8,
+      "maxSelectedDrawsAtHardCeiling": 2,
+      "averageWeeklyBudgetEUR": 9.21,
+      "averageDailyBudgetEUR": 1.31
+    },
+    {
+      "monthlyBudgetEUR": 50,
+      "maxSelectedDrawsAtPreferredStake": 10,
+      "maxSelectedDrawsAtHardCeiling": 3,
+      "averageWeeklyBudgetEUR": 11.51,
+      "averageDailyBudgetEUR": 1.64
+    },
+    {
+      "monthlyBudgetEUR": 60,
+      "maxSelectedDrawsAtPreferredStake": 12,
+      "maxSelectedDrawsAtHardCeiling": 4,
+      "averageWeeklyBudgetEUR": 13.81,
+      "averageDailyBudgetEUR": 1.97
+    },
+    {
+      "monthlyBudgetEUR": 75,
+      "maxSelectedDrawsAtPreferredStake": 15,
+      "maxSelectedDrawsAtHardCeiling": 5,
+      "averageWeeklyBudgetEUR": 17.26,
+      "averageDailyBudgetEUR": 2.46
+    },
+    {
+      "monthlyBudgetEUR": 100,
+      "maxSelectedDrawsAtPreferredStake": 20,
+      "maxSelectedDrawsAtHardCeiling": 6,
+      "averageWeeklyBudgetEUR": 23.01,
+      "averageDailyBudgetEUR": 3.29
+    }
+  ],
+  "operationalDecision": "NO_REAL_MONEY_UNTIL_EXPLICIT_GLOBAL_MONTHLY_CAP_AND_EVIDENCE_GATE",
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
