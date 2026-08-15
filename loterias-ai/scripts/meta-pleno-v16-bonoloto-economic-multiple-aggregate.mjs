@@ -1,0 +1,7 @@
+import fs from 'node:fs';
+const ROOT='loterias-ai/data/research/meta-pleno-v16-shards';
+let all=[];for(const f of fs.readdirSync(ROOT).filter(x=>/^bonoloto-\d+\.json$/.test(x))){all.push(...(JSON.parse(fs.readFileSync(`${ROOT}/${f}`,'utf8')).top||[]))}
+const seen=new Set();all=all.sort((a,b)=>b.finalRank-a.finalRank).filter(x=>{const k=JSON.stringify(x.spec);if(seen.has(k))return false;seen.add(k);return true});
+const finalists=all.slice(0,120);
+const out={generatedAt:new Date().toISOString(),engine:'MetaPleno-v16-bonoloto-economic-multiple',candidatePool:all.length,selectionRule:'Ranked only on 2017-2019 discovery and 2020-2022 validation economics. 2023-2026 is not used for selection and remains research-only, not virgin final holdout.',top:finalists.slice(0,30).map(x=>({spec:x.spec,discovery:x.discovery,validation:x.validation,finalRank:x.finalRank})),realMoneyPass:false};
+fs.mkdirSync('loterias-ai/data/research',{recursive:true});fs.writeFileSync('loterias-ai/data/research/meta-pleno-v16-bonoloto-economic-multiple.json',JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify({candidatePool:out.candidatePool,best:out.top[0]&&{id:out.top[0].spec.id,setSize:out.top[0].spec.setSize,discoveryROI:out.top[0].discovery.roi,validationROI:out.top[0].validation.roi,validationMedian:out.top[0].validation.medianYearROI,positiveYears:out.top[0].validation.positiveYears,high:out.top[0].validation.high}},null,2));
