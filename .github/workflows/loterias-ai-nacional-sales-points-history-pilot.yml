@@ -1,0 +1,39 @@
+name: Loterias AI Nacional Sales Points History Pilot
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/loterias-ai-nacional-sales-points-history-pilot.yml'
+permissions:
+  contents: write
+jobs:
+  enrich:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Pilot 2025
+        run: YEAR=2025 LIMIT=30 node loterias-ai/scripts/enrich-nacional-prize-sales-points.mjs
+      - name: Pilot 2024
+        run: YEAR=2024 LIMIT=30 node loterias-ai/scripts/enrich-nacional-prize-sales-points.mjs
+      - name: Persist historical pilot safely
+        run: |
+          mkdir -p /tmp/nacional-history
+          cp loterias-ai/data/archive/_meta/loteria-nacional-sales-points-2025.json /tmp/nacional-history/2025.json
+          cp loterias-ai/data/archive/_meta/loteria-nacional-sales-points-2024.json /tmp/nacional-history/2024.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/nacional-history/2025.json loterias-ai/data/archive/_meta/loteria-nacional-sales-points-2025.json
+            cp /tmp/nacional-history/2024.json loterias-ai/data/archive/_meta/loteria-nacional-sales-points-2024.json
+            git add loterias-ai/data/archive/_meta/loteria-nacional-sales-points-2025.json loterias-ai/data/archive/_meta/loteria-nacional-sales-points-2024.json
+            git commit -m 'data(loterias-ai): pilot historical Nacional prize sales points' || exit 0
+            git push origin HEAD:main && exit 0
+            sleep $((attempt*3))
+          done
+          exit 1
