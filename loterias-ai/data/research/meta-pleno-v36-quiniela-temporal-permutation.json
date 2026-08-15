@@ -1,0 +1,67 @@
+{
+  "generatedAt": "2026-08-15T14:01:22.714Z",
+  "engine": "MetaPleno-v36-quiniela-temporal-permutation",
+  "purpose": "Permutation test for the frozen Quiniela champion. Predictions are computed from the real chronological history, then real 14-sign outcome vectors are shuffled among evaluation dates within each phase. This preserves the empirical outcome-vector distribution while breaking temporal alignment.",
+  "frozenSpec": {
+    "id": 271818,
+    "lookback": 40,
+    "doubles": 3,
+    "triples": 3,
+    "columns": 216,
+    "mode": "mixed",
+    "w": [
+      -0.89,
+      0.051,
+      0.664,
+      -0.637,
+      0.239,
+      -0.044
+    ]
+  },
+  "historyDraws": 1861,
+  "phaseSizes": {
+    "discovery": 36,
+    "validation": 42,
+    "holdout": 373
+  },
+  "observed": {
+    "discovery": {
+      "draws": 36,
+      "full14": 0,
+      "atLeast13": 0,
+      "meanMaxHits": 8.472222222222221
+    },
+    "validation": {
+      "draws": 42,
+      "full14": 0,
+      "atLeast13": 0,
+      "meanMaxHits": 8.238095238095237
+    },
+    "holdout": {
+      "draws": 373,
+      "full14": 0,
+      "atLeast13": 2,
+      "meanMaxHits": 8.970509383378015
+    }
+  },
+  "permutation": {
+    "runs": 20000,
+    "triplePhaseAtLeastObserved": 20000,
+    "triplePhaseRate": 1,
+    "holdoutAtLeastObservedRate": 1,
+    "totalFullAtLeastObservedRate": 1,
+    "totalFullHistogram": {
+      "0": 13237,
+      "1": 5845,
+      "2": 859,
+      "3": 58,
+      "4": 1
+    }
+  },
+  "limitations": [
+    "The candidate itself was selected from a large search, so this frozen-candidate permutation p-value is not selection-aware by itself.",
+    "Phase construction follows the original mass-search split and sampling rules.",
+    "Prospective post-2026-08-16 draws remain decisive."
+  ],
+  "realMoneyPass": false
+}
