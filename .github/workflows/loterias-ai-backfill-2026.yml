@@ -10,6 +10,10 @@ on:
         description: 'Optional gameId to refresh (blank = all core games)'
         required: false
         default: ''
+      start_date:
+        description: 'Optional YYYY-MM-DD start date (blank = 2026-01-01)'
+        required: false
+        default: ''
       end_date:
         description: 'Optional YYYY-MM-DD end date (blank = today)'
         required: false
@@ -21,6 +25,7 @@ jobs:
       contents: write
     env:
       LOTERIAS_BACKFILL_GAME: ${{ github.event_name == 'workflow_dispatch' && inputs.game || (github.event_name == 'push' && 'bonoloto') || '' }}
+      LOTERIAS_BACKFILL_START: ${{ github.event_name == 'workflow_dispatch' && inputs.start_date || (github.event_name == 'push' && '2026-08-14') || '' }}
       LOTERIAS_BACKFILL_END: ${{ github.event_name == 'workflow_dispatch' && inputs.end_date || '' }}
     steps:
       - uses: actions/checkout@v4
@@ -34,7 +39,7 @@ jobs:
           node - <<'NODE'
           const fs=require('fs');
           const s=JSON.parse(fs.readFileSync('loterias-ai/data/archive/backfill-2026-summary.json','utf8'));
-          for(const [g,x] of Object.entries(s.games)){if(!x.validatedDraws) throw new Error(g+' produced zero draws');}
+          for(const [g,x] of Object.entries(s.games)){if(!x.validatedDraws) throw new Error(g+' produced zero preserved/fetched draws');}
           console.log(s.games);
           NODE
       - name: Persist archive partitions on current branch
