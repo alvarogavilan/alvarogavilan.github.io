@@ -1,0 +1,23 @@
+name: Loterias AI MetaPleno v107 Audit v106 Repeat5
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v107-audit-v106-repeat5-matched-null.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v107-audit-v106-repeat5.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node loterias-ai/scripts/meta-pleno-v107-audit-v106-repeat5-matched-null.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v107-audit-v106-repeat5
+          path: loterias-ai/data/research/meta-pleno-v107-audit-v106-repeat5-matched-null.json
