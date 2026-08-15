@@ -1,0 +1,31 @@
+name: Loterias AI Nacional Sales Point Analytics
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/build-nacional-sales-point-analytics.mjs'
+      - 'loterias-ai/data/archive/_meta/loteria-nacional-sales-points-*.json'
+      - '.github/workflows/loterias-ai-nacional-sales-point-analytics.yml'
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/build-nacional-sales-point-analytics.mjs
+      - name: Persist safely
+        run: |
+          cp loterias-ai/data/research/nacional-sales-point-analytics.json /tmp/nacional-geo.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/research
+          cp /tmp/nacional-geo.json loterias-ai/data/research/nacional-sales-point-analytics.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/nacional-sales-point-analytics.json
+          git commit -m 'data(loterias-ai): persist Nacional geography analytics' || exit 0
+          git push origin HEAD:main
