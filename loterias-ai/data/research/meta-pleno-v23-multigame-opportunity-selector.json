@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-15T13:10:55.162Z",
+  "generatedAt": "2026-08-15T13:12:17.554Z",
   "engine": "MetaPleno-v23-multigame-opportunity-selector",
   "purpose": "Research prioritization across games. This file cannot authorize real-money betting.",
   "safeguards": {
@@ -9,6 +9,35 @@
     "noPlayAllowed": true
   },
   "ranking": [
+    {
+      "game": "gordo-primitiva",
+      "unitCostEUR": 1.5,
+      "researchScore": 13.7227,
+      "evidence": [
+        {
+          "label": "pairTripleNovelty",
+          "full": 0,
+          "near": 0,
+          "meanHits": 0.48878923766816146,
+          "randomMeanHits": 0.4654349775784755,
+          "source": "novelty-pair-triple-search.json"
+        },
+        {
+          "label": "gordoV14Audited",
+          "roiNet": 0.14768959435626106,
+          "highEvents": 1,
+          "pROI": 0.004099795010249488,
+          "pHigh": 0.014149292535373231,
+          "source": "gordo-v14-complete-ticket-audit.json + gordo-v14-matched-cost-baseline.json"
+        }
+      ],
+      "rationale": [
+        "audited v14 ROI=0.14768959435626106",
+        "audited v14 highEvents=1",
+        "matched-cost pROI=0.004099795010249488",
+        "matched-cost pHigh=0.014149292535373231"
+      ]
+    },
     {
       "game": "eurodreams",
       "unitCostEUR": 2.5,
@@ -67,22 +96,6 @@
       ]
     },
     {
-      "game": "gordo-primitiva",
-      "unitCostEUR": 1.5,
-      "researchScore": 1.1452,
-      "evidence": [
-        {
-          "label": "pairTripleNovelty",
-          "full": 0,
-          "near": 0,
-          "meanHits": 0.48878923766816146,
-          "randomMeanHits": 0.4654349775784755,
-          "source": "novelty-pair-triple-search.json"
-        }
-      ],
-      "rationale": []
-    },
-    {
       "game": "euromillones",
       "unitCostEUR": 2.5,
       "researchScore": 0.0497,
@@ -99,7 +112,7 @@
       "rationale": []
     }
   ],
-  "researchPriority": "eurodreams",
+  "researchPriority": "gordo-primitiva",
   "decision": "RESEARCH_ONLY",
   "note": "Scores compare heterogeneous research evidence and cost only to allocate compute. They are not probabilities of winning and must never be shown as such."
 }
