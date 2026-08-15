@@ -1,0 +1,55 @@
+{
+  "generatedAt": "2026-08-15T14:19:17.774Z",
+  "engine": "MetaPleno-v43-quiniela-selection-null-shard",
+  "replicate": 7,
+  "candidates": 50000,
+  "originalUniverseCutoff": "2017-08-13",
+  "phaseSizes": {
+    "discovery": 36,
+    "validation": 42,
+    "holdout": 255
+  },
+  "champion": {
+    "spec": {
+      "id": 11275,
+      "lookback": 80,
+      "doubles": 6,
+      "triples": 3,
+      "columns": 1728,
+      "mode": "uncertainty",
+      "w": [
+        0.281,
+        -0.18,
+        -0.25,
+        0.642,
+        0.856,
+        -0.988
+      ]
+    },
+    "discovery": {
+      "draws": 36,
+      "full14": 0,
+      "atLeast13": 2,
+      "atLeast12": 2,
+      "meanMaxHits": 9.63888888888889,
+      "efficiency": 17183.941254200203
+    },
+    "validation": {
+      "draws": 42,
+      "full14": 2,
+      "atLeast13": 2,
+      "atLeast12": 4,
+      "meanMaxHits": 9.761904761904763,
+      "efficiency": 1718653.222477272
+    },
+    "holdout": {
+      "draws": 255,
+      "full14": 2,
+      "atLeast13": 4,
+      "atLeast12": 21,
+      "meanMaxHits": 9.454901960784314,
+      "efficiency": 1737112.292040256
+    }
+  },
+  "nullPolicy": "Real outcome vectors permuted independently within discovery, validation and holdout. Search/ranking pipeline then rerun on permuted discovery+validation before opening permuted holdout."
+}

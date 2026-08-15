@@ -1,0 +1,475 @@
+{
+  "generatedAt": "2026-08-15T14:19:38.673Z",
+  "engine": "MetaPleno-v43-quiniela-selection-aware-null",
+  "purpose": "Empirical stress test of selection bias. Each null replicate permutes real outcome vectors within the original discovery/validation/holdout phases, reruns a 50k-candidate search on discovery+validation, freezes that null champion, then opens the permuted holdout. This is one-tenth the original 500k candidate pool per replicate, so failure of null champions is suggestive but not a full correction for the original search.",
+  "replicates": 10,
+  "candidatesPerReplicate": 50000,
+  "totalNullCandidatesSearched": 500000,
+  "observedFrozenChampionHoldout": {
+    "draws": 255,
+    "full14": 1,
+    "atLeast13": 2,
+    "meanMaxHits": 8.862745098039216
+  },
+  "nullChampionSummary": {
+    "maxFull14": 2,
+    "maxAtLeast13": 11,
+    "maxAtLeast12": 36,
+    "maxMeanMaxHits": 9.694117647058823,
+    "meanFull14": 1.1,
+    "meanMeanMaxHits": 9.349411764705883
+  },
+  "empiricalRates": {
+    "holdoutFull14AtLeastObserved": 0.7,
+    "holdoutMeanAtLeastObserved": 0.9,
+    "holdoutJointAtLeastObserved": 0,
+    "counts": {
+      "geFull": 7,
+      "geMean": 9,
+      "geJoint": 0
+    }
+  },
+  "replicateChampions": [
+    {
+      "replicate": 0,
+      "spec": {
+        "id": 32388,
+        "lookback": 80,
+        "doubles": 6,
+        "triples": 3,
+        "columns": 1728,
+        "mode": "confidence",
+        "w": [
+          1,
+          0.882,
+          -0.38,
+          0.585,
+          0.879,
+          0.398
+        ]
+      },
+      "discovery": {
+        "draws": 36,
+        "full14": 1,
+        "atLeast13": 2,
+        "atLeast12": 4,
+        "meanMaxHits": 9.61111111111111,
+        "efficiency": 868003.6392276929
+      },
+      "validation": {
+        "draws": 42,
+        "full14": 2,
+        "atLeast13": 2,
+        "atLeast12": 5,
+        "meanMaxHits": 9.5,
+        "efficiency": 1718738.265155397
+      },
+      "holdout": {
+        "draws": 255,
+        "full14": 2,
+        "atLeast13": 7,
+        "atLeast12": 26,
+        "meanMaxHits": 9.596078431372549,
+        "efficiency": 1763057.1159473076
+      }
+    },
+    {
+      "replicate": 1,
+      "spec": {
+        "id": 49178,
+        "lookback": 120,
+        "doubles": 3,
+        "triples": 3,
+        "columns": 216,
+        "mode": "uncertainty",
+        "w": [
+          0.069,
+          0.902,
+          -0.418,
+          0.488,
+          0.384,
+          0.11
+        ]
+      },
+      "discovery": {
+        "draws": 36,
+        "full14": 1,
+        "atLeast13": 1,
+        "atLeast12": 1,
+        "meanMaxHits": 8.555555555555555,
+        "efficiency": 1152879.0150939252
+      },
+      "validation": {
+        "draws": 42,
+        "full14": 2,
+        "atLeast13": 2,
+        "atLeast12": 2,
+        "meanMaxHits": 8.547619047619047,
+        "efficiency": 2305757.052793341
+      },
+      "holdout": {
+        "draws": 255,
+        "full14": 0,
+        "atLeast13": 0,
+        "atLeast12": 3,
+        "meanMaxHits": 8.156862745098039,
+        "efficiency": 343.3361037262143
+      }
+    },
+    {
+      "replicate": 2,
+      "spec": {
+        "id": 42617,
+        "lookback": 80,
+        "doubles": 6,
+        "triples": 3,
+        "columns": 1728,
+        "mode": "confidence",
+        "w": [
+          -0.815,
+          -0.375,
+          0.203,
+          -0.384,
+          0.695,
+          -0.904
+        ]
+      },
+      "discovery": {
+        "draws": 36,
+        "full14": 0,
+        "atLeast13": 2,
+        "atLeast12": 4,
+        "meanMaxHits": 9.75,
+        "efficiency": 17354.080619946562
+      },
+      "validation": {
+        "draws": 42,
+        "full14": 2,
+        "atLeast13": 3,
+        "atLeast12": 5,
+        "meanMaxHits": 9.785714285714286,
+        "efficiency": 1727244.7851638936
+      },
+      "holdout": {
+        "draws": 255,
+        "full14": 0,
+        "atLeast13": 7,
+        "atLeast12": 26,
+        "meanMaxHits": 9.549019607843137,
+        "efficiency": 61757.971099603434
+      }
+    },
+    {
+      "replicate": 3,
+      "spec": {
+        "id": 44752,
+        "lookback": 40,
+        "doubles": 5,
+        "triples": 3,
+        "columns": 864,
+        "mode": "uncertainty",
+        "w": [
+          0.355,
+          0.014,
+          -0.52,
+          0.056,
+          0.535,
+          0.026
+        ]
+      },
+      "discovery": {
+        "draws": 36,
+        "full14": 1,
+        "atLeast13": 1,
+        "atLeast12": 2,
+        "meanMaxHits": 9.222222222222221,
+        "efficiency": 939149.0100850165
+      },
+      "validation": {
+        "draws": 42,
+        "full14": 2,
+        "atLeast13": 3,
+        "atLeast12": 6,
+        "meanMaxHits": 9.880952380952381,
+        "efficiency": 1887779.8128042023
+      },
+      "holdout": {
+        "draws": 255,
+        "full14": 1,
+        "atLeast13": 7,
+        "atLeast12": 27,
+        "meanMaxHits": 9.392156862745098,
+        "efficiency": 997253.1236316448
+      }
+    },
+    {
+      "replicate": 4,
+      "spec": {
+        "id": 23536,
+        "lookback": 250,
+        "doubles": 6,
+        "triples": 3,
+        "columns": 1728,
+        "mode": "mixed",
+        "w": [
+          0.197,
+          0.961,
+          0.518,
+          0.559,
+          0.562,
+          0.433
+        ]
+      },
+      "discovery": {
+        "draws": 36,
+        "full14": 0,
+        "atLeast13": 3,
+        "atLeast12": 4,
+        "meanMaxHits": 9.805555555555555,
+        "efficiency": 25860.581050000746
+      },
+      "validation": {
+        "draws": 42,
+        "full14": 2,
+        "atLeast13": 2,
+        "atLeast12": 5,
+        "meanMaxHits": 9.928571428571429,
+        "efficiency": 1718738.301611807
+      },
+      "holdout": {
+        "draws": 255,
+        "full14": 1,
+        "atLeast13": 8,
+        "atLeast12": 30,
+        "meanMaxHits": 9.615686274509804,
+        "efficiency": 921254.3027253164
+      }
+    },
+    {
+      "replicate": 5,
+      "spec": {
+        "id": 42978,
+        "lookback": 250,
+        "doubles": 6,
+        "triples": 3,
+        "columns": 1728,
+        "mode": "mixed",
+        "w": [
+          0.86,
+          -0.438,
+          -0.446,
+          -0.183,
+          0.015,
+          -0.863
+        ]
+      },
+      "discovery": {
+        "draws": 36,
+        "full14": 1,
+        "atLeast13": 2,
+        "atLeast12": 4,
+        "meanMaxHits": 9.86111111111111,
+        "efficiency": 868003.6604939322
+      },
+      "validation": {
+        "draws": 42,
+        "full14": 2,
+        "atLeast13": 4,
+        "atLeast12": 6,
+        "meanMaxHits": 9.928571428571429,
+        "efficiency": 1735836.3579772958
+      },
+      "holdout": {
+        "draws": 255,
+        "full14": 2,
+        "atLeast13": 8,
+        "atLeast12": 36,
+        "meanMaxHits": 9.670588235294117,
+        "efficiency": 1772414.2675601265
+      }
+    },
+    {
+      "replicate": 6,
+      "spec": {
+        "id": 46743,
+        "lookback": 120,
+        "doubles": 6,
+        "triples": 3,
+        "columns": 1728,
+        "mode": "mixed",
+        "w": [
+          -0.888,
+          -0.001,
+          0.929,
+          -0.902,
+          0.907,
+          0.07
+        ]
+      },
+      "discovery": {
+        "draws": 36,
+        "full14": 2,
+        "atLeast13": 2,
+        "atLeast12": 4,
+        "meanMaxHits": 9.333333333333334,
+        "efficiency": 1718653.1860208616
+      },
+      "validation": {
+        "draws": 42,
+        "full14": 2,
+        "atLeast13": 3,
+        "atLeast12": 4,
+        "meanMaxHits": 9.928571428571429,
+        "efficiency": 1727159.732358988
+      },
+      "holdout": {
+        "draws": 255,
+        "full14": 2,
+        "atLeast13": 6,
+        "atLeast12": 36,
+        "meanMaxHits": 9.694117647058823,
+        "efficiency": 1755401.2781532083
+      }
+    },
+    {
+      "replicate": 7,
+      "spec": {
+        "id": 11275,
+        "lookback": 80,
+        "doubles": 6,
+        "triples": 3,
+        "columns": 1728,
+        "mode": "uncertainty",
+        "w": [
+          0.281,
+          -0.18,
+          -0.25,
+          0.642,
+          0.856,
+          -0.988
+        ]
+      },
+      "discovery": {
+        "draws": 36,
+        "full14": 0,
+        "atLeast13": 2,
+        "atLeast12": 2,
+        "meanMaxHits": 9.63888888888889,
+        "efficiency": 17183.941254200203
+      },
+      "validation": {
+        "draws": 42,
+        "full14": 2,
+        "atLeast13": 2,
+        "atLeast12": 4,
+        "meanMaxHits": 9.761904761904763,
+        "efficiency": 1718653.222477272
+      },
+      "holdout": {
+        "draws": 255,
+        "full14": 2,
+        "atLeast13": 4,
+        "atLeast12": 21,
+        "meanMaxHits": 9.454901960784314,
+        "efficiency": 1737112.292040256
+      }
+    },
+    {
+      "replicate": 8,
+      "spec": {
+        "id": 11265,
+        "lookback": 120,
+        "doubles": 4,
+        "triples": 3,
+        "columns": 432,
+        "mode": "uncertainty",
+        "w": [
+          0.063,
+          -0.857,
+          -0.221,
+          -0.665,
+          0.553,
+          -0.667
+        ]
+      },
+      "discovery": {
+        "draws": 36,
+        "full14": 0,
+        "atLeast13": 2,
+        "atLeast12": 2,
+        "meanMaxHits": 9,
+        "efficiency": 20701.41208648886
+      },
+      "validation": {
+        "draws": 42,
+        "full14": 2,
+        "atLeast13": 3,
+        "atLeast12": 5,
+        "meanMaxHits": 9.285714285714286,
+        "efficiency": 2080810.0859048571
+      },
+      "holdout": {
+        "draws": 255,
+        "full14": 1,
+        "atLeast13": 4,
+        "atLeast12": 10,
+        "meanMaxHits": 8.949019607843137,
+        "efficiency": 1066793.484833308
+      }
+    },
+    {
+      "replicate": 9,
+      "spec": {
+        "id": 20546,
+        "lookback": 80,
+        "doubles": 6,
+        "triples": 3,
+        "columns": 1728,
+        "mode": "confidence",
+        "w": [
+          0.499,
+          0.002,
+          -0.252,
+          0.523,
+          0.768,
+          -0.257
+        ]
+      },
+      "discovery": {
+        "draws": 36,
+        "full14": 1,
+        "atLeast13": 1,
+        "atLeast12": 2,
+        "meanMaxHits": 9.666666666666666,
+        "efficiency": 859327.018335216
+      },
+      "validation": {
+        "draws": 42,
+        "full14": 2,
+        "atLeast13": 4,
+        "atLeast12": 6,
+        "meanMaxHits": 9.571428571428571,
+        "efficiency": 1735836.3275969538
+      },
+      "holdout": {
+        "draws": 255,
+        "full14": 0,
+        "atLeast13": 11,
+        "atLeast12": 30,
+        "meanMaxHits": 9.415686274509804,
+        "efficiency": 96124.20240267103
+      }
+    }
+  ],
+  "supportingModernPermutation": {
+    "jointRate": 0.0007
+  },
+  "limitations": [
+    "Each null search uses 50k candidates versus 500k in the original search.",
+    "Only a modest number of independent null searches can be afforded in this diagnostic.",
+    "Candidate systems are highly dependent; empirical search replication is preferred over multiplying independent probabilities.",
+    "Prospective post-freeze outcomes remain decisive."
+  ],
+  "classification": "NULL_SEARCH_DID_NOT_REPRODUCE_OBSERVED_HOLDOUT_AT_50K_SCALE",
+  "realMoneyPass": false
+}
