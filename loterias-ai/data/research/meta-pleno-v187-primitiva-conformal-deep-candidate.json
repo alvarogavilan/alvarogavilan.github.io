@@ -1,0 +1,150 @@
+{
+  "generatedAt": "2026-08-15T23:26:05.638Z",
+  "version": "v187",
+  "gameId": "primitiva",
+  "family": "C46_SCORE_CONFORMAL_DEEP_CANDIDATE",
+  "calibration": "2020-01-01..2022-12-31 winner-score quantiles only",
+  "evaluation": "2023-01-01..latest",
+  "alphas": [
+    0.05,
+    0.1,
+    0.2,
+    0.3
+  ],
+  "thresholds": [
+    {
+      "alpha": 0.05,
+      "scoreThreshold": 0.39279540790024564
+    },
+    {
+      "alpha": 0.1,
+      "scoreThreshold": 0.4283646922140254
+    },
+    {
+      "alpha": 0.2,
+      "scoreThreshold": 0.472350417705216
+    },
+    {
+      "alpha": 0.3,
+      "scoreThreshold": 0.5056755192501097
+    }
+  ],
+  "evals": [
+    {
+      "alpha": 0.05,
+      "scoreThreshold": 0.39279540790024564,
+      "draws": 564,
+      "avgSetSize": 45.95035460992908,
+      "avgSetFraction": 0.9377623389781444,
+      "omittedWinners": 2792,
+      "omittedCovered": 2573,
+      "omittedCoverage": 0.9215616045845272,
+      "liftVsMatchedSize": 0.9827240509452845,
+      "allWinnerCoverage": 0.9352836879432624,
+      "targetDetails": [
+        {
+          "date": "2024-01-11",
+          "missing": 22,
+          "rank": 29,
+          "inSet": true,
+          "setSize": 46
+        },
+        {
+          "date": "2026-07-25",
+          "missing": 38,
+          "rank": 20,
+          "inSet": true,
+          "setSize": 47
+        }
+      ]
+    },
+    {
+      "alpha": 0.1,
+      "scoreThreshold": 0.4283646922140254,
+      "draws": 564,
+      "avgSetSize": 43.051418439716315,
+      "avgSetFraction": 0.8786003763207412,
+      "omittedWinners": 2792,
+      "omittedCovered": 2365,
+      "omittedCoverage": 0.8470630372492837,
+      "liftVsMatchedSize": 0.9641050243985503,
+      "allWinnerCoverage": 0.8738179669030733,
+      "targetDetails": [
+        {
+          "date": "2024-01-11",
+          "missing": 22,
+          "rank": 29,
+          "inSet": true,
+          "setSize": 42
+        },
+        {
+          "date": "2026-07-25",
+          "missing": 38,
+          "rank": 20,
+          "inSet": true,
+          "setSize": 44
+        }
+      ]
+    },
+    {
+      "alpha": 0.2,
+      "scoreThreshold": 0.472350417705216,
+      "draws": 564,
+      "avgSetSize": 37.843971631205676,
+      "avgSetFraction": 0.7723259516572587,
+      "omittedWinners": 2792,
+      "omittedCovered": 2021,
+      "omittedCoverage": 0.7238538681948424,
+      "liftVsMatchedSize": 0.9372388259666727,
+      "allWinnerCoverage": 0.7721631205673759,
+      "targetDetails": [
+        {
+          "date": "2024-01-11",
+          "missing": 22,
+          "rank": 29,
+          "inSet": true,
+          "setSize": 36
+        },
+        {
+          "date": "2026-07-25",
+          "missing": 38,
+          "rank": 20,
+          "inSet": true,
+          "setSize": 40
+        }
+      ]
+    },
+    {
+      "alpha": 0.3,
+      "scoreThreshold": 0.5056755192501097,
+      "draws": 564,
+      "avgSetSize": 32.290780141843975,
+      "avgSetFraction": 0.6589955130988566,
+      "omittedWinners": 2792,
+      "omittedCovered": 1635,
+      "omittedCoverage": 0.5856017191977078,
+      "liftVsMatchedSize": 0.8886277790329371,
+      "allWinnerCoverage": 0.658096926713948,
+      "targetDetails": [
+        {
+          "date": "2024-01-11",
+          "missing": 22,
+          "rank": 29,
+          "inSet": true,
+          "setSize": 34
+        },
+        {
+          "date": "2026-07-25",
+          "missing": 38,
+          "rank": 20,
+          "inSet": true,
+          "setSize": 31
+        }
+      ]
+    }
+  ],
+  "methodology": "Build split-conformal-style score thresholds from pre-2023 true-winner scores under the frozen c46 feature score. Evaluate whether winners omitted from c46 top8 are retained in dynamic candidate sets more often than a matched-size random set. This is exploratory architecture and cannot validate the known 2024/2026 events by itself.",
+  "decision": "RESEARCH_ONLY_COMPARE_MATCHED_SIZE_LIFT",
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
