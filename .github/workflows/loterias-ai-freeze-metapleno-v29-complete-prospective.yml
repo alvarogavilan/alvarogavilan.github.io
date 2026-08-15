@@ -1,0 +1,36 @@
+name: Loterias AI Freeze MetaPleno v29 Complete Prospective
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/freeze-metapleno-v29-complete-prospective.mjs'
+      - '.github/workflows/loterias-ai-freeze-metapleno-v29-complete-prospective.yml'
+permissions:
+  contents: write
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/freeze-metapleno-v29-complete-prospective.mjs
+      - name: Persist safely
+        run: |
+          mkdir -p /tmp/v29
+          cp loterias-ai/data/shadow/*-metapleno-v29-complete.json /tmp/v29/
+          cp loterias-ai/data/shadow/metapleno-v28-v29-prospective-audit.json /tmp/v29/
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/v29/*.json loterias-ai/data/shadow/
+            git add loterias-ai/data/shadow/*-metapleno-v29-complete.json loterias-ai/data/shadow/metapleno-v28-v29-prospective-audit.json
+            git commit -m 'data(loterias-ai): freeze MetaPleno v29 complete prospective tickets' || exit 0
+            git push origin HEAD:main && exit 0
+            sleep $((i*2))
+          done
+          exit 1
