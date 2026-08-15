@@ -1,0 +1,28 @@
+name: Loterias AI MetaPleno v188 Primitiva Compressed Rescue Overlay
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v188-primitiva-compressed-rescue-overlay.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v188-primitiva-compressed-rescue-overlay.yml'
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run v188
+        run: node loterias-ai/scripts/meta-pleno-v188-primitiva-compressed-rescue-overlay.mjs
+      - name: Persist v188
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v188-primitiva-compressed-rescue-overlay.json
+          git diff --cached --quiet || git commit -m "research(loterias-ai): persist v188 compressed Primitiva rescue overlay"
+          git pull --rebase origin main
+          git push
