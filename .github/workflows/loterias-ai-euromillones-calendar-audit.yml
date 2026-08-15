@@ -1,0 +1,31 @@
+name: Loterias AI Euromillones Calendar Audit
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/audit-euromillones-calendar-anomalies.mjs'
+      - '.github/workflows/loterias-ai-euromillones-calendar-audit.yml'
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/audit-euromillones-calendar-anomalies.mjs
+      - name: Persist audit safely
+        run: |
+          cp loterias-ai/data/audits/euromillones-calendar-anomalies.json /tmp/euro-calendar.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/audits
+          cp /tmp/euro-calendar.json loterias-ai/data/audits/euromillones-calendar-anomalies.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/audits/euromillones-calendar-anomalies.json
+          git commit -m 'data(loterias-ai): persist Euromillones calendar audit' || exit 0
+          git push origin HEAD:main
