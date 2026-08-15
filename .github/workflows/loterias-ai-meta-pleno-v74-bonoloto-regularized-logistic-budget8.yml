@@ -1,0 +1,25 @@
+name: Loterias AI MetaPleno v74 Bonoloto Regularized Logistic Budget8
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v74-bonoloto-regularized-logistic-budget8.mjs'
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/meta-pleno-v74-bonoloto-regularized-logistic-budget8.mjs
+      - name: Persist result safely
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v74-bonoloto-regularized-logistic-budget8.json
+          git commit -m "data(loterias-ai): persist v74 regularized logistic Budget8" || exit 0
+          for i in 1 2 3 4 5; do git pull --rebase origin main && git push origin HEAD:main && exit 0; sleep $((i*3)); done
+          exit 1
