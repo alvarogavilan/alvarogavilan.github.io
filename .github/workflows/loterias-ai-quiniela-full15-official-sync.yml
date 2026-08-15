@@ -6,6 +6,7 @@ on:
   push:
     paths:
       - 'loterias-ai/scripts/quiniela-prospective-full15-official-sync-v2.mjs'
+      - 'loterias-ai/scripts/quiniela-export-current-combination.mjs'
       - 'loterias-ai/data/research/meta-pleno-v41-quiniela-pleno15-coverage-audit.json'
       - '.github/workflows/loterias-ai-quiniela-full15-official-sync.yml'
 permissions:
@@ -26,12 +27,16 @@ jobs:
         run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils tesseract-ocr tesseract-ocr-spa
       - name: Sync official upcoming jornada and freeze Full15 if possible
         run: node loterias-ai/scripts/quiniela-prospective-full15-official-sync-v2.mjs
+      - name: Export human-readable jornada combination
+        run: node loterias-ai/scripts/quiniela-export-current-combination.mjs
       - name: Persist official evidence safely
         run: |
           mkdir -p /tmp/loterias-full15/loterias-ai/data/official /tmp/loterias-full15/loterias-ai/data/shadow
           cp -f loterias-ai/data/official/quiniela-upcoming-sync.json /tmp/loterias-full15/loterias-ai/data/official/ || true
           cp -f loterias-ai/data/official/quiniela-upcoming.json /tmp/loterias-full15/loterias-ai/data/official/ || true
           cp -f loterias-ai/data/shadow/quiniela-meta-pleno-ledger.json /tmp/loterias-full15/loterias-ai/data/shadow/ || true
+          cp -f loterias-ai/data/shadow/quiniela-current-combination.json /tmp/loterias-full15/loterias-ai/data/shadow/ || true
+          cp -f loterias-ai/data/shadow/quiniela-*-jornada-*-combination.json /tmp/loterias-full15/loterias-ai/data/shadow/ 2>/dev/null || true
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           for i in 1 2 3 4 5; do
@@ -40,8 +45,8 @@ jobs:
             mkdir -p loterias-ai/data/official loterias-ai/data/shadow
             cp -f /tmp/loterias-full15/loterias-ai/data/official/* loterias-ai/data/official/ 2>/dev/null || true
             cp -f /tmp/loterias-full15/loterias-ai/data/shadow/* loterias-ai/data/shadow/ 2>/dev/null || true
-            git add loterias-ai/data/official loterias-ai/data/shadow/quiniela-meta-pleno-ledger.json
-            git commit -m 'data(loterias-ai): sync official Quiniela prospective Full15' || exit 0
+            git add loterias-ai/data/official loterias-ai/data/shadow/quiniela-meta-pleno-ledger.json loterias-ai/data/shadow/quiniela-current-combination.json loterias-ai/data/shadow/quiniela-*-jornada-*-combination.json
+            git commit -m 'data(loterias-ai): sync official Quiniela prospective Full15 and jornada combination' || exit 0
             git push origin HEAD:main && exit 0
             sleep $((i*3))
           done
