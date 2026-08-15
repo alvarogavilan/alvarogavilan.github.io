@@ -1,0 +1,30 @@
+name: Loterias AI Freeze Gordo v14 Shadow
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/freeze-gordo-v14-shadow.mjs'
+      - '.github/workflows/loterias-ai-freeze-gordo-v14-shadow.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: TARGET_DATE=2026-08-16 node loterias-ai/scripts/freeze-gordo-v14-shadow.mjs
+      - name: Persist safely
+        run: |
+          cp loterias-ai/data/shadow/gordo-2026-08-16-metapleno-v14.json /tmp/gordo-shadow.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch origin main
+          git reset --hard origin/main
+          cp /tmp/gordo-shadow.json loterias-ai/data/shadow/gordo-2026-08-16-metapleno-v14.json
+          git add loterias-ai/data/shadow/gordo-2026-08-16-metapleno-v14.json
+          git commit -m 'data(loterias-ai): freeze Gordo v14 shadow 2026-08-16' || exit 0
+          for i in 1 2 3 4 5; do git pull --rebase origin main && git push origin HEAD:main && exit 0; sleep $((i*3)); done
+          exit 1
