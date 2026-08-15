@@ -9,6 +9,7 @@ on:
       - 'loterias-ai/scripts/meta-pleno-v54-bonoloto-budget8-prospective-freeze.mjs'
       - 'loterias-ai/scripts/meta-pleno-v91-bonoloto-v58-ensemble-prospective-freeze.mjs'
       - 'loterias-ai/scripts/evaluate-bonoloto-2026-08-15-metapleno-v10.mjs'
+      - 'loterias-ai/scripts/prospective-master-scoreboard.mjs'
       - '.github/workflows/loterias-ai-bonoloto-official-rss-sync.yml'
 permissions:
   contents: write
@@ -32,11 +33,14 @@ jobs:
         run: node loterias-ai/scripts/meta-pleno-v54-bonoloto-budget8-prospective-freeze.mjs
       - name: Evaluate v91 v58 ensemble Budget8 prospective freeze against refreshed archive
         run: node loterias-ai/scripts/meta-pleno-v91-bonoloto-v58-ensemble-prospective-freeze.mjs
+      - name: Refresh prospective master scoreboard
+        run: node loterias-ai/scripts/prospective-master-scoreboard.mjs
       - name: Persist official archive and prospective state safely
         run: |
           YEAR=$(date -u +%Y)
           mkdir -p /tmp/bono-official /tmp/bono-shadow
           cp loterias-ai/data/official/bonoloto-rss-sync-status.json /tmp/bono-official/status.json
+          cp loterias-ai/data/shadow/prospective-master-scoreboard.json /tmp/bono-shadow/master-scoreboard.json
           if [ -f loterias-ai/data/archive/bonoloto/${YEAR}.json ]; then cp loterias-ai/data/archive/bonoloto/${YEAR}.json /tmp/bono-official/year.json; fi
           cp loterias-ai/data/shadow/bonoloto-v54-budget8-freeze-status.json /tmp/bono-shadow/v54-status.json
           cp loterias-ai/data/shadow/bonoloto-v91-v58-ensemble-freeze-status.json /tmp/bono-shadow/v91-status.json
@@ -50,7 +54,8 @@ jobs:
             git reset --hard origin/main
             mkdir -p loterias-ai/data/official loterias-ai/data/archive/bonoloto loterias-ai/data/shadow
             cp /tmp/bono-official/status.json loterias-ai/data/official/bonoloto-rss-sync-status.json
-            git add loterias-ai/data/official/bonoloto-rss-sync-status.json
+            cp /tmp/bono-shadow/master-scoreboard.json loterias-ai/data/shadow/prospective-master-scoreboard.json
+            git add loterias-ai/data/official/bonoloto-rss-sync-status.json loterias-ai/data/shadow/prospective-master-scoreboard.json
             if [ -f /tmp/bono-official/year.json ]; then cp /tmp/bono-official/year.json loterias-ai/data/archive/bonoloto/${YEAR}.json; git add loterias-ai/data/archive/bonoloto/${YEAR}.json; fi
             cp /tmp/bono-shadow/v54-status.json loterias-ai/data/shadow/bonoloto-v54-budget8-freeze-status.json
             cp /tmp/bono-shadow/v91-status.json loterias-ai/data/shadow/bonoloto-v91-v58-ensemble-freeze-status.json
