@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-08-15T16:19:50.682Z",
+  "generatedAt": "2026-08-15T16:22:57.537Z",
   "engine": "MetaPleno-v82-global-full-hit-census",
   "scope": [
     "research",
     "backtests",
     "shadow"
   ],
-  "filesScanned": 194,
-  "methodology": "Repository-wide census of persisted explicit full-hit events. Deduplicates identical game/date/prediction events to avoid counting correlated copies. Retrospective census only; does not imply predictability.",
+  "filesScanned": 198,
+  "methodology": "Repository-wide census of persisted explicit full-hit events. Deduplicates identical game/date/prediction/phase events and labels selection vs post-freeze vs prospective/shadow to prevent retrospective hits being mistaken for forward evidence.",
   "byGame": {
     "bonoloto": {
       "rawOccurrences": 20,
@@ -21,11 +21,47 @@
         "2024-08-19",
         "2024-10-11"
       ],
+      "byPhase": {
+        "SELECTION": {
+          "predictions": 6,
+          "uniqueDates": 4,
+          "dates": [
+            "2021-01-11",
+            "2021-02-06",
+            "2022-07-30",
+            "2023-07-31"
+          ]
+        },
+        "POST_FREEZE_MID": {
+          "predictions": 6,
+          "uniqueDates": 2,
+          "dates": [
+            "2024-08-19",
+            "2024-10-11"
+          ]
+        },
+        "POST_FREEZE_LATE": {
+          "predictions": 0,
+          "uniqueDates": 0,
+          "dates": []
+        },
+        "PROSPECTIVE_OR_SHADOW": {
+          "predictions": 0,
+          "uniqueDates": 0,
+          "dates": []
+        },
+        "UNCLASSIFIED": {
+          "predictions": 0,
+          "uniqueDates": 0,
+          "dates": []
+        }
+      },
       "events": [
         {
           "game": "bonoloto",
           "file": "loterias-ai/data/research/meta-pleno-v52-bonoloto-budget8-forward.json",
           "engine": "MetaPleno-v52-bonoloto-budget8-forward",
+          "phase": "SELECTION",
           "date": "2021-01-11",
           "type": "6/6",
           "pool": [
@@ -52,6 +88,7 @@
           "game": "bonoloto",
           "file": "loterias-ai/data/research/meta-pleno-v73-bonoloto-mutual-information-budget8.json",
           "engine": "MetaPleno-v73-bonoloto-mutual-information-budget8",
+          "phase": "SELECTION",
           "date": "2021-02-06",
           "type": "6/6",
           "pool": [
@@ -78,6 +115,7 @@
           "game": "bonoloto",
           "file": "loterias-ai/data/research/meta-pleno-v73-bonoloto-mutual-information-budget8.json",
           "engine": "MetaPleno-v73-bonoloto-mutual-information-budget8",
+          "phase": "SELECTION",
           "date": "2021-02-06",
           "type": "6/6",
           "pool": [
@@ -104,6 +142,7 @@
           "game": "bonoloto",
           "file": "loterias-ai/data/research/meta-pleno-v73-bonoloto-mutual-information-budget8.json",
           "engine": "MetaPleno-v73-bonoloto-mutual-information-budget8",
+          "phase": "SELECTION",
           "date": "2021-02-06",
           "type": "6/6",
           "pool": [
@@ -130,6 +169,7 @@
           "game": "bonoloto",
           "file": "loterias-ai/data/research/meta-pleno-v80-bonoloto-residue-state-budget8.json",
           "engine": "MetaPleno-v80-bonoloto-residue-state-budget8",
+          "phase": "SELECTION",
           "date": "2022-07-30",
           "type": "6/6",
           "pool": [
@@ -156,6 +196,7 @@
           "game": "bonoloto",
           "file": "loterias-ai/data/research/meta-pleno-v11-bonoloto-rolling-compact.json",
           "engine": "MetaPleno-v11-bonoloto-rolling-compact",
+          "phase": "SELECTION",
           "date": "2023-07-31",
           "type": "6/6",
           "pool": [
@@ -180,6 +221,7 @@
           "game": "bonoloto",
           "file": "loterias-ai/data/research/meta-pleno-v81-bonoloto-set-kernel-analog-budget8.json",
           "engine": "MetaPleno-v81-bonoloto-set-kernel-analog-budget8",
+          "phase": "POST_FREEZE_MID",
           "date": "2024-08-19",
           "type": "6/6",
           "pool": [
@@ -206,6 +248,7 @@
           "game": "bonoloto",
           "file": "loterias-ai/data/research/meta-pleno-v81-bonoloto-set-kernel-analog-budget8.json",
           "engine": "MetaPleno-v81-bonoloto-set-kernel-analog-budget8",
+          "phase": "POST_FREEZE_MID",
           "date": "2024-08-19",
           "type": "6/6",
           "pool": [
@@ -232,6 +275,7 @@
           "game": "bonoloto",
           "file": "loterias-ai/data/research/meta-pleno-v81-bonoloto-set-kernel-analog-budget8.json",
           "engine": "MetaPleno-v81-bonoloto-set-kernel-analog-budget8",
+          "phase": "POST_FREEZE_MID",
           "date": "2024-08-19",
           "type": "6/6",
           "pool": [
@@ -258,6 +302,7 @@
           "game": "bonoloto",
           "file": "loterias-ai/data/research/meta-pleno-v81-bonoloto-set-kernel-analog-budget8.json",
           "engine": "MetaPleno-v81-bonoloto-set-kernel-analog-budget8",
+          "phase": "POST_FREEZE_MID",
           "date": "2024-08-19",
           "type": "6/6",
           "pool": [
@@ -284,6 +329,7 @@
           "game": "bonoloto",
           "file": "loterias-ai/data/research/meta-pleno-v81-bonoloto-set-kernel-analog-budget8.json",
           "engine": "MetaPleno-v81-bonoloto-set-kernel-analog-budget8",
+          "phase": "POST_FREEZE_MID",
           "date": "2024-08-19",
           "type": "6/6",
           "pool": [
@@ -310,6 +356,7 @@
           "game": "bonoloto",
           "file": "loterias-ai/data/research/meta-pleno-v53-bonoloto-budget8-million.json",
           "engine": "MetaPleno-v53-bonoloto-budget8-million",
+          "phase": "POST_FREEZE_MID",
           "date": "2024-10-11",
           "type": "6/6",
           "pool": [
@@ -339,6 +386,33 @@
       "dedupedPredictions": 0,
       "uniqueFullHitDates": 0,
       "dates": [],
+      "byPhase": {
+        "SELECTION": {
+          "predictions": 0,
+          "uniqueDates": 0,
+          "dates": []
+        },
+        "POST_FREEZE_MID": {
+          "predictions": 0,
+          "uniqueDates": 0,
+          "dates": []
+        },
+        "POST_FREEZE_LATE": {
+          "predictions": 0,
+          "uniqueDates": 0,
+          "dates": []
+        },
+        "PROSPECTIVE_OR_SHADOW": {
+          "predictions": 0,
+          "uniqueDates": 0,
+          "dates": []
+        },
+        "UNCLASSIFIED": {
+          "predictions": 0,
+          "uniqueDates": 0,
+          "dates": []
+        }
+      },
       "events": []
     },
     "euromillones": {
@@ -346,10 +420,37 @@
       "dedupedPredictions": 0,
       "uniqueFullHitDates": 0,
       "dates": [],
+      "byPhase": {
+        "SELECTION": {
+          "predictions": 0,
+          "uniqueDates": 0,
+          "dates": []
+        },
+        "POST_FREEZE_MID": {
+          "predictions": 0,
+          "uniqueDates": 0,
+          "dates": []
+        },
+        "POST_FREEZE_LATE": {
+          "predictions": 0,
+          "uniqueDates": 0,
+          "dates": []
+        },
+        "PROSPECTIVE_OR_SHADOW": {
+          "predictions": 0,
+          "uniqueDates": 0,
+          "dates": []
+        },
+        "UNCLASSIFIED": {
+          "predictions": 0,
+          "uniqueDates": 0,
+          "dates": []
+        }
+      },
       "events": []
     }
   },
-  "repeatAcrossDistinctDates": {
+  "postFreezeDistinctDateRepeat": {
     "bonoloto": true,
     "primitiva": false,
     "euromillones": false
