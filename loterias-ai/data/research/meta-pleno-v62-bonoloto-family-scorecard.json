@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-15T16:31:54.369Z",
+  "generatedAt": "2026-08-15T16:35:32.242Z",
   "engine": "MetaPleno-v62-bonoloto-family-scorecard",
   "protocol": {
     "primaryObjective": "Repeated distinct-date 6/6 after temporal freeze, preferably prospective.",
@@ -10,6 +10,7 @@
       "No reranking after opening later era",
       "Budget <=15 EUR for any candidate intended as potentially playable",
       "Family matched-null p>=0.05 deprioritizes retrospective full-hit signals",
+      "Derived ensembles sharing the same jackpot cluster do not count as independent evidence",
       "Negative results remain persisted",
       "realMoneyPass remains false until sufficient prospective evidence"
     ],
@@ -47,6 +48,19 @@
         "maxUniqueFullDates": 29,
         "meanUniqueFullDates": 3.102599179206566
       }
+    },
+    "v58Ensemble": {
+      "models": 10,
+      "draws": 731,
+      "observedUniqueFullDates": 1,
+      "null": {
+        "method": "Common circular shift of the real winning-set sequence. All 10 frozen ensemble pools and their cross-model correlations remain unchanged.",
+        "shifts": 731,
+        "extreme": 6,
+        "pValue": 0.008207934336525308,
+        "maxUniqueFullDates": 1,
+        "meanUniqueFullDates": 0.008207934336525308
+      }
     }
   },
   "families": [
@@ -69,7 +83,7 @@
       "distinctPersistedFullDates": [
         "2024-10-11"
       ],
-      "familyMatchedNullPValue": null,
+      "familyMatchedNullPValue": 0.008207934336525308,
       "antiOverfitScore": 10010,
       "priority": "MEDIUM_FULL_EVENT_REQUIRES_NULL",
       "realMoneyPass": false
