@@ -1,0 +1,26 @@
+name: Loterias AI MetaPleno v146 Omitted Profile
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v146-omitted-profile]
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v146-bonoloto-omitted-profile.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v146-omitted-profile.yml'
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/meta-pleno-v142-global-nearpleno-atlas.mjs
+      - run: node loterias-ai/scripts/meta-pleno-v146-bonoloto-omitted-profile.mjs
+      - name: Persist v142 v146
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v142-global-nearpleno-atlas.json loterias-ai/data/research/meta-pleno-v146-bonoloto-omitted-profile.json
+          git diff --cached --quiet || git commit -m 'data(loterias-ai): persist v146 omitted-profile rescuer'
+          git push
