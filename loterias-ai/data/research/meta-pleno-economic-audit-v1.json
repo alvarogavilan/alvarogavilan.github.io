@@ -1,0 +1,61 @@
+{
+  "generatedAt": "2026-08-15",
+  "engine": "MetaPleno-economic-audit-v1",
+  "policy": "Economic audit must charge the full cost of every frozen finalist that would have had to be played prospectively. Historical/validation hits are research evidence only and are not counted as realizable profit unless the rule was frozen beforehand. Supplementary fields (stars, Dream, complementario, reintegro, key number) must be modeled before assigning an exact prize where the game requires them.",
+  "assumptions": {
+    "bonolotoStakeEur": 0.5,
+    "euromillonesStakeEur": 2.5,
+    "eurodreamsStakeEur": 2.5,
+    "frozenPanelSize": 240,
+    "spanishLotteryTax": {
+      "exemptAmountEur": 40000,
+      "rateAboveExempt": 0.2
+    }
+  },
+  "audits": {
+    "bonoloto": {
+      "testDraws": 1320,
+      "panelCostEur": 158400,
+      "fullHit": {
+        "date": "2023-07-31",
+        "prediction": [9, 11, 18, 24, 26, 33],
+        "truth": [9, 11, 18, 24, 26, 33],
+        "grossPrizeEur": 960247.46,
+        "netPrizeAfterSpecialLotteryTaxEur": 776197.97,
+        "netProfitAfterPanelCostEur": 617797.97,
+        "netRoiAfterTax": 3.90024
+      },
+      "caveat": "Does not yet include lower-tier wins across all 240 tickets. A single out-of-sample full hit from a 240-ticket panel is not by itself proof of predictive edge."
+    },
+    "euromillones": {
+      "testDraws": 376,
+      "panelCostEur": 225600,
+      "mainNumberNearHitsAcrossPanel": 8,
+      "example2026": {
+        "date": "2026-03-13",
+        "predictionMain": [13, 17, 41, 48, 50],
+        "truthMain": [13, 17, 26, 41, 48],
+        "winningStars": [4, 10],
+        "mainHits": 4,
+        "prizeIf0StarsEur": 37.56,
+        "prizeIf1StarEur": 128.42,
+        "prizeIf2StarsEur": 1119.31
+      },
+      "caveat": "Current formula does not predict stars, therefore no exact ticket prize can be assigned yet."
+    },
+    "eurodreams": {
+      "testDraws": 65,
+      "panelCostEur": 39000,
+      "nearHit2026": {
+        "date": "2026-02-19",
+        "predictionMain": [4, 8, 13, 36, 37, 38],
+        "truthMain": [8, 10, 13, 36, 37, 38],
+        "mainHits": 5,
+        "grossPrizeEur": 723.30
+      },
+      "caveat": "High-tier return alone is far below panel cost; lower-tier prizes across all tickets still need a full draw-by-draw audit. The 2025 5/6 was validation evidence and is not counted as prospective profit."
+    }
+  },
+  "researchConclusion": "The Bonoloto result is economically striking even after charging the whole frozen panel and lottery tax, but the current evidence is not sufficient to claim a repeatable edge. The next economic gate is exact all-ticket, all-category ROI with supplementary numbers modeled and a much smaller precommitted portfolio.",
+  "realMoneyPass": false
+}
