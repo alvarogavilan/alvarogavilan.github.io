@@ -1,0 +1,65 @@
+{
+  "generatedAt": "2026-08-15T17:54:52.471Z",
+  "engine": "MetaPleno-v110-bonoloto-survival-hazard-budget8",
+  "family": "discrete-time empirical-Bayes survival hazard by number waiting-time state",
+  "methodology": "For every prediction, estimate P(appearance next draw | current waiting-time bucket) only from prior draws in a rolling window. Hyperparameters cap/window/prior-strength are ranked only on 2020-2022. Prediction-signature duplicates are removed before freezing the best 24 mathematically effective configurations. 2023-2024 and 2025-latest are untouched later periods.",
+  "partitions": {
+    "TRAIN": "history before each prediction",
+    "VALIDATION_SELECTION": "2020-01-01..2022-12-31",
+    "POST_FREEZE_MID": "2023-01-01..2024-12-31",
+    "POST_FREEZE_LATE": "2025-01-01..latest"
+  },
+  "searchAccounting": {
+    "candidatePool": 8,
+    "nominalConfigurations": 80,
+    "mathematicallyEffectiveConfigurations": 64,
+    "criterion": "full desc, 5+ desc, cubic hit score desc; selection period only",
+    "selectionPeriod": "2020-2022",
+    "laterPeriods": ["2023-2024", "2025-latest"],
+    "familiesInvestigated": ["discrete-survival-hazard"]
+  },
+  "budget": {
+    "poolSize": 8,
+    "combinations": 28,
+    "theoreticalCostEUR": 14,
+    "maxEURPerGameDraw": 15,
+    "realStakeEUR": 0
+  },
+  "summary": {
+    "nominalConfigurations": 80,
+    "mathematicallyEffectiveConfigurations": 64,
+    "frozenEffectiveConfigurations": 24,
+    "midFullModels": 0,
+    "lateFullModels": 0,
+    "repeatFullModels": 0,
+    "repeat5PlusModels": 0
+  },
+  "leaders": [
+    {"id":12,"c":{"cap":5,"window":1000,"strength":1},"sel":{"full":0,"h5":1,"score":3424,"events":[]},"mid":{"full":0,"h5":0,"score":2169,"events":[]},"late":{"full":0,"h5":0,"score":2155,"events":[]}},
+    {"id":14,"c":{"cap":5,"window":1000,"strength":20},"sel":{"full":0,"h5":1,"score":3424,"events":[]},"mid":{"full":0,"h5":0,"score":2169,"events":[]},"late":{"full":0,"h5":0,"score":2155,"events":[]}},
+    {"id":8,"c":{"cap":5,"window":500,"strength":1},"sel":{"full":0,"h5":1,"score":3372,"events":[]},"mid":{"full":0,"h5":1,"score":2412,"events":[]},"late":{"full":0,"h5":0,"score":2121,"events":[]}},
+    {"id":11,"c":{"cap":5,"window":500,"strength":100},"sel":{"full":0,"h5":1,"score":3365,"events":[]},"mid":{"full":0,"h5":1,"score":2412,"events":[]},"late":{"full":0,"h5":0,"score":2121,"events":[]}},
+    {"id":76,"c":{"cap":40,"window":999999,"strength":1},"sel":{"full":0,"h5":1,"score":3197,"events":[]},"mid":{"full":0,"h5":0,"score":2673,"events":[]},"late":{"full":0,"h5":0,"score":2316,"events":[]}},
+    {"id":78,"c":{"cap":40,"window":999999,"strength":20},"sel":{"full":0,"h5":1,"score":3197,"events":[]},"mid":{"full":0,"h5":0,"score":2674,"events":[]},"late":{"full":0,"h5":0,"score":2323,"events":[]}},
+    {"id":79,"c":{"cap":40,"window":999999,"strength":100},"sel":{"full":0,"h5":1,"score":3171,"events":[]},"mid":{"full":0,"h5":0,"score":2667,"events":[]},"late":{"full":0,"h5":0,"score":2313,"events":[]}},
+    {"id":67,"c":{"cap":40,"window":250,"strength":100},"sel":{"full":0,"h5":1,"score":2948,"events":[]},"mid":{"full":0,"h5":1,"score":2251,"events":[]},"late":{"full":0,"h5":0,"score":2000,"events":[]}},
+    {"id":49,"c":{"cap":20,"window":500,"strength":5},"sel":{"full":0,"h5":0,"score":3564,"events":[]},"mid":{"full":0,"h5":0,"score":2459,"events":[]},"late":{"full":0,"h5":0,"score":1786,"events":[]}},
+    {"id":48,"c":{"cap":20,"window":500,"strength":1},"sel":{"full":0,"h5":0,"score":3557,"events":[]},"mid":{"full":0,"h5":0,"score":2460,"events":[]},"late":{"full":0,"h5":0,"score":1805,"events":[]}},
+    {"id":50,"c":{"cap":20,"window":500,"strength":20},"sel":{"full":0,"h5":0,"score":3528,"events":[]},"mid":{"full":0,"h5":0,"score":2431,"events":[]},"late":{"full":0,"h5":0,"score":1799,"events":[]}},
+    {"id":51,"c":{"cap":20,"window":500,"strength":100},"sel":{"full":0,"h5":0,"score":3510,"events":[]},"mid":{"full":0,"h5":0,"score":2446,"events":[]},"late":{"full":0,"h5":0,"score":1768,"events":[]}},
+    {"id":74,"c":{"cap":40,"window":1000,"strength":20},"sel":{"full":0,"h5":0,"score":3510,"events":[]},"mid":{"full":0,"h5":0,"score":2710,"events":[]},"late":{"full":0,"h5":0,"score":2207,"events":[]}},
+    {"id":72,"c":{"cap":40,"window":1000,"strength":1},"sel":{"full":0,"h5":0,"score":3507,"events":[]},"mid":{"full":0,"h5":0,"score":2665,"events":[]},"late":{"full":0,"h5":0,"score":2252,"events":[]}},
+    {"id":73,"c":{"cap":40,"window":1000,"strength":5},"sel":{"full":0,"h5":0,"score":3499,"events":[]},"mid":{"full":0,"h5":0,"score":2678,"events":[]},"late":{"full":0,"h5":0,"score":2244,"events":[]}},
+    {"id":75,"c":{"cap":40,"window":1000,"strength":100},"sel":{"full":0,"h5":0,"score":3483,"events":[]},"mid":{"full":0,"h5":0,"score":2648,"events":[]},"late":{"full":0,"h5":0,"score":2184,"events":[]}},
+    {"id":28,"c":{"cap":10,"window":500,"strength":1},"sel":{"full":0,"h5":0,"score":3432,"events":[]},"mid":{"full":0,"h5":1,"score":2647,"events":[]},"late":{"full":0,"h5":0,"score":1772,"events":[]}},
+    {"id":29,"c":{"cap":10,"window":500,"strength":5},"sel":{"full":0,"h5":0,"score":3413,"events":[]},"mid":{"full":0,"h5":1,"score":2647,"events":[]},"late":{"full":0,"h5":0,"score":1765,"events":[]}},
+    {"id":30,"c":{"cap":10,"window":500,"strength":20},"sel":{"full":0,"h5":0,"score":3394,"events":[]},"mid":{"full":0,"h5":1,"score":2646,"events":[]},"late":{"full":0,"h5":0,"score":1757,"events":[]}},
+    {"id":31,"c":{"cap":10,"window":500,"strength":100},"sel":{"full":0,"h5":0,"score":3340,"events":[]},"mid":{"full":0,"h5":1,"score":2602,"events":[]},"late":{"full":0,"h5":0,"score":1744,"events":[]}},
+    {"id":55,"c":{"cap":20,"window":1000,"strength":100},"sel":{"full":0,"h5":0,"score":3334,"events":[]},"mid":{"full":0,"h5":0,"score":2834,"events":[]},"late":{"full":0,"h5":0,"score":2051,"events":[]}},
+    {"id":54,"c":{"cap":20,"window":1000,"strength":20},"sel":{"full":0,"h5":0,"score":3323,"events":[]},"mid":{"full":0,"h5":0,"score":2828,"events":[]},"late":{"full":0,"h5":0,"score":2036,"events":[]}},
+    {"id":52,"c":{"cap":20,"window":1000,"strength":1},"sel":{"full":0,"h5":0,"score":3305,"events":[]},"mid":{"full":0,"h5":0,"score":2802,"events":[]},"late":{"full":0,"h5":0,"score":2053,"events":[]}},
+    {"id":53,"c":{"cap":20,"window":1000,"strength":5},"sel":{"full":0,"h5":0,"score":3298,"events":[]},"mid":{"full":0,"h5":0,"score":2802,"events":[]},"late":{"full":0,"h5":0,"score":2053,"events":[]}}
+  ],
+  "statisticalDecision": "NO_REPEATED_FULL_POST_FREEZE_SIGNAL",
+  "realMoneyPass": false
+}
