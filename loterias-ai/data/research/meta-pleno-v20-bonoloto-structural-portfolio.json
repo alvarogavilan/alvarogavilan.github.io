@@ -1,0 +1,955 @@
+{
+  "generatedAt": "2026-08-15T12:42:16.762Z",
+  "engine": "MetaPleno-v20-bonoloto-structural-portfolio",
+  "methodology": "Combination-level structural search. For every target draw, candidate tickets are generated deterministically and ranked only from statistics strictly prior to that draw. Hyperparameters and portfolio size are selected using 2020-2022 only; 2023-2026 is research evaluation, not virgin holdout. Final promotion requires future sealed draws.",
+  "features": [
+    "sum",
+    "oddCount",
+    "lowHalfCount",
+    "consecutivePairs",
+    "maxGap",
+    "range",
+    "overlapLast1",
+    "overlapLast2",
+    "pairCooccurrence"
+  ],
+  "candidateConfigs": 81,
+  "candidatesPerDraw": 1200,
+  "selected": {
+    "cfg": {
+      "lookback": 730,
+      "wStruct": 0.5,
+      "wPair": 1
+    },
+    "k": 25,
+    "validation": {
+      "draws": 894,
+      "stakeEUR": 11175,
+      "returnEUR": 70759.29,
+      "roi": 5.3319275167785225,
+      "high": 2,
+      "six": 0,
+      "medianYearROI": -0.5238517571884984,
+      "worstYearROI": -0.8007842519685039,
+      "byYear": {
+        "2020": {
+          "draws": 254,
+          "stake": 3175,
+          "ret": 632.5100000000001,
+          "high": 0,
+          "six": 0,
+          "roi": -0.8007842519685039
+        },
+        "2021": {
+          "draws": 313,
+          "stake": 3912.5,
+          "ret": 1862.93,
+          "high": 1,
+          "six": 0,
+          "roi": -0.5238517571884984
+        },
+        "2022": {
+          "draws": 327,
+          "stake": 4087.5,
+          "ret": 68263.84999999999,
+          "high": 1,
+          "six": 0,
+          "roi": 15.700636085626908
+        }
+      },
+      "events": [
+        {
+          "date": "2021-08-06",
+          "bestHits": 5,
+          "bestTicket": [
+            3,
+            16,
+            23,
+            26,
+            35,
+            38
+          ],
+          "truth": [
+            2,
+            16,
+            23,
+            26,
+            35,
+            38
+          ],
+          "portfolioSize": 25
+        },
+        {
+          "date": "2022-05-19",
+          "bestHits": 5,
+          "bestTicket": [
+            5,
+            12,
+            17,
+            27,
+            28,
+            44
+          ],
+          "truth": [
+            12,
+            17,
+            27,
+            28,
+            44,
+            47
+          ],
+          "portfolioSize": 25
+        }
+      ]
+    },
+    "research2023_2026": {
+      "draws": 1320,
+      "stakeEUR": 16500,
+      "returnEUR": 3879.7099999999996,
+      "roi": -0.7648660606060607,
+      "high": 1,
+      "six": 0,
+      "medianYearROI": -0.8015934426229508,
+      "worstYearROI": -0.8329775342465754,
+      "byYear": {
+        "2023": {
+          "draws": 365,
+          "stake": 4562.5,
+          "ret": 762.04,
+          "high": 0,
+          "six": 0,
+          "roi": -0.8329775342465754
+        },
+        "2024": {
+          "draws": 366,
+          "stake": 4575,
+          "ret": 907.71,
+          "high": 0,
+          "six": 0,
+          "roi": -0.8015934426229508
+        },
+        "2025": {
+          "draws": 365,
+          "stake": 4562.5,
+          "ret": 1680.8000000000002,
+          "high": 1,
+          "six": 0,
+          "roi": -0.6316054794520547
+        },
+        "2026": {
+          "draws": 224,
+          "stake": 2800,
+          "ret": 529.16,
+          "high": 0,
+          "six": 0,
+          "roi": -0.8110142857142857
+        }
+      },
+      "events": [
+        {
+          "date": "2025-12-25",
+          "bestHits": 5,
+          "bestTicket": [
+            6,
+            9,
+            11,
+            25,
+            38,
+            40
+          ],
+          "truth": [
+            6,
+            9,
+            11,
+            25,
+            31,
+            38
+          ],
+          "portfolioSize": 25
+        }
+      ]
+    }
+  },
+  "topValidation": [
+    {
+      "cfg": {
+        "lookback": 730,
+        "wStruct": 0.5,
+        "wPair": 1
+      },
+      "k": 25,
+      "validation": {
+        "draws": 894,
+        "stakeEUR": 11175,
+        "returnEUR": 70759.29,
+        "roi": 5.3319275167785225,
+        "high": 2,
+        "six": 0,
+        "medianYearROI": -0.5238517571884984,
+        "worstYearROI": -0.8007842519685039,
+        "byYear": {
+          "2020": {
+            "draws": 254,
+            "stake": 3175,
+            "ret": 632.5100000000001,
+            "high": 0,
+            "six": 0,
+            "roi": -0.8007842519685039
+          },
+          "2021": {
+            "draws": 313,
+            "stake": 3912.5,
+            "ret": 1862.93,
+            "high": 1,
+            "six": 0,
+            "roi": -0.5238517571884984
+          },
+          "2022": {
+            "draws": 327,
+            "stake": 4087.5,
+            "ret": 68263.84999999999,
+            "high": 1,
+            "six": 0,
+            "roi": 15.700636085626908
+          }
+        },
+        "events": [
+          {
+            "date": "2021-08-06",
+            "bestHits": 5,
+            "bestTicket": [
+              3,
+              16,
+              23,
+              26,
+              35,
+              38
+            ],
+            "truth": [
+              2,
+              16,
+              23,
+              26,
+              35,
+              38
+            ],
+            "portfolioSize": 25
+          },
+          {
+            "date": "2022-05-19",
+            "bestHits": 5,
+            "bestTicket": [
+              5,
+              12,
+              17,
+              27,
+              28,
+              44
+            ],
+            "truth": [
+              12,
+              17,
+              27,
+              28,
+              44,
+              47
+            ],
+            "portfolioSize": 25
+          }
+        ]
+      },
+      "research2023_2026": {
+        "draws": 1320,
+        "stakeEUR": 16500,
+        "returnEUR": 3879.7099999999996,
+        "roi": -0.7648660606060607,
+        "high": 1,
+        "six": 0,
+        "medianYearROI": -0.8015934426229508,
+        "worstYearROI": -0.8329775342465754,
+        "byYear": {
+          "2023": {
+            "draws": 365,
+            "stake": 4562.5,
+            "ret": 762.04,
+            "high": 0,
+            "six": 0,
+            "roi": -0.8329775342465754
+          },
+          "2024": {
+            "draws": 366,
+            "stake": 4575,
+            "ret": 907.71,
+            "high": 0,
+            "six": 0,
+            "roi": -0.8015934426229508
+          },
+          "2025": {
+            "draws": 365,
+            "stake": 4562.5,
+            "ret": 1680.8000000000002,
+            "high": 1,
+            "six": 0,
+            "roi": -0.6316054794520547
+          },
+          "2026": {
+            "draws": 224,
+            "stake": 2800,
+            "ret": 529.16,
+            "high": 0,
+            "six": 0,
+            "roi": -0.8110142857142857
+          }
+        },
+        "events": [
+          {
+            "date": "2025-12-25",
+            "bestHits": 5,
+            "bestTicket": [
+              6,
+              9,
+              11,
+              25,
+              38,
+              40
+            ],
+            "truth": [
+              6,
+              9,
+              11,
+              25,
+              31,
+              38
+            ],
+            "portfolioSize": 25
+          }
+        ]
+      }
+    },
+    {
+      "cfg": {
+        "lookback": 120,
+        "wStruct": 2,
+        "wPair": 0.5
+      },
+      "k": 25,
+      "validation": {
+        "draws": 894,
+        "stakeEUR": 11175,
+        "returnEUR": 6844.220000000001,
+        "roi": -0.3875418344519015,
+        "high": 2,
+        "six": 0,
+        "medianYearROI": -0.5539212598425198,
+        "worstYearROI": -0.8131253822629969,
+        "byYear": {
+          "2020": {
+            "draws": 254,
+            "stake": 3175,
+            "ret": 1416.2999999999997,
+            "high": 1,
+            "six": 0,
+            "roi": -0.5539212598425198
+          },
+          "2021": {
+            "draws": 313,
+            "stake": 3912.5,
+            "ret": 4664.07,
+            "high": 1,
+            "six": 0,
+            "roi": 0.19209456869009567
+          },
+          "2022": {
+            "draws": 327,
+            "stake": 4087.5,
+            "ret": 763.8499999999999,
+            "high": 0,
+            "six": 0,
+            "roi": -0.8131253822629969
+          }
+        },
+        "events": [
+          {
+            "date": "2020-06-19",
+            "bestHits": 5,
+            "bestTicket": [
+              6,
+              13,
+              22,
+              35,
+              36,
+              38
+            ],
+            "truth": [
+              6,
+              13,
+              22,
+              35,
+              36,
+              47
+            ],
+            "portfolioSize": 25
+          },
+          {
+            "date": "2021-02-27",
+            "bestHits": 5,
+            "bestTicket": [
+              8,
+              9,
+              24,
+              39,
+              42,
+              45
+            ],
+            "truth": [
+              8,
+              9,
+              12,
+              39,
+              42,
+              45
+            ],
+            "portfolioSize": 25
+          }
+        ]
+      }
+    },
+    {
+      "cfg": {
+        "lookback": 120,
+        "wStruct": 2,
+        "wPair": 1
+      },
+      "k": 5,
+      "validation": {
+        "draws": 894,
+        "stakeEUR": 2235,
+        "returnEUR": 1377.3999999999996,
+        "roi": -0.38371364653243867,
+        "high": 1,
+        "six": 0,
+        "medianYearROI": -0.728954128440367,
+        "worstYearROI": -0.8394330708661417,
+        "byYear": {
+          "2020": {
+            "draws": 254,
+            "stake": 635,
+            "ret": 101.96000000000001,
+            "high": 0,
+            "six": 0,
+            "roi": -0.8394330708661417
+          },
+          "2021": {
+            "draws": 313,
+            "stake": 782.5,
+            "ret": 1053.86,
+            "high": 1,
+            "six": 0,
+            "roi": 0.34678594249201256
+          },
+          "2022": {
+            "draws": 327,
+            "stake": 817.5,
+            "ret": 221.57999999999998,
+            "high": 0,
+            "six": 0,
+            "roi": -0.728954128440367
+          }
+        },
+        "events": [
+          {
+            "date": "2021-08-19",
+            "bestHits": 5,
+            "bestTicket": [
+              6,
+              8,
+              25,
+              28,
+              29,
+              39
+            ],
+            "truth": [
+              6,
+              8,
+              12,
+              25,
+              29,
+              39
+            ],
+            "portfolioSize": 5
+          }
+        ]
+      }
+    },
+    {
+      "cfg": {
+        "lookback": 120,
+        "wStruct": 0.5,
+        "wPair": 0
+      },
+      "k": 25,
+      "validation": {
+        "draws": 894,
+        "stakeEUR": 11175,
+        "returnEUR": 3655.7100000000005,
+        "roi": -0.6728671140939597,
+        "high": 1,
+        "six": 0,
+        "medianYearROI": -0.776714373088685,
+        "worstYearROI": -0.8126456692913386,
+        "byYear": {
+          "2020": {
+            "draws": 254,
+            "stake": 3175,
+            "ret": 594.8499999999999,
+            "high": 0,
+            "six": 0,
+            "roi": -0.8126456692913386
+          },
+          "2021": {
+            "draws": 313,
+            "stake": 3912.5,
+            "ret": 2148.1800000000003,
+            "high": 1,
+            "six": 0,
+            "roi": -0.4509444089456869
+          },
+          "2022": {
+            "draws": 327,
+            "stake": 4087.5,
+            "ret": 912.68,
+            "high": 0,
+            "six": 0,
+            "roi": -0.776714373088685
+          }
+        },
+        "events": [
+          {
+            "date": "2021-09-13",
+            "bestHits": 5,
+            "bestTicket": [
+              5,
+              12,
+              13,
+              32,
+              34,
+              38
+            ],
+            "truth": [
+              5,
+              12,
+              13,
+              32,
+              38,
+              41
+            ],
+            "portfolioSize": 25
+          }
+        ]
+      }
+    },
+    {
+      "cfg": {
+        "lookback": 365,
+        "wStruct": 2,
+        "wPair": 0
+      },
+      "k": 25,
+      "validation": {
+        "draws": 894,
+        "stakeEUR": 11175,
+        "returnEUR": 3063.7299999999996,
+        "roi": -0.7258407158836689,
+        "high": 1,
+        "six": 0,
+        "medianYearROI": -0.776963779527559,
+        "worstYearROI": -0.816594495412844,
+        "byYear": {
+          "2020": {
+            "draws": 254,
+            "stake": 3175,
+            "ret": 708.14,
+            "high": 0,
+            "six": 0,
+            "roi": -0.776963779527559
+          },
+          "2021": {
+            "draws": 313,
+            "stake": 3912.5,
+            "ret": 1605.92,
+            "high": 1,
+            "six": 0,
+            "roi": -0.589541214057508
+          },
+          "2022": {
+            "draws": 327,
+            "stake": 4087.5,
+            "ret": 749.67,
+            "high": 0,
+            "six": 0,
+            "roi": -0.816594495412844
+          }
+        },
+        "events": [
+          {
+            "date": "2021-01-15",
+            "bestHits": 5,
+            "bestTicket": [
+              14,
+              17,
+              24,
+              28,
+              33,
+              49
+            ],
+            "truth": [
+              14,
+              24,
+              28,
+              33,
+              39,
+              49
+            ],
+            "portfolioSize": 25
+          }
+        ]
+      }
+    },
+    {
+      "cfg": {
+        "lookback": 120,
+        "wStruct": 1,
+        "wPair": 0
+      },
+      "k": 25,
+      "validation": {
+        "draws": 894,
+        "stakeEUR": 11175,
+        "returnEUR": 3666.57,
+        "roi": -0.6718953020134228,
+        "high": 1,
+        "six": 0,
+        "medianYearROI": -0.7777165354330708,
+        "worstYearROI": -0.7828159021406728,
+        "byYear": {
+          "2020": {
+            "draws": 254,
+            "stake": 3175,
+            "ret": 705.7500000000001,
+            "high": 0,
+            "six": 0,
+            "roi": -0.7777165354330708
+          },
+          "2021": {
+            "draws": 313,
+            "stake": 3912.5,
+            "ret": 2073.08,
+            "high": 1,
+            "six": 0,
+            "roi": -0.4701392971246007
+          },
+          "2022": {
+            "draws": 327,
+            "stake": 4087.5,
+            "ret": 887.74,
+            "high": 0,
+            "six": 0,
+            "roi": -0.7828159021406728
+          }
+        },
+        "events": [
+          {
+            "date": "2021-04-13",
+            "bestHits": 5,
+            "bestTicket": [
+              7,
+              11,
+              19,
+              38,
+              42,
+              45
+            ],
+            "truth": [
+              7,
+              11,
+              18,
+              19,
+              38,
+              45
+            ],
+            "portfolioSize": 25
+          }
+        ]
+      }
+    },
+    {
+      "cfg": {
+        "lookback": 120,
+        "wStruct": 0.5,
+        "wPair": 0.5
+      },
+      "k": 25,
+      "validation": {
+        "draws": 894,
+        "stakeEUR": 11175,
+        "returnEUR": 3620.6,
+        "roi": -0.6760089485458614,
+        "high": 1,
+        "six": 0,
+        "medianYearROI": -0.7823284345047923,
+        "worstYearROI": -0.7971244094488189,
+        "byYear": {
+          "2020": {
+            "draws": 254,
+            "stake": 3175,
+            "ret": 644.13,
+            "high": 0,
+            "six": 0,
+            "roi": -0.7971244094488189
+          },
+          "2021": {
+            "draws": 313,
+            "stake": 3912.5,
+            "ret": 851.64,
+            "high": 0,
+            "six": 0,
+            "roi": -0.7823284345047923
+          },
+          "2022": {
+            "draws": 327,
+            "stake": 4087.5,
+            "ret": 2124.83,
+            "high": 1,
+            "six": 0,
+            "roi": -0.4801639143730887
+          }
+        },
+        "events": [
+          {
+            "date": "2022-01-12",
+            "bestHits": 5,
+            "bestTicket": [
+              16,
+              17,
+              19,
+              26,
+              31,
+              48
+            ],
+            "truth": [
+              17,
+              19,
+              26,
+              31,
+              35,
+              48
+            ],
+            "portfolioSize": 25
+          }
+        ]
+      }
+    },
+    {
+      "cfg": {
+        "lookback": 365,
+        "wStruct": 0.5,
+        "wPair": 0.5
+      },
+      "k": 25,
+      "validation": {
+        "draws": 894,
+        "stakeEUR": 11175,
+        "returnEUR": 3332.850000000001,
+        "roi": -0.7017583892617449,
+        "high": 1,
+        "six": 0,
+        "medianYearROI": -0.7865732283464567,
+        "worstYearROI": -0.8348319488817891,
+        "byYear": {
+          "2020": {
+            "draws": 254,
+            "stake": 3175,
+            "ret": 677.63,
+            "high": 0,
+            "six": 0,
+            "roi": -0.7865732283464567
+          },
+          "2021": {
+            "draws": 313,
+            "stake": 3912.5,
+            "ret": 646.22,
+            "high": 0,
+            "six": 0,
+            "roi": -0.8348319488817891
+          },
+          "2022": {
+            "draws": 327,
+            "stake": 4087.5,
+            "ret": 2009,
+            "high": 1,
+            "six": 0,
+            "roi": -0.5085015290519878
+          }
+        },
+        "events": [
+          {
+            "date": "2022-01-05",
+            "bestHits": 5,
+            "bestTicket": [
+              6,
+              8,
+              19,
+              32,
+              37,
+              47
+            ],
+            "truth": [
+              6,
+              8,
+              19,
+              32,
+              43,
+              47
+            ],
+            "portfolioSize": 25
+          }
+        ]
+      }
+    },
+    {
+      "cfg": {
+        "lookback": 120,
+        "wStruct": 2,
+        "wPair": 1
+      },
+      "k": 25,
+      "validation": {
+        "draws": 894,
+        "stakeEUR": 11175,
+        "returnEUR": 3097.840000000001,
+        "roi": -0.7227883668903803,
+        "high": 1,
+        "six": 0,
+        "medianYearROI": -0.7892159021406728,
+        "worstYearROI": -0.8038425196850394,
+        "byYear": {
+          "2020": {
+            "draws": 254,
+            "stake": 3175,
+            "ret": 622.8,
+            "high": 0,
+            "six": 0,
+            "roi": -0.8038425196850394
+          },
+          "2021": {
+            "draws": 313,
+            "stake": 3912.5,
+            "ret": 1613.4599999999998,
+            "high": 1,
+            "six": 0,
+            "roi": -0.5876140575079873
+          },
+          "2022": {
+            "draws": 327,
+            "stake": 4087.5,
+            "ret": 861.58,
+            "high": 0,
+            "six": 0,
+            "roi": -0.7892159021406728
+          }
+        },
+        "events": [
+          {
+            "date": "2021-08-19",
+            "bestHits": 5,
+            "bestTicket": [
+              6,
+              8,
+              25,
+              28,
+              29,
+              39
+            ],
+            "truth": [
+              6,
+              8,
+              12,
+              25,
+              29,
+              39
+            ],
+            "portfolioSize": 25
+          }
+        ]
+      }
+    },
+    {
+      "cfg": {
+        "lookback": 365,
+        "wStruct": 2,
+        "wPair": 0
+      },
+      "k": 5,
+      "validation": {
+        "draws": 894,
+        "stakeEUR": 2235,
+        "returnEUR": 1435.55,
+        "roi": -0.3576957494407159,
+        "high": 1,
+        "six": 0,
+        "medianYearROI": -0.7919685039370079,
+        "worstYearROI": -0.8211131498470948,
+        "byYear": {
+          "2020": {
+            "draws": 254,
+            "stake": 635,
+            "ret": 132.1,
+            "high": 0,
+            "six": 0,
+            "roi": -0.7919685039370079
+          },
+          "2021": {
+            "draws": 313,
+            "stake": 782.5,
+            "ret": 1157.21,
+            "high": 1,
+            "six": 0,
+            "roi": 0.4788626198083068
+          },
+          "2022": {
+            "draws": 327,
+            "stake": 817.5,
+            "ret": 146.24,
+            "high": 0,
+            "six": 0,
+            "roi": -0.8211131498470948
+          }
+        },
+        "events": [
+          {
+            "date": "2021-01-15",
+            "bestHits": 5,
+            "bestTicket": [
+              14,
+              17,
+              24,
+              28,
+              33,
+              49
+            ],
+            "truth": [
+              14,
+              24,
+              28,
+              33,
+              39,
+              49
+            ],
+            "portfolioSize": 5
+          }
+        ]
+      }
+    }
+  ],
+  "realMoneyPass": false
+}
