@@ -1,0 +1,26 @@
+name: Loterias AI MetaPleno v185 Primitiva Sixth Anatomy
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v182-primitiva-ticket-ranker]
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v185-primitiva-sixth-anatomy.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v185-primitiva-sixth-anatomy.yml'
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node loterias-ai/scripts/meta-pleno-v185-primitiva-sixth-anatomy.mjs
+      - name: Persist v185
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v185-primitiva-sixth-anatomy.json
+          git diff --cached --quiet || git commit -m "research(loterias-ai): persist v185 Primitiva sixth anatomy"
+          git push
