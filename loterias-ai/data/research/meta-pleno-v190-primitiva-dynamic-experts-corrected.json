@@ -1,0 +1,74 @@
+{
+  "generatedAt": "2026-08-15T23:31:58.794Z",
+  "version": "v190",
+  "gameId": "primitiva",
+  "family": "DYNAMIC_RECENT_EXPERT_WEIGHTING_CORRECTED",
+  "experts": {
+    "gap": 18,
+    "kalman": 18,
+    "total": 36
+  },
+  "training": "all c46 5/6 events before 2023; expert weights use only hits strictly before each event; DROP remains 2017-2022",
+  "configsTested": 48,
+  "leader": {
+    "window": 120,
+    "beta": 0,
+    "topExperts": 8,
+    "trainingCorrect": 0,
+    "trainingMRR": 0.19872104247104244
+  },
+  "test": "2023+",
+  "events": [
+    {
+      "date": "2024-01-11",
+      "truth": [
+        7,
+        12,
+        15,
+        22,
+        35,
+        48
+      ],
+      "missing": 22,
+      "chosenAdd": 10,
+      "addCorrect": false,
+      "missingExternalRank": 21,
+      "drop": 40,
+      "dropCorrect": true,
+      "rescuedPoolHits": 5,
+      "bestPlayable5EUR": 5,
+      "fullPlayable5EUR": false
+    },
+    {
+      "date": "2026-07-25",
+      "truth": [
+        28,
+        37,
+        38,
+        40,
+        43,
+        48
+      ],
+      "missing": 38,
+      "chosenAdd": 18,
+      "addCorrect": false,
+      "missingExternalRank": 9,
+      "drop": 22,
+      "dropCorrect": true,
+      "rescuedPoolHits": 5,
+      "bestPlayable5EUR": 5,
+      "fullPlayable5EUR": false
+    }
+  ],
+  "summary": {
+    "trainEvents": 4,
+    "testEvents": 2,
+    "addCorrect": 0,
+    "dropCorrect": 2,
+    "rescuedPoolFull": 0,
+    "fullPlayable5EUR": 0
+  },
+  "methodology": "Pre-specify 18 gap and 18 Kalman experts. At each draw weight experts by their top8 hit performance over a trailing window strictly before that draw. Select window/beta/topExperts only on pre-2023 c46 5/6 events, freeze, then evaluate 2023+; DROP and 5 EUR ticket ranking use the pre-2023 v184 position rule.",
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
