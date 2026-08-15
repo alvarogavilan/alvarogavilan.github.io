@@ -1,0 +1,24 @@
+name: Loterias AI MetaPleno v126 Primitiva Reranker
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/multilane-v126-primitiva-reranker]
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v126-primitiva-discovery-reranker.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v126-primitiva-reranker.yml'
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - run: node loterias-ai/scripts/meta-pleno-v126-primitiva-discovery-reranker.mjs
+      - run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v126-primitiva-discovery-reranker.json
+          git diff --cached --quiet || git commit -m 'data(loterias-ai): persist v126 Primitiva reranker'
+          git push
