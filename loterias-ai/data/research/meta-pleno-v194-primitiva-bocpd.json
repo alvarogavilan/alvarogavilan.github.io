@@ -1,0 +1,86 @@
+{
+  "generatedAt": "2026-08-15T23:42:59.302Z",
+  "version": "v194",
+  "gameId": "primitiva",
+  "family": "BERNOULLI_BOCPD_NUMBER_REGIMES",
+  "configsTested": 12,
+  "selection": {
+    "train": "2017-2020",
+    "finalists": 6,
+    "validation": "2021-2022",
+    "test": "2023+"
+  },
+  "leader": {
+    "id": 6,
+    "config": {
+      "meanRun": 120,
+      "prior": 0.5
+    },
+    "train": {
+      "draws": 399,
+      "pool6": 0,
+      "pool5": 1,
+      "ticket6": 0,
+      "ticket5": 1,
+      "meanBest": 1.0075187969924813
+    },
+    "validation": {
+      "draws": 234,
+      "pool6": 0,
+      "pool5": 1,
+      "ticket6": 0,
+      "ticket5": 1,
+      "meanBest": 1.0427350427350428
+    },
+    "test": {
+      "draws": 564,
+      "pool6": 0,
+      "pool5": 0,
+      "ticket6": 0,
+      "ticket5": 0,
+      "meanBest": 1.0283687943262412
+    }
+  },
+  "deepTargetAudit": [
+    {
+      "date": "2024-01-11",
+      "missing": 22,
+      "rank": 44,
+      "top8": false,
+      "pool": [
+        13,
+        48,
+        7,
+        14,
+        11,
+        33,
+        1,
+        5
+      ],
+      "poolHits": 2,
+      "bestPlayable": 2
+    },
+    {
+      "date": "2026-07-25",
+      "missing": 38,
+      "rank": 12,
+      "top8": false,
+      "pool": [
+        31,
+        11,
+        43,
+        33,
+        22,
+        12,
+        40,
+        20
+      ],
+      "poolHits": 2,
+      "bestPlayable": 2
+    }
+  ],
+  "methodology": "Independent Bernoulli Bayesian online change-point detection per number. Posterior run-length mixture uses constant hazard 1/meanRun and Beta-Bernoulli predictive updates, truncated at run length 400. Hyperparameters are shortlisted on 2017-2020 and selected on 2021-2022; 2023+ is untouched test. Pool8 is converted to the fixed 15-ticket v79 reduction; full hit requires exact winning sextet in a playable ticket.",
+  "decision": "RESEARCH_ONLY_BOCPD",
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
