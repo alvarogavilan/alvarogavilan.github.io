@@ -7,6 +7,9 @@ on:
       - '.github/workflows/loterias-ai-gordo-triple-commonness-significance.yml'
 permissions:
   contents: write
+concurrency:
+  group: loterias-ai-gordo-triple-commonness-significance
+  cancel-in-progress: true
 jobs:
   audit:
     runs-on: ubuntu-latest
