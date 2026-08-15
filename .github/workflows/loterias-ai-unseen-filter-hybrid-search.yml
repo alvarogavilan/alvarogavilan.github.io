@@ -1,0 +1,32 @@
+name: Loterias AI Unseen Filter Hybrid Search
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/unseen-filter-hybrid-search.mjs'
+      - '.github/workflows/loterias-ai-unseen-filter-hybrid-search.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-unseen-filter-hybrid
+  cancel-in-progress: false
+jobs:
+  search:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - name: Run unseen-filter hybrid search
+        run: node loterias-ai/scripts/unseen-filter-hybrid-search.mjs
+      - name: Persist evidence safely
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/unseen-filter-hybrid-search.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'data(loterias-ai): persist unseen-filter hybrid search'
+          for i in 1 2 3 4 5; do git pull --rebase origin main && git push origin HEAD:main && exit 0; sleep $((i*3)); done
+          exit 1
