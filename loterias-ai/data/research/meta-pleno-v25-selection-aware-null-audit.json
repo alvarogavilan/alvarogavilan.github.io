@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-15T13:35:38.337Z",
+  "generatedAt": "2026-08-15T13:36:30.787Z",
   "engine": "MetaPleno-v25-selection-aware-null-audit",
   "purpose": "Audit frozen MetaPleno v5 candidates only on their later test windows against an exact uniform-lottery null, with conservative correction for the 240 finalists opened per game. Historical validation/discovery hits are not counted as independent confirmation.",
   "assumptions": {
@@ -74,7 +74,7 @@
       "null": {
         "perDrawThresholdProbability": 0.00010666616322754819,
         "expectedThresholdEvents": 0.040106477373558116,
-        "rawTailProbability": 0.03931491279314027,
+        "rawTailProbability": 0.03931491279313986,
         "bonferroni240": 1,
         "perDrawFullProbability": 4.719741735732221e-7,
         "expectedFullEvents": 0.0001774622892635315,
@@ -133,8 +133,8 @@
       "null": {
         "perDrawThresholdProbability": 0.000053407948144790245,
         "expectedThresholdEvents": 0.003471516629411366,
-        "rawTailProbability": 0.003465590267610651,
-        "bonferroni240": 0.8317416642265562,
+        "rawTailProbability": 0.0034655902676106513,
+        "bonferroni240": 0.8317416642265563,
         "perDrawFullProbability": 2.6052657631605e-7,
         "expectedFullEvents": 0.00001693422746054325,
         "rawFullTailProbability": 1,
@@ -210,12 +210,12 @@
       "null": {
         "perDrawThresholdProbability": 7.151123842018516e-8,
         "expectedThresholdEvents": 0.00009439483471464441,
-        "rawTailProbability": null,
-        "bonferroni240": null,
+        "rawTailProbability": 0.00009439038303724044,
+        "bonferroni240": 0.022653691928937708,
         "perDrawFullProbability": 7.151123842018516e-8,
         "expectedFullEvents": 0.00009439483471464441,
-        "rawFullTailProbability": null,
-        "bonferroni240Full": null
+        "rawFullTailProbability": 0.00009439038303724044,
+        "bonferroni240Full": 0.022653691928937708
       },
       "interpretation": "SINGLE_TEST_PERIOD_SIGNAL_NO_CROSS_YEAR_REPLICATION",
       "realMoneyPass": false
@@ -225,13 +225,23 @@
   "summary": {
     "strongestByAdjustedThreshold": [
       {
+        "game": "bonoloto",
+        "id": "meta-pleno-v5-bonoloto-175757",
+        "events": 1,
+        "activeYears": [
+          "2023"
+        ],
+        "adjustedP": 0.022653691928937708,
+        "interpretation": "SINGLE_TEST_PERIOD_SIGNAL_NO_CROSS_YEAR_REPLICATION"
+      },
+      {
         "game": "eurodreams",
         "id": "meta-pleno-v5-eurodreams-146988",
         "events": 1,
         "activeYears": [
           "2026"
         ],
-        "adjustedP": 0.8317416642265562,
+        "adjustedP": 0.8317416642265563,
         "interpretation": "SINGLE_TEST_PERIOD_SIGNAL_NO_CROSS_YEAR_REPLICATION"
       },
       {
@@ -242,16 +252,6 @@
           "2026"
         ],
         "adjustedP": 1,
-        "interpretation": "SINGLE_TEST_PERIOD_SIGNAL_NO_CROSS_YEAR_REPLICATION"
-      },
-      {
-        "game": "bonoloto",
-        "id": "meta-pleno-v5-bonoloto-175757",
-        "events": 1,
-        "activeYears": [
-          "2023"
-        ],
-        "adjustedP": null,
         "interpretation": "SINGLE_TEST_PERIOD_SIGNAL_NO_CROSS_YEAR_REPLICATION"
       }
     ],
