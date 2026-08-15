@@ -5,7 +5,7 @@ on:
     - cron: '30 22 15 8 *'
     - cron: '15 0,6,12,17 16 8 *'
   push:
-    branches: [main, research/metapleno-v175-next-draw-2eur-freeze]
+    branches: [main, research/metapleno-v175-next-draw-2eur-freeze, fix/v175-use-official-rss-sync]
     paths:
       - 'loterias-ai/scripts/meta-pleno-v175-bonoloto-next-draw-2eur-freeze.mjs'
       - '.github/workflows/loterias-ai-meta-pleno-v175-next-draw-2eur-freeze.yml'
@@ -19,8 +19,8 @@ jobs:
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: 22}
-      - name: Refresh official archive
-        run: node loterias-ai/scripts/backfill-core-2026.mjs || true
+      - name: Refresh official Bonoloto archive
+        run: node loterias-ai/scripts/bonoloto-official-rss-sync.mjs
       - name: Build guarded v175 freeze
         id: freeze
         shell: bash
@@ -43,8 +43,8 @@ jobs:
         if: hashFiles('loterias-ai/data/prospective/bonoloto-v175-v172-compressed-2eur-2026-08-16.json') != ''
         run: |
           git config user.name 'github-actions[bot]'
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add loterias-ai/data/archive/bonoloto/2026.json loterias-ai/data/prospective/bonoloto-v175-v172-compressed-2eur-2026-08-16.json loterias-ai/data/research/prospective-freeze-timing-validation.json
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/archive/bonoloto/2026.json loterias-ai/data/official/bonoloto-rss-sync-status.json loterias-ai/data/prospective/bonoloto-v175-v172-compressed-2eur-2026-08-16.json loterias-ai/data/research/prospective-freeze-timing-validation.json
           git diff --cached --quiet && exit 0
           git commit -m 'data(loterias-ai): freeze v175 Bonoloto Aug 16 2 EUR shadow'
           for i in 1 2 3 4 5; do git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin HEAD:"${GITHUB_REF_NAME}" && exit 0; sleep $((i*3)); done
