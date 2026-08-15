@@ -1,0 +1,35 @@
+name: Loterias AI Nacional Rule Era Registry
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/build-nacional-rule-era-registry.mjs'
+      - 'loterias-ai/data/validation/nacional-payout-reconstruction.json'
+      - '.github/workflows/loterias-ai-nacional-rule-era-registry.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-nacional-rule-era-registry
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build rule-era registry
+        run: node loterias-ai/scripts/build-nacional-rule-era-registry.mjs
+      - name: Persist registry
+        run: |
+          cp loterias-ai/data/models/nacional-rule-era-registry.json /tmp/nacional-rule-era-registry.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/models
+          cp /tmp/nacional-rule-era-registry.json loterias-ai/data/models/nacional-rule-era-registry.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/models/nacional-rule-era-registry.json
+          git commit -m 'data(loterias-ai): persist Nacional rule-era registry' || exit 0
+          git push origin HEAD:main
