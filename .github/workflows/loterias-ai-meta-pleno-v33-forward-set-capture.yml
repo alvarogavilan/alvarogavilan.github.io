@@ -2,6 +2,9 @@ name: Loterias AI MetaPleno v33 Forward Set Capture
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ['Loterias AI MetaPleno v15 Set Capture']
+    types: [completed]
   push:
     paths:
       - '.github/workflows/loterias-ai-meta-pleno-v33-forward-set-capture.yml'
@@ -16,6 +19,7 @@ concurrency:
 
 jobs:
   evaluate:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
