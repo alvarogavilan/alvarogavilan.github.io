@@ -1,0 +1,36 @@
+name: Loterias AI Validate Nacional Payout
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/validate-nacional-payout-reconstruction.mjs'
+      - '.github/workflows/loterias-ai-validate-nacional-payout.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-validate-nacional-payout
+  cancel-in-progress: true
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate reconstruction against exhaustive SELAE checker
+        run: node loterias-ai/scripts/validate-nacional-payout-reconstruction.mjs
+      - name: Persist validation evidence
+        if: always()
+        run: |
+          test -f loterias-ai/data/validation/nacional-payout-reconstruction.json || exit 0
+          cp loterias-ai/data/validation/nacional-payout-reconstruction.json /tmp/nacional-payout-reconstruction.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/validation
+          cp /tmp/nacional-payout-reconstruction.json loterias-ai/data/validation/nacional-payout-reconstruction.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/validation/nacional-payout-reconstruction.json
+          git commit -m 'data(loterias-ai): persist Nacional payout reconstruction validation' || exit 0
+          git push origin HEAD:main
