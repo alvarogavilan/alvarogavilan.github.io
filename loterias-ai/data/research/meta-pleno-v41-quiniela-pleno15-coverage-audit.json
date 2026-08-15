@@ -1,0 +1,195 @@
+{
+  "generatedAt": "2026-08-15T14:11:24.253Z",
+  "engine": "MetaPleno-v41-quiniela-pleno15-coverage-audit",
+  "purpose": "Compare independently selected pre-2018 marker-15 models at coverage widths 1, 2 and 4, then open 2018-2026 and specifically inspect the frozen 14/14 date 2018-12-05.",
+  "splits": {
+    "discovery": 27,
+    "validation": 10,
+    "postFreeze": 589
+  },
+  "groups": {
+    "1": {
+      "covers": 1,
+      "candidates": 100000,
+      "champion": {
+        "spec": {
+          "id": 17754,
+          "window": 40,
+          "w": [
+            0.802,
+            -0.024,
+            0.086,
+            -0.376,
+            -0.004,
+            -0.032
+          ]
+        },
+        "discovery": {
+          "draws": 27,
+          "hits": 7,
+          "rate": 0.25925925925925924
+        },
+        "validation": {
+          "draws": 10,
+          "hits": 2,
+          "rate": 0.2
+        }
+      },
+      "postFreeze": {
+        "draws": 589,
+        "hits": 43,
+        "rate": 0.0730050933786078
+      },
+      "target": {
+        "date": "2018-12-05",
+        "truth": "M-1",
+        "prediction": [
+          "2-0"
+        ],
+        "hit": false
+      },
+      "randomCoverage": 0.0625,
+      "selectionAdjustedNaiveTargetHitUpper": 1
+    },
+    "2": {
+      "covers": 2,
+      "candidates": 100000,
+      "champion": {
+        "spec": {
+          "id": 54453,
+          "window": 80,
+          "w": [
+            0.645,
+            -0.663,
+            0.588,
+            0.676,
+            -0.006,
+            -0.39
+          ]
+        },
+        "discovery": {
+          "draws": 27,
+          "hits": 11,
+          "rate": 0.4074074074074074
+        },
+        "validation": {
+          "draws": 10,
+          "hits": 2,
+          "rate": 0.2
+        }
+      },
+      "postFreeze": {
+        "draws": 589,
+        "hits": 97,
+        "rate": 0.16468590831918506
+      },
+      "target": {
+        "date": "2018-12-05",
+        "truth": "M-1",
+        "prediction": [
+          "M-1",
+          "M-0"
+        ],
+        "hit": true
+      },
+      "randomCoverage": 0.125,
+      "selectionAdjustedNaiveTargetHitUpper": 1
+    },
+    "4": {
+      "covers": 4,
+      "candidates": 100000,
+      "champion": {
+        "spec": {
+          "id": 54458,
+          "window": 80,
+          "w": [
+            0.872,
+            0.514,
+            0.7,
+            0.844,
+            -0.075,
+            -0.005
+          ]
+        },
+        "discovery": {
+          "draws": 27,
+          "hits": 15,
+          "rate": 0.5555555555555556
+        },
+        "validation": {
+          "draws": 10,
+          "hits": 4,
+          "rate": 0.4
+        }
+      },
+      "postFreeze": {
+        "draws": 589,
+        "hits": 222,
+        "rate": 0.3769100169779287
+      },
+      "target": {
+        "date": "2018-12-05",
+        "truth": "M-1",
+        "prediction": [
+          "2-1",
+          "2-0",
+          "M-1",
+          "M-0"
+        ],
+        "hit": true
+      },
+      "randomCoverage": 0.25,
+      "selectionAdjustedNaiveTargetHitUpper": 1
+    }
+  },
+  "strictestHistoricalPleno15": {
+    "covers": 2,
+    "candidates": 100000,
+    "champion": {
+      "spec": {
+        "id": 54453,
+        "window": 80,
+        "w": [
+          0.645,
+          -0.663,
+          0.588,
+          0.676,
+          -0.006,
+          -0.39
+        ]
+      },
+      "discovery": {
+        "draws": 27,
+        "hits": 11,
+        "rate": 0.4074074074074074
+      },
+      "validation": {
+        "draws": 10,
+        "hits": 2,
+        "rate": 0.2
+      }
+    },
+    "postFreeze": {
+      "draws": 589,
+      "hits": 97,
+      "rate": 0.16468590831918506
+    },
+    "target": {
+      "date": "2018-12-05",
+      "truth": "M-1",
+      "prediction": [
+        "M-1",
+        "M-0"
+      ],
+      "hit": true
+    },
+    "randomCoverage": 0.125,
+    "selectionAdjustedNaiveTargetHitUpper": 1
+  },
+  "realMoneyPass": false,
+  "limitations": [
+    "The target date is inspected after a marker model search and therefore is not prospective.",
+    "Naive multiplicity bounds are intentionally conservative and do not account for candidate dependence.",
+    "Prospective full15 requires a ticket frozen before a future draw."
+  ]
+}
