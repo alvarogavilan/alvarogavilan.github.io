@@ -1,0 +1,22 @@
+name: Loterias AI MetaPleno v123 Bonoloto Discovery Reranker
+on:
+  push:
+    branches:
+      - research/metapleno-v123-bonoloto-discovery-reranker
+  workflow_dispatch:
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run v123 discovery reranker
+        run: node loterias-ai/scripts/meta-pleno-v123-bonoloto-discovery-reranker.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v123-bonoloto-discovery-reranker
+          path: loterias-ai/data/research/meta-pleno-v123-bonoloto-discovery-reranker.json
