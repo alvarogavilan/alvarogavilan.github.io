@@ -10,5 +10,5 @@ s=s.replace(before,after)
  .replace("version:'v148'","version:'v150'")
  .replace("family:'STRUCTURAL_GATED_SIXTH_RESCUE'","family:'ALL_POSITION_STRUCTURAL_SIXTH_RESCUE'")
  .replace("but a structural swap is executed only if its objective gain over the unchanged c12 pool exceeds a threshold.","and expands the one-swap candidate set so ANY of c12 ranks 1-8 may be dropped for ranks 9-14; a swap executes only if objective gain exceeds a threshold.")
- .replace("This tests whether selective structural intervention can preserve near-plenos while rescuing full hits.","This tests the concrete architectural limitation exposed by v149: some 5/6 pools have all false positives above rank 6, making v132's drop-only-ranks-6..8 rule incapable of a 6/6 rescue.");
+ .replace("This tests whether selective structural intervention can preserve near-plenos while rescuing full hits.","This tests the concrete architectural limitation exposed by v149: some 5/6 pools have all false positives above rank 6, making the original v132 drop-only-ranks-6..8 rule incapable of a 6/6 rescue.");
 const tmp='/tmp/meta-pleno-v150.mjs';fs.writeFileSync(tmp,s);await import(pathToFileURL(tmp).href);
