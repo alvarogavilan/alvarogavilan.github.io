@@ -1,0 +1,39 @@
+{
+  "status": "MODEL_FROZEN_WAITING_OFFICIAL_PROGRAM",
+  "game": "quiniela",
+  "purpose": "Prospective Shadow test of complete Quiniela 14/14 + Pleno al 15. The 14-match rule and the marker-15 rule are frozen before any eligible draw on or after 2026-08-16.",
+  "prospectiveNotBeforeDate": "2026-08-16",
+  "frozenAtEvidence": "GitHub commit timestamp of this immutable freeze file",
+  "fourteenMatchModel": {
+    "sourceRun": 31877326576,
+    "specId": 271818,
+    "lookback": 40,
+    "doubles": 3,
+    "triples": 3,
+    "columns": 216,
+    "mode": "mixed",
+    "weights": [-0.89, 0.051, 0.664, -0.637, 0.239, -0.044],
+    "latestArchiveCutoffAtFreeze": "2026-08-09"
+  },
+  "pleno15Model": {
+    "source": "MetaPleno-v41-quiniela-pleno15-coverage-audit",
+    "specId": 54453,
+    "window": 80,
+    "covers": 2,
+    "weights": [0.645, -0.663, 0.588, 0.676, -0.006, -0.39],
+    "historicalPostFreezeReference": {
+      "date": "2018-12-05",
+      "truth": "M-1",
+      "prediction": ["M-1", "M-0"],
+      "classification": "HISTORICAL_POST_FREEZE_ONLY_NOT_PROSPECTIVE"
+    }
+  },
+  "officialProgramPolicy": {
+    "source": "SELAE official Proximas_jornadas_deportivas.pdf",
+    "rule": "Do not generate the P15 marker forecast until an official future program with match-15 teams is available. Never infer or invent teams.",
+    "forecastMutationAfterSeal": "FORBIDDEN"
+  },
+  "realStakeEUR": 0,
+  "realMoneyPass": false,
+  "researchWarning": "Historical Pleno al 15 does not prove predictive edge. Only immutable prospective settlements count toward promotion."
+}
