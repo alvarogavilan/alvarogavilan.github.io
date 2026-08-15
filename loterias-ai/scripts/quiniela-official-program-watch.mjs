@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+const IN=process.env.PROGRAM_TEXT||'/tmp/proximas-jornadas.txt';
+const OUT='loterias-ai/data/shadow/quiniela-next-official-program.json';
+const src='https://www.loteriasyapuestas.es/f/loterias/documentos/Quiniela/Calendarios/Proximas_jornadas_deportivas.pdf';
+const t=fs.readFileSync(IN,'utf8').replace(/\r/g,'');
+const monthMap={enero:1,febrero:2,marzo:3,abril:4,mayo:5,junio:6,julio:7,agosto:8,septiembre:9,octubre:10,noviembre:11,diciembre:12};
+const lines=t.split('\n').map(x=>x.trim()).filter(Boolean);const sections=[];
+for(let i=0;i<lines.length;i++){const jm=lines[i].match(/JORNADA\s+(\d+)[ªa]?/i);if(!jm)continue;let end=Math.min(lines.length,i+45),date=null,p15=null;for(let j=i+1;j<end;j++){if(j>i+1&&/JORNADA\s+\d+/i.test(lines[j])){end=j;break}const dm=lines[j].match(/(\d{1,2})(?:\s*-\s*(\d{1,2}))?\s+de\s+([A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+)\s+de\s+(20\d{2})/i);if(dm&&!date){const m=monthMap[dm[3].toLowerCase()];if(m)date={fromDay:+dm[1],toDay:+(dm[2]||dm[1]),month:m,year:+dm[4],raw:lines[j]}}const pm=lines[j].match(/^(?:P\s*15|P15|15)\s*[.:-]?\s*(.+?)\s+-\s+(.+)$/i);if(pm)p15={home:pm[1].trim(),away:pm[2].trim(),raw:lines[j]}}if(date&&p15)sections.push({jornada:+jm[1],date,p15})}
+const eligible=sections.filter(s=>{const d=s.date;if(d.year>2026)return true;if(d.year<2026)return false;if(d.month>8)return true;if(d.month<8)return false;return d.toDay>=16}).sort((a,b)=>a.date.year-b.date.year||a.date.month-b.date.month||a.date.fromDay-b.date.fromDay||a.jornada-b.jornada);
+const chosen=eligible[0]||null;const report={checkedAt:new Date().toISOString(),source:src,status:chosen?'OFFICIAL_PROGRAM_FOUND':'WAITING_OFFICIAL_PROGRAM',prospectiveNotBeforeDate:'2026-08-16',parsedSections:sections,chosen};fs.mkdirSync('loterias-ai/data/shadow',{recursive:true});fs.writeFileSync(OUT,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));
