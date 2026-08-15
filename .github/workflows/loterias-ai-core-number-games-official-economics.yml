@@ -19,13 +19,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Enrich Bonoloto
+      - name: Enrich Bonoloto aggressively but rate-bounded
         run: |
-          for i in 1 2 3 4; do GAME=bonoloto BATCH_LIMIT=120 node loterias-ai/scripts/enrich-core-number-game-official-economics.mjs || exit 1; done
-      - name: Enrich El Gordo
-        run: |
-          # Four bounded passes cover the current remainder while keeping SELAE request rate conservative.
-          for i in 1 2 3 4; do GAME=gordo BATCH_LIMIT=120 node loterias-ai/scripts/enrich-core-number-game-official-economics.mjs || exit 1; done
+          for i in $(seq 1 16); do GAME=bonoloto BATCH_LIMIT=120 node loterias-ai/scripts/enrich-core-number-game-official-economics.mjs || exit 1; done
+      - name: Verify El Gordo remains complete
+        run: GAME=gordo BATCH_LIMIT=120 node loterias-ai/scripts/enrich-core-number-game-official-economics.mjs
       - name: Persist safely
         run: |
           mkdir -p /tmp/loterias-ai
@@ -43,5 +41,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add loterias-ai/data/archive/bonoloto loterias-ai/data/archive/gordo-primitiva loterias-ai/data/archive/_meta/bonoloto-official-economics.json loterias-ai/data/archive/_meta/gordo-primitiva-official-economics.json
-          git commit -m 'data(loterias-ai): enrich Bonoloto and El Gordo official economics' || exit 0
+          git commit -m 'data(loterias-ai): expand Bonoloto official economics' || exit 0
           git push origin HEAD:main
