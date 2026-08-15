@@ -1,0 +1,540 @@
+{
+  "generatedAt": "2026-08-15T20:19:44.698Z",
+  "version": "v152",
+  "gameId": "bonoloto",
+  "family": "PAIRWISE_SWAP_POLICY",
+  "methodology": "Learn a pre-draw pairwise swap policy on every c12 top8→rank9-14 one-swap candidate from 2018-2020. Labels are whether the swap improves or harms the base pool hit count, used only in training. Features are pre-draw c12 rank/score differences, structural-gain, co-occurrence cohesion difference and seven c12 feature deltas. A Fisher-style standardized discriminant is frozen after 2020; intervention threshold is selected only on 2021-2022; 2023-2024 and 2025-latest remain unopened until final freeze.",
+  "training": {
+    "start": "2018-01-01",
+    "end": "2020-12-31",
+    "days": 880,
+    "positiveSwaps": 4423,
+    "negativeSwaps": 4817,
+    "featureNames": [
+      "addRankNorm",
+      "dropRankNorm",
+      "scoreDiff",
+      "structGain",
+      "cohesionDiff",
+      "d_longFrequency",
+      "d_shortMomentum",
+      "d_gap",
+      "d_stability",
+      "d_pairAffinity",
+      "d_entropy",
+      "d_meanReversion"
+    ],
+    "coefficients": {
+      "addRankNorm": 0.012807746568476863,
+      "dropRankNorm": 0.012500356918234883,
+      "scoreDiff": 0.019151098184843226,
+      "structGain": 0.03337507833646557,
+      "cohesionDiff": 0.03507000174389199,
+      "d_longFrequency": -0.03756967945890594,
+      "d_shortMomentum": 0.03922929795914693,
+      "d_gap": -0.04038409372305341,
+      "d_stability": 0.06785943735243484,
+      "d_pairAffinity": -0.06415889810164065,
+      "d_entropy": -0.034515041576429525,
+      "d_meanReversion": 0.033215885910708697
+    }
+  },
+  "candidatePool": {
+    "thresholdQuantiles": [
+      0.5,
+      0.65,
+      0.75,
+      0.85,
+      0.9,
+      0.95,
+      0.975,
+      0.99,
+      0.995
+    ],
+    "nominal": 9,
+    "effective": 9
+  },
+  "selection": {
+    "start": "2021-01-01",
+    "end": "2022-12-31",
+    "frozen": 4
+  },
+  "validation": {
+    "mid": "2023-2024",
+    "late": "2025-latest"
+  },
+  "leaders": [
+    {
+      "id": "q0.99",
+      "threshold": 0.4462213097483258,
+      "select": {
+        "n": 640,
+        "h4": 7,
+        "h5": 0,
+        "h6": 0,
+        "improved": 8,
+        "harmed": 12,
+        "swaps": 97,
+        "sum": 631
+      },
+      "mid": {
+        "n": 731,
+        "h4": 1,
+        "h5": 1,
+        "h6": 0,
+        "improved": 10,
+        "harmed": 11,
+        "swaps": 104,
+        "sum": 692,
+        "events": [
+          {
+            "date": "2024-03-05",
+            "winning": [
+              17,
+              20,
+              22,
+              31,
+              34,
+              46
+            ],
+            "basePool": [
+              20,
+              22,
+              31,
+              34,
+              39,
+              41,
+              45,
+              46
+            ],
+            "baseHits": 5,
+            "pool": [
+              20,
+              22,
+              31,
+              34,
+              39,
+              41,
+              45,
+              46
+            ],
+            "hits": 5,
+            "delta": 0,
+            "swapped": false,
+            "drop": null,
+            "add": null,
+            "policyScore": 0.2344498997917285
+          }
+        ]
+      },
+      "late": {
+        "n": 590,
+        "h4": 1,
+        "h5": 1,
+        "h6": 0,
+        "improved": 20,
+        "harmed": 15,
+        "swaps": 112,
+        "sum": 543,
+        "events": [
+          {
+            "date": "2025-06-21",
+            "winning": [
+              32,
+              34,
+              36,
+              37,
+              39,
+              48
+            ],
+            "basePool": [
+              10,
+              31,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "baseHits": 5,
+            "pool": [
+              10,
+              31,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "hits": 5,
+            "delta": 0,
+            "swapped": false,
+            "drop": null,
+            "add": null,
+            "policyScore": 0.21666778232557812
+          }
+        ]
+      }
+    },
+    {
+      "id": "q0.975",
+      "threshold": 0.38106097054418425,
+      "select": {
+        "n": 640,
+        "h4": 6,
+        "h5": 0,
+        "h6": 0,
+        "improved": 17,
+        "harmed": 33,
+        "swaps": 225,
+        "sum": 619
+      },
+      "mid": {
+        "n": 731,
+        "h4": 1,
+        "h5": 1,
+        "h6": 0,
+        "improved": 28,
+        "harmed": 23,
+        "swaps": 246,
+        "sum": 698,
+        "events": [
+          {
+            "date": "2024-03-05",
+            "winning": [
+              17,
+              20,
+              22,
+              31,
+              34,
+              46
+            ],
+            "basePool": [
+              20,
+              22,
+              31,
+              34,
+              39,
+              41,
+              45,
+              46
+            ],
+            "baseHits": 5,
+            "pool": [
+              20,
+              22,
+              31,
+              34,
+              39,
+              41,
+              45,
+              46
+            ],
+            "hits": 5,
+            "delta": 0,
+            "swapped": false,
+            "drop": null,
+            "add": null,
+            "policyScore": 0.2344498997917285
+          }
+        ]
+      },
+      "late": {
+        "n": 590,
+        "h4": 2,
+        "h5": 1,
+        "h6": 0,
+        "improved": 29,
+        "harmed": 21,
+        "swaps": 194,
+        "sum": 546,
+        "events": [
+          {
+            "date": "2025-06-21",
+            "winning": [
+              32,
+              34,
+              36,
+              37,
+              39,
+              48
+            ],
+            "basePool": [
+              10,
+              31,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "baseHits": 5,
+            "pool": [
+              10,
+              31,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "hits": 5,
+            "delta": 0,
+            "swapped": false,
+            "drop": null,
+            "add": null,
+            "policyScore": 0.21666778232557812
+          }
+        ]
+      }
+    },
+    {
+      "id": "q0.995",
+      "threshold": 0.488521980959849,
+      "select": {
+        "n": 640,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "improved": 5,
+        "harmed": 7,
+        "swaps": 54,
+        "sum": 633
+      },
+      "mid": {
+        "n": 731,
+        "h4": 1,
+        "h5": 1,
+        "h6": 0,
+        "improved": 2,
+        "harmed": 6,
+        "swaps": 49,
+        "sum": 689,
+        "events": [
+          {
+            "date": "2024-03-05",
+            "winning": [
+              17,
+              20,
+              22,
+              31,
+              34,
+              46
+            ],
+            "basePool": [
+              20,
+              22,
+              31,
+              34,
+              39,
+              41,
+              45,
+              46
+            ],
+            "baseHits": 5,
+            "pool": [
+              20,
+              22,
+              31,
+              34,
+              39,
+              41,
+              45,
+              46
+            ],
+            "hits": 5,
+            "delta": 0,
+            "swapped": false,
+            "drop": null,
+            "add": null,
+            "policyScore": 0.2344498997917285
+          }
+        ]
+      },
+      "late": {
+        "n": 590,
+        "h4": 1,
+        "h5": 1,
+        "h6": 0,
+        "improved": 14,
+        "harmed": 10,
+        "swaps": 73,
+        "sum": 542,
+        "events": [
+          {
+            "date": "2025-06-21",
+            "winning": [
+              32,
+              34,
+              36,
+              37,
+              39,
+              48
+            ],
+            "basePool": [
+              10,
+              31,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "baseHits": 5,
+            "pool": [
+              10,
+              31,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "hits": 5,
+            "delta": 0,
+            "swapped": false,
+            "drop": null,
+            "add": null,
+            "policyScore": 0.21666778232557812
+          }
+        ]
+      }
+    },
+    {
+      "id": "q0.9",
+      "threshold": 0.24912016119178282,
+      "select": {
+        "n": 640,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "improved": 51,
+        "harmed": 65,
+        "swaps": 492,
+        "sum": 621
+      },
+      "mid": {
+        "n": 731,
+        "h4": 1,
+        "h5": 1,
+        "h6": 0,
+        "improved": 65,
+        "harmed": 59,
+        "swaps": 571,
+        "sum": 699,
+        "events": [
+          {
+            "date": "2024-03-05",
+            "winning": [
+              17,
+              20,
+              22,
+              31,
+              34,
+              46
+            ],
+            "basePool": [
+              20,
+              22,
+              31,
+              34,
+              39,
+              41,
+              45,
+              46
+            ],
+            "baseHits": 5,
+            "pool": [
+              20,
+              22,
+              31,
+              34,
+              39,
+              41,
+              45,
+              46
+            ],
+            "hits": 5,
+            "delta": 0,
+            "swapped": false,
+            "drop": null,
+            "add": null,
+            "policyScore": 0.2344498997917285
+          }
+        ]
+      },
+      "late": {
+        "n": 590,
+        "h4": 2,
+        "h5": 1,
+        "h6": 0,
+        "improved": 57,
+        "harmed": 42,
+        "swaps": 445,
+        "sum": 553,
+        "events": [
+          {
+            "date": "2025-06-21",
+            "winning": [
+              32,
+              34,
+              36,
+              37,
+              39,
+              48
+            ],
+            "basePool": [
+              10,
+              31,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "baseHits": 5,
+            "pool": [
+              10,
+              31,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "hits": 5,
+            "delta": 0,
+            "swapped": false,
+            "drop": null,
+            "add": null,
+            "policyScore": 0.21666778232557812
+          }
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "midFullModels": 0,
+    "lateFullModels": 0,
+    "mid5PlusModels": 4,
+    "late5PlusModels": 4,
+    "repeat5PlusModels": 4,
+    "lateImprovementModels": 4
+  },
+  "budget": {
+    "poolSize": 8,
+    "playableCombinations": 28,
+    "theoreticalStakeEUR": 14,
+    "realStakeEUR": 0
+  },
+  "realMoneyPass": false,
+  "decision": "RESEARCH_ONLY_REQUIRE_CORRELATED_NULL_AND_PROSPECTIVE"
+}
