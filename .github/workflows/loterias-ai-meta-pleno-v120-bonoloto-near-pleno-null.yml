@@ -1,0 +1,22 @@
+name: Loterias AI MetaPleno v120 Bonoloto Near Pleno Null
+on:
+  push:
+    branches:
+      - research/metapleno-v120-bonoloto-near-pleno-null
+  workflow_dispatch:
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run v120 matched-cost null
+        run: node loterias-ai/scripts/meta-pleno-v120-bonoloto-near-pleno-null.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v120-bonoloto-near-pleno-null
+          path: loterias-ai/data/research/meta-pleno-v120-bonoloto-near-pleno-null.json
