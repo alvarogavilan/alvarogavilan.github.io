@@ -31,6 +31,8 @@ jobs:
           cp -R loterias-ai/data/archive/gordo-primitiva /tmp/loterias-ai/gordo-primitiva
           cp loterias-ai/data/archive/_meta/bonoloto-official-economics.json /tmp/loterias-ai/bonoloto-official-economics.json
           cp loterias-ai/data/archive/_meta/gordo-primitiva-official-economics.json /tmp/loterias-ai/gordo-primitiva-official-economics.json
+          cp loterias-ai/data/archive/_meta/bonoloto-official-conflicts.json /tmp/loterias-ai/bonoloto-official-conflicts.json 2>/dev/null || true
+          cp loterias-ai/data/archive/_meta/gordo-primitiva-official-conflicts.json /tmp/loterias-ai/gordo-primitiva-official-conflicts.json 2>/dev/null || true
           git fetch origin main
           git reset --hard origin/main
           rm -rf loterias-ai/data/archive/bonoloto loterias-ai/data/archive/gordo-primitiva
@@ -38,8 +40,10 @@ jobs:
           cp -R /tmp/loterias-ai/gordo-primitiva loterias-ai/data/archive/gordo-primitiva
           cp /tmp/loterias-ai/bonoloto-official-economics.json loterias-ai/data/archive/_meta/bonoloto-official-economics.json
           cp /tmp/loterias-ai/gordo-primitiva-official-economics.json loterias-ai/data/archive/_meta/gordo-primitiva-official-economics.json
+          test ! -f /tmp/loterias-ai/bonoloto-official-conflicts.json || cp /tmp/loterias-ai/bonoloto-official-conflicts.json loterias-ai/data/archive/_meta/bonoloto-official-conflicts.json
+          test ! -f /tmp/loterias-ai/gordo-primitiva-official-conflicts.json || cp /tmp/loterias-ai/gordo-primitiva-official-conflicts.json loterias-ai/data/archive/_meta/gordo-primitiva-official-conflicts.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add loterias-ai/data/archive/bonoloto loterias-ai/data/archive/gordo-primitiva loterias-ai/data/archive/_meta/bonoloto-official-economics.json loterias-ai/data/archive/_meta/gordo-primitiva-official-economics.json
+          git add loterias-ai/data/archive/bonoloto loterias-ai/data/archive/gordo-primitiva loterias-ai/data/archive/_meta/bonoloto-official-economics.json loterias-ai/data/archive/_meta/gordo-primitiva-official-economics.json loterias-ai/data/archive/_meta/*-official-conflicts.json
           git commit -m 'data(loterias-ai): expand Bonoloto official economics' || exit 0
           git push origin HEAD:main
