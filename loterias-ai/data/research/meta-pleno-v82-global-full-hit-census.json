@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-15T16:28:36.763Z",
+  "generatedAt": "2026-08-15T16:30:41.787Z",
   "engine": "MetaPleno-v82-global-full-hit-census",
   "scope": [
     "research",
@@ -456,7 +456,7 @@
     "euromillones": false
   },
   "crossFamilyFusionV86": {
-    "generatedAt": "2026-08-15T16:28:36.742Z",
+    "generatedAt": "2026-08-15T16:30:16.236Z",
     "engine": "MetaPleno-v86-bonoloto-cross-family-rank-fusion",
     "methodology": "Rank-vote fusion of independently frozen v53 and v81 families. Ensemble size and family weights selected only on 2020-2022; top20 frozen before opening 2023-2024 and 2025-2026.",
     "budgetPolicy": {
@@ -890,6 +890,73 @@
         }
       }
     ]
+  },
+  "familyMatchedNullV87": {
+    "generatedAt": "2026-08-15T16:30:16.599Z",
+    "engine": "MetaPleno-v87-bonoloto-family-matched-null",
+    "game": "bonoloto",
+    "methodology": "Family-level matched temporal null for the persisted top30 frozen v53 and v81 panels. A common circular shift preserves the entire prediction panel, within-family correlations and real draw composition, breaking only temporal alignment.",
+    "v53": {
+      "mid": {
+        "family": "v53",
+        "models": 30,
+        "draws": 731,
+        "observedUniqueFullDates": 1,
+        "null": {
+          "method": "single common circular shift applied to real winning-set sequence; all model pools and cross-model correlation preserved",
+          "shifts": 731,
+          "extreme": 48,
+          "pValue": 0.06566347469220246,
+          "maxUniqueFullDates": 42,
+          "meanUniqueFullDates": 0.146374829001368
+        }
+      },
+      "late": {
+        "family": "v53",
+        "models": 30,
+        "draws": 590,
+        "observedUniqueFullDates": 0,
+        "null": {
+          "method": "single common circular shift applied to real winning-set sequence; all model pools and cross-model correlation preserved",
+          "shifts": 590,
+          "extreme": 590,
+          "pValue": 1,
+          "maxUniqueFullDates": 21,
+          "meanUniqueFullDates": 0.06949152542372881
+        }
+      }
+    },
+    "v81": {
+      "mid": {
+        "family": "v81",
+        "models": 30,
+        "draws": 731,
+        "observedUniqueFullDates": 1,
+        "null": {
+          "method": "single common circular shift applied to real winning-set sequence; all model pools and cross-model correlation preserved",
+          "shifts": 731,
+          "extreme": 443,
+          "pValue": 0.6060191518467852,
+          "maxUniqueFullDates": 29,
+          "meanUniqueFullDates": 3.102599179206566
+        }
+      },
+      "late": {
+        "family": "v81",
+        "models": 30,
+        "draws": 590,
+        "observedUniqueFullDates": 0,
+        "null": {
+          "method": "single common circular shift applied to real winning-set sequence; all model pools and cross-model correlation preserved",
+          "shifts": 590,
+          "extreme": 590,
+          "pValue": 1,
+          "maxUniqueFullDates": 21,
+          "meanUniqueFullDates": 2.8
+        }
+      }
+    },
+    "realMoneyPass": false
   },
   "realMoneyPass": false
 }
