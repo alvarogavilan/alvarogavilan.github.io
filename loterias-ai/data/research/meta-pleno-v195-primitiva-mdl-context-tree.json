@@ -1,0 +1,86 @@
+{
+  "generatedAt": "2026-08-15T23:45:00.117Z",
+  "version": "v195",
+  "gameId": "primitiva",
+  "family": "KT_MDL_BINARY_CONTEXT_TREE",
+  "depthsTested": [
+    2,
+    4,
+    6,
+    8,
+    10
+  ],
+  "selection": {
+    "train": "2017-2020",
+    "validation": "2021-2022",
+    "test": "2023+"
+  },
+  "leader": {
+    "depth": 2,
+    "train": {
+      "draws": 399,
+      "pool5": 0,
+      "pool6": 0,
+      "ticket5": 0,
+      "ticket6": 0,
+      "meanBest": 0.9573934837092731
+    },
+    "validation": {
+      "draws": 234,
+      "pool5": 0,
+      "pool6": 0,
+      "ticket5": 0,
+      "ticket6": 0,
+      "meanBest": 0.9700854700854701
+    },
+    "test": {
+      "draws": 564,
+      "pool5": 0,
+      "pool6": 0,
+      "ticket5": 0,
+      "ticket6": 0,
+      "meanBest": 0.9645390070921985
+    }
+  },
+  "deepTargetAudit": [
+    {
+      "date": "2024-01-11",
+      "missing": 22,
+      "rank": 15,
+      "top8": false,
+      "pool": [
+        3,
+        45,
+        38,
+        1,
+        47,
+        40,
+        30,
+        41
+      ],
+      "poolHits": 0,
+      "bestPlayable": 0
+    },
+    {
+      "date": "2026-07-25",
+      "missing": 38,
+      "rank": 2,
+      "top8": true,
+      "pool": [
+        39,
+        38,
+        1,
+        45,
+        41,
+        40,
+        30,
+        3
+      ],
+      "poolHits": 2,
+      "bestPlayable": 2
+    }
+  ],
+  "methodology": "For each number, model its draw-by-draw presence as a binary sequence. Orders 0..D use Krichevsky-Trofimov predictive coding; cumulative prequential code length is the MDL score. Predictions average context orders with weights exp(-relative code length). D is shortlisted on 2017-2020, selected on 2021-2022, frozen for 2023+. Pool8 uses the fixed 15-ticket Primitiva reduction; 6/6 counts only when the exact sextet is playable.",
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
