@@ -1,3 +1,4 @@
+// trigger: v70 pair-trio research
 import fs from 'node:fs';
 const game=process.argv[2]; if(!['bonoloto','primitiva','euromillones'].includes(game)) throw new Error('game');
 const cfg={bonoloto:{n:49,k:6,cost:.5,pool:8,stars:0,starK:0},primitiva:{n:49,k:6,cost:1,pool:8,stars:0,starK:0},euromillones:{n:50,k:5,cost:2.5,pool:8,stars:12,starK:2,starPool:4}}[game];
