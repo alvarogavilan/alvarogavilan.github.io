@@ -1,0 +1,65 @@
+name: Loterias AI MetaPleno Football
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/loterias-ai-meta-pleno-football.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-meta-pleno-football
+  cancel-in-progress: false
+jobs:
+  search:
+    strategy:
+      fail-fast: false
+      matrix:
+        game: [quiniela, quinigol]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Run 500k pleno-first game-specific search
+        run: |
+          mkdir -p loterias-ai/data/research
+          if [ "${{ matrix.game }}" = "quiniela" ]; then
+            CANDIDATES=500000 node loterias-ai/scripts/quiniela-system-mass-search.mjs
+            cp loterias-ai/data/research/quiniela-system-mass-search.json loterias-ai/data/research/meta-pleno-football-quiniela.json
+          else
+            CANDIDATES=500000 node loterias-ai/scripts/quinigol-mass-financial-search.mjs
+            cp loterias-ai/data/backtests/quinigol-mass-financial-search.json loterias-ai/data/research/meta-pleno-football-quinigol.json
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: meta-pleno-football-${{ matrix.game }}
+          path: loterias-ai/data/research/meta-pleno-football-${{ matrix.game }}.json
+  persist:
+    needs: search
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: meta-pleno-football-*
+          path: /tmp/meta-football
+      - name: Persist isolated football evidence
+        run: |
+          mkdir -p loterias-ai/data/research
+          find /tmp/meta-football -name '*.json' -exec cp {} loterias-ai/data/research/ \;
+          cp -R loterias-ai/data/research /tmp/meta-football-final
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/meta-football-final/meta-pleno-football-*.json loterias-ai/data/research/
+            git add loterias-ai/data/research/meta-pleno-football-*.json
+            git commit -m 'data(loterias-ai): persist MetaPleno football search' || exit 0
+            git push origin HEAD:main && exit 0
+            sleep $((i*3))
+          done
+          exit 1
