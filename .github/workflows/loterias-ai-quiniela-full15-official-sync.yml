@@ -3,6 +3,11 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '17 */4 * * *'
+  push:
+    paths:
+      - 'loterias-ai/scripts/quiniela-prospective-full15-official-sync.mjs'
+      - 'loterias-ai/data/research/meta-pleno-v41-quiniela-pleno15-coverage-audit.json'
+      - '.github/workflows/loterias-ai-quiniela-full15-official-sync.yml'
 permissions:
   contents: write
 concurrency:
