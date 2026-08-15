@@ -1,0 +1,35 @@
+name: Loterias AI Nacional Schema Financial Tournament
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/loteria-nacional-schema-financial-tournament.mjs'
+      - '.github/workflows/loterias-ai-nacional-schema-financial-tournament.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-nacional-schema-financial-tournament
+  cancel-in-progress: true
+jobs:
+  tournament:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run validated-schema financial tournament
+        run: node loterias-ai/scripts/loteria-nacional-schema-financial-tournament.mjs
+      - name: Persist tournament evidence safely
+        run: |
+          cp loterias-ai/data/backtests/loteria-nacional-schema-financial-tournament.json /tmp/nacional-schema-financial-tournament.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/backtests
+          cp /tmp/nacional-schema-financial-tournament.json loterias-ai/data/backtests/loteria-nacional-schema-financial-tournament.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/backtests/loteria-nacional-schema-financial-tournament.json
+          git commit -m 'data(loterias-ai): persist validated-schema Nacional tournament' || exit 0
+          git push origin HEAD:main
