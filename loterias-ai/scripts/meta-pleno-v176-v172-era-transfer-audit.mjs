@@ -15,7 +15,7 @@ function transformed(f){
   let s=original;
   const out=`/tmp/meta-pleno-v176-fold-${f.id}.json`;
   s=s.replace("loterias-ai/data/research/meta-pleno-v172-dual-drop-ticket-ranker.json",out)
-     .replace("version:'v172'","version:'v176-fold-${f.id}'")
+     .replace("version:'v172'",`version:'v176-fold-${f.id}'`)
      .replaceAll("2018-01-01",f.dropStart)
      .replaceAll("2020-12-31",f.dropEnd)
      .replaceAll("2021-01-01",f.selectStart)
