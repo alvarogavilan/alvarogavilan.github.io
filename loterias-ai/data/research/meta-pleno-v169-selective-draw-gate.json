@@ -1,0 +1,152 @@
+{
+  "generatedAt": "2026-08-15T20:58:59.553Z",
+  "version": "v169",
+  "gameId": "bonoloto",
+  "family": "SELECTIVE_DRAW_EVIDENCE_GATE",
+  "methodology": "Uses only pre-draw confidence geometry of the frozen c12 ranking. Gate family and target selection fraction are chosen on 2018-06 through 2022. Thresholds are frozen before opening 2023-2024 and 2025-latest. Purpose is to determine whether near-plenos concentrate on a small subset of draws, allowing many NO_BET days without changing number selection.",
+  "selectionPeriod": "2018-06-01..2022-12-31",
+  "candidateGates": 15,
+  "frozen": [
+    {
+      "family": "quality",
+      "targetFraction": 0.1,
+      "threshold": 0.28827470353196616,
+      "select": {
+        "selected": 139,
+        "total": 1390,
+        "fraction": 0.1,
+        "h4": 2,
+        "h5": 1,
+        "h6": 0,
+        "meanHits": 0.9784172661870504,
+        "events": [
+          {
+            "date": "2018-09-06",
+            "hits": 5
+          }
+        ]
+      },
+      "score": 10020009.784172662,
+      "mid": {
+        "selected": 77,
+        "total": 731,
+        "fraction": 0.10533515731874145,
+        "h4": 0,
+        "h5": 0,
+        "h6": 0,
+        "meanHits": 1.051948051948052,
+        "events": []
+      },
+      "late": {
+        "selected": 80,
+        "total": 590,
+        "fraction": 0.13559322033898305,
+        "h4": 0,
+        "h5": 0,
+        "h6": 0,
+        "meanHits": 0.8,
+        "events": []
+      }
+    },
+    {
+      "family": "meanScore",
+      "targetFraction": 0.2,
+      "threshold": 0.6060954026579419,
+      "select": {
+        "selected": 278,
+        "total": 1390,
+        "fraction": 0.2,
+        "h4": 3,
+        "h5": 1,
+        "h6": 0,
+        "meanHits": 0.9928057553956835,
+        "events": [
+          {
+            "date": "2018-09-06",
+            "hits": 5
+          }
+        ]
+      },
+      "score": 5015004.964028777,
+      "mid": {
+        "selected": 156,
+        "total": 731,
+        "fraction": 0.213406292749658,
+        "h4": 0,
+        "h5": 0,
+        "h6": 0,
+        "meanHits": 1.0064102564102564,
+        "events": []
+      },
+      "late": {
+        "selected": 96,
+        "total": 590,
+        "fraction": 0.16271186440677965,
+        "h4": 0,
+        "h5": 0,
+        "h6": 0,
+        "meanHits": 0.96875,
+        "events": []
+      }
+    },
+    {
+      "family": "concentration",
+      "targetFraction": 0.2,
+      "threshold": 0.013110290530151494,
+      "select": {
+        "selected": 278,
+        "total": 1390,
+        "fraction": 0.2,
+        "h4": 3,
+        "h5": 1,
+        "h6": 0,
+        "meanHits": 0.9892086330935251,
+        "events": [
+          {
+            "date": "2018-09-06",
+            "hits": 5
+          }
+        ]
+      },
+      "score": 5015004.946043165,
+      "mid": {
+        "selected": 119,
+        "total": 731,
+        "fraction": 0.16279069767441862,
+        "h4": 0,
+        "h5": 0,
+        "h6": 0,
+        "meanHits": 0.8151260504201681,
+        "events": []
+      },
+      "late": {
+        "selected": 110,
+        "total": 590,
+        "fraction": 0.1864406779661017,
+        "h4": 0,
+        "h5": 0,
+        "h6": 0,
+        "meanHits": 1,
+        "events": []
+      }
+    }
+  ],
+  "ungatedValidation": {
+    "mid": {
+      "n": 731,
+      "h5": 1
+    },
+    "late": {
+      "n": 590,
+      "h5": 1
+    }
+  },
+  "economicPolicy": {
+    "zeroEURValid": true,
+    "hardMaxPerGameDrawEUR": 15,
+    "preferredSelectedDrawEUR": 5,
+    "realMoneyPass": false,
+    "realStakeEUR": 0
+  },
+  "decision": "SELECTIVITY_REQUIRES_OUT_OF_SAMPLE_CONCENTRATION"
+}
