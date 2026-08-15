@@ -1,0 +1,73 @@
+name: Loterias AI MetaPleno v1
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-shard.mjs'
+      - 'loterias-ai/scripts/meta-pleno-aggregate.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v1.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-meta-pleno-v1
+  cancel-in-progress: false
+jobs:
+  search:
+    strategy:
+      fail-fast: false
+      matrix:
+        game: [primitiva, bonoloto, euromillones, eurodreams, gordo-primitiva]
+        shard: [0,1,2,3]
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Search 50k pleno-first hybrids
+        env:
+          GAME: ${{ matrix.game }}
+          SHARD: ${{ matrix.shard }}
+          CANDIDATES: 50000
+        run: node loterias-ai/scripts/meta-pleno-shard.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: meta-pleno-${{ matrix.game }}-${{ matrix.shard }}
+          path: loterias-ai/data/research/meta-pleno-shards/${{ matrix.game }}-${{ matrix.shard }}.json
+  aggregate:
+    needs: search
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: meta-pleno-*
+          path: /tmp/meta-pleno
+      - name: Collect shards
+        run: |
+          mkdir -p loterias-ai/data/research/meta-pleno-shards
+          find /tmp/meta-pleno -name '*.json' -exec cp {} loterias-ai/data/research/meta-pleno-shards/ \;
+      - name: Open untouched holdout and aggregate
+        run: node loterias-ai/scripts/meta-pleno-aggregate.mjs
+      - name: Persist MetaPleno evidence safely
+        run: |
+          cp -R loterias-ai/data/research/meta-pleno-shards /tmp/meta-pleno-shards-final
+          cp loterias-ai/data/research/meta-pleno-v1.json /tmp/meta-pleno-v1.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            rm -rf loterias-ai/data/research/meta-pleno-shards
+            cp -R /tmp/meta-pleno-shards-final loterias-ai/data/research/meta-pleno-shards
+            cp /tmp/meta-pleno-v1.json loterias-ai/data/research/meta-pleno-v1.json
+            git add loterias-ai/data/research/meta-pleno-shards loterias-ai/data/research/meta-pleno-v1.json
+            git commit -m 'data(loterias-ai): persist MetaPleno v1 million-candidate search' || exit 0
+            git push origin HEAD:main && exit 0
+            sleep $((i*3))
+          done
+          exit 1
