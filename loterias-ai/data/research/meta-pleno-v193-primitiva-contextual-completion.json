@@ -1,0 +1,76 @@
+{
+  "generatedAt": "2026-08-15T23:40:30.190Z",
+  "version": "v193",
+  "gameId": "primitiva",
+  "family": "CONTEXTUAL_COMPLETION_RESCUE",
+  "configsTested": 1023,
+  "trainEvents": 13,
+  "validationEvents": 1,
+  "testFiveSixEvents": 2,
+  "leader": {
+    "globalPair": 0,
+    "recentPair": 0,
+    "triple": 0,
+    "rarity": 0,
+    "rankPrior": 0.5,
+    "training": {
+      "top1": 2,
+      "mrr": 0.2786141193749889
+    },
+    "validation": {
+      "top1": 0,
+      "mrr": 0.16666666666666666
+    }
+  },
+  "methodology": "Candidate ADD scoring uses only pre-draw historical pair lift, trailing-120 pair lift, triple completion, rarity and frozen c46 rank prior. Weight candidates are trained on pre-2021 c46 4/6+5/6 near misses, selected on 2021-2022 near misses, then frozen for 2023+ c46 5/6. No external-model ranks are used. DROP and 5 EUR ticket ranking use the pre-2023 v184 position rule.",
+  "events": [
+    {
+      "date": "2024-01-11",
+      "truth": [
+        7,
+        12,
+        15,
+        22,
+        35,
+        48
+      ],
+      "missing": 22,
+      "chosenAdd": 42,
+      "addCorrect": false,
+      "missingRank": 21,
+      "drop": 40,
+      "dropCorrect": true,
+      "rescuedPoolHits": 5,
+      "bestPlayable5EUR": 5,
+      "fullPlayable5EUR": false
+    },
+    {
+      "date": "2026-07-25",
+      "truth": [
+        28,
+        37,
+        38,
+        40,
+        43,
+        48
+      ],
+      "missing": 38,
+      "chosenAdd": 6,
+      "addCorrect": false,
+      "missingRank": 12,
+      "drop": 22,
+      "dropCorrect": true,
+      "rescuedPoolHits": 5,
+      "bestPlayable5EUR": 5,
+      "fullPlayable5EUR": false
+    }
+  ],
+  "summary": {
+    "addCorrect": 0,
+    "dropCorrect": 2,
+    "rescuedPoolFull": 0,
+    "fullPlayable5EUR": 0
+  },
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
