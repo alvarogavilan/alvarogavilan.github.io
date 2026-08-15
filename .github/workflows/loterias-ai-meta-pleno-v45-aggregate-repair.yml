@@ -1,0 +1,47 @@
+name: Loterias AI MetaPleno v45 Aggregate Repair
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/loterias-ai-meta-pleno-v45-aggregate-repair.yml'
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  aggregate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v45-null-*
+          path: loterias-ai/data/research/meta-pleno-v45-quiniela-216-null-shards
+          merge-multiple: true
+          run-id: 31889728036
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: node loterias-ai/scripts/meta-pleno-v45-quiniela-216-null-aggregate.mjs
+      - name: Persist repaired aggregate and shards safely
+        shell: bash
+        run: |
+          cp loterias-ai/data/research/meta-pleno-v45-quiniela-216-selection-null.json /tmp/v45.json
+          cp -R loterias-ai/data/research/meta-pleno-v45-quiniela-216-null-shards /tmp/v45-shards
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p loterias-ai/data/research/meta-pleno-v45-quiniela-216-null-shards
+            cp /tmp/v45.json loterias-ai/data/research/meta-pleno-v45-quiniela-216-selection-null.json
+            cp /tmp/v45-shards/*.json loterias-ai/data/research/meta-pleno-v45-quiniela-216-null-shards/
+            git add loterias-ai/data/research/meta-pleno-v45-quiniela-216-selection-null.json loterias-ai/data/research/meta-pleno-v45-quiniela-216-null-shards
+            git commit -m 'data(loterias-ai): persist repaired MetaPleno v45 216-column null' || exit 0
+            git push origin HEAD:main && exit 0
+            sleep $((i*2))
+          done
+          exit 1
