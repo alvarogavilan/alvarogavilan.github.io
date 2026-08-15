@@ -1,94 +1,24 @@
 import fs from 'node:fs';
 
 const OUT='loterias-ai/data/research/meta-pleno-v109-physical-process-forensics.json';
-
 const sources=[
-  {
-    id:'SELAE-BONOLOTO-NORMATIVA',
-    authority:'SELAE',
-    title:'Normas que regulan el juego BonoLoto',
-    url:'https://www.loteriasyapuestas.es/es/normativa/normativa-de-los-juegos/bonoloto',
-    observed:[
-      'SELAE publishes an official Bonoloto regulations entry point.'
-    ],
-    machineId:false,
-    ballSetId:false,
-    ballReplacementDate:false,
-    incidentHistory:false
-  },
-  {
-    id:'BOE-A-2023-21775',
-    authority:'BOE / IGAE / SELAE',
-    title:'Resolucion de 18 de octubre de 2023 sobre asistencia a actos preparatorios y ejecutivos de sorteos',
-    url:'https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-21775',
-    effectiveContext:'published 2023-10-23; agreement amendment dated 2023-10-11',
-    observed:[
-      'Public oversight covers preparatory and executive draw acts and applicable procedures.',
-      'The published schedule lists Bonoloto draws Monday through Saturday at 21:30.',
-      'SELAE communicates the scrutiny centre and schedule to the monitoring commission.',
-      'Procedure changes affecting independent oversight are to be communicated to the relevant IGAE officials.'
-    ],
-    machineId:false,
-    ballSetId:false,
-    ballReplacementDate:false,
-    incidentHistory:false
-  }
+  {id:'SELAE-BONOLOTO-NORMATIVA',authority:'SELAE',title:'Normas que regulan el juego BonoLoto',url:'https://www.loteriasyapuestas.es/es/normativa/normativa-de-los-juegos/bonoloto',observed:['SELAE publishes an official Bonoloto regulations entry point.'],machineId:false,ballSetId:false,ballReplacementDate:false,incidentHistory:false},
+  {id:'BOE-A-1991-20234',authority:'BOE / ONLAE',title:'Resolucion de 1 de agosto de 1991',url:'https://www.boe.es/buscar/doc.php?id=BOE-A-1991-20234&lang=es',observed:['Bonoloto schedule documented as Sunday, Monday, Tuesday and Wednesday.','The rules explicitly allow draw days to be modified by a resolution published in BOE.'],machineId:false,ballSetId:false,ballReplacementDate:false,incidentHistory:false},
+  {id:'BOE-A-2000-18839',authority:'BOE / LAE',title:'Resolucion de 16 de octubre de 2000',url:'https://www.boe.es/buscar/doc.php?id=BOE-A-2000-18839&lang=es',observed:['Bonoloto schedule documented as Monday, Tuesday, Wednesday and Friday.'],machineId:false,ballSetId:false,ballReplacementDate:false,incidentHistory:false},
+  {id:'BOE-A-2023-21775',authority:'BOE / IGAE / SELAE',title:'Resolucion de 18 de octubre de 2023 sobre asistencia a actos preparatorios y ejecutivos de sorteos',url:'https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-21775',effectiveContext:'published 2023-10-23; agreement amendment dated 2023-10-11',observed:['Public oversight covers preparatory and executive draw acts and applicable procedures.','The published schedule lists Bonoloto draws Monday through Saturday at 21:30.','SELAE communicates the scrutiny centre and schedule to the monitoring commission.','Procedure changes affecting independent oversight are to be communicated to the relevant IGAE officials.'],machineId:false,ballSetId:false,ballReplacementDate:false,incidentHistory:false},
+  {id:'SELAE-BONOLOTO-2026-07-19',authority:'SELAE',title:'Official Bonoloto result Sunday 19 July 2026',url:'https://www.loteriasyapuestas.es/es/resultados?drawId=1014007021',observed:['SELAE publishes an official Bonoloto draw on Sunday 2026-07-19, establishing that Sunday draws existed by this date.'],machineId:false,ballSetId:false,ballReplacementDate:false,incidentHistory:false}
 ];
 
-const metadataCoverage={
-  game:'bonoloto',
-  fields:{
-    machineId:{publicHistoricalSeries:false,status:'ABSENT_IN_AUDITED_PUBLIC_SOURCES'},
-    ballSetId:{publicHistoricalSeries:false,status:'ABSENT_IN_AUDITED_PUBLIC_SOURCES'},
-    machineChangeDate:{publicHistoricalSeries:false,status:'ABSENT_IN_AUDITED_PUBLIC_SOURCES'},
-    ballReplacementDate:{publicHistoricalSeries:false,status:'ABSENT_IN_AUDITED_PUBLIC_SOURCES'},
-    incidentLog:{publicHistoricalSeries:false,status:'ABSENT_IN_AUDITED_PUBLIC_SOURCES'},
-    drawRoom:{publicHistoricalSeries:false,status:'NOT_RESOLVED_AS_DRAW_LEVEL_SERIES'},
-    operatorIdentity:{publicHistoricalSeries:false,status:'NOT_RESOLVED_AS_DRAW_LEVEL_SERIES'},
-    oversightProcedure:{publicEvidence:true,status:'PARTIAL_PUBLIC_PROCEDURAL_EVIDENCE'},
-    drawSchedule:{publicEvidence:true,status:'PUBLIC_REGIME_EVIDENCE_AVAILABLE'}
-  }
-};
+const metadataCoverage={game:'bonoloto',fields:{machineId:{publicHistoricalSeries:false,status:'ABSENT_IN_AUDITED_PUBLIC_SOURCES'},ballSetId:{publicHistoricalSeries:false,status:'ABSENT_IN_AUDITED_PUBLIC_SOURCES'},machineChangeDate:{publicHistoricalSeries:false,status:'ABSENT_IN_AUDITED_PUBLIC_SOURCES'},ballReplacementDate:{publicHistoricalSeries:false,status:'ABSENT_IN_AUDITED_PUBLIC_SOURCES'},incidentLog:{publicHistoricalSeries:false,status:'ABSENT_IN_AUDITED_PUBLIC_SOURCES'},drawRoom:{publicHistoricalSeries:false,status:'NOT_RESOLVED_AS_DRAW_LEVEL_SERIES'},operatorIdentity:{publicHistoricalSeries:false,status:'NOT_RESOLVED_AS_DRAW_LEVEL_SERIES'},oversightProcedure:{publicEvidence:true,status:'PARTIAL_PUBLIC_PROCEDURAL_EVIDENCE'},drawSchedule:{publicEvidence:true,status:'MULTIPLE_PUBLIC_CALENDAR_REGIMES_CONFIRMED'}}};
 
 const regimeRegistry=[
-  {
-    regimeId:'PUBLIC-PROCEDURE-2023-10',
-    evidenceSource:'BOE-A-2023-21775',
-    from:'2023-10-23',
-    to:null,
-    usableForPrediction:false,
-    reason:'This is a public procedural/schedule boundary, not evidence of a distinct machine or ball population. It must not be converted into a hardware regime without draw-level physical metadata.'
-  }
+  {regimeId:'CALENDAR-EVIDENCE-1991',evidenceSource:'BOE-A-1991-20234',evidenceDate:'1991-08-01',documentedDays:['Sunday','Monday','Tuesday','Wednesday'],operationalBoundaryExact:false,usableForPrediction:true,reason:'Official calendar evidence. Exact operational start/end must be resolved before assigning individual draws to this regime.'},
+  {regimeId:'CALENDAR-EVIDENCE-2000',evidenceSource:'BOE-A-2000-18839',evidenceDate:'2000-10-16',documentedDays:['Monday','Tuesday','Wednesday','Friday'],operationalBoundaryExact:false,usableForPrediction:true,reason:'Official calendar evidence. Exact operational start/end must be resolved before assigning individual draws to this regime.'},
+  {regimeId:'CALENDAR-EVIDENCE-2023',evidenceSource:'BOE-A-2023-21775',evidenceDate:'2023-10-23',documentedDays:['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],documentedTime:'21:30',operationalBoundaryExact:false,usableForPrediction:true,reason:'Official procedural/calendar evidence only; not a hardware regime.'},
+  {regimeId:'CALENDAR-SUNDAY-BY-2026-07-19',evidenceSource:'SELAE-BONOLOTO-2026-07-19',evidenceDate:'2026-07-19',documentedDays:['Sunday'],operationalBoundaryExact:false,usableForPrediction:false,reason:'Establishes Sunday operation by this date, but the exact transition date from the prior schedule has not yet been verified.'}
 ];
 
-const out={
-  engine:'MetaPleno-v109-physical-process-forensics',
-  asOf:'2026-08-15',
-  purpose:'Audit whether public official sources support leakage-free physical-regime modelling before any machine/ball conditioned lottery experiment.',
-  scientificStatus:'PHYSICAL_HARDWARE_SERIES_NOT_AVAILABLE_FROM_AUDITED_PUBLIC_SOURCES',
-  sources,
-  metadataCoverage,
-  regimeRegistry,
-  gates:{
-    inventMetadata:false,
-    hardwareConditionedBacktestAllowed:false,
-    reason:'No verified draw-level historical machine ID, ball-set ID, replacement-date or incident series has been established.',
-    futureUnlock:'Only enable hardware-conditioned models after an official or independently auditable draw-level series is acquired and frozen before evaluation.'
-  },
-  searchAccounting:{
-    nominalConfigurations:0,
-    mathematicallyEffectiveConfigurations:0,
-    candidatePool:0,
-    criterion:'metadata availability audit only; no predictive candidate selected',
-    selectionPeriod:null,
-    laterPeriods:[],
-    familiesInvestigated:['physical-process-metadata-audit']
-  },
-  budget:{maxEURPerGameDraw:15,realStakeEUR:0},
-  realMoneyPass:false,
-  decision:'DO_NOT_FABRICATE_PHYSICAL_REGIMES'
-};
-
+const out={engine:'MetaPleno-v109-physical-process-forensics',asOf:'2026-08-15',purpose:'Audit whether public official sources support leakage-free physical or procedural regime modelling before machine/ball conditioned experiments.',scientificStatus:'CALENDAR_REGIMES_CONFIRMED_HARDWARE_SERIES_UNAVAILABLE',sources,metadataCoverage,regimeRegistry,gates:{inventMetadata:false,hardwareConditionedBacktestAllowed:false,calendarConditionedBacktestAllowed:false,reason:'Official calendar regimes exist, but exact operational boundaries must be frozen before calendar-conditioned evaluation; no verified draw-level historical machine ID, ball-set ID, replacement-date or incident series exists.',futureUnlock:'Resolve exact calendar transition boundaries from official sources or temporally clean archives; hardware conditioning remains blocked until an auditable physical series exists.'},searchAccounting:{nominalConfigurations:0,mathematicallyEffectiveConfigurations:0,candidatePool:0,criterion:'metadata/regime evidence audit only; no predictive candidate selected',selectionPeriod:null,laterPeriods:[],familiesInvestigated:['physical-process-metadata-audit','official-calendar-regime-audit']},budget:{maxEURPerGameDraw:15,realStakeEUR:0},realMoneyPass:false,decision:'CALENDAR_REGIMES_ARE_TESTABLE_AFTER_BOUNDARY_RESOLUTION_HARDWARE_REGIMES_ARE_NOT'};
 fs.mkdirSync('loterias-ai/data/research',{recursive:true});
 fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
 console.log(JSON.stringify({engine:out.engine,status:out.scientificStatus,decision:out.decision}));
