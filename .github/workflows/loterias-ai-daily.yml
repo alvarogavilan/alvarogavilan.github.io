@@ -4,9 +4,22 @@ on:
   schedule:
     - cron: '15 5 * * *'
   workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/build-daily-state.mjs'
+      - 'loterias-ai/scripts/probe-selae.mjs'
+      - 'loterias-ai/tests/core.test.mjs'
+      - 'loterias-ai/tests/evidence.test.mjs'
+      - 'loterias-ai/tests/schedule.test.mjs'
+      - 'loterias-ai/data/draw-schedule.json'
+      - '.github/workflows/loterias-ai-daily.yml'
 
 permissions:
   contents: write
+
+concurrency:
+  group: loterias-ai-daily
+  cancel-in-progress: true
 
 jobs:
   daily:
