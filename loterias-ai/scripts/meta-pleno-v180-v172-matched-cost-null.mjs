@@ -1,0 +1,8 @@
+import fs from 'node:fs';
+const totalTickets=28,selectedTickets=4,observedRetainedFullEvents=2,configsSearched=25;
+const perEvent=selectedTickets/totalTickets;
+const fixedConfigBoth=Math.pow(perEvent,observedRetainedFullEvents);
+const bonferroni=Math.min(1,fixedConfigBoth*configsSearched);
+const sidak=1-Math.pow(1-fixedConfigBoth,configsSearched);
+const out={generatedAt:new Date().toISOString(),version:'v180',gameId:'bonoloto',family:'V172_MATCHED_COST_COMPRESSION_NULL',question:'Given two known Budget8 full-hit events, how surprising is it for a 4-of-28 ticket ranker to retain both, after accounting for the 25 v172 ranking configurations?',inputs:{totalTickets,selectedTickets,theoreticalStakeEUR:2,conditionalCoveragePerFullPoolEvent:perEvent,observedRetainedFullEvents,configsSearched},null:{assumption:'For a fixed pre-specified 4-ticket subset, conditional on the winning sextet being one of the 28 Budget8 sextets, each sextet is exchangeable under the matched-cost null.',fixedConfigBothRetainedProbability:fixedConfigBoth,bonferroniUpperBound:bonferroni,sidakReference: sidak},decision:bonferroni<0.05?'LOCALLY_SIGNIFICANT_AFTER_V172_CONFIG_CORRECTION':'NOT_SIGNIFICANT_AFTER_V172_CONFIG_CORRECTION',caveats:['This conditions on the two v162 full-pool events and therefore does not test the probability that v162 produced those events.','Architecture-level search before v172 is not corrected here.','The 2024-2025 cases helped motivate the architecture; prospective replication remains mandatory.'],realMoneyPass:false,realStakeEUR:0};
+fs.writeFileSync('loterias-ai/data/research/meta-pleno-v180-v172-matched-cost-null.json',JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify(out,null,2));
