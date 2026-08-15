@@ -1,0 +1,25 @@
+name: Loterias AI MetaPleno v173 Prospective 2EUR Freeze
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v170-v162-ticket-compression]
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v173-v172-prospective-2eur-freeze.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v173-compressed-freeze.yml'
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/meta-pleno-v173-v172-prospective-2eur-freeze.mjs
+      - name: Persist v173
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/prospective/bonoloto-v173-v172-compressed-2eur-freeze.json
+          git diff --cached --quiet || git commit -m 'data(loterias-ai): persist v173 prospective 2 EUR freeze'
+          git push
