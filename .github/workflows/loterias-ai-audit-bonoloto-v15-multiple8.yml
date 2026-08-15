@@ -7,6 +7,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  actions: read
 jobs:
   audit:
     runs-on: ubuntu-latest
@@ -15,6 +16,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Reuse exact v15 Bonoloto shards
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: alvarogavilan/alvarogavilan.github.io
+          run-id: 31883202786
+          pattern: v15-bonoloto-*
+          merge-multiple: true
+          path: .
       - run: node loterias-ai/scripts/audit-bonoloto-v15-multiple8-economics.mjs
       - name: Persist
         run: |
