@@ -1,0 +1,56 @@
+name: Loterias AI MetaPleno v13 Direct Multiyear
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v13-shard.mjs'
+      - 'loterias-ai/scripts/meta-pleno-v13-aggregate.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v13-direct-multiyear.yml'
+permissions:
+  actions: read
+  contents: write
+jobs:
+  shard:
+    strategy:
+      fail-fast: false
+      matrix:
+        game: [bonoloto, primitiva, euromillones, eurodreams, gordo-primitiva]
+        shard: [0,1,2,3]
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Search shard
+        env:
+          GAME: ${{ matrix.game }}
+          SHARD: ${{ matrix.shard }}
+          CANDIDATES: 50000
+        run: node loterias-ai/scripts/meta-pleno-v13-shard.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: meta-pleno-v13-${{ matrix.game }}-${{ matrix.shard }}
+          path: loterias-ai/data/research/meta-pleno-v13-shards/${{ matrix.game }}-${{ matrix.shard }}.json
+  aggregate:
+    needs: shard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: meta-pleno-v13-*
+          path: loterias-ai/data/research/meta-pleno-v13-shards
+          merge-multiple: true
+      - run: node loterias-ai/scripts/meta-pleno-v13-aggregate.mjs
+      - name: Persist result
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/meta-pleno-v13-direct-multiyear.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'data(loterias-ai): persist MetaPleno v13 multiyear result'
+          for i in 1 2 3 4 5; do git pull --rebase origin main && git push origin HEAD:main && exit 0; sleep $((i*3)); done
+          exit 1
