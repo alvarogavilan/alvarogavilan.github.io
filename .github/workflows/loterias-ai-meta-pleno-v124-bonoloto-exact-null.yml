@@ -1,0 +1,22 @@
+name: Loterias AI MetaPleno v124 Bonoloto Exact Null
+on:
+  push:
+    branches:
+      - research/metapleno-v124-bonoloto-exact-null
+  workflow_dispatch:
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run v124 exact null
+        run: node loterias-ai/scripts/meta-pleno-v124-bonoloto-exact-null.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v124-bonoloto-exact-null
+          path: loterias-ai/data/research/meta-pleno-v124-bonoloto-exact-null.json
