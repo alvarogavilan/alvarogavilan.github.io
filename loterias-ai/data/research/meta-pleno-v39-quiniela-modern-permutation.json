@@ -1,0 +1,88 @@
+{
+  "generatedAt": "2026-08-15T14:07:48.398Z",
+  "engine": "MetaPleno-v39-quiniela-modern-permutation",
+  "purpose": "Empirical temporal-alignment audit of the frozen pre-2018 Quiniela rule on the subsequently imported 2018-2026 official archive. The exact forecast systems are kept fixed; real 14-sign outcome vectors are randomly permuted across dates, preserving their full empirical distribution and breaking only forecast/result alignment.",
+  "frozenSpec": {
+    "id": 271818,
+    "lookback": 40,
+    "doubles": 3,
+    "triples": 3,
+    "columns": 216,
+    "mode": "mixed",
+    "w": [
+      -0.89,
+      0.051,
+      0.664,
+      -0.637,
+      0.239,
+      -0.044
+    ]
+  },
+  "draws": 589,
+  "observed": {
+    "full14": 1,
+    "atLeast13": 4,
+    "atLeast12": 25,
+    "meanMaxHits": 8.893039049235993
+  },
+  "permutation": {
+    "runs": 20000,
+    "pFull14AtLeastObserved": 0.52045,
+    "pAtLeast13AtLeastObserved": 0.8839,
+    "pAtLeast12AtLeastObserved": 0.2692,
+    "pMeanAtLeastObserved": 0.00235,
+    "pJointAllMetricsAtLeastObserved": 0.0007,
+    "counts": {
+      "geFull": 10409,
+      "ge13": 17678,
+      "ge12": 5384,
+      "geMean": 47,
+      "geJoint": 14
+    },
+    "full14Histogram": {
+      "0": 9591,
+      "1": 7782,
+      "2": 2241,
+      "3": 358,
+      "4": 27,
+      "5": 1
+    },
+    "atLeast12Histogram": {
+      "10": 1,
+      "11": 5,
+      "12": 6,
+      "13": 35,
+      "14": 69,
+      "15": 196,
+      "16": 371,
+      "17": 630,
+      "18": 1026,
+      "19": 1476,
+      "20": 1939,
+      "21": 2295,
+      "22": 2307,
+      "23": 2218,
+      "24": 2042,
+      "25": 1781,
+      "26": 1327,
+      "27": 929,
+      "28": 574,
+      "29": 351,
+      "30": 231,
+      "31": 112,
+      "32": 46,
+      "33": 21,
+      "34": 6,
+      "35": 5,
+      "36": 1
+    }
+  },
+  "interpretation": "EXTREME_EMPIRICAL_ALIGNMENT_SIGNAL",
+  "limitations": [
+    "This tests the already-frozen rule only; it does not correct the original 500,000-candidate selection process or all project-wide research families.",
+    "2018-2026 is historical post-freeze replication within this pipeline, not real-time prospective evidence.",
+    "Permuting complete outcome vectors preserves empirical sign-pattern difficulty but removes calendar/season structure.",
+    "Real-money remains disabled; 216 columns are costly and hit-rate significance does not imply positive ROI."
+  ],
+  "realMoneyPass": false
+}
