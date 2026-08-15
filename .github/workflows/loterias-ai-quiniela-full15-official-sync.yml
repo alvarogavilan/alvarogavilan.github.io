@@ -16,14 +16,14 @@ concurrency:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: 22}
-      - name: Install PDF text extractor
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
+      - name: Install PDF/OCR tooling
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils tesseract-ocr tesseract-ocr-spa
       - name: Sync official upcoming jornada and freeze Full15 if possible
         run: node loterias-ai/scripts/quiniela-prospective-full15-official-sync.mjs
       - name: Persist official evidence safely
