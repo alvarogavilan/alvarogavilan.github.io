@@ -1,0 +1,156 @@
+{
+  "generatedAt": "2026-08-15T23:36:31.312Z",
+  "version": "v191a",
+  "gameId": "primitiva",
+  "family": "FULL_GRID_SINGLE_FEATURE_AUDIT",
+  "experts": {
+    "gap": 60,
+    "kalman": 168,
+    "total": 228
+  },
+  "configsTested": 1023,
+  "trainEvents": 4,
+  "testEvents": 2,
+  "leader": {
+    "best": 0.5,
+    "sup8": 0,
+    "sup12": 0,
+    "dis": 0,
+    "avg": 0,
+    "training": {
+      "top1": 0,
+      "mrr": 0.16729597244303127
+    }
+  },
+  "featureDiagnostics": {
+    "best": {
+      "train": {
+        "top1": 0,
+        "mrr": 0.16729597244303127
+      },
+      "test": {
+        "top1": 0,
+        "mrr": 0.031947261663286
+      }
+    },
+    "sup8": {
+      "train": {
+        "top1": 0,
+        "mrr": 0.08445340501792115
+      },
+      "test": {
+        "top1": 0,
+        "mrr": 0.11309523809523808
+      }
+    },
+    "sup12": {
+      "train": {
+        "top1": 0,
+        "mrr": 0.08724747474747474
+      },
+      "test": {
+        "top1": 0,
+        "mrr": 0.10989010989010989
+      }
+    },
+    "dis": {
+      "train": {
+        "top1": 0,
+        "mrr": 0.04847647835452713
+      },
+      "test": {
+        "top1": 0,
+        "mrr": 0.0328042328042328
+      }
+    },
+    "avg": {
+      "train": {
+        "top1": 0,
+        "mrr": 0.09270833333333334
+      },
+      "test": {
+        "top1": 0,
+        "mrr": 0.07777777777777778
+      }
+    }
+  },
+  "methodology": "Audit pure single-feature rankings without changing the v191 leader. Use the complete pre-specified v79 (60) and v108 (168) grids, with no target-derived expert selection. For each candidate outside c46 top8 derive best rank, top8/top12 support, c46-vs-best disagreement and mean reciprocal rank across all 228 experts. Select feature weights only on c46 5/6 events before 2023, then freeze for 2023+. DROP and 5 EUR playable-ticket ranking remain pre-2023 v184 rules.",
+  "events": [
+    {
+      "date": "2024-01-11",
+      "truth": [
+        7,
+        12,
+        15,
+        22,
+        35,
+        48
+      ],
+      "missing": 22,
+      "chosenAdd": 5,
+      "addCorrect": false,
+      "missingExternalRank": 29,
+      "missingEvidence": {
+        "c": 29,
+        "min": 2,
+        "gapMin": 4,
+        "kalMin": 2,
+        "sup8Count": 43
+      },
+      "chosenEvidence": {
+        "c": 12,
+        "min": 1,
+        "gapMin": 1,
+        "kalMin": 36,
+        "sup8Count": 32
+      },
+      "drop": 40,
+      "dropCorrect": true,
+      "rescuedPoolHits": 5,
+      "bestPlayable5EUR": 5,
+      "fullPlayable5EUR": false
+    },
+    {
+      "date": "2026-07-25",
+      "truth": [
+        28,
+        37,
+        38,
+        40,
+        43,
+        48
+      ],
+      "missing": 38,
+      "chosenAdd": 6,
+      "addCorrect": false,
+      "missingExternalRank": 34,
+      "missingEvidence": {
+        "c": 20,
+        "min": 2,
+        "gapMin": 2,
+        "kalMin": 5,
+        "sup8Count": 80
+      },
+      "chosenEvidence": {
+        "c": 9,
+        "min": 1,
+        "gapMin": 8,
+        "kalMin": 1,
+        "sup8Count": 12
+      },
+      "drop": 22,
+      "dropCorrect": true,
+      "rescuedPoolHits": 5,
+      "bestPlayable5EUR": 5,
+      "fullPlayable5EUR": false
+    }
+  ],
+  "summary": {
+    "addCorrect": 0,
+    "dropCorrect": 2,
+    "rescuedPoolFull": 0,
+    "fullPlayable5EUR": 0
+  },
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
