@@ -19,9 +19,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Enrich Bonoloto in 32 bounded batches
+      - name: Enrich all remaining non-quarantined Bonoloto economics
         run: |
-          for i in $(seq 1 32); do GAME=bonoloto BATCH_LIMIT=120 node loterias-ai/scripts/enrich-core-number-game-official-economics.mjs || exit 1; done
+          for i in $(seq 1 24); do
+            GAME=bonoloto BATCH_LIMIT=120 node loterias-ai/scripts/enrich-core-number-game-official-economics.mjs || exit 1
+            remaining=$(node -e "const j=require('./loterias-ai/data/archive/_meta/bonoloto-official-economics.json'); console.log(j.remaining||0)")
+            echo "Bonoloto remaining: $remaining"
+            if [ "$remaining" -le 1 ]; then break; fi
+          done
       - name: Verify El Gordo remains complete
         run: GAME=gordo BATCH_LIMIT=120 node loterias-ai/scripts/enrich-core-number-game-official-economics.mjs
       - name: Persist safely under concurrent commits
@@ -46,7 +51,7 @@ jobs:
             test ! -f /tmp/loterias-ai/bonoloto-official-conflicts.json || cp /tmp/loterias-ai/bonoloto-official-conflicts.json loterias-ai/data/archive/_meta/bonoloto-official-conflicts.json
             test ! -f /tmp/loterias-ai/gordo-primitiva-official-conflicts.json || cp /tmp/loterias-ai/gordo-primitiva-official-conflicts.json loterias-ai/data/archive/_meta/gordo-primitiva-official-conflicts.json
             git add loterias-ai/data/archive/bonoloto loterias-ai/data/archive/gordo-primitiva loterias-ai/data/archive/_meta/bonoloto-official-economics.json loterias-ai/data/archive/_meta/gordo-primitiva-official-economics.json loterias-ai/data/archive/_meta/*-official-conflicts.json
-            git commit -m 'data(loterias-ai): expand Bonoloto official economics' || exit 0
+            git commit -m 'data(loterias-ai): finish Bonoloto official economics' || exit 0
             git push origin HEAD:main && exit 0
             sleep $((attempt*3))
           done
