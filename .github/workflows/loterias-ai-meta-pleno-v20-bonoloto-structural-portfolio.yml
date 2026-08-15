@@ -1,0 +1,27 @@
+name: Loterias AI MetaPleno v20 Bonoloto Structural Portfolio
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v20-bonoloto-structural-portfolio.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v20-bonoloto-structural-portfolio.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node loterias-ai/scripts/meta-pleno-v20-bonoloto-structural-portfolio.mjs
+      - name: Persist safely
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/meta-pleno-v20-bonoloto-structural-portfolio.json
+          git commit -m 'data(loterias-ai): persist Bonoloto v20 structural portfolio' || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
