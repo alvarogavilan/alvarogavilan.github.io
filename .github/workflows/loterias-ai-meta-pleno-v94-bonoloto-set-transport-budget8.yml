@@ -1,0 +1,22 @@
+name: Loterias AI MetaPleno v94 Bonoloto Set Transport Budget8
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v94-bonoloto-set-transport-budget8.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v94-bonoloto-set-transport-budget8.yml'
+permissions:
+  contents: read
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/meta-pleno-v94-bonoloto-set-transport-budget8.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v94-bonoloto-set-transport
+          path: loterias-ai/data/research/meta-pleno-v94-bonoloto-set-transport-budget8.json
