@@ -1,0 +1,31 @@
+{
+  "version": "2026-08-15-v1",
+  "purpose": "Prevent portfolio size from scaling mechanically across games with different ticket prices. Cost is part of the gate, never an afterthought.",
+  "bankrollReferenceEUR": 50,
+  "realMoneyDefaultEUR": 0,
+  "rules": {
+    "shadow": "Research may evaluate large panels, but the UI must show theoretical cost and never imply authorization.",
+    "realMoney": "Portfolio size must be selected before the target draw and pass financial, random-baseline, sample and prospective gates.",
+    "expensiveGames": "For high unit-cost games, prefer concentrated portfolios. Large panels require materially stronger evidence and positive expected net value under conservative prize assumptions.",
+    "noBudgetChasing": "Never increase spend merely to raise jackpot coverage."
+  },
+  "games": {
+    "bonoloto": {"unitCostEUR": 0.5, "researchPortfolioSizes": [1,2,5,10,15,25,50,100,133,240], "preferredProspectiveShadowMaxEUR": 12.5},
+    "primitiva": {"unitCostEUR": 1, "researchPortfolioSizes": [1,2,3,5,10,15,25,50], "preferredProspectiveShadowMaxEUR": 10},
+    "euromillones": {"unitCostEUR": 2.5, "researchPortfolioSizes": [1,2,3,4,5,8,10,15,25], "preferredProspectiveShadowMaxEUR": 10, "largePanelRequiresExceptionalEvidence": true},
+    "eurodreams": {"unitCostEUR": 2.5, "researchPortfolioSizes": [1,2,3,4,5,8,10,15,25], "preferredProspectiveShadowMaxEUR": 10, "largePanelRequiresExceptionalEvidence": true},
+    "gordo-primitiva": {"unitCostEUR": 1.5, "researchPortfolioSizes": [1,2,3,5,8,10,15,25], "preferredProspectiveShadowMaxEUR": 9},
+    "quiniela": {"unitCostModel": "depends_on_simple_double_triple_system", "portfolioMustUseExactSystemCost": true},
+    "quinigol": {"unitCostModel": "depends_on_number_of_combinations", "portfolioMustUseExactSystemCost": true},
+    "loteria-nacional": {"unitCostModel": "draw_specific_decimo_price", "portfolioMustUseExactDrawCost": true}
+  },
+  "promotionRequirements": [
+    "selected without target-period information",
+    "locked holdout positive after all ticket costs",
+    "matched random portfolio comparison using identical spend",
+    "prospective shadow evidence",
+    "multiple-testing correction",
+    "bankroll cap respected",
+    "no unresolved data discrepancy"
+  ]
+}
