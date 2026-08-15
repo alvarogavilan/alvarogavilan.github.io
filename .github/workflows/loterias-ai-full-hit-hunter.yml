@@ -1,0 +1,35 @@
+name: Loterias AI Full Hit Hunter
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/full-hit-hunter.mjs'
+      - '.github/workflows/loterias-ai-full-hit-hunter.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-full-hit-hunter
+  cancel-in-progress: false
+jobs:
+  hunt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Scan every archived game for historical full hits and repeat strategies
+        run: node loterias-ai/scripts/full-hit-hunter.mjs
+      - name: Persist evidence safely
+        run: |
+          cp loterias-ai/data/research/full-hit-hunter.json /tmp/full-hit-hunter.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/research
+          cp /tmp/full-hit-hunter.json loterias-ai/data/research/full-hit-hunter.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/full-hit-hunter.json
+          git commit -m 'data(loterias-ai): persist historical full-hit hunter evidence' || exit 0
+          git push origin HEAD:main
