@@ -1,0 +1,31 @@
+name: Loterias AI MetaPleno v137 Prospective Evaluator
+on:
+  push:
+    branches:
+      - main
+      - research/metapleno-v137-prospective-evaluator
+    paths:
+      - 'loterias-ai/data/archive/bonoloto/**'
+      - 'loterias-ai/scripts/meta-pleno-v137-prospective-evaluator.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v137-prospective-evaluator.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node loterias-ai/scripts/meta-pleno-v137-prospective-evaluator.mjs
+      - name: Persist evaluation only if target exists
+        run: |
+          if [ -f loterias-ai/data/prospective/bonoloto-v137-evaluation.json ]; then
+            git config user.name github-actions[bot]
+            git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+            git add loterias-ai/data/prospective/bonoloto-v137-evaluation.json
+            git diff --cached --quiet || git commit -m "data(loterias-ai): persist v137 prospective evaluation"
+            git push
+          fi
