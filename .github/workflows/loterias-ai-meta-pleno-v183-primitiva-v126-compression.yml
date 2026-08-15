@@ -1,0 +1,26 @@
+name: Loterias AI MetaPleno v183 Primitiva V126 Compression
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v182-primitiva-ticket-ranker]
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v183-primitiva-v126-compression.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v183-primitiva-v126-compression.yml'
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node loterias-ai/scripts/meta-pleno-v183-primitiva-v126-compression.mjs
+      - name: Persist v183
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v183-primitiva-v126-compression.json
+          git diff --cached --quiet || git commit -m "research(loterias-ai): persist v183 Primitiva v126 compression"
+          git push
