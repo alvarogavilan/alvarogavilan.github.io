@@ -1,0 +1,71 @@
+name: Loterias AI MetaPleno v53 Bonoloto Budget8 Million
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v53-bonoloto-budget8-million.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v53-bonoloto-budget8-million.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-meta-pleno-v53-bonoloto-budget8-million
+  cancel-in-progress: false
+jobs:
+  shards:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0,1,2,3,4,5,6,7,8,9]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Search 100k Budget8 models
+        env:
+          SHARD_ID: ${{ matrix.shard }}
+          PER_SHARD: 100000
+        run: node loterias-ai/scripts/meta-pleno-v53-bonoloto-budget8-million.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v53-shard-${{ matrix.shard }}
+          path: v53-out/*.json
+          retention-days: 2
+  aggregate:
+    needs: shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v53-shard-*
+          path: v53-shards-raw
+      - name: Flatten shards
+        run: |
+          mkdir -p v53-shards
+          find v53-shards-raw -name '*.json' -exec cp {} v53-shards/ \;
+      - name: Aggregate and open later eras
+        env:
+          AGGREGATE: 1
+          SHARD_DIR: v53-shards
+        run: node loterias-ai/scripts/meta-pleno-v53-bonoloto-budget8-million.mjs
+      - name: Persist result safely
+        run: |
+          cp loterias-ai/data/research/meta-pleno-v53-bonoloto-budget8-million.json /tmp/v53.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/v53.json loterias-ai/data/research/meta-pleno-v53-bonoloto-budget8-million.json
+            git add loterias-ai/data/research/meta-pleno-v53-bonoloto-budget8-million.json
+            git commit -m 'data(loterias-ai): persist MetaPleno v53 Budget8 million result' || exit 0
+            git push origin HEAD:main && exit 0
+            sleep $((i*3))
+          done
+          exit 1
