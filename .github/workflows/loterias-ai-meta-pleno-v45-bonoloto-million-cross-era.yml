@@ -1,0 +1,70 @@
+name: Loterias AI MetaPleno v45 Bonoloto Million Cross Era
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v45-bonoloto-million-cross-era.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v45-bonoloto-million-cross-era.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-meta-pleno-v45-bonoloto-million-cross-era
+  cancel-in-progress: false
+jobs:
+  shard:
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        shard: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Search 50k deterministic candidates
+        env:
+          SHARD_ID: ${{ matrix.shard }}
+          TOTAL_SHARDS: 20
+          CANDIDATES_PER_SHARD: 50000
+        run: node loterias-ai/scripts/meta-pleno-v45-bonoloto-million-cross-era.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v45-${{ matrix.shard }}
+          path: v45-out/*.json
+          retention-days: 2
+  aggregate:
+    needs: shard
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v45-*
+          path: v45-shards
+          merge-multiple: true
+      - name: Open later eras only after frozen early ranking
+        env:
+          AGGREGATE: 1
+          SHARD_DIR: v45-shards
+        run: node loterias-ai/scripts/meta-pleno-v45-bonoloto-million-cross-era.mjs
+      - name: Persist research evidence safely
+        run: |
+          cp loterias-ai/data/research/meta-pleno-v45-bonoloto-million-cross-era.json /tmp/v45.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/v45.json loterias-ai/data/research/meta-pleno-v45-bonoloto-million-cross-era.json
+            git add loterias-ai/data/research/meta-pleno-v45-bonoloto-million-cross-era.json
+            git commit -m 'data(loterias-ai): persist MetaPleno v45 Bonoloto million cross-era result' || exit 0
+            git push origin HEAD:main && exit 0
+            sleep $((i*3))
+          done
+          exit 1
