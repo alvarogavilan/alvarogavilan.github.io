@@ -1,0 +1,288 @@
+{
+  "generatedAt": "2026-08-15T20:15:05.158Z",
+  "version": "v150",
+  "gameId": "bonoloto",
+  "family": "ALL_POSITION_STRUCTURAL_SIXTH_RESCUE",
+  "methodology": "Frozen c12 base plus the exact v132 one-swap structural objective (lambda=.05), and expands the one-swap candidate set so ANY of c12 ranks 1-8 may be dropped for ranks 9-14; a swap executes only if objective gain exceeds a threshold. Threshold selected only on 2018-05-25..2022-12-31; frozen before 2023+. This tests the concrete architectural limitation exposed by v149: some 5/6 pools have all false positives above rank 6, making the original v132 drop-only-ranks-6..8 rule incapable of a 6/6 rescue. Architecture remains exploratory because v132 was conceived after earlier holdout inspection.",
+  "candidatePool": {
+    "nominal": 8,
+    "effective": 8,
+    "thresholds": [
+      0,
+      0.0005,
+      0.001,
+      0.002,
+      0.005,
+      0.01,
+      0.02,
+      0.05
+    ]
+  },
+  "selection": {
+    "start": "2018-05-25",
+    "end": "2022-12-31",
+    "frozen": 4
+  },
+  "validation": {
+    "mid": "2023-2024",
+    "late": "2025-latest"
+  },
+  "leaders": [
+    {
+      "threshold": 0.05,
+      "select": {
+        "n": 1396,
+        "h4": 9,
+        "h5": 1,
+        "h6": 0,
+        "swaps": 0,
+        "sum": 1414
+      },
+      "mid": {
+        "n": 731,
+        "h4": 1,
+        "h5": 1,
+        "h6": 0,
+        "swaps": 0,
+        "sum": 695,
+        "events": [
+          {
+            "date": "2024-03-05",
+            "winning": [
+              17,
+              20,
+              22,
+              31,
+              34,
+              46
+            ],
+            "pool": [
+              20,
+              22,
+              31,
+              34,
+              39,
+              41,
+              45,
+              46
+            ],
+            "hits": 5,
+            "swapped": false,
+            "structuralGain": 0.007949690083921657
+          }
+        ]
+      },
+      "late": {
+        "n": 590,
+        "h4": 1,
+        "h5": 1,
+        "h6": 0,
+        "swaps": 0,
+        "sum": 541,
+        "events": [
+          {
+            "date": "2025-06-21",
+            "winning": [
+              32,
+              34,
+              36,
+              37,
+              39,
+              48
+            ],
+            "pool": [
+              10,
+              31,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "hits": 5,
+            "swapped": false,
+            "structuralGain": 0.02140258541905704
+          }
+        ]
+      }
+    },
+    {
+      "threshold": 0.02,
+      "select": {
+        "n": 1396,
+        "h4": 7,
+        "h5": 1,
+        "h6": 0,
+        "swaps": 156,
+        "sum": 1412
+      },
+      "mid": {
+        "n": 731,
+        "h4": 1,
+        "h5": 1,
+        "h6": 0,
+        "swaps": 111,
+        "sum": 698,
+        "events": [
+          {
+            "date": "2024-03-05",
+            "winning": [
+              17,
+              20,
+              22,
+              31,
+              34,
+              46
+            ],
+            "pool": [
+              20,
+              22,
+              31,
+              34,
+              39,
+              41,
+              45,
+              46
+            ],
+            "hits": 5,
+            "swapped": false,
+            "structuralGain": 0.007949690083921657
+          }
+        ]
+      },
+      "late": {
+        "n": 590,
+        "h4": 1,
+        "h5": 0,
+        "h6": 0,
+        "swaps": 33,
+        "sum": 538,
+        "events": []
+      }
+    },
+    {
+      "threshold": 0.01,
+      "select": {
+        "n": 1396,
+        "h4": 7,
+        "h5": 1,
+        "h6": 0,
+        "swaps": 603,
+        "sum": 1391
+      },
+      "mid": {
+        "n": 731,
+        "h4": 1,
+        "h5": 1,
+        "h6": 0,
+        "swaps": 349,
+        "sum": 696,
+        "events": [
+          {
+            "date": "2024-03-05",
+            "winning": [
+              17,
+              20,
+              22,
+              31,
+              34,
+              46
+            ],
+            "pool": [
+              20,
+              22,
+              31,
+              34,
+              39,
+              41,
+              45,
+              46
+            ],
+            "hits": 5,
+            "swapped": false,
+            "structuralGain": 0.007949690083921657
+          }
+        ]
+      },
+      "late": {
+        "n": 590,
+        "h4": 2,
+        "h5": 0,
+        "h6": 0,
+        "swaps": 181,
+        "sum": 548,
+        "events": []
+      }
+    },
+    {
+      "threshold": 0.001,
+      "select": {
+        "n": 1396,
+        "h4": 7,
+        "h5": 1,
+        "h6": 0,
+        "swaps": 1328,
+        "sum": 1391
+      },
+      "mid": {
+        "n": 731,
+        "h4": 2,
+        "h5": 1,
+        "h6": 1,
+        "swaps": 707,
+        "sum": 711,
+        "events": [
+          {
+            "date": "2024-03-05",
+            "winning": [
+              17,
+              20,
+              22,
+              31,
+              34,
+              46
+            ],
+            "pool": [
+              17,
+              20,
+              22,
+              31,
+              34,
+              39,
+              45,
+              46
+            ],
+            "hits": 6,
+            "swapped": true,
+            "structuralGain": 0.007949690083921657
+          }
+        ]
+      },
+      "late": {
+        "n": 590,
+        "h4": 2,
+        "h5": 0,
+        "h6": 0,
+        "swaps": 571,
+        "sum": 551,
+        "events": []
+      }
+    }
+  ],
+  "summary": {
+    "midFullModels": 1,
+    "lateFullModels": 0,
+    "mid5PlusModels": 4,
+    "late5PlusModels": 1,
+    "repeat5PlusModels": 1
+  },
+  "budget": {
+    "poolSize": 8,
+    "playableCombinations": 28,
+    "theoreticalStakeEUR": 14,
+    "realStakeEUR": 0
+  },
+  "realMoneyPass": false,
+  "decision": "EXPLORATORY_REQUIRE_FRESH_PROSPECTIVE_REPLICATION"
+}
