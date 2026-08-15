@@ -10,13 +10,15 @@ permissions:
 jobs:
   enrich:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: |
-          for i in 1 2 3 4; do BATCH_LIMIT=120 node loterias-ai/scripts/enrich-euromillones-official-economics.mjs || exit 1; done
+      - name: Enrich sixteen bounded official batches
+        run: |
+          for i in $(seq 1 16); do BATCH_LIMIT=120 node loterias-ai/scripts/enrich-euromillones-official-economics.mjs || exit 1; done
       - name: Persist safely
         run: |
           cp -R loterias-ai/data/archive/euromillones /tmp/euromillones
@@ -29,5 +31,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add loterias-ai/data/archive/euromillones loterias-ai/data/archive/_meta/euromillones-official-economics.json
-          git commit -m 'data(loterias-ai): enrich Euromillones official economics' || exit 0
+          git commit -m 'data(loterias-ai): expand Euromillones official economics' || exit 0
           git push origin HEAD:main
