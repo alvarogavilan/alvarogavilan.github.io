@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-15T16:04:57.082Z",
+  "generatedAt": "2026-08-15T16:31:54.369Z",
   "engine": "MetaPleno-v62-bonoloto-family-scorecard",
   "protocol": {
     "primaryObjective": "Repeated distinct-date 6/6 after temporal freeze, preferably prospective.",
@@ -9,44 +9,47 @@
       "Same date+same pool across correlated specs counts as one event cluster",
       "No reranking after opening later era",
       "Budget <=15 EUR for any candidate intended as potentially playable",
-      "Matched-null p>=0.05 deprioritizes retrospective repeatability signals",
+      "Family matched-null p>=0.05 deprioritizes retrospective full-hit signals",
       "Negative results remain persisted",
       "realMoneyPass remains false until sufficient prospective evidence"
     ],
     "rankingNote": "Score is triage only, not a probability of success or evidence of profitability."
   },
-  "matchedNullAudit": {
-    "engine": "MetaPleno-v76-bonoloto-hazard-matched-null",
-    "observedRepeat5PlusModels": 4,
-    "pValue": 0.11246493078902826,
-    "interpretation": "NOT_SIGNIFICANT_UNDER_MATCHED_NULL"
+  "nullAudits": {
+    "hazard": {
+      "pValue": 0.11246493078902826,
+      "interpretation": "NOT_SIGNIFICANT_UNDER_MATCHED_NULL"
+    },
+    "v53Family": {
+      "family": "v53",
+      "models": 30,
+      "draws": 731,
+      "observedUniqueFullDates": 1,
+      "null": {
+        "method": "single common circular shift applied to real winning-set sequence; all model pools and cross-model correlation preserved",
+        "shifts": 731,
+        "extreme": 48,
+        "pValue": 0.06566347469220246,
+        "maxUniqueFullDates": 42,
+        "meanUniqueFullDates": 0.146374829001368
+      }
+    },
+    "v81Family": {
+      "family": "v81",
+      "models": 30,
+      "draws": 731,
+      "observedUniqueFullDates": 1,
+      "null": {
+        "method": "single common circular shift applied to real winning-set sequence; all model pools and cross-model correlation preserved",
+        "shifts": 731,
+        "extreme": 443,
+        "pValue": 0.6060191518467852,
+        "maxUniqueFullDates": 29,
+        "meanUniqueFullDates": 3.102599179206566
+      }
+    }
   },
   "families": [
-    {
-      "id": "v53-budget8-million",
-      "file": "meta-pleno-v53-bonoloto-budget8-million.json",
-      "status": "COMPLETE",
-      "engine": "MetaPleno-v53-bonoloto-budget8-million",
-      "budgetEUR": null,
-      "summary": {
-        "tested": 1000000,
-        "shardSurvivors": 2500,
-        "frozenTop": 100,
-        "midAnyFull": 3,
-        "lateAnyFull": 0,
-        "repeatFullMidLate": 0,
-        "repeat5PlusMidLate": 1
-      },
-      "distinctPersistedFullEventClusters": 1,
-      "distinctPersistedFullDates": [
-        "2024-10-11"
-      ],
-      "matchedNullPValue": null,
-      "matchedNullVerdict": null,
-      "antiOverfitScore": 10100,
-      "priority": "MEDIUM_REQUIRES_NULL",
-      "realMoneyPass": false
-    },
     {
       "id": "v58-ensemble-budget8",
       "file": "meta-pleno-v58-bonoloto-budget8-ensemble.json",
@@ -66,10 +69,56 @@
       "distinctPersistedFullDates": [
         "2024-10-11"
       ],
-      "matchedNullPValue": null,
-      "matchedNullVerdict": null,
+      "familyMatchedNullPValue": null,
       "antiOverfitScore": 10010,
-      "priority": "LOW_OR_RESEARCH_ONLY",
+      "priority": "MEDIUM_FULL_EVENT_REQUIRES_NULL",
+      "realMoneyPass": false
+    },
+    {
+      "id": "v53-budget8-million",
+      "file": "meta-pleno-v53-bonoloto-budget8-million.json",
+      "status": "COMPLETE",
+      "engine": "MetaPleno-v53-bonoloto-budget8-million",
+      "budgetEUR": 14,
+      "summary": {
+        "tested": 1000000,
+        "shardSurvivors": 2500,
+        "frozenTop": 100,
+        "midAnyFull": 3,
+        "lateAnyFull": 0,
+        "repeatFullMidLate": 0,
+        "repeat5PlusMidLate": 1
+      },
+      "distinctPersistedFullEventClusters": 1,
+      "distinctPersistedFullDates": [
+        "2024-10-11"
+      ],
+      "familyMatchedNullPValue": 0.06566347469220246,
+      "antiOverfitScore": 9110,
+      "priority": "DEPRIORITIZED_AFTER_MATCHED_NULL",
+      "realMoneyPass": false
+    },
+    {
+      "id": "v81-set-kernel-budget8",
+      "file": "meta-pleno-v81-bonoloto-set-kernel-analog-budget8.json",
+      "status": "COMPLETE",
+      "engine": "MetaPleno-v81-bonoloto-set-kernel-analog-budget8",
+      "budgetEUR": 14,
+      "summary": {
+        "configurations": 240,
+        "frozen": 30,
+        "midFullModels": 9,
+        "lateFullModels": 0,
+        "repeatFullModels": 0,
+        "repeat5PlusModels": 1
+      },
+      "distinctPersistedFullEventClusters": 1,
+      "distinctPersistedFullDates": [
+        "2024-08-19"
+      ],
+      "familyMatchedNullPValue": 0.6060191518467852,
+      "antiOverfitScore": 9110,
+      "priority": "DEPRIORITIZED_AFTER_MATCHED_NULL",
       "realMoneyPass": false
     },
     {
@@ -89,8 +138,7 @@
       },
       "distinctPersistedFullEventClusters": 0,
       "distinctPersistedFullDates": [],
-      "matchedNullPValue": null,
-      "matchedNullVerdict": null,
+      "familyMatchedNullPValue": null,
       "antiOverfitScore": 10,
       "priority": "LOW_OR_RESEARCH_ONLY",
       "realMoneyPass": false
@@ -111,8 +159,7 @@
       },
       "distinctPersistedFullEventClusters": 0,
       "distinctPersistedFullDates": [],
-      "matchedNullPValue": null,
-      "matchedNullVerdict": null,
+      "familyMatchedNullPValue": null,
       "antiOverfitScore": 10,
       "priority": "LOW_OR_RESEARCH_ONLY",
       "realMoneyPass": false
@@ -133,8 +180,7 @@
       },
       "distinctPersistedFullEventClusters": 0,
       "distinctPersistedFullDates": [],
-      "matchedNullPValue": null,
-      "matchedNullVerdict": null,
+      "familyMatchedNullPValue": null,
       "antiOverfitScore": 10,
       "priority": "LOW_OR_RESEARCH_ONLY",
       "realMoneyPass": false
@@ -154,8 +200,7 @@
       },
       "distinctPersistedFullEventClusters": 0,
       "distinctPersistedFullDates": [],
-      "matchedNullPValue": null,
-      "matchedNullVerdict": null,
+      "familyMatchedNullPValue": null,
       "antiOverfitScore": 10,
       "priority": "LOW_OR_RESEARCH_ONLY",
       "realMoneyPass": false
@@ -176,8 +221,7 @@
       },
       "distinctPersistedFullEventClusters": 0,
       "distinctPersistedFullDates": [],
-      "matchedNullPValue": null,
-      "matchedNullVerdict": null,
+      "familyMatchedNullPValue": null,
       "antiOverfitScore": 10,
       "priority": "LOW_OR_RESEARCH_ONLY",
       "realMoneyPass": false
@@ -198,8 +242,7 @@
       },
       "distinctPersistedFullEventClusters": 0,
       "distinctPersistedFullDates": [],
-      "matchedNullPValue": null,
-      "matchedNullVerdict": null,
+      "familyMatchedNullPValue": null,
       "antiOverfitScore": 10,
       "priority": "LOW_OR_RESEARCH_ONLY",
       "realMoneyPass": false
@@ -220,8 +263,71 @@
       },
       "distinctPersistedFullEventClusters": 0,
       "distinctPersistedFullDates": [],
-      "matchedNullPValue": null,
-      "matchedNullVerdict": null,
+      "familyMatchedNullPValue": null,
+      "antiOverfitScore": 10,
+      "priority": "LOW_OR_RESEARCH_ONLY",
+      "realMoneyPass": false
+    },
+    {
+      "id": "v75-spectral-prefix-budget8",
+      "file": "meta-pleno-v75-bonoloto-spectral-prefix-budget8.json",
+      "status": "COMPLETE",
+      "engine": "MetaPleno-v75-bonoloto-spectral-prefix-budget8",
+      "budgetEUR": 14,
+      "summary": {
+        "candidateConfigurations": 192,
+        "fullSelection": 60,
+        "frozen": 20,
+        "midFullModels": 0,
+        "lateFullModels": 0,
+        "repeatFullModels": 0,
+        "repeat5PlusModels": 0
+      },
+      "distinctPersistedFullEventClusters": 0,
+      "distinctPersistedFullDates": [],
+      "familyMatchedNullPValue": null,
+      "antiOverfitScore": 10,
+      "priority": "LOW_OR_RESEARCH_ONLY",
+      "realMoneyPass": false
+    },
+    {
+      "id": "v77-contextual-pair-trio-budget8",
+      "file": "meta-pleno-v77-bonoloto-contextual-pair-trio-budget8.json",
+      "status": "COMPLETE",
+      "engine": "MetaPleno-v77-bonoloto-contextual-pair-trio-budget8",
+      "budgetEUR": 14,
+      "summary": {
+        "configurations": 192,
+        "frozen": 25,
+        "midFullModels": 0,
+        "lateFullModels": 0,
+        "repeatFullModels": 0,
+        "repeat5PlusModels": 0
+      },
+      "distinctPersistedFullEventClusters": 0,
+      "distinctPersistedFullDates": [],
+      "familyMatchedNullPValue": null,
+      "antiOverfitScore": 10,
+      "priority": "LOW_OR_RESEARCH_ONLY",
+      "realMoneyPass": false
+    },
+    {
+      "id": "v80-residue-state-budget8",
+      "file": "meta-pleno-v80-bonoloto-residue-state-budget8.json",
+      "status": "COMPLETE",
+      "engine": "MetaPleno-v80-bonoloto-residue-state-budget8",
+      "budgetEUR": 14,
+      "summary": {
+        "configurations": 360,
+        "frozen": 30,
+        "midFullModels": 0,
+        "lateFullModels": 0,
+        "repeatFullModels": 0,
+        "repeat5PlusModels": 0
+      },
+      "distinctPersistedFullEventClusters": 0,
+      "distinctPersistedFullDates": [],
+      "familyMatchedNullPValue": null,
       "antiOverfitScore": 10,
       "priority": "LOW_OR_RESEARCH_ONLY",
       "realMoneyPass": false
@@ -229,11 +335,6 @@
     {
       "id": "v61-spectral-budget8",
       "file": "meta-pleno-v61-bonoloto-spectral-budget8.json",
-      "status": "PENDING_OR_MISSING"
-    },
-    {
-      "id": "v75-spectral-prefix-budget8",
-      "file": "meta-pleno-v75-bonoloto-spectral-prefix-budget8.json",
       "status": "PENDING_OR_MISSING"
     },
     {
@@ -253,8 +354,7 @@
       },
       "distinctPersistedFullEventClusters": 0,
       "distinctPersistedFullDates": [],
-      "matchedNullPValue": 0.11246493078902826,
-      "matchedNullVerdict": "NOT_SIGNIFICANT_UNDER_MATCHED_NULL",
+      "familyMatchedNullPValue": 0.11246493078902826,
       "antiOverfitScore": -590,
       "priority": "DEPRIORITIZED_AFTER_MATCHED_NULL",
       "realMoneyPass": false
