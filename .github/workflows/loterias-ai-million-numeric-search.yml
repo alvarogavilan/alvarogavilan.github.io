@@ -1,0 +1,66 @@
+name: Loterias AI Million Numeric Search
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/mass-numeric-strategy-shard.mjs'
+      - 'loterias-ai/scripts/aggregate-mass-numeric-strategies.mjs'
+      - '.github/workflows/loterias-ai-million-numeric-search.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-million-numeric-search
+  cancel-in-progress: false
+jobs:
+  search:
+    strategy:
+      fail-fast: false
+      matrix:
+        game: [primitiva, bonoloto, euromillones, eurodreams, gordo-primitiva]
+        shard: [0, 1, 2, 3]
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Evaluate 50,000 leakage-safe strategies
+        env:
+          GAME: ${{ matrix.game }}
+          SHARD: ${{ matrix.shard }}
+          CANDIDATES: 50000
+        run: node loterias-ai/scripts/mass-numeric-strategy-shard.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mass-${{ matrix.game }}-${{ matrix.shard }}
+          path: /tmp/loterias-ai-mass/${{ matrix.game }}-${{ matrix.shard }}.json
+          retention-days: 2
+  aggregate:
+    needs: search
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: mass-*
+          path: /tmp/mass
+          merge-multiple: true
+      - name: Freeze global champions and open untouched holdout once
+        run: node loterias-ai/scripts/aggregate-mass-numeric-strategies.mjs
+      - name: Persist million-search evidence safely
+        run: |
+          cp loterias-ai/data/research/mass-numeric-strategy-search.json /tmp/mass-numeric-strategy-search.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/research
+          cp /tmp/mass-numeric-strategy-search.json loterias-ai/data/research/mass-numeric-strategy-search.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/mass-numeric-strategy-search.json
+          git commit -m 'data(loterias-ai): persist one-million numeric strategy search' || exit 0
+          git push origin HEAD:main
