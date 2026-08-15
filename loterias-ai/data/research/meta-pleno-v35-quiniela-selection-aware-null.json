@@ -1,0 +1,58 @@
+{
+  "generatedAt": "2026-08-15T13:59:22.672Z",
+  "engine": "MetaPleno-v35-quiniela-selection-aware-null",
+  "purpose": "Quantify how surprising the frozen 216-column Quiniela champion pattern is under an equiprobable-sign matched-column null, explicitly accounting for the 500,000-candidate search. This is not a proof of predictive edge because candidate dependence, non-equiprobable real match probabilities, and adaptive research choices remain.",
+  "frozenSpec": {
+    "id": 271818,
+    "lookback": 40,
+    "doubles": 3,
+    "triples": 3,
+    "columns": 216,
+    "mode": "mixed",
+    "w": [
+      -0.89,
+      0.051,
+      0.664,
+      -0.637,
+      0.239,
+      -0.044
+    ]
+  },
+  "candidatePool": 500000,
+  "observed": {
+    "discoveryFull14": 1,
+    "validationFull14": 1,
+    "holdoutFull14": 1
+  },
+  "draws": {
+    "discovery": 36,
+    "validation": 42,
+    "holdout": 255
+  },
+  "nullModel": {
+    "assumption": "Each of 14 signs equiprobable and the 216-column system has per-draw full14 probability columns/3^14. Phase events are treated independent for the analytic single-candidate calculation.",
+    "perDrawFull14Probability": 0.0000451602341558141,
+    "phaseAtLeastOneFull14": {
+      "discovery": 0.0016244842355193079,
+      "validation": 0.0018949749277568095,
+      "holdout": 0.0114500630554204
+    },
+    "singleCandidateAtLeastOneFull14InEachOfThreePhases": 3.5247380575966694e-8,
+    "selectionAwareAtLeastOneOfCandidatePoolShowsTriplePhasePattern": 0.017469301658460168,
+    "bonferroniUpperBound": 0.017623690287983346
+  },
+  "monteCarlo": {
+    "runs": 1000000,
+    "singleCandidateTriplePhaseCount": 0,
+    "singleCandidateTriplePhaseRate": 0
+  },
+  "limitations": [
+    "500,000 searched systems are not statistically independent.",
+    "Actual football 1/X/2 probabilities are not equiprobable.",
+    "The champion was selected using discovery and validation, while holdout was subsequently opened.",
+    "Multiple research families beyond this single search increase global selection bias.",
+    "Prospective results after 2026-08-16 remain the decisive evidence."
+  ],
+  "classification": "NOTABLE_RESEARCH_ANOMALY_REQUIRES_PROSPECTIVE_REPLICATION",
+  "realMoneyPass": false
+}
