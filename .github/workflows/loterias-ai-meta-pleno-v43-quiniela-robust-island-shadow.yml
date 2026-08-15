@@ -1,0 +1,36 @@
+name: Loterias AI MetaPleno v43 Quiniela Robust Island Shadow
+on:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v43-quiniela-robust-island-shadow.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v43-quiniela-robust-island-shadow.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Freeze robust-island panel
+        run: node loterias-ai/scripts/meta-pleno-v43-quiniela-robust-island-shadow.mjs
+      - name: Persist panel safely
+        run: |
+          cp loterias-ai/data/shadow/quiniela-v43-robust-island-panel.json /tmp/quiniela-v43.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p loterias-ai/data/shadow
+            cp /tmp/quiniela-v43.json loterias-ai/data/shadow/quiniela-v43-robust-island-panel.json
+            git add loterias-ai/data/shadow/quiniela-v43-robust-island-panel.json
+            git commit -m 'data(loterias-ai): freeze Quiniela v43 robust-island panel' || exit 0
+            git push origin HEAD:main && exit 0
+            sleep $((i*3))
+          done
+          exit 1
