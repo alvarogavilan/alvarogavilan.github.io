@@ -1,10 +1,12 @@
 import fs from 'node:fs';
 const BASE='https://www.loteriasyapuestas.es/servicios/fechav3';
-const START=new Date('2026-01-01T00:00:00Z');
+const startInput=process.env.LOTERIAS_BACKFILL_START||'2026-01-01';
 const endInput=process.env.LOTERIAS_BACKFILL_END||new Date().toISOString().slice(0,10);
-const END=new Date(`${endInput}T00:00:00Z`);
+const START=new Date(`${startInput}T00:00:00Z`),END=new Date(`${endInput}T00:00:00Z`);
+if(Number.isNaN(START.getTime()))throw new Error(`Invalid LOTERIAS_BACKFILL_START: ${startInput}`);
 if(Number.isNaN(END.getTime()))throw new Error(`Invalid LOTERIAS_BACKFILL_END: ${endInput}`);
-if(END<START)throw new Error(`Backfill end ${endInput} precedes 2026 start`);
+if(END<START)throw new Error(`Backfill end ${endInput} precedes start ${startInput}`);
+if(START.getUTCFullYear()!==2026||END.getUTCFullYear()!==2026)throw new Error('backfill-core-2026 only accepts 2026 dates');
 const GAME_FILTER=(process.env.LOTERIAS_BACKFILL_GAME||'').trim();
 const specs={
   bonoloto:{gid:'BONO',days:[0,1,2,3,4,5,6],pick:6,max:49},
@@ -43,18 +45,20 @@ async function fetchDate(game,spec,d){
   return rows.filter(x=>x&&x.game_id===spec.gid).map(x=>normalize(game,x,spec,url));
 }
 const selected=Object.entries(specs).filter(([game])=>!GAME_FILTER||game===GAME_FILTER);
-const summary={generatedAt:new Date().toISOString(),period:{start:'2026-01-01',end:END.toISOString().slice(0,10)},gameFilter:GAME_FILTER||null,games:{}};
+const summary={generatedAt:new Date().toISOString(),period:{start:START.toISOString().slice(0,10),end:END.toISOString().slice(0,10)},gameFilter:GAME_FILTER||null,mode:'INCREMENTAL_NON_DESTRUCTIVE',games:{}};
 for(const [game,spec] of selected){
-  const records=[],errors=[];let requests=0;
+  const fetched=[],errors=[];let requests=0;
   for(let d=new Date(START);d<=END;d.setUTCDate(d.getUTCDate()+1)){
     if(!spec.days.includes(d.getUTCDay()))continue;requests++;
-    try{records.push(...await fetchDate(game,spec,d));}catch(e){errors.push({date:ymd(d),error:String(e)});}
+    try{fetched.push(...await fetchDate(game,spec,d));}catch(e){errors.push({date:ymd(d),error:String(e)});}
     await sleep(60);
   }
-  const uniq=[...new Map(records.map(r=>[r.drawId,r])).values()].sort((a,b)=>a.drawDate.localeCompare(b.drawDate));
-  const dir=`loterias-ai/data/archive/${game}`;fs.mkdirSync(dir,{recursive:true});
-  fs.writeFileSync(`${dir}/2026.json`,JSON.stringify({gameId:game,year:2026,records:uniq},null,2)+'\n');
-  summary.games[game]={requests,validatedDraws:uniq.length,errors:errors.length,earliest:uniq[0]?.drawDate||null,latest:uniq.at(-1)?.drawDate||null};
+  const dir=`loterias-ai/data/archive/${game}`,file=`${dir}/2026.json`;fs.mkdirSync(dir,{recursive:true});
+  let existing=[];if(fs.existsSync(file)){try{existing=JSON.parse(fs.readFileSync(file,'utf8')).records||[]}catch{existing=[]}}
+  const merged=[...new Map([...existing,...fetched].map(r=>[r.drawId,r])).values()].sort((a,b)=>a.drawDate.localeCompare(b.drawDate));
+  if(existing.length&&merged.length<existing.length)throw new Error(`${game}: non-destructive invariant violated`);
+  fs.writeFileSync(file,JSON.stringify({gameId:game,year:2026,records:merged},null,2)+'\n');
+  summary.games[game]={requests,existingDraws:existing.length,fetchedDraws:fetched.length,validatedDraws:merged.length,newDraws:Math.max(0,merged.length-existing.length),errors:errors.length,earliest:merged[0]?.drawDate||null,latest:merged.at(-1)?.drawDate||null};
   console.log(game,summary.games[game]);
 }
 fs.writeFileSync('loterias-ai/data/archive/backfill-2026-summary.json',JSON.stringify(summary,null,2)+'\n');
