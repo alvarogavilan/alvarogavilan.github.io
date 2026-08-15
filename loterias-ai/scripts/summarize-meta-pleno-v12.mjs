@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+// Triggered after MetaPleno v12 completed successfully.
 const p='loterias-ai/data/research/meta-pleno-v12-multiyear-stability.json';
 const j=JSON.parse(fs.readFileSync(p,'utf8'));
 const out={generatedAt:new Date().toISOString(),engine:'MetaPleno-v12-summary',games:{},realMoneyPass:false};
