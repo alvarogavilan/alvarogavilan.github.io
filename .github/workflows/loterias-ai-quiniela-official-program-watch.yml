@@ -4,6 +4,12 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '15 7,13 * * *'
+  push:
+    paths:
+      - '.github/workflows/loterias-ai-quiniela-official-program-watch.yml'
+      - 'loterias-ai/scripts/quiniela-official-program-watch.mjs'
+      - 'loterias-ai/scripts/quiniela-pleno15-prospective-seal.mjs'
+      - 'loterias-ai/data/shadow/quiniela-pleno15-model-freeze-2026-08-15.json'
 
 permissions:
   contents: write
