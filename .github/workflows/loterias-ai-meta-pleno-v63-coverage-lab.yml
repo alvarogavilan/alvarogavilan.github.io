@@ -1,0 +1,51 @@
+name: Loterias AI MetaPleno v63 Multi Game Coverage Lab
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v63-coverage-lab.mjs'
+      - 'loterias-ai/data/research/scientific-library-v63.json'
+      - '.github/workflows/loterias-ai-meta-pleno-v63-coverage-lab.yml'
+permissions:
+  contents: write
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - game: bonoloto
+            main: '2,4,6,8,14,26,34,42'
+            stars: ''
+          - game: primitiva
+            main: '2,4,6,8,14,26,34,42'
+            stars: ''
+          - game: euromillones
+            main: '2,8,14,21,28,35,42,49'
+            stars: '1,4,7,10'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run coverage optimizer
+        env:
+          GAME: ${{ matrix.game }}
+          MAIN_POOL: ${{ matrix.main }}
+          STAR_POOL: ${{ matrix.stars }}
+          MAX_BUDGET_EUR: '15'
+        run: node loterias-ai/scripts/meta-pleno-v63-coverage-lab.mjs
+      - name: Persist result safely
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git pull --rebase origin main
+          git add loterias-ai/data/research/meta-pleno-v63-${{ matrix.game }}-coverage-lab.json
+          git diff --cached --quiet && exit 0
+          git commit -m "data(loterias-ai): persist v63 ${{ matrix.game }} coverage lab"
+          for i in 1 2 3 4 5; do
+            git push origin HEAD:main && exit 0
+            git pull --rebase origin main
+          done
+          exit 1
