@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+const audit=JSON.parse(fs.readFileSync('loterias-ai/data/research/gordo-v14-complete-ticket-audit.json','utf8'));
+const base=JSON.parse(fs.readFileSync('loterias-ai/data/research/gordo-v14-matched-cost-baseline.json','utf8'));
+const years=Object.entries(audit.holdout.byYear||{}).map(([year,x])=>({year:+year,...x,roi:x.stake?x.net/x.stake-1:null}));
+const profitableYears=years.filter(x=>x.roi>0).length;
+const nonNegativeYears=years.filter(x=>x.roi>=0).length;
+const positiveWithoutBest=(()=>{if(!years.length)return null;const best=[...years].sort((a,b)=>(b.net-b.stake)-(a.net-a.stake))[0];const rest=years.filter(x=>x.year!==best.year);const stake=rest.reduce((s,x)=>s+x.stake,0),net=rest.reduce((s,x)=>s+x.net,0);return {excludedYear:best.year,draws:rest.reduce((s,x)=>s+x.draws,0),stakeEUR:stake,netReturnEUR:net,roi:stake?net/stake-1:null};})();
+const out={generatedAt:new Date().toISOString(),engine:'gordo-v14-year-slice-robustness',source:'gordo-v14-complete-ticket-audit.json',holdoutROI:audit.holdout.roiNet,matchedCostPROI:base.random?.pROI??null,years,profitableYears,nonNegativeYears,leaveBestYearOut:positiveWithoutBest,assessment:{robustAcrossYears:profitableYears>=2&&positiveWithoutBest?.roi>0,concentratedInSingleYear:positiveWithoutBest?.roi<0,realMoneyPass:false},note:'A positive aggregate holdout can be driven by one prize. This audit explicitly tests temporal concentration; it cannot authorize betting.'};
+fs.writeFileSync('loterias-ai/data/research/gordo-v14-year-slice-robustness.json',JSON.stringify(out,null,2)+'\n');
+console.log(JSON.stringify(out,null,2));
