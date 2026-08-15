@@ -1,0 +1,48 @@
+name: Loterias AI MetaPleno v4 Recover Yearly
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/loterias-ai-meta-pleno-v4-recover-yearly.yml'
+permissions:
+  actions: read
+  contents: write
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: 31877872101
+          pattern: meta-pleno-v4-*
+          path: /tmp/meta-v4
+      - name: Collect authoritative fixed shards
+        run: |
+          rm -rf loterias-ai/data/research/meta-pleno-v4-shards
+          mkdir -p loterias-ai/data/research/meta-pleno-v4-shards
+          find /tmp/meta-v4 -name '*.json' -exec cp {} loterias-ai/data/research/meta-pleno-v4-shards/ \;
+          test "$(find loterias-ai/data/research/meta-pleno-v4-shards -name '*.json' | wc -l)" -eq 20
+          node -e "const fs=require('fs'),p='loterias-ai/data/research/meta-pleno-v4-shards';for(const f of fs.readdirSync(p)){const j=JSON.parse(fs.readFileSync(p+'/'+f));if(j.engine!=='MetaPleno-v4-symbolic-fixed')throw new Error('invalid shard '+f)}"
+      - name: Score pleno and pleno-1 year by year
+        run: node loterias-ai/scripts/meta-pleno-v4-aggregate.mjs
+      - name: Persist evidence safely
+        run: |
+          cp loterias-ai/data/research/meta-pleno-v4-symbolic.json /tmp/meta-v4-yearly.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/meta-v4-yearly.json loterias-ai/data/research/meta-pleno-v4-symbolic.json
+            git add loterias-ai/data/research/meta-pleno-v4-symbolic.json
+            git commit -m 'data(loterias-ai): persist valid yearly pleno and pleno-1 evidence' || exit 0
+            git push origin HEAD:main && exit 0
+            sleep $((i*3))
+          done
+          exit 1
