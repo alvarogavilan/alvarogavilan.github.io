@@ -1,0 +1,71 @@
+name: Loterias AI MetaPleno v43 Quiniela Selection Null
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v43-quiniela-null-search-shard.mjs'
+      - 'loterias-ai/scripts/meta-pleno-v43-quiniela-null-aggregate.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v43-quiniela-selection-null.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-metapleno-v43
+  cancel-in-progress: true
+
+jobs:
+  null-search:
+    strategy:
+      fail-fast: false
+      matrix:
+        replicate: [0,1,2,3,4,5,6,7,8,9]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Rerun 50k-candidate search under phase-wise permutation null
+        env:
+          REPLICATE: ${{ matrix.replicate }}
+          CANDIDATES: 50000
+        run: node loterias-ai/scripts/meta-pleno-v43-quiniela-null-search-shard.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v43-null-${{ matrix.replicate }}
+          path: loterias-ai/data/research/meta-pleno-v43-quiniela-null-shards/rep-${{ matrix.replicate }}.json
+  aggregate:
+    needs: null-search
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v43-null-*
+          path: loterias-ai/data/research/meta-pleno-v43-quiniela-null-shards
+          merge-multiple: true
+      - run: node loterias-ai/scripts/meta-pleno-v43-quiniela-null-aggregate.mjs
+      - name: Persist result and null champions safely
+        shell: bash
+        run: |
+          cp loterias-ai/data/research/meta-pleno-v43-quiniela-selection-aware-null.json /tmp/v43.json
+          cp -R loterias-ai/data/research/meta-pleno-v43-quiniela-null-shards /tmp/v43-shards
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p loterias-ai/data/research/meta-pleno-v43-quiniela-null-shards
+            cp /tmp/v43.json loterias-ai/data/research/meta-pleno-v43-quiniela-selection-aware-null.json
+            cp /tmp/v43-shards/*.json loterias-ai/data/research/meta-pleno-v43-quiniela-null-shards/
+            git add loterias-ai/data/research/meta-pleno-v43-quiniela-selection-aware-null.json loterias-ai/data/research/meta-pleno-v43-quiniela-null-shards
+            git commit -m 'data(loterias-ai): persist MetaPleno v43 Quiniela selection-null audit' || exit 0
+            git push origin HEAD:main && exit 0
+            sleep $((i*2))
+          done
+          exit 1
