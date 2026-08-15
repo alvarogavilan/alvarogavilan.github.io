@@ -1,0 +1,493 @@
+{
+  "generatedAt": "2026-08-15T22:34:52.315Z",
+  "version": "v181",
+  "gameId": "primitiva",
+  "family": "V79_COST_COMPRESSION",
+  "purpose": "Quantify how much of the deterministic v79 5-of-8 reduced-system guarantee survives at lower spend levels. This is a coverage audit, not a predictive edge claim.",
+  "baseline": {
+    "poolSize": 8,
+    "fullReducedTickets": 15,
+    "fullReducedStakeEUR": 15,
+    "coveredFiveSubsets": 56,
+    "totalFiveSubsets": 56
+  },
+  "methodology": "Start from the exact v79 15-ticket template. Greedily order its tickets by marginal coverage of the 56 possible 5-number subsets of an 8-number pool. Report conditional coverage at fixed budgets. No draw outcomes or future information are used.",
+  "budgets": [
+    {
+      "stakeEUR": 1,
+      "tickets": 1,
+      "coveredFiveSubsets": 6,
+      "totalFiveSubsets": 56,
+      "conditionalFiveSubsetCoverage": 0.10714285714285714,
+      "selectedTemplateIndexes": [
+        0
+      ],
+      "selectedTemplateTickets": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      ]
+    },
+    {
+      "stakeEUR": 2,
+      "tickets": 2,
+      "coveredFiveSubsets": 12,
+      "totalFiveSubsets": 56,
+      "conditionalFiveSubsetCoverage": 0.21428571428571427,
+      "selectedTemplateIndexes": [
+        0,
+        1
+      ],
+      "selectedTemplateTickets": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          6,
+          7
+        ]
+      ]
+    },
+    {
+      "stakeEUR": 3,
+      "tickets": 3,
+      "coveredFiveSubsets": 18,
+      "totalFiveSubsets": 56,
+      "conditionalFiveSubsetCoverage": 0.32142857142857145,
+      "selectedTemplateIndexes": [
+        0,
+        1,
+        2
+      ],
+      "selectedTemplateTickets": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          6,
+          7
+        ],
+        [
+          0,
+          1,
+          4,
+          5,
+          6,
+          7
+        ]
+      ]
+    },
+    {
+      "stakeEUR": 5,
+      "tickets": 5,
+      "coveredFiveSubsets": 28,
+      "totalFiveSubsets": 56,
+      "conditionalFiveSubsetCoverage": 0.5,
+      "selectedTemplateIndexes": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "selectedTemplateTickets": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          6,
+          7
+        ],
+        [
+          0,
+          1,
+          4,
+          5,
+          6,
+          7
+        ],
+        [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          6
+        ]
+      ]
+    },
+    {
+      "stakeEUR": 8,
+      "tickets": 8,
+      "coveredFiveSubsets": 40,
+      "totalFiveSubsets": 56,
+      "conditionalFiveSubsetCoverage": 0.7142857142857143,
+      "selectedTemplateIndexes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "selectedTemplateTickets": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          6,
+          7
+        ],
+        [
+          0,
+          1,
+          4,
+          5,
+          6,
+          7
+        ],
+        [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          6
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          7
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          5,
+          6
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          5,
+          7
+        ]
+      ]
+    },
+    {
+      "stakeEUR": 10,
+      "tickets": 10,
+      "coveredFiveSubsets": 48,
+      "totalFiveSubsets": 56,
+      "conditionalFiveSubsetCoverage": 0.8571428571428571,
+      "selectedTemplateIndexes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "selectedTemplateTickets": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          6,
+          7
+        ],
+        [
+          0,
+          1,
+          4,
+          5,
+          6,
+          7
+        ],
+        [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          6
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          7
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          5,
+          6
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          5,
+          7
+        ],
+        [
+          0,
+          2,
+          4,
+          5,
+          6,
+          7
+        ],
+        [
+          0,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      ]
+    },
+    {
+      "stakeEUR": 15,
+      "tickets": 15,
+      "coveredFiveSubsets": 56,
+      "totalFiveSubsets": 56,
+      "conditionalFiveSubsetCoverage": 1,
+      "selectedTemplateIndexes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "selectedTemplateTickets": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          6,
+          7
+        ],
+        [
+          0,
+          1,
+          4,
+          5,
+          6,
+          7
+        ],
+        [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          6
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          4,
+          7
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          5,
+          6
+        ],
+        [
+          0,
+          1,
+          2,
+          3,
+          5,
+          7
+        ],
+        [
+          0,
+          2,
+          4,
+          5,
+          6,
+          7
+        ],
+        [
+          0,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        [
+          1,
+          2,
+          4,
+          5,
+          6,
+          7
+        ],
+        [
+          1,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        [
+          0,
+          1,
+          2,
+          4,
+          5,
+          6
+        ],
+        [
+          0,
+          1,
+          2,
+          4,
+          5,
+          7
+        ],
+        [
+          0,
+          1,
+          2,
+          4,
+          6,
+          7
+        ]
+      ]
+    }
+  ],
+  "decision": "ECONOMIC_COVERAGE_ONLY_NO_REAL_MONEY_AUTHORIZATION",
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
