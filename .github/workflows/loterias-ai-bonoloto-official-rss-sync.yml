@@ -6,6 +6,7 @@ on:
   push:
     paths:
       - 'loterias-ai/scripts/bonoloto-official-rss-sync.mjs'
+      - 'loterias-ai/scripts/meta-pleno-v54-bonoloto-budget8-prospective-freeze.mjs'
       - '.github/workflows/loterias-ai-bonoloto-official-rss-sync.yml'
 permissions:
   contents: write
@@ -23,23 +24,30 @@ jobs:
         with: {node-version: 22}
       - name: Fetch and validate fresh official Bonoloto results
         run: node loterias-ai/scripts/bonoloto-official-rss-sync.mjs
-      - name: Persist official archive update safely
+      - name: Evaluate Budget8 prospective freeze against refreshed archive
+        run: node loterias-ai/scripts/meta-pleno-v54-bonoloto-budget8-prospective-freeze.mjs
+      - name: Persist official archive and prospective state safely
         run: |
           YEAR=$(date -u +%Y)
-          mkdir -p /tmp/bono-official
+          mkdir -p /tmp/bono-official /tmp/bono-shadow
           cp loterias-ai/data/official/bonoloto-rss-sync-status.json /tmp/bono-official/status.json
           if [ -f loterias-ai/data/archive/bonoloto/${YEAR}.json ]; then cp loterias-ai/data/archive/bonoloto/${YEAR}.json /tmp/bono-official/year.json; fi
+          cp loterias-ai/data/shadow/bonoloto-v54-budget8-freeze-status.json /tmp/bono-shadow/v54-status.json
+          if [ -f loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v54-budget8.json ]; then cp loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v54-budget8.json /tmp/bono-shadow/v54-freeze.json; fi
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           for i in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
-            mkdir -p loterias-ai/data/official loterias-ai/data/archive/bonoloto
+            mkdir -p loterias-ai/data/official loterias-ai/data/archive/bonoloto loterias-ai/data/shadow
             cp /tmp/bono-official/status.json loterias-ai/data/official/bonoloto-rss-sync-status.json
             git add loterias-ai/data/official/bonoloto-rss-sync-status.json
             if [ -f /tmp/bono-official/year.json ]; then cp /tmp/bono-official/year.json loterias-ai/data/archive/bonoloto/${YEAR}.json; git add loterias-ai/data/archive/bonoloto/${YEAR}.json; fi
+            cp /tmp/bono-shadow/v54-status.json loterias-ai/data/shadow/bonoloto-v54-budget8-freeze-status.json
+            git add loterias-ai/data/shadow/bonoloto-v54-budget8-freeze-status.json
+            if [ -f /tmp/bono-shadow/v54-freeze.json ]; then cp /tmp/bono-shadow/v54-freeze.json loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v54-budget8.json; git add loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v54-budget8.json; fi
             git diff --cached --quiet && exit 0
-            git commit -m 'data(loterias-ai): sync Bonoloto from official SELAE RSS'
+            git commit -m 'data(loterias-ai): sync official Bonoloto and refresh Budget8 freeze'
             git push origin HEAD:main && exit 0
             sleep $((i*3))
           done
