@@ -1,0 +1,44 @@
+name: Loterias AI Quiniela Prospective Full15 Settle
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '37 7,19 * * *'
+  push:
+    paths:
+      - 'loterias-ai/data/archive/quiniela/2026.json'
+      - 'loterias-ai/scripts/quiniela-prospective-full15-settle.mjs'
+      - '.github/workflows/loterias-ai-quiniela-prospective-full15-settle.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-quiniela-prospective-full15-settle
+  cancel-in-progress: false
+jobs:
+  settle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Settle Full15 and v43 from official archive
+        run: node loterias-ai/scripts/quiniela-prospective-full15-settle.mjs
+      - name: Persist evidence safely
+        run: |
+          mkdir -p /tmp/quiniela-settle/loterias-ai/data/shadow
+          cp -f loterias-ai/data/shadow/quiniela-meta-pleno-ledger.json /tmp/quiniela-settle/loterias-ai/data/shadow/ || true
+          cp -f loterias-ai/data/shadow/quiniela-v43-robust-island-panel.json /tmp/quiniela-settle/loterias-ai/data/shadow/ || true
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p loterias-ai/data/shadow
+            cp -f /tmp/quiniela-settle/loterias-ai/data/shadow/* loterias-ai/data/shadow/ 2>/dev/null || true
+            git add loterias-ai/data/shadow
+            git commit -m 'data(loterias-ai): settle prospective Quiniela evidence' || exit 0
+            git push origin HEAD:main && exit 0
+            sleep $((i*3))
+          done
+          exit 1
