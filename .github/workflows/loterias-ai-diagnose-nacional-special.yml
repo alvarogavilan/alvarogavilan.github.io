@@ -1,0 +1,34 @@
+name: Loterias AI Diagnose Nacional Special
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/diagnose-nacional-special-payout.mjs'
+      - '.github/workflows/loterias-ai-diagnose-nacional-special.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-diagnose-nacional-special
+  cancel-in-progress: true
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Diagnose official special-draw payout schema
+        run: node loterias-ai/scripts/diagnose-nacional-special-payout.mjs
+      - name: Persist diagnostic evidence
+        run: |
+          cp loterias-ai/data/validation/nacional-special-payout-diagnostic.json /tmp/nacional-special-payout-diagnostic.json
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/data/validation
+          cp /tmp/nacional-special-payout-diagnostic.json loterias-ai/data/validation/nacional-special-payout-diagnostic.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/validation/nacional-special-payout-diagnostic.json
+          git commit -m 'data(loterias-ai): persist special Nacional payout diagnostic' || exit 0
+          git push origin HEAD:main
