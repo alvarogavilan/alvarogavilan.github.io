@@ -1,0 +1,26 @@
+name: Loterias AI MetaPleno v116 Audit v115 Matched Null
+on:
+  push:
+    branches:
+      - research/metapleno-v116-bonoloto-v115-matched-null
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v116-audit-v115-family-matched-null.mjs'
+      - 'loterias-ai/scripts/meta-pleno-v115-bonoloto-independent-meta-stacker-budget8.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v116-audit-v115.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node loterias-ai/scripts/meta-pleno-v116-audit-v115-family-matched-null.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v116-v115-family-matched-null
+          path: loterias-ai/data/research/meta-pleno-v116-audit-v115-family-matched-null.json
