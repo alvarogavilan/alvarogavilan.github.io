@@ -23,7 +23,7 @@ permissions:
 
 concurrency:
   group: loterias-ai-archive-maintenance
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   maintain:
@@ -31,7 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
