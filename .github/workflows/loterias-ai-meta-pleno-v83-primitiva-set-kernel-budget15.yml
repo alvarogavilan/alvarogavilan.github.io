@@ -1,0 +1,36 @@
+name: Loterias AI MetaPleno v83 Primitiva Set Kernel Budget15
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v83-primitiva-set-kernel-budget15.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v83-primitiva-set-kernel-budget15.yml'
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/meta-pleno-v83-primitiva-set-kernel-budget15.mjs
+      - name: Persist result safely
+        run: |
+          cp loterias-ai/data/research/meta-pleno-v83-primitiva-set-kernel-budget15.json /tmp/v83.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p loterias-ai/data/research
+            cp /tmp/v83.json loterias-ai/data/research/meta-pleno-v83-primitiva-set-kernel-budget15.json
+            git add loterias-ai/data/research/meta-pleno-v83-primitiva-set-kernel-budget15.json
+            git diff --cached --quiet && exit 0
+            git commit -m 'data(loterias-ai): persist MetaPleno v83 Primitiva set-kernel result'
+            git push origin HEAD:main && exit 0
+            sleep $((i*3))
+          done
+          exit 1
