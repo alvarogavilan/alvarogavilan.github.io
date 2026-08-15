@@ -19,18 +19,25 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Enrich sixteen bounded official batches
+      - name: Finish remaining bounded official batches
         shell: bash
         run: |
-          for i in $(seq 1 16); do
+          for i in $(seq 1 12); do
             BATCH_LIMIT=120 node loterias-ai/scripts/enrich-primitiva-official-economics.mjs || exit 1
           done
       - name: Persist safely
         shell: bash
         run: |
+          mkdir -p /tmp/loterias-ai
+          cp -R loterias-ai/data/archive/primitiva /tmp/loterias-ai/primitiva
+          cp loterias-ai/data/archive/_meta/primitiva-official-economics.json /tmp/loterias-ai/primitiva-official-economics.json
+          git fetch origin main
+          git reset --hard origin/main
+          rm -rf loterias-ai/data/archive/primitiva
+          cp -R /tmp/loterias-ai/primitiva loterias-ai/data/archive/primitiva
+          cp /tmp/loterias-ai/primitiva-official-economics.json loterias-ai/data/archive/_meta/primitiva-official-economics.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add loterias-ai/data/archive/primitiva loterias-ai/data/archive/_meta/primitiva-official-economics.json
-          git commit -m 'data(loterias-ai): expand Primitiva official economics' || exit 0
-          git pull --rebase origin main
+          git commit -m 'data(loterias-ai): complete Primitiva official economics' || exit 0
           git push origin HEAD:main
