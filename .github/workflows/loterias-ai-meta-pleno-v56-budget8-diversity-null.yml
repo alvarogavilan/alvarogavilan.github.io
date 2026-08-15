@@ -1,0 +1,35 @@
+name: Loterias AI MetaPleno v56 Budget8 Diversity Null
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v56-bonoloto-budget8-diversity-null.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v56-budget8-diversity-null.yml'
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/meta-pleno-v56-bonoloto-budget8-diversity-null.mjs
+      - name: Persist result safely
+        run: |
+          cp loterias-ai/data/research/meta-pleno-v56-bonoloto-budget8-diversity-null.json /tmp/v56.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/v56.json loterias-ai/data/research/meta-pleno-v56-bonoloto-budget8-diversity-null.json
+            git add loterias-ai/data/research/meta-pleno-v56-bonoloto-budget8-diversity-null.json
+            git diff --cached --quiet && exit 0
+            git commit -m 'data(loterias-ai): persist MetaPleno v56 Budget8 diversity audit'
+            git push origin HEAD:main && exit 0
+            sleep $((i*3))
+          done
+          exit 1
