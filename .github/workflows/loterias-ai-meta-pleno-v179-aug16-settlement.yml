@@ -1,0 +1,42 @@
+name: Loterias AI MetaPleno v179 Aug16 Settlement
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '45 19,20,21,22 16 8 *'
+  push:
+    branches: [main, research/metapleno-v179-prospective-settlement]
+    paths:
+      - 'loterias-ai/data/archive/bonoloto/2026.json'
+      - 'loterias-ai/scripts/meta-pleno-v179-settle-aug16-shadows.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v179-aug16-settlement.yml'
+permissions:
+  contents: write
+jobs:
+  settle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Refresh official Bonoloto archive
+        run: node loterias-ai/scripts/bonoloto-official-rss-sync.mjs || true
+      - name: Settle immutable shadows
+        shell: bash
+        run: |
+          set +e
+          node loterias-ai/scripts/meta-pleno-v179-settle-aug16-shadows.mjs > /tmp/v179.out 2>&1
+          rc=$?
+          cat /tmp/v179.out
+          if [ $rc -ne 0 ] && grep -q 'WAITING_OFFICIAL_TARGET' /tmp/v179.out; then exit 0; fi
+          exit $rc
+      - name: Persist settlement
+        if: hashFiles('loterias-ai/data/research/meta-pleno-v179-aug16-prospective-settlement.json') != ''
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/archive/bonoloto/2026.json loterias-ai/data/research/meta-pleno-v179-aug16-prospective-settlement.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'data(loterias-ai): settle v175 v178 Aug16 prospective shadows'
+          for i in 1 2 3 4 5; do git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin HEAD:"${GITHUB_REF_NAME}" && exit 0; sleep $((i*3)); done
+          exit 1
