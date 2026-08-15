@@ -1,0 +1,69 @@
+{
+  "version": "v63",
+  "generatedAt": "2026-08-15",
+  "purpose": "Research priors and algorithmic ideas for lottery prediction, coverage optimization, anti-overfit validation and combinatorial ticket design.",
+  "policy": {
+    "predictionIsNotCoverage": true,
+    "noPaperIsTreatedAsProofOfPredictability": true,
+    "realMoneyRequiresProspectiveOrVirginHoldoutEvidence": true,
+    "maxDefaultBudgetEUR": 15,
+    "multipleTestingMustBeTracked": true,
+    "correlatedHitsCountAsOneEventCluster": true
+  },
+  "sources": [
+    {
+      "id": "cushing-stewart-2024",
+      "title": "Applying constraint programming to minimal lottery designs",
+      "authors": ["David Cushing", "David I. Stewart"],
+      "year": 2024,
+      "url": "https://link.springer.com/article/10.1007/s10601-024-09368-5",
+      "arxiv": "https://arxiv.org/abs/2307.12430",
+      "ideas": ["constraint programming", "minimal lottery designs", "covering designs", "lower bounds"],
+      "integration": "Use CP/covering-design logic to optimize finite ticket portfolios after a candidate pool has been produced."
+    },
+    {
+      "id": "stommer-2026-649",
+      "title": "Tackling the 6/49 Lottery and Debunking Common Myths with Probabilistic Methods and Combinatorial Designs",
+      "authors": ["Ralph Stömmer"],
+      "year": 2026,
+      "url": "https://arxiv.org/abs/2603.24170",
+      "ideas": ["6/49", "probabilistic benchmark", "covering designs", "Schönheim bound", "myth testing"],
+      "integration": "Benchmark model-restricted pools against random baselines; do not assume hot/cold restrictions improve jackpot probability; exploit covering design only as portfolio engineering."
+    },
+    {
+      "id": "stommer-2024-mandel",
+      "title": "On the Lottery Problem: Tracing Stefan Mandel's Combinatorial Condensation",
+      "authors": ["Ralph Stömmer"],
+      "year": 2024,
+      "url": "https://arxiv.org/abs/2408.06857",
+      "ideas": ["combinatorial condensation", "covering design", "residual risk", "buying the pot"],
+      "integration": "Treat condensation as coverage compression, not prediction; quantify residual miss probability and cost before any portfolio is considered."
+    },
+    {
+      "id": "nkomozake-2024-cdm",
+      "title": "Predicting Winning Lottery Numbers",
+      "authors": ["Thando Nkomozake"],
+      "year": 2024,
+      "url": "https://arxiv.org/abs/2403.12836",
+      "ideas": ["Compound-Dirichlet-Multinomial", "Bayesian predictive model", "lottery prediction"],
+      "integration": "Implement only as a separately frozen Bayesian family and compare to uniform/random calibration; never promote from in-sample fit alone."
+    },
+    {
+      "id": "stinson-combinatorial-designs",
+      "title": "Combinatorial Designs: Constructions and Analysis",
+      "authors": ["Douglas R. Stinson"],
+      "year": 2003,
+      "url": "https://link.springer.com/book/10.1007/b97564",
+      "ideas": ["BIBD", "Steiner systems", "finite geometry", "covering constructions"],
+      "integration": "Reference library for deterministic and algebraic coverage constructions."
+    }
+  ],
+  "researchBacklog": [
+    "Compound-Dirichlet-Multinomial family with strict pre-2023 freeze",
+    "CP-SAT exact/near-exact reduced wheels under game-specific budget",
+    "covering-array and block-design portfolio optimizer",
+    "family-wise null simulation with adaptive-search correction",
+    "cross-game transfer tests with no shared holdout leakage",
+    "prospective prediction ledger sealed before official draw publication"
+  ]
+}
