@@ -5,11 +5,23 @@ on:
       - 'loterias-ai/scripts/backfill-core-2026.mjs'
       - '.github/workflows/loterias-ai-backfill-2026.yml'
   workflow_dispatch:
+    inputs:
+      game:
+        description: 'Optional gameId to refresh (blank = all core games)'
+        required: false
+        default: ''
+      end_date:
+        description: 'Optional YYYY-MM-DD end date (blank = today)'
+        required: false
+        default: ''
 jobs:
   backfill:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      LOTERIAS_BACKFILL_GAME: ${{ github.event_name == 'workflow_dispatch' && inputs.game || (github.event_name == 'push' && 'bonoloto') || '' }}
+      LOTERIAS_BACKFILL_END: ${{ github.event_name == 'workflow_dispatch' && inputs.end_date || '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -25,12 +37,12 @@ jobs:
           for(const [g,x] of Object.entries(s.games)){if(!x.validatedDraws) throw new Error(g+' produced zero draws');}
           console.log(s.games);
           NODE
-      - name: Persist archive partitions
+      - name: Persist archive partitions on current branch
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add loterias-ai/data/archive
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'data(loterias-ai): backfill official 2026 core draws'
-          git pull --rebase origin main
-          git push origin HEAD:main
+          for i in 1 2 3 4 5; do git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin HEAD:"${GITHUB_REF_NAME}" && exit 0; sleep $((i*3)); done
+          exit 1
