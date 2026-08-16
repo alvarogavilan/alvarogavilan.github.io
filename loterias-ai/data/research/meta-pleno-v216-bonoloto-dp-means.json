@@ -1,0 +1,539 @@
+{
+  "generatedAt": "2026-08-16T09:09:09.671Z",
+  "version": "v216",
+  "gameId": "bonoloto",
+  "family": "BAYESIAN_NONPARAMETRIC_DP_MEANS_REGIMES",
+  "candidatePool": {
+    "nominalConfigurations": 24,
+    "effectiveConfigurations": 21,
+    "validConfigurations": 20
+  },
+  "selectionPeriod": "2018-01-01..2022-12-31",
+  "postFreezePeriods": [
+    "2023-01-01..2024-12-31",
+    "2025-01-01..2026-12-31"
+  ],
+  "methodology": "Online DP-means small-variance non-parametric regime discovery. A new state cluster is created when normalized state distance exceeds lambda; cluster count is not fixed. Prediction occurs before assigning/updating the target state, so its outcome cannot leak into its own forecast. Number probabilities come from the nearest 1/3 established regimes. Hyperparameters are ranked only on 2018-2022; 2023+ is opened afterward and updates walk-forward using already observed draws only. Configurations collapsing to one cluster are invalidated.",
+  "budget": {
+    "poolSize": 8,
+    "tickets": 28,
+    "unitCostEUR": 0.5,
+    "theoreticalCostEUR": 14,
+    "realStakeEUR": 0
+  },
+  "summary": {
+    "nominalConfigurations": 24,
+    "effectiveConfigurations": 21,
+    "validConfigurations": 20,
+    "frozen": 8,
+    "minFinalClusters": 2,
+    "maxFinalClusters": 1029,
+    "midFullModels": 0,
+    "lateFullModels": 0,
+    "repeatFullModels": 0,
+    "repeat5PlusModels": 0,
+    "uniquePostFreeze5PlusDates": [
+      "2025-04-02",
+      "2025-04-27"
+    ]
+  },
+  "leaders": [
+    {
+      "config": {
+        "id": 9,
+        "lambda": 0.016,
+        "k": 1,
+        "mix": true
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 10,
+        "h5": 2,
+        "h6": 0,
+        "sum": 1474,
+        "events": [
+          {
+            "date": "2019-05-04",
+            "hits": 5,
+            "pool": [
+              9,
+              15,
+              17,
+              24,
+              25,
+              27,
+              33,
+              46
+            ],
+            "truth": [
+              9,
+              15,
+              17,
+              24,
+              41,
+              46
+            ]
+          },
+          {
+            "date": "2019-09-13",
+            "hits": 5,
+            "pool": [
+              11,
+              15,
+              19,
+              21,
+              25,
+              27,
+              29,
+              34
+            ],
+            "truth": [
+              12,
+              15,
+              21,
+              25,
+              27,
+              34
+            ]
+          }
+        ],
+        "meanHits": 0.9697368421052631
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 2,
+        "h5": 0,
+        "h6": 0,
+        "sum": 724,
+        "events": [],
+        "meanHits": 0.9904240766073872
+      },
+      "late": {
+        "draws": 591,
+        "h4": 2,
+        "h5": 0,
+        "h6": 0,
+        "sum": 572,
+        "events": [],
+        "meanHits": 0.9678510998307953
+      },
+      "finalClusters": 28,
+      "maxClusters": 28,
+      "poolSequenceHash": "d7c4bf01",
+      "validNonParametric": true
+    },
+    {
+      "config": {
+        "id": 15,
+        "lambda": 0.032,
+        "k": 3,
+        "mix": true
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 11,
+        "h5": 1,
+        "h6": 0,
+        "sum": 1523,
+        "events": [
+          {
+            "date": "2022-05-11",
+            "hits": 5,
+            "pool": [
+              2,
+              11,
+              17,
+              25,
+              27,
+              30,
+              32,
+              35
+            ],
+            "truth": [
+              2,
+              11,
+              27,
+              32,
+              35,
+              40
+            ]
+          }
+        ],
+        "meanHits": 1.0019736842105262
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 1,
+        "h5": 0,
+        "h6": 0,
+        "sum": 703,
+        "events": [],
+        "meanHits": 0.9616963064295485
+      },
+      "late": {
+        "draws": 591,
+        "h4": 3,
+        "h5": 1,
+        "h6": 0,
+        "sum": 559,
+        "events": [
+          {
+            "date": "2025-04-02",
+            "hits": 5,
+            "pool": [
+              7,
+              10,
+              16,
+              20,
+              30,
+              33,
+              46,
+              48
+            ],
+            "truth": [
+              7,
+              16,
+              28,
+              30,
+              33,
+              46
+            ]
+          }
+        ],
+        "meanHits": 0.9458544839255499
+      },
+      "finalClusters": 8,
+      "maxClusters": 8,
+      "poolSequenceHash": "08a35305",
+      "validNonParametric": true
+    },
+    {
+      "config": {
+        "id": 7,
+        "lambda": 0.008,
+        "k": 3,
+        "mix": true
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 7,
+        "h5": 1,
+        "h6": 0,
+        "sum": 1484,
+        "events": [
+          {
+            "date": "2022-08-19",
+            "hits": 5,
+            "pool": [
+              6,
+              8,
+              12,
+              14,
+              15,
+              18,
+              45,
+              46
+            ],
+            "truth": [
+              6,
+              8,
+              15,
+              18,
+              31,
+              45
+            ]
+          }
+        ],
+        "meanHits": 0.9763157894736842
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 4,
+        "h5": 0,
+        "h6": 0,
+        "sum": 674,
+        "events": [],
+        "meanHits": 0.9220246238030095
+      },
+      "late": {
+        "draws": 591,
+        "h4": 3,
+        "h5": 0,
+        "h6": 0,
+        "sum": 584,
+        "events": [],
+        "meanHits": 0.988155668358714
+      },
+      "finalClusters": 124,
+      "maxClusters": 124,
+      "poolSequenceHash": "a4eda364",
+      "validNonParametric": true
+    },
+    {
+      "config": {
+        "id": 11,
+        "lambda": 0.016,
+        "k": 3,
+        "mix": true
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 6,
+        "h5": 1,
+        "h6": 0,
+        "sum": 1486,
+        "events": [
+          {
+            "date": "2018-03-12",
+            "hits": 5,
+            "pool": [
+              23,
+              24,
+              28,
+              31,
+              33,
+              35,
+              39,
+              49
+            ],
+            "truth": [
+              2,
+              23,
+              24,
+              31,
+              33,
+              39
+            ]
+          }
+        ],
+        "meanHits": 0.9776315789473684
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 713,
+        "events": [],
+        "meanHits": 0.9753761969904241
+      },
+      "late": {
+        "draws": 591,
+        "h4": 1,
+        "h5": 0,
+        "h6": 0,
+        "sum": 564,
+        "events": [],
+        "meanHits": 0.9543147208121827
+      },
+      "finalClusters": 28,
+      "maxClusters": 28,
+      "poolSequenceHash": "d0c71bbd",
+      "validNonParametric": true
+    },
+    {
+      "config": {
+        "id": 19,
+        "lambda": 0.064,
+        "k": 3,
+        "mix": true
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 6,
+        "h5": 1,
+        "h6": 0,
+        "sum": 1478,
+        "events": [
+          {
+            "date": "2022-07-15",
+            "hits": 5,
+            "pool": [
+              2,
+              10,
+              22,
+              30,
+              32,
+              33,
+              36,
+              46
+            ],
+            "truth": [
+              2,
+              10,
+              22,
+              33,
+              38,
+              46
+            ]
+          }
+        ],
+        "meanHits": 0.9723684210526315
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 7,
+        "h5": 0,
+        "h6": 0,
+        "sum": 708,
+        "events": [],
+        "meanHits": 0.9685362517099864
+      },
+      "late": {
+        "draws": 591,
+        "h4": 0,
+        "h5": 0,
+        "h6": 0,
+        "sum": 586,
+        "events": [],
+        "meanHits": 0.9915397631133672
+      },
+      "finalClusters": 2,
+      "maxClusters": 2,
+      "poolSequenceHash": "add7f6ce",
+      "validNonParametric": true
+    },
+    {
+      "config": {
+        "id": 6,
+        "lambda": 0.008,
+        "k": 3,
+        "mix": false
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 10,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1532,
+        "events": [],
+        "meanHits": 1.0078947368421052
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 1,
+        "h5": 0,
+        "h6": 0,
+        "sum": 702,
+        "events": [],
+        "meanHits": 0.960328317373461
+      },
+      "late": {
+        "draws": 591,
+        "h4": 3,
+        "h5": 1,
+        "h6": 0,
+        "sum": 610,
+        "events": [
+          {
+            "date": "2025-04-27",
+            "hits": 5,
+            "pool": [
+              2,
+              11,
+              14,
+              15,
+              22,
+              25,
+              26,
+              45
+            ],
+            "truth": [
+              2,
+              11,
+              13,
+              14,
+              22,
+              25
+            ]
+          }
+        ],
+        "meanHits": 1.0321489001692048
+      },
+      "finalClusters": 253,
+      "maxClusters": 253,
+      "poolSequenceHash": "b87d7dd2",
+      "validNonParametric": true
+    },
+    {
+      "config": {
+        "id": 5,
+        "lambda": 0.008,
+        "k": 1,
+        "mix": true
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 10,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1504,
+        "events": [],
+        "meanHits": 0.9894736842105263
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 1,
+        "h5": 0,
+        "h6": 0,
+        "sum": 690,
+        "events": [],
+        "meanHits": 0.9439124487004104
+      },
+      "late": {
+        "draws": 591,
+        "h4": 1,
+        "h5": 0,
+        "h6": 0,
+        "sum": 592,
+        "events": [],
+        "meanHits": 1.0016920473773265
+      },
+      "finalClusters": 124,
+      "maxClusters": 124,
+      "poolSequenceHash": "d7886b6f",
+      "validNonParametric": true
+    },
+    {
+      "config": {
+        "id": 16,
+        "lambda": 0.064,
+        "k": 1,
+        "mix": false
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 10,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1472,
+        "events": [],
+        "meanHits": 0.968421052631579
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 715,
+        "events": [],
+        "meanHits": 0.9781121751025992
+      },
+      "late": {
+        "draws": 591,
+        "h4": 6,
+        "h5": 0,
+        "h6": 0,
+        "sum": 568,
+        "events": [],
+        "meanHits": 0.961082910321489
+      },
+      "finalClusters": 5,
+      "maxClusters": 5,
+      "poolSequenceHash": "4040ff37",
+      "validNonParametric": true
+    }
+  ],
+  "decision": "NEGATIVE",
+  "realMoneyPass": false
+}
