@@ -1,0 +1,29 @@
+name: Loterias AI MetaPleno v253 Causal States
+on:
+  push:
+    branches:
+      - research/metapleno-v253-causal-states
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run v253
+        run: node loterias-ai/research/metapleno-v253-causal-states.mjs
+      - name: Validate fail-closed
+        run: node -e "const r=require('./loterias-ai/data/research/metapleno-v253-causal-states.json'); if(r.realMoneyPass!==false||r.realStakeEUR!==0||r.candidatePool.theoreticalCostEUR>15) process.exit(1)"
+      - name: Persist result
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v253-causal-states.json
+          git diff --cached --quiet || git commit -m 'research(loterias-ai): persist v253 causal-state result'
+          git push
