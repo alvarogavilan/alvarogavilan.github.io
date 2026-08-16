@@ -1,0 +1,33 @@
+name: Loterias AI MetaPleno v291 MAP-Elites
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/metapleno-v291-open-ended-novelty-map-elites
+    paths:
+      - loterias-ai/research/megalab/v291-map-elites.mjs
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-v291-map-elites
+  cancel-in-progress: false
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - name: Run 16384-scientist MAP-Elites lab
+        run: node loterias-ai/research/megalab/v291-map-elites.mjs
+      - name: Verify scientific/economic fail-closed
+        run: |
+          node -e "const x=require('./loterias-ai/data/research/metapleno-v291-map-elites.json');if(x.realMoneyPass||x.realStakeEUR!==0||x.games.some(g=>g.budget.theoreticalEUR>4)||!x.scientificSafety.oosUntouched||!x.scientificSafety.negativePersistence)process.exit(1)"
+      - name: Persist v291 evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v291-map-elites.json loterias-ai/data/research/metapleno-global-negative-memory.json
+          git commit -m 'data(loterias-ai): persist v291 MAP-Elites evidence' || exit 0
+          git push
