@@ -1,0 +1,29 @@
+name: Loterias AI MetaPleno v233 Primitiva Positional Copula
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v233-primitiva-positional-copula]
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v233-primitiva-positional-copula.mjs'
+      - '.github/workflows/loterias-ai-metapleno-v233-primitiva-positional-copula.yml'
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Run v233
+        run: node loterias-ai/scripts/meta-pleno-v233-primitiva-positional-copula.mjs
+      - name: Validate fail-closed
+        run: node -e "const x=require('./loterias-ai/data/research/meta-pleno-v233-primitiva-positional-copula.json'); if(x.realMoneyPass!==false||x.realStakeEUR!==0||x.economics.budgetCapEUR>15) process.exit(1)"
+      - name: Persist result
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v233-primitiva-positional-copula.json
+          git diff --cached --quiet || git commit -m 'research(loterias-ai): persist v233 Primitiva positional copula'
+          git push
