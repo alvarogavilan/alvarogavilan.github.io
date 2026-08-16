@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-08-16T08:45:11.166Z",
+  "version": "v209",
+  "family": "EXACT_REPEAT_BIRTHDAY_COLLISION_NULL",
+  "source": "v208 exact recurrence audit",
+  "methodology": "For each stable main-number combination space, compare observed exact repeated signatures with the birthday-collision expectation N(N-1)/(2*M), where M=C(n,k). Tail probabilities use the standard rare-collision Poisson approximation. This asks whether exact historical repeats occur more often than uniform random draws would predict; it does not assume independence beyond the null model.",
+  "tests": [
+    {
+      "gameId": "bonoloto",
+      "draws": 9356,
+      "combinationSpace": 13983816,
+      "observedRepeatSignatures": 4,
+      "expectedCollisionPairsUnderUniform": 3.129524158498653,
+      "pAtLeastOneApprox": 0.9562613950547796,
+      "pAtLeastObservedPoissonApprox": 0.3817604822420586,
+      "ratioObservedToExpected": 1.2781495835836418
+    },
+    {
+      "gameId": "primitiva",
+      "draws": 4173,
+      "combinationSpace": 13983816,
+      "observedRepeatSignatures": 1,
+      "expectedCollisionPairsUnderUniform": 0.6224966060766246,
+      "pAtLeastOneApprox": 0.4633969226363295,
+      "pAtLeastObservedPoissonApprox": 0.4633969226363295,
+      "ratioObservedToExpected": 1.606434461229669
+    },
+    {
+      "gameId": "euromillones",
+      "draws": 1970,
+      "combinationSpace": 2118760,
+      "observedRepeatSignatures": 1,
+      "expectedCollisionPairsUnderUniform": 0.9153773905491891,
+      "pAtLeastOneApprox": 0.5996344965807333,
+      "pAtLeastObservedPoissonApprox": 0.5996344965807333,
+      "ratioObservedToExpected": 1.0924455971105433
+    }
+  ],
+  "decision": "EXACT_REPEATS_COMPATIBLE_WITH_RANDOM_COLLISIONS",
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
