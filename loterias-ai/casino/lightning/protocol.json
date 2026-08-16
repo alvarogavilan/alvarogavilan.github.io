@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-17",
+  "study": "Lightning Roulette",
+  "status": "PREREGISTERED",
+  "moneyMode": "PAPER_ONLY",
+  "processes": {
+    "A_physical_wheel": ["winning-number","wheel-sector","neighbors","table-id-if-public","timestamp","regime-change"],
+    "B_lightning_rng": ["selected-lightning-numbers","multipliers","count-of-lightning-numbers","timestamp","regime-change"],
+    "C_joint": ["winner-is-lightning","winner-multiplier","conditional-distributions","cross-process-dependence"]
+  },
+  "dataPolicy": {
+    "publicOrUserLawfullyAvailableOnly": true,
+    "unknownIsUnknown": true,
+    "noInventedRounds": true,
+    "preserveRawObservations": true,
+    "sourceAndTimestampRequired": true
+  },
+  "tests": [
+    "uniformity-and-calibration",
+    "serial-dependence",
+    "runs-and-waiting-times",
+    "changepoints",
+    "sector-and-neighbor-effects",
+    "multiplier-distribution",
+    "conditional-winner-lightning-dependence",
+    "information-theoretic-tests",
+    "null-simulation",
+    "multiple-testing-correction"
+  ],
+  "validation": {
+    "chronologicalSplitRequired": true,
+    "freezeBeforeOOS": true,
+    "independentReplication": true,
+    "prospectivePaperRoundsRequired": true,
+    "realMoneyEnabled": false
+  }
+}
