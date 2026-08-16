@@ -1,12 +1,15 @@
 {
-  "version":1,
+  "version":2,
   "purpose":"Fuente estructurada para que el Libro Vivo incorpore hitos verificables sin reconstruirlos de memoria.",
   "events":[
     {"id":"university-created","type":"infrastructure","title":"Nace la Universidad Loterías AI","plain":"La investigación deja de depender de una sola secuencia manual de métodos y se organiza en departamentos, memoria y tribunales.","evidenceState":"PERSISTED"},
     {"id":"v290-4096","type":"experiment-scale","title":"4.096 científicos virtuales","plain":"MegaLab prueba por primera vez miles de hipótesis lógicas dentro de una ejecución consolidada.","evidenceState":"PERSISTED"},
     {"id":"v291-16384","type":"experiment-scale","title":"16.384 científicos y MAP-Elites","plain":"La búsqueda pasa de perseguir sólo el mejor resultado a conservar también diversidad de pensamiento matemático.","metrics":{"logicalScientists":16384,"eliteCells":512,"oosFinalists":64,"newNegatives":16239},"evidenceState":"MERGED_MAIN"},
     {"id":"v292-million-registry","type":"experiment-scale","title":"La Universidad supera el millón de científicos lógicos","plain":"La población se representa de forma determinista y se comprime por equivalencia semántica antes de usar históricos, evitando gastar cálculo en copias conceptuales.","metrics":{"logicalScientists":1048576,"uniqueSemanticCells":899631,"semanticCollisions":148945},"evidenceState":"PERSISTED_ON_RESEARCH_BRANCH"},
+    {"id":"v292-oos-5of6","type":"scientific-event","title":"A un número del pleno, fuera de muestra","plain":"Una trayectoria congelada antes de la validación acertó cinco de los seis números de Bonoloto el 21 de mayo de 2024. La predicción fue 4, 30, 34, 43, 44, 49; el resultado, 4, 30, 32, 43, 44, 49. La investigación no lo trató como prueba de predictibilidad.","metrics":{"hits":5,"required":6,"date":"2024-05-21","independentBehaviorCount":1},"evidenceState":"PERSISTED_ON_RESEARCH_BRANCH"},
+    {"id":"v292-behavioral-falsification","type":"falsification","title":"Cinco científicos resultaron ser uno","plain":"La auditoría descubrió que cinco científicos con 5/6 producían exactamente la misma trayectoria predictiva. Tras colapsar clones, la señal contaba una sola vez. En 591 sorteos posteriores desde 2025 esa trayectoria no repitió ningún 5/6 ni consiguió un pleno.","metrics":{"semanticCandidates":32,"uniqueBehaviors":2,"behavioralDuplicates":30,"postFreezeDraws":591,"postFreezeNearFull":0,"postFreezeFullMain":0},"evidenceState":"PERSISTED_ON_RESEARCH_BRANCH"},
+    {"id":"behavioral-memory","type":"infrastructure","title":"La Universidad aprende a reconocer científicos que piensan igual","plain":"Desde v293, dos métodos que producen la misma secuencia de predicciones cuentan como un único comportamiento aunque sus fórmulas o etiquetas sean distintas. Esto evita duplicar señales y ahorra cálculo.","evidenceState":"IMPLEMENTED_ON_V293_BRANCH"},
     {"id":"book-reader","type":"editorial","title":"El Libro se convierte en eBook vivo","plain":"El manuscrito puede leerse página a página dentro de la app y mantiene una cadena editorial separada para web, impresión y formatos digitales.","evidenceState":"MERGED_MAIN"}
   ],
-  "rules":{"neverInventMetrics":true,"technicalAndPlainLayers":true,"extremeClaimsRequireEvidence":true}
+  "rules":{"neverInventMetrics":true,"technicalAndPlainLayers":true,"extremeClaimsRequireEvidence":true,"behavioralClonesCountAsOne":true}
 }
