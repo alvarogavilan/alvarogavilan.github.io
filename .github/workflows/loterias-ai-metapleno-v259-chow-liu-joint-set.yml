@@ -20,14 +20,8 @@ jobs:
       - name: Run v259
         run: node loterias-ai/research/metapleno-v259-chow-liu-joint-set.mjs
       - name: Verify fail-closed
-        run: node - <<'NODE'
-          const fs=require('fs');
-          const p='loterias-ai/data/research/metapleno-v259-chow-liu-joint-set.json';
-          const j=JSON.parse(fs.readFileSync(p,'utf8'));
-          if(j.realMoneyPass!==false||j.realStakeEUR!==0) throw new Error('real money must remain blocked');
-          if(j.candidatePool?.theoreticalCostEUR>15) throw new Error('budget exceeded');
-          console.log(j.decision,j.signal);
-          NODE
+        run: >-
+          node -e "const fs=require('fs'); const p='loterias-ai/data/research/metapleno-v259-chow-liu-joint-set.json'; const j=JSON.parse(fs.readFileSync(p,'utf8')); if(j.realMoneyPass!==false||j.realStakeEUR!==0) throw new Error('real money must remain blocked'); if(j.candidatePool?.theoreticalCostEUR>15) throw new Error('budget exceeded'); console.log(j.decision,j.signal);"
       - name: Persist result
         run: |
           git config user.name 'github-actions[bot]'
