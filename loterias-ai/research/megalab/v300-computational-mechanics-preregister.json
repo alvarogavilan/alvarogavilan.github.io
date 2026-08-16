@@ -1,0 +1,21 @@
+{
+  "version": "v300",
+  "family": "COMPUTATIONAL_MECHANICS_EPSILON_MACHINES",
+  "createdAt": "2026-08-17",
+  "status": "PREREGISTERED",
+  "objective": "Reconstruir estados causales minimos de la secuencia de sorteos y predecir distribuciones de combinaciones completas sin usar datos OOS para seleccionar ni ajustar modelos.",
+  "games": ["bonoloto","primitiva","euromillones","gordo"],
+  "selectionWindow": "2019-2022",
+  "oosWindow": "2023-2024",
+  "futureReserve": "2025+",
+  "representations": ["ordered-gaps","parity-highlow-residue","set-hash-symbols","sum-span-entropy"],
+  "histories": [2,3,4,5,6,8],
+  "stateMergeTolerances": [0.02,0.05,0.1,0.15],
+  "predictionModes": ["causal-state-successor","state-mixture","anti-consensus-successor"],
+  "logicalPopulation": 18432,
+  "screeningPopulation": 4096,
+  "deduplication": "prediction-trajectory fingerprint",
+  "promotion": {"selectionNearFullRequired": true,"maxFreezePerGame": 8,"freezeBeforeOOS": true},
+  "hardGates": {"oosLockedUntilFreeze": true,"noRetuneAfterOOS": true,"multipleTestingCorrection": true,"realMoneyPass": false,"realStakeEUR": 0},
+  "successDefinition": "Un pleno solo cuenta como hallazgo si la combinacion fue producida por un modelo congelado antes del sorteo y sobrevive auditoria OOS/replicacion."
+}

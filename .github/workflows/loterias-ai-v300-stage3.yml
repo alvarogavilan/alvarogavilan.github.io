@@ -1,0 +1,30 @@
+name: Loterias AI v300 Stage3
+on:
+  push:
+    branches:
+      - research/metapleno-v300-computational-mechanics
+    paths:
+      - loterias-ai/research/megalab/v300-stage3-freeze.mjs
+      - .github/workflows/loterias-ai-v300-stage3.yml
+jobs:
+  freeze:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Freeze pre-OOS candidates
+        run: node loterias-ai/research/megalab/v300-stage3-freeze.mjs
+      - name: Enforce freeze gates
+        run: node -e "const x=require('./loterias-ai/data/research/metapleno-v300-stage3-freeze.json'); if(x.validationTouched||x.postFreezeTouched||x.retuningPerformed||x.realMoneyPass||x.realStakeEUR!==0||x.ordinaryBudgetMaxEUR>15||x.frozenCandidates!==32) process.exit(1)"
+      - name: Persist freeze
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v300-stage3-freeze.json
+          git commit -m "research(loterias-ai): persist v300 stage3 freeze" || exit 0
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push
