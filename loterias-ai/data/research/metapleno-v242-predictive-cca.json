@@ -1,0 +1,59 @@
+{
+  "version": "v242",
+  "engine": "Predictive CCA Subspace",
+  "family": "PREDICTIVE_CCA_SUBSPACE",
+  "gameId": "bonoloto",
+  "generatedAt": "2026-08-16T11:28:02.463Z",
+  "archiveDraws": 9356,
+  "candidatePool": {
+    "nominalConfigurations": 12,
+    "effectiveConfigurations": 12,
+    "poolSize": 12,
+    "linesPerDraw": 30,
+    "theoreticalCostEUR": 15
+  },
+  "reconstruction": "For every evaluated draw, features use only preceding draws. Model/hyperparameters are frozen before evaluation era.",
+  "selection": {
+    "criterion": "pre-2023 only: full6 > hit5+ > meanBest > lower rank/lag",
+    "selected": {
+      "lag": 5,
+      "rank": 2
+    },
+    "train": {
+      "n": 1207,
+      "meanBest": 1.3579121789560895,
+      "hit5Plus": 1,
+      "full6": 0
+    }
+  },
+  "validation": {
+    "period": "2023-2024",
+    "n": 731,
+    "meanBest": 1.3461012311901506,
+    "hit5Plus": 1,
+    "full6": 0,
+    "hitDates": [
+      {
+        "date": "2023-12-25",
+        "best": 5
+      }
+    ]
+  },
+  "postFreeze": {
+    "period": "2025+",
+    "n": 591,
+    "meanBest": 1.3231810490693738,
+    "hit5Plus": 0,
+    "full6": 0,
+    "hitDates": []
+  },
+  "signal": {
+    "repeat5PlusAcrossEras": false,
+    "fullAcrossEras": false,
+    "requiresAudit": false
+  },
+  "decision": "NEGATIVE",
+  "realMoneyPass": false,
+  "realStakeEUR": 0,
+  "note": "Supervised lagged predictive subspace via diagonally whitened cross-covariance and frozen low-rank canonical components. Retrospective evidence never authorizes real money."
+}
