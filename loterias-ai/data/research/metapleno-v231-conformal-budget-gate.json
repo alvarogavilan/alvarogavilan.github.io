@@ -1,0 +1,62 @@
+{
+  "version": "v231",
+  "engine": "Conformal Budget Gate",
+  "game": "bonoloto",
+  "generatedAt": "2026-08-16T10:26:01.801Z",
+  "candidatePool": {
+    "nominalConfigurations": 4,
+    "effectiveConfigurations": 4,
+    "selectionCriterion": "Smallest pre-2023 calibrated pool size with >=5 miss-rate <= alpha; otherwise fail to k=9 research-only."
+  },
+  "dataBoundary": {
+    "train": "<2023-01-01",
+    "validation": "2023-2024",
+    "postFreeze": "2025+"
+  },
+  "selection": {
+    "trainEnd": "2022-12-31",
+    "alpha": 0.2,
+    "selectedPoolSize": 9,
+    "theoreticalBudgetEUR": 15,
+    "realMoneyPass": false,
+    "realStakeEUR": 0
+  },
+  "calibration": [
+    {
+      "k": 6,
+      "n": 1520,
+      "hit5": 0,
+      "missRate": 1
+    },
+    {
+      "k": 7,
+      "n": 1520,
+      "hit5": 0,
+      "missRate": 1
+    },
+    {
+      "k": 8,
+      "n": 1520,
+      "hit5": 0,
+      "missRate": 1
+    },
+    {
+      "k": 9,
+      "n": 1520,
+      "hit5": 0,
+      "missRate": 1
+    }
+  ],
+  "validation": {
+    "n": 731,
+    "hit5": 0,
+    "hit6": 0
+  },
+  "postFreeze": {
+    "n": 591,
+    "hit5": 1,
+    "hit6": 0
+  },
+  "decision": "RESEARCH_ONLY",
+  "note": "Calibration is pre-2023 only. A pool-size gate is not a lottery edge and cannot authorize real money."
+}
