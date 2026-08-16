@@ -1,6 +1,11 @@
 name: Loterias AI v296 Stage1-2 RQA Screen
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - research/metapleno-v296-recurrence-quantification
+    paths:
+      - '.github/workflows/loterias-ai-v296-stage1-2.yml'
 permissions:
   contents: write
 concurrency:
@@ -9,7 +14,7 @@ concurrency:
 jobs:
   research:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 6
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
