@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-17",
+  "name": "Lightning Always-On Observer + Live Session",
+  "principle": "El sistema observa continuamente; el usuario solo recibe señales accionables cuando confirma que tiene la mesa abierta.",
+  "components": {
+    "observer24x7": {
+      "purpose": "Ingerir rondas publicas/licitas, actualizar historico, recalcular features y mantener modelos preparados.",
+      "userPresenceRequired": false,
+      "realMoneyEnabled": false
+    },
+    "sessionMode": {
+      "activation": "USER_PRESENT_IN_LIGHTNING_TABLE",
+      "purpose": "Sincronizarse con la ronda actual y mostrar solo señales con tiempo suficiente antes del cierre.",
+      "staleSignalPolicy": "DROP",
+      "automaticBettingEnabled": false
+    },
+    "signalPacket": {
+      "fields": ["roundIdOrTimestamp","generatedAt","expiresAt","secondsToBetClose","coverageSize","numbers","stakePaperEUR","confidenceLabel","expectedValueEstimate","reasonCodes","modelFreezeId"],
+      "mustArriveBeforeClose": true
+    }
+  },
+  "latencyPolicy": {
+    "targetSignalLeadSeconds": 8,
+    "minimumSignalLeadSeconds": 4,
+    "belowMinimum": "NO_SIGNAL",
+    "unknownBetClose": "NO_SIGNAL"
+  },
+  "delivery": {
+    "primary": "in-app live panel",
+    "secondary": "optional local audio/haptic alert when session active",
+    "future": "local Mac observer can keep the table-state pipeline warm 24/7"
+  },
+  "safety": {
+    "paperOnlyUntilProspectiveValidation": true,
+    "neverCallSignalGuaranteed": true,
+    "userExecutesAnyRealBetManually": true
+  }
+}
