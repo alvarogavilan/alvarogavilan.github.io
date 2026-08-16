@@ -4,11 +4,12 @@ on:
   schedule:
     - cron: '7 * * * *'
   push:
-    branches: [main, fix/loterias-hoy-live-dedupe]
+    branches: [main, fix/loterias-hoy-live-dedupe, fix/loterias-hoy-euromillones-5plus2]
     paths:
       - 'loterias-ai/data/shadow/**'
       - 'loterias-ai/data/prospective/**'
       - 'loterias-ai/scripts/build-today-manifest.mjs'
+      - '.github/workflows/loterias-ai-today-manifest.yml'
 permissions:
   contents: write
 jobs:
@@ -19,6 +20,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - name: Validate Euromillones complete ticket fixture
+        run: |
+          TODAY_OVERRIDE=2026-08-18 node loterias-ai/scripts/build-today-manifest.mjs
+          node - <<'NODE'
+          const fs=require('fs');
+          const d=JSON.parse(fs.readFileSync('loterias-ai/data/ui/today-manifest.json','utf8'));
+          const g=d.games.find(x=>x.gameId==='euromillones');
+          if(!g) throw new Error('Missing Euromillones in 2026-08-18 fixture');
+          const entries=[g.primary,...(g.alternatives||[])];
+          const v199=entries.find(x=>String(x.version).toLowerCase()==='v199');
+          if(!v199) throw new Error('Missing v199 Euromillones entry');
+          const line=v199.lines?.[0];
+          if(!line?.copy?.includes('Estrellas 2 5')) throw new Error('Stars missing from copy payload: '+JSON.stringify(line));
+          if(!line?.display?.includes('⭐ 2 · 5')) throw new Error('Stars missing from display payload: '+JSON.stringify(line));
+          if(v199.unitCostEUR!==2.5) throw new Error('Unexpected Euromillones unit cost: '+v199.unitCostEUR);
+          console.log(JSON.stringify({copy:line.copy,display:line.display,unitCostEUR:v199.unitCostEUR}));
+          NODE
       - name: Build Madrid-local Today manifest
         run: node loterias-ai/scripts/build-today-manifest.mjs
       - name: Validate strict Today invariants
