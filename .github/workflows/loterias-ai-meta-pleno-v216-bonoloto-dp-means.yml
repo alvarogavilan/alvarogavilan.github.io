@@ -1,0 +1,28 @@
+name: Loterias AI MetaPleno v216 Bonoloto DP Means
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v216-bonoloto-dp-means]
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v216-bonoloto-dp-means.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v216-bonoloto-dp-means.yml'
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: research/metapleno-v216-bonoloto-dp-means}
+      - uses: actions/setup-node@v4
+        with: {node-version: '20'}
+      - run: node loterias-ai/scripts/meta-pleno-v216-bonoloto-dp-means.mjs
+      - name: Validate gates
+        run: node -e "const x=require('./loterias-ai/data/research/meta-pleno-v216-bonoloto-dp-means.json');if(x.realMoneyPass!==false||x.budget.realStakeEUR!==0||x.summary.validConfigurations<1)process.exit(1)"
+      - name: Persist v216
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v216-bonoloto-dp-means.json
+          git diff --cached --quiet || git commit -m 'research(loterias-ai): persist v216 DP-means regimes'
+          git push
