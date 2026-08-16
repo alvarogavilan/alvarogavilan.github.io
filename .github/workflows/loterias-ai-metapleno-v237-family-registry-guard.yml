@@ -1,0 +1,29 @@
+name: Loterias AI MetaPleno v237 Family Registry Guard
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v237-family-registry-guard]
+    paths:
+      - 'loterias-ai/research/metapleno-v237-family-registry-guard.mjs'
+      - '.github/workflows/loterias-ai-metapleno-v237-family-registry-guard.yml'
+permissions:
+  contents: write
+jobs:
+  registry:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Run v237
+        run: node loterias-ai/research/metapleno-v237-family-registry-guard.mjs
+      - name: Validate fail-closed
+        run: node -e "const r=require('./loterias-ai/data/research/metapleno-v237-family-registry-guard.json'); if(r.policy.realMoneyPass!==false||r.policy.realStakeEUR!==0||!r.policy.newLaneMustCheckRegistry) process.exit(1)"
+      - name: Persist registry
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v237-family-registry-guard.json
+          git diff --cached --quiet || git commit -m 'research(loterias-ai): persist v237 family registry guard'
+          git push
