@@ -1,0 +1,197 @@
+{
+  "generatedAt": "2026-08-16T09:21:49.717Z",
+  "version": "v214",
+  "gameId": "bonoloto",
+  "family": "EXACT_LOCAL_GAUSSIAN_PROCESS",
+  "candidatePool": {
+    "nominalConfigurations": 8,
+    "effectiveConfigurations": 4,
+    "deduplication": "validation pool8 signatures"
+  },
+  "selectionPeriod": "2021-01-01..2022-12-31",
+  "postFreezePeriods": [
+    "2023-01-01..2024-12-31",
+    "2025-01-01..2026-12-31"
+  ],
+  "methodology": "For each number and target draw, construct an exact local Gaussian Process posterior mean on its six-dimensional strictly pre-draw temporal state. The GP uses the nearest 4/6 same-number historical states from the previous 384 draws, an exact RBF covariance matrix and Gaussian noise, solved directly; no Random Fourier approximation or learned logistic weights. Hyperparameters are selected only on 2021-2022 and frozen before opening 2023+.",
+  "budget": {
+    "poolSize": 8,
+    "tickets": 28,
+    "unitCostEUR": 0.5,
+    "theoreticalCostEUR": 14,
+    "realStakeEUR": 0
+  },
+  "summary": {
+    "nominalConfigurations": 8,
+    "effectiveConfigurations": 4,
+    "chosenConfig": {
+      "id": 0,
+      "ell": 0.15,
+      "m": 4,
+      "noise": 0.2,
+      "window": 384
+    },
+    "midFull": 0,
+    "lateFull": 0,
+    "repeatFull": false,
+    "mid5Plus": 0,
+    "late5Plus": 0,
+    "repeat5Plus": false
+  },
+  "selectionTrials": [
+    {
+      "config": {
+        "id": 0,
+        "ell": 0.15,
+        "m": 4,
+        "noise": 0.2,
+        "window": 384
+      },
+      "validation": {
+        "draws": 640,
+        "h4": 7,
+        "h5": 0,
+        "h6": 0,
+        "meanHits": 1.0375,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 2,
+        "ell": 0.3,
+        "m": 4,
+        "noise": 0.2,
+        "window": 384
+      },
+      "validation": {
+        "draws": 640,
+        "h4": 6,
+        "h5": 0,
+        "h6": 0,
+        "meanHits": 1.03125,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 4,
+        "ell": 0.6,
+        "m": 4,
+        "noise": 0.2,
+        "window": 384
+      },
+      "validation": {
+        "draws": 640,
+        "h4": 6,
+        "h5": 0,
+        "h6": 0,
+        "meanHits": 1.03125,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 6,
+        "ell": 1.2,
+        "m": 4,
+        "noise": 0.2,
+        "window": 384
+      },
+      "validation": {
+        "draws": 640,
+        "h4": 6,
+        "h5": 0,
+        "h6": 0,
+        "meanHits": 1.03125,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 1,
+        "ell": 0.15,
+        "m": 6,
+        "noise": 0.2,
+        "window": 384
+      },
+      "validation": {
+        "draws": 640,
+        "h4": 3,
+        "h5": 0,
+        "h6": 0,
+        "meanHits": 1.01875,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 3,
+        "ell": 0.3,
+        "m": 6,
+        "noise": 0.2,
+        "window": 384
+      },
+      "validation": {
+        "draws": 640,
+        "h4": 3,
+        "h5": 0,
+        "h6": 0,
+        "meanHits": 1.01875,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 5,
+        "ell": 0.6,
+        "m": 6,
+        "noise": 0.2,
+        "window": 384
+      },
+      "validation": {
+        "draws": 640,
+        "h4": 3,
+        "h5": 0,
+        "h6": 0,
+        "meanHits": 1.01875,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 7,
+        "ell": 1.2,
+        "m": 6,
+        "noise": 0.2,
+        "window": 384
+      },
+      "validation": {
+        "draws": 640,
+        "h4": 3,
+        "h5": 0,
+        "h6": 0,
+        "meanHits": 1.01875,
+        "events": []
+      }
+    }
+  ],
+  "mid": {
+    "draws": 731,
+    "h4": 3,
+    "h5": 0,
+    "h6": 0,
+    "meanHits": 0.9835841313269493,
+    "events": []
+  },
+  "late": {
+    "draws": 591,
+    "h4": 4,
+    "h5": 0,
+    "h6": 0,
+    "meanHits": 0.9796954314720813,
+    "events": []
+  },
+  "decision": "NEGATIVE",
+  "realMoneyPass": false
+}
