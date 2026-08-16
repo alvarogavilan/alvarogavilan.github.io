@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-08-17",
+  "scope": "Lightning Roulette only",
+  "bookExclusion": true,
+  "officialMechanics": {
+    "provider": "Evolution",
+    "wheel": "single-zero live roulette with automatically launched ball",
+    "luckyNumbers": "1-5 randomly generated Lucky Numbers per round",
+    "luckyMultipliers": "50x-500x",
+    "generationTiming": "Lucky Numbers generated after betting time has closed",
+    "straightUpBasePayout": "29:1 when not multiplied",
+    "sources": [
+      "https://games.evolution.com/es/casino-en-vivo/ruleta-en-vivo/lightning-roulette/",
+      "https://www.evolution.com/news/evolution-launch-revolutionary-new-roulette-game-and-more-ice-2018"
+    ]
+  },
+  "dataSource": {
+    "name": "TrackerSino",
+    "api": "https://api.trackersino.com/v1-beta/games/lightningroulette/rounds",
+    "fields": ["round_index","round_id","random_number","finalized_at","raw.result","raw.luckies[num,multi]"],
+    "history": "supports limit, time windows and backward pagination via until",
+    "credentialRequired": true,
+    "source": "https://trackersino.com/fr/data/docs/guides/lightningroulette"
+  },
+  "academicPriorArt": [
+    {
+      "title": "Predicting the outcome of roulette",
+      "authors": "Michael Small, Chi Kong Tse",
+      "year": 2012,
+      "source": "https://arxiv.org/abs/1204.6412",
+      "usableIdeas": ["mechanical determinism","initial position","velocity","acceleration","wheel slant","physical bias"],
+      "caution": "Demonstrated on a standard European wheel under experimental measurement conditions; does not prove Lightning Roulette is exploitable."
+    },
+    {
+      "title": "Families of discrete circular distributions with some novel applications",
+      "authors": "Kanti V. Mardia, Karthik Sriram",
+      "year": 2020,
+      "source": "https://arxiv.org/abs/2009.05437",
+      "usableIdeas": ["uniformity tests","serial independence","changepoint detection","circular mixtures"],
+      "caution": "Statistical detection framework, not evidence of a profitable Lightning strategy."
+    },
+    {
+      "title": "Biased Roulette Wheel: A Quantitative Trading Strategy Approach",
+      "authors": "Giancarlo Salirrosas Martinez",
+      "year": 2016,
+      "source": "https://arxiv.org/abs/1609.09601",
+      "usableIdeas": ["walk-forward testing","flat staking","real online roulette sequence","bias regime testing"],
+      "caution": "Requires independent replication and strict multiple-testing correction before any transfer to Lightning."
+    }
+  ],
+  "researchLanes": [
+    "physical-wheel-bias",
+    "circular-uniformity",
+    "serial-dependence",
+    "changepoints",
+    "time-of-day-minute-second",
+    "lucky-number-rng",
+    "multiplier-distribution",
+    "winner-lucky-joint-dependence",
+    "coverage-sets-1-to-18",
+    "economic-cost-to-hit",
+    "walk-forward-freeze-oos",
+    "prospective-paper"
+  ],
+  "hardConclusion": "No current source proves a near-certain or guaranteed profitable Lightning Roulette strategy. Any candidate must be frozen before OOS and survive independent prospective PAPER testing after multiplicity correction."
+}
