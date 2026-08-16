@@ -1,0 +1,38 @@
+name: Loterias AI v293 Stage5 Post-Freeze
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/metapleno-v293-representation-synthesis
+    paths:
+      - 'loterias-ai/research/megalab/v293-stage5-postfreeze-2025plus.mjs'
+      - '.github/workflows/loterias-ai-v293-stage5-postfreeze.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-v293-stage5-postfreeze-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run strict post-freeze 2025+
+        run: node loterias-ai/research/megalab/v293-stage5-postfreeze-2025plus.mjs
+      - name: Verify frozen lineage and money gates
+        run: node -e "const r=require('./loterias-ai/data/research/metapleno-v293-stage5-postfreeze-2025plus.json');const m=require('./loterias-ai/data/research/metapleno-v293-frozen-manifest.json');const s=require('./loterias-ai/data/research/metapleno-v293-stage4-oos-2023-2024.json');if(r.sourceManifestHash!==m.manifestHash||r.stage4ManifestHash!==s.sourceManifestHash||r.hyperparametersRetuned||r.manifestMutated||r.selectionAfterOOS||r.realMoneyPass||r.realStakeEUR!==0||r.theoreticalBudgetMaxEUR>15)process.exit(1)"
+      - name: Persist Stage5 evidence only
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v293-stage5-postfreeze-2025plus.json
+          git commit -m 'data(loterias-ai): persist v293 strict post-freeze 2025+' || exit 0
+          git pull --rebase origin research/metapleno-v293-representation-synthesis
+          git push
