@@ -1,0 +1,235 @@
+{
+  "generatedAt": "2026-08-16T09:53:47.475Z",
+  "version": "v227",
+  "gameId": "bonoloto",
+  "family": "SINGULAR_SPECTRUM_HANKEL_RECURRENCE",
+  "candidatePool": {
+    "nominalConfigurations": 4,
+    "effectiveConfigurations": 4
+  },
+  "selectionPeriod": "2018-01-01..2022-12-31",
+  "postFreezePeriods": [
+    "2023-01-01..2024-12-31",
+    "2025-01-01..2026-12-31"
+  ],
+  "methodology": "Compact rolling Singular Spectrum Analysis. For each number, build the lag-8 Hankel trajectory covariance from only the previous 128/256 binary appearances, estimate the first two empirical orthogonal functions by deterministic power iteration, derive the standard SSA recurrent coefficients from rank-1/rank-2 signal subspaces, and forecast the next binary inclusion score. No target outcome enters its own covariance or forecast. Window/rank variants are ranked only on 2018-2022 and then frozen before opening 2023+.",
+  "multipleTesting": {
+    "candidatePool": 4,
+    "effectiveConfigurations": 4,
+    "selectionCriterion": "train h6, then h5, h4, meanHits; all four compact variants frozen",
+    "matchedNullRequiredIfSignal": true
+  },
+  "budget": {
+    "poolSize": 8,
+    "tickets": 28,
+    "unitCostEUR": 0.5,
+    "theoreticalCostEUR": 14,
+    "realStakeEUR": 0
+  },
+  "summary": {
+    "nominalConfigurations": 4,
+    "effectiveConfigurations": 4,
+    "frozen": 4,
+    "midFullModels": 0,
+    "lateFullModels": 0,
+    "repeatFullModels": 0,
+    "repeat5PlusModels": 0,
+    "uniquePostFreeze5PlusDates": [
+      "2023-12-01"
+    ]
+  },
+  "leaders": [
+    {
+      "config": {
+        "id": 2,
+        "W": 256,
+        "lag": 8,
+        "rank": 1
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 10,
+        "h5": 1,
+        "h6": 0,
+        "sum": 1469,
+        "events": [
+          {
+            "date": "2022-03-16",
+            "hits": 5,
+            "pool": [
+              6,
+              8,
+              10,
+              16,
+              30,
+              40,
+              41,
+              44
+            ],
+            "truth": [
+              2,
+              8,
+              10,
+              16,
+              30,
+              44
+            ]
+          }
+        ],
+        "meanHits": 0.9664473684210526
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 4,
+        "h5": 0,
+        "h6": 0,
+        "sum": 724,
+        "events": [],
+        "meanHits": 0.9904240766073872
+      },
+      "late": {
+        "draws": 591,
+        "h4": 3,
+        "h5": 0,
+        "h6": 0,
+        "sum": 588,
+        "events": [],
+        "meanHits": 0.9949238578680203
+      },
+      "poolSequenceHash": "d4e6c0c3"
+    },
+    {
+      "config": {
+        "id": 0,
+        "W": 128,
+        "lag": 8,
+        "rank": 1
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 10,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1480,
+        "events": [],
+        "meanHits": 0.9736842105263158
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 730,
+        "events": [],
+        "meanHits": 0.9986320109439124
+      },
+      "late": {
+        "draws": 591,
+        "h4": 2,
+        "h5": 0,
+        "h6": 0,
+        "sum": 606,
+        "events": [],
+        "meanHits": 1.0253807106598984
+      },
+      "poolSequenceHash": "6c251a1e"
+    },
+    {
+      "config": {
+        "id": 3,
+        "W": 256,
+        "lag": 8,
+        "rank": 2
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 8,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1471,
+        "events": [],
+        "meanHits": 0.9677631578947369
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 8,
+        "h5": 0,
+        "h6": 0,
+        "sum": 732,
+        "events": [],
+        "meanHits": 1.0013679890560876
+      },
+      "late": {
+        "draws": 591,
+        "h4": 2,
+        "h5": 0,
+        "h6": 0,
+        "sum": 586,
+        "events": [],
+        "meanHits": 0.9915397631133672
+      },
+      "poolSequenceHash": "952291ec"
+    },
+    {
+      "config": {
+        "id": 1,
+        "W": 128,
+        "lag": 8,
+        "rank": 2
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 4,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1459,
+        "events": [],
+        "meanHits": 0.9598684210526316
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 4,
+        "h5": 1,
+        "h6": 0,
+        "sum": 710,
+        "events": [
+          {
+            "date": "2023-12-01",
+            "hits": 5,
+            "pool": [
+              9,
+              13,
+              14,
+              33,
+              37,
+              42,
+              45,
+              49
+            ],
+            "truth": [
+              14,
+              33,
+              35,
+              37,
+              42,
+              45
+            ]
+          }
+        ],
+        "meanHits": 0.9712722298221614
+      },
+      "late": {
+        "draws": 591,
+        "h4": 2,
+        "h5": 0,
+        "h6": 0,
+        "sum": 591,
+        "events": [],
+        "meanHits": 1
+      },
+      "poolSequenceHash": "ce74cfb5"
+    }
+  ],
+  "decision": "NEGATIVE",
+  "realMoneyPass": false
+}
