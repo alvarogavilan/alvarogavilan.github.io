@@ -1,0 +1,54 @@
+{
+  "version":"v294",
+  "family":"SET_STATE_DYNAMICS",
+  "status":"DESIGN_FROZEN_BEFORE_RESULTS",
+  "goal":"Model each lottery draw as one combinatorial set-state and search transitions between whole-draw states instead of scoring individual numbers.",
+  "orthogonalityToPrior":[
+    "no v292 frequency-gap weighted predictor reuse",
+    "no v293 representation grammar reuse",
+    "whole-draw state is the atomic prediction object",
+    "candidate prediction must be generated as a complete valid set",
+    "per-number scores may not be used as the final selection mechanism"
+  ],
+  "stateFamilies":[
+    "sorted-gap-word",
+    "cyclic-difference-code",
+    "residue-lattice-signature",
+    "pair-distance-spectrum",
+    "set-minhash-transition",
+    "intersection-orbit-state",
+    "combinadic-neighborhood",
+    "draw-graph-canonical-code"
+  ],
+  "transitionFamilies":[
+    "nearest-state-next",
+    "k-neighbor-consensus-set",
+    "state-orbit-successor",
+    "transition-motif-recurrence",
+    "compressed-context successor"
+  ],
+  "scientistPopulation":262144,
+  "screening":{
+    "selectionOnly":"2019-2022",
+    "semanticDedup":true,
+    "behavioralDedup":true,
+    "wholeSetPredictionRequired":true,
+    "oosLockedUntilFreeze":true,
+    "maxFrozenCandidates":64
+  },
+  "falsification":{
+    "strictOOS":"2023-2024",
+    "postFreezeReplication":"2025+",
+    "nullSimulationRequiredFor5Plus":true,
+    "multipleTestingCorrection":true,
+    "behavioralCloneCollapse":true,
+    "noRetuningAfterOOS":true
+  },
+  "memory":{
+    "queryPermanentScientificMemoryBeforeCompute":true,
+    "persistAllNegatives":true,
+    "reuseExistingEvidenceOnDuplicate":true,
+    "v293NegativeExcludedFromRescue":true
+  },
+  "economics":{"realMoneyPass":false,"realStakeEUR":0,"ordinaryBudgetMaxEUR":15}
+}
