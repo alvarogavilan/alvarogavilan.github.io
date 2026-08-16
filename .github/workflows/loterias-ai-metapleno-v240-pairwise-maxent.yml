@@ -1,0 +1,29 @@
+name: Loterias AI MetaPleno v240 Pairwise MaxEnt
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v240-pairwise-maxent]
+    paths:
+      - 'loterias-ai/research/metapleno-v240-pairwise-maxent.mjs'
+      - '.github/workflows/loterias-ai-metapleno-v240-pairwise-maxent.yml'
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Run v240
+        run: node loterias-ai/research/metapleno-v240-pairwise-maxent.mjs
+      - name: Validate fail-closed
+        run: node -e "const r=require('./loterias-ai/data/research/metapleno-v240-pairwise-maxent.json'); if(r.realMoneyPass!==false||r.realStakeEUR!==0||r.candidatePool.theoreticalCostEUR>15) process.exit(1)"
+      - name: Persist result
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v240-pairwise-maxent.json
+          git diff --cached --quiet || git commit -m 'research(loterias-ai): persist v240 pairwise maxent result'
+          git push
