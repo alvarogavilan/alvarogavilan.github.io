@@ -1,0 +1,35 @@
+name: Loterias AI v294 Stage3 Dense Freeze
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/metapleno-v294-set-state-dynamics
+    paths:
+      - 'loterias-ai/research/megalab/v294-stage3-dense-freeze.mjs'
+      - '.github/workflows/loterias-ai-v294-stage3-dense-freeze.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-v294-stage3-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run dense selection and freeze
+        run: node loterias-ai/research/megalab/v294-stage3-dense-freeze.mjs
+      - name: Verify freeze gates
+        run: node -e "const r=require('./loterias-ai/data/research/metapleno-v294-stage3-dense-freeze.json');const m=require('./loterias-ai/data/research/metapleno-v294-frozen-manifest.json');if(r.validationTouched||r.postFreezeTouched||r.retuningPerformed||!m.frozenBeforeOOS||!m.hyperparametersFrozen||m.oosRead||m.postFreezeRead||r.realMoneyPass||r.realStakeEUR!==0||r.theoreticalBudgetMaxEUR>15)process.exit(1)"
+      - name: Persist frozen evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v294-stage3-dense-freeze.json loterias-ai/data/research/metapleno-v294-frozen-manifest.json
+          git commit -m 'data(loterias-ai): persist v294 dense freeze' || exit 0
+          git pull --rebase origin research/metapleno-v294-set-state-dynamics
+          git push
