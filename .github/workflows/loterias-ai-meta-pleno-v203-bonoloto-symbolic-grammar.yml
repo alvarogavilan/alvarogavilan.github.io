@@ -1,0 +1,29 @@
+name: Loterias AI MetaPleno v203 Bonoloto Symbolic Grammar
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v203-bonoloto-symbolic-grammar]
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: node loterias-ai/scripts/meta-pleno-v203-bonoloto-symbolic-grammar.mjs
+      - name: Validate search accounting
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');const p='loterias-ai/data/research/meta-pleno-v203-bonoloto-symbolic-grammar.json';const d=JSON.parse(fs.readFileSync(p));
+          if(!(d.candidatePool?.nominal>=d.candidatePool?.effective&&d.candidatePool?.effective>0)) throw new Error('Invalid candidate accounting');
+          if(d.realMoneyPass!==false||d.budget?.realStakeEUR!==0) throw new Error('Real-money gate regression');
+          console.log(JSON.stringify(d.summary));
+          NODE
+      - name: Persist v203
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v203-bonoloto-symbolic-grammar.json
+          if ! git diff --cached --quiet; then git commit -m 'research(loterias-ai): persist v203 symbolic grammar'; git pull --rebase origin "$GITHUB_REF_NAME"; git push origin HEAD:"$GITHUB_REF_NAME"; fi

@@ -1,0 +1,1805 @@
+{
+  "generatedAt": "2026-08-16T08:24:21.465Z",
+  "version": "v203",
+  "gameId": "bonoloto",
+  "family": "GRAMMAR_GUIDED_SYMBOLIC_DISCOVERY",
+  "candidatePool": {
+    "nominal": 2304,
+    "effective": 548,
+    "deduplication": "top8 signatures on 36 pre-2023 anchor draws"
+  },
+  "selectionPeriod": "2018-01-01..2022-12-31",
+  "postFreezePeriods": [
+    "2023-01-01..2024-12-31",
+    "2025-01-01..2026-12-31"
+  ],
+  "methodology": "Enumerate compact symbolic expressions over strictly pre-draw features (8/32/128-draw rates, trend, acceleration, gap, number coordinate, parity), deduplicate mathematically/effectively identical top-8 behavior on pre-2023 anchors, select top25 only on 2018-2022 and open 2023+ afterwards. Any extraordinary signal requires matched-null and correction over effective configurations.",
+  "budget": {
+    "poolSize": 8,
+    "tickets": 28,
+    "unitCostEUR": 0.5,
+    "theoreticalCostEUR": 14,
+    "realStakeEUR": 0
+  },
+  "summary": {
+    "nominalConfigurations": 2304,
+    "effectiveConfigurations": 548,
+    "frozen": 25,
+    "midFullModels": 0,
+    "lateFullModels": 0,
+    "repeatFullModels": 0,
+    "repeat5PlusModels": 1,
+    "uniquePostFreeze5PlusDates": [
+      "2023-05-08",
+      "2023-10-01",
+      "2024-01-06",
+      "2025-10-19"
+    ]
+  },
+  "leaders": [
+    {
+      "config": {
+        "id": 1375,
+        "a": 4,
+        "b": 6,
+        "op": "sub",
+        "alpha": 0.5,
+        "polarity": 1,
+        "expr": "sub(accel,0.5*num)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 3,
+        "pool4": 7,
+        "meanHits": 0.9605263157894737,
+        "events": [
+          {
+            "date": "2019-10-24",
+            "hits": 5,
+            "pool": [
+              1,
+              2,
+              3,
+              4,
+              6,
+              8,
+              9,
+              12
+            ],
+            "truth": [
+              2,
+              3,
+              8,
+              9,
+              12,
+              42
+            ]
+          },
+          {
+            "date": "2020-06-22",
+            "hits": 5,
+            "pool": [
+              1,
+              2,
+              3,
+              5,
+              6,
+              7,
+              10,
+              11
+            ],
+            "truth": [
+              1,
+              3,
+              7,
+              10,
+              11,
+              49
+            ]
+          },
+          {
+            "date": "2021-03-03",
+            "hits": 5,
+            "pool": [
+              1,
+              2,
+              3,
+              5,
+              6,
+              7,
+              12,
+              13
+            ],
+            "truth": [
+              5,
+              6,
+              7,
+              12,
+              13,
+              23
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 2,
+        "meanHits": 0.9630642954856361,
+        "events": []
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 4,
+        "meanHits": 0.9830795262267343,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 1042,
+        "a": 3,
+        "b": 4,
+        "op": "absdiff",
+        "alpha": 2,
+        "polarity": -1,
+        "expr": "-absdiff(trend,2*accel)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 2,
+        "pool4": 16,
+        "meanHits": 0.9947368421052631,
+        "events": [
+          {
+            "date": "2020-09-19",
+            "hits": 5,
+            "pool": [
+              1,
+              3,
+              6,
+              8,
+              28,
+              29,
+              37,
+              42
+            ],
+            "truth": [
+              1,
+              6,
+              28,
+              29,
+              37,
+              45
+            ]
+          },
+          {
+            "date": "2021-09-22",
+            "hits": 5,
+            "pool": [
+              5,
+              16,
+              20,
+              25,
+              28,
+              33,
+              38,
+              43
+            ],
+            "truth": [
+              6,
+              16,
+              20,
+              25,
+              28,
+              43
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 3,
+        "meanHits": 0.9616963064295485,
+        "events": []
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 4,
+        "meanHits": 0.9018612521150592,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 364,
+        "a": 1,
+        "b": 2,
+        "op": "add",
+        "alpha": 2,
+        "polarity": -1,
+        "expr": "-add(f32,2*f128)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 2,
+        "pool4": 11,
+        "meanHits": 0.9638157894736842,
+        "events": [
+          {
+            "date": "2020-12-31",
+            "hits": 5,
+            "pool": [
+              9,
+              12,
+              16,
+              19,
+              23,
+              25,
+              28,
+              45
+            ],
+            "truth": [
+              9,
+              12,
+              18,
+              25,
+              28,
+              45
+            ]
+          },
+          {
+            "date": "2021-06-29",
+            "hits": 5,
+            "pool": [
+              2,
+              5,
+              7,
+              15,
+              29,
+              30,
+              31,
+              38
+            ],
+            "truth": [
+              5,
+              7,
+              15,
+              29,
+              31,
+              44
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 3,
+        "meanHits": 0.957592339261286,
+        "events": []
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 2,
+        "meanHits": 0.9543147208121827,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 380,
+        "a": 1,
+        "b": 2,
+        "op": "max",
+        "alpha": 1,
+        "polarity": -1,
+        "expr": "-max(f32,1*f128)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 2,
+        "pool4": 11,
+        "meanHits": 0.9394736842105263,
+        "events": [
+          {
+            "date": "2020-12-31",
+            "hits": 5,
+            "pool": [
+              9,
+              12,
+              19,
+              23,
+              25,
+              28,
+              40,
+              45
+            ],
+            "truth": [
+              9,
+              12,
+              18,
+              25,
+              28,
+              45
+            ]
+          },
+          {
+            "date": "2022-10-20",
+            "hits": 5,
+            "pool": [
+              5,
+              10,
+              24,
+              30,
+              34,
+              36,
+              38,
+              48
+            ],
+            "truth": [
+              10,
+              24,
+              30,
+              34,
+              47,
+              48
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 1,
+        "meanHits": 1.0068399452804377,
+        "events": []
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 4,
+        "meanHits": 0.9644670050761421,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 739,
+        "a": 2,
+        "b": 4,
+        "op": "max",
+        "alpha": 0.5,
+        "polarity": 1,
+        "expr": "max(f128,0.5*accel)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 2,
+        "pool4": 10,
+        "meanHits": 1.006578947368421,
+        "events": [
+          {
+            "date": "2018-06-11",
+            "hits": 5,
+            "pool": [
+              1,
+              19,
+              22,
+              28,
+              31,
+              33,
+              37,
+              46
+            ],
+            "truth": [
+              22,
+              28,
+              31,
+              33,
+              36,
+              37
+            ]
+          },
+          {
+            "date": "2022-02-18",
+            "hits": 5,
+            "pool": [
+              3,
+              8,
+              16,
+              25,
+              27,
+              32,
+              39,
+              45
+            ],
+            "truth": [
+              3,
+              25,
+              30,
+              32,
+              39,
+              45
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 5,
+        "meanHits": 0.9671682626538988,
+        "events": []
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 4,
+        "meanHits": 0.9678510998307953,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 249,
+        "a": 0,
+        "b": 6,
+        "op": "absdiff",
+        "alpha": 1,
+        "polarity": 1,
+        "expr": "absdiff(f8,1*num)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 2,
+        "pool4": 10,
+        "meanHits": 0.9927631578947368,
+        "events": [
+          {
+            "date": "2019-01-30",
+            "hits": 5,
+            "pool": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              7,
+              8,
+              48
+            ],
+            "truth": [
+              2,
+              3,
+              4,
+              7,
+              20,
+              48
+            ]
+          },
+          {
+            "date": "2021-04-19",
+            "hits": 5,
+            "pool": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              7,
+              8,
+              49
+            ],
+            "truth": [
+              1,
+              3,
+              5,
+              8,
+              21,
+              49
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 3,
+        "meanHits": 1,
+        "events": []
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 1,
+        "meanHits": 0.9255499153976311,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 775,
+        "a": 2,
+        "b": 5,
+        "op": "max",
+        "alpha": 0.5,
+        "polarity": 1,
+        "expr": "max(f128,0.5*gap)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 2,
+        "pool4": 9,
+        "meanHits": 1.0217105263157895,
+        "events": [
+          {
+            "date": "2018-06-11",
+            "hits": 5,
+            "pool": [
+              1,
+              18,
+              19,
+              22,
+              28,
+              31,
+              33,
+              37
+            ],
+            "truth": [
+              22,
+              28,
+              31,
+              33,
+              36,
+              37
+            ]
+          },
+          {
+            "date": "2022-02-18",
+            "hits": 5,
+            "pool": [
+              3,
+              8,
+              16,
+              25,
+              27,
+              32,
+              39,
+              45
+            ],
+            "truth": [
+              3,
+              25,
+              30,
+              32,
+              39,
+              45
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 5,
+        "meanHits": 0.9685362517099864,
+        "events": []
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 4,
+        "meanHits": 0.9475465313028765,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 383,
+        "a": 1,
+        "b": 2,
+        "op": "max",
+        "alpha": 2,
+        "polarity": 1,
+        "expr": "max(f32,2*f128)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 2,
+        "pool4": 9,
+        "meanHits": 1.007236842105263,
+        "events": [
+          {
+            "date": "2018-06-11",
+            "hits": 5,
+            "pool": [
+              1,
+              19,
+              22,
+              28,
+              31,
+              33,
+              37,
+              46
+            ],
+            "truth": [
+              22,
+              28,
+              31,
+              33,
+              36,
+              37
+            ]
+          },
+          {
+            "date": "2022-02-18",
+            "hits": 5,
+            "pool": [
+              3,
+              8,
+              16,
+              25,
+              27,
+              32,
+              39,
+              45
+            ],
+            "truth": [
+              3,
+              25,
+              30,
+              32,
+              39,
+              45
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 5,
+        "meanHits": 0.9781121751025992,
+        "events": []
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 4,
+        "meanHits": 0.9644670050761421,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 1087,
+        "a": 3,
+        "b": 6,
+        "op": "sub",
+        "alpha": 0.5,
+        "polarity": 1,
+        "expr": "sub(trend,0.5*num)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 2,
+        "pool4": 9,
+        "meanHits": 0.9638157894736842,
+        "events": [
+          {
+            "date": "2019-10-24",
+            "hits": 5,
+            "pool": [
+              1,
+              2,
+              3,
+              4,
+              6,
+              8,
+              9,
+              12
+            ],
+            "truth": [
+              2,
+              3,
+              8,
+              9,
+              12,
+              42
+            ]
+          },
+          {
+            "date": "2021-03-03",
+            "hits": 5,
+            "pool": [
+              1,
+              2,
+              3,
+              5,
+              6,
+              7,
+              12,
+              13
+            ],
+            "truth": [
+              5,
+              6,
+              7,
+              12,
+              13,
+              23
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 4,
+        "meanHits": 0.9808481532147743,
+        "events": []
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 4,
+        "meanHits": 0.9966159052453468,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 94,
+        "a": 0,
+        "b": 2,
+        "op": "max",
+        "alpha": 2,
+        "polarity": -1,
+        "expr": "-max(f8,2*f128)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 1,
+        "pool4": 15,
+        "meanHits": 0.9625,
+        "events": [
+          {
+            "date": "2020-12-31",
+            "hits": 5,
+            "pool": [
+              9,
+              12,
+              16,
+              19,
+              23,
+              25,
+              28,
+              45
+            ],
+            "truth": [
+              9,
+              12,
+              18,
+              25,
+              28,
+              45
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 1,
+        "pool4": 1,
+        "meanHits": 1.0054719562243501,
+        "events": [
+          {
+            "date": "2023-10-01",
+            "hits": 5,
+            "pool": [
+              3,
+              5,
+              11,
+              14,
+              18,
+              19,
+              42,
+              47
+            ],
+            "truth": [
+              11,
+              14,
+              19,
+              26,
+              42,
+              47
+            ]
+          }
+        ]
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 3,
+        "meanHits": 0.9560067681895094,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 835,
+        "a": 2,
+        "b": 7,
+        "op": "sub",
+        "alpha": 0.5,
+        "polarity": 1,
+        "expr": "sub(f128,0.5*par)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 1,
+        "pool4": 13,
+        "meanHits": 0.9881578947368421,
+        "events": [
+          {
+            "date": "2021-12-17",
+            "hits": 5,
+            "pool": [
+              6,
+              8,
+              16,
+              26,
+              30,
+              32,
+              44,
+              48
+            ],
+            "truth": [
+              8,
+              16,
+              30,
+              32,
+              44,
+              49
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 2,
+        "meanHits": 0.9658002735978112,
+        "events": []
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 3,
+        "meanHits": 0.961082910321489,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 384,
+        "a": 1,
+        "b": 2,
+        "op": "min",
+        "alpha": 0.5,
+        "polarity": -1,
+        "expr": "-min(f32,0.5*f128)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 1,
+        "pool4": 13,
+        "meanHits": 0.9875,
+        "events": [
+          {
+            "date": "2021-06-29",
+            "hits": 5,
+            "pool": [
+              5,
+              7,
+              9,
+              15,
+              19,
+              29,
+              30,
+              31
+            ],
+            "truth": [
+              5,
+              7,
+              15,
+              29,
+              31,
+              44
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 4,
+        "meanHits": 0.9534883720930233,
+        "events": []
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 2,
+        "meanHits": 1.0186125211505923,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 703,
+        "a": 2,
+        "b": 3,
+        "op": "max",
+        "alpha": 0.5,
+        "polarity": 1,
+        "expr": "max(f128,0.5*trend)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 1,
+        "pool4": 12,
+        "meanHits": 1.0046052631578948,
+        "events": [
+          {
+            "date": "2018-06-11",
+            "hits": 5,
+            "pool": [
+              1,
+              19,
+              22,
+              28,
+              31,
+              33,
+              37,
+              46
+            ],
+            "truth": [
+              22,
+              28,
+              31,
+              33,
+              36,
+              37
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 5,
+        "meanHits": 0.9849521203830369,
+        "events": []
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 4,
+        "meanHits": 0.9695431472081218,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 694,
+        "a": 2,
+        "b": 3,
+        "op": "sub",
+        "alpha": 2,
+        "polarity": -1,
+        "expr": "-sub(f128,2*trend)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 1,
+        "pool4": 12,
+        "meanHits": 0.9861842105263158,
+        "events": [
+          {
+            "date": "2021-06-30",
+            "hits": 5,
+            "pool": [
+              10,
+              13,
+              15,
+              24,
+              29,
+              30,
+              42,
+              44
+            ],
+            "truth": [
+              10,
+              15,
+              24,
+              30,
+              44,
+              46
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 1,
+        "meanHits": 0.9343365253077975,
+        "events": []
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 3,
+        "meanHits": 1,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 1399,
+        "a": 4,
+        "b": 6,
+        "op": "absdiff",
+        "alpha": 0.5,
+        "polarity": 1,
+        "expr": "absdiff(accel,0.5*num)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 1,
+        "pool4": 12,
+        "meanHits": 0.9855263157894737,
+        "events": [
+          {
+            "date": "2022-07-09",
+            "hits": 5,
+            "pool": [
+              1,
+              2,
+              4,
+              41,
+              43,
+              44,
+              48,
+              49
+            ],
+            "truth": [
+              4,
+              31,
+              41,
+              43,
+              44,
+              48
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 5,
+        "meanHits": 1.0218878248974008,
+        "events": []
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 4,
+        "meanHits": 0.9644670050761421,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 760,
+        "a": 2,
+        "b": 5,
+        "op": "add",
+        "alpha": 2,
+        "polarity": -1,
+        "expr": "-add(f128,2*gap)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 1,
+        "pool4": 12,
+        "meanHits": 0.9723684210526315,
+        "events": [
+          {
+            "date": "2018-01-18",
+            "hits": 5,
+            "pool": [
+              10,
+              11,
+              15,
+              18,
+              20,
+              28,
+              39,
+              41
+            ],
+            "truth": [
+              10,
+              15,
+              20,
+              25,
+              39,
+              41
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 6,
+        "meanHits": 0.9767441860465116,
+        "events": []
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 0,
+        "meanHits": 1.023688663282572,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 385,
+        "a": 1,
+        "b": 2,
+        "op": "min",
+        "alpha": 0.5,
+        "polarity": 1,
+        "expr": "min(f32,0.5*f128)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 1,
+        "pool4": 11,
+        "meanHits": 1.0164473684210527,
+        "events": [
+          {
+            "date": "2018-06-11",
+            "hits": 5,
+            "pool": [
+              1,
+              19,
+              22,
+              28,
+              31,
+              33,
+              37,
+              46
+            ],
+            "truth": [
+              22,
+              28,
+              31,
+              33,
+              36,
+              37
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 5,
+        "meanHits": 0.9630642954856361,
+        "events": []
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 4,
+        "meanHits": 0.9576988155668359,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 758,
+        "a": 2,
+        "b": 5,
+        "op": "add",
+        "alpha": 1,
+        "polarity": -1,
+        "expr": "-add(f128,1*gap)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 1,
+        "pool4": 11,
+        "meanHits": 0.9743421052631579,
+        "events": [
+          {
+            "date": "2018-01-18",
+            "hits": 5,
+            "pool": [
+              8,
+              10,
+              11,
+              15,
+              18,
+              20,
+              39,
+              41
+            ],
+            "truth": [
+              10,
+              15,
+              20,
+              25,
+              39,
+              41
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 3,
+        "meanHits": 0.9767441860465116,
+        "events": []
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 4,
+        "meanHits": 1.011844331641286,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 131,
+        "a": 0,
+        "b": 3,
+        "op": "max",
+        "alpha": 2,
+        "polarity": 1,
+        "expr": "max(f8,2*trend)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 1,
+        "pool4": 11,
+        "meanHits": 0.9730263157894737,
+        "events": [
+          {
+            "date": "2020-07-29",
+            "hits": 5,
+            "pool": [
+              1,
+              7,
+              9,
+              13,
+              23,
+              27,
+              29,
+              30
+            ],
+            "truth": [
+              1,
+              3,
+              7,
+              23,
+              27,
+              30
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 2,
+        "meanHits": 0.9562243502051984,
+        "events": []
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 4,
+        "meanHits": 0.9712351945854484,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 1685,
+        "a": 5,
+        "b": 6,
+        "op": "min",
+        "alpha": 2,
+        "polarity": 1,
+        "expr": "min(gap,2*num)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 1,
+        "pool4": 10,
+        "meanHits": 0.9914473684210526,
+        "events": [
+          {
+            "date": "2019-04-16",
+            "hits": 5,
+            "pool": [
+              29,
+              32,
+              36,
+              38,
+              41,
+              43,
+              45,
+              46
+            ],
+            "truth": [
+              10,
+              32,
+              36,
+              38,
+              45,
+              46
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 1,
+        "pool4": 2,
+        "meanHits": 1.0177838577291383,
+        "events": [
+          {
+            "date": "2024-01-06",
+            "hits": 5,
+            "pool": [
+              31,
+              33,
+              37,
+              39,
+              42,
+              44,
+              46,
+              48
+            ],
+            "truth": [
+              31,
+              37,
+              39,
+              43,
+              44,
+              46
+            ]
+          }
+        ]
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 0,
+        "meanHits": 0.9593908629441624,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 537,
+        "a": 1,
+        "b": 6,
+        "op": "absdiff",
+        "alpha": 1,
+        "polarity": 1,
+        "expr": "absdiff(f32,1*num)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 1,
+        "pool4": 10,
+        "meanHits": 0.9907894736842106,
+        "events": [
+          {
+            "date": "2021-04-19",
+            "hits": 5,
+            "pool": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              8,
+              49
+            ],
+            "truth": [
+              1,
+              3,
+              5,
+              8,
+              21,
+              49
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 5,
+        "meanHits": 1.0068399452804377,
+        "events": []
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 6,
+        "meanHits": 0.9475465313028765,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 187,
+        "a": 0,
+        "b": 5,
+        "op": "sub",
+        "alpha": 0.5,
+        "polarity": 1,
+        "expr": "sub(f8,0.5*gap)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 1,
+        "pool4": 10,
+        "meanHits": 0.9789473684210527,
+        "events": [
+          {
+            "date": "2020-07-29",
+            "hits": 5,
+            "pool": [
+              1,
+              7,
+              9,
+              13,
+              23,
+              27,
+              29,
+              30
+            ],
+            "truth": [
+              1,
+              3,
+              7,
+              23,
+              27,
+              30
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 4,
+        "meanHits": 0.9931600547195623,
+        "events": []
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 0,
+        "meanHits": 1.038917089678511,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 1123,
+        "a": 3,
+        "b": 7,
+        "op": "sub",
+        "alpha": 0.5,
+        "polarity": 1,
+        "expr": "sub(trend,0.5*par)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 1,
+        "pool4": 10,
+        "meanHits": 0.9598684210526316,
+        "events": [
+          {
+            "date": "2020-11-25",
+            "hits": 5,
+            "pool": [
+              2,
+              10,
+              12,
+              20,
+              26,
+              34,
+              40,
+              46
+            ],
+            "truth": [
+              2,
+              7,
+              10,
+              12,
+              20,
+              46
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 5,
+        "meanHits": 1.0082079343365253,
+        "events": []
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 1,
+        "meanHits": 1.003384094754653,
+        "events": []
+      }
+    },
+    {
+      "config": {
+        "id": 1089,
+        "a": 3,
+        "b": 6,
+        "op": "sub",
+        "alpha": 1,
+        "polarity": 1,
+        "expr": "sub(trend,1*num)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 1,
+        "pool4": 10,
+        "meanHits": 0.9572368421052632,
+        "events": [
+          {
+            "date": "2019-10-24",
+            "hits": 5,
+            "pool": [
+              1,
+              2,
+              3,
+              4,
+              6,
+              8,
+              9,
+              12
+            ],
+            "truth": [
+              2,
+              3,
+              8,
+              9,
+              12,
+              42
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 1,
+        "pool4": 3,
+        "meanHits": 0.9685362517099864,
+        "events": [
+          {
+            "date": "2023-05-08",
+            "hits": 5,
+            "pool": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8
+            ],
+            "truth": [
+              2,
+              3,
+              6,
+              7,
+              8,
+              25
+            ]
+          }
+        ]
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 1,
+        "pool4": 4,
+        "meanHits": 0.9593908629441624,
+        "events": [
+          {
+            "date": "2025-10-19",
+            "hits": 5,
+            "pool": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              8,
+              10
+            ],
+            "truth": [
+              1,
+              3,
+              4,
+              8,
+              10,
+              39
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "config": {
+        "id": 766,
+        "a": 2,
+        "b": 5,
+        "op": "sub",
+        "alpha": 2,
+        "polarity": -1,
+        "expr": "-sub(f128,2*gap)"
+      },
+      "train": {
+        "draws": 1520,
+        "pool6": 0,
+        "pool5": 1,
+        "pool4": 10,
+        "meanHits": 0.9506578947368421,
+        "events": [
+          {
+            "date": "2020-10-15",
+            "hits": 5,
+            "pool": [
+              12,
+              14,
+              15,
+              18,
+              31,
+              32,
+              38,
+              42
+            ],
+            "truth": [
+              2,
+              15,
+              31,
+              32,
+              38,
+              42
+            ]
+          }
+        ]
+      },
+      "mid": {
+        "draws": 731,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 3,
+        "meanHits": 0.987688098495212,
+        "events": []
+      },
+      "late": {
+        "draws": 591,
+        "pool6": 0,
+        "pool5": 0,
+        "pool4": 4,
+        "meanHits": 0.9509306260575296,
+        "events": []
+      }
+    }
+  ],
+  "decision": "NEAR_SIGNAL_REQUIRES_NULL",
+  "realMoneyPass": false
+}
