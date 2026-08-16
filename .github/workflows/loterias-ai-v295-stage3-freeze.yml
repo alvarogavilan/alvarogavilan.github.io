@@ -1,0 +1,41 @@
+name: Loterias AI v295 Stage3 Strict Freeze
+on:
+  push:
+    branches:
+      - research/metapleno-v295-mdl-ctw
+    paths:
+      - 'loterias-ai/research/megalab/v295-stage3-freeze.mjs'
+      - '.github/workflows/loterias-ai-v295-stage3-freeze.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/metapleno-v295-mdl-ctw
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Freeze v295 manifest
+        run: node loterias-ai/research/megalab/v295-stage3-freeze.mjs
+      - name: Verify fail-closed economics and untouched OOS
+        run: |
+          node - <<'NODE'
+          const j=require('./loterias-ai/data/research/metapleno-v295-stage3-freeze.json');
+          if(j.realMoneyPass!==false||j.realStakeEUR!==0||j.theoreticalBudgetMaxEUR>15)process.exit(1);
+          if(j.validationTouched||j.postFreezeTouched||j.retuningAllowed)process.exit(1);
+          if(j.candidateCount!==32)process.exit(1);
+          console.log({manifestHash:j.manifestHash,candidateCount:j.candidateCount,realMoneyPass:j.realMoneyPass});
+          NODE
+      - name: Persist frozen manifest
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/metapleno-v295-stage3-freeze.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'data(loterias-ai): persist v295 strict freeze'
+          git push origin HEAD:research/metapleno-v295-mdl-ctw
