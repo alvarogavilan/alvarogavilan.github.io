@@ -1,0 +1,26 @@
+{
+  "version":"v298",
+  "family":"HYPERGRAPH_SPECTRAL_TRANSITIONS",
+  "status":"PREREGISTERED",
+  "hypothesis":"Represent each draw as a hyperedge over number vertices, accumulate decayed co-occurrence structure, and test whether spectral/centrality transition states contain predictive information for the next complete set beyond selection noise.",
+  "games":["bonoloto","primitiva","euromillones","gordo-primitiva"],
+  "selectionWindow":"2019-01-01/2023-01-01",
+  "oosWindow":"2023-01-01/2025-01-01",
+  "postFreezeWindow":"2025+",
+  "oosLockedUntilFreeze":true,
+  "postFreezeLockedUntilOosDecision":true,
+  "parameterGrid":{
+    "decay":[0.90,0.94,0.97,0.985],
+    "lookback":[24,48,96,192],
+    "pairWeight":[0.5,1,2,4],
+    "nodeWeight":[0.25,0.5,1,2],
+    "spectralMix":[0,0.25,0.5,0.75,1],
+    "transitionLag":[1,2,3,5]
+  },
+  "screening":{"logicalScientists":20480,"historicalScreens":4096,"behavioralDedup":true,"maxDenseLeadersPerGame":64,"maxFrozenPerGame":8},
+  "nearFullDefinition":{"bonoloto":5,"primitiva":5,"euromillones":4,"gordo-primitiva":4},
+  "fullMainDefinition":"all main numbers matched",
+  "antiLeak":{"retuningAfterOos":false,"read2025PlusBeforeOosDecision":false,"validationTouchedBeforeFreeze":false},
+  "economicGate":{"realMoneyPass":false,"realStakeEUR":0,"ordinaryBudgetMaxEUR":4},
+  "decisionPolicy":"Selection signals only justify dense freeze. OOS near-full triggers audit; OOS full-main triggers extreme audit. Zero OOS signal falsifies the family without retuning."
+}
