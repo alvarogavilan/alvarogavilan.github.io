@@ -1,0 +1,66 @@
+{
+  "version": "v244",
+  "engine": "Temporal MLP Classifier",
+  "family": "TEMPORAL_MLP_NEURAL",
+  "gameId": "bonoloto",
+  "generatedAt": "2026-08-16T11:36:07.260Z",
+  "archiveDraws": 9356,
+  "candidatePool": {
+    "nominalConfigurations": 12,
+    "effectiveConfigurations": 12,
+    "poolSize": 12,
+    "linesPerDraw": 30,
+    "theoreticalCostEUR": 15
+  },
+  "reconstruction": "Each target uses features computed strictly from prior draws. Hyperparameters selected pre-2023; final MLP retrained only through 2022 and frozen.",
+  "features": [
+    "gap200",
+    "freq5",
+    "freq20",
+    "freq60",
+    "freq180",
+    "trend20_180",
+    "trend60_180",
+    "number_position"
+  ],
+  "selection": {
+    "criterion": "pre-2023 only: full6 > hit5+ > meanBest > lower complexity",
+    "selected": {
+      "windowDraws": 730,
+      "hidden": 16,
+      "epochs": 6,
+      "lr": 0.03
+    },
+    "train": {
+      "n": 1207,
+      "meanBest": 1.3330571665285833,
+      "hit5Plus": 1,
+      "full6": 0
+    }
+  },
+  "validation": {
+    "period": "2023-2024",
+    "n": 731,
+    "meanBest": 1.3419972640218878,
+    "hit5Plus": 0,
+    "full6": 0,
+    "hitDates": []
+  },
+  "postFreeze": {
+    "period": "2025+",
+    "n": 591,
+    "meanBest": 1.3468697123519457,
+    "hit5Plus": 0,
+    "full6": 0,
+    "hitDates": []
+  },
+  "signal": {
+    "repeat5PlusAcrossEras": false,
+    "fullAcrossEras": false,
+    "requiresAudit": false
+  },
+  "decision": "NEGATIVE",
+  "realMoneyPass": false,
+  "realStakeEUR": 0,
+  "note": "Small fully-trained nonlinear neural lane; deterministic seeds and pre-draw reconstruction. Retrospective evidence never authorizes real money."
+}
