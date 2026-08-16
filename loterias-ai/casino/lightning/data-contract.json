@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "format": "JSON Lines",
+  "required": {
+    "ts": "ISO-8601 timestamp with timezone",
+    "winner": "integer 0..36",
+    "lightning": "array of {number:0..36,multiplier:number>=1}",
+    "source": "source identifier",
+    "sourceRoundId": "stable round identifier when public"
+  },
+  "optional": ["tableId","provider","dealerOrAuto","wheelId","sourceUrl","observedAt","rawHash"],
+  "rules": [
+    "Never fabricate missing rounds or timestamps.",
+    "Keep raw chronology immutable.",
+    "Duplicate sourceRoundId values are rejected.",
+    "If timezone is unknown, row is quarantined instead of guessed.",
+    "Casino data is excluded from Libro Vivo and all book exports."
+  ]
+}
