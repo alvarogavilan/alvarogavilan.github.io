@@ -33,7 +33,77 @@
       "url": "https://arxiv.org/abs/2607.22375",
       "relevantIdeas": ["quality-diversity research ideation", "idea lineages", "memory of completed and rejected proposals", "repair and refinement"],
       "differenceForOurSystem": "Integramos el principio calidad-diversidad con evidencia de predicción congelada, multiplicidad estadística, Red Team y OOS ciego."
+    },
+    {
+      "name": "Predicting Winning Lottery Numbers",
+      "year": 2024,
+      "source": "Thando Nkomozake / arXiv 2403.12836",
+      "url": "https://arxiv.org/abs/2403.12836",
+      "relevantIdeas": ["Compound-Dirichlet-Multinomial prediction", "Bayesian posterior update", "historical walk-through on 6-number and 5-number lotteries", "Pick-3 jackpot prediction experiment"],
+      "absorb": ["implement CDM as an isolated candidate family", "reproduce exactly with frozen historical windows", "compare against uniform and frequency baselines", "forbid extrapolated hit intervals as evidence", "require blind OOS and multiple-testing correction"],
+      "caution": "The paper reports no 5/6 or 6/6 hit in its 21-year six-number sample and extrapolates long waiting times; its Pick-3 money strategy escalates stake after losses and is not accepted as evidence of an edge."
+    },
+    {
+      "name": "Estimating Hot Numbers and Testing Uniformity for the Lottery",
+      "year": 1993,
+      "source": "Johnson & Klotz / Journal of the American Statistical Association 88(422)",
+      "url": "https://doi.org/10.1080/01621459.1993.10476320",
+      "relevantIdeas": ["maximum-likelihood estimates for non-equiprobable lottery numbers", "variance-covariance matrix", "generalized likelihood-ratio test for uniformity", "simulation-based procedure assessment"],
+      "absorb": ["number-level probability audit", "rolling likelihood-ratio regime monitor", "machine-era segmentation", "use only if deviations survive multiplicity and prospective replication"]
+    },
+    {
+      "name": "Statistical auditing and randomness test of lotto k/N-type games",
+      "year": 2008,
+      "source": "Coronel-Brizio, Hernandez-Montoya, Rapallo & Scalas / Physica A 387(25)",
+      "url": "https://doi.org/10.1016/j.physa.2008.07.017",
+      "relevantIdeas": ["exact means and covariances for lotto k/N", "multivariate randomness auditing", "comparison with hypergeometric theoretical model", "adaptability to pseudorandom generators"],
+      "absorb": ["formal hypergeometric audit layer", "covariance anomaly detector", "pre-register anomaly thresholds", "route only persistent anomalies to predictive research"]
+    },
+    {
+      "name": "The Statistics of the National Lottery",
+      "year": 1997,
+      "source": "John Haigh / Journal of the Royal Statistical Society Series A 160(2)",
+      "url": "https://doi.org/10.1111/1467-985X.00056",
+      "relevantIdeas": ["randomness tests on UK National Lottery", "individual-frequency analysis", "waiting-time analysis", "player-choice models and unpopular-combination expected-return effect"],
+      "absorb": ["waiting-time residual tests", "frequency-vs-waiting-time consistency", "separate draw prediction from payout-optimization research", "model crowd-choice only as a prize-sharing layer, never as draw predictability"]
+    },
+    {
+      "name": "The hidden variable in the luck of the lottery gambler",
+      "year": 2018,
+      "source": "Hugo Casanova-Leal / Ingenieria Investigacion y Tecnologia 19(3)",
+      "url": "https://doi.org/10.22201/fi.25940732e.2018.19n3.029",
+      "relevantIdeas": ["ball-weight hypothesis", "randomizer influence", "real lottery information", "two-level physical/statistical analysis"],
+      "absorb": ["physical-mechanism hypothesis registry", "machine/ball-set metadata when publicly available", "separate plausible mechanical bias from folklore", "require evidence that physical bias actually propagates into draw outcomes"]
+    },
+    {
+      "name": "Is it possible to cheat the lottery draw by weighing?",
+      "year": 2017,
+      "source": "Pinitsoontorn, Buathong & Srisodaphol / Asia-Pacific Journal of Science and Technology",
+      "url": "https://so01.tci-thaijo.org/index.php/APST/article/view/83061",
+      "relevantIdeas": ["physical lottery-machine experiment", "air-blowing draw machine", "controlled ball-mass experiments", "chi-square fairness tests"],
+      "absorb": ["mechanical-bias simulator", "mass/airflow sensitivity studies as synthetic physics", "do not infer real-machine bias without real metadata"]
+    },
+    {
+      "name": "Unlucky Number 13? Manipulating Evidence Subject to Snooping",
+      "year": 2022,
+      "source": "Hassler & Pohle / International Statistical Review 90",
+      "url": "https://doi.org/10.1111/insr.12488",
+      "relevantIdeas": ["data snooping risk", "post-selection statistical distortion", "German lottery empirical example", "quantification of misleading inference after exploratory search"],
+      "absorb": ["mandatory experiment ledger", "family-wise/false-discovery correction", "freeze before OOS", "record every tried hypothesis including negatives", "automatic penalty for search breadth"]
     }
   ],
-  "conclusion": "Existen precedentes parciales importantes. No hay base para afirmar que el concepto general de científicos IA que generan, compiten y refinan hipótesis sea único mundialmente. La posible novedad está en la combinación concreta de mecanismos de Loterías AI y debe tratarse como hipótesis de novedad, no como hecho, hasta completar una búsqueda de literatura, patentes y software más amplia."
+  "researchDirective": {
+    "status": "ACTIVE",
+    "principle": "Todo precedente serio que intente detectar no-uniformidad, dependencia, sesgo fisico o capacidad predictiva se convierte en una familia reproducible y falsable dentro de MegaLab; no se acepta por autoridad ni se descarta por parecer imposible.",
+    "priorityFamilies": [
+      "CDM Bayesian lottery predictor reproduction",
+      "JASA maximum-likelihood non-uniformity audit",
+      "Physica-A hypergeometric covariance audit",
+      "waiting-time residual and regime-change audit",
+      "physical machine/ball bias sensitivity",
+      "anti-snooping and multiplicity calibration"
+    ],
+    "hardGates": ["past-only feature construction", "time freeze", "blind OOS", "no post-OOS retuning", "multiple-testing correction", "independent replication", "zero real-money promotion from literature claims alone"]
+  },
+  "conclusion": "Sí existe una literatura real y bastante más cercana a nuestro objetivo de lo que parecía: investigadores han intentado predecir números, estimar probabilidades no uniformes, auditar la aleatoriedad de sorteos, estudiar sesgos físicos y explotar decisiones de jugadores. No he encontrado evidencia pública sólida de que alguien haya conseguido predecir de forma reproducible una lotería 6/49 o equivalente y mantener esa ventaja en datos futuros ciegos. La oportunidad de Loterías AI es absorber cada método reproducible, someterlo a una infraestructura de búsqueda/falsación mucho más amplia y distinguir rigurosamente una anomalía real de un hallazgo producido por mirar millones de posibilidades."
 }
