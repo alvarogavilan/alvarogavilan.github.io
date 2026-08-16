@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// scoped trigger: v286 Jensen-Shannon pair-drift batch
 import fs from 'node:fs';import path from 'node:path';
 const R='loterias-ai';const G=[['bonoloto','bonoloto',49,6,.5,8,'1900-01-01',null],['primitiva','primitiva',49,6,1,4,'1900-01-01',null],['euromillones','euromillones',50,5,2.5,1,'2016-09-27','stars'],['gordo-primitiva','gordo-primitiva',54,5,1.5,2,'1900-01-01','key']].map(([id,dir,max,pick,cost,lines,start,side])=>({id,dir,max,pick,cost,lines,start,side}));
 function load(g){let a=[];for(const f of fs.readdirSync(path.join(R,'data','archive',g.dir)).filter(x=>/^\d{4}\.json$/.test(x)).sort()){const j=JSON.parse(fs.readFileSync(path.join(R,'data','archive',g.dir,f)));for(const r of (j.records||j.draws||[])){const date=r.drawDate||r.date,m=(r.result?.main||r.main||r.numbers||[]).map(Number).sort((a,b)=>a-b);if(date&&date>=g.start&&m.length===g.pick&&new Set(m).size===g.pick)a.push({date,main:m,stars:(r.result?.stars||[]).map(Number),key:Number(r.result?.key)})}}return [...new Map(a.map(x=>[x.date,x])).values()].sort((a,b)=>a.date.localeCompare(b.date))}
