@@ -1,0 +1,336 @@
+{
+  "version": "v263",
+  "engine": "Haar Wavelet Temporal Ranker",
+  "family": "HAAR_WAVELET_TEMPORAL_RANKER",
+  "gameId": "bonoloto",
+  "generatedAt": "2026-08-16T14:44:02.447Z",
+  "archiveDraws": 9356,
+  "antiDuplicateGuard": {
+    "registryPresent": true,
+    "matched": false,
+    "aliasesChecked": [
+      "HAAR_WAVELET_TEMPORAL_RANKER",
+      "haar wavelet",
+      "wavelet temporal",
+      "wavelet ranker"
+    ]
+  },
+  "candidatePool": {
+    "nominalConfigurations": 18,
+    "effectiveConfigurations": 18,
+    "frozenConfigurations": 4,
+    "poolSize": 8,
+    "combinations": 28,
+    "theoreticalCostEUR": 14,
+    "budgetCapEUR": 15
+  },
+  "methodology": "Orthogonal multiscale Haar-style temporal contrasts over each number binary occurrence stream. Hyperparameters ranked only on 2019-2022; top four frozen before 2023 validation and 2025+ post-freeze evaluation. Every prediction is computed from prefix counts ending strictly before its target draw. Same-budget 160-draw frequency pool8 is the baseline.",
+  "leaders": [
+    {
+      "cfg": {
+        "scales": [
+          32,
+          64,
+          128
+        ],
+        "weights": [
+          -1,
+          -0.5,
+          -0.25
+        ],
+        "baseWeight": 0.25,
+        "baseWindow": 160,
+        "minHistory": 128
+      },
+      "dev": {
+        "draws": 1207,
+        "meanHits": 1.0091135045567523,
+        "baselineMeanHits": 1.0389395194697597,
+        "deltaMeanHits": -0.029826014913007456,
+        "hit4Plus": 4,
+        "baselineHit4Plus": 5,
+        "hit5Plus": 0,
+        "baselineHit5Plus": 0,
+        "full6": 0,
+        "baselineFull6": 0,
+        "pairwise": {
+          "wins": 396,
+          "losses": 410,
+          "ties": 401
+        },
+        "events": []
+      },
+      "validation": {
+        "draws": 731,
+        "meanHits": 0.9808481532147743,
+        "baselineMeanHits": 0.9425444596443229,
+        "deltaMeanHits": 0.038303693570451436,
+        "hit4Plus": 2,
+        "baselineHit4Plus": 5,
+        "hit5Plus": 0,
+        "baselineHit5Plus": 0,
+        "full6": 0,
+        "baselineFull6": 0,
+        "pairwise": {
+          "wins": 249,
+          "losses": 226,
+          "ties": 256
+        },
+        "events": []
+      },
+      "postFreeze": {
+        "draws": 591,
+        "meanHits": 0.9746192893401016,
+        "baselineMeanHits": 0.949238578680203,
+        "deltaMeanHits": 0.025380710659898477,
+        "hit4Plus": 3,
+        "baselineHit4Plus": 1,
+        "hit5Plus": 0,
+        "baselineHit5Plus": 0,
+        "full6": 0,
+        "baselineFull6": 0,
+        "pairwise": {
+          "wins": 193,
+          "losses": 180,
+          "ties": 218
+        },
+        "events": []
+      }
+    },
+    {
+      "cfg": {
+        "scales": [
+          32,
+          64,
+          128
+        ],
+        "weights": [
+          -1,
+          -0.5,
+          -0.25
+        ],
+        "baseWeight": 0.5,
+        "baseWindow": 160,
+        "minHistory": 128
+      },
+      "dev": {
+        "draws": 1207,
+        "meanHits": 1.0049710024855012,
+        "baselineMeanHits": 1.0389395194697597,
+        "deltaMeanHits": -0.03396851698425849,
+        "hit4Plus": 6,
+        "baselineHit4Plus": 5,
+        "hit5Plus": 0,
+        "baselineHit5Plus": 0,
+        "full6": 0,
+        "baselineFull6": 0,
+        "pairwise": {
+          "wins": 390,
+          "losses": 405,
+          "ties": 412
+        },
+        "events": []
+      },
+      "validation": {
+        "draws": 731,
+        "meanHits": 0.9712722298221614,
+        "baselineMeanHits": 0.9425444596443229,
+        "deltaMeanHits": 0.028727770177838577,
+        "hit4Plus": 0,
+        "baselineHit4Plus": 5,
+        "hit5Plus": 0,
+        "baselineHit5Plus": 0,
+        "full6": 0,
+        "baselineFull6": 0,
+        "pairwise": {
+          "wins": 247,
+          "losses": 230,
+          "ties": 254
+        },
+        "events": []
+      },
+      "postFreeze": {
+        "draws": 591,
+        "meanHits": 0.9966159052453468,
+        "baselineMeanHits": 0.949238578680203,
+        "deltaMeanHits": 0.047377326565143825,
+        "hit4Plus": 2,
+        "baselineHit4Plus": 1,
+        "hit5Plus": 0,
+        "baselineHit5Plus": 0,
+        "full6": 0,
+        "baselineFull6": 0,
+        "pairwise": {
+          "wins": 195,
+          "losses": 177,
+          "ties": 219
+        },
+        "events": []
+      }
+    },
+    {
+      "cfg": {
+        "scales": [
+          16,
+          32,
+          64
+        ],
+        "weights": [
+          1,
+          1,
+          0.5
+        ],
+        "baseWeight": 0.25,
+        "baseWindow": 160,
+        "minHistory": 64
+      },
+      "dev": {
+        "draws": 1207,
+        "meanHits": 0.9892294946147473,
+        "baselineMeanHits": 1.0389395194697597,
+        "deltaMeanHits": -0.04971002485501243,
+        "hit4Plus": 6,
+        "baselineHit4Plus": 5,
+        "hit5Plus": 0,
+        "baselineHit5Plus": 0,
+        "full6": 0,
+        "baselineFull6": 0,
+        "pairwise": {
+          "wins": 381,
+          "losses": 418,
+          "ties": 408
+        },
+        "events": []
+      },
+      "validation": {
+        "draws": 731,
+        "meanHits": 0.920656634746922,
+        "baselineMeanHits": 0.9425444596443229,
+        "deltaMeanHits": -0.02188782489740082,
+        "hit4Plus": 2,
+        "baselineHit4Plus": 5,
+        "hit5Plus": 0,
+        "baselineHit5Plus": 0,
+        "full6": 0,
+        "baselineFull6": 0,
+        "pairwise": {
+          "wins": 246,
+          "losses": 241,
+          "ties": 244
+        },
+        "events": []
+      },
+      "postFreeze": {
+        "draws": 591,
+        "meanHits": 1.011844331641286,
+        "baselineMeanHits": 0.949238578680203,
+        "deltaMeanHits": 0.06260575296108291,
+        "hit4Plus": 2,
+        "baselineHit4Plus": 1,
+        "hit5Plus": 0,
+        "baselineHit5Plus": 0,
+        "full6": 0,
+        "baselineFull6": 0,
+        "pairwise": {
+          "wins": 205,
+          "losses": 194,
+          "ties": 192
+        },
+        "events": []
+      }
+    },
+    {
+      "cfg": {
+        "scales": [
+          16,
+          32,
+          64
+        ],
+        "weights": [
+          1,
+          1,
+          0.5
+        ],
+        "baseWeight": 0.5,
+        "baseWindow": 160,
+        "minHistory": 64
+      },
+      "dev": {
+        "draws": 1207,
+        "meanHits": 0.9875724937862469,
+        "baselineMeanHits": 1.0389395194697597,
+        "deltaMeanHits": -0.05136702568351284,
+        "hit4Plus": 7,
+        "baselineHit4Plus": 5,
+        "hit5Plus": 0,
+        "baselineHit5Plus": 0,
+        "full6": 0,
+        "baselineFull6": 0,
+        "pairwise": {
+          "wins": 379,
+          "losses": 421,
+          "ties": 407
+        },
+        "events": []
+      },
+      "validation": {
+        "draws": 731,
+        "meanHits": 0.9192886456908345,
+        "baselineMeanHits": 0.9425444596443229,
+        "deltaMeanHits": -0.023255813953488372,
+        "hit4Plus": 2,
+        "baselineHit4Plus": 5,
+        "hit5Plus": 0,
+        "baselineHit5Plus": 0,
+        "full6": 0,
+        "baselineFull6": 0,
+        "pairwise": {
+          "wins": 244,
+          "losses": 240,
+          "ties": 247
+        },
+        "events": []
+      },
+      "postFreeze": {
+        "draws": 591,
+        "meanHits": 1.0050761421319796,
+        "baselineMeanHits": 0.949238578680203,
+        "deltaMeanHits": 0.05583756345177665,
+        "hit4Plus": 3,
+        "baselineHit4Plus": 1,
+        "hit5Plus": 0,
+        "baselineHit5Plus": 0,
+        "full6": 0,
+        "baselineFull6": 0,
+        "pairwise": {
+          "wins": 203,
+          "losses": 191,
+          "ties": 197
+        },
+        "events": []
+      }
+    }
+  ],
+  "hardAudit": {
+    "triggered": false,
+    "duplicateDrawDates": 0,
+    "exactEventRecheck": true,
+    "preDrawCausalityCheck": true,
+    "pairwiseTwoSidedSignP": 0.22938007119412945,
+    "replicated5PlusAcrossFrozenEras": false,
+    "anyOOSFull6": false,
+    "statisticalAnomaly": false,
+    "integrityPass": true,
+    "hardPass": false
+  },
+  "signal": {
+    "anyOOS5Plus": false,
+    "anyOOSFull6": false,
+    "statisticalAnomaly": false,
+    "requiresAudit": false
+  },
+  "decision": "WEAK_OOS_UPLIFT_NO_EXTREME",
+  "realMoneyPass": false,
+  "realStakeEUR": 0,
+  "note": "Research only. Negative or anomalous retrospective evidence never authorizes staking; real-money remains fail-closed."
+}
