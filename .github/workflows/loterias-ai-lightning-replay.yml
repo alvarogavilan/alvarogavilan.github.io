@@ -1,0 +1,42 @@
+name: Loterias AI Lightning Replay
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/loterias-ai-casino-university]
+    paths:
+      - 'loterias-ai/casino/lightning/**'
+      - '.github/workflows/loterias-ai-lightning-replay.yml'
+permissions:
+  contents: write
+jobs:
+  validate-engine:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Syntax check
+        run: node --check loterias-ai/casino/lightning/replay-engine.mjs
+      - name: Validate data contract JSON
+        run: node -e "JSON.parse(require('fs').readFileSync('loterias-ai/casino/lightning/data-contract.json','utf8'))"
+      - name: Enforce book exclusion and PAPER gate
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const c=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/data-contract.json','utf8'));
+          if(!c.rules.some(x=>x.includes('excluded from Libro Vivo'))) process.exit(1);
+          const e=fs.readFileSync('loterias-ai/casino/lightning/replay-engine.mjs','utf8');
+          if(!e.includes("mode:'PAPER_ONLY'") || !e.includes('realMoneyEnabled:false')) process.exit(1);
+          NODE
+      - name: Run replay if real dataset exists
+        shell: bash
+        run: |
+          DATA='loterias-ai/casino/lightning/data/rounds.jsonl'
+          if [ -s "$DATA" ]; then
+            node loterias-ai/casino/lightning/replay-engine.mjs "$DATA" > loterias-ai/casino/lightning/replay-latest.json
+            node -e "const x=require('./loterias-ai/casino/lightning/replay-latest.json'); if(x.realMoneyEnabled || !x.dataset?.sha256 || x.dataset.rows<100) process.exit(1)"
+          else
+            echo 'No validated real Lightning dataset yet; engine validation only.'
+          fi
