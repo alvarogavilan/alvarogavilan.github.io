@@ -1,0 +1,36 @@
+{
+  "version": "v299",
+  "family": "SYMBOLIC_DYNAMICS_ORDINAL_PATTERNS",
+  "status": "PREREGISTERED",
+  "hypothesis": "If draw-level structural features contain non-random regime information, ordinal-pattern and permutation-entropy transitions may identify predictive state changes without ranking individual numbers directly.",
+  "selectionWindow": "2019-01-01/2023-01-01",
+  "oosWindow": "2023-01-01/2025-01-01",
+  "postFreezeWindow": "2025-01-01+",
+  "features": ["sum", "span", "even-ratio", "low-high-ratio", "mean-gap", "gap-variance", "residue-entropy"],
+  "ordinalOrders": [3,4,5],
+  "delays": [1,2,3,5],
+  "lookbacks": [24,48,96,144],
+  "transitionModes": ["nearest-pattern-successor", "entropy-regime-shift", "ordinal-markov", "motif-recurrence"],
+  "logicalScientists": 24576,
+  "historicalScreenMax": 4096,
+  "behavioralDedup": true,
+  "freezeMaxPerGame": 8,
+  "freezeMaxTotal": 32,
+  "gates": {
+    "oosReadBeforeFreeze": false,
+    "retuningAfterFreeze": false,
+    "postFreezeReadBeforeOOSDecision": false,
+    "realMoneyPass": false,
+    "realStakeEUR": 0,
+    "ordinaryBudgetMaxEUR": 4
+  },
+  "promotion": {
+    "stage1_2": "Only families with at least one independent near-full behavior proceed to dense selection.",
+    "stage3": "Dense 2019-2022 selection, behavioral collapse, cryptographic freeze.",
+    "stage4": "Strict blind OOS 2023-2024.",
+    "stage5": "2025+ only after OOS survival."
+  },
+  "antiDuplication": ["v293", "v294", "v295", "v296", "v297", "v298"],
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
