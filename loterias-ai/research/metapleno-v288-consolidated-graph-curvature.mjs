@@ -45,8 +45,6 @@ function curvatureSignature(rows,g){
   const node=Array(g.max+1).fill(0);
   const nodeN=Array(g.max+1).fill(0);
   for(let i=1;i<=g.max;i++)for(let j=i+1;j<=g.max;j++)if(w[i][j]>0){
-    // Unweighted Forman-Ricci curvature on the support graph: F(e)=4-deg(u)-deg(v).
-    // Weight only enters via support stability; this keeps the statistic robust and cheap.
     const c=4-deg[i]-deg[j];
     edge.push(c);node[i]+=c;node[j]+=c;nodeN[i]++;nodeN[j]++;
   }
@@ -147,3 +145,4 @@ const out={
 fs.mkdirSync(path.join(R,'data','research'),{recursive:true});
 fs.writeFileSync(path.join(R,'data','research','metapleno-v288-consolidated-graph-curvature.json'),JSON.stringify(out,null,2)+'\n');
 console.log(JSON.stringify({anyAuditSignal:out.anyAuditSignal,games:games.map(g=>({gameId:g.gameId,decision:g.decision,budget:g.budget}))},null,2));
+// scoped trigger v288
