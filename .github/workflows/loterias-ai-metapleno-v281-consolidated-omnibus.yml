@@ -1,0 +1,25 @@
+name: Loterias AI MetaPleno v281 Consolidated Omnibus
+on:
+  push:
+    paths:
+      - '.github/workflows/loterias-ai-metapleno-v281-consolidated-omnibus.yml'
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - name: Run four-game three-family consolidated batch
+        run: node loterias-ai/research/metapleno-v281-consolidated-omnibus.mjs
+      - name: Verify fail-closed and compact budgets
+        run: node -e "const x=require('./loterias-ai/data/research/metapleno-v281-consolidated-omnibus.json');if(x.realMoneyPass||x.realStakeEUR!==0||x.games.some(g=>g.budget.theoreticalEUR>4))process.exit(1)"
+      - name: Persist result
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v281-consolidated-omnibus.json
+          git commit -m 'data(loterias-ai): persist v281 consolidated omnibus result' || exit 0
+          git push
