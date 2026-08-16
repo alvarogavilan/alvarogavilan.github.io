@@ -1,0 +1,172 @@
+{
+  "version": "v266",
+  "engine": "Friedman-Rafsky MST Two-Sample Regime",
+  "family": "GRAPH_MST_TWO_SAMPLE_GATE",
+  "gameId": "bonoloto",
+  "generatedAt": "2026-08-16T14:44:24.317Z",
+  "archiveDraws": 9356,
+  "candidatePool": {
+    "nominalConfigurations": 24,
+    "effectiveConfigurations": 24,
+    "frozenConfigurations": 4,
+    "poolSize": 8,
+    "combinations": 28,
+    "theoreticalCostEUR": 14
+  },
+  "methodology": "Graph-based multivariate two-sample detector: build a Euclidean MST over deterministic thinned recent/baseline feature clouds and score separation by the deficit of cross-sample MST edges. Feature scaling is frozen pre-2019; thresholds/hyperparameters selected 2019-2022; 2023-2024 validation and 2025+ post-freeze untouched. On gate activation, numbers are ranked by MST mixing between current regime and each number conditional history.",
+  "leaders": [
+    {
+      "c": {
+        "recent": 60,
+        "base": 180,
+        "q": 0.99,
+        "sample": 40
+      },
+      "threshold": 0.6075949367088608,
+      "selection": {
+        "draws": 1207,
+        "gated": 9,
+        "gateRate": 0.007456503728251864,
+        "meanHitsWhenGated": 1.3333333333333333,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "validation": {
+        "draws": 731,
+        "gated": 15,
+        "gateRate": 0.02051983584131327,
+        "meanHitsWhenGated": 0.8666666666666667,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "postFreeze": {
+        "draws": 591,
+        "gated": 4,
+        "gateRate": 0.00676818950930626,
+        "meanHitsWhenGated": 1.25,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      }
+    },
+    {
+      "c": {
+        "recent": 60,
+        "base": 180,
+        "q": 0.95,
+        "sample": 40
+      },
+      "threshold": 0.5696202531645569,
+      "selection": {
+        "draws": 1207,
+        "gated": 58,
+        "gateRate": 0.048053024026512015,
+        "meanHitsWhenGated": 1.206896551724138,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "validation": {
+        "draws": 731,
+        "gated": 69,
+        "gateRate": 0.09439124487004104,
+        "meanHitsWhenGated": 0.8695652173913043,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "postFreeze": {
+        "draws": 591,
+        "gated": 30,
+        "gateRate": 0.050761421319796954,
+        "meanHitsWhenGated": 0.9666666666666667,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      }
+    },
+    {
+      "c": {
+        "recent": 30,
+        "base": 360,
+        "q": 0.95,
+        "sample": 24
+      },
+      "threshold": 0.6170212765957447,
+      "selection": {
+        "draws": 1207,
+        "gated": 27,
+        "gateRate": 0.02236951118475559,
+        "meanHitsWhenGated": 1.1481481481481481,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "validation": {
+        "draws": 731,
+        "gated": 18,
+        "gateRate": 0.024623803009575923,
+        "meanHitsWhenGated": 0.7777777777777778,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "postFreeze": {
+        "draws": 591,
+        "gated": 22,
+        "gateRate": 0.03722504230118443,
+        "meanHitsWhenGated": 1.1363636363636365,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      }
+    },
+    {
+      "c": {
+        "recent": 30,
+        "base": 180,
+        "q": 0.95,
+        "sample": 24
+      },
+      "threshold": 0.5957446808510638,
+      "selection": {
+        "draws": 1207,
+        "gated": 55,
+        "gateRate": 0.045567522783761395,
+        "meanHitsWhenGated": 1.1090909090909091,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "validation": {
+        "draws": 731,
+        "gated": 47,
+        "gateRate": 0.06429548563611491,
+        "meanHitsWhenGated": 1,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "postFreeze": {
+        "draws": 591,
+        "gated": 30,
+        "gateRate": 0.050761421319796954,
+        "meanHitsWhenGated": 0.8666666666666667,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      }
+    }
+  ],
+  "signal": {
+    "repeat5PlusAcrossEras": false,
+    "anyOOSFull": false,
+    "requiresAudit": false
+  },
+  "decision": "NEGATIVE",
+  "realMoneyPass": false,
+  "realStakeEUR": 0,
+  "note": "Research-only graph two-sample family; no retrospective anomaly authorizes real-money play."
+}
