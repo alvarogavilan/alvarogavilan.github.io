@@ -1,0 +1,21 @@
+{
+  "version": "v302",
+  "family": "COPULA_COOCURRENCE_RESIDUALS",
+  "status": "PREREGISTERED_STAGE1_2_ONLY",
+  "hypothesis": "After removing rolling marginal frequencies, dependence residuals between numbers may contain reproducible short-lived structure not captured by raw hot/cold counts.",
+  "games": ["bonoloto", "primitiva", "euromillones", "gordo-primitiva"],
+  "selectionWindow": {"start":"2019-01-01","endExclusive":"2023-01-01"},
+  "blindRules": {"validationTouched":false,"postFreezeTouched":false,"retuningAfterValidation":false,"strictlyPriorDataOnly":true},
+  "screen": {"logicalConfigurationsPerGame":8192,"historicalConfigurationsPerGame":1024,"behavioralDeduplication":true,"earlyStopIfNoNearFull":true},
+  "parameterFamilies": {
+    "lookback": [36,72,144,288],
+    "decay": [0,0.0025,0.0075,0.015],
+    "residualMode": ["pearson","lift","signed-log-lift","shrunken-pearson"],
+    "seedMode": ["marginal","anti-marginal","residual-centrality","residual-diversity"],
+    "pairWeight": [0.25,0.5,1,2]
+  },
+  "promotionGate": "No OOS unless a frozen behavioral representative survives dense selection with either a full hit or at least two distinct near-full dates.",
+  "realMoneyPass": false,
+  "realStakeEUR": 0,
+  "ordinaryBudgetMaxEUR": 4
+}
