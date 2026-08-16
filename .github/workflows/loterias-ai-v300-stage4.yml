@@ -1,0 +1,31 @@
+name: Loterias AI v300 Stage4
+on:
+  push:
+    branches:
+      - research/metapleno-v300-computational-mechanics
+    paths:
+      - loterias-ai/research/megalab/v300-stage4-blind-oos.mjs
+      - .github/workflows/loterias-ai-v300-stage4.yml
+      - loterias-ai/data/research/metapleno-v300-stage3-freeze.json
+jobs:
+  oos:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Run blind OOS 2023-2024
+        run: node loterias-ai/research/megalab/v300-stage4-blind-oos.mjs
+      - name: Enforce hard gates
+        run: node -e "const x=require('./loterias-ai/data/research/metapleno-v300-stage4-oos.json'); if(!x.validationTouched||x.postFreezeTouched||x.retuningPerformed||x.realMoneyPass||x.realStakeEUR!==0||x.ordinaryBudgetMaxEUR>15) process.exit(1)"
+      - name: Persist OOS evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v300-stage4-oos.json
+          git commit -m "research(loterias-ai): persist v300 blind OOS evidence" || exit 0
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push
