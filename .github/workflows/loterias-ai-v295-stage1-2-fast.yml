@@ -1,6 +1,11 @@
 name: Loterias AI v295 Stage1-2 Fast Screen
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - research/metapleno-v295-mdl-ctw
+    paths:
+      - '.github/workflows/loterias-ai-v295-stage1-2-fast.yml'
 permissions:
   contents: write
 concurrency:
