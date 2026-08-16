@@ -1,0 +1,37 @@
+name: Loterias AI MetaPleno v209 Exact Repeat Collision Null
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v207-bonoloto-continuous-recurrence]
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v209-exact-repeat-collision-null.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v209-exact-repeat-collision-null.yml'
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run collision null
+        run: node loterias-ai/scripts/meta-pleno-v209-exact-repeat-collision-null.mjs
+      - name: Validate v209
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');const d=JSON.parse(fs.readFileSync('loterias-ai/data/research/meta-pleno-v209-exact-repeat-collision-null.json','utf8'));
+          if(d.version!=='v209'||d.realMoneyPass!==false||!Array.isArray(d.tests)||d.tests.length<3) throw new Error('v209 gate');
+          console.log(JSON.stringify({decision:d.decision,tests:d.tests}));
+          NODE
+      - name: Persist v209
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v209-exact-repeat-collision-null.json
+          if ! git diff --cached --quiet; then
+            git commit -m "data(loterias-ai): persist v209 exact-repeat collision null"
+            git pull --rebase origin "$GITHUB_REF_NAME"
+            git push origin HEAD:"$GITHUB_REF_NAME"
+          fi
