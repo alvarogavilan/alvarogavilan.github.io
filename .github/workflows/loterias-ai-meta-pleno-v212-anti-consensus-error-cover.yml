@@ -1,0 +1,33 @@
+name: loterias-ai meta-pleno v212 anti-consensus error cover
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/metapleno-v212-anti-consensus-error-cover-clean
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v212-anti-consensus-error-cover.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v212-anti-consensus-error-cover.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/metapleno-v212-anti-consensus-error-cover-clean
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run v212
+        run: node loterias-ai/scripts/meta-pleno-v212-anti-consensus-error-cover.mjs
+      - name: Persist result
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/meta-pleno-v212-anti-consensus-error-cover.json
+          git diff --cached --quiet || git commit -m 'research(loterias-ai): persist v212 anti-consensus result'
+          git push
