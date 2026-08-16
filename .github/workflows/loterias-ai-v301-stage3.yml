@@ -1,0 +1,40 @@
+name: Loterias AI v301 Stage3
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/metapleno-v301-wasserstein-dynamics
+    paths:
+      - 'loterias-ai/research/megalab/v301-stage3-dense-freeze.mjs'
+      - '.github/workflows/loterias-ai-v301-stage3.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-v301-stage3
+  cancel-in-progress: false
+
+jobs:
+  dense-freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Run dense selection freeze
+        run: node loterias-ai/research/megalab/v301-stage3-dense-freeze.mjs
+      - name: Enforce no OOS touch
+        run: |
+          node -e "const x=require('./loterias-ai/data/research/metapleno-v301-stage3-dense-freeze.json'); if(x.validationTouched||x.postFreezeTouched||x.retuningPerformed||x.realMoneyPass||x.realStakeEUR!==0||x.selectionOnly!==true) process.exit(1)"
+      - name: Persist dense evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v301-stage3-dense-freeze.json
+          git commit -m "research(loterias-ai): persist v301 stage3 dense freeze" || exit 0
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push
