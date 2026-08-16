@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-17",
+  "study": "Lightning Roulette",
+  "purpose": "Evitar dependencia de una unica fuente y separar datos completos de corroboraciones parciales.",
+  "sources": [
+    {
+      "id": "trackersino-api",
+      "role": "PRIMARY_STRUCTURED",
+      "fields": ["roundId","timestamp","winner","allLuckyNumbers","allLuckyMultipliers"],
+      "requiresCredential": true,
+      "trainingEligible": true
+    },
+    {
+      "id": "casinoscore-live",
+      "role": "SECONDARY_CORROBORATION",
+      "fields": ["recentWinner","winningMultiplierWhenDisplayed"],
+      "requiresCredential": false,
+      "trainingEligible": false,
+      "note": "No completar Lucky Numbers ausentes a partir de esta fuente."
+    }
+  ],
+  "confidenceTiers": {
+    "A": "Ronda completa estructurada: roundId+timestamp+winner+Lucky Numbers/multipliers validos.",
+    "B": "Winner/multiplier corroborado por una fuente secundaria independiente dentro de una ventana temporal compatible.",
+    "C": "Dato parcial util solo para auditoria, nunca para entrenar el modelo Lightning completo."
+  },
+  "hardRules": {
+    "noInventMissingFields": true,
+    "noCrossSourceImputation": true,
+    "deduplicateByRoundId": true,
+    "preserveSource": true,
+    "preserveRawEvidence": true,
+    "realMoneyEnabled": false
+  }
+}

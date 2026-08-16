@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-17",
+  "mode": "PAPER_ONLY",
+  "purpose": "Medir coste realista por objetivo en Lightning sin confundir un acierto aislado con una estrategia rentable.",
+  "objectives": [
+    {"id":"single-number-hit","coverage":[1],"metrics":["rounds-to-first-hit","euros-staked-to-first-hit","net-pnl-at-hit","max-drawdown"]},
+    {"id":"small-set-hit","coverage":[2,3,4,5],"metrics":["hit-rate-vs-baseline","euros-staked-to-first-hit","net-pnl","max-drawdown"]},
+    {"id":"lightning-x50","threshold":50,"metrics":["rounds-to-first","euros-staked-to-first","net-pnl-at-first","max-drawdown"]},
+    {"id":"lightning-x100","threshold":100,"metrics":["rounds-to-first","euros-staked-to-first","net-pnl-at-first","max-drawdown"]},
+    {"id":"lightning-x200","threshold":200,"metrics":["rounds-to-first","euros-staked-to-first","net-pnl-at-first","max-drawdown"]},
+    {"id":"lightning-x500","threshold":500,"metrics":["rounds-to-first","euros-staked-to-first","net-pnl-at-first","max-drawdown","repeatability"]}
+  ],
+  "paperStakeScenariosEUR": {
+    "singleNumber": [1,2,5,6,7,10],
+    "smallSetTotal": [5,10,20,30],
+    "rule": "Cada escenario se evalua por separado; nunca se aumenta stake tras perdidas para maquillar tiempo hasta objetivo."
+  },
+  "hardRiskGates": {
+    "realMoneyEnabled": false,
+    "martingaleOrLossChasing": false,
+    "stakeEscalationAfterLoss": false,
+    "claim99PercentSingleOrTinySetWithoutProspectiveEvidence": false,
+    "minimumProspectivePaperRoundsBeforePromotion": 10000,
+    "requirePositiveNetEVAfterCosts": true,
+    "requireIndependentReplication": true,
+    "requireMultiplicityCorrection": true
+  },
+  "reporting": [
+    "total-rounds",
+    "total-staked-eur",
+    "gross-return-eur",
+    "net-pnl-eur",
+    "roi",
+    "max-drawdown-eur",
+    "longest-losing-run",
+    "first-hit-round",
+    "first-x50-round",
+    "first-x100-round",
+    "first-x200-round",
+    "first-x500-round",
+    "cost-to-first-x500-eur",
+    "repeat-x500-count",
+    "confidence-vs-random-baseline"
+  ]
+}

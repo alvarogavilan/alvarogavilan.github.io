@@ -1,0 +1,65 @@
+name: Loterias AI Lightning Collector
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-lightning-collector
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Collect latest finalized Lightning rounds
+        env:
+          TRACKERSINO_API_KEY: ${{ secrets.TRACKERSINO_API_KEY }}
+          LIGHTNING_FETCH_LIMIT: '1000'
+        run: node loterias-ai/casino/lightning/collect-trackersino.mjs
+      - name: Build deterministic corpus
+        run: node loterias-ai/casino/lightning/build-dataset.mjs
+      - name: Validate corpus quality
+        run: |
+          mkdir -p loterias-ai/casino/lightning/evidence
+          node loterias-ai/casino/lightning/validate-corpus.mjs loterias-ai/casino/lightning/data/rounds.jsonl > loterias-ai/casino/lightning/evidence/corpus-quality.json
+          cat loterias-ai/casino/lightning/evidence/corpus-quality.json
+      - name: Run chronological PAPER replay only when eligible
+        run: |
+          ELIGIBLE=$(node -e "const fs=require('fs');const p='loterias-ai/casino/lightning/evidence/corpus-quality.json';if(!fs.existsSync(p)){process.stdout.write('false')}else{const x=JSON.parse(fs.readFileSync(p,'utf8'));process.stdout.write(String(x.trainingEligible===true))}")
+          if [ "$ELIGIBLE" = "true" ]; then
+            node loterias-ai/casino/lightning/replay-engine.mjs loterias-ai/casino/lightning/data/rounds.jsonl > loterias-ai/casino/lightning/evidence/latest-replay.json
+          else
+            echo 'Replay blocked until corpus passes minimum-size and quality gates.'
+            rm -f loterias-ai/casino/lightning/evidence/latest-replay.json
+          fi
+      - name: Enforce PAPER-only gates
+        run: |
+          node -e "const c=require('./loterias-ai/casino/research-charter.json'); if(c.hardRules.realMoneyEnabled||c.hardRules.automaticBettingEnabled) process.exit(1)"
+          node -e "const p=require('./loterias-ai/casino/book-exclusion-policy.json'); if(!p.excludeCasinoFromBook) process.exit(1)"
+          if [ -f loterias-ai/casino/lightning/evidence/latest-replay.json ]; then
+            node -e "const x=require('./loterias-ai/casino/lightning/evidence/latest-replay.json'); if(x.realMoneyEnabled||x.mode!=='PAPER_ONLY') process.exit(1)"
+          fi
+      - name: Persist only validated evidence changes
+        run: |
+          if [ -n "$(git status --porcelain -- loterias-ai/casino/lightning/data loterias-ai/casino/lightning/evidence)" ]; then
+            git config user.name github-actions[bot]
+            git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+            git add loterias-ai/casino/lightning/data loterias-ai/casino/lightning/evidence
+            git commit -m "data(casino): ingest Lightning rounds and refresh PAPER evidence" || exit 0
+            git pull --rebase origin "$GITHUB_REF_NAME"
+            git push
+          else
+            echo "No new validated Lightning evidence"
+          fi
