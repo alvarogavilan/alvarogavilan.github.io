@@ -1,0 +1,60 @@
+name: Loterias AI Lightning First Corpus
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/lightning-first-corpus
+    paths:
+      - '.github/workflows/loterias-ai-lightning-first-corpus.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-lightning-first-corpus
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Collect up to 1000 finalized Lightning rounds
+        env:
+          TRACKERSINO_API_KEY: ${{ secrets.TRACKERSINO_API_KEY }}
+          LIGHTNING_FETCH_LIMIT: '1000'
+        run: node loterias-ai/casino/lightning/collect-trackersino.mjs
+      - name: Build corpus
+        run: node loterias-ai/casino/lightning/build-dataset.mjs
+      - name: Validate corpus
+        run: |
+          mkdir -p loterias-ai/casino/lightning/evidence
+          node loterias-ai/casino/lightning/validate-corpus.mjs loterias-ai/casino/lightning/data/rounds.jsonl > loterias-ai/casino/lightning/evidence/corpus-quality.json
+          cat loterias-ai/casino/lightning/evidence/corpus-quality.json
+      - name: Run PAPER replay when gate passes
+        run: |
+          ELIGIBLE=$(node -e "const x=require('./loterias-ai/casino/lightning/evidence/corpus-quality.json');process.stdout.write(String(x.trainingEligible===true))")
+          if [ "$ELIGIBLE" = "true" ]; then
+            node loterias-ai/casino/lightning/replay-engine.mjs loterias-ai/casino/lightning/data/rounds.jsonl > loterias-ai/casino/lightning/evidence/latest-replay.json
+            cat loterias-ai/casino/lightning/evidence/latest-replay.json
+          else
+            echo 'PAPER replay blocked by corpus gate.'
+          fi
+      - name: Enforce research-only safety
+        run: |
+          node -e "const c=require('./loterias-ai/casino/research-charter.json');if(c.hardRules.realMoneyEnabled||c.hardRules.automaticBettingEnabled)process.exit(1)"
+      - name: Persist branch evidence
+        run: |
+          if [ -n "$(git status --porcelain -- loterias-ai/casino/lightning/data loterias-ai/casino/lightning/evidence)" ]; then
+            git config user.name github-actions[bot]
+            git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+            git add loterias-ai/casino/lightning/data loterias-ai/casino/lightning/evidence
+            git commit -m "data(casino): persist first Lightning corpus diagnostic" || exit 0
+            git pull --rebase origin "$GITHUB_REF_NAME"
+            git push
+          fi
