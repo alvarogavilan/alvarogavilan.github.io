@@ -32,15 +32,22 @@ function targetDate(d,file){
   const m=file.match(/20\d\d-\d\d-\d\d/); return m?.[0]||null;
 }
 function money(...xs){for(const x of xs){const n=Number(x);if(Number.isFinite(n)&&n>=0)return n}return 0}
+function numberLine(numbers,stars,i,meta=null){
+  const nums=numbers.map(Number), ss=Array.isArray(stars)?stars.map(Number):[];
+  const starText=ss.length?` | Estrellas ${ss.join(' ')}`:'';
+  const starDisplay=ss.length?` · ⭐ ${ss.join(' · ')}`:'';
+  return {label:`Apuesta ${i+1}`,copy:`${nums.join(' ')}${starText}`,display:`${nums.join(' · ')}${starDisplay}`,meta:ss.length?['5 números + 2 estrellas',meta].filter(Boolean).join(' · '):meta};
+}
 function ticketLines(d){
   const raw=d?.prediction?.tickets||d?.portfolio||d?.tickets||d?.equivalents||null;
   if(Array.isArray(raw)) return raw.map((x,i)=>{
     if(Array.isArray(x)) return {label:`Apuesta ${i+1}`,copy:x.join(' '),display:x.join(' · ')};
-    if(Array.isArray(x?.numbers)) return {label:`Apuesta ${i+1}`,copy:x.numbers.join(' '),display:x.numbers.join(' · '),meta:x.historicalNearCount!=null?`${x.historicalNearCount}× 5/6 históricos`:null};
+    if(Array.isArray(x?.numbers)) return numberLine(x.numbers,x.stars,i,x.historicalNearCount!=null?`${x.historicalNearCount}× 5/6 históricos`:null);
     if(Array.isArray(x?.signs)) return {label:`Columna ${i+1}`,copy:`${x.signs.join(' ')}${x.pleno15?` | P15 ${x.pleno15}`:''}`,display:x.signs.join(' · '),meta:x.pleno15?`P15 ${x.pleno15}`:null};
     return null;
   }).filter(Boolean);
-  if(Array.isArray(d?.numbers)) return [{label:'Apuesta 1',copy:d.numbers.join(' ')+(d.key!=null?` | clave ${d.key}`:''),display:d.numbers.join(' · '),meta:d.key!=null?`Clave ${d.key}`:null}];
+  if(Array.isArray(d?.numbers)) return [numberLine(d.numbers,d.stars,0,d.key!=null?`Clave ${d.key}`:null)];
+  if(Array.isArray(d?.prediction?.numbers)) return [numberLine(d.prediction.numbers,d.prediction.stars,0)];
   return [];
 }
 function poolOf(d){const p=d?.prediction?.pool||d?.pool||d?.sources?.v175?.pool;return Array.isArray(p)?p:null}
