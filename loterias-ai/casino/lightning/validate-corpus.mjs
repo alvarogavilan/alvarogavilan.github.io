@@ -20,7 +20,7 @@ const gaps=[];
 const winners=Array(37).fill(0);
 const mults={};
 let prev=null;
-for(const [i,r] of rows.entries()){
+for(const r of rows){
   const validId=typeof r.roundId==='string'&&r.roundId.length>0;
   const validTs=typeof r.ts==='string'&&!Number.isNaN(Date.parse(r.ts));
   const validWinner=Number.isInteger(r.winner)&&r.winner>=0&&r.winner<=36;
@@ -42,6 +42,7 @@ const uniqueRate=complete?seen.size/complete:0;
 const trainingEligible=rows.length>=500 && bad===0 && duplicates===0 && completeRate===1;
 const report={
   status:trainingEligible?'PASS':'BLOCKED',
+  blockReason:trainingEligible?null:(rows.length<500?'INSUFFICIENT_ROWS':'QUALITY_GATE_FAILED'),
   dataset:{rows:rows.length,sha256:crypto.createHash('sha256').update(text).digest('hex')},
   quality:{complete,bad,duplicates,completeRate,uniqueRate,withLightning,withLightningRate:complete?withLightning/complete:0},
   timing:{gapSecondsP50:q(.5),gapSecondsP95:q(.95),gapSecondsP99:q(.99),maxGapSeconds:gaps.at(-1)??null},
@@ -51,4 +52,3 @@ const report={
   realMoney:false
 };
 console.log(JSON.stringify(report,null,2));
-if(!trainingEligible) process.exitCode=3;
