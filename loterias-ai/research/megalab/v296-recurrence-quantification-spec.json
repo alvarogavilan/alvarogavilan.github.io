@@ -1,0 +1,22 @@
+{
+  "version":"v296",
+  "family":"RECURRENCE_QUANTIFICATION_ANALYSIS",
+  "status":"DESIGN_FROZEN_BEFORE_RESULTS",
+  "goal":"Test whether recurrence structure in pre-draw whole-draw state trajectories contains reproducible predictive information using recurrence plots and recurrence-quantification statistics, without reusing nearest-state successor selection as the final predictor.",
+  "orthogonalityToPrior":[
+    "uses recurrence-density and diagonal/vertical recurrence structures rather than per-number scores",
+    "no v292 frequency-gap final ranking",
+    "no v293 representation grammar reuse",
+    "no v294 nearest historical successor as final selector",
+    "no v295 code-length objective"
+  ],
+  "stateEmbeddings":["gap-vector","pair-distance-vector","residue-count-vector","sorted-normalized-set","sum-span-parity-state"],
+  "rqaMetrics":["recurrence-rate","determinism","laminarity","trapping-time","longest-diagonal","entropy-diagonal-length"],
+  "thresholdRules":["fixed-quantile","adaptive-local-quantile","rank-distance"],
+  "lookbacks":[64,96,128,192,256],
+  "populationLogical":153600,
+  "selection":{"window":"2019-2022","screenSample":20480,"semanticDedup":true,"behavioralDedup":true,"oosLockedUntilFreeze":true,"maxFrozenCandidates":32},
+  "falsification":{"strictOOS":"2023-2024","postFreezeReplication":"2025+","nullSimulationRequiredFor5Plus":true,"multipleTestingCorrection":true,"behavioralCloneCollapse":true,"noRetuningAfterOOS":true},
+  "economics":{"realMoneyPass":false,"realStakeEUR":0,"ordinaryBudgetMaxEUR":15},
+  "memory":{"antiDuplicateSearchPerformed":true,"repositoryMatchesFound":0,"persistNegatives":true,"rescueAfterOOSFailureForbidden":true}
+}
