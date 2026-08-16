@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-17",
+  "study": "Lightning Roulette Historical Replay",
+  "mode": "PAPER_ONLY",
+  "objective": "Reproducir cronológicamente cada ronda y medir cuándo una estrategia congelada habría acertado el ganador y, por separado, cuándo ese ganador habría recibido multiplicadores Lightning relevantes.",
+  "predictionCoverageSizes": [1,2,3,4,5,6,8,10,12,15,18],
+  "strictChronology": {
+    "futureRowsVisible": false,
+    "predictionMustExistBeforeOutcome": true,
+    "retuningAfterOutcome": false,
+    "rollingOriginEvaluation": true
+  },
+  "milestones": [
+    {"id":"WINNER_HIT","definition":"el número ganador estaba en el conjunto predicho"},
+    {"id":"LIGHTNING_WINNER_HIT","definition":"el ganador estaba predicho y fue además número Lightning"},
+    {"id":"X50_PLUS","minimumMultiplier":50},
+    {"id":"X100_PLUS","minimumMultiplier":100},
+    {"id":"X150_PLUS","minimumMultiplier":150},
+    {"id":"X200_PLUS","minimumMultiplier":200},
+    {"id":"X300_PLUS","minimumMultiplier":300},
+    {"id":"X400_PLUS","minimumMultiplier":400},
+    {"id":"X500","minimumMultiplier":500}
+  ],
+  "requiredOutputsPerModel": [
+    "roundsEvaluated",
+    "coverageSize",
+    "winnerHits",
+    "winnerHitRate",
+    "randomBaselineHitRate",
+    "excessHitRate",
+    "lightningWinnerHits",
+    "x50PlusHits",
+    "x100PlusHits",
+    "x200PlusHits",
+    "x500Hits",
+    "roundsUntilFirstWinnerHit",
+    "roundsUntilFirstX100Plus",
+    "roundsUntilFirstX200Plus",
+    "roundsUntilFirstX500",
+    "longestMissStreak",
+    "multiplicityAdjustedEvidence",
+    "paperNetEVIfRulesKnown"
+  ],
+  "antiIllusionRules": {
+    "compareEachCoverageToItsOwnBaseline": true,
+    "doNotCountHistoricalX500AsPredictionUnlessPredeclared": true,
+    "doNotCallX500PredictableFromOneOccurrence": true,
+    "multipleTestingCorrectionRequired": true,
+    "independentHoldoutRequired": true,
+    "prospectivePaperRequired": true,
+    "realMoneyEnabled": false
+  }
+}
