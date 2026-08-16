@@ -1,0 +1,56 @@
+{
+  "version": "v236J",
+  "engine": "Johnson Combination Geometry",
+  "family": "JOHNSON_J49_6_GEODESIC_KERNEL",
+  "gameId": "bonoloto",
+  "generatedAt": "2026-08-16T11:00:37.970Z",
+  "archiveDraws": 9356,
+  "candidatePool": {
+    "nominalConfigurations": 27,
+    "effectiveConfigurations": 27,
+    "poolSize": 9,
+    "linesPerDraw": 30,
+    "theoreticalCostEUR": 15
+  },
+  "selection": {
+    "criterion": "pre-2023 only: full6 > hit5+ > meanBest > lower complexity",
+    "period": "2019-01-01..2022-12-31",
+    "selectedId": 7,
+    "hyperparameters": {
+      "window": 90,
+      "tau": 120,
+      "beta": 0.7
+    },
+    "train": {
+      "n": 1207,
+      "meanBest": 1.1251035625517813,
+      "hit5Plus": 1,
+      "full6": 0
+    }
+  },
+  "validation": {
+    "period": "2023-2024",
+    "n": 731,
+    "meanBest": 1.0861833105335157,
+    "hit5Plus": 0,
+    "full6": 0,
+    "hitDates": []
+  },
+  "postFreeze": {
+    "period": "2025+",
+    "n": 591,
+    "meanBest": 1.0846023688663282,
+    "hit5Plus": 0,
+    "full6": 0,
+    "hitDates": []
+  },
+  "signal": {
+    "repeat5PlusAcrossEras": false,
+    "fullAcrossEras": false,
+    "requiresAudit": false
+  },
+  "realMoneyPass": false,
+  "realStakeEUR": 0,
+  "decision": "NEGATIVE",
+  "note": "Ranks six-number sets by an exponential kernel on Johnson distance d=6-|intersection|, with recency decay. Hyperparameters selected before 2023 and frozen. Retrospective evidence never authorizes real money."
+}
