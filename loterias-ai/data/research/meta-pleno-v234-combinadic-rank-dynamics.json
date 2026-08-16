@@ -1,0 +1,400 @@
+{
+  "generatedAt": "2026-08-16T10:32:25.856Z",
+  "version": "v234",
+  "gameId": "bonoloto",
+  "family": "COMBINADIC_RANK_DYNAMICS",
+  "purpose": "Map each complete 6-number set to a unique combinadic coordinate, forecast that coordinate using pre-draw rank dynamics, and decode a 30-line <=15 EUR local portfolio.",
+  "candidatePool": {
+    "nominalConfigurations": 12,
+    "effectiveConfigurations": 12,
+    "selectionCriterion": "Top 4 pre-2023 by full, then 5+, then average best hits."
+  },
+  "dataBoundary": {
+    "train": "<2023-01-01",
+    "validation": "2023-2024",
+    "postFreeze": ">=2025-01-01",
+    "chronological": true,
+    "targetUpdatedAfterScoring": true
+  },
+  "economics": {
+    "lines": 30,
+    "unitCostEUR": 0.5,
+    "theoreticalCostEUR": 15,
+    "realStakeEUR": 0
+  },
+  "frozen": [
+    "ar1-W512",
+    "mean-W128",
+    "ar1-W256",
+    "ar1-W128"
+  ],
+  "trainRanking": [
+    {
+      "id": "ar1-W512",
+      "config": {
+        "id": "ar1-W512",
+        "window": 512,
+        "mode": "ar1"
+      },
+      "train": {
+        "draws": 7734,
+        "full": 0,
+        "ge5": 6,
+        "averageBestHits": 2.344065166795966,
+        "fullDates": [],
+        "ge5Dates": [
+          "1995-04-19",
+          "2000-01-10",
+          "2001-04-18",
+          "2013-10-21",
+          "2020-10-28",
+          "2021-08-05"
+        ]
+      }
+    },
+    {
+      "id": "mean-W128",
+      "config": {
+        "id": "mean-W128",
+        "window": 128,
+        "mode": "mean"
+      },
+      "train": {
+        "draws": 7734,
+        "full": 0,
+        "ge5": 6,
+        "averageBestHits": 2.330100853374709,
+        "fullDates": [],
+        "ge5Dates": [
+          "1996-12-16",
+          "2002-03-11",
+          "2002-07-22",
+          "2003-09-23",
+          "2016-05-11",
+          "2018-01-10"
+        ]
+      }
+    },
+    {
+      "id": "ar1-W256",
+      "config": {
+        "id": "ar1-W256",
+        "window": 256,
+        "mode": "ar1"
+      },
+      "train": {
+        "draws": 7734,
+        "full": 0,
+        "ge5": 5,
+        "averageBestHits": 2.3333333333333335,
+        "fullDates": [],
+        "ge5Dates": [
+          "1996-08-28",
+          "2007-10-01",
+          "2011-08-09",
+          "2012-03-28",
+          "2015-04-10"
+        ]
+      }
+    },
+    {
+      "id": "ar1-W128",
+      "config": {
+        "id": "ar1-W128",
+        "window": 128,
+        "mode": "ar1"
+      },
+      "train": {
+        "draws": 7734,
+        "full": 0,
+        "ge5": 5,
+        "averageBestHits": 2.322601499870701,
+        "fullDates": [],
+        "ge5Dates": [
+          "1992-08-16",
+          "1994-07-11",
+          "1997-10-01",
+          "2006-11-06",
+          "2007-04-25"
+        ]
+      }
+    },
+    {
+      "id": "mean-W256",
+      "config": {
+        "id": "mean-W256",
+        "window": 256,
+        "mode": "mean"
+      },
+      "train": {
+        "draws": 7734,
+        "full": 0,
+        "ge5": 4,
+        "averageBestHits": 2.3289371605896045,
+        "fullDates": [],
+        "ge5Dates": [
+          "2012-04-18",
+          "2013-08-13",
+          "2019-12-28",
+          "2021-08-03"
+        ]
+      }
+    },
+    {
+      "id": "mean-W512",
+      "config": {
+        "id": "mean-W512",
+        "window": 512,
+        "mode": "mean"
+      },
+      "train": {
+        "draws": 7734,
+        "full": 0,
+        "ge5": 3,
+        "averageBestHits": 2.3536333074734936,
+        "fullDates": [],
+        "ge5Dates": [
+          "1990-07-16",
+          "1998-10-26",
+          "2014-01-08"
+        ]
+      }
+    },
+    {
+      "id": "trend-W512",
+      "config": {
+        "id": "trend-W512",
+        "window": 512,
+        "mode": "trend"
+      },
+      "train": {
+        "draws": 7734,
+        "full": 0,
+        "ge5": 3,
+        "averageBestHits": 2.3374709076803724,
+        "fullDates": [],
+        "ge5Dates": [
+          "1990-01-09",
+          "1993-06-28",
+          "2021-05-03"
+        ]
+      }
+    },
+    {
+      "id": "trend-W256",
+      "config": {
+        "id": "trend-W256",
+        "window": 256,
+        "mode": "trend"
+      },
+      "train": {
+        "draws": 7734,
+        "full": 0,
+        "ge5": 3,
+        "averageBestHits": 2.330747349366434,
+        "fullDates": [],
+        "ge5Dates": [
+          "1991-06-19",
+          "2001-09-12",
+          "2014-07-29"
+        ]
+      }
+    },
+    {
+      "id": "trend-W128",
+      "config": {
+        "id": "trend-W128",
+        "window": 128,
+        "mode": "trend"
+      },
+      "train": {
+        "draws": 7734,
+        "full": 0,
+        "ge5": 2,
+        "averageBestHits": 2.339281096457202,
+        "fullDates": [],
+        "ge5Dates": [
+          "1996-12-23",
+          "2001-08-03"
+        ]
+      }
+    },
+    {
+      "id": "trend-W64",
+      "config": {
+        "id": "trend-W64",
+        "window": 64,
+        "mode": "trend"
+      },
+      "train": {
+        "draws": 7734,
+        "full": 0,
+        "ge5": 2,
+        "averageBestHits": 2.3330747349366434,
+        "fullDates": [],
+        "ge5Dates": [
+          "1995-08-15",
+          "1999-01-18"
+        ]
+      }
+    },
+    {
+      "id": "mean-W64",
+      "config": {
+        "id": "mean-W64",
+        "window": 64,
+        "mode": "mean"
+      },
+      "train": {
+        "draws": 7734,
+        "full": 0,
+        "ge5": 2,
+        "averageBestHits": 2.331264546159814,
+        "fullDates": [],
+        "ge5Dates": [
+          "1996-11-06",
+          "2020-11-28"
+        ]
+      }
+    },
+    {
+      "id": "ar1-W64",
+      "config": {
+        "id": "ar1-W64",
+        "window": 64,
+        "mode": "ar1"
+      },
+      "train": {
+        "draws": 7734,
+        "full": 0,
+        "ge5": 2,
+        "averageBestHits": 2.3281613653995343,
+        "fullDates": [],
+        "ge5Dates": [
+          "2002-02-06",
+          "2006-11-22"
+        ]
+      }
+    }
+  ],
+  "validation": {
+    "models": [
+      {
+        "id": "ar1-W512",
+        "metrics": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 2.3255813953488373,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "mean-W128",
+        "metrics": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 1,
+          "averageBestHits": 2.3146374829001366,
+          "fullDates": [],
+          "ge5Dates": [
+            "2023-08-07"
+          ]
+        }
+      },
+      {
+        "id": "ar1-W256",
+        "metrics": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 2.295485636114911,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "ar1-W128",
+        "metrics": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 2.3242134062927495,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      }
+    ],
+    "uniqueFullDates": [],
+    "unique5PlusDates": [
+      "2023-08-07"
+    ]
+  },
+  "postFreeze": {
+    "models": [
+      {
+        "id": "ar1-W512",
+        "metrics": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 1,
+          "averageBestHits": 2.3248730964467006,
+          "fullDates": [],
+          "ge5Dates": [
+            "2026-07-18"
+          ]
+        }
+      },
+      {
+        "id": "mean-W128",
+        "metrics": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 2.3333333333333335,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "ar1-W256",
+        "metrics": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 2.3688663282571913,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "ar1-W128",
+        "metrics": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 2.3587140439932317,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      }
+    ],
+    "uniqueFullDates": [],
+    "unique5PlusDates": [
+      "2026-07-18"
+    ]
+  },
+  "signals": {
+    "repeatFullAcrossEras": false,
+    "repeat5PlusAcrossEras": true
+  },
+  "decision": "AUDIT_REPEAT5_SIGNAL",
+  "multipleTesting": {
+    "candidateCount": 12,
+    "status": "REQUIRED_BEFORE_PROMOTION"
+  },
+  "realMoneyPass": false,
+  "realStakeEUR": 0,
+  "note": "Combinadic coordinate is a representation experiment only; no retrospective result authorizes real money."
+}
