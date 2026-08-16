@@ -1,0 +1,61 @@
+{
+  "version": "v246",
+  "engine": "Finite-Field Syndrome Transition",
+  "family": "GF2_SYNDROME_TRANSITION",
+  "gameId": "bonoloto",
+  "generatedAt": "2026-08-16T11:40:26.384Z",
+  "archiveDraws": 9356,
+  "candidatePool": {
+    "nominalConfigurations": 24,
+    "effectiveConfigurations": 24,
+    "poolSize": 12,
+    "linesPerDraw": 30,
+    "theoreticalCostEUR": 15
+  },
+  "reconstruction": "Each target uses only the immediately previous draw syndrome. Hyperparameters are selected pre-2023; syndrome-conditioned frequencies are refit only through 2022 and then frozen.",
+  "selection": {
+    "criterion": "pre-2023 only: full6 > hit5+ > meanBest > lower syndrome dimension",
+    "selected": {
+      "window": 730,
+      "r": 6,
+      "mult": 5,
+      "alpha": 0.5
+    },
+    "train": {
+      "n": 1207,
+      "meanBest": 1.3272576636288318,
+      "hit5Plus": 2,
+      "full6": 0
+    }
+  },
+  "validation": {
+    "period": "2023-2024",
+    "n": 731,
+    "meanBest": 1.3242134062927498,
+    "hit5Plus": 0,
+    "full6": 0,
+    "hitDates": []
+  },
+  "postFreeze": {
+    "period": "2025+",
+    "n": 591,
+    "meanBest": 1.3147208121827412,
+    "hit5Plus": 1,
+    "full6": 0,
+    "hitDates": [
+      {
+        "date": "2026-01-27",
+        "best": 5
+      }
+    ]
+  },
+  "signal": {
+    "repeat5PlusAcrossEras": false,
+    "fullAcrossEras": false,
+    "requiresAudit": false
+  },
+  "decision": "NEGATIVE",
+  "realMoneyPass": false,
+  "realStakeEUR": 0,
+  "note": "Coding-theory lane using global GF(2) syndromes of the complete draw and frozen syndrome-to-next-number transition frequencies. Retrospective evidence never authorizes real money."
+}
