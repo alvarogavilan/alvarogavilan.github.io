@@ -1,0 +1,330 @@
+{
+  "generatedAt": "2026-08-16T11:07:45.848Z",
+  "version": "v230",
+  "gameId": "bonoloto",
+  "family": "POSITIONAL_EMPIRICAL_COPULA",
+  "purpose": "Model ordered-position marginal quantiles and adjacent-position dependence, then generate 30 lines <=15 EUR without target leakage.",
+  "candidatePool": {
+    "nominalConfigurations": 9,
+    "effectiveConfigurations": 9,
+    "selectionCriterion": "Top 4 on pre-2023 TRAIN by full, then 5+, then average best hits."
+  },
+  "dataBoundary": {
+    "train": "<2023-01-01",
+    "validation": "2023-2024",
+    "postFreeze": ">=2025-01-01",
+    "minimumHistory": 250,
+    "chronological": true,
+    "targetUpdatedAfterScoring": true
+  },
+  "economics": {
+    "lines": 30,
+    "unitCostEUR": 0.5,
+    "theoreticalCostEUR": 15,
+    "realStakeEUR": 0
+  },
+  "implementation": {
+    "quantileEvaluation": "precomputed sorted positional tables + exact upper-bound",
+    "semanticParity": "same count(values <= n) as original quantileBin"
+  },
+  "frozen": [
+    "W500-B7",
+    "W500-B5",
+    "W250-B7",
+    "W250-B5"
+  ],
+  "trainRanking": [
+    {
+      "id": "W500-B7",
+      "config": {
+        "id": "W500-B7",
+        "window": 500,
+        "bins": 7
+      },
+      "train": {
+        "draws": 7784,
+        "full": 0,
+        "ge5": 4,
+        "averageBestHits": 1.6598150051387461,
+        "fullDates": [],
+        "ge5Dates": [
+          "1997-02-17",
+          "2003-09-23",
+          "2017-03-30",
+          "2022-08-13"
+        ]
+      }
+    },
+    {
+      "id": "W500-B5",
+      "config": {
+        "id": "W500-B5",
+        "window": 500,
+        "bins": 5
+      },
+      "train": {
+        "draws": 7784,
+        "full": 0,
+        "ge5": 4,
+        "averageBestHits": 1.6542908530318603,
+        "fullDates": [],
+        "ge5Dates": [
+          "1997-02-17",
+          "2003-09-23",
+          "2017-03-30",
+          "2022-08-13"
+        ]
+      }
+    },
+    {
+      "id": "W250-B7",
+      "config": {
+        "id": "W250-B7",
+        "window": 250,
+        "bins": 7
+      },
+      "train": {
+        "draws": 7784,
+        "full": 0,
+        "ge5": 4,
+        "averageBestHits": 1.6447841726618706,
+        "fullDates": [],
+        "ge5Dates": [
+          "1997-02-17",
+          "2003-09-23",
+          "2017-03-30",
+          "2022-08-13"
+        ]
+      }
+    },
+    {
+      "id": "W250-B5",
+      "config": {
+        "id": "W250-B5",
+        "window": 250,
+        "bins": 5
+      },
+      "train": {
+        "draws": 7784,
+        "full": 0,
+        "ge5": 3,
+        "averageBestHits": 1.648895169578623,
+        "fullDates": [],
+        "ge5Dates": [
+          "1997-02-17",
+          "2017-03-30",
+          "2022-08-13"
+        ]
+      }
+    },
+    {
+      "id": "W250-B4",
+      "config": {
+        "id": "W250-B4",
+        "window": 250,
+        "bins": 4
+      },
+      "train": {
+        "draws": 7784,
+        "full": 0,
+        "ge5": 3,
+        "averageBestHits": 1.6454265159301131,
+        "fullDates": [],
+        "ge5Dates": [
+          "1997-02-17",
+          "2017-03-30",
+          "2022-08-13"
+        ]
+      }
+    },
+    {
+      "id": "W500-B4",
+      "config": {
+        "id": "W500-B4",
+        "window": 500,
+        "bins": 4
+      },
+      "train": {
+        "draws": 7784,
+        "full": 0,
+        "ge5": 3,
+        "averageBestHits": 1.6441418293936279,
+        "fullDates": [],
+        "ge5Dates": [
+          "1997-02-17",
+          "2017-03-30",
+          "2022-08-13"
+        ]
+      }
+    },
+    {
+      "id": "W100-B4",
+      "config": {
+        "id": "W100-B4",
+        "window": 100,
+        "bins": 4
+      },
+      "train": {
+        "draws": 7784,
+        "full": 0,
+        "ge5": 3,
+        "averageBestHits": 1.631551901336074,
+        "fullDates": [],
+        "ge5Dates": [
+          "1997-02-17",
+          "2017-03-30",
+          "2022-08-13"
+        ]
+      }
+    },
+    {
+      "id": "W100-B5",
+      "config": {
+        "id": "W100-B5",
+        "window": 100,
+        "bins": 5
+      },
+      "train": {
+        "draws": 7784,
+        "full": 0,
+        "ge5": 2,
+        "averageBestHits": 1.6089414182939363,
+        "fullDates": [],
+        "ge5Dates": [
+          "2021-04-27",
+          "2022-08-13"
+        ]
+      }
+    },
+    {
+      "id": "W100-B7",
+      "config": {
+        "id": "W100-B7",
+        "window": 100,
+        "bins": 7
+      },
+      "train": {
+        "draws": 7784,
+        "full": 0,
+        "ge5": 2,
+        "averageBestHits": 1.600334018499486,
+        "fullDates": [],
+        "ge5Dates": [
+          "2017-03-30",
+          "2022-08-13"
+        ]
+      }
+    }
+  ],
+  "validation": {
+    "models": [
+      {
+        "id": "W500-B7",
+        "metrics": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 1.6196990424076607,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "W500-B5",
+        "metrics": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 1.6196990424076607,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "W250-B7",
+        "metrics": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 1.6169630642954855,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "W250-B5",
+        "metrics": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 1.6183310533515731,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      }
+    ],
+    "uniqueFullDates": [],
+    "unique5PlusDates": []
+  },
+  "postFreeze": {
+    "models": [
+      {
+        "id": "W500-B7",
+        "metrics": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 1.6835871404399323,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "W500-B5",
+        "metrics": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 1.6734348561759729,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "W250-B7",
+        "metrics": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 1.6785109983079527,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "W250-B5",
+        "metrics": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 1.6734348561759729,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      }
+    ],
+    "uniqueFullDates": [],
+    "unique5PlusDates": []
+  },
+  "signals": {
+    "repeatFullAcrossEras": false,
+    "repeat5PlusAcrossEras": false
+  },
+  "decision": "NEGATIVE",
+  "multipleTesting": {
+    "candidateCount": 9,
+    "status": "NOT_TRIGGERED"
+  },
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
