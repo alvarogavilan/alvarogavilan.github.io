@@ -1,0 +1,36 @@
+name: Loterias AI MetaPleno v217 Research Registry
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - research/metapleno-v217-research-registry-clean
+    paths:
+      - 'loterias-ai/data/research/meta-pleno-v*.json'
+      - 'loterias-ai/scripts/build-metapleno-research-registry.mjs'
+      - '.github/workflows/loterias-ai-metapleno-v217-research-registry.yml'
+permissions:
+  contents: write
+jobs:
+  registry:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with: {node-version: '20'}
+      - run: node loterias-ai/scripts/build-metapleno-research-registry.mjs
+      - name: Validate registry
+        run: node -e "const x=require('./loterias-ai/data/research/metapleno-research-registry.json');if(x.summary.realMoneyPasses!==0)process.exit(1);if(x.summary.artifacts<20)process.exit(1)"
+      - name: Persist latest registry safely
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git reset --hard HEAD
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          node loterias-ai/scripts/build-metapleno-research-registry.mjs
+          git add loterias-ai/data/research/metapleno-research-registry.json
+          git diff --cached --quiet || git commit -m 'research(loterias-ai): refresh MetaPleno registry'
+          git push origin "HEAD:${GITHUB_REF_NAME}"
