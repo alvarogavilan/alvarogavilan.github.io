@@ -1,0 +1,31 @@
+name: Loterias AI v293 Stage3 Dense Freeze
+on:
+  push:
+    branches:
+      - research/metapleno-v293-representation-synthesis
+    paths:
+      - loterias-ai/research/megalab/v293-stage3-dense-selection-freeze.mjs
+      - .github/workflows/loterias-ai-v293-stage3-dense-freeze.yml
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run dense selection and freeze
+        run: node loterias-ai/research/megalab/v293-stage3-dense-selection-freeze.mjs
+      - name: Verify OOS remains untouched
+        run: node -e "const x=require('./loterias-ai/data/research/metapleno-v293-stage3-dense-selection.json');const m=require('./loterias-ai/data/research/metapleno-v293-frozen-manifest.json');if(x.validationTouched||x.postFreezeTouched||x.retuningPerformed||!m.frozenBeforeOOS||!m.hyperparametersFrozen||m.oosRead||x.realMoneyPass||x.realStakeEUR!==0)process.exit(1)"
+      - name: Persist stage3 evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v293-stage3-dense-selection.json loterias-ai/data/research/metapleno-v293-frozen-manifest.json
+          git commit -m 'data(loterias-ai): persist v293 dense selection freeze' || exit 0
+          git pull --rebase origin research/metapleno-v293-representation-synthesis
+          git push
