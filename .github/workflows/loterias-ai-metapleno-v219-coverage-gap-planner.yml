@@ -1,0 +1,25 @@
+name: Loterias AI MetaPleno v219 Coverage Gap Planner
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v219-coverage-gap-planner]
+permissions:
+  contents: write
+jobs:
+  planner:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: research/metapleno-v219-coverage-gap-planner}
+      - uses: actions/setup-node@v4
+        with: {node-version: '20'}
+      - run: node loterias-ai/scripts/build-metapleno-v219-coverage-gap-planner.mjs
+      - name: Validate
+        run: node -e "const x=require('./loterias-ai/data/research/metapleno-v219-coverage-gap-planner.json');if(x.realMoneyPass!==false||x.realStakeEUR!==0||!x.topResearchGaps.length)process.exit(1)"
+      - name: Persist
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v219-coverage-gap-planner.json
+          git diff --cached --quiet || git commit -m 'research(loterias-ai): persist v219 coverage gap planner'
+          git push
