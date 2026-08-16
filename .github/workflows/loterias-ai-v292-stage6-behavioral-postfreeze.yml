@@ -1,0 +1,31 @@
+name: Loterias AI v292 Stage6 Behavioral PostFreeze
+on:
+  push:
+    branches:
+      - research/metapleno-v292-million-scientist-funnel
+    paths:
+      - loterias-ai/research/megalab/v292-stage6-behavioral-audit-postfreeze.mjs
+      - .github/workflows/loterias-ai-v292-stage6-behavioral-postfreeze.yml
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run behavioral dedup and post-freeze audit
+        run: node loterias-ai/research/megalab/v292-stage6-behavioral-audit-postfreeze.mjs
+      - name: Verify fail-closed economics and provenance
+        run: node -e "const x=require('./loterias-ai/data/research/metapleno-v292-stage6-behavioral-audit-postfreeze.json');if(!x.stage5EvidenceVerified||x.retuningPerformed||!x.behavioralDeduplication||x.realMoneyPass||x.realStakeEUR!==0)process.exit(1)"
+      - name: Persist stage6 evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v292-stage6-behavioral-audit-postfreeze.json
+          git commit -m 'data(loterias-ai): persist v292 stage6 behavioral audit' || exit 0
+          git pull --rebase origin research/metapleno-v292-million-scientist-funnel
+          git push
