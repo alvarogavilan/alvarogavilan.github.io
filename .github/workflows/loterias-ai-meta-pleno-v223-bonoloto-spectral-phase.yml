@@ -1,0 +1,27 @@
+name: loterias-ai meta-pleno v223 spectral phase
+on:
+  push:
+    branches:
+      - research/metapleno-v223-spectral-phase
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/metapleno-v223-spectral-phase
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run v223
+        run: node loterias-ai/scripts/meta-pleno-v223-bonoloto-spectral-phase.mjs
+      - name: Persist result
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/meta-pleno-v223-bonoloto-spectral-phase.json
+          git diff --cached --quiet || git commit -m 'research(loterias-ai): persist v223 spectral phase result'
+          git push
