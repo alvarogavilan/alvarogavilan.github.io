@@ -1,0 +1,13 @@
+{
+  "version":"v291",
+  "family":"OPEN_ENDED_NOVELTY_MAP_ELITES",
+  "status":"READY_FOR_IMPLEMENTATION",
+  "mission":"Explorar procedimientos cualitativamente distintos, no sólo maximizar aciertos retrospectivos.",
+  "population":{"virtualScientists":16384,"logicalIslands":64,"eliteCells":512},
+  "behaviorAxes":["temporal-memory-depth","feature-family-diversity","formula-complexity","graph-vs-sequence","local-vs-global","deterministic-vs-stochastic","single-vs-ensemble","stationary-vs-regime-aware"],
+  "noveltyPolicy":{"primaryObjective":"behavioral novelty","secondaryObjective":"selection fitness","oosPromotion":"strict","duplicateGuard":"sha256+semantic-signature","negativeMemory":"shared-global"},
+  "promotion":{"screen":"cheap","selection":"2019-2022","freeze":true,"validation":"2023-2024","postFreeze":"2025+","auditOn":"repeat5+ or fullMain/fullJackpot OOS"},
+  "economicSafety":{"realMoneyPass":false,"realStakeEUR":0,"ordinaryBudgetMaxEUR":4},
+  "computePolicy":{"singleBatch":true,"githubActionsHeavyRuns":1,"timeoutMinutes":12,"cacheDescriptors":true},
+  "note":"MAP-Elites/novelty search se usa como mecanismo de diversidad del espacio de hipótesis; no se considera evidencia predictiva por sí mismo."
+}
