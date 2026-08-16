@@ -1,0 +1,37 @@
+name: Loterias AI MetaPleno v199 Euromillones Complete 5+2
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v199-euromillones-complete-5plus2]
+permissions:
+  contents: write
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/meta-pleno-v199-euromillones-complete-5plus2.mjs
+      - name: Validate complete Euromillones ticket
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const p='loterias-ai/data/prospective/euromillones-v199-complete-5plus2-2026-08-18.json';
+          const d=JSON.parse(fs.readFileSync(p,'utf8'));
+          const t=d.tickets?.[0];
+          if(!t||t.numbers?.length!==5||t.stars?.length!==2) throw new Error('Incomplete Euromillones 5+2 ticket');
+          if(d.realMoneyPass!==false||d.realStakeEUR!==0) throw new Error('Real-money gate regression');
+          if(d.config?.theoreticalStakeEUR!==2.5) throw new Error('Unexpected theoretical stake');
+          console.log(JSON.stringify({numbers:t.numbers,stars:t.stars,fingerprint:d.fingerprintSha256}));
+          NODE
+      - name: Persist v199 freeze
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/prospective/euromillones-v199-complete-5plus2-2026-08-18.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'data(loterias-ai): freeze complete Euromillones v199 5+2'
+            git pull --rebase origin "$GITHUB_REF_NAME"
+            git push origin HEAD:"$GITHUB_REF_NAME"
+          fi
