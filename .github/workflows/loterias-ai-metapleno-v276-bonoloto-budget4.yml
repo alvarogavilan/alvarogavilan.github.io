@@ -1,0 +1,19 @@
+name: Loterias AI MetaPleno v276 Bonoloto Budget4
+on: [push, workflow_dispatch]
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - run: node loterias-ai/research/metapleno-v276-bonoloto-budget4.mjs
+      - name: Verify fail-closed
+        run: node -e "const x=require('./loterias-ai/data/research/metapleno-v276-bonoloto-budget4.json');if(x.realMoneyPass||x.realStakeEUR!==0||x.budgetPolicy.hardDailyEUR>4)process.exit(1)"
+      - name: Persist result
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v276-bonoloto-budget4.json
+          git commit -m 'data(loterias-ai): persist v276 budget4 result' || exit 0
+          git push
