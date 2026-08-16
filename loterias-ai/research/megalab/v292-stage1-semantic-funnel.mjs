@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// v292 Stage 1: deterministic semantic funnel; intentionally reads no lottery outcomes.
 import fs from 'node:fs';import crypto from 'node:crypto';import path from 'node:path';
 const N=1048576,MAX=131072,OUT='loterias-ai/data/research/metapleno-v292-stage1-semantic-funnel.json';
 const games=['bonoloto','primitiva','euromillones','gordo-primitiva'];const schools=['symbolic','temporal','information','graph','regime','ensemble','combinatorial','topological','transport','spectral','causal-probe','adversarial'];const memories=[7,15,30,60,120,240,365,730];const operators=['linear','ratio','rank','nonlinear','kernel','set','graph','sequence'];const features=['frequency','gap','cooccurrence','position','modular','entropy','motif','regime','distance','novelty','cross-game','synthetic'];
