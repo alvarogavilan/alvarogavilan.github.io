@@ -1,31 +1,32 @@
 {
-  "version":"1.1",
+  "version":"1.2",
   "name":"Universidad Autonomous Research Orchestrator",
   "status":"ACTIVE_SPEC",
   "mission":"Transformar conocimiento, resultados y huecos de investigación en hipótesis nuevas sin duplicar familias ya falsadas, consultando y escribiendo siempre en la memoria científica permanente.",
-  "inputs":["scientific-library","permanent-scientific-memory","negative-memory","research-results","game-rules","historical-archives","method-genealogies"],
+  "inputs":["scientific-library","permanent-scientific-memory","negative-memory","behavioral-memory","research-results","game-rules","historical-archives","method-genealogies"],
   "pipeline":[
-    {"stage":"MEMORY_QUERY","role":"consultar fórmulas, experimentos, negativos, genealogías y equivalencias antes de diseñar o ejecutar"},
+    {"stage":"MEMORY_QUERY","role":"consultar fórmulas, experimentos, negativos, genealogías, equivalencias semánticas y trayectorias predictivas antes de diseñar o ejecutar"},
     {"stage":"SCOUT","role":"buscar ideas, métodos, analogías y problemas no cubiertos"},
     {"stage":"TRANSLATE","role":"convertir una idea en representación, features, operadores y predicción pre-draw"},
     {"stage":"NOVELTY_GUARD","role":"comparar hash, expresión canónica, firma semántica, genealogía, parámetros, dataset y seed contra memoria global"},
     {"stage":"SYNTHESIZE","role":"crear variantes verdaderamente distintas y cruces interdisciplinarios"},
     {"stage":"CHEAP_FALSIFY","role":"descartar rápido con tests baratos sin usar OOS para diseñar"},
-    {"stage":"FREEZE","role":"cerrar hiperparámetros antes de validación"},
+    {"stage":"BEHAVIORAL_DEDUP","role":"agrupar como una sola familia científica los métodos que producen la misma trayectoria de predicciones pre-draw; conservar representantes y genealogía de clones"},
+    {"stage":"FREEZE","role":"cerrar hiperparámetros y behavior hashes antes de validación"},
     {"stage":"OOS","role":"evaluar 2023-2024 sin reajuste"},
-    {"stage":"POST_FREEZE","role":"replicar 2025+"},
-    {"stage":"EXTREME_AUDIT","role":"falsar automáticamente repeat5+, 6/6 o jackpot antes de promoción"},
-    {"stage":"MEMORY_COMMIT","role":"persistir fórmula, hipótesis, configuración, dataset fingerprint, seed, commit, workflow, métricas, decisión, negativos y genealogía en ledger permanente"},
+    {"stage":"POST_FREEZE","role":"replicar 2025+ sin retuning"},
+    {"stage":"EXTREME_AUDIT","role":"falsar automáticamente repeat5+, 6/6 o jackpot, colapsando clones comportamentales antes de contar señales"},
+    {"stage":"MEMORY_COMMIT","role":"persistir fórmula, hipótesis, behavior hash, trayectoria, configuración, dataset fingerprint, seed, commit, workflow, métricas, decisión, negativos y genealogía"},
     {"stage":"PUBLISH_EVIDENCE","role":"alimentar Universidad/Libro mediante referencias a evidencia inmutable"}
   ],
   "departments":[
     {"id":"math","virtualRoles":512,"topics":["probability","combinatorics","statistics","information","geometry","topology","graphs","optimization"]},
     {"id":"physics","virtualRoles":384,"topics":["statistical-physics","chaos","complex-systems","transport","energy","dynamics"]},
     {"id":"ai","virtualRoles":512,"topics":["symbolic-regression","program-synthesis","quality-diversity","automl","ensembles","representation-invention"]},
-    {"id":"falsification","virtualRoles":384,"topics":["multiple-testing","null-models","leakage","data-snooping","replication","adversarial-audit"]},
-    {"id":"memory","virtualRoles":256,"topics":["content-addressing","semantic-dedup","genealogy","provenance","indexes","retrieval","negative-memory"]},
+    {"id":"falsification","virtualRoles":384,"topics":["multiple-testing","null-models","leakage","data-snooping","replication","adversarial-audit","behavioral-clone-collapse"]},
+    {"id":"memory","virtualRoles":256,"topics":["content-addressing","semantic-dedup","behavioral-dedup","genealogy","provenance","indexes","retrieval","negative-memory"]},
     {"id":"editorial","virtualRoles":256,"topics":["plain-language","visual-explanation","traceability","book-ingestion"]}
   ],
-  "controls":{"realMoneyPass":false,"realStakeEUR":0,"ordinaryBudgetMaxEUR":4,"oosRetuningForbidden":true,"negativePersistenceRequired":true,"permanentMemoryRequired":true,"memoryQueryBeforeCompute":true,"memoryCommitAfterCompute":true,"extremeClaimsFailClosed":true},
-  "outputs":["hypothesis-registry","permanent-scientific-memory","negative-memory","candidate-audit-queue","university-metrics","book-event-feed"]
+  "controls":{"realMoneyPass":false,"realStakeEUR":0,"ordinaryBudgetMaxEUR":4,"oosRetuningForbidden":true,"negativePersistenceRequired":true,"permanentMemoryRequired":true,"memoryQueryBeforeCompute":true,"behavioralDedupBeforePromotion":true,"behavioralCloneSignalsCountAsOne":true,"memoryCommitAfterCompute":true,"extremeClaimsFailClosed":true},
+  "outputs":["hypothesis-registry","permanent-scientific-memory","behavioral-memory","negative-memory","candidate-audit-queue","university-metrics","book-event-feed"]
 }
