@@ -1,0 +1,87 @@
+{
+  "generatedAt": "2026-08-16T07:44:39.509Z",
+  "version": "v197",
+  "gameId": "primitiva",
+  "family": "DISCRETE_SURVIVAL_HAZARD",
+  "configsTested": 36,
+  "selection": {
+    "train": "2017-2020",
+    "finalists": 12,
+    "validation": "2021-2022",
+    "test": "2023+"
+  },
+  "leader": {
+    "id": 5,
+    "config": {
+      "personalWeight": 0.25,
+      "prior": 8,
+      "cap": 48
+    },
+    "train": {
+      "draws": 399,
+      "pool5": 0,
+      "pool6": 0,
+      "ticket5": 0,
+      "ticket6": 0,
+      "meanBest": 0.9072681704260651
+    },
+    "validation": {
+      "draws": 234,
+      "pool5": 0,
+      "pool6": 0,
+      "ticket5": 0,
+      "ticket6": 0,
+      "meanBest": 0.9529914529914529
+    },
+    "test": {
+      "draws": 564,
+      "pool5": 0,
+      "pool6": 0,
+      "ticket5": 0,
+      "ticket6": 0,
+      "meanBest": 1.0070921985815602
+    }
+  },
+  "deepTargetAudit": [
+    {
+      "date": "2024-01-11",
+      "missing": 22,
+      "rank": 35,
+      "top8": false,
+      "pool": [
+        10,
+        25,
+        45,
+        21,
+        2,
+        28,
+        19,
+        41
+      ],
+      "poolHits": 0,
+      "bestPlayable": 0
+    },
+    {
+      "date": "2026-07-25",
+      "missing": 38,
+      "rank": 9,
+      "top8": false,
+      "pool": [
+        1,
+        36,
+        37,
+        10,
+        41,
+        3,
+        40,
+        28
+      ],
+      "poolHits": 3,
+      "bestPlayable": 3
+    }
+  ],
+  "methodology": "Discrete time-to-next-occurrence survival model per number. Before each draw, estimate the empirical conditional hazard P(next occurrence | survived current gap) from only prior inter-arrival intervals, Beta-smoothed toward the global lottery hazard. Personal/global hazard mixture, prior strength and gap cap are shortlisted on 2017-2020 and selected on 2021-2022; 2023+ remains untouched test. Pool8 is converted to the fixed real 15-ticket v79 reduction; full hit requires exact winning sextet in a playable ticket.",
+  "decision": "NEGATIVE_NO_5PLUS_TEST",
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
