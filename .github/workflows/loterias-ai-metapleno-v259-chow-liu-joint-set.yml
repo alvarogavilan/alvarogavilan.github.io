@@ -1,0 +1,38 @@
+name: Loterias AI MetaPleno v259 Chow-Liu Joint Set
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/metapleno-v259-chow-liu-joint-set
+    paths:
+      - 'loterias-ai/research/metapleno-v259-chow-liu-joint-set.mjs'
+      - '.github/workflows/loterias-ai-metapleno-v259-chow-liu-joint-set.yml'
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run v259
+        run: node loterias-ai/research/metapleno-v259-chow-liu-joint-set.mjs
+      - name: Verify fail-closed
+        run: node - <<'NODE'
+          const fs=require('fs');
+          const p='loterias-ai/data/research/metapleno-v259-chow-liu-joint-set.json';
+          const j=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(j.realMoneyPass!==false||j.realStakeEUR!==0) throw new Error('real money must remain blocked');
+          if(j.candidatePool?.theoreticalCostEUR>15) throw new Error('budget exceeded');
+          console.log(j.decision,j.signal);
+          NODE
+      - name: Persist result
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/metapleno-v259-chow-liu-joint-set.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'data(loterias-ai): persist v259 Chow-Liu result'
+          git push
