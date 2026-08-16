@@ -1,0 +1,22 @@
+name: Loterias AI MetaPleno v280 Consolidated dCov
+on: [workflow_dispatch]
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - name: Run four-game consolidated batch
+        run: node loterias-ai/research/metapleno-v280-consolidated-dcov.mjs
+      - name: Verify fail-closed and compact budgets
+        run: node -e "const x=require('./loterias-ai/data/research/metapleno-v280-consolidated-dcov.json');if(x.realMoneyPass||x.realStakeEUR!==0||x.games.some(g=>g.budget.theoreticalEUR>4))process.exit(1)"
+      - name: Persist result
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v280-consolidated-dcov.json
+          git commit -m 'data(loterias-ai): persist v280 consolidated dCov result' || exit 0
+          git push
