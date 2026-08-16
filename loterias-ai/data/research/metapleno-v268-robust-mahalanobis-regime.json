@@ -1,0 +1,168 @@
+{
+  "version": "v268",
+  "engine": "Robust Mahalanobis Regime Shift",
+  "family": "ROBUST_MAHALANOBIS_REGIME_GATE",
+  "gameId": "bonoloto",
+  "generatedAt": "2026-08-16T14:47:35.311Z",
+  "archiveDraws": 9356,
+  "candidatePool": {
+    "nominalConfigurations": 12,
+    "effectiveConfigurations": 12,
+    "frozenConfigurations": 4,
+    "poolSize": 8,
+    "combinations": 28,
+    "theoreticalCostEUR": 14
+  },
+  "methodology": "Median/MAD robust standardization frozen pre-2019, then diagonal robust Mahalanobis separation between recent and baseline regime centroids. Thresholds/windows selected 2019-2022 only; 2023-2024 and 2025+ untouched. On gate activation, numbers are ranked by Mahalanobis proximity of their historical conditional state centroid to the current recent centroid.",
+  "leaders": [
+    {
+      "c": {
+        "recent": 20,
+        "base": 320,
+        "q": 0.95
+      },
+      "threshold": 0.7286366280207186,
+      "selection": {
+        "draws": 1207,
+        "gated": 61,
+        "gateRate": 0.050538525269262634,
+        "meanHitsWhenGated": 1.0819672131147542,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "validation": {
+        "draws": 731,
+        "gated": 80,
+        "gateRate": 0.1094391244870041,
+        "meanHitsWhenGated": 1,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "postFreeze": {
+        "draws": 591,
+        "gated": 47,
+        "gateRate": 0.07952622673434856,
+        "meanHitsWhenGated": 1.0212765957446808,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      }
+    },
+    {
+      "c": {
+        "recent": 20,
+        "base": 320,
+        "q": 0.99
+      },
+      "threshold": 0.9474126233952973,
+      "selection": {
+        "draws": 1207,
+        "gated": 13,
+        "gateRate": 0.010770505385252692,
+        "meanHitsWhenGated": 1.0769230769230769,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "validation": {
+        "draws": 731,
+        "gated": 23,
+        "gateRate": 0.03146374829001368,
+        "meanHitsWhenGated": 1,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "postFreeze": {
+        "draws": 591,
+        "gated": 12,
+        "gateRate": 0.02030456852791878,
+        "meanHitsWhenGated": 1.4166666666666667,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      }
+    },
+    {
+      "c": {
+        "recent": 20,
+        "base": 160,
+        "q": 0.95
+      },
+      "threshold": 0.780061051859997,
+      "selection": {
+        "draws": 1207,
+        "gated": 61,
+        "gateRate": 0.050538525269262634,
+        "meanHitsWhenGated": 1.0327868852459017,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "validation": {
+        "draws": 731,
+        "gated": 85,
+        "gateRate": 0.11627906976744186,
+        "meanHitsWhenGated": 0.8941176470588236,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "postFreeze": {
+        "draws": 591,
+        "gated": 48,
+        "gateRate": 0.08121827411167512,
+        "meanHitsWhenGated": 1.1458333333333333,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      }
+    },
+    {
+      "c": {
+        "recent": 20,
+        "base": 160,
+        "q": 0.99
+      },
+      "threshold": 1.038884001001415,
+      "selection": {
+        "draws": 1207,
+        "gated": 13,
+        "gateRate": 0.010770505385252692,
+        "meanHitsWhenGated": 1,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "validation": {
+        "draws": 731,
+        "gated": 12,
+        "gateRate": 0.016415868673050615,
+        "meanHitsWhenGated": 0.8333333333333334,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "postFreeze": {
+        "draws": 591,
+        "gated": 12,
+        "gateRate": 0.02030456852791878,
+        "meanHitsWhenGated": 1.1666666666666667,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      }
+    }
+  ],
+  "signal": {
+    "repeat5PlusAcrossEras": false,
+    "anyOOSFull": false,
+    "requiresAudit": false
+  },
+  "decision": "NEGATIVE",
+  "realMoneyPass": false,
+  "realStakeEUR": 0,
+  "note": "Research-only robust-location regime family. No result authorizes real-money play."
+}
