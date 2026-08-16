@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// v292 stage-0: deterministic virtual population; no historical outcome access.
 import fs from 'node:fs';import crypto from 'node:crypto';import path from 'node:path';
 const N=1048576,OUT='loterias-ai/data/research/metapleno-v292-million-registry.json';
 const games=['bonoloto','primitiva','euromillones','gordo-primitiva'];
