@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// trigger-stage2-v1
 import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';
 const R='loterias-ai',OUT=path.join(R,'data','research','metapleno-v292-stage2-temporal-screen.json');
 const games={bonoloto:{dir:'bonoloto',max:49,pick:6},primitiva:{dir:'primitiva',max:49,pick:6},euromillones:{dir:'euromillones',max:50,pick:5,start:'2016-09-27'},'gordo-primitiva':{dir:'gordo-primitiva',max:54,pick:5}};const schools=['symbolic','temporal','information','graph','regime','ensemble','combinatorial','topological','transport','spectral','causal-probe','adversarial'];const memories=[7,15,30,60,120,240,365,730],ops=['linear','ratio','rank','nonlinear','kernel','set','graph','sequence'],features=['frequency','gap','cooccurrence','position','modular','entropy','motif','regime','distance','novelty','cross-game','synthetic'];
