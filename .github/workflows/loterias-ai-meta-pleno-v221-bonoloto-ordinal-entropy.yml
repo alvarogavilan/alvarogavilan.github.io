@@ -1,0 +1,29 @@
+name: loterias-ai meta-pleno v221 ordinal entropy
+on:
+  push:
+    branches: [research/metapleno-v221-ordinal-entropy]
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v221-bonoloto-ordinal-entropy.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v221-bonoloto-ordinal-entropy.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/metapleno-v221-ordinal-entropy
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run v221
+        run: node loterias-ai/scripts/meta-pleno-v221-bonoloto-ordinal-entropy.mjs
+      - name: Persist result
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/meta-pleno-v221-bonoloto-ordinal-entropy.json
+          git diff --cached --quiet || git commit -m 'research(loterias-ai): persist v221 ordinal entropy result'
+          git push
