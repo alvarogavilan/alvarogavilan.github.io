@@ -1,0 +1,35 @@
+name: Loterias AI v294 Stage4 Strict OOS
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/metapleno-v294-set-state-dynamics
+    paths:
+      - 'loterias-ai/research/megalab/v294-stage4-strict-oos.mjs'
+      - '.github/workflows/loterias-ai-v294-stage4-strict-oos.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-v294-stage4-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run strict blind OOS 2023-2024
+        run: node loterias-ai/research/megalab/v294-stage4-strict-oos.mjs
+      - name: Verify OOS lineage and money gates
+        run: node -e "const r=require('./loterias-ai/data/research/metapleno-v294-stage4-oos-2023-2024.json');const m=require('./loterias-ai/data/research/metapleno-v294-frozen-manifest.json');if(r.sourceManifestHash!==m.manifestHash||r.hyperparametersRetuned||r.manifestMutated||r.postFreeze2025Read||r.realMoneyPass||r.realStakeEUR!==0||r.theoreticalBudgetMaxEUR>15)process.exit(1)"
+      - name: Persist Stage4 evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v294-stage4-oos-2023-2024.json
+          git commit -m 'data(loterias-ai): persist v294 strict OOS' || exit 0
+          git pull --rebase origin research/metapleno-v294-set-state-dynamics
+          git push
