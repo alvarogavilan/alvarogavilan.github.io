@@ -1,0 +1,1066 @@
+{
+  "generatedAt": "2026-08-16T10:25:58.830Z",
+  "version": "v232",
+  "gameId": "bonoloto",
+  "family": "INVARIANT_REGIME_MAXIMIN_SELECTOR",
+  "purpose": "Select only pre-2023 model configurations whose 5+ rate and hit quality are stable across three disjoint historical regimes, then freeze before 2023.",
+  "candidatePool": {
+    "nominalConfigurations": 20,
+    "effectiveConfigurations": 20,
+    "selectionCriterion": "Maximin 5+ rate across pre-2005, 2005-2014, 2015-2022; tie-break maximin average hits and total 5+."
+  },
+  "dataBoundary": {
+    "selectionOnlyBefore": "2023-01-01",
+    "validation": "2023-2024",
+    "postFreeze": ">=2025-01-01",
+    "chronological": true
+  },
+  "economics": {
+    "lines": 30,
+    "costEUR": 15,
+    "realStakeEUR": 0
+  },
+  "frozen": [
+    "momentum-L0p08",
+    "momentum-L0p15",
+    "momentum-L0",
+    "momentum-L0p03",
+    "stability-L0p08",
+    "stability-L0p15"
+  ],
+  "trainRanking": [
+    {
+      "id": "momentum-L0p08",
+      "config": {
+        "family": "momentum",
+        "lambda": 0.08
+      },
+      "pre2023Regimes": [
+        {
+          "draws": 3262,
+          "full": 0,
+          "ge5": 1,
+          "rate5": 0.00030656039239730225,
+          "avg": 1.1011649294911097,
+          "fullDates": [],
+          "ge5Dates": [
+            "1997-01-27"
+          ]
+        },
+        {
+          "draws": 2087,
+          "full": 0,
+          "ge5": 1,
+          "rate5": 0.0004791566842357451,
+          "avg": 1.0987062769525635,
+          "fullDates": [],
+          "ge5Dates": [
+            "2014-04-07"
+          ]
+        },
+        {
+          "draws": 2435,
+          "full": 0,
+          "ge5": 2,
+          "rate5": 0.0008213552361396304,
+          "avg": 1.115400410677618,
+          "fullDates": [],
+          "ge5Dates": [
+            "2018-07-26",
+            "2018-09-06"
+          ]
+        }
+      ],
+      "min5PlusRate": 0.00030656039239730225,
+      "minAverageHits": 1.0987062769525635,
+      "total5Plus": 4
+    },
+    {
+      "id": "momentum-L0p15",
+      "config": {
+        "family": "momentum",
+        "lambda": 0.15
+      },
+      "pre2023Regimes": [
+        {
+          "draws": 3262,
+          "full": 0,
+          "ge5": 1,
+          "rate5": 0.00030656039239730225,
+          "avg": 1.1011649294911097,
+          "fullDates": [],
+          "ge5Dates": [
+            "1997-01-27"
+          ]
+        },
+        {
+          "draws": 2087,
+          "full": 0,
+          "ge5": 1,
+          "rate5": 0.0004791566842357451,
+          "avg": 1.0987062769525635,
+          "fullDates": [],
+          "ge5Dates": [
+            "2014-04-07"
+          ]
+        },
+        {
+          "draws": 2435,
+          "full": 0,
+          "ge5": 1,
+          "rate5": 0.0004106776180698152,
+          "avg": 1.1149897330595482,
+          "fullDates": [],
+          "ge5Dates": [
+            "2018-07-26"
+          ]
+        }
+      ],
+      "min5PlusRate": 0.00030656039239730225,
+      "minAverageHits": 1.0987062769525635,
+      "total5Plus": 3
+    },
+    {
+      "id": "momentum-L0",
+      "config": {
+        "family": "momentum",
+        "lambda": 0
+      },
+      "pre2023Regimes": [
+        {
+          "draws": 3262,
+          "full": 0,
+          "ge5": 1,
+          "rate5": 0.00030656039239730225,
+          "avg": 1.0980993255671367,
+          "fullDates": [],
+          "ge5Dates": [
+            "1997-01-27"
+          ]
+        },
+        {
+          "draws": 2087,
+          "full": 0,
+          "ge5": 1,
+          "rate5": 0.0004791566842357451,
+          "avg": 1.0972688068998562,
+          "fullDates": [],
+          "ge5Dates": [
+            "2014-04-07"
+          ]
+        },
+        {
+          "draws": 2435,
+          "full": 0,
+          "ge5": 2,
+          "rate5": 0.0008213552361396304,
+          "avg": 1.1129363449691991,
+          "fullDates": [],
+          "ge5Dates": [
+            "2018-07-26",
+            "2018-09-06"
+          ]
+        }
+      ],
+      "min5PlusRate": 0.00030656039239730225,
+      "minAverageHits": 1.0972688068998562,
+      "total5Plus": 4
+    },
+    {
+      "id": "momentum-L0p03",
+      "config": {
+        "family": "momentum",
+        "lambda": 0.03
+      },
+      "pre2023Regimes": [
+        {
+          "draws": 3262,
+          "full": 0,
+          "ge5": 1,
+          "rate5": 0.00030656039239730225,
+          "avg": 1.0980993255671367,
+          "fullDates": [],
+          "ge5Dates": [
+            "1997-01-27"
+          ]
+        },
+        {
+          "draws": 2087,
+          "full": 0,
+          "ge5": 1,
+          "rate5": 0.0004791566842357451,
+          "avg": 1.0972688068998562,
+          "fullDates": [],
+          "ge5Dates": [
+            "2014-04-07"
+          ]
+        },
+        {
+          "draws": 2435,
+          "full": 0,
+          "ge5": 2,
+          "rate5": 0.0008213552361396304,
+          "avg": 1.1129363449691991,
+          "fullDates": [],
+          "ge5Dates": [
+            "2018-07-26",
+            "2018-09-06"
+          ]
+        }
+      ],
+      "min5PlusRate": 0.00030656039239730225,
+      "minAverageHits": 1.0972688068998562,
+      "total5Plus": 4
+    },
+    {
+      "id": "stability-L0p08",
+      "config": {
+        "family": "stability",
+        "lambda": 0.08
+      },
+      "pre2023Regimes": [
+        {
+          "draws": 3262,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.1143470263641937,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2087,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.091998083373263,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2435,
+          "full": 0,
+          "ge5": 2,
+          "rate5": 0.0008213552361396304,
+          "avg": 1.095687885010267,
+          "fullDates": [],
+          "ge5Dates": [
+            "2018-11-20",
+            "2022-07-13"
+          ]
+        }
+      ],
+      "min5PlusRate": 0,
+      "minAverageHits": 1.091998083373263,
+      "total5Plus": 2
+    },
+    {
+      "id": "stability-L0p15",
+      "config": {
+        "family": "stability",
+        "lambda": 0.15
+      },
+      "pre2023Regimes": [
+        {
+          "draws": 3262,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.1143470263641937,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2087,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.091998083373263,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2435,
+          "full": 0,
+          "ge5": 2,
+          "rate5": 0.0008213552361396304,
+          "avg": 1.095687885010267,
+          "fullDates": [],
+          "ge5Dates": [
+            "2018-11-20",
+            "2022-07-13"
+          ]
+        }
+      ],
+      "min5PlusRate": 0,
+      "minAverageHits": 1.091998083373263,
+      "total5Plus": 2
+    },
+    {
+      "id": "stability-L0",
+      "config": {
+        "family": "stability",
+        "lambda": 0
+      },
+      "pre2023Regimes": [
+        {
+          "draws": 3262,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.1131207847946045,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2087,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.0896022999520842,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2435,
+          "full": 0,
+          "ge5": 1,
+          "rate5": 0.0004106776180698152,
+          "avg": 1.0936344969199179,
+          "fullDates": [],
+          "ge5Dates": [
+            "2022-07-13"
+          ]
+        }
+      ],
+      "min5PlusRate": 0,
+      "minAverageHits": 1.0896022999520842,
+      "total5Plus": 1
+    },
+    {
+      "id": "stability-L0p03",
+      "config": {
+        "family": "stability",
+        "lambda": 0.03
+      },
+      "pre2023Regimes": [
+        {
+          "draws": 3262,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.1131207847946045,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2087,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.0896022999520842,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2435,
+          "full": 0,
+          "ge5": 1,
+          "rate5": 0.0004106776180698152,
+          "avg": 1.0936344969199179,
+          "fullDates": [],
+          "ge5Dates": [
+            "2022-07-13"
+          ]
+        }
+      ],
+      "min5PlusRate": 0,
+      "minAverageHits": 1.0896022999520842,
+      "total5Plus": 1
+    },
+    {
+      "id": "meanrev-L0p08",
+      "config": {
+        "family": "meanrev",
+        "lambda": 0.08
+      },
+      "pre2023Regimes": [
+        {
+          "draws": 3262,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.0931943592887798,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2087,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.1039770004791567,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2435,
+          "full": 0,
+          "ge5": 2,
+          "rate5": 0.0008213552361396304,
+          "avg": 1.0895277207392198,
+          "fullDates": [],
+          "ge5Dates": [
+            "2022-03-15",
+            "2022-07-13"
+          ]
+        }
+      ],
+      "min5PlusRate": 0,
+      "minAverageHits": 1.0895277207392198,
+      "total5Plus": 2
+    },
+    {
+      "id": "meanrev-L0p15",
+      "config": {
+        "family": "meanrev",
+        "lambda": 0.15
+      },
+      "pre2023Regimes": [
+        {
+          "draws": 3262,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.0931943592887798,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2087,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.1039770004791567,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2435,
+          "full": 0,
+          "ge5": 2,
+          "rate5": 0.0008213552361396304,
+          "avg": 1.0891170431211499,
+          "fullDates": [],
+          "ge5Dates": [
+            "2022-03-15",
+            "2022-07-13"
+          ]
+        }
+      ],
+      "min5PlusRate": 0,
+      "minAverageHits": 1.0891170431211499,
+      "total5Plus": 2
+    },
+    {
+      "id": "meanrev-L0",
+      "config": {
+        "family": "meanrev",
+        "lambda": 0
+      },
+      "pre2023Regimes": [
+        {
+          "draws": 3262,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.0916615573267934,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2087,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.1006229036895065,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2435,
+          "full": 0,
+          "ge5": 2,
+          "rate5": 0.0008213552361396304,
+          "avg": 1.086652977412731,
+          "fullDates": [],
+          "ge5Dates": [
+            "2022-03-15",
+            "2022-07-13"
+          ]
+        }
+      ],
+      "min5PlusRate": 0,
+      "minAverageHits": 1.086652977412731,
+      "total5Plus": 2
+    },
+    {
+      "id": "meanrev-L0p03",
+      "config": {
+        "family": "meanrev",
+        "lambda": 0.03
+      },
+      "pre2023Regimes": [
+        {
+          "draws": 3262,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.0916615573267934,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2087,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.1006229036895065,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2435,
+          "full": 0,
+          "ge5": 2,
+          "rate5": 0.0008213552361396304,
+          "avg": 1.086652977412731,
+          "fullDates": [],
+          "ge5Dates": [
+            "2022-03-15",
+            "2022-07-13"
+          ]
+        }
+      ],
+      "min5PlusRate": 0,
+      "minAverageHits": 1.086652977412731,
+      "total5Plus": 2
+    },
+    {
+      "id": "gap-L0p15",
+      "config": {
+        "family": "gap",
+        "lambda": 0.15
+      },
+      "pre2023Regimes": [
+        {
+          "draws": 3262,
+          "full": 0,
+          "ge5": 1,
+          "rate5": 0.00030656039239730225,
+          "avg": 1.0910484365419988,
+          "fullDates": [],
+          "ge5Dates": [
+            "1998-03-04"
+          ]
+        },
+        {
+          "draws": 2087,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.10924772400575,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2435,
+          "full": 0,
+          "ge5": 2,
+          "rate5": 0.0008213552361396304,
+          "avg": 1.0796714579055442,
+          "fullDates": [],
+          "ge5Dates": [
+            "2019-04-16",
+            "2022-12-07"
+          ]
+        }
+      ],
+      "min5PlusRate": 0,
+      "minAverageHits": 1.0796714579055442,
+      "total5Plus": 3
+    },
+    {
+      "id": "gap-L0p08",
+      "config": {
+        "family": "gap",
+        "lambda": 0.08
+      },
+      "pre2023Regimes": [
+        {
+          "draws": 3262,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.0910484365419988,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2087,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.10924772400575,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2435,
+          "full": 0,
+          "ge5": 1,
+          "rate5": 0.0004106776180698152,
+          "avg": 1.0792607802874743,
+          "fullDates": [],
+          "ge5Dates": [
+            "2022-12-07"
+          ]
+        }
+      ],
+      "min5PlusRate": 0,
+      "minAverageHits": 1.0792607802874743,
+      "total5Plus": 1
+    },
+    {
+      "id": "gap-L0",
+      "config": {
+        "family": "gap",
+        "lambda": 0
+      },
+      "pre2023Regimes": [
+        {
+          "draws": 3262,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.0889025137952177,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2087,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.1044561571633924,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2435,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.0759753593429158,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      ],
+      "min5PlusRate": 0,
+      "minAverageHits": 1.0759753593429158,
+      "total5Plus": 0
+    },
+    {
+      "id": "gap-L0p03",
+      "config": {
+        "family": "gap",
+        "lambda": 0.03
+      },
+      "pre2023Regimes": [
+        {
+          "draws": 3262,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.0889025137952177,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2087,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.1044561571633924,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2435,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.0759753593429158,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      ],
+      "min5PlusRate": 0,
+      "minAverageHits": 1.0759753593429158,
+      "total5Plus": 0
+    },
+    {
+      "id": "balanced-L0p15",
+      "config": {
+        "family": "balanced",
+        "lambda": 0.15
+      },
+      "pre2023Regimes": [
+        {
+          "draws": 3262,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.0996321275291232,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2087,
+          "full": 0,
+          "ge5": 1,
+          "rate5": 0.0004791566842357451,
+          "avg": 1.0709151892668902,
+          "fullDates": [],
+          "ge5Dates": [
+            "2010-04-05"
+          ]
+        },
+        {
+          "draws": 2435,
+          "full": 0,
+          "ge5": 2,
+          "rate5": 0.0008213552361396304,
+          "avg": 1.1149897330595482,
+          "fullDates": [],
+          "ge5Dates": [
+            "2018-11-20",
+            "2022-07-13"
+          ]
+        }
+      ],
+      "min5PlusRate": 0,
+      "minAverageHits": 1.0709151892668902,
+      "total5Plus": 3
+    },
+    {
+      "id": "balanced-L0p08",
+      "config": {
+        "family": "balanced",
+        "lambda": 0.08
+      },
+      "pre2023Regimes": [
+        {
+          "draws": 3262,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.099325567136726,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2087,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.0704360325826545,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2435,
+          "full": 0,
+          "ge5": 2,
+          "rate5": 0.0008213552361396304,
+          "avg": 1.1149897330595482,
+          "fullDates": [],
+          "ge5Dates": [
+            "2018-11-20",
+            "2022-07-13"
+          ]
+        }
+      ],
+      "min5PlusRate": 0,
+      "minAverageHits": 1.0704360325826545,
+      "total5Plus": 2
+    },
+    {
+      "id": "balanced-L0",
+      "config": {
+        "family": "balanced",
+        "lambda": 0
+      },
+      "pre2023Regimes": [
+        {
+          "draws": 3262,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.0965665236051503,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2087,
+          "full": 0,
+          "ge5": 2,
+          "rate5": 0.0009583133684714902,
+          "avg": 1.0699568758984188,
+          "fullDates": [],
+          "ge5Dates": [
+            "2010-04-05",
+            "2012-11-13"
+          ]
+        },
+        {
+          "draws": 2435,
+          "full": 0,
+          "ge5": 2,
+          "rate5": 0.0008213552361396304,
+          "avg": 1.1137577002053387,
+          "fullDates": [],
+          "ge5Dates": [
+            "2018-11-20",
+            "2022-07-13"
+          ]
+        }
+      ],
+      "min5PlusRate": 0,
+      "minAverageHits": 1.0699568758984188,
+      "total5Plus": 4
+    },
+    {
+      "id": "balanced-L0p03",
+      "config": {
+        "family": "balanced",
+        "lambda": 0.03
+      },
+      "pre2023Regimes": [
+        {
+          "draws": 3262,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.0965665236051503,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        {
+          "draws": 2087,
+          "full": 0,
+          "ge5": 2,
+          "rate5": 0.0009583133684714902,
+          "avg": 1.0699568758984188,
+          "fullDates": [],
+          "ge5Dates": [
+            "2010-04-05",
+            "2012-11-13"
+          ]
+        },
+        {
+          "draws": 2435,
+          "full": 0,
+          "ge5": 2,
+          "rate5": 0.0008213552361396304,
+          "avg": 1.1137577002053387,
+          "fullDates": [],
+          "ge5Dates": [
+            "2018-11-20",
+            "2022-07-13"
+          ]
+        }
+      ],
+      "min5PlusRate": 0,
+      "minAverageHits": 1.0699568758984188,
+      "total5Plus": 4
+    }
+  ],
+  "validation": {
+    "models": [
+      {
+        "id": "momentum-L0p08",
+        "metrics": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 1,
+          "rate5": 0.0013679890560875513,
+          "avg": 1.0807113543091655,
+          "fullDates": [],
+          "ge5Dates": [
+            "2023-09-17"
+          ]
+        }
+      },
+      {
+        "id": "momentum-L0p15",
+        "metrics": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 1,
+          "rate5": 0.0013679890560875513,
+          "avg": 1.0807113543091655,
+          "fullDates": [],
+          "ge5Dates": [
+            "2023-09-17"
+          ]
+        }
+      },
+      {
+        "id": "momentum-L0",
+        "metrics": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 1,
+          "rate5": 0.0013679890560875513,
+          "avg": 1.079343365253078,
+          "fullDates": [],
+          "ge5Dates": [
+            "2023-09-17"
+          ]
+        }
+      },
+      {
+        "id": "momentum-L0p03",
+        "metrics": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 1,
+          "rate5": 0.0013679890560875513,
+          "avg": 1.079343365253078,
+          "fullDates": [],
+          "ge5Dates": [
+            "2023-09-17"
+          ]
+        }
+      },
+      {
+        "id": "stability-L0p08",
+        "metrics": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.0998632010943912,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "stability-L0p15",
+        "metrics": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.1012311901504788,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      }
+    ],
+    "uniqueFullDates": [],
+    "unique5PlusDates": [
+      "2023-09-17"
+    ]
+  },
+  "postFreeze": {
+    "models": [
+      {
+        "id": "momentum-L0p08",
+        "metrics": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.104906937394247,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "momentum-L0p15",
+        "metrics": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.104906937394247,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "momentum-L0",
+        "metrics": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.104906937394247,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "momentum-L0p03",
+        "metrics": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.104906937394247,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "stability-L0p08",
+        "metrics": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.0964467005076142,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "stability-L0p15",
+        "metrics": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "rate5": 0,
+          "avg": 1.0964467005076142,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      }
+    ],
+    "uniqueFullDates": [],
+    "unique5PlusDates": []
+  },
+  "signals": {
+    "repeatFullAcrossEras": false,
+    "repeat5PlusAcrossEras": false
+  },
+  "decision": "NEGATIVE",
+  "multipleTesting": {
+    "candidateCount": 20,
+    "status": "NOT_TRIGGERED"
+  },
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
