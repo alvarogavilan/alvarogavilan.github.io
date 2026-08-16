@@ -1,8 +1,11 @@
 name: Loterias AI MetaPleno v231 Conformal Budget Gate
 on:
+  workflow_dispatch:
   push:
     branches: [research/metapleno-v231-conformal-budget-gate]
-  workflow_dispatch:
+    paths:
+      - 'loterias-ai/research/metapleno-v231-conformal-budget-gate.mjs'
+      - '.github/workflows/loterias-ai-metapleno-v231-conformal-budget-gate.yml'
 permissions:
   contents: write
 jobs:
@@ -10,19 +13,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
-        with:
-          node-version: 22
+        with: {node-version: '22'}
       - name: Run v231
-        run: node loterias-ai/scripts/meta-pleno-v231-conformal-budget-gate.mjs
+        run: node loterias-ai/research/metapleno-v231-conformal-budget-gate.mjs
       - name: Validate fail-closed
-        run: node -e "const x=require('./loterias-ai/data/research/meta-pleno-v231-conformal-budget-gate.json'); if(x.realMoneyPass!==false||x.realStakeEUR!==0) process.exit(1);"
+        run: node -e "const r=require('./loterias-ai/data/research/metapleno-v231-conformal-budget-gate.json'); if(r.selection.realMoneyPass!==false||r.selection.realStakeEUR!==0) process.exit(1)"
       - name: Persist result
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add loterias-ai/data/research/meta-pleno-v231-conformal-budget-gate.json
-          git diff --cached --quiet || git commit -m "research(loterias-ai): persist v231 conformal budget gate result"
+          git add loterias-ai/data/research/metapleno-v231-conformal-budget-gate.json
+          git diff --cached --quiet || git commit -m 'research(loterias-ai): persist v231 conformal budget gate'
           git push
