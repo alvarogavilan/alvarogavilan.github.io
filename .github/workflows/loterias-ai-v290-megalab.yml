@@ -1,0 +1,33 @@
+name: Loterias AI v290 MegaLab Autonomous Scientists
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/metapleno-v290-megalab-autonomous-scientists
+    paths:
+      - loterias-ai/research/megalab/**
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-v290-megalab
+  cancel-in-progress: false
+jobs:
+  megalab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - name: Run 4096-scientist virtual lab
+        run: node loterias-ai/research/megalab/v290-megalab.mjs
+      - name: Verify economic and scientific fail-closed
+        run: |
+          node -e "const x=require('./loterias-ai/data/research/metapleno-v290-megalab.json'); if(x.realMoneyPass||x.realStakeEUR!==0||x.games.some(g=>g.budget.theoreticalEUR>4)||!x.scientificSafety.oosUntouched||!x.scientificSafety.negativePersistence) process.exit(1)"
+      - name: Persist laboratory evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v290-megalab.json loterias-ai/data/research/metapleno-global-negative-memory.json
+          git commit -m 'data(loterias-ai): persist v290 MegaLab evidence' || exit 0
+          git push
