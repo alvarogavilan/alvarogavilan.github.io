@@ -1,0 +1,519 @@
+{
+  "generatedAt": "2026-08-16T09:06:36.128Z",
+  "version": "v215",
+  "gameId": "bonoloto",
+  "family": "BAYESIAN_NONPARAMETRIC_DP_STATE_MIXTURE",
+  "candidatePool": {
+    "nominalConfigurations": 24,
+    "effectiveConfigurations": 24
+  },
+  "selectionPeriod": "2018-01-01..2022-12-31",
+  "postFreezePeriods": [
+    "2023-01-01..2024-12-31",
+    "2025-01-01..2026-12-31"
+  ],
+  "methodology": "Online hard-MAP Dirichlet-process-style Gaussian state mixture. Each pre-draw state is assigned only after its target draw is evaluated, so the target outcome cannot affect its own prediction. Cluster count is not fixed ex ante. Cluster successor-number posteriors generate an 8-number pool. Hyperparameters are ranked only on 2018-2022; 2023+ is opened afterward while the frozen model updates walk-forward using only already observed draws.",
+  "budget": {
+    "poolSize": 8,
+    "tickets": 28,
+    "unitCostEUR": 0.5,
+    "theoreticalCostEUR": 14,
+    "realStakeEUR": 0
+  },
+  "summary": {
+    "nominalConfigurations": 24,
+    "effectiveConfigurations": 24,
+    "frozen": 8,
+    "midFullModels": 0,
+    "lateFullModels": 0,
+    "repeatFullModels": 0,
+    "repeat5PlusModels": 0,
+    "uniquePostFreeze5PlusDates": [
+      "2025-06-06"
+    ]
+  },
+  "leaders": [
+    {
+      "config": {
+        "id": 0,
+        "alpha": 0.1,
+        "sigma": 0.12,
+        "mix": false
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1468,
+        "events": [],
+        "meanHits": 0.9657894736842105
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 715,
+        "events": [],
+        "meanHits": 0.9781121751025992
+      },
+      "late": {
+        "draws": 591,
+        "h4": 3,
+        "h5": 1,
+        "h6": 0,
+        "sum": 552,
+        "events": [
+          {
+            "date": "2025-06-06",
+            "hits": 5,
+            "pool": [
+              2,
+              10,
+              27,
+              30,
+              33,
+              34,
+              39,
+              45
+            ],
+            "truth": [
+              2,
+              10,
+              25,
+              27,
+              30,
+              39
+            ]
+          }
+        ],
+        "meanHits": 0.934010152284264
+      },
+      "finalClusters": 1,
+      "maxClusters": 1
+    },
+    {
+      "config": {
+        "id": 1,
+        "alpha": 0.1,
+        "sigma": 0.12,
+        "mix": true
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1468,
+        "events": [],
+        "meanHits": 0.9657894736842105
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 715,
+        "events": [],
+        "meanHits": 0.9781121751025992
+      },
+      "late": {
+        "draws": 591,
+        "h4": 3,
+        "h5": 1,
+        "h6": 0,
+        "sum": 552,
+        "events": [
+          {
+            "date": "2025-06-06",
+            "hits": 5,
+            "pool": [
+              2,
+              10,
+              27,
+              30,
+              33,
+              34,
+              39,
+              45
+            ],
+            "truth": [
+              2,
+              10,
+              25,
+              27,
+              30,
+              39
+            ]
+          }
+        ],
+        "meanHits": 0.934010152284264
+      },
+      "finalClusters": 1,
+      "maxClusters": 1
+    },
+    {
+      "config": {
+        "id": 2,
+        "alpha": 0.1,
+        "sigma": 0.22,
+        "mix": false
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1468,
+        "events": [],
+        "meanHits": 0.9657894736842105
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 715,
+        "events": [],
+        "meanHits": 0.9781121751025992
+      },
+      "late": {
+        "draws": 591,
+        "h4": 3,
+        "h5": 1,
+        "h6": 0,
+        "sum": 552,
+        "events": [
+          {
+            "date": "2025-06-06",
+            "hits": 5,
+            "pool": [
+              2,
+              10,
+              27,
+              30,
+              33,
+              34,
+              39,
+              45
+            ],
+            "truth": [
+              2,
+              10,
+              25,
+              27,
+              30,
+              39
+            ]
+          }
+        ],
+        "meanHits": 0.934010152284264
+      },
+      "finalClusters": 1,
+      "maxClusters": 1
+    },
+    {
+      "config": {
+        "id": 3,
+        "alpha": 0.1,
+        "sigma": 0.22,
+        "mix": true
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1468,
+        "events": [],
+        "meanHits": 0.9657894736842105
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 715,
+        "events": [],
+        "meanHits": 0.9781121751025992
+      },
+      "late": {
+        "draws": 591,
+        "h4": 3,
+        "h5": 1,
+        "h6": 0,
+        "sum": 552,
+        "events": [
+          {
+            "date": "2025-06-06",
+            "hits": 5,
+            "pool": [
+              2,
+              10,
+              27,
+              30,
+              33,
+              34,
+              39,
+              45
+            ],
+            "truth": [
+              2,
+              10,
+              25,
+              27,
+              30,
+              39
+            ]
+          }
+        ],
+        "meanHits": 0.934010152284264
+      },
+      "finalClusters": 1,
+      "maxClusters": 1
+    },
+    {
+      "config": {
+        "id": 4,
+        "alpha": 0.1,
+        "sigma": 0.4,
+        "mix": false
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1468,
+        "events": [],
+        "meanHits": 0.9657894736842105
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 715,
+        "events": [],
+        "meanHits": 0.9781121751025992
+      },
+      "late": {
+        "draws": 591,
+        "h4": 3,
+        "h5": 1,
+        "h6": 0,
+        "sum": 552,
+        "events": [
+          {
+            "date": "2025-06-06",
+            "hits": 5,
+            "pool": [
+              2,
+              10,
+              27,
+              30,
+              33,
+              34,
+              39,
+              45
+            ],
+            "truth": [
+              2,
+              10,
+              25,
+              27,
+              30,
+              39
+            ]
+          }
+        ],
+        "meanHits": 0.934010152284264
+      },
+      "finalClusters": 1,
+      "maxClusters": 1
+    },
+    {
+      "config": {
+        "id": 5,
+        "alpha": 0.1,
+        "sigma": 0.4,
+        "mix": true
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1468,
+        "events": [],
+        "meanHits": 0.9657894736842105
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 715,
+        "events": [],
+        "meanHits": 0.9781121751025992
+      },
+      "late": {
+        "draws": 591,
+        "h4": 3,
+        "h5": 1,
+        "h6": 0,
+        "sum": 552,
+        "events": [
+          {
+            "date": "2025-06-06",
+            "hits": 5,
+            "pool": [
+              2,
+              10,
+              27,
+              30,
+              33,
+              34,
+              39,
+              45
+            ],
+            "truth": [
+              2,
+              10,
+              25,
+              27,
+              30,
+              39
+            ]
+          }
+        ],
+        "meanHits": 0.934010152284264
+      },
+      "finalClusters": 1,
+      "maxClusters": 1
+    },
+    {
+      "config": {
+        "id": 6,
+        "alpha": 0.5,
+        "sigma": 0.12,
+        "mix": false
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1468,
+        "events": [],
+        "meanHits": 0.9657894736842105
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 715,
+        "events": [],
+        "meanHits": 0.9781121751025992
+      },
+      "late": {
+        "draws": 591,
+        "h4": 3,
+        "h5": 1,
+        "h6": 0,
+        "sum": 552,
+        "events": [
+          {
+            "date": "2025-06-06",
+            "hits": 5,
+            "pool": [
+              2,
+              10,
+              27,
+              30,
+              33,
+              34,
+              39,
+              45
+            ],
+            "truth": [
+              2,
+              10,
+              25,
+              27,
+              30,
+              39
+            ]
+          }
+        ],
+        "meanHits": 0.934010152284264
+      },
+      "finalClusters": 1,
+      "maxClusters": 1
+    },
+    {
+      "config": {
+        "id": 7,
+        "alpha": 0.5,
+        "sigma": 0.12,
+        "mix": true
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1468,
+        "events": [],
+        "meanHits": 0.9657894736842105
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 715,
+        "events": [],
+        "meanHits": 0.9781121751025992
+      },
+      "late": {
+        "draws": 591,
+        "h4": 3,
+        "h5": 1,
+        "h6": 0,
+        "sum": 552,
+        "events": [
+          {
+            "date": "2025-06-06",
+            "hits": 5,
+            "pool": [
+              2,
+              10,
+              27,
+              30,
+              33,
+              34,
+              39,
+              45
+            ],
+            "truth": [
+              2,
+              10,
+              25,
+              27,
+              30,
+              39
+            ]
+          }
+        ],
+        "meanHits": 0.934010152284264
+      },
+      "finalClusters": 1,
+      "maxClusters": 1
+    }
+  ],
+  "decision": "NEGATIVE",
+  "realMoneyPass": false
+}
