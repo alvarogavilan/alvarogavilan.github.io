@@ -1,0 +1,33 @@
+name: Loterias AI Loteria Nacional v201 Official Sales Geo 2025
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/loteria-nacional-v201-official-sales-geo-2025]
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '20'}
+      - run: node loterias-ai/scripts/loteria-nacional-v201-official-sales-geo-2025.mjs
+      - name: Validate official-only geo
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');const p='loterias-ai/data/research/loteria-nacional-v201-official-sales-geo-2025.json';const d=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(d.provider!=='SELAE'||d.scope?.year!==2025)throw new Error('source/year mismatch');
+          if(d.realMoneyPass!==false||d.realStakeEUR!==0)throw new Error('real-money gate regression');
+          console.log(JSON.stringify(d.summary));
+          NODE
+      - name: Persist v201
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/loteria-nacional-v201-official-sales-geo-2025.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'data(loterias-ai): persist Lotería Nacional 2025 official sales geo'
+            git pull --rebase origin "$GITHUB_REF_NAME"
+            git push origin HEAD:"$GITHUB_REF_NAME"
+          fi
