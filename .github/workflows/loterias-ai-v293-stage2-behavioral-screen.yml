@@ -1,0 +1,31 @@
+name: Loterias AI v293 Stage2 Behavioral Screen
+on:
+  push:
+    branches:
+      - research/metapleno-v293-representation-synthesis
+    paths:
+      - loterias-ai/research/megalab/v293-stage2-selection-behavioral-screen.mjs
+      - .github/workflows/loterias-ai-v293-stage2-behavioral-screen.yml
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run selection-only behavioral screen
+        run: node loterias-ai/research/megalab/v293-stage2-selection-behavioral-screen.mjs
+      - name: Verify OOS untouched and clone accounting
+        run: node -e "const x=require('./loterias-ai/data/research/metapleno-v293-stage2-behavioral-screen.json');if(!x.selectionTouched||x.validationTouched||x.postFreezeTouched||x.retuningPerformed||!x.behavioralCloneSignalsCountAsOne||x.realMoneyPass||x.realStakeEUR!==0||x.behavioralRepresentatives>16384)process.exit(1)"
+      - name: Persist stage2 evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v293-stage2-behavioral-screen.json
+          git commit -m 'data(loterias-ai): persist v293 stage2 behavioral evidence' || exit 0
+          git pull --rebase origin research/metapleno-v293-representation-synthesis
+          git push
