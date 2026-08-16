@@ -1,0 +1,175 @@
+{
+  "version": "v264",
+  "engine": "Kernel Maximum-Mean-Discrepancy Regime",
+  "family": "KERNEL_MMD_TWO_SAMPLE_GATE",
+  "gameId": "bonoloto",
+  "generatedAt": "2026-08-16T14:41:35.608Z",
+  "archiveDraws": 9356,
+  "candidatePool": {
+    "nominalConfigurations": 36,
+    "effectiveConfigurations": 36,
+    "frozenConfigurations": 4,
+    "poolSize": 8,
+    "combinations": 28,
+    "theoreticalCostEUR": 14
+  },
+  "frozenReference": {
+    "baseSigma": 3.1199393103998414
+  },
+  "methodology": "Linear-time Gaussian-kernel MMD two-sample regime test on six pre-2019 standardized draw invariants. Kernel bandwidth reference is frozen strictly before 2019. Thresholds and hyperparameters are selected on 2019-2022 only; 2023-2024 validation and 2025+ post-freeze remain untouched. When a gate fires, numbers are ranked by kernel mean-discrepancy between the current regime and each number’s prior conditional draw distribution.",
+  "leaders": [
+    {
+      "c": {
+        "recent": 40,
+        "base": 320,
+        "q": 0.99,
+        "sigmaMult": 1
+      },
+      "threshold": 0.1530609593949996,
+      "selection": {
+        "draws": 1207,
+        "gated": 13,
+        "gateRate": 0.010770505385252692,
+        "meanHitsWhenGated": 1.5384615384615385,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "validation": {
+        "draws": 731,
+        "gated": 10,
+        "gateRate": 0.013679890560875513,
+        "meanHitsWhenGated": 1.3,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "postFreeze": {
+        "draws": 591,
+        "gated": 10,
+        "gateRate": 0.01692047377326565,
+        "meanHitsWhenGated": 0.7,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      }
+    },
+    {
+      "c": {
+        "recent": 20,
+        "base": 320,
+        "q": 0.99,
+        "sigmaMult": 0.5
+      },
+      "threshold": 0.22927687418730552,
+      "selection": {
+        "draws": 1207,
+        "gated": 13,
+        "gateRate": 0.010770505385252692,
+        "meanHitsWhenGated": 1.4615384615384615,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "validation": {
+        "draws": 731,
+        "gated": 14,
+        "gateRate": 0.019151846785225718,
+        "meanHitsWhenGated": 1.4285714285714286,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "postFreeze": {
+        "draws": 591,
+        "gated": 4,
+        "gateRate": 0.00676818950930626,
+        "meanHitsWhenGated": 1.25,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      }
+    },
+    {
+      "c": {
+        "recent": 80,
+        "base": 160,
+        "q": 0.99,
+        "sigmaMult": 2
+      },
+      "threshold": 0.03997805320369918,
+      "selection": {
+        "draws": 1207,
+        "gated": 13,
+        "gateRate": 0.010770505385252692,
+        "meanHitsWhenGated": 1.3846153846153846,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "validation": {
+        "draws": 731,
+        "gated": 39,
+        "gateRate": 0.0533515731874145,
+        "meanHitsWhenGated": 0.8205128205128205,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "postFreeze": {
+        "draws": 591,
+        "gated": 41,
+        "gateRate": 0.06937394247038917,
+        "meanHitsWhenGated": 0.8536585365853658,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      }
+    },
+    {
+      "c": {
+        "recent": 20,
+        "base": 160,
+        "q": 0.99,
+        "sigmaMult": 0.5
+      },
+      "threshold": 0.23800167717097365,
+      "selection": {
+        "draws": 1207,
+        "gated": 13,
+        "gateRate": 0.010770505385252692,
+        "meanHitsWhenGated": 1.3076923076923077,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "validation": {
+        "draws": 731,
+        "gated": 14,
+        "gateRate": 0.019151846785225718,
+        "meanHitsWhenGated": 1.6428571428571428,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "postFreeze": {
+        "draws": 591,
+        "gated": 9,
+        "gateRate": 0.015228426395939087,
+        "meanHitsWhenGated": 1.1111111111111112,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      }
+    }
+  ],
+  "signal": {
+    "repeat5PlusAcrossEras": false,
+    "anyOOSFull": false,
+    "requiresAudit": false
+  },
+  "decision": "NEGATIVE",
+  "realMoneyPass": false,
+  "realStakeEUR": 0,
+  "note": "Research-only MMD family; no result enables real-money play."
+}
