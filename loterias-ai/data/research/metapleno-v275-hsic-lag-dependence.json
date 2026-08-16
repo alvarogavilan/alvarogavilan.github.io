@@ -1,0 +1,171 @@
+{
+  "version": "v275",
+  "engine": "HSIC Lag-Dependence Regime Gate",
+  "family": "HSIC_NONLINEAR_LAG_DEPENDENCE_GATE",
+  "gameId": "bonoloto",
+  "generatedAt": "2026-08-16T15:11:12.712Z",
+  "archiveDraws": 9356,
+  "candidatePool": {
+    "nominalConfigurations": 16,
+    "frozenConfigurations": 4,
+    "poolSize": 8,
+    "combinations": 28,
+    "theoreticalCostEUR": 14
+  },
+  "methodology": "Gaussian-kernel HSIC measures nonlinear dependence between consecutive standardized draw-state vectors. Scaling is frozen pre-2019; HSIC gap thresholds and hyperparameters are selected only on 2019-2022. On a pre-draw gate, a kernel analogue forecaster weights historical predecessor states by similarity to the latest state and ranks next-draw number frequencies. 2023-2024 and 2025+ are untouched.",
+  "leaders": [
+    {
+      "c": {
+        "recent": 30,
+        "base": 120,
+        "q": 0.99,
+        "sigma": 1.5
+      },
+      "threshold": 0.02124703311133577,
+      "selection": {
+        "draws": 1207,
+        "gated": 13,
+        "gateRate": 0.010770505385252692,
+        "meanHitsWhenGated": 1.4615384615384615,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "validation": {
+        "draws": 731,
+        "gated": 14,
+        "gateRate": 0.019151846785225718,
+        "meanHitsWhenGated": 1.3571428571428572,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "postFreeze": {
+        "draws": 591,
+        "gated": 7,
+        "gateRate": 0.011844331641285956,
+        "meanHitsWhenGated": 0.7142857142857143,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      }
+    },
+    {
+      "c": {
+        "recent": 30,
+        "base": 120,
+        "q": 0.99,
+        "sigma": 0.75
+      },
+      "threshold": 0.026742721011151556,
+      "selection": {
+        "draws": 1207,
+        "gated": 13,
+        "gateRate": 0.010770505385252692,
+        "meanHitsWhenGated": 1.3076923076923077,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "validation": {
+        "draws": 731,
+        "gated": 5,
+        "gateRate": 0.006839945280437756,
+        "meanHitsWhenGated": 1.6,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "postFreeze": {
+        "draws": 591,
+        "gated": 9,
+        "gateRate": 0.015228426395939087,
+        "meanHitsWhenGated": 0.6666666666666666,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      }
+    },
+    {
+      "c": {
+        "recent": 30,
+        "base": 240,
+        "q": 0.99,
+        "sigma": 1.5
+      },
+      "threshold": 0.0236192644533697,
+      "selection": {
+        "draws": 1207,
+        "gated": 13,
+        "gateRate": 0.010770505385252692,
+        "meanHitsWhenGated": 1.2307692307692308,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "validation": {
+        "draws": 731,
+        "gated": 15,
+        "gateRate": 0.02051983584131327,
+        "meanHitsWhenGated": 1.6666666666666667,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "postFreeze": {
+        "draws": 591,
+        "gated": 5,
+        "gateRate": 0.008460236886632826,
+        "meanHitsWhenGated": 0.8,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      }
+    },
+    {
+      "c": {
+        "recent": 30,
+        "base": 240,
+        "q": 0.95,
+        "sigma": 0.75
+      },
+      "threshold": 0.030082128360587518,
+      "selection": {
+        "draws": 1207,
+        "gated": 61,
+        "gateRate": 0.050538525269262634,
+        "meanHitsWhenGated": 1.180327868852459,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "validation": {
+        "draws": 731,
+        "gated": 16,
+        "gateRate": 0.02188782489740082,
+        "meanHitsWhenGated": 1.375,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      },
+      "postFreeze": {
+        "draws": 591,
+        "gated": 38,
+        "gateRate": 0.06429780033840947,
+        "meanHitsWhenGated": 0.8947368421052632,
+        "hit5Plus": 0,
+        "full6": 0,
+        "events": []
+      }
+    }
+  ],
+  "signal": {
+    "repeat5PlusAcrossEras": false,
+    "anyOOSFull": false,
+    "requiresAudit": false
+  },
+  "decision": "NEGATIVE",
+  "realMoneyPass": false,
+  "realStakeEUR": 0,
+  "note": "Research-only nonlinear dependence family; theoretical pool8 cost 14 EUR, real stake zero."
+}
