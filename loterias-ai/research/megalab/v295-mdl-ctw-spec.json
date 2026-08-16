@@ -1,0 +1,15 @@
+{
+  "version":"v295",
+  "family":"MDL_CONTEXT_TREE_WEIGHTING",
+  "status":"DESIGN_FROZEN_BEFORE_RESULTS",
+  "goal":"Test whether compact universal-coding descriptions of pre-draw lottery state sequences contain reproducible predictive information, without reusing v292 number scores, v293 representation grammars or v294 whole-set transition retrieval.",
+  "orthogonalityToPrior":["prediction objective is compression gain / code length","no frequency-gap final ranking","no v293 grammar reuse","no v294 nearest historical set-successor retrieval","candidate identity includes encoder + alphabet + context depth + coder"],
+  "encoders":["draw-rank-delta-symbols","gap-word-symbols","parity-residue-word","pair-distance-quantiles","intersection-size-sequence","sum-span-entropy-word"],
+  "coders":["context-tree-weighting","prediction-by-partial-matching","finite-context-MDL","Lempel-Ziv-context-surprise"],
+  "contextDepths":[1,2,3,4,6,8,12,16],
+  "candidateGeneration":"choose complete valid set minimizing incremental frozen code length under the selected pre-draw coder; no result-aware adaptation",
+  "selection":{"window":"2019-2022","oosLocked":true,"behavioralDedup":true,"semanticDedup":true,"maxFrozenCandidates":48},
+  "falsification":{"oos":"2023-2024","postFreeze":"2025+","nullSimulationRequiredFor5Plus":true,"multipleTestingCorrection":true,"retuningForbiddenAfterFreeze":true},
+  "memory":{"antiDuplicateSearchPerformed":true,"repositoryMatchesFound":0,"persistNegatives":true},
+  "economics":{"realMoneyPass":false,"realStakeEUR":0,"ordinaryBudgetMaxEUR":15}
+}
