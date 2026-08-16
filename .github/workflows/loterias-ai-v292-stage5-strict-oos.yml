@@ -1,0 +1,28 @@
+name: Loterias AI v292 Stage5 Strict OOS
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Verify frozen manifest before OOS
+        run: node -e "const m=require('./loterias-ai/data/research/metapleno-v292-frozen-candidate-manifest.json');if(!m.frozenBeforeOOS||!m.hyperparametersFrozen||m.oosRead||m.candidateCount!==128)process.exit(1)"
+      - name: Run strict OOS 2023-2024
+        run: node loterias-ai/research/megalab/v292-stage5-strict-oos.mjs
+      - name: Verify fail-closed economics
+        run: node -e "const x=require('./loterias-ai/data/research/metapleno-v292-stage5-strict-oos.json');const m=require('./loterias-ai/data/research/metapleno-v292-frozen-candidate-manifest.json');if(!x.manifestVerified||x.retuningPerformed||x.selectionDataReusedForRanking||!m.oosRead||x.realMoneyPass||x.realStakeEUR!==0)process.exit(1)"
+      - name: Persist OOS evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v292-stage5-strict-oos.json loterias-ai/data/research/metapleno-v292-frozen-candidate-manifest.json
+          git commit -m 'data(loterias-ai): persist v292 strict OOS evidence' || exit 0
+          git pull --rebase origin research/metapleno-v292-million-scientist-funnel
+          git push
