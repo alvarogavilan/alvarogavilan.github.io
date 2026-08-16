@@ -1,0 +1,15 @@
+{
+  "version":"v303",
+  "family":"RENEWAL_SURVIVAL_HAZARD",
+  "status":"PREREGISTERED_STAGE1_2_ONLY",
+  "hypothesis":"If individual-number recurrence intervals contain stable non-memoryless structure, empirical discrete survival hazards conditioned only on strictly prior appearances may rank next-draw membership better than marginal frequency.",
+  "games":["bonoloto","primitiva","euromillones","gordo-primitiva"],
+  "selectionWindow":{"start":"2019-01-01","endExclusive":"2023-01-01"},
+  "blindRules":{"validationTouched":false,"postFreezeTouched":false,"retuningAfterValidation":false,"strictlyPriorDataOnly":true},
+  "screen":{"logicalConfigurationsPerGame":8192,"historicalConfigurationsPerGame":1024,"behavioralDeduplication":true,"earlyStopIfNoNearFull":true},
+  "parameterFamilies":{"lookback":[96,192,384,768],"bandwidth":[0,1,2,4],"priorStrength":[1,3,10,30],"recencyBlend":[0,0.2,0.5,0.8],"diversityPenalty":[0,0.05,0.15,0.3]},
+  "promotionGate":"No OOS unless dense selection produces a full hit or at least two distinct near-full dates for a frozen strategy.",
+  "realMoneyPass":false,
+  "realStakeEUR":0,
+  "ordinaryBudgetMaxEUR":4
+}
