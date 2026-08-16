@@ -1,0 +1,717 @@
+{
+  "version": "v259",
+  "engine": "Chow-Liu Joint Set Model",
+  "family": "CHOW_LIU_TREE_JOINT_DISTRIBUTION",
+  "gameId": "bonoloto",
+  "generatedAt": "2026-08-16T13:12:11.671Z",
+  "archiveDraws": 9356,
+  "reconstruction": "At every draw, learn a maximum-mutual-information spanning tree from only the preceding rolling window. Estimate root and edge-conditional Bernoulli probabilities with smoothing, score complete 6-of-49 binary states under the learned tree, then derive an 8-number pool from the highest-probability candidate sets.",
+  "orthogonality": "Unlike v70 pair/trio potentials and v99 greedy Ising scoring, v259 learns an explicit normalized tree-structured joint distribution; unlike v73, dependencies are same-draw joint structure rather than temporal conditional lift.",
+  "candidatePool": {
+    "nominalConfigurations": 48,
+    "effectiveConfigurations": 48,
+    "frozenConfigurations": 12,
+    "poolSize": 8,
+    "coveredLines": 28,
+    "theoreticalCostEUR": 14
+  },
+  "selection": {
+    "criterion": "2020-2022 only: full6 > hit5 > hit4 > meanHits; top 12 frozen",
+    "leaders": [
+      {
+        "id": 24,
+        "cfg": {
+          "window": 480,
+          "alpha": 0.5,
+          "candidateN": 12,
+          "elite": 25
+        },
+        "train": {
+          "draws": 894,
+          "full": 0,
+          "hit5": 1,
+          "hit4": 5,
+          "meanHits": 1.0794183445190157,
+          "events": [
+            {
+              "date": "2021-11-19",
+              "hits": 5,
+              "pool": [
+                45,
+                8,
+                37,
+                20,
+                32,
+                13,
+                27,
+                6
+              ],
+              "truth": [
+                8,
+                27,
+                32,
+                37,
+                45,
+                48
+              ],
+              "treeRoot": 13
+            }
+          ]
+        },
+        "validation": {
+          "draws": 731,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 2,
+          "meanHits": 0.9931600547195623,
+          "events": []
+        },
+        "postFreeze": {
+          "draws": 591,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 2,
+          "meanHits": 1,
+          "events": []
+        }
+      },
+      {
+        "id": 25,
+        "cfg": {
+          "window": 480,
+          "alpha": 0.5,
+          "candidateN": 12,
+          "elite": 75
+        },
+        "train": {
+          "draws": 894,
+          "full": 0,
+          "hit5": 1,
+          "hit4": 5,
+          "meanHits": 1.0738255033557047,
+          "events": [
+            {
+              "date": "2021-11-19",
+              "hits": 5,
+              "pool": [
+                8,
+                45,
+                20,
+                37,
+                32,
+                13,
+                6,
+                27
+              ],
+              "truth": [
+                8,
+                27,
+                32,
+                37,
+                45,
+                48
+              ],
+              "treeRoot": 13
+            }
+          ]
+        },
+        "validation": {
+          "draws": 731,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 1,
+          "meanHits": 0.9890560875512996,
+          "events": []
+        },
+        "postFreeze": {
+          "draws": 591,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 2,
+          "meanHits": 1.0050761421319796,
+          "events": []
+        }
+      },
+      {
+        "id": 29,
+        "cfg": {
+          "window": 480,
+          "alpha": 1,
+          "candidateN": 12,
+          "elite": 75
+        },
+        "train": {
+          "draws": 894,
+          "full": 0,
+          "hit5": 1,
+          "hit4": 5,
+          "meanHits": 1.0469798657718121,
+          "events": [
+            {
+              "date": "2021-11-19",
+              "hits": 5,
+              "pool": [
+                8,
+                45,
+                37,
+                32,
+                13,
+                20,
+                6,
+                27
+              ],
+              "truth": [
+                8,
+                27,
+                32,
+                37,
+                45,
+                48
+              ],
+              "treeRoot": 13
+            }
+          ]
+        },
+        "validation": {
+          "draws": 731,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 2,
+          "meanHits": 0.9616963064295485,
+          "events": []
+        },
+        "postFreeze": {
+          "draws": 591,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 2,
+          "meanHits": 1.0050761421319796,
+          "events": []
+        }
+      },
+      {
+        "id": 36,
+        "cfg": {
+          "window": 960,
+          "alpha": 0.5,
+          "candidateN": 12,
+          "elite": 25
+        },
+        "train": {
+          "draws": 894,
+          "full": 0,
+          "hit5": 1,
+          "hit4": 5,
+          "meanHits": 0.9608501118568232,
+          "events": [
+            {
+              "date": "2022-06-02",
+              "hits": 5,
+              "pool": [
+                18,
+                13,
+                45,
+                37,
+                8,
+                4,
+                6,
+                40
+              ],
+              "truth": [
+                6,
+                8,
+                13,
+                35,
+                40,
+                45
+              ],
+              "treeRoot": 32
+            }
+          ]
+        },
+        "validation": {
+          "draws": 731,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 2,
+          "meanHits": 0.9972640218878249,
+          "events": []
+        },
+        "postFreeze": {
+          "draws": 591,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 4,
+          "meanHits": 1.0067681895093064,
+          "events": []
+        }
+      },
+      {
+        "id": 28,
+        "cfg": {
+          "window": 480,
+          "alpha": 1,
+          "candidateN": 12,
+          "elite": 25
+        },
+        "train": {
+          "draws": 894,
+          "full": 0,
+          "hit5": 1,
+          "hit4": 4,
+          "meanHits": 1.0469798657718121,
+          "events": [
+            {
+              "date": "2021-11-19",
+              "hits": 5,
+              "pool": [
+                45,
+                8,
+                37,
+                32,
+                13,
+                20,
+                6,
+                27
+              ],
+              "truth": [
+                8,
+                27,
+                32,
+                37,
+                45,
+                48
+              ],
+              "treeRoot": 13
+            }
+          ]
+        },
+        "validation": {
+          "draws": 731,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 2,
+          "meanHits": 0.957592339261286,
+          "events": []
+        },
+        "postFreeze": {
+          "draws": 591,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 2,
+          "meanHits": 1.0084602368866329,
+          "events": []
+        }
+      },
+      {
+        "id": 45,
+        "cfg": {
+          "window": 960,
+          "alpha": 2,
+          "candidateN": 12,
+          "elite": 75
+        },
+        "train": {
+          "draws": 894,
+          "full": 0,
+          "hit5": 1,
+          "hit4": 4,
+          "meanHits": 0.9910514541387024,
+          "events": [
+            {
+              "date": "2022-06-02",
+              "hits": 5,
+              "pool": [
+                13,
+                37,
+                18,
+                45,
+                8,
+                4,
+                6,
+                40
+              ],
+              "truth": [
+                6,
+                8,
+                13,
+                35,
+                40,
+                45
+              ],
+              "treeRoot": 32
+            }
+          ]
+        },
+        "validation": {
+          "draws": 731,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 3,
+          "meanHits": 0.9917920656634747,
+          "events": []
+        },
+        "postFreeze": {
+          "draws": 591,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 6,
+          "meanHits": 1.003384094754653,
+          "events": []
+        }
+      },
+      {
+        "id": 44,
+        "cfg": {
+          "window": 960,
+          "alpha": 2,
+          "candidateN": 12,
+          "elite": 25
+        },
+        "train": {
+          "draws": 894,
+          "full": 0,
+          "hit5": 1,
+          "hit4": 4,
+          "meanHits": 0.9843400447427293,
+          "events": [
+            {
+              "date": "2022-06-02",
+              "hits": 5,
+              "pool": [
+                13,
+                37,
+                45,
+                8,
+                18,
+                4,
+                6,
+                40
+              ],
+              "truth": [
+                6,
+                8,
+                13,
+                35,
+                40,
+                45
+              ],
+              "treeRoot": 32
+            }
+          ]
+        },
+        "validation": {
+          "draws": 731,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 3,
+          "meanHits": 0.9849521203830369,
+          "events": []
+        },
+        "postFreeze": {
+          "draws": 591,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 6,
+          "meanHits": 0.9983079526226735,
+          "events": []
+        }
+      },
+      {
+        "id": 40,
+        "cfg": {
+          "window": 960,
+          "alpha": 1,
+          "candidateN": 12,
+          "elite": 25
+        },
+        "train": {
+          "draws": 894,
+          "full": 0,
+          "hit5": 1,
+          "hit4": 4,
+          "meanHits": 0.9664429530201343,
+          "events": [
+            {
+              "date": "2022-06-02",
+              "hits": 5,
+              "pool": [
+                18,
+                13,
+                8,
+                45,
+                37,
+                4,
+                6,
+                40
+              ],
+              "truth": [
+                6,
+                8,
+                13,
+                35,
+                40,
+                45
+              ],
+              "treeRoot": 32
+            }
+          ]
+        },
+        "validation": {
+          "draws": 731,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 3,
+          "meanHits": 1.0027359781121752,
+          "events": []
+        },
+        "postFreeze": {
+          "draws": 591,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 2,
+          "meanHits": 0.9949238578680203,
+          "events": []
+        }
+      },
+      {
+        "id": 41,
+        "cfg": {
+          "window": 960,
+          "alpha": 1,
+          "candidateN": 12,
+          "elite": 75
+        },
+        "train": {
+          "draws": 894,
+          "full": 0,
+          "hit5": 1,
+          "hit4": 4,
+          "meanHits": 0.9608501118568232,
+          "events": [
+            {
+              "date": "2022-06-02",
+              "hits": 5,
+              "pool": [
+                18,
+                13,
+                37,
+                45,
+                8,
+                4,
+                6,
+                40
+              ],
+              "truth": [
+                6,
+                8,
+                13,
+                35,
+                40,
+                45
+              ],
+              "treeRoot": 32
+            }
+          ]
+        },
+        "validation": {
+          "draws": 731,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 3,
+          "meanHits": 1.0027359781121752,
+          "events": []
+        },
+        "postFreeze": {
+          "draws": 591,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 2,
+          "meanHits": 0.9983079526226735,
+          "events": []
+        }
+      },
+      {
+        "id": 37,
+        "cfg": {
+          "window": 960,
+          "alpha": 0.5,
+          "candidateN": 12,
+          "elite": 75
+        },
+        "train": {
+          "draws": 894,
+          "full": 0,
+          "hit5": 1,
+          "hit4": 4,
+          "meanHits": 0.9574944071588367,
+          "events": [
+            {
+              "date": "2022-06-02",
+              "hits": 5,
+              "pool": [
+                18,
+                13,
+                37,
+                45,
+                8,
+                4,
+                6,
+                40
+              ],
+              "truth": [
+                6,
+                8,
+                13,
+                35,
+                40,
+                45
+              ],
+              "treeRoot": 32
+            }
+          ]
+        },
+        "validation": {
+          "draws": 731,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 2,
+          "meanHits": 0.9986320109439124,
+          "events": []
+        },
+        "postFreeze": {
+          "draws": 591,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 4,
+          "meanHits": 1.003384094754653,
+          "events": []
+        }
+      },
+      {
+        "id": 27,
+        "cfg": {
+          "window": 480,
+          "alpha": 0.5,
+          "candidateN": 14,
+          "elite": 75
+        },
+        "train": {
+          "draws": 894,
+          "full": 0,
+          "hit5": 1,
+          "hit4": 3,
+          "meanHits": 1.0659955257270695,
+          "events": [
+            {
+              "date": "2021-11-19",
+              "hits": 5,
+              "pool": [
+                45,
+                8,
+                37,
+                20,
+                13,
+                32,
+                27,
+                6
+              ],
+              "truth": [
+                8,
+                27,
+                32,
+                37,
+                45,
+                48
+              ],
+              "treeRoot": 13
+            }
+          ]
+        },
+        "validation": {
+          "draws": 731,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 2,
+          "meanHits": 1,
+          "events": []
+        },
+        "postFreeze": {
+          "draws": 591,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 3,
+          "meanHits": 1.0101522842639594,
+          "events": []
+        }
+      },
+      {
+        "id": 26,
+        "cfg": {
+          "window": 480,
+          "alpha": 0.5,
+          "candidateN": 14,
+          "elite": 25
+        },
+        "train": {
+          "draws": 894,
+          "full": 0,
+          "hit5": 1,
+          "hit4": 3,
+          "meanHits": 1.0626398210290828,
+          "events": [
+            {
+              "date": "2021-11-19",
+              "hits": 5,
+              "pool": [
+                45,
+                8,
+                37,
+                20,
+                13,
+                32,
+                27,
+                6
+              ],
+              "truth": [
+                8,
+                27,
+                32,
+                37,
+                45,
+                48
+              ],
+              "treeRoot": 13
+            }
+          ]
+        },
+        "validation": {
+          "draws": 731,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 3,
+          "meanHits": 1.0013679890560876,
+          "events": []
+        },
+        "postFreeze": {
+          "draws": 591,
+          "full": 0,
+          "hit5": 0,
+          "hit4": 3,
+          "meanHits": 1.0135363790186125,
+          "events": []
+        }
+      }
+    ]
+  },
+  "signal": {
+    "repeat5PlusModels": 0,
+    "repeatFullModels": 0,
+    "modelsWithAnyOOSFull": 0,
+    "requiresAudit": false
+  },
+  "decision": "NEGATIVE",
+  "realMoneyPass": false,
+  "realStakeEUR": 0,
+  "note": "Research only. Retrospective or OOS anomalies do not authorize real-money play; prospective shadow and multiple-testing controls remain mandatory."
+}
