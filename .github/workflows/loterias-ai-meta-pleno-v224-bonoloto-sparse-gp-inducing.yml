@@ -1,0 +1,27 @@
+name: loterias-ai meta-pleno v224 sparse GP inducing
+on:
+  push:
+    branches:
+      - research/metapleno-v224-sparse-gp-inducing
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/metapleno-v224-sparse-gp-inducing
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run v224
+        run: node loterias-ai/scripts/meta-pleno-v224-bonoloto-sparse-gp-inducing.mjs
+      - name: Persist result
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/meta-pleno-v224-bonoloto-sparse-gp-inducing.json
+          git diff --cached --quiet || git commit -m 'research(loterias-ai): persist v224 sparse GP result'
+          git push
