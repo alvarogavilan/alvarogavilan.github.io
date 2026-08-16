@@ -1,0 +1,136 @@
+{
+  "version": "v257",
+  "engine": "Consecutive-Overlap E-Process",
+  "family": "CONSECUTIVE_OVERLAP_EXACT_NULL",
+  "gameId": "bonoloto",
+  "generatedAt": "2026-08-16T12:30:53.738Z",
+  "archiveDraws": 9356,
+  "nullModel": {
+    "description": "Independent uniform 6-of-49 draws; exact overlap K with previous draw follows Hypergeometric(49,6,6).",
+    "overlapProbabilities": [
+      0.4359649755116915,
+      0.4130194504847604,
+      0.13237802900152576,
+      0.017650403866870102,
+      0.000968619724401408,
+      0.000018449899512407772,
+      7.151123842018516e-8
+    ]
+  },
+  "candidatePool": {
+    "nominalConfigurations": 12,
+    "effectiveConfigurations": 12
+  },
+  "selection": {
+    "criterion": "pre-2023 highest final e-value, then max e-value",
+    "selected": {
+      "window": 1460,
+      "prior": 1
+    },
+    "train": {
+      "n": 1207,
+      "finalE": 0.04912212688682303,
+      "maxE": 1.0045062206794433,
+      "anytimePBound": 0.9955139942524246
+    }
+  },
+  "validation": {
+    "period": "2023-2024",
+    "n": 731,
+    "finalE": 0.11575929483292723,
+    "maxE": 1.0022505777895283,
+    "anytimePBound": 0.9977544759370536,
+    "trail": [
+      {
+        "date": "2023-04-10",
+        "overlap": 1,
+        "lr": 0.9902631813833092,
+        "wealth": 0.43161200246854947
+      },
+      {
+        "date": "2023-07-19",
+        "overlap": 0,
+        "lr": 1.0147591653438437,
+        "wealth": 0.5101381009024951
+      },
+      {
+        "date": "2023-10-27",
+        "overlap": 1,
+        "lr": 0.9985153745615033,
+        "wealth": 0.42797062068950925
+      },
+      {
+        "date": "2024-02-04",
+        "overlap": 1,
+        "lr": 0.980360549569476,
+        "wealth": 0.23971054827469396
+      },
+      {
+        "date": "2024-05-14",
+        "overlap": 1,
+        "lr": 0.9770596722981983,
+        "wealth": 0.19998737187717716
+      },
+      {
+        "date": "2024-08-22",
+        "overlap": 0,
+        "lr": 1.016322738788133,
+        "wealth": 0.1614288877319978
+      },
+      {
+        "date": "2024-11-30",
+        "overlap": 0,
+        "lr": 1.0288313263424487,
+        "wealth": 0.12894815745957575
+      }
+    ]
+  },
+  "postFreeze": {
+    "period": "2025+",
+    "n": 591,
+    "finalE": 0.15822299127466127,
+    "maxE": 1,
+    "anytimePBound": 1,
+    "trail": [
+      {
+        "date": "2025-04-10",
+        "overlap": 0,
+        "lr": 1.0257041794538697,
+        "wealth": 0.6733707805555282
+      },
+      {
+        "date": "2025-07-19",
+        "overlap": 1,
+        "lr": 0.9556039700348933,
+        "wealth": 0.7804355708562055
+      },
+      {
+        "date": "2025-10-27",
+        "overlap": 0,
+        "lr": 1.008504871566686,
+        "wealth": 0.33898826387386305
+      },
+      {
+        "date": "2026-02-04",
+        "overlap": 1,
+        "lr": 0.9770596722981983,
+        "wealth": 0.40371746078837356
+      },
+      {
+        "date": "2026-05-15",
+        "overlap": 1,
+        "lr": 0.9935640586545867,
+        "wealth": 0.20023926556933067
+      }
+    ]
+  },
+  "signal": {
+    "replicatedStrongEvidence": false,
+    "thresholdE": 20,
+    "requiresAudit": false
+  },
+  "decision": "NEGATIVE_NO_SERIAL_OVERLAP_BREAK",
+  "realMoneyPass": false,
+  "realStakeEUR": 0,
+  "note": "Sequential serial-dependence test only; no betting authorization."
+}
