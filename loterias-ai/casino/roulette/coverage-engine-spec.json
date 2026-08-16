@@ -1,0 +1,33 @@
+{
+  "schemaVersion":1,
+  "createdAt":"2026-08-17",
+  "name":"Roulette Predictive Coverage Engine",
+  "mode":"PAPER_ONLY",
+  "objective":"Predecir conjuntos pequenos de numeros para la siguiente ronda y demostrar que su cobertura prospectiva supera de forma significativa la referencia aleatoria y el coste economico de cubrirlos.",
+  "wheel":"EUROPEAN_SINGLE_ZERO",
+  "candidateSetSizes":[1,2,3,4,5,6,8,10,12,15,18],
+  "baselines":{"1":0.027027027,"4":0.108108108,"5":0.135135135,"10":0.27027027,"12":0.324324324,"18":0.486486486},
+  "families":[
+    "physical-sector-and-neighbor",
+    "wheel-regime-and-changepoint",
+    "dealer-table-if-observable",
+    "waiting-time-and-recurrence",
+    "information-theory",
+    "bayesian-calibration",
+    "ensemble-of-independent-scientists",
+    "lightning-joint-process"
+  ],
+  "perPredictionRecord":["timestamp","game","table-if-known","model-freeze-hash","set-size","numbers","pre-round-confidence","estimated-hit-probability","null-hit-probability","stake-paper-only","outcome","hit","net-paper-return"],
+  "promotionGates":[
+    "chronological-freeze-before-round",
+    "blind-oos",
+    "multiple-testing-correction",
+    "set-size-adjusted-baseline",
+    "independent-replication",
+    "prospective-paper-sample",
+    "positive-net-ev-after-payout-rules"
+  ],
+  "forbiddenClaims":["asegurado","100%-seguro","ganancia-garantizada"],
+  "realMoneyEnabled":false,
+  "automaticBettingEnabled":false
+}
