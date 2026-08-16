@@ -1,0 +1,28 @@
+name: Loterias AI MetaPleno v211 Near Repeat Transitions
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v211-near-repeat-transitions]
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v211-near-repeat-transitions.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v211-near-repeat-transitions.yml'
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: research/metapleno-v211-near-repeat-transitions}
+      - uses: actions/setup-node@v4
+        with: {node-version: '20'}
+      - run: node loterias-ai/scripts/meta-pleno-v211-near-repeat-transitions.mjs
+      - name: Validate gates
+        run: node -e "const x=require('./loterias-ai/data/research/meta-pleno-v211-near-repeat-transitions.json');if(x.realMoneyPass!==false||x.budget.realStakeEUR!==0)process.exit(1)"
+      - name: Persist v211
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v211-near-repeat-transitions.json
+          git diff --cached --quiet || git commit -m 'research(loterias-ai): persist v211 near-repeat transitions'
+          git push
