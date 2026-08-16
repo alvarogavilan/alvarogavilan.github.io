@@ -1,0 +1,27 @@
+name: loterias-ai meta-pleno v227 SSA Hankel
+on:
+  push:
+    branches:
+      - research/metapleno-v227-ssa-hankel
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/metapleno-v227-ssa-hankel
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run v227
+        run: node loterias-ai/scripts/meta-pleno-v227-bonoloto-ssa-hankel.mjs
+      - name: Persist result
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/meta-pleno-v227-bonoloto-ssa-hankel.json
+          git diff --cached --quiet || git commit -m 'research(loterias-ai): persist v227 SSA Hankel result'
+          git push
