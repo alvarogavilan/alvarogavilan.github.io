@@ -1,0 +1,16 @@
+{
+  "version":"v1",
+  "name":"Physical Draw Lab",
+  "mission":"Modelar por juego los factores físicos del sorteo sin asumir causalidad y someter cualquier señal a falsación temporal estricta.",
+  "scope":["bonoloto","primitiva","euromillones","gordo-primitiva","loteria-nacional"],
+  "perGameModel":["draw_machine_identity","machine_generation","ball_set_identity","ball_material","ball_diameter","ball_mass_nominal","ball_mass_tolerance","ball_mass_measurement_date","airflow_or_mixing_mechanism","mixing_duration","draw_order","maintenance_or_replacement_events","venue_or_environment_when_publicly_documented"],
+  "evidencePolicy":{"officialSourcesFirst":true,"recordUnknownsExplicitly":true,"noInventedMeasurements":true,"separateMeasuredFromInferred":true,"retainSourceAndDate":true},
+  "researchQuestions":[
+    "¿Existen cambios de distribución coincidentes con cambios de máquina o juego de bolas?",
+    "¿Existen sesgos temporales reproducibles asociados a variables físicas documentadas?",
+    "¿Sobreviven las señales a OOS y replicación independiente?",
+    "¿Hay interacción entre peso/tolerancia, mecanismo de mezcla y posición de extracción?"
+  ],
+  "gates":{"selection":"historical only","freezeBeforeOOS":true,"blindOOS":true,"multipleTestingCorrection":true,"independentReplication":true,"futureUntouchedData":true,"realMoneyPass":false,"realStakeEUR":0},
+  "status":"PREREGISTERED"
+}
