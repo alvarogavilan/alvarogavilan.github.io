@@ -1,0 +1,41 @@
+{
+  "version": "v298-preregistration",
+  "family": "VINE_COPULA_DEPENDENCE",
+  "createdAt": "2026-08-16T21:34:07Z",
+  "purpose": "Test whether frozen multivariate rank-dependence captured by pair-copula constructions provides reproducible pre-draw ranking information beyond marginal frequencies without reusing prior pairwise/Chow-Liu or reservoir families.",
+  "antiDuplicationGuard": {
+    "queries": [
+      "copula",
+      "vine copula",
+      "Clayton Gumbel Frank Gaussian dependence rank correlation"
+    ],
+    "repositoryMatches": 0,
+    "status": "PASS_ORTHOGONAL_FAMILY"
+  },
+  "protocol": {
+    "games": ["bonoloto", "primitiva", "euromillones", "gordo-primitiva"],
+    "developmentEndExclusive": "2023-01-01",
+    "strictOosStart": "2023-01-01",
+    "strictOosEndExclusive": "2025-01-01",
+    "postFreezeStart": "2025-01-01",
+    "candidateFamilies": ["gaussian", "clayton", "frank", "gumbel"],
+    "dependenceInput": "pre-draw empirical ranks only",
+    "selection": "development-only; freeze model family, pair structure, parameters and tie-breaking before OOS",
+    "behaviorDeduplication": true,
+    "retuningAfterOos": false,
+    "read2025PlusBeforeOosDecision": false,
+    "auditTrigger": "any repeat5+, full main hit, or statistically relevant OOS anomaly",
+    "negativePersistence": true
+  },
+  "economics": {
+    "maxTheoreticalBudgetEURPerGameDraw": 15,
+    "realMoneyPass": false,
+    "realStakeEUR": 0
+  },
+  "decisionRule": {
+    "oosMustBeEvaluatedBlind": true,
+    "postFreezeReplicationRequiredForAnyPositiveClaim": true,
+    "isolatedHistoricalExtremeIsNotEvidence": true
+  },
+  "status": "PREREGISTERED_NOT_EXECUTED"
+}
