@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-17",
+  "study": "Lightning Roulette Temporal Regimes",
+  "priority": "MAX_CASINO_PRIORITY",
+  "bookExportAllowed": false,
+  "moneyMode": "PAPER_ONLY",
+  "roundTimeFields": ["sourceTimestamp","utcTimestamp","localTimestampIfKnown","hour","minute","second","dayOfWeek","dayOfMonth","month","timezone","roundSequenceIndex","secondsSincePreviousRound"],
+  "derivedTimeWindows": ["hour-of-day","15-minute-bin","5-minute-bin","minute-of-hour","second-of-minute","day-of-week","weekend-vs-weekday","session-block","rolling-25-round","rolling-50-round","rolling-100-round","change-point-segment"],
+  "targets": ["winning-number","wheel-sector","coverage-set-hit","lightning-number-selection","winner-is-lightning","multiplier-tier","x50plus","x100plus","x200plus","x300plus","x400plus","x500"],
+  "tests": ["time-stratified-uniformity","circular-time-regression","periodicity-spectrum","autocorrelation-by-time-bin","changepoint-detection","conditional-multiplier-distribution","winner-lightning-time-interaction","permutation-null-preserving-day-structure","multiple-testing-correction"],
+  "antiLeakage": {
+    "chronologicalReplay": true,
+    "featuresMustExistBeforeBetClose": true,
+    "freezeBeforeOOS": true,
+    "futureDaysUntouched": true,
+    "retuneAfterOOS": false
+  },
+  "promotion": ["TRAIN_SIGNAL","FROZEN_TIME_RULE","BLIND_FUTURE_DAYS","INDEPENDENT_WEEK_REPLICATION","PROSPECTIVE_PAPER","DISCOVERY_CANDIDATE"],
+  "hardRule": "Una hora/minuto/segundo llamativo no es señal hasta superar nulos que preserven la estructura temporal y repetirse en días futuros.",
+  "realMoneyEnabled": false
+}
