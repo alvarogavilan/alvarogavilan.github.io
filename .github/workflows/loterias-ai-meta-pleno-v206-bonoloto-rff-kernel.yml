@@ -1,0 +1,29 @@
+name: Loterias AI MetaPleno v206 Bonoloto RFF Kernel
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v206-bonoloto-rff-kernel]
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: node loterias-ai/scripts/meta-pleno-v206-bonoloto-rff-kernel.mjs
+      - name: Validate gates
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');const d=JSON.parse(fs.readFileSync('loterias-ai/data/research/meta-pleno-v206-bonoloto-rff-kernel.json'));
+          if(d.realMoneyPass!==false||d.budget?.realStakeEUR!==0) throw new Error('real-money regression');
+          if(!(d.candidatePool.effective>0&&d.candidatePool.effective<=d.candidatePool.nominal)) throw new Error('candidate accounting');
+          console.log(JSON.stringify(d.summary));
+          NODE
+      - name: Persist v206
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v206-bonoloto-rff-kernel.json
+          if ! git diff --cached --quiet; then git commit -m 'research(loterias-ai): persist v206 RFF kernel'; git pull --rebase origin "$GITHUB_REF_NAME"; git push origin HEAD:"$GITHUB_REF_NAME"; fi
