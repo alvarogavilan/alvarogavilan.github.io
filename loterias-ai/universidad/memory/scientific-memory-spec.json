@@ -1,19 +1,21 @@
 {
-  "version":"1.0",
+  "version":"1.1",
   "name":"Loterias AI Permanent Scientific Memory",
   "status":"ACTIVE_SPEC",
-  "mission":"Registrar de forma permanente, consultable y deduplicable todo experimento, fórmula, hipótesis, resultado, negativo, genealogía y evidencia para impedir repetir trabajo y permitir reutilización científica futura.",
-  "principles":["append-only-evidence","content-addressed-identities","semantic-deduplication","negative-results-first-class","full-genealogy","reproducible-runs","queryable-indexes","oos-immutability","no-result-erasure"],
+  "mission":"Registrar permanentemente fórmulas, hipótesis, experimentos, resultados, negativos, genealogías y comportamientos predictivos para impedir repetir trabajo y reutilizar toda evidencia científica.",
+  "principles":["append-only-evidence","content-addressed-identities","semantic-deduplication","behavioral-deduplication","negative-results-first-class","full-genealogy","reproducible-runs","queryable-indexes","oos-immutability","no-result-erasure"],
   "records":{
     "formula":{"required":["formulaId","canonicalExpression","semanticSignature","sha256","operators","features","parameters","genealogy","createdBy","createdAt"]},
-    "experiment":{"required":["experimentId","formulaIds","gameId","datasetFingerprint","selectionWindow","oosWindow","postFreezeWindow","seed","codeCommit","workflowRun","metrics","decision","failureReasons","createdAt"]},
+    "behavior":{"required":["behaviorHash","gameId","predictionWindow","predictionTrajectoryHash","representativeFormulaId","cloneFormulaIds","datasetFingerprint","createdAt"]},
+    "experiment":{"required":["experimentId","formulaIds","behaviorHashes","gameId","datasetFingerprint","selectionWindow","oosWindow","postFreezeWindow","seed","codeCommit","workflowRun","metrics","decision","failureReasons","createdAt"]},
     "hypothesis":{"required":["hypothesisId","statement","origin","noveltySignature","relatedFormulaIds","status","falsificationPlan"]},
-    "negative":{"required":["negativeId","semanticSignature","gameId","reason","evidenceRefs","scope","createdAt"]},
-    "claim":{"required":["claimId","type","evidenceRefs","auditStatus","replicationStatus"]}
+    "negative":{"required":["negativeId","semanticSignature","behaviorHash","gameId","reason","evidenceRefs","scope","createdAt"]},
+    "claim":{"required":["claimId","type","evidenceRefs","auditStatus","replicationStatus","independentBehaviorCount"]}
   },
-  "indexes":["sha256","semanticSignature","gameId","formulaFamily","featureSet","operatorSet","genealogy","experimentDecision","failureReason","datasetFingerprint","codeCommit","workflowRun","date"],
-  "duplicateGate":{"beforeCompute":true,"checks":["exact-sha256","canonical-expression","semantic-signature","genealogy-equivalence","negative-memory","dataset+formula+parameters+seed"],"onDuplicate":"REUSE_EXISTING_EVIDENCE","onKnownNegative":"SKIP_UNLESS_NEW_FALSIFICATION_REASON"},
-  "retention":{"policy":"PERMANENT","deleteScientificEvidence":false,"compactByReference":true,"storeLargeArtifactsByContentHash":true,"preserveRawMetrics":true},
-  "queryContract":{"audiences":["research-orchestrator","scientists","auditors","app","book","human-review"],"queries":["has-this-been-tested","show-formula-history","show-all-negatives","show-genealogy","show-oos-evidence","show-replications","find-nearest-semantic-method","explain-why-skipped"]},
+  "indexes":["sha256","semanticSignature","behaviorHash","predictionTrajectoryHash","gameId","formulaFamily","featureSet","operatorSet","genealogy","experimentDecision","failureReason","datasetFingerprint","codeCommit","workflowRun","date"],
+  "duplicateGate":{"beforeCompute":true,"beforePromotion":true,"checks":["exact-sha256","canonical-expression","semantic-signature","genealogy-equivalence","prediction-trajectory-hash","negative-memory","dataset+formula+parameters+seed"],"onSemanticDuplicate":"REUSE_EXISTING_EVIDENCE","onBehavioralDuplicate":"COLLAPSE_TO_ONE_REPRESENTATIVE","onKnownNegative":"SKIP_UNLESS_NEW_FALSIFICATION_REASON"},
+  "signalAccounting":{"behavioralClonesCountAsOne":true,"repeat5PlusRequiresIndependentBehaviorAudit":true,"fullMainRequiresIndependentBehaviorAudit":true},
+  "retention":{"policy":"PERMANENT","deleteScientificEvidence":false,"compactByReference":true,"storeLargeArtifactsByContentHash":true,"preserveRawMetrics":true,"preservePredictionTrajectories":true},
+  "queryContract":{"audiences":["research-orchestrator","scientists","auditors","app","book","human-review"],"queries":["has-this-been-tested","has-this-behavior-been-produced","show-formula-history","show-behavioral-clones","show-all-negatives","show-genealogy","show-oos-evidence","show-replications","find-nearest-semantic-method","find-nearest-behavior","explain-why-skipped"]},
   "safety":{"realMoneyPass":false,"realStakeEUR":0,"oosRetuningForbidden":true,"negativePersistenceRequired":true}
 }
