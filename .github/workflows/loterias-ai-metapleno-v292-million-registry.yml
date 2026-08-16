@@ -1,0 +1,32 @@
+name: Loterias AI MetaPleno v292 Million Registry
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/metapleno-v292-million-scientist-funnel
+    paths:
+      - loterias-ai/research/megalab/v292-stage0-million-registry.mjs
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-v292-million-registry
+  cancel-in-progress: false
+jobs:
+  registry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - name: Materialize auditable virtual registry summary
+        run: node loterias-ai/research/megalab/v292-stage0-million-registry.mjs
+      - name: Verify fail-closed
+        run: node -e "const x=require('./loterias-ai/data/research/metapleno-v292-million-registry.json');if(x.logicalScientists!==1048576||x.realMoneyPass||x.realStakeEUR!==0)process.exit(1)"
+      - name: Persist registry evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v292-million-registry.json
+          git commit -m 'data(loterias-ai): persist v292 million-scientist registry' || exit 0
+          git push
