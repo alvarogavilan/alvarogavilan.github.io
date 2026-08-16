@@ -1,0 +1,26 @@
+{
+  "version":"v297",
+  "family":"RESERVOIR_COMPUTING_ECHO_STATE",
+  "status":"DESIGN_FROZEN_BEFORE_RESULTS",
+  "goal":"Test whether a fixed nonlinear dynamical reservoir fed only with pre-draw whole-draw state encodings can extract reproducible temporal state information that improves next-draw set generation without retuning on validation data.",
+  "orthogonalityToPrior":[
+    "fixed random recurrent reservoir with trained linear readout rather than recurrence-plot statistics",
+    "no nearest historical successor as final predictor",
+    "no code-length objective",
+    "no per-number frequency-gap final ranking",
+    "no Gaussian-process kernel regression",
+    "no e-process betting evidence as predictor"
+  ],
+  "inputEncodings":["normalized-set-indicator","gap-vector-padded","residue-count-state","pair-distance-moments","sum-span-parity-state"],
+  "reservoirSizes":[16,32,64,96],
+  "spectralRadius":[0.4,0.7,0.9,1.1],
+  "leakRate":[0.15,0.35,0.6,0.85],
+  "ridge":[0.0001,0.001,0.01,0.1],
+  "seeds":[11,23,47,97,193,389],
+  "populationLogical":30720,
+  "selection":{"window":"2019-2022","screenSample":8192,"walkForwardOnly":true,"behavioralDedup":true,"oosLockedUntilFreeze":true,"maxFrozenCandidates":32},
+  "falsification":{"strictOOS":"2023-2024","postFreezeReplication":"2025+","nullSimulationRequiredFor5Plus":true,"multipleTestingCorrection":true,"behavioralCloneCollapse":true,"noRetuningAfterOOS":true},
+  "economics":{"realMoneyPass":false,"realStakeEUR":0,"ordinaryBudgetMaxEUR":4,"hardResearchCeilingEUR":15},
+  "memory":{"antiDuplicateSearchPerformed":true,"repositoryMatchesFound":0,"persistNegatives":true,"rescueAfterOOSFailureForbidden":true},
+  "actionPolicy":"PREREGISTER_ONLY_WHILE_V296_HEAVY_ACTION_ACTIVE"
+}
