@@ -1,0 +1,50 @@
+name: Loterias AI Today Manifest
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '7 * * * *'
+  push:
+    branches: [main, fix/loterias-hoy-live-dedupe]
+    paths:
+      - 'loterias-ai/data/shadow/**'
+      - 'loterias-ai/data/prospective/**'
+      - 'loterias-ai/scripts/build-today-manifest.mjs'
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Build Madrid-local Today manifest
+        run: node loterias-ai/scripts/build-today-manifest.mjs
+      - name: Validate strict Today invariants
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const p='loterias-ai/data/ui/today-manifest.json';
+          const d=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(!d.strictToday||d.staleFallbackAllowed) throw new Error('Today stale policy regression');
+          const seen=new Set();
+          for(const g of d.games){
+            if(g.targetDate!==d.today) throw new Error('Non-today game leaked: '+g.gameId);
+            if(seen.has(g.gameId)) throw new Error('Duplicate visible game: '+g.gameId);
+            seen.add(g.gameId);
+            if(g.primary.targetDate!==d.today) throw new Error('Stale primary: '+g.gameId);
+            if(g.primary.realMoneyPass) throw new Error('Unexpected real-money pass in Today');
+          }
+          console.log(JSON.stringify({today:d.today,games:[...seen]}));
+          NODE
+      - name: Persist manifest
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/ui/today-manifest.json
+          if ! git diff --cached --quiet; then
+            git commit -m "data(loterias-ai): refresh Today manifest"
+            git pull --rebase origin "$GITHUB_REF_NAME"
+            git push origin HEAD:"$GITHUB_REF_NAME"
+          fi
