@@ -64,8 +64,9 @@ function normalize(filePath,kind,today){
   if(d?.dataBoundary?.targetResultObserved===true||d?.targetResultObserved===true) return null;
   const lines=ticketLines(d),pool=poolOf(d);
   if(!lines.length&&!pool&&game!=='quiniela') return null;
-  const theoreticalCostEUR=money(d?.theoreticalCostEUR,d?.theoreticalStakeEUR,d?.config?.theoreticalStakeEUR,d?.stakeEUR);
-  const unitCostEUR=money(d?.unitCostEUR,d?.config?.unitStakeEUR,d?.pricePerColumnEUR, lines.length?theoreticalCostEUR/lines.length:0);
+  let theoreticalCostEUR=money(d?.theoreticalCostEUR,d?.theoreticalStakeEUR,d?.config?.theoreticalStakeEUR,d?.stakeEUR);
+  let unitCostEUR=money(d?.unitCostEUR,d?.config?.unitStakeEUR,d?.pricePerColumnEUR, lines.length?theoreticalCostEUR/lines.length:0);
+  if(game==='bonoloto'&&Array.isArray(pool)&&pool.length===8&&theoreticalCostEUR===0){theoreticalCostEUR=14;if(unitCostEUR===0)unitCostEUR=.5}
   const purpose=String(d?.purpose||'');
   const alternativeNotAdditive=Boolean(d?.config?.alternativeNotAdditive||/never additive|not additive|alternative/i.test(purpose));
   const prospectScore=(kind==='PROSPECTIVE'?1000:0)+(d?.evidence?.prospectiveReplication?100:0)+(d?.status?.includes?.('FROZEN')?20:0)-(theoreticalCostEUR*2)+(d?.evidence?.confirmatory===false?-5:0);

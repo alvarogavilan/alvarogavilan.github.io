@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: '7 * * * *'
   push:
-    branches: [main, fix/loterias-hoy-live-dedupe, fix/loterias-hoy-euromillones-5plus2]
+    branches: [main, fix/loterias-hoy-live-dedupe, fix/loterias-hoy-euromillones-5plus2, fix/loterias-hoy-bonoloto-pool8-cost]
     paths:
       - 'loterias-ai/data/shadow/**'
       - 'loterias-ai/data/prospective/**'
@@ -36,6 +36,20 @@ jobs:
           if(!line?.display?.includes('⭐ 2 · 5')) throw new Error('Stars missing from display payload: '+JSON.stringify(line));
           if(v199.unitCostEUR!==2.5) throw new Error('Unexpected Euromillones unit cost: '+v199.unitCostEUR);
           console.log(JSON.stringify({copy:line.copy,display:line.display,unitCostEUR:v199.unitCostEUR}));
+          NODE
+      - name: Validate Bonoloto pool8 inferred cost fixture
+        run: |
+          TODAY_OVERRIDE=2026-08-16 node loterias-ai/scripts/build-today-manifest.mjs
+          node - <<'NODE'
+          const fs=require('fs');
+          const d=JSON.parse(fs.readFileSync('loterias-ai/data/ui/today-manifest.json','utf8'));
+          const g=d.games.find(x=>x.gameId==='bonoloto');
+          if(!g) throw new Error('Missing Bonoloto fixture');
+          const entries=[g.primary,...(g.alternatives||[])];
+          const poolOnly=entries.filter(x=>x.pool?.length===8&&x.lines?.length===0);
+          if(!poolOnly.length) throw new Error('No pool-only Budget8 entries found');
+          for(const e of poolOnly){if(e.theoreticalCostEUR!==14||e.unitCostEUR!==.5)throw new Error('Bad Budget8 cost '+JSON.stringify({v:e.version,c:e.theoreticalCostEUR,u:e.unitCostEUR}))}
+          console.log(JSON.stringify(poolOnly.map(x=>({version:x.version,cost:x.theoreticalCostEUR,unit:x.unitCostEUR}))));
           NODE
       - name: Build Madrid-local Today manifest
         run: node loterias-ai/scripts/build-today-manifest.mjs
