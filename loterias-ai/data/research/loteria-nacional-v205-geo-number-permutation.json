@@ -1,0 +1,31 @@
+{
+  "generatedAt": "2026-08-16T08:28:32.944Z",
+  "version": "v205",
+  "gameId": "loteria-nacional",
+  "family": "OFFICIAL_SALES_GEO_NUMBER_ASSOCIATION",
+  "years": [
+    2024,
+    2025,
+    2026
+  ],
+  "observations": 124,
+  "uniqueProvinces": 52,
+  "methodology": "Collapse each official SELAE prize page to province presence per prize/draw. Measure mutual information between province and winning-number last digit / last two digits. Null shuffles winning-number endings across prize-draw observations while keeping each draw geography intact. This tests association only, not causality or predictability.",
+  "tests": {
+    "last1": {
+      "observedMI": 0.2742534708891469,
+      "permutations": 5000,
+      "geObserved": 1824,
+      "pValue": 0.3649270145970806
+    },
+    "last2": {
+      "observedMI": 1.110702957750177,
+      "permutations": 5000,
+      "geObserved": 1740,
+      "pValue": 0.34813037392521495
+    }
+  },
+  "decision": "NO_REPRODUCIBLE_GEO_NUMBER_ASSOCIATION",
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
