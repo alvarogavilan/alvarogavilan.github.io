@@ -18,7 +18,10 @@ jobs:
         with:
           node-version: 24
       - name: Syntax check
-        run: node --check loterias-ai/casino/lightning/replay-engine.mjs
+        run: |
+          node --check loterias-ai/casino/lightning/replay-engine.mjs
+          node --check loterias-ai/casino/lightning/build-dataset.mjs
+          node --check loterias-ai/casino/lightning/collect-trackersino.mjs
       - name: Validate data contract JSON
         run: node -e "JSON.parse(require('fs').readFileSync('loterias-ai/casino/lightning/data-contract.json','utf8'))"
       - name: Enforce book exclusion and PAPER gate
@@ -30,6 +33,8 @@ jobs:
           const e=fs.readFileSync('loterias-ai/casino/lightning/replay-engine.mjs','utf8');
           if(!e.includes("mode:'PAPER_ONLY'") || !e.includes('realMoneyEnabled:false')) process.exit(1);
           NODE
+      - name: Build canonical dataset
+        run: node loterias-ai/casino/lightning/build-dataset.mjs
       - name: Run replay if real dataset exists
         shell: bash
         run: |
