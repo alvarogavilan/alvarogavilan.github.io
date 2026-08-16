@@ -22,26 +22,26 @@ for (const r of rows) {
   const ts = r.finalized_at;
   const roundId = String(r.round_id ?? r.round_index ?? '');
   const luckiesRaw = Array.isArray(r?.raw?.luckies) ? r.raw.luckies : [];
-  const luckies = luckiesRaw.map(x=>({number:Number(x.num), multiplier:Number(x.multi)}))
+  const lightning = luckiesRaw.map(x=>({number:Number(x.num), multiplier:Number(x.multi)}))
     .filter(x=>Number.isInteger(x.number)&&x.number>=0&&x.number<=36&&Number.isFinite(x.multiplier)&&x.multiplier>0);
   if (!roundId || !ts || Number.isNaN(Date.parse(ts)) || !Number.isInteger(winner) || winner<0 || winner>36) continue;
   normalized.push({
     roundId,
-    timestamp:new Date(ts).toISOString(),
+    ts:new Date(ts).toISOString(),
     winner,
-    lightningNumbers:luckies,
+    lightning,
     source:'trackersino',
     upstreamRoundIndex:r.round_index ?? null,
     upstreamMultiplier:r.multiplier ?? null
   });
 }
 
-normalized.sort((a,b)=>a.timestamp.localeCompare(b.timestamp));
+normalized.sort((a,b)=>a.ts.localeCompare(b.ts));
 const root = 'loterias-ai/casino/lightning/data/raw';
 fs.mkdirSync(root,{recursive:true});
 const byDay = new Map();
 for (const r of normalized) {
-  const day=r.timestamp.slice(0,10);
+  const day=r.ts.slice(0,10);
   if(!byDay.has(day)) byDay.set(day,[]);
   byDay.get(day).push(r);
 }
@@ -54,7 +54,7 @@ for (const [day, incoming] of byDay) {
   const map=new Map(existing.map(x=>[x.roundId,x]));
   const before=map.size;
   for(const r of incoming) map.set(r.roundId,r);
-  const out=[...map.values()].sort((a,b)=>a.timestamp.localeCompare(b.timestamp));
+  const out=[...map.values()].sort((a,b)=>a.ts.localeCompare(b.ts));
   fs.writeFileSync(file,out.map(x=>JSON.stringify(x)).join('\n')+'\n');
   inserted += map.size-before;
   files++;
