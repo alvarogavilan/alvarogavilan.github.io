@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';
+const R='loterias-ai',SRC=path.join(R,'data/research/metapleno-v295-stage1-2-selection.json'),OUT=path.join(R,'data/research/metapleno-v295-stage3-freeze.json');
+const H=s=>crypto.createHash('sha256').update(s).digest('hex');
+const src=JSON.parse(fs.readFileSync(SRC,'utf8'));
+if(src.validationTouched||src.postFreezeTouched||src.retuningPerformed)throw new Error('FAIL_CLOSED_SELECTION_TAINTED');
+if(src.realMoneyPass!==false||src.realStakeEUR!==0||src.theoreticalBudgetMaxEUR>15)throw new Error('FAIL_CLOSED_ECONOMICS');
+const frozen={version:'v295-stage3',family:'MDL_CONTEXT_TREE_WEIGHTING',createdAt:new Date().toISOString(),sourceVersion:src.version,selectionWindow:src.selectionWindow,validationWindow:'2023-01-01/2025-01-01',postFreezeWindow:'2025-01-01+',freezePolicy:'top-8-behaviorally-unique-selection-candidates-per-game; no OOS access before manifest hash',retuningAllowed:false,validationTouched:false,postFreezeTouched:false,behavioralCloneGate:true,candidatesByGame:{}};
+for(const [game,v] of Object.entries(src.byGame||{})){const seen=new Set(),arr=[];for(const c of v.best||[]){if(seen.has(c.behaviorHash))continue;seen.add(c.behaviorHash);arr.push({scientistId:c.scientistId,game:c.game,encoder:c.encoder,coder:c.coder,depth:c.depth,seed:c.seed,variant:c.variant,behaviorHash:c.behaviorHash,selection:c.selection});if(arr.length===8)break;}if(arr.length<8)throw new Error(`FAIL_CLOSED_NOT_ENOUGH_UNIQUE_${game}`);frozen.candidatesByGame[game]=arr;}
+const canonical=JSON.stringify(frozen.candidatesByGame);frozen.candidateCount=Object.values(frozen.candidatesByGame).reduce((a,x)=>a+x.length,0);frozen.manifestHash=H(canonical);frozen.realMoneyPass=false;frozen.realStakeEUR=0;frozen.theoreticalBudgetMaxEUR=15;frozen.next='strict-blind-oos-2023-2024';
+fs.writeFileSync(OUT,JSON.stringify(frozen,null,2)+'\n');console.log(JSON.stringify({candidateCount:frozen.candidateCount,manifestHash:frozen.manifestHash,validationTouched:false,postFreezeTouched:false,realMoneyPass:false,realStakeEUR:0,theoreticalBudgetMaxEUR:15},null,2));
