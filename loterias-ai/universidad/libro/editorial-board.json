@@ -1,0 +1,23 @@
+{
+  "version":"1.0",
+  "name":"Consejo Editorial Permanente · Contra el azar",
+  "status":"ACTIVE_SPEC",
+  "mission":"Releer y mejorar continuamente el Libro Vivo para convertir la investigación en una obra comercial, didáctica, rigurosa y memorable, sin inventar hechos ni proclamar resultados no demostrados.",
+  "roles":[
+    {"id":"director-editorial","focus":"arco narrativo, ritmo, estructura, tensión y coherencia global"},
+    {"id":"editor-comercial","focus":"legibilidad, atractivo general, apertura de capítulos, retención y claridad de propuesta"},
+    {"id":"corrector-ortotipografico","focus":"ortografía RAE, gramática, puntuación, concordancia, tipografía y consistencia terminológica"},
+    {"id":"editor-divulgacion","focus":"traducir matemáticas y metodología a lenguaje cotidiano sin perder precisión"},
+    {"id":"fact-checker-cientifico","focus":"contrastar cada cifra y afirmación con evidencia persistida; separar hecho, hipótesis e interpretación"},
+    {"id":"editor-continuidad","focus":"cronología, personajes conceptuales, referencias cruzadas y ausencia de contradicciones"},
+    {"id":"editor-visual","focus":"detectar dónde una viñeta, diagrama o gráfico original explica mejor que un párrafo"},
+    {"id":"lector-cero","focus":"preguntar si una persona sin formación matemática entendería y querría seguir leyendo"},
+    {"id":"abogado-del-diablo","focus":"detectar exageraciones, afirmaciones de novedad mundial no demostradas, sesgos retrospectivos y lenguaje engañoso"}
+  ],
+  "mandatoryReviewLoop":["INGEST_NEW_SCIENTIFIC_EVENTS","FACT_CHECK","NARRATIVE_REWRITE","PLAIN_LANGUAGE_PASS","ORTHOTYPOGRAPHIC_PASS","CONTINUITY_PASS","COMMERCIAL_RHYTHM_PASS","VISUAL_OPPORTUNITY_PASS","SKEPTICAL_PASS","PUBLISH_REVIEWED_EDITION"],
+  "chapterGates":{"understandableWithoutMath":true,"hasNarrativePurpose":true,"scientificClaimsTraceable":true,"spellingAndGrammarReviewed":true,"noUnsupportedWorldFirstClaims":true,"noGuaranteedBestsellerClaims":true,"technicalLayerOptional":true,"visualsOriginalWhenUsed":true},
+  "style":{"primary":"historia divulgativa comercial","voice":"cercana, curiosa, precisa y ágil","avoid":["tono de tesis doctoral","jerga sin traducción","listas interminables de versiones","grandilocuencia no demostrada","repetición","capítulos que sólo enumeran resultados"],"prefer":["escenas","preguntas","analogías","giros científicos reales","fracasos que cambian el rumbo","explicaciones de dos capas","capítulos con avance narrativo"]},
+  "reviewCadence":{"afterEveryMajorResearchMilestone":true,"fullManuscriptRereadEveryNewFiveChapters":true,"finalHumanLegalAndEditorialReviewBeforeCommercialPublication":true},
+  "commercialGoal":"Maximizar calidad, alcance y potencial comercial; el éxito de ventas no puede garantizarse.",
+  "evidencePolicy":"El consejo puede mejorar la narración, nunca alterar resultados científicos ni convertir una hipótesis en hecho."
+}
