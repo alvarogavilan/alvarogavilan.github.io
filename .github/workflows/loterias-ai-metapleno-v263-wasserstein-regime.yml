@@ -1,0 +1,32 @@
+name: Loterias AI MetaPleno v263 Wasserstein Regime
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/metapleno-v263-wasserstein-regime
+    paths:
+      - 'loterias-ai/research/metapleno-v263-wasserstein-regime.mjs'
+      - '.github/workflows/loterias-ai-metapleno-v263-wasserstein-regime.yml'
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run v263
+        run: node loterias-ai/research/metapleno-v263-wasserstein-regime.mjs
+      - name: Verify fail-closed and budget
+        run: node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('loterias-ai/data/research/metapleno-v263-wasserstein-regime.json','utf8'));if(j.realMoneyPass!==false||j.realStakeEUR!==0)throw new Error('real money must remain blocked');if(j.candidatePool?.theoreticalCostEUR>15)throw new Error('budget exceeded');if(!['NEGATIVE','AUDIT_SIGNAL'].includes(j.decision))throw new Error('unexpected decision');console.log(j.decision,j.signal);"
+      - name: Persist result
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/metapleno-v263-wasserstein-regime.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'data(loterias-ai): persist v263 Wasserstein result'
+          git push
