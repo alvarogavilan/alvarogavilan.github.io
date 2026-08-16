@@ -1,0 +1,42 @@
+name: Loterias AI Lightning Public Observer
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+  push:
+    branches:
+      - research/lightning-public-observer
+    paths:
+      - 'loterias-ai/casino/lightning/observe-tracksino-public.mjs'
+      - '.github/workflows/loterias-ai-lightning-public-observer.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-lightning-public-observer
+  cancel-in-progress: false
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Observe public aggregate page
+        run: node loterias-ai/casino/lightning/observe-tracksino-public.mjs
+      - name: Enforce isolation
+        run: |
+          node -e "const x=require('./loterias-ai/casino/lightning/evidence/public-observer.json');if(x.trainingEligible||x.paperReplayEligible||x.realMoney||x.roundLevelData)process.exit(1)"
+      - name: Persist public observation
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/casino/lightning/evidence/public-observer.json
+          git commit -m "data(casino): refresh public Lightning observer" || exit 0
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push
