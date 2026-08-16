@@ -1,0 +1,32 @@
+name: Loterias AI MetaPleno v292 Stage2 Temporal Screen
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/metapleno-v292-million-scientist-funnel
+    paths:
+      - loterias-ai/research/megalab/v292-stage2-ultracheap-temporal-screen.mjs
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-v292-stage2
+  cancel-in-progress: false
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - name: Run selection-only temporal screen
+        run: node loterias-ai/research/megalab/v292-stage2-ultracheap-temporal-screen.mjs
+      - name: Verify untouched OOS and fail-closed economics
+        run: node -e "const x=require('./loterias-ai/data/research/metapleno-v292-stage2-temporal-screen.json');if(!x.selectionOnly||x.validationTouched||x.postFreezeTouched||x.realMoneyPass||x.realStakeEUR!==0||x.survivors>8192||!x.nextStage.oosUntouched)process.exit(1)"
+      - name: Persist stage2 evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v292-stage2-temporal-screen.json
+          git commit -m 'data(loterias-ai): persist v292 stage2 temporal screen' || exit 0
+          git push
