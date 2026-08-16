@@ -1,0 +1,28 @@
+name: Loterias AI MetaPleno v288 Consolidated Graph Curvature
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/metapleno-v288-consolidated-graph-curvature
+    paths:
+      - loterias-ai/research/metapleno-v288-consolidated-graph-curvature.mjs
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - run: node loterias-ai/research/metapleno-v288-consolidated-graph-curvature.mjs
+      - name: Verify fail-closed
+        run: node -e "const x=require('./loterias-ai/data/research/metapleno-v288-consolidated-graph-curvature.json');if(x.realMoneyPass||x.realStakeEUR!==0||x.games.some(g=>g.budget.theoreticalEUR>4))process.exit(1)"
+      - name: Persist result
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v288-consolidated-graph-curvature.json
+          git commit -m 'data(loterias-ai): persist v288 graph-curvature result' || exit 0
+          git push
