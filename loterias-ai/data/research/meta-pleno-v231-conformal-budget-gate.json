@@ -1,0 +1,1162 @@
+{
+  "generatedAt": "2026-08-16T10:22:34.288Z",
+  "version": "v231",
+  "gameId": "bonoloto",
+  "family": "SPLIT_CONFORMAL_BUDGET_GATE",
+  "purpose": "Use only past rank nonconformity to choose SKIP, complete Budget8, or Pool9 <=15 EUR; never infer that calendar progression increases win probability.",
+  "candidatePool": {
+    "nominalConfigurations": 27,
+    "effectiveConfigurations": 27,
+    "selectionCriterion": "Top 4 pre-2023 by full, then 5+, then lower aggregate stake, then played-hit average."
+  },
+  "dataBoundary": {
+    "train": "<2023-01-01",
+    "validation": "2023-2024",
+    "postFreeze": ">=2025-01-01",
+    "chronological": true,
+    "targetUpdatedAfterScoring": true
+  },
+  "economics": {
+    "maxPerDrawEUR": 15,
+    "preferredZeroWhenUncertain": true,
+    "realStakeEUR": 0
+  },
+  "frozen": [
+    "balanced-C100-A0p05",
+    "balanced-C100-A0p1",
+    "balanced-C100-A0p2",
+    "balanced-C250-A0p05"
+  ],
+  "trainRanking": [
+    {
+      "id": "balanced-C100-A0p05",
+      "config": {
+        "id": "balanced-C100-A0p05",
+        "family": {
+          "id": "balanced",
+          "w": {
+            "long": 0.25,
+            "short": 0.2,
+            "gap": 0.2,
+            "stable": 0.2,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 100,
+        "alpha": 0.05
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "balanced-C100-A0p1",
+      "config": {
+        "id": "balanced-C100-A0p1",
+        "family": {
+          "id": "balanced",
+          "w": {
+            "long": 0.25,
+            "short": 0.2,
+            "gap": 0.2,
+            "stable": 0.2,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 100,
+        "alpha": 0.1
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "balanced-C100-A0p2",
+      "config": {
+        "id": "balanced-C100-A0p2",
+        "family": {
+          "id": "balanced",
+          "w": {
+            "long": 0.25,
+            "short": 0.2,
+            "gap": 0.2,
+            "stable": 0.2,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 100,
+        "alpha": 0.2
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "balanced-C250-A0p05",
+      "config": {
+        "id": "balanced-C250-A0p05",
+        "family": {
+          "id": "balanced",
+          "w": {
+            "long": 0.25,
+            "short": 0.2,
+            "gap": 0.2,
+            "stable": 0.2,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 250,
+        "alpha": 0.05
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "balanced-C250-A0p1",
+      "config": {
+        "id": "balanced-C250-A0p1",
+        "family": {
+          "id": "balanced",
+          "w": {
+            "long": 0.25,
+            "short": 0.2,
+            "gap": 0.2,
+            "stable": 0.2,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 250,
+        "alpha": 0.1
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "balanced-C250-A0p2",
+      "config": {
+        "id": "balanced-C250-A0p2",
+        "family": {
+          "id": "balanced",
+          "w": {
+            "long": 0.25,
+            "short": 0.2,
+            "gap": 0.2,
+            "stable": 0.2,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 250,
+        "alpha": 0.2
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "balanced-C500-A0p05",
+      "config": {
+        "id": "balanced-C500-A0p05",
+        "family": {
+          "id": "balanced",
+          "w": {
+            "long": 0.25,
+            "short": 0.2,
+            "gap": 0.2,
+            "stable": 0.2,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 500,
+        "alpha": 0.05
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "balanced-C500-A0p1",
+      "config": {
+        "id": "balanced-C500-A0p1",
+        "family": {
+          "id": "balanced",
+          "w": {
+            "long": 0.25,
+            "short": 0.2,
+            "gap": 0.2,
+            "stable": 0.2,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 500,
+        "alpha": 0.1
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "balanced-C500-A0p2",
+      "config": {
+        "id": "balanced-C500-A0p2",
+        "family": {
+          "id": "balanced",
+          "w": {
+            "long": 0.25,
+            "short": 0.2,
+            "gap": 0.2,
+            "stable": 0.2,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 500,
+        "alpha": 0.2
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "gap-C100-A0p05",
+      "config": {
+        "id": "gap-C100-A0p05",
+        "family": {
+          "id": "gap",
+          "w": {
+            "long": 0.15,
+            "short": 0.1,
+            "gap": 0.45,
+            "stable": 0.15,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 100,
+        "alpha": 0.05
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "gap-C100-A0p1",
+      "config": {
+        "id": "gap-C100-A0p1",
+        "family": {
+          "id": "gap",
+          "w": {
+            "long": 0.15,
+            "short": 0.1,
+            "gap": 0.45,
+            "stable": 0.15,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 100,
+        "alpha": 0.1
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "gap-C100-A0p2",
+      "config": {
+        "id": "gap-C100-A0p2",
+        "family": {
+          "id": "gap",
+          "w": {
+            "long": 0.15,
+            "short": 0.1,
+            "gap": 0.45,
+            "stable": 0.15,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 100,
+        "alpha": 0.2
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "gap-C250-A0p05",
+      "config": {
+        "id": "gap-C250-A0p05",
+        "family": {
+          "id": "gap",
+          "w": {
+            "long": 0.15,
+            "short": 0.1,
+            "gap": 0.45,
+            "stable": 0.15,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 250,
+        "alpha": 0.05
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "gap-C250-A0p1",
+      "config": {
+        "id": "gap-C250-A0p1",
+        "family": {
+          "id": "gap",
+          "w": {
+            "long": 0.15,
+            "short": 0.1,
+            "gap": 0.45,
+            "stable": 0.15,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 250,
+        "alpha": 0.1
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "gap-C250-A0p2",
+      "config": {
+        "id": "gap-C250-A0p2",
+        "family": {
+          "id": "gap",
+          "w": {
+            "long": 0.15,
+            "short": 0.1,
+            "gap": 0.45,
+            "stable": 0.15,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 250,
+        "alpha": 0.2
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "gap-C500-A0p05",
+      "config": {
+        "id": "gap-C500-A0p05",
+        "family": {
+          "id": "gap",
+          "w": {
+            "long": 0.15,
+            "short": 0.1,
+            "gap": 0.45,
+            "stable": 0.15,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 500,
+        "alpha": 0.05
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "gap-C500-A0p1",
+      "config": {
+        "id": "gap-C500-A0p1",
+        "family": {
+          "id": "gap",
+          "w": {
+            "long": 0.15,
+            "short": 0.1,
+            "gap": 0.45,
+            "stable": 0.15,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 500,
+        "alpha": 0.1
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "gap-C500-A0p2",
+      "config": {
+        "id": "gap-C500-A0p2",
+        "family": {
+          "id": "gap",
+          "w": {
+            "long": 0.15,
+            "short": 0.1,
+            "gap": 0.45,
+            "stable": 0.15,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 500,
+        "alpha": 0.2
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "momentum-C100-A0p05",
+      "config": {
+        "id": "momentum-C100-A0p05",
+        "family": {
+          "id": "momentum",
+          "w": {
+            "long": 0.15,
+            "short": 0.45,
+            "gap": 0.1,
+            "stable": 0.15,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 100,
+        "alpha": 0.05
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "momentum-C100-A0p1",
+      "config": {
+        "id": "momentum-C100-A0p1",
+        "family": {
+          "id": "momentum",
+          "w": {
+            "long": 0.15,
+            "short": 0.45,
+            "gap": 0.1,
+            "stable": 0.15,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 100,
+        "alpha": 0.1
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "momentum-C100-A0p2",
+      "config": {
+        "id": "momentum-C100-A0p2",
+        "family": {
+          "id": "momentum",
+          "w": {
+            "long": 0.15,
+            "short": 0.45,
+            "gap": 0.1,
+            "stable": 0.15,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 100,
+        "alpha": 0.2
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "momentum-C250-A0p05",
+      "config": {
+        "id": "momentum-C250-A0p05",
+        "family": {
+          "id": "momentum",
+          "w": {
+            "long": 0.15,
+            "short": 0.45,
+            "gap": 0.1,
+            "stable": 0.15,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 250,
+        "alpha": 0.05
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "momentum-C250-A0p1",
+      "config": {
+        "id": "momentum-C250-A0p1",
+        "family": {
+          "id": "momentum",
+          "w": {
+            "long": 0.15,
+            "short": 0.45,
+            "gap": 0.1,
+            "stable": 0.15,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 250,
+        "alpha": 0.1
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "momentum-C250-A0p2",
+      "config": {
+        "id": "momentum-C250-A0p2",
+        "family": {
+          "id": "momentum",
+          "w": {
+            "long": 0.15,
+            "short": 0.45,
+            "gap": 0.1,
+            "stable": 0.15,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 250,
+        "alpha": 0.2
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "momentum-C500-A0p05",
+      "config": {
+        "id": "momentum-C500-A0p05",
+        "family": {
+          "id": "momentum",
+          "w": {
+            "long": 0.15,
+            "short": 0.45,
+            "gap": 0.1,
+            "stable": 0.15,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 500,
+        "alpha": 0.05
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "momentum-C500-A0p1",
+      "config": {
+        "id": "momentum-C500-A0p1",
+        "family": {
+          "id": "momentum",
+          "w": {
+            "long": 0.15,
+            "short": 0.45,
+            "gap": 0.1,
+            "stable": 0.15,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 500,
+        "alpha": 0.1
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    },
+    {
+      "id": "momentum-C500-A0p2",
+      "config": {
+        "id": "momentum-C500-A0p2",
+        "family": {
+          "id": "momentum",
+          "w": {
+            "long": 0.15,
+            "short": 0.45,
+            "gap": 0.1,
+            "stable": 0.15,
+            "meanrev": 0.15
+          }
+        },
+        "calWindow": 500,
+        "alpha": 0.2
+      },
+      "train": {
+        "draws": 7784,
+        "played": 0,
+        "skipped": 7784,
+        "stakeEUR": 0,
+        "avgStakePerDraw": 0,
+        "full": 0,
+        "ge5": 0,
+        "averageBestHitsOnPlayed": 0,
+        "fullDates": [],
+        "ge5Dates": [],
+        "modes": {
+          "B8": 0,
+          "P9": 0,
+          "SKIP": 7784
+        }
+      }
+    }
+  ],
+  "validation": {
+    "models": [
+      {
+        "id": "balanced-C100-A0p05",
+        "metrics": {
+          "draws": 731,
+          "played": 0,
+          "skipped": 731,
+          "stakeEUR": 0,
+          "avgStakePerDraw": 0,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHitsOnPlayed": 0,
+          "fullDates": [],
+          "ge5Dates": [],
+          "modes": {
+            "B8": 0,
+            "P9": 0,
+            "SKIP": 731
+          }
+        }
+      },
+      {
+        "id": "balanced-C100-A0p1",
+        "metrics": {
+          "draws": 731,
+          "played": 0,
+          "skipped": 731,
+          "stakeEUR": 0,
+          "avgStakePerDraw": 0,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHitsOnPlayed": 0,
+          "fullDates": [],
+          "ge5Dates": [],
+          "modes": {
+            "B8": 0,
+            "P9": 0,
+            "SKIP": 731
+          }
+        }
+      },
+      {
+        "id": "balanced-C100-A0p2",
+        "metrics": {
+          "draws": 731,
+          "played": 0,
+          "skipped": 731,
+          "stakeEUR": 0,
+          "avgStakePerDraw": 0,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHitsOnPlayed": 0,
+          "fullDates": [],
+          "ge5Dates": [],
+          "modes": {
+            "B8": 0,
+            "P9": 0,
+            "SKIP": 731
+          }
+        }
+      },
+      {
+        "id": "balanced-C250-A0p05",
+        "metrics": {
+          "draws": 731,
+          "played": 0,
+          "skipped": 731,
+          "stakeEUR": 0,
+          "avgStakePerDraw": 0,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHitsOnPlayed": 0,
+          "fullDates": [],
+          "ge5Dates": [],
+          "modes": {
+            "B8": 0,
+            "P9": 0,
+            "SKIP": 731
+          }
+        }
+      }
+    ],
+    "uniqueFullDates": [],
+    "unique5PlusDates": [],
+    "aggregateStakeEUR": 0
+  },
+  "postFreeze": {
+    "models": [
+      {
+        "id": "balanced-C100-A0p05",
+        "metrics": {
+          "draws": 591,
+          "played": 0,
+          "skipped": 591,
+          "stakeEUR": 0,
+          "avgStakePerDraw": 0,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHitsOnPlayed": 0,
+          "fullDates": [],
+          "ge5Dates": [],
+          "modes": {
+            "B8": 0,
+            "P9": 0,
+            "SKIP": 591
+          }
+        }
+      },
+      {
+        "id": "balanced-C100-A0p1",
+        "metrics": {
+          "draws": 591,
+          "played": 0,
+          "skipped": 591,
+          "stakeEUR": 0,
+          "avgStakePerDraw": 0,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHitsOnPlayed": 0,
+          "fullDates": [],
+          "ge5Dates": [],
+          "modes": {
+            "B8": 0,
+            "P9": 0,
+            "SKIP": 591
+          }
+        }
+      },
+      {
+        "id": "balanced-C100-A0p2",
+        "metrics": {
+          "draws": 591,
+          "played": 0,
+          "skipped": 591,
+          "stakeEUR": 0,
+          "avgStakePerDraw": 0,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHitsOnPlayed": 0,
+          "fullDates": [],
+          "ge5Dates": [],
+          "modes": {
+            "B8": 0,
+            "P9": 0,
+            "SKIP": 591
+          }
+        }
+      },
+      {
+        "id": "balanced-C250-A0p05",
+        "metrics": {
+          "draws": 591,
+          "played": 0,
+          "skipped": 591,
+          "stakeEUR": 0,
+          "avgStakePerDraw": 0,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHitsOnPlayed": 0,
+          "fullDates": [],
+          "ge5Dates": [],
+          "modes": {
+            "B8": 0,
+            "P9": 0,
+            "SKIP": 591
+          }
+        }
+      }
+    ],
+    "uniqueFullDates": [],
+    "unique5PlusDates": [],
+    "aggregateStakeEUR": 0
+  },
+  "signals": {
+    "repeatFullAcrossEras": false,
+    "repeat5PlusAcrossEras": false
+  },
+  "decision": "NEGATIVE",
+  "multipleTesting": {
+    "candidateCount": 27,
+    "status": "NOT_TRIGGERED"
+  },
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
