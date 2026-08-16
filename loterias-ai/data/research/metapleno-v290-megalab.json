@@ -1,0 +1,2892 @@
+{
+  "version": "v290",
+  "family": "MEGALAB_AUTONOMOUS_SCIENTIST_SWARM",
+  "generatedAt": "2026-08-16T16:28:09.055Z",
+  "architecture": {
+    "configuredScientists": 4096,
+    "specialties": 12,
+    "objectiveVariants": 6,
+    "virtualShards": 16,
+    "sharedNegativeMemory": true,
+    "multiStagePromotion": true
+  },
+  "counts": {
+    "generated": 4096,
+    "skippedMemory": 0,
+    "promotedSelection": 208,
+    "promotedOOS": 64,
+    "newNegatives": 4018
+  },
+  "games": [
+    {
+      "gameId": "bonoloto",
+      "archiveDraws": 9356,
+      "budget": {
+        "lineCostEUR": 0.5,
+        "lines": 8,
+        "theoreticalEUR": 4
+      },
+      "scientists": 1024,
+      "leaders": [
+        {
+          "scientistId": "S0045",
+          "game": "bonoloto",
+          "specialty": "combinatorial-search",
+          "objective": "era-replication",
+          "hash": "3dd6c15e8f3c00ae53472dfbd58f4586735ea99c09eb908eacd2f9648ceec549",
+          "complexity": 3,
+          "screen": {
+            "draws": 173,
+            "meanBestHits": 1.0809248554913296,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "screenScore": 8.05092485549133,
+          "selection": {
+            "draws": 1207,
+            "meanBestHits": 0.995857497928749,
+            "nearFull": 2,
+            "fullMain": 0
+          },
+          "selectionScore": 14.965857497928749,
+          "validation": {
+            "draws": 731,
+            "meanBestHits": 1.0451436388508892,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 591,
+            "meanBestHits": 0.9390862944162437,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "b",
+            "op": "sub",
+            "a": {
+              "t": "a",
+              "k": "position"
+            },
+            "b": {
+              "t": "a",
+              "k": "decade"
+            }
+          }
+        },
+        {
+          "scientistId": "S2349",
+          "game": "bonoloto",
+          "specialty": "combinatorial-search",
+          "objective": "era-replication",
+          "hash": "b879923ca79bd74175c140ae95fab56f8373a4a7c59daf3159918a4c1f0abed5",
+          "complexity": 7,
+          "screen": {
+            "draws": 173,
+            "meanBestHits": 0.9421965317919075,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "screenScore": 7.872196531791907,
+          "selection": {
+            "draws": 1207,
+            "meanBestHits": 0.9569179784589892,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "selectionScore": 7.886917978458989,
+          "validation": {
+            "draws": 731,
+            "meanBestHits": 1.0013679890560876,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 591,
+            "meanBestHits": 0.9289340101522843,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "u",
+            "op": "abs",
+            "a": {
+              "t": "b",
+              "op": "add",
+              "a": {
+                "t": "b",
+                "op": "div",
+                "a": {
+                  "t": "a",
+                  "k": "pairFar"
+                },
+                "b": {
+                  "t": "a",
+                  "k": "pairNear"
+                }
+              },
+              "b": {
+                "t": "u",
+                "op": "abs",
+                "a": {
+                  "t": "a",
+                  "k": "freq60"
+                }
+              }
+            }
+          }
+        },
+        {
+          "scientistId": "S1377",
+          "game": "bonoloto",
+          "specialty": "combinatorial-search",
+          "objective": "tail-uplift",
+          "hash": "ccf6e225d93f2e231119a430f80382ca225faa0db3015236badeb267bc278890",
+          "complexity": 10,
+          "screen": {
+            "draws": 173,
+            "meanBestHits": 1.092485549132948,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "screenScore": 6.992485549132948,
+          "selection": {
+            "draws": 1207,
+            "meanBestHits": 1.0115990057995028,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "selectionScore": 6.911599005799503,
+          "validation": {
+            "draws": 731,
+            "meanBestHits": 1.0013679890560876,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 591,
+            "meanBestHits": 1.0321489001692048,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "b",
+            "op": "add",
+            "a": {
+              "t": "b",
+              "op": "sub",
+              "a": {
+                "t": "a",
+                "k": "freq15"
+              },
+              "b": {
+                "t": "b",
+                "op": "max",
+                "a": {
+                  "t": "a",
+                  "k": "mod5"
+                },
+                "b": {
+                  "t": "b",
+                  "op": "sub",
+                  "a": {
+                    "t": "a",
+                    "k": "freq15"
+                  },
+                  "b": {
+                    "t": "a",
+                    "k": "gap"
+                  }
+                }
+              }
+            },
+            "b": {
+              "t": "u",
+              "op": "log",
+              "a": {
+                "t": "a",
+                "k": "decade"
+              }
+            }
+          }
+        },
+        {
+          "scientistId": "S4057",
+          "game": "bonoloto",
+          "specialty": "symbolic-regression",
+          "objective": "mean-hits",
+          "hash": "a6f12ab376b0ec0e2a28c153dd229400d92879f3846e99a0d7c12b43838b64fe",
+          "complexity": 3,
+          "screen": {
+            "draws": 173,
+            "meanBestHits": 1.115606936416185,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.0856069364161849,
+          "selection": {
+            "draws": 1207,
+            "meanBestHits": 0.9701739850869926,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "selectionScore": 5.940173985086993,
+          "validation": {
+            "draws": 731,
+            "meanBestHits": 0.948016415868673,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 591,
+            "meanBestHits": 0.949238578680203,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "b",
+            "op": "diffabs",
+            "a": {
+              "t": "a",
+              "k": "pairNear"
+            },
+            "b": {
+              "t": "a",
+              "k": "neighbor"
+            }
+          }
+        },
+        {
+          "scientistId": "S1969",
+          "game": "bonoloto",
+          "specialty": "symbolic-regression",
+          "objective": "mean-hits",
+          "hash": "89dfb1e32aba65732dd168aacc4ce54c1c76e4569792241c1858a1e8b1b77e5a",
+          "complexity": 12,
+          "screen": {
+            "draws": 173,
+            "meanBestHits": 1.1040462427745665,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "screenScore": 5.984046242774567,
+          "selection": {
+            "draws": 1207,
+            "meanBestHits": 1.0107705053852527,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "selectionScore": 5.890770505385253,
+          "validation": {
+            "draws": 731,
+            "meanBestHits": 0.9835841313269493,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 591,
+            "meanBestHits": 1.0372250423011844,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "b",
+            "op": "mul",
+            "a": {
+              "t": "u",
+              "op": "tanh",
+              "a": {
+                "t": "u",
+                "op": "sin",
+                "a": {
+                  "t": "u",
+                  "op": "tanh",
+                  "a": {
+                    "t": "a",
+                    "k": "freq120"
+                  }
+                }
+              }
+            },
+            "b": {
+              "t": "b",
+              "op": "add",
+              "a": {
+                "t": "u",
+                "op": "sign",
+                "a": {
+                  "t": "b",
+                  "op": "max",
+                  "a": {
+                    "t": "a",
+                    "k": "decade"
+                  },
+                  "b": {
+                    "t": "a",
+                    "k": "lastSeenNorm"
+                  }
+                }
+              },
+              "b": {
+                "t": "u",
+                "op": "tanh",
+                "a": {
+                  "t": "a",
+                  "k": "decade"
+                }
+              }
+            }
+          }
+        },
+        {
+          "scientistId": "S1261",
+          "game": "bonoloto",
+          "specialty": "symbolic-regression",
+          "objective": "stability",
+          "hash": "7cb7508fcc8a224c36b546fb459a1e749405c1d1589e0c2dfefd42bfdd426cc2",
+          "complexity": 5,
+          "screen": {
+            "draws": 173,
+            "meanBestHits": 1.1445086705202312,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "screenScore": 5.094508670520231,
+          "selection": {
+            "draws": 1207,
+            "meanBestHits": 1.0132560066280034,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "selectionScore": 4.963256006628003,
+          "validation": {
+            "draws": 731,
+            "meanBestHits": 0.9794801641586868,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 591,
+            "meanBestHits": 0.9780033840947546,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "u",
+            "op": "sqrt",
+            "a": {
+              "t": "b",
+              "op": "diffabs",
+              "a": {
+                "t": "u",
+                "op": "sign",
+                "a": {
+                  "t": "a",
+                  "k": "pairNear"
+                }
+              },
+              "b": {
+                "t": "a",
+                "k": "freq120"
+              }
+            }
+          }
+        },
+        {
+          "scientistId": "S1333",
+          "game": "bonoloto",
+          "specialty": "symbolic-regression",
+          "objective": "stability",
+          "hash": "cdef59ec0cf835e73e119bbce076a6f08c746620a7fd40ad4dcac8960ef4a4d2",
+          "complexity": 4,
+          "screen": {
+            "draws": 173,
+            "meanBestHits": 1.0289017341040463,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "screenScore": 4.988901734104046,
+          "selection": {
+            "draws": 1207,
+            "meanBestHits": 0.9726594863297432,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "selectionScore": 4.932659486329743,
+          "validation": {
+            "draws": 731,
+            "meanBestHits": 0.9288645690834473,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 591,
+            "meanBestHits": 0.9593908629441624,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "b",
+            "op": "add",
+            "a": {
+              "t": "a",
+              "k": "hotDelta"
+            },
+            "b": {
+              "t": "u",
+              "op": "log",
+              "a": {
+                "t": "a",
+                "k": "pairNear"
+              }
+            }
+          }
+        },
+        {
+          "scientistId": "S2773",
+          "game": "bonoloto",
+          "specialty": "symbolic-regression",
+          "objective": "stability",
+          "hash": "1e568bdc6a70fe9c1c37b938791518cc4208625f886c9d275675198584ed0d05",
+          "complexity": 6,
+          "screen": {
+            "draws": 173,
+            "meanBestHits": 0.9942196531791907,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "screenScore": 4.93421965317919,
+          "selection": {
+            "draws": 1207,
+            "meanBestHits": 0.980115990057995,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "selectionScore": 4.920115990057995,
+          "validation": {
+            "draws": 731,
+            "meanBestHits": 0.9986320109439124,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 591,
+            "meanBestHits": 0.9323181049069373,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "u",
+            "op": "sign",
+            "a": {
+              "t": "u",
+              "op": "sign",
+              "a": {
+                "t": "b",
+                "op": "avg",
+                "a": {
+                  "t": "u",
+                  "op": "sin",
+                  "a": {
+                    "t": "a",
+                    "k": "pairNear"
+                  }
+                },
+                "b": {
+                  "t": "a",
+                  "k": "pairNear"
+                }
+              }
+            }
+          }
+        },
+        {
+          "scientistId": "S0661",
+          "game": "bonoloto",
+          "specialty": "symbolic-regression",
+          "objective": "stability",
+          "hash": "74f82024316f75c67c1a4c2362351b5acc71e0aa709052e0f6850d0f9447a058",
+          "complexity": 1,
+          "screen": {
+            "draws": 173,
+            "meanBestHits": 1.046242774566474,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.036242774566474,
+          "selection": {
+            "draws": 1207,
+            "meanBestHits": 1.0173985086992543,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 1.0073985086992543,
+          "validation": {
+            "draws": 731,
+            "meanBestHits": 0.9439124487004104,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 591,
+            "meanBestHits": 0.9695431472081218,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "freq120"
+          }
+        },
+        {
+          "scientistId": "S0517",
+          "game": "bonoloto",
+          "specialty": "symbolic-regression",
+          "objective": "stability",
+          "hash": "9e08b02e08239564692f1773f20c10c24c635c49730b565f84850c9516d50cb1",
+          "complexity": 1,
+          "screen": {
+            "draws": 173,
+            "meanBestHits": 1.115606936416185,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.105606936416185,
+          "selection": {
+            "draws": 1207,
+            "meanBestHits": 0.995857497928749,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.985857497928749,
+          "validation": {
+            "draws": 731,
+            "meanBestHits": 1.0205198358413132,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 591,
+            "meanBestHits": 1.0101522842639594,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "position"
+          }
+        },
+        {
+          "scientistId": "S0789",
+          "game": "bonoloto",
+          "specialty": "combinatorial-search",
+          "objective": "era-replication",
+          "hash": "dcd1d52ec0aa320642d845b00ff25242264e9e3921ee6d67bf1056fc7c1ab7c9",
+          "complexity": 1,
+          "screen": {
+            "draws": 173,
+            "meanBestHits": 1.115606936416185,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.105606936416185,
+          "selection": {
+            "draws": 1207,
+            "meanBestHits": 0.995857497928749,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.985857497928749,
+          "validation": {
+            "draws": 731,
+            "meanBestHits": 1.0205198358413132,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 591,
+            "meanBestHits": 1.0101522842639594,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "position"
+          }
+        },
+        {
+          "scientistId": "S0849",
+          "game": "bonoloto",
+          "specialty": "combinatorial-search",
+          "objective": "tail-uplift",
+          "hash": "9c7afec87224735034c429ee9750db3e02a67188e15d1ed8f885d7f5083a51b3",
+          "complexity": 1,
+          "screen": {
+            "draws": 173,
+            "meanBestHits": 1.115606936416185,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.105606936416185,
+          "selection": {
+            "draws": 1207,
+            "meanBestHits": 0.995857497928749,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.985857497928749,
+          "validation": {
+            "draws": 731,
+            "meanBestHits": 1.0205198358413132,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 591,
+            "meanBestHits": 1.0101522842639594,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "position"
+          }
+        },
+        {
+          "scientistId": "S1181",
+          "game": "bonoloto",
+          "specialty": "spectral",
+          "objective": "near-full",
+          "hash": "3a2d14c317c8065f255fefeba93d4b8c06d0ea7f3e6386d9b3be047210d096f1",
+          "complexity": 1,
+          "screen": {
+            "draws": 173,
+            "meanBestHits": 1.115606936416185,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.105606936416185,
+          "selection": {
+            "draws": 1207,
+            "meanBestHits": 0.995857497928749,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.985857497928749,
+          "validation": {
+            "draws": 731,
+            "meanBestHits": 1.0205198358413132,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 591,
+            "meanBestHits": 1.0101522842639594,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "position"
+          }
+        },
+        {
+          "scientistId": "S1573",
+          "game": "bonoloto",
+          "specialty": "symbolic-regression",
+          "objective": "stability",
+          "hash": "9e08b02e08239564692f1773f20c10c24c635c49730b565f84850c9516d50cb1",
+          "complexity": 1,
+          "screen": {
+            "draws": 173,
+            "meanBestHits": 1.115606936416185,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.105606936416185,
+          "selection": {
+            "draws": 1207,
+            "meanBestHits": 0.995857497928749,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.985857497928749,
+          "validation": {
+            "draws": 731,
+            "meanBestHits": 1.0205198358413132,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 591,
+            "meanBestHits": 1.0101522842639594,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "position"
+          }
+        },
+        {
+          "scientistId": "S1633",
+          "game": "bonoloto",
+          "specialty": "symbolic-regression",
+          "objective": "mean-hits",
+          "hash": "7a82bd8aeb098e333318b2976bf24bc9a912c10ed538c8fca6d3d2fe35aa984a",
+          "complexity": 1,
+          "screen": {
+            "draws": 173,
+            "meanBestHits": 1.115606936416185,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.105606936416185,
+          "selection": {
+            "draws": 1207,
+            "meanBestHits": 0.995857497928749,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.985857497928749,
+          "validation": {
+            "draws": 731,
+            "meanBestHits": 1.0205198358413132,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 591,
+            "meanBestHits": 1.0101522842639594,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "position"
+          }
+        },
+        {
+          "scientistId": "S1905",
+          "game": "bonoloto",
+          "specialty": "combinatorial-search",
+          "objective": "tail-uplift",
+          "hash": "9c7afec87224735034c429ee9750db3e02a67188e15d1ed8f885d7f5083a51b3",
+          "complexity": 1,
+          "screen": {
+            "draws": 173,
+            "meanBestHits": 1.115606936416185,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.105606936416185,
+          "selection": {
+            "draws": 1207,
+            "meanBestHits": 0.995857497928749,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.985857497928749,
+          "validation": {
+            "draws": 731,
+            "meanBestHits": 1.0205198358413132,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 591,
+            "meanBestHits": 1.0101522842639594,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "position"
+          }
+        }
+      ],
+      "decision": "NEGATIVE"
+    },
+    {
+      "gameId": "primitiva",
+      "archiveDraws": 4173,
+      "budget": {
+        "lineCostEUR": 1,
+        "lines": 4,
+        "theoreticalEUR": 4
+      },
+      "scientists": 1024,
+      "leaders": [
+        {
+          "scientistId": "S2290",
+          "game": "primitiva",
+          "specialty": "ensemble-synthesis",
+          "objective": "tail-uplift",
+          "hash": "64bdc567f0eea1b533c6e8aa63a9d4b5bfede63c59e1622ea53dd05cfa2f0103",
+          "complexity": 10,
+          "screen": {
+            "draws": 61,
+            "meanBestHits": 1,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "screenScore": 6.9,
+          "selection": {
+            "draws": 425,
+            "meanBestHits": 0.9576470588235294,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "selectionScore": 6.857647058823529,
+          "validation": {
+            "draws": 313,
+            "meanBestHits": 0.9552715654952076,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 251,
+            "meanBestHits": 1.047808764940239,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "b",
+            "op": "add",
+            "a": {
+              "t": "b",
+              "op": "avg",
+              "a": {
+                "t": "a",
+                "k": "freq15"
+              },
+              "b": {
+                "t": "a",
+                "k": "lastSeenNorm"
+              }
+            },
+            "b": {
+              "t": "b",
+              "op": "div",
+              "a": {
+                "t": "u",
+                "op": "sin",
+                "a": {
+                  "t": "a",
+                  "k": "freq120"
+                }
+              },
+              "b": {
+                "t": "b",
+                "op": "avg",
+                "a": {
+                  "t": "a",
+                  "k": "coldDelta"
+                },
+                "b": {
+                  "t": "a",
+                  "k": "mod5"
+                }
+              }
+            }
+          }
+        },
+        {
+          "scientistId": "S1178",
+          "game": "primitiva",
+          "specialty": "graph-structure",
+          "objective": "mean-hits",
+          "hash": "04f08846405d12056a6af52359ba5556d38b220675f27a30f8e86357e22c1d9b",
+          "complexity": 5,
+          "screen": {
+            "draws": 61,
+            "meanBestHits": 0.9508196721311475,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "screenScore": 5.900819672131147,
+          "selection": {
+            "draws": 425,
+            "meanBestHits": 0.9176470588235294,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "selectionScore": 5.867647058823529,
+          "validation": {
+            "draws": 313,
+            "meanBestHits": 0.9073482428115016,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 251,
+            "meanBestHits": 0.8924302788844621,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "b",
+            "op": "mul",
+            "a": {
+              "t": "b",
+              "op": "avg",
+              "a": {
+                "t": "a",
+                "k": "freq15"
+              },
+              "b": {
+                "t": "a",
+                "k": "hotDelta"
+              }
+            },
+            "b": {
+              "t": "a",
+              "k": "coldDelta"
+            }
+          }
+        },
+        {
+          "scientistId": "S2366",
+          "game": "primitiva",
+          "specialty": "graph-structure",
+          "objective": "stability",
+          "hash": "a37444cfb9c68220a2978b9e599d2206dd017ac863e05a9f562f4c7c0ad9c77a",
+          "complexity": 3,
+          "screen": {
+            "draws": 61,
+            "meanBestHits": 1.1147540983606556,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.0847540983606556,
+          "selection": {
+            "draws": 425,
+            "meanBestHits": 1.056470588235294,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 1.026470588235294,
+          "validation": {
+            "draws": 313,
+            "meanBestHits": 0.9584664536741214,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 251,
+            "meanBestHits": 0.9601593625498008,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "b",
+            "op": "min",
+            "a": {
+              "t": "a",
+              "k": "pairNear"
+            },
+            "b": {
+              "t": "a",
+              "k": "freq60"
+            }
+          }
+        },
+        {
+          "scientistId": "S0202",
+          "game": "primitiva",
+          "specialty": "ensemble-synthesis",
+          "objective": "tail-uplift",
+          "hash": "b0da3ed4d578ce4988e6e2aacdeb19426474521a160d6cc84f9baec83e8f2e87",
+          "complexity": 2,
+          "screen": {
+            "draws": 61,
+            "meanBestHits": 1.098360655737705,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.078360655737705,
+          "selection": {
+            "draws": 425,
+            "meanBestHits": 1.0305882352941176,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 1.0105882352941176,
+          "validation": {
+            "draws": 313,
+            "meanBestHits": 0.9488817891373802,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 251,
+            "meanBestHits": 0.9282868525896414,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "u",
+            "op": "log",
+            "a": {
+              "t": "a",
+              "k": "pairFar"
+            }
+          }
+        },
+        {
+          "scientistId": "S0466",
+          "game": "primitiva",
+          "specialty": "ensemble-synthesis",
+          "objective": "tail-uplift",
+          "hash": "b0da3ed4d578ce4988e6e2aacdeb19426474521a160d6cc84f9baec83e8f2e87",
+          "complexity": 2,
+          "screen": {
+            "draws": 61,
+            "meanBestHits": 1.098360655737705,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.078360655737705,
+          "selection": {
+            "draws": 425,
+            "meanBestHits": 1.0305882352941176,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 1.0105882352941176,
+          "validation": {
+            "draws": 313,
+            "meanBestHits": 0.9488817891373802,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 251,
+            "meanBestHits": 0.9282868525896414,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "u",
+            "op": "log",
+            "a": {
+              "t": "a",
+              "k": "pairFar"
+            }
+          }
+        },
+        {
+          "scientistId": "S3158",
+          "game": "primitiva",
+          "specialty": "graph-structure",
+          "objective": "stability",
+          "hash": "041c51ffaa70488c30b40be7600a74f94b62b1408a101d9af59bb0aa96d15310",
+          "complexity": 2,
+          "screen": {
+            "draws": 61,
+            "meanBestHits": 1.180327868852459,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.160327868852459,
+          "selection": {
+            "draws": 425,
+            "meanBestHits": 1.0188235294117647,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.9988235294117647,
+          "validation": {
+            "draws": 313,
+            "meanBestHits": 0.9424920127795527,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 251,
+            "meanBestHits": 0.9601593625498008,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "u",
+            "op": "cos",
+            "a": {
+              "t": "a",
+              "k": "hotDelta"
+            }
+          }
+        },
+        {
+          "scientistId": "S1598",
+          "game": "primitiva",
+          "specialty": "graph-structure",
+          "objective": "stability",
+          "hash": "874ee9a0c213edba4ab868a5c7ba26981b9adeb3cc373d4b5de96d3f0bab5b19",
+          "complexity": 3,
+          "screen": {
+            "draws": 61,
+            "meanBestHits": 1.098360655737705,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.068360655737705,
+          "selection": {
+            "draws": 425,
+            "meanBestHits": 1.0282352941176471,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.9982352941176471,
+          "validation": {
+            "draws": 313,
+            "meanBestHits": 0.9201277955271565,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 251,
+            "meanBestHits": 0.9641434262948207,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "b",
+            "op": "mul",
+            "a": {
+              "t": "a",
+              "k": "position"
+            },
+            "b": {
+              "t": "a",
+              "k": "pairNear"
+            }
+          }
+        },
+        {
+          "scientistId": "S0198",
+          "game": "primitiva",
+          "specialty": "topology",
+          "objective": "near-full",
+          "hash": "49c2fa307cbe95899d243b6a1f2fef2b9eefd880c7a5b3c1479e1c8ea38a1e25",
+          "complexity": 1,
+          "screen": {
+            "draws": 61,
+            "meanBestHits": 1.1475409836065573,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.1375409836065573,
+          "selection": {
+            "draws": 425,
+            "meanBestHits": 1,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.99,
+          "validation": {
+            "draws": 313,
+            "meanBestHits": 0.9712460063897763,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 251,
+            "meanBestHits": 1,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "freq60"
+          }
+        },
+        {
+          "scientistId": "S0470",
+          "game": "primitiva",
+          "specialty": "graph-structure",
+          "objective": "stability",
+          "hash": "8886283724f2a2a45ab0cea811c578a5105b1ac088a105f912b8841088663b71",
+          "complexity": 1,
+          "screen": {
+            "draws": 61,
+            "meanBestHits": 1.1475409836065573,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.1375409836065573,
+          "selection": {
+            "draws": 425,
+            "meanBestHits": 1,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.99,
+          "validation": {
+            "draws": 313,
+            "meanBestHits": 0.9712460063897763,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 251,
+            "meanBestHits": 1,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "freq60"
+          }
+        },
+        {
+          "scientistId": "S0530",
+          "game": "primitiva",
+          "specialty": "graph-structure",
+          "objective": "mean-hits",
+          "hash": "b825856fc46a7fa4510aa75a204eea795b9fe6cf994d271f6c670961a9e23c6d",
+          "complexity": 1,
+          "screen": {
+            "draws": 61,
+            "meanBestHits": 1.1475409836065573,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.1375409836065573,
+          "selection": {
+            "draws": 425,
+            "meanBestHits": 1,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.99,
+          "validation": {
+            "draws": 313,
+            "meanBestHits": 0.9712460063897763,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 251,
+            "meanBestHits": 1,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "freq60"
+          }
+        },
+        {
+          "scientistId": "S0862",
+          "game": "primitiva",
+          "specialty": "ensemble-synthesis",
+          "objective": "era-replication",
+          "hash": "bf0bd4ca9a70e40f412e87d0f55583802700a292a8bbbb7074e99f8e621fa0c1",
+          "complexity": 1,
+          "screen": {
+            "draws": 61,
+            "meanBestHits": 1.1475409836065573,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.1375409836065573,
+          "selection": {
+            "draws": 425,
+            "meanBestHits": 1,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.99,
+          "validation": {
+            "draws": 313,
+            "meanBestHits": 0.9712460063897763,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 251,
+            "meanBestHits": 1,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "freq60"
+          }
+        },
+        {
+          "scientistId": "S0922",
+          "game": "primitiva",
+          "specialty": "ensemble-synthesis",
+          "objective": "tail-uplift",
+          "hash": "de3552632412d6e549103b0a92599706664a6b021bb8d224d2eb09d95db3f38e",
+          "complexity": 1,
+          "screen": {
+            "draws": 61,
+            "meanBestHits": 1.1475409836065573,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.1375409836065573,
+          "selection": {
+            "draws": 425,
+            "meanBestHits": 1,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.99,
+          "validation": {
+            "draws": 313,
+            "meanBestHits": 0.9712460063897763,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 251,
+            "meanBestHits": 1,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "freq60"
+          }
+        },
+        {
+          "scientistId": "S1618",
+          "game": "primitiva",
+          "specialty": "ensemble-synthesis",
+          "objective": "tail-uplift",
+          "hash": "de3552632412d6e549103b0a92599706664a6b021bb8d224d2eb09d95db3f38e",
+          "complexity": 1,
+          "screen": {
+            "draws": 61,
+            "meanBestHits": 1.1475409836065573,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.1375409836065573,
+          "selection": {
+            "draws": 425,
+            "meanBestHits": 1,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.99,
+          "validation": {
+            "draws": 313,
+            "meanBestHits": 0.9712460063897763,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 251,
+            "meanBestHits": 1,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "freq60"
+          }
+        },
+        {
+          "scientistId": "S1950",
+          "game": "primitiva",
+          "specialty": "topology",
+          "objective": "near-full",
+          "hash": "49c2fa307cbe95899d243b6a1f2fef2b9eefd880c7a5b3c1479e1c8ea38a1e25",
+          "complexity": 1,
+          "screen": {
+            "draws": 61,
+            "meanBestHits": 1.1475409836065573,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.1375409836065573,
+          "selection": {
+            "draws": 425,
+            "meanBestHits": 1,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.99,
+          "validation": {
+            "draws": 313,
+            "meanBestHits": 0.9712460063897763,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 251,
+            "meanBestHits": 1,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "freq60"
+          }
+        },
+        {
+          "scientistId": "S2282",
+          "game": "primitiva",
+          "specialty": "graph-structure",
+          "objective": "mean-hits",
+          "hash": "b825856fc46a7fa4510aa75a204eea795b9fe6cf994d271f6c670961a9e23c6d",
+          "complexity": 1,
+          "screen": {
+            "draws": 61,
+            "meanBestHits": 1.1475409836065573,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.1375409836065573,
+          "selection": {
+            "draws": 425,
+            "meanBestHits": 1,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.99,
+          "validation": {
+            "draws": 313,
+            "meanBestHits": 0.9712460063897763,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 251,
+            "meanBestHits": 1,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "freq60"
+          }
+        },
+        {
+          "scientistId": "S2342",
+          "game": "primitiva",
+          "specialty": "graph-structure",
+          "objective": "stability",
+          "hash": "8886283724f2a2a45ab0cea811c578a5105b1ac088a105f912b8841088663b71",
+          "complexity": 1,
+          "screen": {
+            "draws": 61,
+            "meanBestHits": 1.1475409836065573,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 1.1375409836065573,
+          "selection": {
+            "draws": 425,
+            "meanBestHits": 1,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.99,
+          "validation": {
+            "draws": 313,
+            "meanBestHits": 0.9712460063897763,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 251,
+            "meanBestHits": 1,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "freq60"
+          }
+        }
+      ],
+      "decision": "NEGATIVE"
+    },
+    {
+      "gameId": "euromillones",
+      "archiveDraws": 1030,
+      "budget": {
+        "lineCostEUR": 2.5,
+        "lines": 1,
+        "theoreticalEUR": 2.5
+      },
+      "scientists": 1024,
+      "leaders": [
+        {
+          "scientistId": "S0143",
+          "game": "euromillones",
+          "specialty": "feature-invention",
+          "objective": "era-replication",
+          "hash": "a9a6fa0b3ce7a9720489b1edb6aaea4fa1fd05adf0ba6fdf591b73f89e870dc6",
+          "complexity": 3,
+          "screen": {
+            "draws": 60,
+            "meanBestHits": 0.65,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.62,
+          "selection": {
+            "draws": 414,
+            "meanBestHits": 0.5096618357487923,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "selectionScore": 7.479661835748792,
+          "validation": {
+            "draws": 209,
+            "meanBestHits": 0.507177033492823,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 167,
+            "meanBestHits": 0.5269461077844312,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "b",
+            "op": "mul",
+            "a": {
+              "t": "a",
+              "k": "pairNear"
+            },
+            "b": {
+              "t": "a",
+              "k": "parity"
+            }
+          }
+        },
+        {
+          "scientistId": "S3287",
+          "game": "euromillones",
+          "specialty": "feature-invention",
+          "objective": "era-replication",
+          "hash": "ead56a6b71913c302da702e12cb7931c9de8753e91e05036c623035214071745",
+          "complexity": 9,
+          "screen": {
+            "draws": 60,
+            "meanBestHits": 0.4666666666666667,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "screenScore": 7.376666666666667,
+          "selection": {
+            "draws": 414,
+            "meanBestHits": 0.5314009661835749,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "selectionScore": 7.441400966183575,
+          "validation": {
+            "draws": 209,
+            "meanBestHits": 0.4880382775119617,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 167,
+            "meanBestHits": 0.5029940119760479,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "b",
+            "op": "sub",
+            "a": {
+              "t": "a",
+              "k": "decade"
+            },
+            "b": {
+              "t": "u",
+              "op": "sqrt",
+              "a": {
+                "t": "b",
+                "op": "max",
+                "a": {
+                  "t": "u",
+                  "op": "sq",
+                  "a": {
+                    "t": "a",
+                    "k": "hotDelta"
+                  }
+                },
+                "b": {
+                  "t": "b",
+                  "op": "div",
+                  "a": {
+                    "t": "a",
+                    "k": "pairFar"
+                  },
+                  "b": {
+                    "t": "a",
+                    "k": "lastSeenNorm"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "scientistId": "S2303",
+          "game": "euromillones",
+          "specialty": "feature-invention",
+          "objective": "era-replication",
+          "hash": "4d15890d490f0f6587f4368b01ac2d214dae860f9b5fa09e4e4a8dd38fecddb0",
+          "complexity": 7,
+          "screen": {
+            "draws": 60,
+            "meanBestHits": 0.5833333333333334,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "screenScore": 7.513333333333334,
+          "selection": {
+            "draws": 414,
+            "meanBestHits": 0.5048309178743962,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "selectionScore": 7.434830917874396,
+          "validation": {
+            "draws": 209,
+            "meanBestHits": 0.5215311004784688,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 167,
+            "meanBestHits": 0.5209580838323353,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "u",
+            "op": "sin",
+            "a": {
+              "t": "b",
+              "op": "div",
+              "a": {
+                "t": "a",
+                "k": "freq120"
+              },
+              "b": {
+                "t": "u",
+                "op": "sq",
+                "a": {
+                  "t": "b",
+                  "op": "min",
+                  "a": {
+                    "t": "a",
+                    "k": "pairFar"
+                  },
+                  "b": {
+                    "t": "a",
+                    "k": "coldDelta"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "scientistId": "S3031",
+          "game": "euromillones",
+          "specialty": "distribution-drift",
+          "objective": "near-full",
+          "hash": "da66e4557519283b26aef33248839da71981a3c49de2a8522933e5509f4bd348",
+          "complexity": 2,
+          "screen": {
+            "draws": 60,
+            "meanBestHits": 0.5833333333333334,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.5633333333333334,
+          "selection": {
+            "draws": 414,
+            "meanBestHits": 0.538647342995169,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.518647342995169,
+          "validation": {
+            "draws": 209,
+            "meanBestHits": 0.4880382775119617,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 167,
+            "meanBestHits": 0.46107784431137727,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "u",
+            "op": "cos",
+            "a": {
+              "t": "a",
+              "k": "mod5"
+            }
+          }
+        },
+        {
+          "scientistId": "S2579",
+          "game": "euromillones",
+          "specialty": "feature-invention",
+          "objective": "tail-uplift",
+          "hash": "17205316ab30bf022a68fa913408945d4bb4c6d45f54f6cbefbe008cdf8a1a52",
+          "complexity": 2,
+          "screen": {
+            "draws": 60,
+            "meanBestHits": 0.7166666666666667,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.6966666666666667,
+          "selection": {
+            "draws": 414,
+            "meanBestHits": 0.5217391304347826,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.5017391304347826,
+          "validation": {
+            "draws": 209,
+            "meanBestHits": 0.4784688995215311,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 167,
+            "meanBestHits": 0.5449101796407185,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "u",
+            "op": "sq",
+            "a": {
+              "t": "a",
+              "k": "pairNear"
+            }
+          }
+        },
+        {
+          "scientistId": "S3663",
+          "game": "euromillones",
+          "specialty": "information-theory",
+          "objective": "stability",
+          "hash": "14753ac82985bfde8177c639b883ab29bb3fc48c504b155e1ab6fc449cf5217b",
+          "complexity": 2,
+          "screen": {
+            "draws": 60,
+            "meanBestHits": 0.7166666666666667,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.6966666666666667,
+          "selection": {
+            "draws": 414,
+            "meanBestHits": 0.5217391304347826,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.5017391304347826,
+          "validation": {
+            "draws": 209,
+            "meanBestHits": 0.4784688995215311,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 167,
+            "meanBestHits": 0.5449101796407185,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "u",
+            "op": "sq",
+            "a": {
+              "t": "a",
+              "k": "pairNear"
+            }
+          }
+        },
+        {
+          "scientistId": "S1303",
+          "game": "euromillones",
+          "specialty": "distribution-drift",
+          "objective": "near-full",
+          "hash": "fe05e6f9aeb95e717fa78cf2ba6d6cfb481ee8b50dfa5aa1282c3395c8e9045c",
+          "complexity": 3,
+          "screen": {
+            "draws": 60,
+            "meanBestHits": 0.55,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.52,
+          "selection": {
+            "draws": 414,
+            "meanBestHits": 0.5289855072463768,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.4989855072463768,
+          "validation": {
+            "draws": 209,
+            "meanBestHits": 0.5454545454545454,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 167,
+            "meanBestHits": 0.5568862275449101,
+            "nearFull": 1,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "b",
+            "op": "diffabs",
+            "a": {
+              "t": "a",
+              "k": "gap"
+            },
+            "b": {
+              "t": "a",
+              "k": "mod3"
+            }
+          }
+        },
+        {
+          "scientistId": "S1207",
+          "game": "euromillones",
+          "specialty": "distribution-drift",
+          "objective": "near-full",
+          "hash": "d736a8e7c73995ab13484d88b5248111c2f95e5665bd134ddc8dc23b49070ba0",
+          "complexity": 10,
+          "screen": {
+            "draws": 60,
+            "meanBestHits": 0.65,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.55,
+          "selection": {
+            "draws": 414,
+            "meanBestHits": 0.5869565217391305,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.4869565217391305,
+          "validation": {
+            "draws": 209,
+            "meanBestHits": 0.5263157894736842,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 167,
+            "meanBestHits": 0.562874251497006,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "b",
+            "op": "sub",
+            "a": {
+              "t": "b",
+              "op": "mul",
+              "a": {
+                "t": "a",
+                "k": "position"
+              },
+              "b": {
+                "t": "a",
+                "k": "mod3"
+              }
+            },
+            "b": {
+              "t": "b",
+              "op": "diffabs",
+              "a": {
+                "t": "a",
+                "k": "freq120"
+              },
+              "b": {
+                "t": "u",
+                "op": "sq",
+                "a": {
+                  "t": "b",
+                  "op": "div",
+                  "a": {
+                    "t": "a",
+                    "k": "freq15"
+                  },
+                  "b": {
+                    "t": "a",
+                    "k": "pairNear"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "scientistId": "S0575",
+          "game": "euromillones",
+          "specialty": "feature-invention",
+          "objective": "era-replication",
+          "hash": "7c9fe22be0741ac59ca972ab1c48610347ff127f5778e1757d6ca15cf4bc1066",
+          "complexity": 1,
+          "screen": {
+            "draws": 60,
+            "meanBestHits": 0.5666666666666667,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.5566666666666666,
+          "selection": {
+            "draws": 414,
+            "meanBestHits": 0.49516908212560384,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.48516908212560383,
+          "validation": {
+            "draws": 209,
+            "meanBestHits": 0.45933014354066987,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 167,
+            "meanBestHits": 0.5508982035928144,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "mod5"
+          }
+        },
+        {
+          "scientistId": "S1239",
+          "game": "euromillones",
+          "specialty": "information-theory",
+          "objective": "stability",
+          "hash": "dbf5ed388a86e7c265713077804218d2b53f78d5b3e49d06608dd841ad3df9ab",
+          "complexity": 1,
+          "screen": {
+            "draws": 60,
+            "meanBestHits": 0.5666666666666667,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.5566666666666666,
+          "selection": {
+            "draws": 414,
+            "meanBestHits": 0.49516908212560384,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.48516908212560383,
+          "validation": {
+            "draws": 209,
+            "meanBestHits": 0.45933014354066987,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 167,
+            "meanBestHits": 0.5508982035928144,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "mod5"
+          }
+        },
+        {
+          "scientistId": "S1299",
+          "game": "euromillones",
+          "specialty": "information-theory",
+          "objective": "mean-hits",
+          "hash": "e1d4419a5d78296898ce102b3a2bf2fcc55e2ac3a68a52afc7c11e763e45245f",
+          "complexity": 1,
+          "screen": {
+            "draws": 60,
+            "meanBestHits": 0.5666666666666667,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.5566666666666666,
+          "selection": {
+            "draws": 414,
+            "meanBestHits": 0.49516908212560384,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.48516908212560383,
+          "validation": {
+            "draws": 209,
+            "meanBestHits": 0.45933014354066987,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 167,
+            "meanBestHits": 0.5508982035928144,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "mod5"
+          }
+        },
+        {
+          "scientistId": "S1631",
+          "game": "euromillones",
+          "specialty": "feature-invention",
+          "objective": "era-replication",
+          "hash": "7c9fe22be0741ac59ca972ab1c48610347ff127f5778e1757d6ca15cf4bc1066",
+          "complexity": 1,
+          "screen": {
+            "draws": 60,
+            "meanBestHits": 0.5666666666666667,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.5566666666666666,
+          "selection": {
+            "draws": 414,
+            "meanBestHits": 0.49516908212560384,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.48516908212560383,
+          "validation": {
+            "draws": 209,
+            "meanBestHits": 0.45933014354066987,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 167,
+            "meanBestHits": 0.5508982035928144,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "mod5"
+          }
+        },
+        {
+          "scientistId": "S2023",
+          "game": "euromillones",
+          "specialty": "distribution-drift",
+          "objective": "near-full",
+          "hash": "c3da3252d04e232b8b540628ea30067f9906e339c8a68a8e0b94f0223bf4e002",
+          "complexity": 1,
+          "screen": {
+            "draws": 60,
+            "meanBestHits": 0.5666666666666667,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.5566666666666666,
+          "selection": {
+            "draws": 414,
+            "meanBestHits": 0.49516908212560384,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.48516908212560383,
+          "validation": {
+            "draws": 209,
+            "meanBestHits": 0.45933014354066987,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 167,
+            "meanBestHits": 0.5508982035928144,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "mod5"
+          }
+        },
+        {
+          "scientistId": "S2355",
+          "game": "euromillones",
+          "specialty": "information-theory",
+          "objective": "mean-hits",
+          "hash": "e1d4419a5d78296898ce102b3a2bf2fcc55e2ac3a68a52afc7c11e763e45245f",
+          "complexity": 1,
+          "screen": {
+            "draws": 60,
+            "meanBestHits": 0.5666666666666667,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.5566666666666666,
+          "selection": {
+            "draws": 414,
+            "meanBestHits": 0.49516908212560384,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.48516908212560383,
+          "validation": {
+            "draws": 209,
+            "meanBestHits": 0.45933014354066987,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 167,
+            "meanBestHits": 0.5508982035928144,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "mod5"
+          }
+        },
+        {
+          "scientistId": "S2719",
+          "game": "euromillones",
+          "specialty": "distribution-drift",
+          "objective": "near-full",
+          "hash": "c3da3252d04e232b8b540628ea30067f9906e339c8a68a8e0b94f0223bf4e002",
+          "complexity": 1,
+          "screen": {
+            "draws": 60,
+            "meanBestHits": 0.5666666666666667,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.5566666666666666,
+          "selection": {
+            "draws": 414,
+            "meanBestHits": 0.49516908212560384,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.48516908212560383,
+          "validation": {
+            "draws": 209,
+            "meanBestHits": 0.45933014354066987,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 167,
+            "meanBestHits": 0.5508982035928144,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "mod5"
+          }
+        },
+        {
+          "scientistId": "S3051",
+          "game": "euromillones",
+          "specialty": "information-theory",
+          "objective": "mean-hits",
+          "hash": "e1d4419a5d78296898ce102b3a2bf2fcc55e2ac3a68a52afc7c11e763e45245f",
+          "complexity": 1,
+          "screen": {
+            "draws": 60,
+            "meanBestHits": 0.5666666666666667,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.5566666666666666,
+          "selection": {
+            "draws": 414,
+            "meanBestHits": 0.49516908212560384,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.48516908212560383,
+          "validation": {
+            "draws": 209,
+            "meanBestHits": 0.45933014354066987,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 167,
+            "meanBestHits": 0.5508982035928144,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "mod5"
+          }
+        }
+      ],
+      "decision": "NEGATIVE"
+    },
+    {
+      "gameId": "gordo-primitiva",
+      "archiveDraws": 1113,
+      "budget": {
+        "lineCostEUR": 1.5,
+        "lines": 2,
+        "theoreticalEUR": 3
+      },
+      "scientists": 1024,
+      "leaders": [
+        {
+          "scientistId": "S2880",
+          "game": "gordo-primitiva",
+          "specialty": "adversarial-falsification",
+          "objective": "era-replication",
+          "hash": "78512e18421ddbff750a2bceae4184d065fb8ad46af4d9be138efc892b541bf4",
+          "complexity": 3,
+          "screen": {
+            "draws": 28,
+            "meanBestHits": 0.8928571428571429,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.8628571428571429,
+          "selection": {
+            "draws": 198,
+            "meanBestHits": 0.6414141414141414,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.6114141414141414,
+          "validation": {
+            "draws": 105,
+            "meanBestHits": 0.5047619047619047,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 84,
+            "meanBestHits": 0.5357142857142857,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "b",
+            "op": "avg",
+            "a": {
+              "t": "a",
+              "k": "freq120"
+            },
+            "b": {
+              "t": "a",
+              "k": "pairFar"
+            }
+          }
+        },
+        {
+          "scientistId": "S0560",
+          "game": "gordo-primitiva",
+          "specialty": "regime-detection",
+          "objective": "near-full",
+          "hash": "27bce863a17eb1f57f0ff70af07c60eacd2b36d94ef43db5ac9e49174302523a",
+          "complexity": 1,
+          "screen": {
+            "draws": 28,
+            "meanBestHits": 0.8214285714285714,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.8114285714285714,
+          "selection": {
+            "draws": 198,
+            "meanBestHits": 0.6212121212121212,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.6112121212121212,
+          "validation": {
+            "draws": 105,
+            "meanBestHits": 0.5142857142857142,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 84,
+            "meanBestHits": 0.5,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "pairFar"
+          }
+        },
+        {
+          "scientistId": "S0892",
+          "game": "gordo-primitiva",
+          "specialty": "temporal-dynamics",
+          "objective": "mean-hits",
+          "hash": "1e9787c796a5d67ccc2e3b3782ce6f828214d0fb0fea33d58af885b0f412f488",
+          "complexity": 1,
+          "screen": {
+            "draws": 28,
+            "meanBestHits": 0.8214285714285714,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.8114285714285714,
+          "selection": {
+            "draws": 198,
+            "meanBestHits": 0.6212121212121212,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.6112121212121212,
+          "validation": {
+            "draws": 105,
+            "meanBestHits": 0.5142857142857142,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 84,
+            "meanBestHits": 0.5,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "pairFar"
+          }
+        },
+        {
+          "scientistId": "S0952",
+          "game": "gordo-primitiva",
+          "specialty": "temporal-dynamics",
+          "objective": "stability",
+          "hash": "516896cc3a70a7e76b75d8ee59e9e0d3bdecd590e2fcb47f29b095987239acf7",
+          "complexity": 1,
+          "screen": {
+            "draws": 28,
+            "meanBestHits": 0.8214285714285714,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.8114285714285714,
+          "selection": {
+            "draws": 198,
+            "meanBestHits": 0.6212121212121212,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.6112121212121212,
+          "validation": {
+            "draws": 105,
+            "meanBestHits": 0.5142857142857142,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 84,
+            "meanBestHits": 0.5,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "pairFar"
+          }
+        },
+        {
+          "scientistId": "S1224",
+          "game": "gordo-primitiva",
+          "specialty": "adversarial-falsification",
+          "objective": "era-replication",
+          "hash": "dbaf0f30d44cab3dfa096871480cd8b24246989217c4e2208dabf3f287b6c55d",
+          "complexity": 1,
+          "screen": {
+            "draws": 28,
+            "meanBestHits": 0.8214285714285714,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.8114285714285714,
+          "selection": {
+            "draws": 198,
+            "meanBestHits": 0.6212121212121212,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.6112121212121212,
+          "validation": {
+            "draws": 105,
+            "meanBestHits": 0.5142857142857142,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 84,
+            "meanBestHits": 0.5,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "pairFar"
+          }
+        },
+        {
+          "scientistId": "S1284",
+          "game": "gordo-primitiva",
+          "specialty": "adversarial-falsification",
+          "objective": "tail-uplift",
+          "hash": "dfd714f45ade4f138d30fa5c7e8d243ab59f60bfe577937b68c0788c4363cded",
+          "complexity": 1,
+          "screen": {
+            "draws": 28,
+            "meanBestHits": 0.8214285714285714,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.8114285714285714,
+          "selection": {
+            "draws": 198,
+            "meanBestHits": 0.6212121212121212,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.6112121212121212,
+          "validation": {
+            "draws": 105,
+            "meanBestHits": 0.5142857142857142,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 84,
+            "meanBestHits": 0.5,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "pairFar"
+          }
+        },
+        {
+          "scientistId": "S1616",
+          "game": "gordo-primitiva",
+          "specialty": "regime-detection",
+          "objective": "near-full",
+          "hash": "27bce863a17eb1f57f0ff70af07c60eacd2b36d94ef43db5ac9e49174302523a",
+          "complexity": 1,
+          "screen": {
+            "draws": 28,
+            "meanBestHits": 0.8214285714285714,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.8114285714285714,
+          "selection": {
+            "draws": 198,
+            "meanBestHits": 0.6212121212121212,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.6112121212121212,
+          "validation": {
+            "draws": 105,
+            "meanBestHits": 0.5142857142857142,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 84,
+            "meanBestHits": 0.5,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "pairFar"
+          }
+        },
+        {
+          "scientistId": "S1948",
+          "game": "gordo-primitiva",
+          "specialty": "temporal-dynamics",
+          "objective": "mean-hits",
+          "hash": "1e9787c796a5d67ccc2e3b3782ce6f828214d0fb0fea33d58af885b0f412f488",
+          "complexity": 1,
+          "screen": {
+            "draws": 28,
+            "meanBestHits": 0.8214285714285714,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.8114285714285714,
+          "selection": {
+            "draws": 198,
+            "meanBestHits": 0.6212121212121212,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.6112121212121212,
+          "validation": {
+            "draws": 105,
+            "meanBestHits": 0.5142857142857142,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 84,
+            "meanBestHits": 0.5,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "pairFar"
+          }
+        },
+        {
+          "scientistId": "S2644",
+          "game": "gordo-primitiva",
+          "specialty": "temporal-dynamics",
+          "objective": "mean-hits",
+          "hash": "1e9787c796a5d67ccc2e3b3782ce6f828214d0fb0fea33d58af885b0f412f488",
+          "complexity": 1,
+          "screen": {
+            "draws": 28,
+            "meanBestHits": 0.8214285714285714,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.8114285714285714,
+          "selection": {
+            "draws": 198,
+            "meanBestHits": 0.6212121212121212,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.6112121212121212,
+          "validation": {
+            "draws": 105,
+            "meanBestHits": 0.5142857142857142,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 84,
+            "meanBestHits": 0.5,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "pairFar"
+          }
+        },
+        {
+          "scientistId": "S2704",
+          "game": "gordo-primitiva",
+          "specialty": "temporal-dynamics",
+          "objective": "stability",
+          "hash": "516896cc3a70a7e76b75d8ee59e9e0d3bdecd590e2fcb47f29b095987239acf7",
+          "complexity": 1,
+          "screen": {
+            "draws": 28,
+            "meanBestHits": 0.8214285714285714,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.8114285714285714,
+          "selection": {
+            "draws": 198,
+            "meanBestHits": 0.6212121212121212,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.6112121212121212,
+          "validation": {
+            "draws": 105,
+            "meanBestHits": 0.5142857142857142,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 84,
+            "meanBestHits": 0.5,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "pairFar"
+          }
+        },
+        {
+          "scientistId": "S3036",
+          "game": "gordo-primitiva",
+          "specialty": "adversarial-falsification",
+          "objective": "tail-uplift",
+          "hash": "dfd714f45ade4f138d30fa5c7e8d243ab59f60bfe577937b68c0788c4363cded",
+          "complexity": 1,
+          "screen": {
+            "draws": 28,
+            "meanBestHits": 0.8214285714285714,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.8114285714285714,
+          "selection": {
+            "draws": 198,
+            "meanBestHits": 0.6212121212121212,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.6112121212121212,
+          "validation": {
+            "draws": 105,
+            "meanBestHits": 0.5142857142857142,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 84,
+            "meanBestHits": 0.5,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "pairFar"
+          }
+        },
+        {
+          "scientistId": "S3096",
+          "game": "gordo-primitiva",
+          "specialty": "adversarial-falsification",
+          "objective": "era-replication",
+          "hash": "dbaf0f30d44cab3dfa096871480cd8b24246989217c4e2208dabf3f287b6c55d",
+          "complexity": 1,
+          "screen": {
+            "draws": 28,
+            "meanBestHits": 0.8214285714285714,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.8114285714285714,
+          "selection": {
+            "draws": 198,
+            "meanBestHits": 0.6212121212121212,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.6112121212121212,
+          "validation": {
+            "draws": 105,
+            "meanBestHits": 0.5142857142857142,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 84,
+            "meanBestHits": 0.5,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "pairFar"
+          }
+        },
+        {
+          "scientistId": "S3368",
+          "game": "gordo-primitiva",
+          "specialty": "regime-detection",
+          "objective": "near-full",
+          "hash": "27bce863a17eb1f57f0ff70af07c60eacd2b36d94ef43db5ac9e49174302523a",
+          "complexity": 1,
+          "screen": {
+            "draws": 28,
+            "meanBestHits": 0.8214285714285714,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.8114285714285714,
+          "selection": {
+            "draws": 198,
+            "meanBestHits": 0.6212121212121212,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.6112121212121212,
+          "validation": {
+            "draws": 105,
+            "meanBestHits": 0.5142857142857142,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 84,
+            "meanBestHits": 0.5,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "pairFar"
+          }
+        },
+        {
+          "scientistId": "S3760",
+          "game": "gordo-primitiva",
+          "specialty": "temporal-dynamics",
+          "objective": "stability",
+          "hash": "516896cc3a70a7e76b75d8ee59e9e0d3bdecd590e2fcb47f29b095987239acf7",
+          "complexity": 1,
+          "screen": {
+            "draws": 28,
+            "meanBestHits": 0.8214285714285714,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.8114285714285714,
+          "selection": {
+            "draws": 198,
+            "meanBestHits": 0.6212121212121212,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.6112121212121212,
+          "validation": {
+            "draws": 105,
+            "meanBestHits": 0.5142857142857142,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 84,
+            "meanBestHits": 0.5,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "pairFar"
+          }
+        },
+        {
+          "scientistId": "S3820",
+          "game": "gordo-primitiva",
+          "specialty": "temporal-dynamics",
+          "objective": "mean-hits",
+          "hash": "1e9787c796a5d67ccc2e3b3782ce6f828214d0fb0fea33d58af885b0f412f488",
+          "complexity": 1,
+          "screen": {
+            "draws": 28,
+            "meanBestHits": 0.8214285714285714,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.8114285714285714,
+          "selection": {
+            "draws": 198,
+            "meanBestHits": 0.6212121212121212,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.6112121212121212,
+          "validation": {
+            "draws": 105,
+            "meanBestHits": 0.5142857142857142,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 84,
+            "meanBestHits": 0.5,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "pairFar"
+          }
+        },
+        {
+          "scientistId": "S4092",
+          "game": "gordo-primitiva",
+          "specialty": "adversarial-falsification",
+          "objective": "tail-uplift",
+          "hash": "dfd714f45ade4f138d30fa5c7e8d243ab59f60bfe577937b68c0788c4363cded",
+          "complexity": 1,
+          "screen": {
+            "draws": 28,
+            "meanBestHits": 0.8214285714285714,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "screenScore": 0.8114285714285714,
+          "selection": {
+            "draws": 198,
+            "meanBestHits": 0.6212121212121212,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "selectionScore": 0.6112121212121212,
+          "validation": {
+            "draws": 105,
+            "meanBestHits": 0.5142857142857142,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "postFreeze": {
+            "draws": 84,
+            "meanBestHits": 0.5,
+            "nearFull": 0,
+            "fullMain": 0
+          },
+          "formula": {
+            "t": "a",
+            "k": "pairFar"
+          }
+        }
+      ],
+      "decision": "NEGATIVE"
+    }
+  ],
+  "anyAuditSignal": false,
+  "realMoneyPass": false,
+  "realStakeEUR": 0,
+  "scientificSafety": {
+    "selectionOnlyEvolution": true,
+    "oosUntouched": true,
+    "postFreezeUntouched": true,
+    "negativePersistence": true,
+    "noHistoricalPlenoTargeting": true
+  }
+}
