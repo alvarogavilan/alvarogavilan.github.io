@@ -1,0 +1,34 @@
+name: Loterias AI Lightning Economic Study
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/lightning/economic-objectives.json'
+      - 'loterias-ai/casino/lightning/research/economic-coverage-window-v1.mjs'
+      - 'loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl'
+      - '.github/workflows/loterias-ai-lightning-economic-study.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  economic-study:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run 15 EUR coverage and multiplier-window study
+        run: node loterias-ai/casino/lightning/research/economic-coverage-window-v1.mjs
+      - name: Upload scientific evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: lightning-economic-coverage-window-v1
+          path: loterias-ai/casino/lightning/evidence/economic-coverage-window-v1.json
+          if-no-files-found: error
