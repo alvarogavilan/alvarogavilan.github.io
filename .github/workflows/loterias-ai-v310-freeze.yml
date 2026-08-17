@@ -1,0 +1,29 @@
+name: Loterias AI v310 Freeze
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/research/megalab/v310-stage3-freeze.mjs'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-v310-freeze
+  cancel-in-progress: false
+jobs:
+  freeze:
+    if: github.actor != 'github-actions[bot]' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - run: node loterias-ai/research/megalab/v310-stage3-freeze.mjs
+      - name: Persist immutable candidate freeze
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v310-stage3-freeze.json
+          git commit -m "research(loterias-ai): persist v310 Primitiva freeze" || exit 0
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin HEAD:"$GITHUB_REF_NAME"
