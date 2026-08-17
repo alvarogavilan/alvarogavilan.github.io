@@ -1,0 +1,85 @@
+{
+  "version": "lightning-replay-paper-v1",
+  "generatedAt": "2026-08-17T06:05:16.476Z",
+  "purpose": "temporal out-of-sample predictability check; not a betting recommendation",
+  "inputRows": 600,
+  "train": {
+    "n": 420,
+    "start": "2026-08-16T20:17:02.848Z",
+    "end": "2026-08-17T02:05:18.560Z"
+  },
+  "test": {
+    "n": 180,
+    "start": "2026-08-17T02:06:02.070Z",
+    "end": "2026-08-17T05:01:32.675Z"
+  },
+  "protocol": {
+    "split": "chronological 70/30",
+    "models": [
+      "train_frequency",
+      "train_markov1"
+    ],
+    "baseline": "uniform 1/37",
+    "smoothing": "Laplace +1",
+    "alphaFamily": 0.05,
+    "multiplicity": "Bonferroni",
+    "retuningAfterTest": false
+  },
+  "models": {
+    "uniform": {
+      "name": "uniform",
+      "n": 180,
+      "hits": 4,
+      "accuracy": 0.022222222222222223,
+      "logLoss": 3.610917912644221,
+      "brier": 0.9729729729729704,
+      "predictionsHash": "d147e58dbe8cea9ecd8c0db7d2dbb0afa9e35e2774ad5d06bf354de9eb9f5a92"
+    },
+    "frequency": {
+      "name": "train_frequency",
+      "n": 180,
+      "hits": 5,
+      "accuracy": 0.027777777777777776,
+      "logLoss": 3.638428241400212,
+      "brier": 0.9742590207385355,
+      "predictionsHash": "ea7b1023270eb1c367c587d7b7a78bc5d06d72841cedae8924084253e312ddb2",
+      "vsUniform": {
+        "accuracyLift": 0.005555555555555553,
+        "logLossImprovement": -0.027510328755991242,
+        "brierImprovement": -0.0012860477655651792,
+        "oneSidedBinomialP": 0.5376185541673922,
+        "bonferroniAlpha": 0.025
+      },
+      "statisticallyBeatsUniform": false
+    },
+    "transition": {
+      "name": "train_markov1",
+      "n": 180,
+      "hits": 4,
+      "accuracy": 0.022222222222222223,
+      "logLoss": 3.682181262055185,
+      "brier": 0.9780334286534085,
+      "predictionsHash": "46ae083dae4a48d67e5778842a2cf08fc358bd53503055b942408f4e43a33564",
+      "vsUniform": {
+        "accuracyLift": 0,
+        "logLossImprovement": -0.07126334941096424,
+        "brierImprovement": -0.005060455680438114,
+        "oneSidedBinomialP": 0.7192693755685389,
+        "bonferroniAlpha": 0.025
+      },
+      "statisticallyBeatsUniform": false
+    }
+  },
+  "summary": {
+    "promotedModels": [],
+    "edgeObserved": false,
+    "realMoneyPass": false,
+    "realStakeEUR": 0,
+    "next": "retain null/randomness interpretation and expand prospective corpus"
+  },
+  "safety": {
+    "authenticationBypassAttempted": false,
+    "realMoney": false,
+    "bettingRecommendation": false
+  }
+}
