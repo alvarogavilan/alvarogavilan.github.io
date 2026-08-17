@@ -77,17 +77,40 @@ function normalize(filePath,kind,today){
   return {gameId:game,targetDate:date,title:titleOf(game,d,file),version:d?.version||null,status:d?.status||kind,kind,source:`../${filePath.replace(`${ROOT}/`,'')}`,generatedAt:d?.generatedAt||d?.frozenAt||null,theoreticalCostEUR:authorizedCostEUR,laboratoryCostEUR,authorizedCostEUR,unitCostEUR,lines,pool,alternativeNotAdditive,realMoneyPass,realStakeEUR,purpose:purpose||null,prospectScore};
 }
 
+function splitCopy(line){
+  const [base,...rest]=String(line?.copy||'').split('|');
+  return {base:base.trim().replace(/\s+/g,' '),extra:rest.join('|').trim().replace(/\s+/g,' ')};
+}
+function sameBaseLines(a,b){
+  if(!Array.isArray(a?.lines)||!Array.isArray(b?.lines)||a.lines.length!==b.lines.length||!a.lines.length)return false;
+  return a.lines.every((line,i)=>splitCopy(line).base===splitCopy(b.lines[i]).base);
+}
+function primaryCompletesSecondary(primary,secondary){
+  if(!sameBaseLines(primary,secondary))return false;
+  let gainedInformation=false;
+  for(let i=0;i<primary.lines.length;i++){
+    const p=splitCopy(primary.lines[i]),s=splitCopy(secondary.lines[i]);
+    if(s.extra&&p.extra!==s.extra)return false;
+    if(!s.extra&&p.extra)gainedInformation=true;
+  }
+  return gainedInformation;
+}
+
 const today=process.env.TODAY_OVERRIDE||madridDate();
 const items=[];
 for(const s of SOURCES){if(!fs.existsSync(s.dir))continue;for(const name of fs.readdirSync(s.dir).filter(usableFile)){const x=normalize(`${s.dir}/${name}`,s.kind,today);if(x)items.push(x)}}
 const groups={};
 for(const x of items)(groups[x.gameId]??=[]).push(x);
+let supersededTotal=0;
 const games=Object.entries(groups).map(([gameId,arr])=>{
   arr.sort((a,b)=>b.prospectScore-a.prospectScore||String(b.generatedAt||'').localeCompare(String(a.generatedAt||''))||a.source.localeCompare(b.source));
   const primary=arr[0];
-  const alternatives=arr.slice(1).map(x=>({...x,alternativeNotAdditive:true}));
-  return {gameId,targetDate:today,primary,alternatives,alternativeCount:alternatives.length,costRule:'ALTERNATIVES_NOT_ADDITIVE',displayCostEUR:primary.authorizedCostEUR};
+  const secondary=arr.slice(1);
+  const superseded=secondary.filter(x=>primaryCompletesSecondary(primary,x));
+  supersededTotal+=superseded.length;
+  const alternatives=secondary.filter(x=>!primaryCompletesSecondary(primary,x)).map(x=>({...x,alternativeNotAdditive:true}));
+  return {gameId,targetDate:today,primary,alternatives,alternativeCount:alternatives.length,supersededCount:superseded.length,costRule:'ALTERNATIVES_NOT_ADDITIVE',displayCostEUR:primary.authorizedCostEUR};
 }).sort((a,b)=>a.gameId.localeCompare(b.gameId));
-const manifest={generatedAt:new Date().toISOString(),timeZone:'Europe/Madrid',today,strictToday:true,staleFallbackAllowed:false,dedupeKey:'gameId+targetDate',games,totalGames:games.length,policy:{oneVisibleCardPerGame:true,alternativesNotAdditive:true,showYesterdayInToday:false,realMoneyPass:false,costDisplay:'AUTHORIZED_ONLY',laboratoryCostSeparate:true}};
+const manifest={generatedAt:new Date().toISOString(),timeZone:'Europe/Madrid',today,strictToday:true,staleFallbackAllowed:false,dedupeKey:'gameId+targetDate',games,totalGames:games.length,supersededTotal,policy:{oneVisibleCardPerGame:true,alternativesNotAdditive:true,supersededCompletionsHidden:true,showYesterdayInToday:false,realMoneyPass:false,costDisplay:'AUTHORIZED_ONLY',laboratoryCostSeparate:true}};
 fs.mkdirSync(path.dirname(OUT),{recursive:true});fs.writeFileSync(OUT,JSON.stringify(manifest,null,2)+'\n');
-console.log(JSON.stringify({today,totalGames:games.length,games:games.map(g=>({gameId:g.gameId,primary:g.primary.version,authorizedCost:g.displayCostEUR,laboratoryCost:g.primary.laboratoryCostEUR,alternatives:g.alternativeCount}))}));
+console.log(JSON.stringify({today,totalGames:games.length,supersededTotal,games:games.map(g=>({gameId:g.gameId,primary:g.primary.version,authorizedCost:g.displayCostEUR,laboratoryCost:g.primary.laboratoryCostEUR,alternatives:g.alternativeCount,superseded:g.supersededCount}))}));
