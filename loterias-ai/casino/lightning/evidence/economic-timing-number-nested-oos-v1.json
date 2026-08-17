@@ -1,0 +1,521 @@
+{
+  "version": "economic-timing-number-nested-oos-v1",
+  "generatedAt": "2026-08-17T21:59:41.436Z",
+  "mode": "PAPER_ONLY",
+  "source": {
+    "file": "loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl",
+    "rounds": 2103,
+    "chronological": true
+  },
+  "frozenTiming": {
+    "freezeVersion": "economic-multiplier-window-prospective-freeze-v1",
+    "frozenAt": "2026-08-17T21:27:45Z",
+    "gapSinceLastWinningLightningAtLeast": 8,
+    "horizonRounds": 7,
+    "immutable": true
+  },
+  "split": {
+    "innerDiscovery": [
+      0,
+      946
+    ],
+    "innerValidation": [
+      946,
+      1261
+    ],
+    "outerValidation": [
+      1261,
+      1682
+    ],
+    "outerHoldout": [
+      1682,
+      2103
+    ]
+  },
+  "splitPolicy": "45% inner discovery / 15% inner validation for model development; 20% outer validation; 20% untouched outer holdout",
+  "timedEpisodeCounts": {
+    "innerDiscovery": 83,
+    "innerValidation": 35,
+    "outerValidation": 37,
+    "outerHoldout": 41
+  },
+  "candidateFamily": {
+    "lookbacks": [
+      5,
+      8,
+      10,
+      12,
+      15,
+      20,
+      30,
+      50,
+      80,
+      120,
+      200
+    ],
+    "modes": [
+      "hot",
+      "cold",
+      "recent",
+      "notRecent",
+      "transition",
+      "wheelLast"
+    ],
+    "coverages": [
+      3,
+      4
+    ],
+    "minimumTimedRoundsPerDevelopmentSplit": 60
+  },
+  "multiplicity": {
+    "method": "Bonferroni on exact one-sided binomial p-values in inner validation",
+    "alpha": 0.05,
+    "appliedBeforeOuterValidation": true
+  },
+  "results": {
+    "3": {
+      "status": "EXPLORATORY_ONLY_NO_MULTIPLICITY_PASS",
+      "selectedConfig": {
+        "pickCount": 3,
+        "lookback": 15,
+        "mode": "hot"
+      },
+      "selectionUsedOuterData": false,
+      "development": {
+        "innerDiscovery": {
+          "episodes": 83,
+          "roundsBet": 475,
+          "hits": 40,
+          "hitRate": 0.084211,
+          "uniformNullRate": 0.081081,
+          "hitExcess": 0.003129,
+          "oneSidedExactBinomialP": 0.425198027,
+          "normalCoveredHits": 35,
+          "winningLightningEvents": 32,
+          "capturedLightning": 5,
+          "captureRateConditionalOnWinningLightning": 0.15625,
+          "captureNullRate": 0.081081,
+          "totalStakeEUR": 7125,
+          "grossReturnEUR": 9250,
+          "netPnlEUR": 2125,
+          "roi": 0.298246,
+          "profitableSessions": 28,
+          "profitableSessionRate": 0.337349,
+          "maxDrawdownEUR": 1440
+        },
+        "innerValidation": {
+          "episodes": 35,
+          "roundsBet": 210,
+          "hits": 23,
+          "hitRate": 0.109524,
+          "uniformNullRate": 0.081081,
+          "hitExcess": 0.028443,
+          "oneSidedExactBinomialP": 0.087322723,
+          "normalCoveredHits": 23,
+          "winningLightningEvents": 11,
+          "capturedLightning": 0,
+          "captureRateConditionalOnWinningLightning": 0,
+          "captureNullRate": 0.081081,
+          "totalStakeEUR": 3150,
+          "grossReturnEUR": 3450,
+          "netPnlEUR": 300,
+          "roi": 0.095238,
+          "profitableSessions": 15,
+          "profitableSessionRate": 0.428571,
+          "maxDrawdownEUR": 645
+        },
+        "comparisons": 66,
+        "bonferroniP": 1,
+        "positiveBoth": true,
+        "multiplicityPass": false,
+        "top5": [
+          {
+            "config": {
+              "pickCount": 3,
+              "lookback": 15,
+              "mode": "hot"
+            },
+            "innerDiscoveryHitExcess": 0.003129,
+            "innerValidationHitExcess": 0.028443,
+            "innerValidationRawP": 0.087322723,
+            "bonferroniP": 1,
+            "positiveBoth": true
+          },
+          {
+            "config": {
+              "pickCount": 3,
+              "lookback": 5,
+              "mode": "transition"
+            },
+            "innerDiscoveryHitExcess": 0.001024,
+            "innerValidationHitExcess": 0.023681,
+            "innerValidationRawP": 0.130522703,
+            "bonferroniP": 1,
+            "positiveBoth": true
+          },
+          {
+            "config": {
+              "pickCount": 3,
+              "lookback": 30,
+              "mode": "cold"
+            },
+            "innerDiscoveryHitExcess": 0.001024,
+            "innerValidationHitExcess": 0.023681,
+            "innerValidationRawP": 0.130522703,
+            "bonferroniP": 1,
+            "positiveBoth": true
+          },
+          {
+            "config": {
+              "pickCount": 3,
+              "lookback": 30,
+              "mode": "notRecent"
+            },
+            "innerDiscoveryHitExcess": 0.001024,
+            "innerValidationHitExcess": 0.023681,
+            "innerValidationRawP": 0.130522703,
+            "bonferroniP": 1,
+            "positiveBoth": true
+          },
+          {
+            "config": {
+              "pickCount": 3,
+              "lookback": 12,
+              "mode": "hot"
+            },
+            "innerDiscoveryHitExcess": 0.003129,
+            "innerValidationHitExcess": 0.018919,
+            "innerValidationRawP": 0.187513153,
+            "bonferroniP": 1,
+            "positiveBoth": true
+          }
+        ]
+      },
+      "outerValidation": {
+        "episodes": 37,
+        "roundsBet": 182,
+        "hits": 19,
+        "hitRate": 0.104396,
+        "uniformNullRate": 0.081081,
+        "hitExcess": 0.023315,
+        "oneSidedExactBinomialP": 0.154461292,
+        "normalCoveredHits": 16,
+        "winningLightningEvents": 20,
+        "capturedLightning": 3,
+        "captureRateConditionalOnWinningLightning": 0.15,
+        "captureNullRate": 0.081081,
+        "totalStakeEUR": 2730,
+        "grossReturnEUR": 3150,
+        "netPnlEUR": 420,
+        "roi": 0.153846,
+        "profitableSessions": 15,
+        "profitableSessionRate": 0.405405,
+        "maxDrawdownEUR": 780
+      },
+      "outerHoldout": {
+        "episodes": 41,
+        "roundsBet": 240,
+        "hits": 21,
+        "hitRate": 0.0875,
+        "uniformNullRate": 0.081081,
+        "hitExcess": 0.006419,
+        "oneSidedExactBinomialP": 0.390894456,
+        "normalCoveredHits": 19,
+        "winningLightningEvents": 12,
+        "capturedLightning": 2,
+        "captureRateConditionalOnWinningLightning": 0.166667,
+        "captureNullRate": 0.081081,
+        "totalStakeEUR": 3600,
+        "grossReturnEUR": 3600,
+        "netPnlEUR": 0,
+        "roi": 0,
+        "profitableSessions": 17,
+        "profitableSessionRate": 0.414634,
+        "maxDrawdownEUR": 950
+      },
+      "deterministicRandomNull": {
+        "outerValidation": {
+          "episodes": 37,
+          "roundsBet": 182,
+          "hits": 12,
+          "hitRate": 0.065934,
+          "uniformNullRate": 0.081081,
+          "hitExcess": -0.015147,
+          "oneSidedExactBinomialP": 0.809769801,
+          "normalCoveredHits": 8,
+          "winningLightningEvents": 20,
+          "capturedLightning": 4,
+          "captureRateConditionalOnWinningLightning": 0.2,
+          "captureNullRate": 0.081081,
+          "totalStakeEUR": 2730,
+          "grossReturnEUR": 2950,
+          "netPnlEUR": 220,
+          "roi": 0.080586,
+          "profitableSessions": 11,
+          "profitableSessionRate": 0.297297,
+          "maxDrawdownEUR": 1020
+        },
+        "outerHoldout": {
+          "episodes": 41,
+          "roundsBet": 240,
+          "hits": 21,
+          "hitRate": 0.0875,
+          "uniformNullRate": 0.081081,
+          "hitExcess": 0.006419,
+          "oneSidedExactBinomialP": 0.390894456,
+          "normalCoveredHits": 21,
+          "winningLightningEvents": 12,
+          "capturedLightning": 0,
+          "captureRateConditionalOnWinningLightning": 0,
+          "captureNullRate": 0.081081,
+          "totalStakeEUR": 3600,
+          "grossReturnEUR": 3150,
+          "netPnlEUR": -450,
+          "roi": -0.125,
+          "profitableSessions": 16,
+          "profitableSessionRate": 0.390244,
+          "maxDrawdownEUR": 1245
+        }
+      },
+      "gates": {
+        "developmentMultiplicityPass": false,
+        "outerValidationExactPass": false,
+        "outerHoldoutExactPass": false,
+        "positiveEconomicDirectionBoth": false,
+        "candidateMayEnterNewProspectiveFreeze": false
+      }
+    },
+    "4": {
+      "status": "EXPLORATORY_ONLY_NO_MULTIPLICITY_PASS",
+      "selectedConfig": {
+        "pickCount": 4,
+        "lookback": 8,
+        "mode": "cold"
+      },
+      "selectionUsedOuterData": false,
+      "development": {
+        "innerDiscovery": {
+          "episodes": 83,
+          "roundsBet": 475,
+          "hits": 56,
+          "hitRate": 0.117895,
+          "uniformNullRate": 0.108108,
+          "hitExcess": 0.009787,
+          "oneSidedExactBinomialP": 0.26597518,
+          "normalCoveredHits": 51,
+          "winningLightningEvents": 32,
+          "capturedLightning": 5,
+          "captureRateConditionalOnWinningLightning": 0.15625,
+          "captureNullRate": 0.108108,
+          "totalStakeEUR": 7125,
+          "grossReturnEUR": 9112.5,
+          "netPnlEUR": 1987.5,
+          "roi": 0.278947,
+          "profitableSessions": 42,
+          "profitableSessionRate": 0.506024,
+          "maxDrawdownEUR": 1380
+        },
+        "innerValidation": {
+          "episodes": 35,
+          "roundsBet": 210,
+          "hits": 32,
+          "hitRate": 0.152381,
+          "uniformNullRate": 0.108108,
+          "hitExcess": 0.044273,
+          "oneSidedExactBinomialP": 0.029607781,
+          "normalCoveredHits": 29,
+          "winningLightningEvents": 11,
+          "capturedLightning": 3,
+          "captureRateConditionalOnWinningLightning": 0.272727,
+          "captureNullRate": 0.108108,
+          "totalStakeEUR": 3150,
+          "grossReturnEUR": 5887.5,
+          "netPnlEUR": 2737.5,
+          "roi": 0.869048,
+          "profitableSessions": 22,
+          "profitableSessionRate": 0.628571,
+          "maxDrawdownEUR": 315
+        },
+        "comparisons": 66,
+        "bonferroniP": 1,
+        "positiveBoth": true,
+        "multiplicityPass": false,
+        "top5": [
+          {
+            "config": {
+              "pickCount": 4,
+              "lookback": 8,
+              "mode": "cold"
+            },
+            "innerDiscoveryHitExcess": 0.009787,
+            "innerValidationHitExcess": 0.044273,
+            "innerValidationRawP": 0.029607781,
+            "bonferroniP": 1,
+            "positiveBoth": true
+          },
+          {
+            "config": {
+              "pickCount": 4,
+              "lookback": 8,
+              "mode": "notRecent"
+            },
+            "innerDiscoveryHitExcess": 0.009787,
+            "innerValidationHitExcess": 0.044273,
+            "innerValidationRawP": 0.029607781,
+            "bonferroniP": 1,
+            "positiveBoth": true
+          },
+          {
+            "config": {
+              "pickCount": 4,
+              "lookback": 5,
+              "mode": "cold"
+            },
+            "innerDiscoveryHitExcess": 0.005576,
+            "innerValidationHitExcess": 0.044273,
+            "innerValidationRawP": 0.029607781,
+            "bonferroniP": 1,
+            "positiveBoth": true
+          },
+          {
+            "config": {
+              "pickCount": 4,
+              "lookback": 5,
+              "mode": "notRecent"
+            },
+            "innerDiscoveryHitExcess": 0.005576,
+            "innerValidationHitExcess": 0.044273,
+            "innerValidationRawP": 0.029607781,
+            "bonferroniP": 1,
+            "positiveBoth": true
+          },
+          {
+            "config": {
+              "pickCount": 4,
+              "lookback": 10,
+              "mode": "cold"
+            },
+            "innerDiscoveryHitExcess": 0.005576,
+            "innerValidationHitExcess": 0.039511,
+            "innerValidationRawP": 0.046102877,
+            "bonferroniP": 1,
+            "positiveBoth": true
+          }
+        ]
+      },
+      "outerValidation": {
+        "episodes": 37,
+        "roundsBet": 182,
+        "hits": 18,
+        "hitRate": 0.098901,
+        "uniformNullRate": 0.108108,
+        "hitExcess": -0.009207,
+        "oneSidedExactBinomialP": 0.690055271,
+        "normalCoveredHits": 17,
+        "winningLightningEvents": 20,
+        "capturedLightning": 1,
+        "captureRateConditionalOnWinningLightning": 0.05,
+        "captureNullRate": 0.108108,
+        "totalStakeEUR": 2730,
+        "grossReturnEUR": 2287.5,
+        "netPnlEUR": -442.5,
+        "roi": -0.162088,
+        "profitableSessions": 12,
+        "profitableSessionRate": 0.324324,
+        "maxDrawdownEUR": 742.5
+      },
+      "outerHoldout": {
+        "episodes": 41,
+        "roundsBet": 240,
+        "hits": 17,
+        "hitRate": 0.070833,
+        "uniformNullRate": 0.108108,
+        "hitExcess": -0.037275,
+        "oneSidedExactBinomialP": 0.980269595,
+        "normalCoveredHits": 16,
+        "winningLightningEvents": 12,
+        "capturedLightning": 1,
+        "captureRateConditionalOnWinningLightning": 0.083333,
+        "captureNullRate": 0.108108,
+        "totalStakeEUR": 3600,
+        "grossReturnEUR": 2175,
+        "netPnlEUR": -1425,
+        "roi": -0.395833,
+        "profitableSessions": 15,
+        "profitableSessionRate": 0.365854,
+        "maxDrawdownEUR": 1590
+      },
+      "deterministicRandomNull": {
+        "outerValidation": {
+          "episodes": 37,
+          "roundsBet": 182,
+          "hits": 18,
+          "hitRate": 0.098901,
+          "uniformNullRate": 0.108108,
+          "hitExcess": -0.009207,
+          "oneSidedExactBinomialP": 0.690055271,
+          "normalCoveredHits": 17,
+          "winningLightningEvents": 20,
+          "capturedLightning": 1,
+          "captureRateConditionalOnWinningLightning": 0.05,
+          "captureNullRate": 0.108108,
+          "totalStakeEUR": 2730,
+          "grossReturnEUR": 2100,
+          "netPnlEUR": -630,
+          "roi": -0.230769,
+          "profitableSessions": 13,
+          "profitableSessionRate": 0.351351,
+          "maxDrawdownEUR": 840
+        },
+        "outerHoldout": {
+          "episodes": 41,
+          "roundsBet": 240,
+          "hits": 27,
+          "hitRate": 0.1125,
+          "uniformNullRate": 0.108108,
+          "hitExcess": 0.004392,
+          "oneSidedExactBinomialP": 0.443547121,
+          "normalCoveredHits": 25,
+          "winningLightningEvents": 12,
+          "capturedLightning": 2,
+          "captureRateConditionalOnWinningLightning": 0.166667,
+          "captureNullRate": 0.108108,
+          "totalStakeEUR": 3600,
+          "grossReturnEUR": 3562.5,
+          "netPnlEUR": -37.5,
+          "roi": -0.010417,
+          "profitableSessions": 20,
+          "profitableSessionRate": 0.487805,
+          "maxDrawdownEUR": 870
+        }
+      },
+      "gates": {
+        "developmentMultiplicityPass": false,
+        "outerValidationExactPass": false,
+        "outerHoldoutExactPass": false,
+        "positiveEconomicDirectionBoth": false,
+        "candidateMayEnterNewProspectiveFreeze": false
+      }
+    }
+  },
+  "gates": {
+    "anyProspectiveCandidate": false,
+    "automaticProspectiveFreezeCreated": false,
+    "realMoneyAllowed": false
+  },
+  "guards": {
+    "noFutureLeakage": true,
+    "timingRuleReadFromImmutableFreeze": true,
+    "numberModelSelectionUsesOnlyFirst60Percent": true,
+    "outerValidationNotUsedForSelection": true,
+    "outerHoldoutNotUsedForSelection": true,
+    "monetaryOutcomeNotUsedForSelection": true,
+    "exactBinomialNull": "pickCount/37",
+    "deterministicRandomEmpiricalNullIncluded": true,
+    "multiplicityCorrectionRequired": true,
+    "failedPriorSelectorNotRetunedOnItsHoldout": true,
+    "anyNewProspectiveFreezeRequiresSeparateVersionAndFreshFutureRounds": true,
+    "realMoneyAllowed": false
+  },
+  "interpretation": "No selector is authorized for prospective promotion by this nested tournament. The timing lane may remain independently alive, but number selection remains unproven."
+}
