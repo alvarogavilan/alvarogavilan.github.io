@@ -1,0 +1,27 @@
+{
+  "version": "v311",
+  "family": "HAWKES_SELF_EXCITING_NUMBER_EVENTS",
+  "status": "PREREGISTERED",
+  "createdFromMainSha": "34353a33fecd7959b9d29f5780e57b19530a9f22",
+  "methodologicalNovelty": "Model each number's historical appearances as a discrete-time self-exciting point process with exponentially decaying excitation plus baseline intensity, distinct from prior renewal/survival-hazard and BOCPD families.",
+  "guard": {
+    "searchedTerms": ["Hawkes", "self-exciting", "point process"],
+    "duplicateFound": false,
+    "nearestPriorFamilies": ["v110 survival hazard", "v197 survival hazard", "v303 renewal hazard"],
+    "whyDistinct": "Those families model waiting-time/renewal structure; v311 adds history-dependent excitation triggered by prior events and cross-number excitation variants without reusing OOS data for tuning."
+  },
+  "protocol": {
+    "developmentEndExclusive": "2023-01-01",
+    "blindOosStart": "2023-01-01",
+    "blindOosEndExclusive": "2025-01-01",
+    "postFreezeStart": "2025-01-01",
+    "retuningAfterOos": false,
+    "behavioralDeduplication": true,
+    "hardAuditOnRepeat5PlusOrFull": true
+  },
+  "economics": {
+    "realMoneyPass": false,
+    "realStakeEUR": 0,
+    "theoreticalBudgetEURMax": 15
+  }
+}

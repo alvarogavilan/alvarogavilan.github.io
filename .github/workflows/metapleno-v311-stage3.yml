@@ -1,0 +1,52 @@
+name: MetaPleno v311 Stage3 Hawkes Freeze
+
+on:
+  push:
+    branches:
+      - research/metapleno-v311-hawkes-rebased
+    paths:
+      - 'loterias-ai/research/megalab/v311-stage3-hawkes-freeze.mjs'
+      - 'loterias-ai/data/research/metapleno-v311-stage1-2.json'
+      - '.github/workflows/metapleno-v311-stage3.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/metapleno-v311-hawkes-rebased
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Freeze development-only Hawkes candidates
+        run: node loterias-ai/research/megalab/v311-stage3-hawkes-freeze.mjs
+      - name: Verify immutable freeze and fail-closed gates
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'), crypto=require('crypto');
+          const p='loterias-ai/data/research/metapleno-v311-stage3-freeze.json';
+          const j=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(j.realMoneyPass!==false||j.realStakeEUR!==0||j.theoreticalBudgetEURMax>15) process.exit(1);
+          if(j.validationTouched!==false||j.postFreezeTouched!==false||j.retuningPerformed!==false) process.exit(1);
+          if(j.status!=='FROZEN_FOR_BLIND_OOS'||j.frozenCandidateCount!==32) process.exit(1);
+          if(j.developmentEndExclusive!=='2023-01-01'||j.blindOosStart!=='2023-01-01'||j.blindOosEndExclusive!=='2025-01-01'||j.postFreezeStart!=='2025-01-01') process.exit(1);
+          if(j.games.length!==4||j.games.some(g=>g.selected.length!==8||new Set(g.selected.map(x=>x.developmentBehaviorHash)).size!==8)) process.exit(1);
+          const {freezeSealSHA256,...rest}=j;
+          const seal=crypto.createHash('sha256').update(JSON.stringify(rest)).digest('hex');
+          if(seal!==freezeSealSHA256) process.exit(1);
+          NODE
+      - name: Persist frozen manifest
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/metapleno-v311-stage3-freeze.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'research(v311): persist immutable Hawkes freeze'
+          git pull --rebase origin research/metapleno-v311-hawkes-rebased
+          git push origin HEAD:research/metapleno-v311-hawkes-rebased
