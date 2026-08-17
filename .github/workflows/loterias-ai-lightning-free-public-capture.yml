@@ -2,8 +2,8 @@ name: Loterias AI Lightning Free Public Capture
 on:
   workflow_dispatch:
   push:
-    paths:
-      - '.github/workflows/loterias-ai-lightning-free-public-capture.yml'
+    branches:
+      - main
   schedule:
     - cron: '7,22,37,52 * * * *'
 permissions:
@@ -13,6 +13,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   capture:
+    if: github.actor != 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
