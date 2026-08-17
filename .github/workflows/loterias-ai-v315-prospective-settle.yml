@@ -9,7 +9,9 @@ on:
       - 'loterias-ai/data/archive/primitiva/**'
       - 'loterias-ai/data/research/v315-prospective-seals/**'
       - 'loterias-ai/data/research/metapleno-v315-execution-protocol-v1.json'
+      - 'loterias-ai/data/research/metapleno-v315-final-inference-contract-v1.json'
       - 'loterias-ai/research/megalab/v315-settle-official-prospective.mjs'
+      - 'loterias-ai/research/megalab/v315-finalize-200.mjs'
       - '.github/workflows/loterias-ai-v315-prospective-settle.yml'
 permissions:
   contents: write
@@ -19,7 +21,7 @@ concurrency:
 jobs:
   settle:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
@@ -44,17 +46,33 @@ jobs:
           }
           console.log(JSON.stringify({settledFiles:files.length,fixedBoundary:200}));
           NODE
-      - name: Persist new settlements against moving main
+      - name: Finalize only at fixed 200-draw boundary
+        run: node loterias-ai/research/megalab/v315-finalize-200.mjs
+      - name: Validate final result if boundary exists
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const p='loterias-ai/data/research/metapleno-v315-final-200.json';
+          if(!fs.existsSync(p)){console.log(JSON.stringify({final:'WAITING_FOR_200'}));process.exit(0)}
+          const d=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(d.fixedBoundary?.draws!==200||d.fixedBoundary?.post200CanRescue!==false) throw new Error('fixed final boundary regression');
+          if(d.candidates?.length!==12) throw new Error('final candidate family must remain 12');
+          if(d.guards?.noRetuning!==true||d.guards?.noOptionalStopping!==true||d.guards?.post200RescueAllowed!==false) throw new Error('final scientific guard regression');
+          if(d.gates?.realMoneyPass!==false) throw new Error('v315 final must not authorize real money');
+          console.log(JSON.stringify({final:'AVAILABLE',familyPass:d.gates.familyPass,realMoneyPass:false}));
+          NODE
+      - name: Persist settlements or fixed final against moving main
         run: |
           set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add loterias-ai/data/research/v315-prospective-settlements || true
+          git add loterias-ai/data/research/v315-prospective-settlements 2>/dev/null || true
+          git add loterias-ai/data/research/metapleno-v315-final-200.json 2>/dev/null || true
           if git diff --cached --quiet; then
-            echo 'No new official v315 settlement.'
+            echo 'No new official v315 settlement or fixed final.'
             exit 0
           fi
-          git commit -m 'research(loterias-ai): settle official v315 prospective target'
+          git commit -m 'research(loterias-ai): advance v315 prospective evidence'
           for attempt in 1 2 3 4 5; do
             if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
             git rebase --abort || true
