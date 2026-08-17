@@ -13,5 +13,15 @@ for(const r of rows){const nums=Array.isArray(r.allLuckyNumbers)?r.allLuckyNumbe
 const expectedWinnerLucky=rows.reduce((s,r)=>s+((r.allLuckyNumbers?.length||0)/37),0);
 const wheel=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
 const idx=new Map(wheel.map((x,i)=>[x,i])); let neigh1=0,neigh2=0;for(let i=1;i<n;i++){let d=Math.abs(idx.get(rows[i].winner)-idx.get(rows[i-1].winner));d=Math.min(d,37-d);if(d<=1)neigh1++;if(d<=2)neigh2++;}
-const result={version:'lightning-stat-audit-v1',generatedAt:new Date().toISOString(),rounds:n,physical:{winnerCounts:counts,chiSquareUniform37:chi2,df:36,lagMatches,wheelNeighbourRate1:neigh1/Math.max(1,n-1),wheelNeighbourNull1:3/37,wheelNeighbourRate2:neigh2/Math.max(1,n-1),wheelNeighbourNull2:5/37},rng:{luckyCountDistribution:luckyCount,luckyNumberFrequency:luckyFreq,multiplierFrequency:multFreq,winnerLuckyObserved:winnerLucky,winnerLuckyEligibleRounds:eligibleLucky,winnerLuckyObservedRate:winnerLucky/Math.max(1,eligibleLucky),winnerLuckyExpectedCountUnderConditionalUniform:expectedWinnerLucky},guards:{exploratory:true,multiplicityCorrectionRequired:true,claimAllowed:false,realMoney:false,next:'permutation-calibrated-walk-forward-audit'}};
-fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify({rounds:n,chi2,winnerLucky,expectedWinnerLucky,multiplierFrequency:multFreq,luckyCountDistribution:luckyCount},null,2));
+const semantic={version:'lightning-stat-audit-v1',rounds:n,physical:{winnerCounts:counts,chiSquareUniform37:chi2,df:36,lagMatches,wheelNeighbourRate1:neigh1/Math.max(1,n-1),wheelNeighbourNull1:3/37,wheelNeighbourRate2:neigh2/Math.max(1,n-1),wheelNeighbourNull2:5/37},rng:{luckyCountDistribution:luckyCount,luckyNumberFrequency:luckyFreq,multiplierFrequency:multFreq,winnerLuckyObserved:winnerLucky,winnerLuckyEligibleRounds:eligibleLucky,winnerLuckyObservedRate:winnerLucky/Math.max(1,eligibleLucky),winnerLuckyExpectedCountUnderConditionalUniform:expectedWinnerLucky},guards:{exploratory:true,multiplicityCorrectionRequired:true,claimAllowed:false,realMoney:false,next:'permutation-calibrated-walk-forward-audit'}};
+let changed=true;
+if(fs.existsSync(out)){
+  const previous=JSON.parse(fs.readFileSync(out,'utf8'));
+  delete previous.generatedAt;
+  changed=JSON.stringify(previous)!==JSON.stringify(semantic);
+}
+if(changed){
+  fs.mkdirSync(path.dirname(out),{recursive:true});
+  fs.writeFileSync(out,JSON.stringify({...semantic,generatedAt:new Date().toISOString()},null,2)+'\n');
+}
+console.log(JSON.stringify({rounds:n,chi2,winnerLucky,expectedWinnerLucky,multiplierFrequency:multFreq,luckyCountDistribution:luckyCount,changed},null,2));
