@@ -16,11 +16,17 @@ jobs:
       - run: node loterias-ai/casino/lightning/collect-casinoscore-public.mjs
       - name: Scientific gate
         run: node -e "const x=require('./loterias-ai/casino/lightning/evidence/casinoscore-public.json');if(x.trainingEligible)process.exit(1);if(!x.free)process.exit(1)"
-      - name: Persist public observation
+      - name: Persist public observation only on semantic change
         run: |
+          set -euo pipefail
+          if node -e "const x=require('./loterias-ai/casino/lightning/evidence/casinoscore-public.json');process.exit(x.duplicateSnapshot && x.rowsAppended===0 ? 0 : 1)"; then
+            echo "Duplicate public snapshot: no rows appended, so no commit."
+            exit 0
+          fi
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add loterias-ai/casino/lightning/data/public-observation loterias-ai/casino/lightning/evidence/casinoscore-public.json
-          git commit -m "research(casino): persist free Lightning public observation" || exit 0
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "research(casino): persist free Lightning public observation"
           git pull --rebase origin "$GITHUB_REF_NAME"
           git push

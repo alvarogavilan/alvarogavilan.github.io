@@ -23,9 +23,14 @@ jobs:
           node-version: 24
       - name: Capture free public Lightning evidence
         run: node loterias-ai/casino/lightning/collect-casinoscore-public.mjs
-      - name: Certify corpus readiness
-        run: node loterias-ai/casino/lightning/corpus-readiness.mjs
-      - name: Persist from latest main without rebase conflicts
+      - name: Certify corpus readiness when capture is new
+        run: |
+          if node -e "const x=require('./loterias-ai/casino/lightning/evidence/casinoscore-public.json');process.exit(x.duplicateSnapshot && x.rowsAppended===0 ? 0 : 1)"; then
+            echo "Duplicate public snapshot: no semantic corpus change; readiness rewrite skipped."
+            exit 0
+          fi
+          node loterias-ai/casino/lightning/corpus-readiness.mjs
+      - name: Persist from latest main without timestamp-only commits
         run: |
           set -euo pipefail
           git config user.name github-actions[bot]
@@ -34,6 +39,10 @@ jobs:
             git fetch origin "$GITHUB_REF_NAME"
             git reset --hard "origin/$GITHUB_REF_NAME"
             node loterias-ai/casino/lightning/collect-casinoscore-public.mjs
+            if node -e "const x=require('./loterias-ai/casino/lightning/evidence/casinoscore-public.json');process.exit(x.duplicateSnapshot && x.rowsAppended===0 ? 0 : 1)"; then
+              echo "Duplicate public snapshot: no rows appended, so no commit."
+              exit 0
+            fi
             node loterias-ai/casino/lightning/corpus-readiness.mjs
             git add loterias-ai/casino/lightning
             if git diff --cached --quiet; then exit 0; fi
