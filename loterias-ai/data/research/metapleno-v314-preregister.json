@@ -1,13 +1,13 @@
 {
   "version": "v314",
   "family": "SIXTH_NUMBER_BOUNDARY_RESCUE_AUDIT",
-  "status": "PREREGISTERED_GUARD_REFINED",
-  "goal": "Test whether historical 5/6 events contain a reproducible strictly causal cutoff-boundary effect that remains after matched-cost null testing, without re-running prior omitted-winner rescue families.",
+  "status": "PREREGISTERED_CONTRACT_FROZEN",
+  "goal": "Test whether historical 5/6 events contain a reproducible strictly prior-data cutoff-boundary effect that remains after matched-cost null testing, without re-running prior omitted-winner rescue families.",
   "scope": {
-    "nearFullDefinition": "exactly 5 of 6 main numbers",
-    "boundaryCase": "missing winner rank near the frozen ticket cutoff",
-    "deepCase": "missing winner rank materially outside the frozen cutoff",
-    "newQuestionOnly": "Is boundary distance itself prospectively informative after conditioning on the frozen baseline?"
+    "nearFullDefinition": "exactly 5 of 6 main numbers inside the frozen top-8 pool",
+    "boundaryCase": "the missing sixth winner is ranked 9 or 10 by the frozen pre-draw ranker",
+    "deepCase": "the missing sixth winner is ranked 11 or worse by the frozen pre-draw ranker",
+    "newQuestionOnly": "Is boundary-rank distance itself prospectively informative after conditioning on the frozen baseline?"
   },
   "antiDuplicateGuard": {
     "priorFamilies": [
@@ -21,9 +21,10 @@
       "relearn omitted-number feature profiles",
       "recalibrate missing-number bias",
       "post-hoc add/drop thresholds",
-      "reuse target outcomes to choose boundary width"
+      "reuse target outcomes to choose boundary width",
+      "re-run rank9_drop8, rank10_drop8 or rank9_drop7 as v314 actions"
     ],
-    "requiredNovelty": "Boundary-rank distance must be frozen pre-holdout and tested as a separate causal covariate against matched-cost nulls and prior frozen baselines."
+    "requiredNovelty": "Boundary-rank distance is frozen pre-holdout and tested only as a separate prospective covariate against matched-cost nulls and prior frozen baselines."
   },
   "rules": {
     "trainSelectionPreHoldoutOnly": true,
@@ -37,6 +38,75 @@
     "realMoneyPass": false,
     "realStakeEUR": 0
   },
-  "successGate": "Must improve reproducibly on frozen baselines in holdout and survive matched-cost null plus multiplicity correction; discovery-only 5/6 events do not count.",
-  "failureGate": "Archive as negative or duplicate if boundary effect vanishes out of sample, fails corrected null testing, requires post-hoc threshold changes, or merely reconstructs v141/v142/v144/v145/v146."
+  "design": {
+    "frozenRankerArtifact": {
+      "rankerFamily": "v138 DYNAMIC_COOCCURRENCE_GRAPH_TOPOLOGY",
+      "rankerSourceCommit": "c52642b8c457976c8de6e3c23a1de37583dcf0a2",
+      "rankerSourcePath": "loterias-ai/data/research/meta-pleno-v138-bonoloto-graph-topology.json",
+      "priorRescueAuditCommit": "6ab3c6b324c9320ae2cb38e72bc4f1891ab727be",
+      "priorRescueAuditPath": "loterias-ai/data/research/meta-pleno-v141-sixth-rescue.json",
+      "frozenConfigs": "all 12 v138/v141 configurations exactly as previously frozen; no configuration selection or retuning is permitted in v314"
+    },
+    "frozenTicketCutoff": {
+      "poolSize": 8,
+      "cutoffRank": 8,
+      "boundaryRanks": [9, 10],
+      "deepRankMinimum": 11,
+      "theoreticalStakeEUR": 14,
+      "actionPolicy": "audit only; v314 does not alter the pool or perform add/drop rescue actions"
+    },
+    "discoveryWindow": {
+      "start": "1989-08-13",
+      "end": "2026-08-17",
+      "note": "All previously exposed historical results, including the old 2018-2026 v138/v141 holdout, are treated as discovery evidence for v314 and cannot be reused as fresh validation."
+    },
+    "holdoutWindow": {
+      "start": "2026-08-18",
+      "end": "OPEN_PROSPECTIVE",
+      "prospectiveOnly": true,
+      "note": "A draw is eligible only if its ranking/pool/config evidence was frozen before the official result became available."
+    },
+    "matchedCostNullSpec": {
+      "conditioning": "condition on the same frozen ranker/config and on exactly five winning numbers falling inside the same frozen top-8 pool",
+      "nullMissingRank": "under the matched conditional null, the missing sixth winner rank is sampled uniformly from ranks 9 through 49 while the frozen pool, ranker and 14 EUR theoretical cost remain unchanged",
+      "primaryNullProbabilityBoundaryRank9or10": 0.04878048780487805,
+      "permutationReplicatesPerConfig": 100000,
+      "nullChangesTicketCost": false,
+      "nullUsesTargetOutcomeForSelection": false
+    }
+  },
+  "freeze": {
+    "multiplicityFamilySize": 12,
+    "multiplicityMethod": "Holm-Bonferroni family-wise error control at alpha=0.05 across the 12 frozen ranker configurations",
+    "deterministicSeed": 31420260817,
+    "minimumEligibleEvents": 20,
+    "successMetric": "primary: prospective boundary-enrichment rate among eligible 5/6 events, where boundary means missing-winner rank 9 or 10; success requires positive enrichment over the matched conditional null, Holm-adjusted p<0.05, lower 95% confidence bound above the null boundary probability, and no post-freeze retuning"
+  },
+  "inference": {
+    "primaryTest": "exact binomial test per frozen configuration against p0=2/41, with Holm correction across 12 configurations; deterministic matched-null permutation is a robustness check",
+    "secondaryMetrics": [
+      "full missing-winner rank distribution from 9 through 49",
+      "rank-9 rate",
+      "rank-10 rate",
+      "deep-miss rate rank >=11",
+      "mean and median distance from cutoff 8",
+      "4/6, 5/6 and 6/6 baseline counts",
+      "temporal stability across prospectively completed chronological blocks"
+    ],
+    "promotionPolicy": "A positive v314 result establishes only a prospective boundary-distance signal. It does not authorize a rescue substitution, predictive jackpot claim, or real-money play. Any action rule would require a new preregistered experiment on later untouched data.",
+    "prospectiveFreezeEvidenceRequired": [
+      "timestamp before draw",
+      "version",
+      "algorithm/config id",
+      "complete ranked list or immutable rank artifact",
+      "frozen top-8 pool",
+      "theoretical cost",
+      "SHA256 or equivalent immutable seal"
+    ]
+  },
+  "successGate": "Boundary-rank distance must improve reproducibly on the matched conditional null in prospective data and survive Holm correction; discovery-only 5/6 events do not count.",
+  "failureGate": "Archive as negative or duplicate if the boundary effect vanishes prospectively, fails corrected null testing, requires post-hoc boundary changes, or merely reconstructs v141/v142/v144/v145/v146.",
+  "scientificNote": "The previously exposed 2018-2026 interval is explicitly not reused as a fresh v314 holdout. Validation starts prospectively on 2026-08-18. v314 is an audit of boundary distance only; it performs no rescue action.",
+  "realMoneyPass": false,
+  "realStakeEUR": 0
 }
