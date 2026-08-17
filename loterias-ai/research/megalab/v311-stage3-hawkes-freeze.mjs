@@ -41,9 +41,10 @@ const payload={
   realStakeEUR:0,
   theoreticalBudgetEURMax:15,
   frozenCandidateCount:32,
-  games
+  games,
+  status:'FROZEN_FOR_BLIND_OOS'
 };
 const freezeSealSHA256=crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex');
-const out={...payload,freezeSealSHA256,status:'FROZEN_FOR_BLIND_OOS'};
+const out={...payload,freezeSealSHA256};
 fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
 console.log(JSON.stringify({status:out.status,frozenCandidateCount:out.frozenCandidateCount,freezeSealSHA256,byGame:out.games.map(g=>({game:g.game,count:g.selected.length,developmentNearFull:g.selected.filter(x=>x.development.nearFull>0).length})),realMoneyPass:false,realStakeEUR:0,theoreticalBudgetEURMax:15},null,2));
