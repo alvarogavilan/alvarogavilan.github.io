@@ -1,0 +1,30 @@
+name: Loterias AI Lightning Pagination Probe
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/lightning/probe-casinoorg-pagination.mjs'
+      - '.github/workflows/loterias-ai-lightning-pagination-probe.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-lightning-pagination-probe
+  cancel-in-progress: false
+jobs:
+  probe:
+    if: github.actor != 'github-actions[bot]' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - run: node loterias-ai/casino/lightning/probe-casinoorg-pagination.mjs
+      - name: Persist pagination evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/casino/lightning/evidence/casinoorg-pagination-probe.json
+          git commit -m "research(casino): persist Lightning pagination probe" || exit 0
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin HEAD:"$GITHUB_REF_NAME"
