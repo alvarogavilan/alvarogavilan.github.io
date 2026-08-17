@@ -12,6 +12,7 @@ const f=JSON.parse(fs.readFileSync(FREEZE,'utf8'));
 const d=JSON.parse(fs.readFileSync(PROTOCOL,'utf8'));
 const provenance=JSON.parse(fs.readFileSync(PROVENANCE,'utf8'));
 const freezeMs=Date.parse(f.frozenAt);
+const protocolFreezeMs=Date.parse(d.freeze?.frozenAt);
 const threshold=Number(f.frozenRule.roundsSinceLastWinningLightningAtLeast);
 const horizon=Number(f.frozenRule.predictNextRounds);
 const p0=Number(f.frozenNull.iidProbabilityAtLeastOneIn7);
@@ -20,7 +21,7 @@ const calibrationReference=Number(d.calibration.referenceProbability);
 const finalBoundary=Number(d.fixedFinalBoundary.postFreezeRounds);
 
 if(d.freeze?.version!==f.version)throw new Error('Decision protocol freeze version mismatch');
-if(d.freeze?.frozenAt!==f.frozenAt)throw new Error('Decision protocol frozenAt mismatch');
+if(!Number.isFinite(freezeMs)||!Number.isFinite(protocolFreezeMs)||protocolFreezeMs!==freezeMs)throw new Error('Decision protocol frozenAt instant mismatch');
 if(d.freeze?.rule?.roundsSinceLastWinningLightningAtLeast!==threshold||d.freeze?.rule?.predictNextRounds!==horizon)throw new Error('Decision protocol timing rule mismatch');
 if(f.frozenRule.noRetuning!==true||d.freeze?.rule?.noRetuning!==true)throw new Error('Immutable no-retuning rule required');
 if(provenance.verdict!=='CHAIN_OF_CUSTODY_VERIFIED'||provenance.checks?.postHocRuleSubstitutionDetected!==false)throw new Error('Verified clean freeze provenance required');
