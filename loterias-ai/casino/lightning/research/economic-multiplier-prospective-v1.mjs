@@ -108,6 +108,14 @@ if(finalBoundaryReached)status='FIXED_FINAL_AVAILABLE';
 
 const separateNumberSelectionProspectiveEdge=false;
 const promotionGatePass=fixedFinalTimingPass&&separateNumberSelectionProspectiveEdge;
+const performanceHidden=!directionalReached;
+const visibleSuccesses=performanceHidden?null:live.successes;
+const visibleFailures=performanceHidden?null:live.failures;
+const visibleRate=performanceHidden?null:live.successRate;
+const visibleWilson=performanceHidden?{lower:null,upper:null}:live.wilson95;
+const visibleCalibrationInside=performanceHidden?null:live.calibrationReferenceInsideWilson95;
+const visibleLift=performanceHidden?null:live.liftVsPrimary;
+const visibleRelativeLift=performanceHidden?null:live.relativeLiftVsPrimary;
 
 const result={
   version:'economic-multiplier-window-prospective-status-v1',
@@ -118,21 +126,27 @@ const result={
   rule:f.frozenRule,
   postFreezeRounds:live.postFreezeRounds,
   closedEpisodes:live.closedEpisodes,
-  successes:live.successes,
-  failures:live.failures,
-  successRate:live.successRate,
-  wilson95:live.wilson95,
+  successes:visibleSuccesses,
+  failures:visibleFailures,
+  successRate:visibleRate,
+  wilson95:visibleWilson,
   frozenNull:{primary:p0,secondary:p1},
   calibration:{
     referenceProbability:calibrationReference,
     referenceSource:d.calibration.referenceSource,
-    referenceInsideCurrentWilson95:live.calibrationReferenceInsideWilson95,
+    referenceInsideCurrentWilson95:visibleCalibrationInside,
     formalCriterion:d.calibration.formalCriterion
   },
-  liftVsPrimary:live.liftVsPrimary,
-  relativeLiftVsPrimary:live.relativeLiftVsPrimary,
+  liftVsPrimary:visibleLift,
+  relativeLiftVsPrimary:visibleRelativeLift,
   pendingEpisode:live.pendingEpisode,
   status,
+  disclosure:{
+    performanceHidden,
+    minimumClosedEpisodesBeforeDirectionalRead:Number(f.gates.minimumClosedEpisodesForDirectionalRead),
+    policy:performanceHidden?d.readPolicy.before30ClosedEpisodes:'DIRECTIONAL_OR_LATER_READ_POLICY_ACTIVE',
+    hiddenFields:performanceHidden?['successes','failures','successRate','wilson95','liftVsPrimary','relativeLiftVsPrimary','directionalGates','recentClosedEpisodeOutcomes']:[]
+  },
   readPolicy:{
     before30:d.readPolicy.before30ClosedEpisodes,
     after30Before100:d.readPolicy.atOrAfter30ClosedEpisodesBefore100,
@@ -155,9 +169,9 @@ const result={
   gates:{
     directionalSampleReached:directionalReached,
     formalSampleReached:formalDescriptiveReached,
-    lowerCiAbovePrimaryNull:live.wilson95.lower!=null&&live.wilson95.lower>p0,
-    positiveVsSecondary:live.successRate!=null&&live.successRate>p1,
-    calibrationReferenceInsideWilson95:live.calibrationReferenceInsideWilson95===true,
+    lowerCiAbovePrimaryNull:performanceHidden?null:live.wilson95.lower!=null&&live.wilson95.lower>p0,
+    positiveVsSecondary:performanceHidden?null:live.successRate!=null&&live.successRate>p1,
+    calibrationReferenceInsideWilson95:performanceHidden?null:live.calibrationReferenceInsideWilson95===true,
     minimum10000ProspectiveRoundsReached:finalBoundaryReached,
     fixedFinalTimingGatePass:fixedFinalTimingPass,
     formalTimingGatePass:fixedFinalTimingPass,
@@ -165,13 +179,14 @@ const result={
     promotionGatePass,
     realMoneyAllowed:false
   },
-  recentClosedEpisodes:live.recentClosedEpisodes,
+  recentClosedEpisodes:performanceHidden?[]:live.recentClosedEpisodes,
   guards:{
     provenanceVerified:true,
     calibrationProtocolRegisteredBeforeFirstClosedEpisode:true,
     emptyProspectiveSampleIsUnevaluable:true,
     singleFixedPromotionWindow:true,
     post10000OptionalStoppingRescueBlocked:true,
+    pre30PerformanceBlindnessEnforced:true,
     noRetuning:true,
     separateProspectiveNumberEdgeRequired:true,
     automaticBettingAllowed:false,
