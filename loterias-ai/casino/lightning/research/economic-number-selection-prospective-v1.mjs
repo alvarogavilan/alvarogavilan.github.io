@@ -41,6 +41,7 @@ function enrich(r){
   return {...r,winner,pairs,winnerIsLightning:Boolean(r.winnerIsLightning??p),winnerMultiplier,_ts:parseTs(r)};
 }
 function round(v,d=6){return Number.isFinite(v)?Number(v.toFixed(d)):null;}
+function isoOrNull(ms){return Number.isFinite(ms)?new Date(ms).toISOString():null;}
 function logFacts(n){const a=[0];for(let i=1;i<=n;i++)a[i]=a[i-1]+Math.log(i);return a;}
 function binomialUpperTail(n,k,p,lf){
   if(n<=0)return null;if(k<=0)return 1;if(k>n)return 0;
@@ -96,6 +97,26 @@ function selectWinner(k){
 }
 
 const eligibleCount=eligibleIndices.length,phaseAComplete=eligibleCount>=phaseARounds,finalComplete=eligibleCount>=finalBoundary;
+const firstEligibleTs=eligibleCount?rows[eligibleIndices[0]]._ts:null;
+const lastEligibleTs=eligibleCount?rows[eligibleIndices.at(-1)]._ts:null;
+const elapsedHours=eligibleCount>=2&&lastEligibleTs>firstEligibleTs?(lastEligibleTs-firstEligibleTs)/3600000:null;
+const roundsPerHour=elapsedHours&&elapsedHours>0?(eligibleCount-1)/elapsedHours:null;
+const roundsUntilPhaseA=Math.max(0,phaseARounds-eligibleCount);
+const roundsUntilFixedFinal=Math.max(0,finalBoundary-eligibleCount);
+const etaPhaseAHours=roundsPerHour&&roundsPerHour>0?roundsUntilPhaseA/roundsPerHour:null;
+const etaFinalHours=roundsPerHour&&roundsPerHour>0?roundsUntilFixedFinal/roundsPerHour:null;
+const administrativeEta={
+  method:'Observed eligible future-round cadence only; no selector outcomes or rankings are used.',
+  firstEligibleAt:isoOrNull(firstEligibleTs),
+  lastEligibleAt:isoOrNull(lastEligibleTs),
+  observedRoundsPerHour:round(roundsPerHour,3),
+  phaseAEstimatedHoursRemaining:round(etaPhaseAHours,2),
+  fixedFinalEstimatedHoursRemaining:round(etaFinalHours,2),
+  phaseAEstimatedAt:isoOrNull(lastEligibleTs+(etaPhaseAHours??NaN)*3600000),
+  fixedFinalEstimatedAt:isoOrNull(lastEligibleTs+(etaFinalHours??NaN)*3600000),
+  descriptiveOnly:true,
+  notAScientificGate:true
+};
 let phase='WAITING_FOR_PROSPECTIVE_START';
 if(eligibleCount>0)phase='ACCUMULATING_PHASE_A_BLINDED';
 if(phaseAComplete&&!finalComplete)phase='PHASE_A_LOCKED_PHASE_B_BLINDED';
@@ -119,13 +140,14 @@ const result={
   prospectiveStartsAt:f.prospectiveStartsAt,
   source:{file:DATA,currentEligibleCorpusRows:rows.length,currentMaxTimestamp:new Date(rows.at(-1)._ts).toISOString()},
   frozenFamily:{coverages,modes,lookbacks,totalCandidates:configs.length},
-  progress:{eligibleFutureRounds:eligibleCount,fixedBoundaryUsedRounds:fixed.length,phaseARoundsRequired:phaseARounds,phaseBRoundsRequired:phaseBRounds,fixedFinalBoundary:finalBoundary,roundsUntilPhaseA:Math.max(0,phaseARounds-eligibleCount),roundsUntilFixedFinal:Math.max(0,finalBoundary-eligibleCount),postBoundaryRowsIgnoredForV1:Math.max(0,eligibleCount-finalBoundary)},
+  progress:{eligibleFutureRounds:eligibleCount,fixedBoundaryUsedRounds:fixed.length,phaseARoundsRequired:phaseARounds,phaseBRoundsRequired:phaseBRounds,fixedFinalBoundary:finalBoundary,roundsUntilPhaseA,roundsUntilFixedFinal,postBoundaryRowsIgnoredForV1:Math.max(0,eligibleCount-finalBoundary)},
+  administrativeEta,
   phase,
   disclosure:eligibleCount<phaseARounds?{candidatePerformanceHidden:true,reason:f.readPolicy.before5000}:eligibleCount<finalBoundary?{candidatePerformanceHidden:false,phaseAWinnersVisible:true,phaseBPerformanceHidden:true,reason:f.readPolicy.from5000To9999}:{candidatePerformanceHidden:false,phaseBPerformanceHidden:false,reason:f.readPolicy.at10000},
   phaseAWinners:phaseAComplete?phaseAWinners:null,
   confirmation:finalComplete?confirmation:null,
   gates:{phaseAComplete,fixedFinalComplete:finalComplete,numberSelectionProspectiveEdge:anyNumberEdge,separateTimingGateStillRequired:true,automaticBettingAllowed:false,realMoneyAllowed:false},
-  guards:{noHistoricalModelSelection:true,all132CandidatesFrozenBeforeStart:true,phaseAUsesOnlyFirst5000EligibleFutureRounds:true,phaseBUsesOnlyNext5000EligibleFutureRounds:true,phaseBSelectorDeterministicFromPhaseA:true,bonferroniAcrossTwoFinalists:true,optionalStoppingBlocked:true,post10000RowsIgnoredForV1:true,realMoneyAllowed:false},
+  guards:{noHistoricalModelSelection:true,all132CandidatesFrozenBeforeStart:true,phaseAUsesOnlyFirst5000EligibleFutureRounds:true,phaseBUsesOnlyNext5000EligibleFutureRounds:true,phaseBSelectorDeterministicFromPhaseA:true,bonferroniAcrossTwoFinalists:true,optionalStoppingBlocked:true,post10000RowsIgnoredForV1:true,administrativeEtaUsesTimestampsOnly:true,realMoneyAllowed:false},
   interpretation:!phaseAComplete?'No selector ranking is disclosed before the fixed 5000-round prospective selection boundary.':!finalComplete?'The two phase-A winners are fixed deterministically. Phase-B outcomes remain blinded until the 10000-round fixed final boundary.':anyNumberEdge?'At least one coverage finalist beat k/37 at the preregistered Bonferroni threshold on the independent phase-B window. This is a separate prospective number-selection signal, not permission for real-money play and not proof that the timing hypothesis passes.':'Neither finalist confirmed above k/37 at the preregistered Bonferroni threshold. v1 is a prospective failure and later rows cannot rescue it.'
 };
 fs.mkdirSync(path.dirname(OUT),{recursive:true});fs.writeFileSync(OUT,JSON.stringify(result,null,2)+'\n');
