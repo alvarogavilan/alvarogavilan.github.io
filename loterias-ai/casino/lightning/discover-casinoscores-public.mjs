@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+import fs from'node:fs';import crypto from'node:crypto';
+const url='https://www.casino.org/casinoscores/es/lightning-roulette/';
+const res=await fetch(url,{headers:{'user-agent':'LoteriasAI-Research/1.0'}});const html=await res.text();
+const urls=[...html.matchAll(/https?:\\?\/\\?\/[^"'<>\\s]+/g)].map(m=>m[0].replaceAll('\\/','/'));
+const rel=[...html.matchAll(/(?:src|href)=['\"]([^'\"]+)['\"]/g)].map(m=>m[1]);
+const candidates=[...new Set([...urls,...rel])].filter(x=>/(api|graphql|json|spin|roulette|lightning|casino.?scores|_next|assets|static)/i.test(x)).slice(0,500);
+const probes=[];for(const raw of candidates){let u;try{u=new URL(raw,url).href}catch{continue}if(!/^https:\/\//.test(u))continue;try{const r=await fetch(u,{headers:{'user-agent':'LoteriasAI-Research/1.0','accept':'application/json,text/plain,text/html,*/*'}});const ct=r.headers.get('content-type')||'';const txt=(await r.text()).slice(0,3000);const roundLike=/(round.?id|spin.?id|lucky.?number|multiplier|resultado|result)/i.test(txt);probes.push({url:u,status:r.status,contentType:ct,bytesSample:txt.length,roundLike,authRequired:r.status===401||r.status===403,sampleHash:crypto.createHash('sha256').update(txt).digest('hex')})}catch(e){probes.push({url:u,error:String(e?.message||e)})}}
+const out={generatedAt:new Date().toISOString(),page:url,pageStatus:res.status,htmlBytes:html.length,candidatesFound:candidates.length,probes:probes.length,viableRoundLike:probes.filter(x=>x.status===200&&x.roundLike).length,publicRoundLike:probes.filter(x=>x.status===200&&x.roundLike&&!x.authRequired).map(x=>({url:x.url,contentType:x.contentType,sampleHash:x.sampleHash})),trainingEligible:false,authenticationBypassAttempted:false,realMoney:false};fs.mkdirSync('loterias-ai/casino/lightning/evidence',{recursive:true});fs.writeFileSync('loterias-ai/casino/lightning/evidence/casinoscores-discovery.json',JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify(out,null,2));
