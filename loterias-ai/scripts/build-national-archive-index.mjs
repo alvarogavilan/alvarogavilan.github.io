@@ -7,20 +7,33 @@ const games=fs.readdirSync(root,{withFileTypes:true}).filter(d=>d.isDirectory()&
 const partitions=[];
 const gameSummary={};
 const hasEconomics=r=>{const e=r?.economics;if(!e)return false;if(e.payouts&&Object.keys(e.payouts).length)return true;if(e.spain&&Object.keys(e.spain).length)return true;if(e.headlineFirstPrizePerDecimo!=null)return true;if(e.revenue!=null||e.jackpot!=null)return true;return false;};
+const normalizeStatus=v=>String(v??'').trim().toLowerCase().replace(/\s+/g,'_');
+const isValidated=r=>{
+  const values=[r?.verification?.status,r?.internalValidation?.status,r?.source?.validation,r?.economics?.validation?.status].map(normalizeStatus).filter(Boolean);
+  const negative=/(^|[_-])(invalid|failed|fail|pending|unverified|unvalidated|unknown|error|conflict)([_-]|$)/;
+  const positive=/(^|[_-])(valid|validated|pass|passed|verified|official)([_-]|$)/;
+  if(values.some(v=>negative.test(v)))return false;
+  return values.some(v=>positive.test(v));
+};
 for(const game of games){
   const dir=path.join(root,game);
   const files=fs.readdirSync(dir).filter(f=>/^\d{4}\.json$/.test(f)).sort();
   let total=0,economicsTotal=0,validatedTotal=0,earliest=null,latest=null,latestEconomics=null;
   for(const file of files){
-    const p=path.join(dir,file),buf=fs.readFileSync(p);let j;try{j=JSON.parse(buf);}catch{continue;}
-    const records=Array.isArray(j.records)?j.records:[],dates=records.map(r=>r.drawDate).filter(Boolean).sort();total+=records.length;
+    const p=path.join(dir,file),buf=fs.readFileSync(p);let j;
+    try{j=JSON.parse(buf);}catch(e){throw new Error(`Archive partition JSON parse failure ${p}: ${e?.message||e}`)}
+    if(!Array.isArray(j.records))throw new Error(`Archive partition records must be an array: ${p}`);
+    const records=j.records,partitionYear=Number(file.slice(0,4));
+    const badYear=records.find(r=>/^\d{4}-\d{2}-\d{2}$/.test(String(r?.drawDate))&&Number(String(r.drawDate).slice(0,4))!==partitionYear);
+    if(badYear)throw new Error(`Archive partition year mismatch ${p}: drawDate=${badYear.drawDate}`);
+    const dates=records.map(r=>r.drawDate).filter(Boolean).sort();total+=records.length;
     if(dates.length){earliest=!earliest||dates[0]<earliest?dates[0]:earliest;latest=!latest||dates.at(-1)>latest?dates.at(-1):latest;}
     const economicsRecords=records.filter(hasEconomics),economicsCount=economicsRecords.length;economicsTotal+=economicsCount;
     const econDates=economicsRecords.map(r=>r.drawDate).filter(Boolean).sort();if(econDates.length)latestEconomics=!latestEconomics||econDates.at(-1)>latestEconomics?econDates.at(-1):latestEconomics;
-    const validatedCount=records.filter(r=>String(r.verification?.status||r.internalValidation?.status||r.source?.validation||r.economics?.validation?.status||'').toLowerCase().includes('valid')||String(r.source?.validation||'').toLowerCase().includes('pass')).length;validatedTotal+=validatedCount;
-    partitions.push({gameId:game,year:Number(file.slice(0,4)),path:p.replace(/^loterias-ai\//,''),records:records.length,earliest:dates[0]||null,latest:dates.at(-1)||null,economicsRecords:economicsCount,validatedRecords:validatedCount,sha256:crypto.createHash('sha256').update(buf).digest('hex')});
+    const validatedCount=records.filter(isValidated).length;validatedTotal+=validatedCount;
+    partitions.push({gameId:game,year:partitionYear,path:p.replace(/^loterias-ai\//,''),records:records.length,earliest:dates[0]||null,latest:dates.at(-1)||null,economicsRecords:economicsCount,validatedRecords:validatedCount,sha256:crypto.createHash('sha256').update(buf).digest('hex')});
   }
-  gameSummary[game]={partitions:files.length,records:total,economicsRecords:economicsTotal,economicsCoverage:total?economicsTotal/total:0,validatedRecords:validatedTotal,earliest,latest,latestEconomics};
+  gameSummary[game]={partitions:files.length,records:total,economicsRecords:economicsTotal,economicsCoverage:total?economicsTotal/total:0,validatedRecords:validatedTotal,validationCoverage:total?validatedTotal/total:0,earliest,latest,latestEconomics};
 }
-const manifest={generatedAt:new Date().toISOString(),schemaVersion:3,storage:'game/year canonical JSON partitions + reference indexes for special draws',games:gameSummary,totals:{games:Object.keys(gameSummary).length,partitions:partitions.length,records:partitions.reduce((s,p)=>s+p.records,0),economicsRecords:partitions.reduce((s,p)=>s+p.economicsRecords,0),validatedRecords:partitions.reduce((s,p)=>s+p.validatedRecords,0)},partitions};
+const manifest={generatedAt:new Date().toISOString(),schemaVersion:4,storage:'game/year canonical JSON partitions + reference indexes for special draws',validationSemantics:'fail-closed exact token matching; INVALID/PENDING/UNVERIFIED/CONFLICT never count as validated',games:gameSummary,totals:{games:Object.keys(gameSummary).length,partitions:partitions.length,records:partitions.reduce((s,p)=>s+p.records,0),economicsRecords:partitions.reduce((s,p)=>s+p.economicsRecords,0),validatedRecords:partitions.reduce((s,p)=>s+p.validatedRecords,0)},partitions};
 fs.writeFileSync(path.join(root,'manifest.json'),JSON.stringify(manifest,null,2)+'\n');console.log(JSON.stringify(manifest.totals,null,2));
