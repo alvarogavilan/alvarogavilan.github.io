@@ -1,11 +1,10 @@
 {
   "version": "v315",
   "family": "CROSS_GAME_TRANSFER_AUDIT",
-  "status": "PREREGISTERED_GUARD_REFINED",
-  "goal": "Test whether a mechanism learned on one lottery transfers prospectively to another without target-game tuning.",
+  "status": "PREREGISTERED_CONTRACT_FROZEN",
+  "goal": "Test whether a mechanism learned on Bonoloto transfers prospectively to Primitiva without target-game tuning, while keeping all previously exposed target history out of fresh validation.",
   "candidateTransfers": [
-    "bonoloto_to_primitiva",
-    "euromillones_main_numbers_to_6ofN_rank_family"
+    "bonoloto_to_primitiva"
   ],
   "excludedTransfers": [
     {
@@ -16,6 +15,11 @@
       "priorConfigurations": 192,
       "priorRepeat5PlusModels": 0,
       "priorRepeatFullModels": 0
+    },
+    {
+      "transfer": "euromillones_main_numbers_to_6ofN_rank_family",
+      "reason": "REGIME_COMPATIBILITY_GUARD",
+      "detail": "Euromillones main-number regime is 5-of-50 plus stars, not 6-of-49. A target-safe deterministic mapping is not frozen yet; executing it inside v315 would require extra design choices and inflate multiplicity."
     }
   ],
   "rules": {
@@ -32,6 +36,93 @@
     "realMoneyPass": false,
     "realStakeEUR": 0
   },
-  "successGate": "Transfer must beat frozen matched-cost baselines on target holdout and survive multiplicity correction.",
-  "failureGate": "Archive if transfer vanishes out of sample, depends on target tuning, is explained by marginal frequency/recency, or duplicates an already falsified transfer direction."
+  "design": {
+    "sourceMechanismArtifact": {
+      "game": "bonoloto",
+      "family": "DYNAMIC_COOCCURRENCE_GRAPH_TOPOLOGY",
+      "version": "v138",
+      "path": "loterias-ai/data/research/meta-pleno-v138-bonoloto-graph-topology.json",
+      "blobSha": "2b41d7e931aff8d5f211fd8690a5dc3c37cffe45",
+      "sourceCommit": "c52642b8c457976c8de6e3c23a1de37583dcf0a2",
+      "frozenConfigs": "all 12 v138 configurations exactly as frozen; no target-driven config selection is allowed"
+    },
+    "sourceTrainingWindow": {
+      "start": "1989-08-13",
+      "end": "2018-05-24",
+      "selectionGame": "bonoloto",
+      "note": "Only Bonoloto determined the 12 frozen v138 configuration parameters."
+    },
+    "targetHoldoutWindow": {
+      "game": "primitiva",
+      "start": "2026-08-18",
+      "end": "OPEN_PROSPECTIVE",
+      "prospectiveOnly": true,
+      "note": "All Primitiva outcomes available on or before 2026-08-17 are treated as exposed discovery context and cannot count as fresh v315 validation."
+    },
+    "transferMapping": {
+      "sharedSupport": "Both Bonoloto and Primitiva main-number spaces are 1..49 and draw 6 main numbers.",
+      "procedure": "For each Primitiva target draw and each frozen v138 configuration, rebuild the same weighted co-occurrence graph from Primitiva draws strictly before the target timestamp using the unchanged frozen window and sign parameters; rank 1..49 with the unchanged v138 degree/clustering/neighbor-entropy formula; emit exactly the top 6 as one ticket for that configuration.",
+      "targetFitting": false,
+      "targetParameterSearch": false
+    },
+    "regimeCompatibilityTest": {
+      "required": [
+        "main number support equals 1..49",
+        "exactly 6 main winning numbers",
+        "at least max frozen v138 window prior target draws available"
+      ],
+      "usesTargetOutcome": false,
+      "failurePolicy": "skip the draw before outcome access and persist the incompatibility reason"
+    },
+    "ticketBudget": {
+      "linesPerFrozenConfig": 1,
+      "frozenConfigCount": 12,
+      "maximumCandidateLines": 12,
+      "maximumTheoreticalCostEUR": 12,
+      "hardProjectCapEUR": 15,
+      "realStakeEUR": 0,
+      "note": "The experiment evaluates one top-6 line per frozen configuration; it does not expand to a top-8 combination system."
+    },
+    "matchedCostRandomBaselineSpec": {
+      "linesPerDraw": 12,
+      "numbersPerLine": 6,
+      "support": "1..49 without replacement within each line",
+      "replicatesPerDraw": 10000,
+      "seed": 31520260817,
+      "usesTargetOutcomeForSelection": false,
+      "sameLineBudgetAsTransfer": true
+    },
+    "marginalFrequencyBaselineSpec": {
+      "procedure": "Using only Primitiva draws strictly before each target timestamp, rank numbers by trailing marginal frequency with the corresponding frozen v138 window length and emit top 6; no parameter search.",
+      "usesTargetOutcomeForSelection": false
+    },
+    "recencyBaselineSpec": {
+      "procedure": "Using only Primitiva draws strictly before each target timestamp, rank numbers by recency since last appearance and emit top 6 under both frozen signs already represented by the source family; no target tuning.",
+      "usesTargetOutcomeForSelection": false
+    }
+  },
+  "freeze": {
+    "multiplicityFamilySize": 12,
+    "multiplicityMethod": "Holm-Bonferroni family-wise error control at alpha=0.05 across the 12 frozen source configurations",
+    "deterministicSeed": 31520260817,
+    "minimumTargetDraws": 200,
+    "primaryMetric": "paired mean main-number hits per frozen transferred 6-number line versus the matched-cost random baseline, higher is better",
+    "secondaryMetrics": [
+      "4/6 event count",
+      "5/6 event count",
+      "6/6 event count",
+      "repeat5+ across distinct prospective dates",
+      "effect versus frozen marginal-frequency baseline",
+      "effect versus frozen recency baseline"
+    ]
+  },
+  "inference": {
+    "promotionGate": "A transfer signal requires positive paired effect versus matched-cost random, Holm-adjusted p<0.05 across 12 frozen configurations, positive effect versus both frozen marginal-frequency and recency baselines, at least 200 eligible prospective target draws, and no post-freeze retuning.",
+    "extremeEventAudit": "Any prospective 5/6, 6/6 or repeat5+ triggers lineage verification, timestamp/seal verification, duplicate-behavior analysis, exact matched-cost null replay and multiplicity correction before interpretation.",
+    "realMoneyPolicy": "Even a positive v315 result does not authorize real-money play. A later untouched preregistered replication is required."
+  },
+  "successGate": "Transfer must beat frozen matched-cost random, marginal-frequency and recency baselines on the prospective Primitiva holdout and survive Holm correction.",
+  "failureGate": "Archive if transfer vanishes prospectively, depends on target tuning, fails regime compatibility, is explained by marginal frequency/recency, or duplicates an already falsified transfer direction.",
+  "realMoneyPass": false,
+  "realStakeEUR": 0
 }
