@@ -1,0 +1,185 @@
+{
+  "version": "economic-multiplier-window-dependence-robustness-v1",
+  "generatedAt": "2026-08-17T22:02:11.432Z",
+  "mode": "PAPER_ONLY",
+  "source": {
+    "immutableGitCommit": "4444ee4284991786718b6b9a55d651b1a7384b10",
+    "file": "loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl",
+    "rounds": 2073,
+    "expectedRoundsAtFreeze": 2073,
+    "exactFrozenCorpusRecoveredWithGitShow": true
+  },
+  "frozenRule": {
+    "threshold": 8,
+    "horizon": 7,
+    "frozenAt": "2026-08-17T21:27:45Z",
+    "noRetuning": true
+  },
+  "frozenNull": {
+    "primary": 0.384823,
+    "secondary": 0.376573
+  },
+  "split": {
+    "discoveryNotReanalysed": [
+      0,
+      1243
+    ],
+    "validation": [
+      1243,
+      1658
+    ],
+    "holdout": [
+      1658,
+      2073
+    ]
+  },
+  "method": {
+    "episodePolicy": "non-overlapping; trigger on completed-round gap >= threshold; close at first winning-Lightning or after frozen horizon",
+    "blockPermutationSizes": [
+      7,
+      14,
+      28,
+      56
+    ],
+    "permutationsPerBlockSize": 5000,
+    "permutationPurpose": "preserve within-block local dependence while disrupting block order; sensitivity analysis, not fresh independent confirmation",
+    "exactBinomialReportedAsSecondaryCheck": true
+  },
+  "results": {
+    "validation": {
+      "range": [
+        1243,
+        1658
+      ],
+      "observed": {
+        "episodes": 38,
+        "successes": 21,
+        "failures": 17,
+        "successRate": 0.552632,
+        "liftVsPrimary": 0.167809,
+        "liftVsSecondary": 0.176059,
+        "exactBinomialPVsPrimary": 0.026421816
+      },
+      "blockPermutation": {
+        "7": {
+          "permutations": 5000,
+          "empiricalOneSidedP": 0.042991402,
+          "nullRateMean": 0.457349,
+          "nullRateP05": 0.368421,
+          "nullRateP50": 0.457143,
+          "nullRateP95": 0.542857,
+          "observedAboveP95": true
+        },
+        "14": {
+          "permutations": 5000,
+          "empiricalOneSidedP": 0.696660668,
+          "nullRateMean": 0.570881,
+          "nullRateP05": 0.5,
+          "nullRateP50": 0.571429,
+          "nullRateP95": 0.638889,
+          "observedAboveP95": false
+        },
+        "28": {
+          "permutations": 5000,
+          "empiricalOneSidedP": 0.367526495,
+          "nullRateMean": 0.537438,
+          "nullRateP05": 0.485714,
+          "nullRateP50": 0.540541,
+          "nullRateP95": 0.583333,
+          "observedAboveP95": false
+        },
+        "56": {
+          "permutations": 5000,
+          "empiricalOneSidedP": 0.716656669,
+          "nullRateMean": 0.556557,
+          "nullRateP05": 0.527778,
+          "nullRateP50": 0.555556,
+          "nullRateP95": 0.583333,
+          "observedAboveP95": false
+        }
+      },
+      "gates": {
+        "positiveVsBothFrozenNulls": true,
+        "exactBinomialPrimaryPLe05": true,
+        "significantBlockSizesAt05": 1,
+        "dependenceRobustDirection": false
+      }
+    },
+    "holdout": {
+      "range": [
+        1658,
+        2073
+      ],
+      "observed": {
+        "episodes": 38,
+        "successes": 12,
+        "failures": 26,
+        "successRate": 0.315789,
+        "liftVsPrimary": -0.069034,
+        "liftVsSecondary": -0.060784,
+        "exactBinomialPVsPrimary": 0.851468795
+      },
+      "blockPermutation": {
+        "7": {
+          "permutations": 5000,
+          "empiricalOneSidedP": 0.832633473,
+          "nullRateMean": 0.355255,
+          "nullRateP05": 0.282051,
+          "nullRateP50": 0.358974,
+          "nullRateP95": 0.432432,
+          "observedAboveP95": false
+        },
+        "14": {
+          "permutations": 5000,
+          "empiricalOneSidedP": 0.933013397,
+          "nullRateMean": 0.372907,
+          "nullRateP05": 0.305556,
+          "nullRateP50": 0.375,
+          "nullRateP95": 0.435897,
+          "observedAboveP95": false
+        },
+        "28": {
+          "permutations": 5000,
+          "empiricalOneSidedP": 0.949210158,
+          "nullRateMean": 0.357345,
+          "nullRateP05": 0.314286,
+          "nullRateP50": 0.358974,
+          "nullRateP95": 0.394737,
+          "observedAboveP95": false
+        },
+        "56": {
+          "permutations": 5000,
+          "empiricalOneSidedP": 0.9930014,
+          "nullRateMean": 0.352003,
+          "nullRateP05": 0.315789,
+          "nullRateP50": 0.351351,
+          "nullRateP95": 0.378378,
+          "observedAboveP95": false
+        }
+      },
+      "gates": {
+        "positiveVsBothFrozenNulls": false,
+        "exactBinomialPrimaryPLe05": false,
+        "significantBlockSizesAt05": 0,
+        "dependenceRobustDirection": false
+      }
+    }
+  },
+  "gates": {
+    "directionDependenceRobustInValidationAndHoldout": false,
+    "freshIndependentConfirmation": false,
+    "prospectiveFreezeStillAuthoritative": true,
+    "realMoneyAllowed": false
+  },
+  "guards": {
+    "exactHistoricalCorpusFromPreFreezeCommit": true,
+    "ruleNotRetuned": true,
+    "discoveryNotUsedForThisRobustnessGate": true,
+    "noCurrentPostFreezeRoundsUsed": true,
+    "noFutureLeakage": true,
+    "retrospectiveSensitivityCannotUpgradeEvidenceTier": true,
+    "prospectiveEvidenceStillRequired": true,
+    "realMoneyAllowed": false
+  },
+  "interpretation": "The frozen timing direction does not survive the full dependence-aware sensitivity gate in both validation and holdout. This weakens the retrospective timing case; the prospective freeze remains the only route to a stronger claim."
+}
