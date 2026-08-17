@@ -1,0 +1,57 @@
+name: MetaPleno v309 Stage4 Blind OOS 2023-2024
+
+on:
+  push:
+    branches:
+      - research/metapleno-v309-mdl-compression-surprise
+    paths:
+      - 'loterias-ai/research/megalab/v309-stage4-blind-oos-2023-2024.mjs'
+      - 'loterias-ai/data/research/metapleno-v309-dense-freeze-manifest.json'
+      - '.github/workflows/metapleno-v309-stage4-blind-oos.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  oos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/metapleno-v309-mdl-compression-surprise
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Execute immutable blind OOS replay
+        run: node loterias-ai/research/megalab/v309-stage4-blind-oos-2023-2024.mjs
+      - name: Verify fail-closed, freeze lineage and audit gate
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const p='loterias-ai/data/research/metapleno-v309-stage4-oos-2023-2024.json';
+          const x=JSON.parse(fs.readFileSync(p,'utf8'));
+          const fail=m=>{console.error(m);process.exit(1)};
+          if(x.realMoneyPass!==false) fail('realMoneyPass must remain false');
+          if(x.realStakeEUR!==0) fail('realStakeEUR must remain 0');
+          if(!(x.theoreticalBudgetEUR<=15)) fail('budget exceeds 15 EUR');
+          if(x.retuningPerformed!==false) fail('retuning detected');
+          if(x.postFreezeTouched!==false) fail('post-freeze data touched');
+          if(x.window?.start!=='2023-01-01'||x.window?.endExclusive!=='2025-01-01') fail('invalid OOS window');
+          if(x.status==='AUDIT_REQUIRED' && !(x.totalNearFull>0||x.totalFull>0)) fail('invalid audit trigger');
+          if(x.status==='NEGATIVE_OOS_FALSIFIED' && (x.totalNearFull>0||x.totalFull>0)) fail('extreme result must enter audit');
+          console.log(JSON.stringify({status:x.status,candidateCount:x.candidateCount,uniqueOosBehaviors:x.uniqueOosBehaviors,draws:x.draws,maxHits:x.maxHits,totalNearFull:x.totalNearFull,totalFull:x.totalFull,realMoneyPass:x.realMoneyPass,realStakeEUR:x.realStakeEUR},null,2));
+          NODE
+      - name: Persist OOS evidence
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/metapleno-v309-stage4-oos-2023-2024.json
+          if git diff --cached --quiet; then
+            echo 'No OOS evidence change to persist'
+          else
+            git commit -m 'research(loterias-ai): persist v309 blind OOS evidence'
+            git pull --rebase origin research/metapleno-v309-mdl-compression-surprise
+            git push origin HEAD:research/metapleno-v309-mdl-compression-surprise
+          fi
