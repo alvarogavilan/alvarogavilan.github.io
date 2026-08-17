@@ -47,7 +47,7 @@ jobs:
       - name: Enforce PAPER-only gates
         run: |
           node -e "const c=require('./loterias-ai/casino/research-charter.json'); if(c.hardRules.realMoneyEnabled||c.hardRules.automaticBettingEnabled) process.exit(1)"
-          node -e "const p=require('./loterias-ai/casino/book-exclusion-policy.json'); if(!p.excludeCasinoFromBook) process.exit(1)"
+          node -e "const p=require('./loterias-ai/casino/editorial-exclusion.json'); if(!p.hardGate||p.bookPolicy.includeInLibroVivo||p.bookPolicy.includeInEditorialFeed||p.bookPolicy.includeInPrintEdition||p.bookPolicy.includeInEbookEdition||p.bookPolicy.includeInCommercialBook) process.exit(1)"
           if [ -f loterias-ai/casino/lightning/evidence/latest-replay.json ]; then
             node -e "const x=require('./loterias-ai/casino/lightning/evidence/latest-replay.json'); if(x.realMoneyEnabled||x.mode!=='PAPER_ONLY') process.exit(1)"
           fi
