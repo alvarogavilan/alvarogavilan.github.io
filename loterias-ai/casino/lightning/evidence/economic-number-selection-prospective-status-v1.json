@@ -1,0 +1,76 @@
+{
+  "version": "economic-number-selection-prospective-status-v1",
+  "generatedAt": "2026-08-17T22:24:24.499Z",
+  "freezeVersion": "economic-number-selection-prospective-freeze-v1",
+  "prospectiveStartsAt": "2026-08-17T22:30:00Z",
+  "source": {
+    "file": "loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl",
+    "currentEligibleCorpusRows": 2103,
+    "currentMaxTimestamp": "2026-08-17T21:30:32.728Z"
+  },
+  "frozenFamily": {
+    "coverages": [
+      3,
+      4
+    ],
+    "modes": [
+      "hot",
+      "cold",
+      "recent",
+      "notRecent",
+      "transition",
+      "wheelLast"
+    ],
+    "lookbacks": [
+      5,
+      8,
+      10,
+      12,
+      15,
+      20,
+      30,
+      50,
+      80,
+      120,
+      200
+    ],
+    "totalCandidates": 132
+  },
+  "progress": {
+    "eligibleFutureRounds": 0,
+    "fixedBoundaryUsedRounds": 0,
+    "phaseARoundsRequired": 5000,
+    "phaseBRoundsRequired": 5000,
+    "fixedFinalBoundary": 10000,
+    "roundsUntilPhaseA": 5000,
+    "roundsUntilFixedFinal": 10000,
+    "postBoundaryRowsIgnoredForV1": 0
+  },
+  "phase": "WAITING_FOR_PROSPECTIVE_START",
+  "disclosure": {
+    "candidatePerformanceHidden": true,
+    "reason": "ADMINISTRATIVE_COUNTS_ONLY_NO_MODEL_RANKING"
+  },
+  "phaseAWinners": null,
+  "confirmation": null,
+  "gates": {
+    "phaseAComplete": false,
+    "fixedFinalComplete": false,
+    "numberSelectionProspectiveEdge": false,
+    "separateTimingGateStillRequired": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false
+  },
+  "guards": {
+    "noHistoricalModelSelection": true,
+    "all132CandidatesFrozenBeforeStart": true,
+    "phaseAUsesOnlyFirst5000EligibleFutureRounds": true,
+    "phaseBUsesOnlyNext5000EligibleFutureRounds": true,
+    "phaseBSelectorDeterministicFromPhaseA": true,
+    "bonferroniAcrossTwoFinalists": true,
+    "optionalStoppingBlocked": true,
+    "post10000RowsIgnoredForV1": true,
+    "realMoneyAllowed": false
+  },
+  "interpretation": "No selector ranking is disclosed before the fixed 5000-round prospective selection boundary."
+}
