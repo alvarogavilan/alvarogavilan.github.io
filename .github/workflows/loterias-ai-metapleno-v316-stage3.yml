@@ -1,0 +1,50 @@
+name: Loterias AI MetaPleno v316 Stage3 Freeze
+on:
+  push:
+    branches:
+      - research/v316-optimal-transport-regime
+    paths:
+      - 'loterias-ai/data/research/metapleno-v316-stage1-2-selection.json'
+      - 'loterias-ai/research/megalab/v316-stage3-freeze.mjs'
+      - '.github/workflows/loterias-ai-metapleno-v316-stage3.yml'
+  workflow_dispatch:
+
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run v316 Stage3 freeze
+        run: node loterias-ai/research/megalab/v316-stage3-freeze.mjs
+      - name: Verify immutable freeze and fail-closed budget
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),crypto=require('crypto');
+          const p='loterias-ai/data/research/metapleno-v316-stage3-freeze.json';
+          const j=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(j.status!=='FROZEN_READY_FOR_BLIND_OOS') throw new Error('freeze status invalid');
+          if(j.validationTouched!==false||j.postFreezeTouched!==false||j.retuningPerformed!==false) throw new Error('temporal isolation failed');
+          if(j.realMoneyPass!==false||Number(j.realStakeEUR)!==0) throw new Error('real-money gate failed');
+          if(Number(j.budget?.maximumTheoreticalCostEURPerGameDraw)>15) throw new Error('budget cap failed');
+          if(Number(j.frozenTotal)>32) throw new Error('candidate cap failed');
+          for(const [game,cands] of Object.entries(j.frozenByGame||{})){
+            if(!Array.isArray(cands)||cands.length<1||cands.length>8) throw new Error(`bad frozen count ${game}`);
+            if(new Set(cands.map(x=>x.behaviorHash)).size!==cands.length) throw new Error(`behavior duplicate ${game}`);
+          }
+          const {manifestHash,generatedAt,...core}=j;
+          const expected=crypto.createHash('sha256').update(JSON.stringify(core)).digest('hex');
+          if(expected!==manifestHash) throw new Error('manifest hash mismatch');
+          NODE
+      - name: Persist freeze
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v316-stage3-freeze.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'data(loterias-ai): persist v316 Stage3 immutable freeze'
+          git push
