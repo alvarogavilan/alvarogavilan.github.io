@@ -7,6 +7,7 @@ on:
     branches: [main]
     paths:
       - 'loterias-ai/casino/lightning/prospective-paper-v1.mjs'
+      - 'loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl'
       - '.github/workflows/loterias-ai-lightning-prospective-paper-v1.yml'
 permissions: {contents: write}
 concurrency: {group: lightning-prospective-paper-v1, cancel-in-progress: false}
@@ -27,7 +28,7 @@ jobs:
           set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          for attempt in 1 2 3; do
+          for attempt in 1 2 3 4 5; do
             git fetch origin "$GITHUB_REF_NAME"
             git reset --hard "origin/$GITHUB_REF_NAME"
             node loterias-ai/casino/lightning/prospective-paper-v1.mjs
