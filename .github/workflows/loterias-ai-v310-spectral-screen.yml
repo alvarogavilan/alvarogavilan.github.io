@@ -1,0 +1,33 @@
+name: Loterias AI v310 Spectral Phase Screen
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/research/megalab/v310-*'
+      - '.github/workflows/loterias-ai-v310-spectral-screen.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-v310-spectral-screen
+  cancel-in-progress: false
+jobs:
+  screen:
+    if: github.actor != 'github-actions[bot]' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Run preregistered v310 Stage 1-2
+        run: node loterias-ai/research/megalab/v310-stage1-2-spectral-phase-screen.mjs
+      - name: Persist scientific result
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v310-stage1-2-selection.json
+          git commit -m "research(loterias-ai): persist v310 stage1-2 result" || exit 0
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin HEAD:"$GITHUB_REF_NAME"
