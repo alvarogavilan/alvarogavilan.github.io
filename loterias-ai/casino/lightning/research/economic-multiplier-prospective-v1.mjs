@@ -71,7 +71,7 @@ function evaluate(limitPostFreezeRounds=null){
 
     if(limitPostFreezeRounds!=null&&isPost&&postFreezeRounds>=limitPostFreezeRounds)break;
   }
-  const successes=closed.filter(x=>x.success).length,total=closed.length,rate=successes/Math.max(1,total),ci=wilson(successes,total);
+  const successes=closed.filter(x=>x.success).length,total=closed.length,rate=total?successes/total:null,ci=wilson(successes,total);
   return {
     postFreezeRounds,
     closedEpisodes:total,
@@ -79,9 +79,9 @@ function evaluate(limitPostFreezeRounds=null){
     failures:total-successes,
     successRate:round(rate),
     wilson95:{lower:round(ci.lower),upper:round(ci.upper)},
-    liftVsPrimary:round(rate-p0),
-    relativeLiftVsPrimary:round(rate/p0-1),
-    calibrationReferenceInsideWilson95:ci.lower!=null&&ci.upper!=null&&calibrationReference>=ci.lower&&calibrationReference<=ci.upper,
+    liftVsPrimary:rate==null?null:round(rate-p0),
+    relativeLiftVsPrimary:rate==null?null:round(rate/p0-1),
+    calibrationReferenceInsideWilson95:ci.lower==null||ci.upper==null?null:calibrationReference>=ci.lower&&calibrationReference<=ci.upper,
     pendingEpisode:active?{triggerAt:active.triggerAt,gapAtTrigger:active.gapAtTrigger,futureRoundsObserved:active.futureRounds}:null,
     recentClosedEpisodes:closed.slice(-20).map(x=>({triggerAt:x.triggerAt,gapAtTrigger:x.gapAtTrigger,success:x.success,closedAt:x.closedAt,futureRounds:x.futureRounds}))
   };
@@ -95,8 +95,8 @@ const fixedFinal=finalBoundaryReached?evaluate(finalBoundary):null;
 const fixedFinalTimingPass=Boolean(fixedFinal&&
   fixedFinal.closedEpisodes>=Number(d.fixedFinalBoundary.minimumClosedEpisodes)&&
   fixedFinal.wilson95.lower!=null&&fixedFinal.wilson95.lower>p0&&
-  fixedFinal.successRate>p1&&
-  fixedFinal.calibrationReferenceInsideWilson95&&
+  fixedFinal.successRate!=null&&fixedFinal.successRate>p1&&
+  fixedFinal.calibrationReferenceInsideWilson95===true&&
   f.frozenRule.noRetuning===true&&
   provenance.verdict==='CHAIN_OF_CUSTODY_VERIFIED'
 );
@@ -156,8 +156,8 @@ const result={
     directionalSampleReached:directionalReached,
     formalSampleReached:formalDescriptiveReached,
     lowerCiAbovePrimaryNull:live.wilson95.lower!=null&&live.wilson95.lower>p0,
-    positiveVsSecondary:live.successRate>p1,
-    calibrationReferenceInsideWilson95:live.calibrationReferenceInsideWilson95,
+    positiveVsSecondary:live.successRate!=null&&live.successRate>p1,
+    calibrationReferenceInsideWilson95:live.calibrationReferenceInsideWilson95===true,
     minimum10000ProspectiveRoundsReached:finalBoundaryReached,
     fixedFinalTimingGatePass:fixedFinalTimingPass,
     formalTimingGatePass:fixedFinalTimingPass,
@@ -169,6 +169,7 @@ const result={
   guards:{
     provenanceVerified:true,
     calibrationProtocolRegisteredBeforeFirstClosedEpisode:true,
+    emptyProspectiveSampleIsUnevaluable:true,
     singleFixedPromotionWindow:true,
     post10000OptionalStoppingRescueBlocked:true,
     noRetuning:true,
