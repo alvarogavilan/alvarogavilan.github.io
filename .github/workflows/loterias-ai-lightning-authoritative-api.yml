@@ -1,0 +1,35 @@
+name: Loterias AI Lightning Authoritative API
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/lightning/collect-casinoorg-api.mjs'
+      - '.github/workflows/loterias-ai-lightning-authoritative-api.yml'
+  schedule:
+    - cron: '7 * * * *'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-lightning-authoritative-api
+  cancel-in-progress: false
+jobs:
+  collect:
+    if: github.actor != 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - name: Collect authoritative public rounds
+        run: node loterias-ai/casino/lightning/collect-casinoorg-api.mjs
+      - name: Refresh corpus readiness
+        run: node loterias-ai/casino/lightning/corpus-readiness.mjs
+      - name: Persist corpus and evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json loterias-ai/casino/lightning/evidence/corpus-readiness.json
+          git commit -m "research(casino): accumulate authoritative Lightning rounds" || exit 0
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin HEAD:"$GITHUB_REF_NAME"
