@@ -35,7 +35,10 @@ jobs:
           if(!line?.copy?.includes('Estrellas 2 5')) throw new Error('Stars missing from copy payload: '+JSON.stringify(line));
           if(!line?.display?.includes('⭐ 2 · 5')) throw new Error('Stars missing from display payload: '+JSON.stringify(line));
           if(v199.unitCostEUR!==2.5) throw new Error('Unexpected Euromillones unit cost: '+v199.unitCostEUR);
-          console.log(JSON.stringify({copy:line.copy,display:line.display,unitCostEUR:v199.unitCostEUR}));
+          if(g.alternativeCount!==0) throw new Error('Superseded v28 leaked as visible alternative: '+JSON.stringify(g.alternatives));
+          if(g.supersededCount!==1) throw new Error('Expected exactly one superseded Euromillones predecessor: '+JSON.stringify({supersededCount:g.supersededCount}));
+          if(d.policy?.supersededCompletionsHidden!==true) throw new Error('Superseded-completion policy missing');
+          console.log(JSON.stringify({copy:line.copy,display:line.display,unitCostEUR:v199.unitCostEUR,alternatives:g.alternativeCount,superseded:g.supersededCount}));
           NODE
       - name: Validate Bonoloto pool8 laboratory cost fixture
         run: |
