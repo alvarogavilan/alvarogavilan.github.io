@@ -1,0 +1,29 @@
+name: Loterias AI Lightning Corpus Readiness
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '37 * * * *'
+  push:
+    branches: [research/lightning-corpus-ops-v3]
+    paths: ['loterias-ai/casino/lightning/**','.github/workflows/loterias-ai-lightning-corpus-readiness.yml']
+permissions: {contents: write}
+concurrency: {group: lightning-corpus-readiness, cancel-in-progress: false}
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - run: node loterias-ai/casino/lightning/corpus-readiness.mjs
+      - name: Enforce scientific gates
+        run: node -e "const x=require('./loterias-ai/casino/lightning/evidence/corpus-readiness.json');if(x.aggregateDataAccepted||x.syntheticDataAccepted||x.realMoney)process.exit(1)"
+      - name: Persist readiness evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/casino/lightning/evidence/corpus-readiness.json
+          git commit -m "research(casino): refresh Lightning corpus readiness" || exit 0
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push
