@@ -1,0 +1,74 @@
+{
+  "version":1,
+  "purpose":"Suplemento append-only de hitos operativos y científicos posteriores al book-event-feed base. Se agrega de forma determinista sin reescribir la historia anterior.",
+  "events":[
+    {
+      "id":"lightning-authoritative-prospective-pipeline-v1",
+      "type":"infrastructure",
+      "title":"La fuente autoritativa aprende a alimentar el prospectivo sin perder el relevo entre workflows",
+      "plain":"El laboratorio detectó que un commit generado por GitHub Actions con GITHUB_TOKEN no dispara otro workflow por push. Eso podía dejar nuevas rondas autoritativas almacenadas sin actualizar inmediatamente los prospectivos. La solución fue mover la verificación de ambos freezes y la evaluación de timing y selección de números al mismo workflow que captura la fuente autoritativa. Después se elevó la captura a cada cinco minutos para reducir el riesgo de huecos. La primera ejecución produjo un commit real de avance prospectivo.",
+      "metrics":{
+        "architectureFixCommit":"1456685e7c37fc5b6f8243d52e492dadd65aa309",
+        "fiveMinuteCadenceCommit":"5dda435758fb34406c8c1258a01bf8a37c577905",
+        "firstAdvanceCommit":"4c339e3bfa42d7d3fa9fe67f5520ec0cda5a3d7b",
+        "scheduledCaptureMinutes":5,
+        "timingFreezeVerifiedBeforeEvaluation":true,
+        "numberFreezeVerifiedBeforeEvaluation":true,
+        "sameWorkflowPersistsProspectiveStatuses":true,
+        "realMoneyAllowed":false
+      },
+      "evidenceState":"MERGED_MAIN"
+    },
+    {
+      "id":"lightning-prospective-continuity-v1",
+      "type":"scientific-event",
+      "title":"La muestra futura recibe su propio control de continuidad",
+      "plain":"No basta con congelar una hipótesis: también hay que demostrar que la muestra futura no está llena de duplicados o grandes huecos de captura. El primer control de continuidad sobre las rondas posteriores a la barrera encontró 19 rondas autoritativas, cero identificadores duplicados, una mediana de 48,997 segundos entre rondas y ningún hueco superior a dos minutos. A ese ritmo, la ventana de 30 rondas del endpoint representa unos 24,32 minutos frente a una captura programada cada cinco minutos, un margen estimado de 4,864 veces. La auditoría no requirió revisión.",
+      "metrics":{
+        "auditScriptCommit":"6578e09065f2a562510d267d7b3202e7c346ab76",
+        "firstPersistedAuditCommit":"5973d4266bd6c9ce8637a3854ad225861487d3ac",
+        "futureRounds":19,
+        "duplicateAuthoritativeRoundIds":0,
+        "medianInterRoundSeconds":48.997,
+        "p95InterRoundSeconds":52.495,
+        "maxInterRoundSeconds":53.515,
+        "gapsOver120Seconds":0,
+        "gapsOver300Seconds":0,
+        "endpointWindowRows":30,
+        "estimatedEndpointWindowMinutes":24.32,
+        "scheduledCaptureMinutes":5,
+        "windowToCadenceRatio":4.864,
+        "continuityReviewRequired":false,
+        "realMoneyAllowed":false
+      },
+      "evidenceState":"MERGED_MAIN"
+    },
+    {
+      "id":"today-superseded-completion-v1",
+      "type":"infrastructure",
+      "title":"Una apuesta completada deja de fingir que su versión incompleta es una alternativa",
+      "plain":"La pantalla Hoy mostraba Euromillones v199 como principal y podía conservar v28 como alternativa aunque ambos compartían exactamente los mismos cinco números y v199 sólo añadía las estrellas congeladas. El generador ahora reconoce ese caso como una versión completada que sustituye visualmente a su predecesora. El manifest del 18 de agosto quedó con una sola apuesta visible y el comportamiento se fijó con un test de CI para impedir la regresión.",
+      "metrics":{
+        "generatorFixCommit":"8b67ff071c22069df4aa635ea78f42fd75dff240",
+        "manifestPersistCommit":"e55868d74e0ad24884401937fc9e065c7afa48a5",
+        "ciLockCommit":"9eddab548c2db78e1741bd8612e9d8a130b091e6",
+        "date":"2026-08-18",
+        "gameId":"euromillones",
+        "primaryVersion":"v199",
+        "visibleAlternatives":0,
+        "supersededCount":1,
+        "frozenMainNumbers":[3,19,31,36,44],
+        "frozenStars":[2,5],
+        "realMoneyPass":false,
+        "authorizedCostEUR":0
+      },
+      "evidenceState":"MERGED_MAIN"
+    }
+  ],
+  "rules":{
+    "appendOnly":true,
+    "neverInventMetrics":true,
+    "doNotOverwriteBaseHistory":true,
+    "scientificAndOperationalEventsStayDistinguished":true
+  }
+}
