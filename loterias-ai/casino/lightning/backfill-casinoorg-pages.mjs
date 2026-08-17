@@ -8,6 +8,7 @@ const root='loterias-ai/casino/lightning';
 const outFile=path.join(root,'data','casinoorg-lightningroulette.jsonl');
 const evidenceFile=path.join(root,'evidence','casinoorg-page-backfill.json');
 const maxPages=Math.max(20,Math.min(500,Number(process.env.LIGHTNING_MAX_PAGES||200)));
+const pageSize=Math.max(30,Math.min(100,Number(process.env.LIGHTNING_PAGE_SIZE||100)));
 const delayMs=Math.max(100,Math.min(2000,Number(process.env.LIGHTNING_DELAY_MS||150)));
 fs.mkdirSync(path.dirname(outFile),{recursive:true});
 fs.mkdirSync(path.dirname(evidenceFile),{recursive:true});
@@ -19,7 +20,7 @@ if(fs.existsSync(outFile)) for(const line of fs.readFileSync(outFile,'utf8').spl
 
 let accepted=0,duplicates=0,rejected=0,pagesFetched=0;const pageReports=[];const rows=[];let previousFingerprint=null,consecutiveAllDuplicate=0;
 for(let page=1;page<=maxPages;page++){
-  const endpoint=page===1?base:`${base}?page=${page}`;
+  const endpoint=`${base}?page=${page}&size=${pageSize}`;
   let res=await fetch(endpoint,{headers:{accept:'application/json','user-agent':'LoteriasAI-research/1.0'}});
   if(res.status===429){await new Promise(r=>setTimeout(r,2500));res=await fetch(endpoint,{headers:{accept:'application/json','user-agent':'LoteriasAI-research/1.0'}})}
   const text=await res.text();
@@ -42,9 +43,9 @@ for(let page=1;page<=maxPages;page++){
   }
   pageReports.push({page,status:res.status,count:items.length,firstId:ids[0]??null,lastId:ids.at(-1)??null,fingerprint,newRows:pageNew,duplicates:pageDup});
   consecutiveAllDuplicate=pageNew===0?consecutiveAllDuplicate+1:0;
-  if(consecutiveAllDuplicate>=8 && page>20) break;
+  if(consecutiveAllDuplicate>=20 && page>30) break;
   await new Promise(r=>setTimeout(r,delayMs));
 }
 if(rows.length) fs.appendFileSync(outFile,rows.map(r=>JSON.stringify(r)).join('\n')+'\n');
-const report={generatedAt:new Date().toISOString(),base,pagesFetched,maxPages,delayMs,accepted,duplicates,rejected,totalStored:existing.size,pageReports,authenticationBypassAttempted:false,publicReadOnlyAcquisition:true,aggregateDataAccepted:false,syntheticDataAccepted:false,realMoney:false};
-fs.writeFileSync(evidenceFile,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({pagesFetched,maxPages,accepted,duplicates,rejected,totalStored:existing.size},null,2));
+const report={generatedAt:new Date().toISOString(),base,pagesFetched,maxPages,pageSize,delayMs,accepted,duplicates,rejected,totalStored:existing.size,pageReports,authenticationBypassAttempted:false,publicReadOnlyAcquisition:true,aggregateDataAccepted:false,syntheticDataAccepted:false,realMoney:false};
+fs.writeFileSync(evidenceFile,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({pagesFetched,maxPages,pageSize,accepted,duplicates,rejected,totalStored:existing.size},null,2));
