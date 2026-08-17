@@ -19,8 +19,8 @@ jobs:
       - name: Persist public observation only on semantic change
         run: |
           set -euo pipefail
-          if node -e "const x=require('./loterias-ai/casino/lightning/evidence/casinoscore-public.json');process.exit(x.duplicateSnapshot && x.rowsAppended===0 ? 0 : 1)"; then
-            echo "Duplicate public snapshot: no rows appended, so no commit."
+          if git diff --quiet -- loterias-ai/casino/lightning/data/public-observation loterias-ai/casino/lightning/evidence/casinoscore-public.json; then
+            echo "No semantic public-capture change; no commit."
             exit 0
           fi
           git config user.name github-actions[bot]
