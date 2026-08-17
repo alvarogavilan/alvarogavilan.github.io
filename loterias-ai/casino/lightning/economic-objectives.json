@@ -1,12 +1,26 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "createdAt": "2026-08-17",
+  "updatedAt": "2026-08-17",
   "mode": "PAPER_ONLY",
-  "purpose": "Medir coste realista por objetivo en Lightning sin confundir un acierto aislado con una estrategia rentable.",
+  "purpose": "Medir coste, beneficio, drawdown y viabilidad de coberturas Lightning sin confundir un cobro grande o una racha con una ventaja reproducible.",
+  "officialGameModel": {
+    "variant": "Evolution Lightning Roulette single-zero",
+    "numbers": 37,
+    "straightUpNonMultipliedProfitOdds": 29,
+    "straightUpNonMultipliedGrossReturnX": 30,
+    "luckyNumbersPerRound": [1,5],
+    "luckyNumbersGeneratedRandomlyEachRound": true,
+    "officialLuckyPayoutRangeX": [50,500],
+    "sourceCheckedAt": "2026-08-17",
+    "rule": "El multiplicador sólo entra en la valoración económica cuando el número ganador está cubierto por una apuesta directa y ese mismo número resulta Lucky Number."
+  },
   "officialStandardMultipliers": [50,100,200,300,400,500],
   "objectives": [
     {"id":"single-number-hit","coverage":[1],"metrics":["rounds-to-first-hit","euros-staked-to-first-hit","net-pnl-at-hit","max-drawdown"]},
     {"id":"small-set-hit","coverage":[2,3,4,5],"metrics":["hit-rate-vs-baseline","euros-staked-to-first-hit","net-pnl","max-drawdown"]},
+    {"id":"paper-15-eur-coverage","totalStakeEUR":15,"coverage":[3,4],"allocation":"equal-per-number","windowsRounds":[4,5,6,7,8,9,10],"metrics":["stake-per-number","normal-hit-net-pnl","cumulative-pnl-if-first-hit-by-round","probability-at-least-one-hit-vs-null","break-even-hit-rate","required-lift-vs-uniform","lightning-capture-rate","net-pnl-with-lightning","roi","max-drawdown"]},
+    {"id":"multiplier-window-4-10","windowsRounds":[4,5,6,7,8,9,10],"definition":"Comprobar si la probabilidad de observar un ganador Lightning en las siguientes 4-10 rondas cambia de forma reproducible según el tiempo transcurrido desde el último ganador Lightning.","metrics":["unconditional-window-rate","conditional-window-rate","conditional-vs-unconditional-ratio","sample-size","confidence-interval","permutation-or-null-calibration"],"promotionRule":"No usar como señal predictiva salvo mejora OOS/prospectiva y replicación independiente."},
     {"id":"lightning-x50","exactMultiplier":50,"metrics":["rounds-to-first","euros-staked-to-first","net-pnl-at-first","max-drawdown"]},
     {"id":"lightning-x100","exactMultiplier":100,"metrics":["rounds-to-first","euros-staked-to-first","net-pnl-at-first","max-drawdown"]},
     {"id":"lightning-x200","exactMultiplier":200,"metrics":["rounds-to-first","euros-staked-to-first","net-pnl-at-first","max-drawdown"]},
@@ -17,20 +31,28 @@
   ],
   "paperStakeScenariosEUR": {
     "singleNumber": [1,2,5,6,7,10],
-    "smallSetTotal": [5,10,20,30],
+    "smallSetTotal": [5,10,15,20,30],
+    "focus15EUR": {
+      "totalStake": 15,
+      "coverage3": {"stakePerNumber":5,"uniformHitProbability":0.08108108108108109,"normalHitNetPnlEUR":135,"breakEvenHitRateWithoutLightning":0.1,"requiredRelativeLiftVsUniform":0.23333333333333334},
+      "coverage4": {"stakePerNumber":3.75,"uniformHitProbability":0.10810810810810811,"normalHitNetPnlEUR":97.5,"breakEvenHitRateWithoutLightning":0.13333333333333333,"requiredRelativeLiftVsUniform":0.23333333333333334},
+      "windowRule":"Para cada ventana 4-10 se contabiliza todo el stake acumulado. Un cobro que supera la apuesta de una ronda no se etiqueta como sesión rentable si no recupera lo apostado en las rondas anteriores."
+    },
     "rule": "Cada escenario se evalúa por separado; nunca se aumenta stake tras pérdidas para maquillar tiempo hasta objetivo."
   },
   "hardRiskGates": {
     "realMoneyEnabled": false,
     "martingaleOrLossChasing": false,
     "stakeEscalationAfterLoss": false,
+    "assumeMultiplierIsDueAfterLossesOrAbsence": false,
     "claim99PercentSingleOrTinySetWithoutProspectiveEvidence": false,
     "minimumProspectivePaperRoundsBeforePromotion": 10000,
     "requirePositiveNetEVAfterCosts": true,
     "requireIndependentReplication": true,
-    "requireMultiplicityCorrection": true
+    "requireMultiplicityCorrection": true,
+    "requireChronologicalNoFutureLeakage": true
   },
   "reporting": [
-    "total-rounds","total-staked-eur","gross-return-eur","net-pnl-eur","roi","max-drawdown-eur","longest-losing-run","first-hit-round","first-x50-round","first-x100-round","first-x200-round","first-x300-round","first-x400-round","first-x500-round","cost-to-first-x50-eur","cost-to-first-x100-eur","cost-to-first-x200-eur","cost-to-first-x300-eur","cost-to-first-x400-eur","cost-to-first-x500-eur","repeat-x500-count","unexpected-multiplier-count","confidence-vs-random-baseline"
+    "total-rounds","total-staked-eur","gross-return-eur","net-pnl-eur","roi","max-drawdown-eur","longest-losing-run","first-hit-round","normal-hit-net-pnl","cumulative-pnl-by-window","break-even-hit-rate","required-lift-vs-uniform","winner-lightning-rate","winner-lightning-gap-distribution","multiplier-window-4-10-unconditional","multiplier-window-4-10-conditional","first-x50-round","first-x100-round","first-x200-round","first-x300-round","first-x400-round","first-x500-round","cost-to-first-x50-eur","cost-to-first-x100-eur","cost-to-first-x200-eur","cost-to-first-x300-eur","cost-to-first-x400-eur","cost-to-first-x500-eur","repeat-x500-count","unexpected-multiplier-count","confidence-vs-random-baseline"
   ]
 }
