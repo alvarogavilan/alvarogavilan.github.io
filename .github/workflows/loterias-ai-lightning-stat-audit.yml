@@ -1,0 +1,29 @@
+name: Loterias AI Lightning Stat Audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/lightning/research/lightning-stat-audit-v1.mjs'
+      - '.github/workflows/loterias-ai-lightning-stat-audit.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-lightning-stat-audit
+  cancel-in-progress: false
+jobs:
+  audit:
+    if: github.actor != 'github-actions[bot]' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - run: node loterias-ai/casino/lightning/research/lightning-stat-audit-v1.mjs
+      - run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/casino/lightning/evidence/stat-audit-v1.json
+          git commit -m "research(casino): persist Lightning statistical audit" || exit 0
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin HEAD:"$GITHUB_REF_NAME"
