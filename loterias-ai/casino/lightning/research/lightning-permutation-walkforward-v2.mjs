@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+import fs from'node:fs';
+const IN='loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl',OUT='loterias-ai/casino/lightning/evidence/permutation-walkforward-v2.json';
+const rows=fs.readFileSync(IN,'utf8').trim().split(/\n+/).map(JSON.parse).filter(x=>Number.isInteger(+x.winningNumber)).sort((a,b)=>String(a.settledAt).localeCompare(String(b.settledAt)));const x=rows.map(r=>+r.winningNumber),N=x.length;
+const lags=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
+function lagRate(a,k){let m=0;for(let i=k;i<a.length;i++)if(a[i]===a[i-k])m++;return{matches:m,n:a.length-k,rate:m/(a.length-k)}}
+function shuffle(a,s){let z=s>>>0,b=a.slice();for(let i=b.length-1;i>0;i--){z=(1664525*z+1013904223)>>>0;const j=z%(i+1);[b[i],b[j]]=[b[j],b[i]]}return b}
+const observed=Object.fromEntries(lags.map(k=>[k,lagRate(x,k)]));const B=2000,ge=Object.fromEntries(lags.map(k=>[k,0]));for(let b=1;b<=B;b++){const p=shuffle(x,0x9e3779b9^b);for(const k of lags)if(lagRate(p,k).rate>=observed[k].rate)ge[k]++}
+const permutation=Object.fromEntries(lags.map(k=>[k,{...observed[k],pUpper:(ge[k]+1)/(B+1)}]));
+function segment(a,from,to){const q=a.slice(from,to),rates=Object.fromEntries(lags.map(k=>[k,lagRate(q,k)]));let best=lags[0];for(const k of lags)if(rates[k].rate>rates[best].rate)best=k;return{from,to,n:q.length,bestLag:best,bestRate:rates[best].rate,rates}}
+const cut1=Math.floor(N*.6),cut2=Math.floor(N*.8);const train=segment(x,0,cut1),validation=segment(x,cut1,cut2),test=segment(x,cut2,N);const chosenLag=train.bestLag;const payload={version:'lightning-permutation-walkforward-v2',generatedAt:new Date().toISOString(),rounds:N,permutations:B,null:'exchangeability under shuffled winning-number order',permutation,walkForward:{train:{n:train.n,chosenLag,chosenRate:train.rates[chosenLag].rate},validation:{n:validation.n,rateAtFrozenLag:validation.rates[chosenLag].rate,nullRate:1/37},test:{n:test.n,rateAtFrozenLag:test.rates[chosenLag].rate,nullRate:1/37}},guards:{exploratoryPermutation:true,lagFrozenOnTrain:true,noRetuningAfterValidation:true,claimAllowed:false,realMoney:false,next:'prospective-frozen-lag-only-if-validation-and-test-survive-multiplicity'}};fs.writeFileSync(OUT,JSON.stringify(payload,null,2)+'\n');console.log(JSON.stringify(payload.walkForward,null,2));
