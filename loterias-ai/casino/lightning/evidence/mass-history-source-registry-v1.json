@@ -1,0 +1,38 @@
+{
+  "version": "lightning-mass-history-source-registry-v1",
+  "createdAt": "2026-08-17T09:02:00Z",
+  "purpose": "Track high-volume historical Lightning Roulette acquisition lanes without mixing provenance tiers.",
+  "sources": [
+    {
+      "id": "casinoorg-public",
+      "status": "ACTIVE_PRIMARY",
+      "auth": "none",
+      "role": "authoritative-structured-public",
+      "capabilities": ["winner", "roundId", "timestamp", "luckyNumbers", "multipliers", "pagination"],
+      "action": "probe deep page boundaries then range-backfill all confirmed pages"
+    },
+    {
+      "id": "trackersino",
+      "status": "DOCUMENTED_REQUIRES_KEY_NOT_INGESTED",
+      "auth": "bearer-key",
+      "role": "independent-high-volume-secondary",
+      "capabilities": ["latest", "history", "limit-up-to-1000-documented", "until-cursor-documented", "winner", "luckyNumbers", "multipliers"],
+      "action": "do not bypass authentication; integrate only when a legitimate key is available"
+    },
+    {
+      "id": "kaggle-live-casino-outcomes",
+      "status": "CANDIDATE_PROVENANCE_REVIEW_REQUIRED",
+      "auth": "platform-dependent",
+      "role": "research-candidate-only",
+      "capabilities": ["roundId", "result", "multiplier", "timestamp"],
+      "warning": "dataset description says simulated and observed logs are mixed; never merge into authoritative corpus unless row-level provenance can be separated"
+    }
+  ],
+  "guards": {
+    "noAuthBypass": true,
+    "noSyntheticIntoAuthoritative": true,
+    "dedupeByRoundId": true,
+    "preserveRawEnvelope": true,
+    "realMoney": false
+  }
+}
