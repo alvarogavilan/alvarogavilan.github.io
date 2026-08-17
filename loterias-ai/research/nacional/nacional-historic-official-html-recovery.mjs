@@ -7,7 +7,7 @@ const out='loterias-ai/data/research/nacional-historic-official-html-recovery.js
 const months=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const weekdays=['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
 const meta=JSON.parse(fs.readFileSync(metaPath,'utf8'));
-const failures=(meta.failures||[]).map(x=>x.date).filter(Boolean).slice(0,120);
+const failures=[...new Set((meta.failures||[]).map(x=>x.date).filter(Boolean))].sort((a,b)=>b.localeCompare(a));
 const rows=[];
 function slug(date){const d=new Date(date+'T12:00:00Z');const dd=String(d.getUTCDate()).padStart(2,'0'),m=months[d.getUTCMonth()],y=d.getUTCFullYear(),w=weekdays[d.getUTCDay()];return `https://www.loteriasyapuestas.es/es/loteria-nacional/resultados/loteria-nacional-premios-mayores-del-sorteo-del-${w}-${dd}-de-${m}-de-${y}`}
 for(const date of failures){
@@ -20,5 +20,20 @@ for(const date of failures){
   await new Promise(r=>setTimeout(r,120));
 }
 const recovered=rows.filter(x=>x.officialPageRecovered);
-const report={generatedAt:new Date().toISOString(),source:'SELAE official historical HTML pages',attempted:rows.length,recoveredMajorPrizePages:recovered.length,recoveryRate:rows.length?recovered.length/rows.length:0,scope:'fallback evidence only; does not claim full extraction schema',authenticationBypassAttempted:false,rows};
-fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({attempted:report.attempted,recoveredMajorPrizePages:report.recoveredMajorPrizePages,recoveryRate:report.recoveryRate},null,2));
+const unresolved=rows.filter(x=>!x.officialPageRecovered);
+const report={
+  generatedAt:new Date().toISOString(),
+  source:'SELAE official historical HTML pages',
+  attempted:rows.length,
+  recoveredMajorPrizePages:recovered.length,
+  unresolvedPages:unresolved.length,
+  recoveryRate:rows.length?recovered.length/rows.length:0,
+  dateRange:rows.length?{newest:rows[0].date,oldest:rows.at(-1).date}:null,
+  sourceMeta:{generatedAt:meta.generatedAt,totalNonSeasonal:meta.totalNonSeasonal,officialCompleteSchemaDraws:meta.officialCompleteSchemaDraws,coverage:meta.coverage},
+  scope:'fallback evidence only; first-prize recovery from official SELAE HTML; does not claim full extraction schema',
+  authenticationBypassAttempted:false,
+  rows
+};
+fs.mkdirSync(path.dirname(out),{recursive:true});
+fs.writeFileSync(out,JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify({attempted:report.attempted,recoveredMajorPrizePages:report.recoveredMajorPrizePages,unresolvedPages:report.unresolvedPages,recoveryRate:report.recoveryRate,dateRange:report.dateRange},null,2));
