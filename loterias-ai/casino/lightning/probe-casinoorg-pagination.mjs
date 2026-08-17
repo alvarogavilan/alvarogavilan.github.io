@@ -33,9 +33,7 @@ for(const [name,url] of variants){
   }catch(error){results.push({name,url,error:String(error?.message||error),ok:false});}
 }
 const baseResult=results.find(x=>x.name==='base');
-for(const r of results){
-  r.distinctFromBase=Boolean(baseResult&&r.idFingerprint&&r.idFingerprint!==baseResult.idFingerprint);
-}
+for(const r of results){r.distinctFromBase=Boolean(baseResult&&r.idFingerprint&&r.idFingerprint!==baseResult.idFingerprint);}
 const viable=results.filter(r=>r.ok&&r.distinctFromBase&&r.count>0).map(r=>r.name);
 const report={generatedAt:new Date().toISOString(),base,authenticationBypassAttempted:false,publicReadOnlyProbe:true,realMoney:false,variants:results,viablePaginationVariants:viable,next:viable.length?'validate-and-use-only-documented-behavior':'continue-time-based-authoritative-acquisition'};
 fs.writeFileSync(out,JSON.stringify(report,null,2)+'\n');
