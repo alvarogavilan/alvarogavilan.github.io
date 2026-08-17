@@ -10,6 +10,7 @@ on:
       - 'loterias-ai/casino/lightning/research/economic-multiplier-window-oos-v1.mjs'
       - 'loterias-ai/casino/lightning/research/economic-multiplier-prospective-v1.mjs'
       - 'loterias-ai/casino/lightning/research/economic-timing-number-combo-oos-v1.mjs'
+      - 'loterias-ai/casino/lightning/research/verify-economic-prospective-freeze-v1.mjs'
       - 'loterias-ai/casino/lightning/evidence/economic-multiplier-window-prospective-freeze-v1.json'
       - 'loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl'
       - '.github/workflows/loterias-ai-lightning-economic-study.yml'
@@ -28,6 +29,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - name: Verify immutable prospective freeze v1
+        run: node loterias-ai/casino/lightning/research/verify-economic-prospective-freeze-v1.mjs
       - name: Run 15 EUR coverage and multiplier-window study
         run: node loterias-ai/casino/lightning/research/economic-coverage-window-v1.mjs
       - name: Select timing rule on discovery and validate OOS
@@ -50,6 +53,7 @@ jobs:
       - name: Persist evidence on main
         shell: bash
         run: |
+          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add loterias-ai/casino/lightning/evidence/economic-coverage-window-v1.json loterias-ai/casino/lightning/evidence/economic-multiplier-window-oos-v1.json loterias-ai/casino/lightning/evidence/economic-timing-number-combo-oos-v1.json loterias-ai/casino/lightning/evidence/economic-multiplier-window-prospective-status-v1.json
@@ -58,13 +62,13 @@ jobs:
             exit 0
           fi
           git commit -m "research(lightning): refresh economic combined evidence"
-          for attempt in 1 2 3; do
-            git pull --rebase origin main
+          for attempt in 1 2 3 4; do
+            git pull --rebase origin main || { git rebase --abort || true; sleep $((attempt*2)); continue; }
             if git push origin HEAD:main; then
               exit 0
             fi
             echo "Concurrent main update; retrying"
-            sleep 2
+            sleep $((attempt*2))
           done
           echo "Unable to persist evidence after retries" >&2
           exit 1
