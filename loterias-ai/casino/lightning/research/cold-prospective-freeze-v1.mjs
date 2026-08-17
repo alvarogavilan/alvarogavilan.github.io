@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// Freeze trigger v1: intentional no-op touch so the dedicated workflow runs after workflow creation.
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 const replay=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/historical-replay-grid-v1.json','utf8'));
