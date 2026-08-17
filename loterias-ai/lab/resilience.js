@@ -63,6 +63,18 @@
     });
   }
 
+  function injectEconomicLink(){
+    if(document.getElementById('lightningEconomicLink')) return;
+    const side=document.getElementById('side');
+    if(!side) return;
+    const wrap=document.createElement('div');
+    wrap.id='lightningEconomicLink';
+    wrap.className='truth';
+    wrap.style.marginTop='12px';
+    wrap.innerHTML='<b style="display:block;color:#ffd166;margin-bottom:5px">⚡ ECONOMÍA LIGHTNING</b><span>15 € · cobertura 3–4 números · timing 4–10 · discovery/validation/holdout.</span><br><a href="../casino/economia/" style="display:inline-block;margin-top:7px">Abrir estudio económico →</a>';
+    side.appendChild(wrap);
+  }
+
   function ensure(){
     const list=document.getElementById('list'); if(!list) return;
     if(list.querySelectorAll('.game').length===0){
@@ -72,6 +84,7 @@
       if(games) games.textContent='13'; if(numeric) numeric.textContent='8'; if(frozen) frozen.textContent='2';
     }
     wire(list);
+    injectEconomicLink();
   }
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>{setTimeout(ensure,900);setTimeout(ensure,2500)});
