@@ -1,0 +1,29 @@
+name: Loterias AI MetaPleno v315 Readiness
+on:
+  push:
+    branches:
+      - research/v315-freeze-prospective-transfer
+    paths:
+      - 'loterias-ai/data/research/metapleno-v315-preregister.json'
+      - 'loterias-ai/research/megalab/v315-readiness-gate.mjs'
+      - 'loterias-ai/research/megalab/v315-readiness-strict.mjs'
+      - '.github/workflows/loterias-ai-metapleno-v315-readiness.yml'
+  workflow_dispatch:
+
+jobs:
+  readiness:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate frozen v315 transfer contract without prospective target outcome access
+        run: node loterias-ai/research/megalab/v315-readiness-strict.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v315-execution-readiness
+          path: loterias-ai/data/research/metapleno-v315-execution-readiness.json
