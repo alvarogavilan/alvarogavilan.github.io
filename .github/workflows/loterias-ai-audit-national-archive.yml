@@ -7,6 +7,7 @@ on:
     paths:
       - 'loterias-ai/data/archive/**'
       - 'loterias-ai/scripts/audit-national-archive.mjs'
+      - 'loterias-ai/scripts/build-national-archive-index.mjs'
       - '.github/workflows/loterias-ai-audit-national-archive.yml'
   schedule:
     - cron: '41 4 * * *'
@@ -27,17 +28,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Rebuild manifest fail-closed
+        run: node loterias-ai/scripts/build-national-archive-index.mjs
       - name: Audit archive fail-closed
         run: node loterias-ai/scripts/audit-national-archive.mjs
-      - name: Assert machine-readable quality gate
+      - name: Assert machine-readable quality gates
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          const p='loterias-ai/data/archive/_meta/archive-audit.json';
-          const j=JSON.parse(fs.readFileSync(p,'utf8'));
-          if(j?.schemaVersion < 3) throw new Error(`unexpected schemaVersion=${j?.schemaVersion}`);
+          const manifest=JSON.parse(fs.readFileSync('loterias-ai/data/archive/manifest.json','utf8'));
+          if(manifest?.schemaVersion < 4) throw new Error(`unexpected manifest schemaVersion=${manifest?.schemaVersion}`);
+          if(!String(manifest?.validationSemantics||'').includes('INVALID/PENDING/UNVERIFIED/CONFLICT')) throw new Error('fail-closed validation semantics missing');
+          if(!Number.isInteger(manifest?.totals?.records) || manifest.totals.records < 1) throw new Error(`invalid archive record total=${manifest?.totals?.records}`);
+          if((manifest?.totals?.validatedRecords||0) > manifest.totals.records) throw new Error('validated records exceed total records');
+          const j=JSON.parse(fs.readFileSync('loterias-ai/data/archive/_meta/archive-audit.json','utf8'));
+          if(j?.schemaVersion < 3) throw new Error(`unexpected audit schemaVersion=${j?.schemaVersion}`);
           if(j?.qualityGate?.pass !== true) throw new Error(`archive gate failed: ${JSON.stringify(j?.qualityGate)}`);
           if((j?.totals?.parseErrors||0)!==0) throw new Error(`parseErrors=${j.totals.parseErrors}`);
           if((j?.totals?.openOfficialConflicts||0)!==0) throw new Error(`openOfficialConflicts=${j.totals.openOfficialConflicts}`);
-          console.log(JSON.stringify({qualityGate:j.qualityGate,totals:j.totals},null,2));
+          console.log(JSON.stringify({manifestTotals:manifest.totals,qualityGate:j.qualityGate,auditTotals:j.totals},null,2));
           NODE
