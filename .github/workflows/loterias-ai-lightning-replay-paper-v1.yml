@@ -1,0 +1,38 @@
+name: Loterias AI Lightning PAPER Replay v1
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/lightning/replay-paper-v1.mjs'
+      - '.github/workflows/loterias-ai-lightning-replay-paper-v1.yml'
+permissions: {contents: write}
+concurrency: {group: lightning-replay-paper-v1, cancel-in-progress: false}
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - name: Execute frozen temporal PAPER replay
+        run: node loterias-ai/casino/lightning/replay-paper-v1.mjs
+      - name: Enforce no-real-money gate
+        run: node -e "const x=require('./loterias-ai/casino/lightning/evidence/replay-paper-v1.json');if(x.summary.realMoneyPass||x.summary.realStakeEUR!==0||x.safety.realMoney||x.safety.bettingRecommendation)process.exit(1)"
+      - name: Persist replay evidence safely
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for attempt in 1 2 3; do
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard "origin/$GITHUB_REF_NAME"
+            node loterias-ai/casino/lightning/replay-paper-v1.mjs
+            git add loterias-ai/casino/lightning/evidence/replay-paper-v1.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m "research(casino): persist Lightning PAPER replay v1"
+            if git push origin HEAD:"$GITHUB_REF_NAME"; then exit 0; fi
+            sleep $((attempt * 2))
+          done
+          exit 1
