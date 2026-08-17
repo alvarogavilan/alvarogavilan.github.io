@@ -124,4 +124,11 @@
   }
 
   window.LoteriasAI={choose,totalCombinations,frequency,gaps,scoreNumbers,analyze};
+
+  if(/\/loterias-ai\/(lab|laboratorio)\/?/.test(location.pathname)){
+    const s=document.createElement('script');
+    s.src=new URL('../lab/resilience.js',location.href).href;
+    s.async=true;
+    document.head.appendChild(s);
+  }
 })();
