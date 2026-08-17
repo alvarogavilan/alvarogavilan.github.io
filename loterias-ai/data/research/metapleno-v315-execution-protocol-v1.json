@@ -1,0 +1,105 @@
+{
+  "version": "v315-execution-protocol-v1",
+  "family": "CROSS_GAME_TRANSFER_AUDIT",
+  "status": "EXECUTION_PROTOCOL_FROZEN_BEFORE_FIRST_ELIGIBLE_TARGET_RESULT",
+  "parentPreregistration": "loterias-ai/data/research/metapleno-v315-preregister.json",
+  "purpose": "Remove remaining implementation degrees of freedom before any eligible prospective Primitiva result is evaluated.",
+  "prospectiveCalendar": {
+    "timeZone": "Europe/Madrid",
+    "officialDrawWeekdays": ["MONDAY", "THURSDAY", "SATURDAY"],
+    "officialUsualDrawTimeLocal": "21:40",
+    "verifiedAgainst": "SELAE official La Primitiva help/schedule pages on 2026-08-18",
+    "preregisteredEligibilityStart": "2026-08-18",
+    "firstScheduledEligibleTarget": "2026-08-20",
+    "administrativeOnly": true
+  },
+  "custody": {
+    "predictionMustBePersistedBeforeTargetResultExists": true,
+    "predictionSealAndSettlementAreSeparatePrograms": true,
+    "sourceArtifactGitBlobMustEqualPreregisteredBlob": true,
+    "sourceLeaderOrderPreserved": true,
+    "all12FrozenConfigurationsRequired": true,
+    "targetOutcomeForbiddenDuringSealing": true,
+    "settlementCannotRecomputeOrReplaceSealedLines": true,
+    "sealHashAlgorithm": "sha256",
+    "realMoneyPass": false,
+    "realStakeEUR": 0
+  },
+  "transferExecution": {
+    "support": {"min": 1, "max": 49, "draw": 6},
+    "historyRule": "Use only Primitiva draws with drawDate strictly before targetDrawDate.",
+    "minimumPriorDraws": 500,
+    "graph": {
+      "edgeWeight": "count prior-window co-occurrences of each unordered number pair",
+      "degree": "sum weighted incident edges",
+      "clustering": "unweighted local clustering among positive-weight neighbours",
+      "neighborEntropy": "Shannon entropy of normalized incident edge weights divided by log(max(2, neighbourCount))",
+      "normalization": "For each feature over numbers 1..49: z-score, then unit(x)=0.5+0.5*tanh(x/2).",
+      "score": "config.dg*unit(z(degree)) + config.cl*unit(z(clustering)) + config.en*unit(z(neighborEntropy))",
+      "tieBreak": "ascending number",
+      "ticket": "top 6 numbers by score, sorted ascending for persistence",
+      "frozenConfigSource": "the 12 v138 leaders in their persisted order"
+    }
+  },
+  "frozenBaselines": {
+    "matchedCostRandom": {
+      "replicates": 10000,
+      "linesPerDrawPerReplicate": 12,
+      "numbersPerLine": 6,
+      "withoutReplacementWithinLine": true,
+      "baseSeed": 31520260817,
+      "seedDerivation": "sha256(baseSeed|targetDrawDate|replicateIndex|slotIndex), first 32 bits feed mulberry32",
+      "slotMapping": "slotIndex 0..11 maps permanently to source leader order 0..11",
+      "finalPValue": "For each configuration, compare its cumulative mean hits over the fixed 200 target draws with the 10000 matched random replicate cumulative means for the same slot. One-sided Monte Carlo p=(1+count(nullMean>=observedMean))/(10000+1)."
+    },
+    "marginalFrequency": {
+      "perConfiguration": true,
+      "window": "use that frozen configuration's w",
+      "ranking": "descending count in the strictly-prior target history window; tie ascending number",
+      "ticket": "top 6"
+    },
+    "recency": {
+      "history": "all strictly-prior Primitiva draws",
+      "recentTicket": "6 numbers with smallest draws-since-last-seen; tie ascending number",
+      "overdueTicket": "6 numbers with largest draws-since-last-seen; tie ascending number",
+      "bothMustBeBeaten": true
+    }
+  },
+  "fixedDecisionBoundary": {
+    "eligibleTargetDraws": 200,
+    "reason": "The parent preregistration required at least 200; fixing the primary boundary to exactly 200 before the first eligible target result blocks optional stopping.",
+    "interimSelectionOrRetuningAllowed": false,
+    "interimCandidateRankingDisclosureAllowed": false,
+    "administrativeProgressAllowed": true,
+    "extremeEventAuditException": "A sealed 5/6 or 6/6 may be disclosed only to trigger the preregistered lineage/null audit; it cannot alter configs, baselines, boundary or multiplicity.",
+    "postBoundaryRowsMayRescueV315": false,
+    "laterRowsPolicy": "Any later evidence belongs to a separately preregistered replication/version."
+  },
+  "finalInference": {
+    "candidateCount": 12,
+    "familyWiseAlpha": 0.05,
+    "multiplicity": "Holm-Bonferroni across the 12 frozen configurations using matched-cost Monte Carlo p-values.",
+    "candidatePassRequiresAll": [
+      "observed mean hits greater than matched-cost random mean",
+      "Holm-adjusted p < 0.05",
+      "observed mean hits greater than corresponding frozen marginal-frequency baseline",
+      "observed mean hits greater than frozen recent recency baseline",
+      "observed mean hits greater than frozen overdue recency baseline",
+      "exactly 200 eligible prospective target draws",
+      "no retuning and intact custody"
+    ],
+    "promotion": "A passing configuration is a transfer signal only. It does not authorize real-money play; an untouched preregistered replication is still mandatory.",
+    "realMoneyPass": false,
+    "realStakeEUR": 0
+  },
+  "guards": {
+    "noTargetTraining": true,
+    "noTargetHyperparameterSearch": true,
+    "noCandidateDropping": true,
+    "noConfigReordering": true,
+    "noBaselineReplacement": true,
+    "noOptionalStopping": true,
+    "noPost200Rescue": true,
+    "noRealMoney": true
+  }
+}
