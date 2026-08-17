@@ -1,7 +1,7 @@
 {
-  "version":3,
+  "version":4,
   "title":"Contra el azar",
-  "purpose":"Capítulos narrativos y divulgativos listos para incorporar al lector del Libro Vivo.",
+  "purpose":"Libro Vivo: relato divulgativo y memoria científica. Cada afirmación relevante debe poder volver a su evidencia persistida.",
   "chapters":[
     {
       "id":"capitulo-v-millon-cientificos",
@@ -12,11 +12,11 @@
         "MegaLab había empezado con 4.096 científicos virtuales y después había crecido hasta 16.384. El siguiente salto cambió la escala de la investigación: 1.048.576 científicos lógicos podían ser descritos de forma determinista antes de mirar un solo resultado nuevo.",
         "Pero el primer descubrimiento de aquella multitud no tuvo nada que ver con acertar números. Fue descubrir que muchos científicos que parecían distintos eran, en el fondo, la misma persona con otra bata. Sus fórmulas tenían nombres diferentes, pero producían exactamente las mismas decisiones.",
         "La Universidad respondió creando dos aduanas. La primera comparaba las ideas por su estructura semántica. La segunda, todavía más exigente, comparaba lo que realmente hacían. Si dos métodos generaban la misma secuencia de predicciones, pasaban a contar como un único comportamiento.",
-        "De pronto, construir más científicos dejó de significar simplemente multiplicar etiquetas. El objetivo pasó a ser multiplicar pensamientos verdaderamente distintos. Aquella corrección parecía administrativa, pero terminó convirtiéndose en una de las defensas científicas más importantes del proyecto."
+        "De pronto, construir más científicos dejó de significar simplemente multiplicar etiquetas. El objetivo pasó a ser multiplicar pensamientos verdaderamente distintos."
       ],
-      "plainLanguage":"Imagina una empresa con mil empleados. Si 900 copian exactamente el mismo informe, no tienes mil opiniones: tienes unas pocas ideas repetidas muchas veces. La Universidad aprendió a contar ideas, no uniformes.",
-      "technicalLayer":"v292 registró 1.048.576 científicos lógicos y 899.631 firmas semánticas únicas antes del screening histórico. La auditoría posterior introdujo deduplicación comportamental mediante hashes de trayectorias predictivas pre-draw.",
-      "visual":"Viñeta: un enorme auditorio lleno de científicos con batas diferentes. Un escáner situado en la puerta muestra que cientos proyectan exactamente la misma sombra. Sólo las sombras distintas pasan a la siguiente sala.",
+      "plainLanguage":"Mil empleados que copian el mismo informe no son mil opiniones independientes. El laboratorio aprende a contar ideas, no uniformes.",
+      "technicalLayer":"v292 registró 1.048.576 científicos lógicos y 899.631 firmas semánticas únicas antes del screening histórico; la auditoría posterior añadió deduplicación comportamental.",
+      "visual":"Un auditorio de batas diferentes atraviesa un escáner que sólo deja pasar sombras predictivas distintas.",
       "evidence":["v292-million-registry","behavioral-memory"]
     },
     {
@@ -25,52 +25,334 @@
       "title":"El día que faltó un número",
       "hook":"El 21 de mayo de 2024 ocurrió algo que obligó a todo el laboratorio a contener la respiración.",
       "narrative":[
-        "Una trayectoria que había quedado fijada antes de abrir la validación propuso para Bonoloto los números 4, 30, 34, 43, 44 y 49. El sorteo real fue 4, 30, 32, 43, 44 y 49.",
+        "Una trayectoria fijada antes de abrir la validación propuso para Bonoloto 4, 30, 34, 43, 44 y 49. El sorteo real fue 4, 30, 32, 43, 44 y 49.",
         "Cinco números coincidían. Uno no. El pleno había quedado a una única sustitución: 34 por 32.",
-        "En cualquier historia escrita después de conocer el desenlace habría sido muy fácil convertir aquello en una señal extraordinaria. La Universidad hizo exactamente lo contrario. Antes de celebrar, ordenó una autopsia.",
-        "Cinco científicos parecían haber protagonizado aquella hazaña. La deduplicación comportamental mostró que los cinco pensaban exactamente igual. No eran cinco confirmaciones: era una sola trayectoria repetida con distintas etiquetas.",
-        "La prueba siguiente fue aún más fría. Sin cambiar la fórmula, aquella misma trayectoria recorrió 591 sorteos posteriores desde 2025. No volvió a producir ningún 5/6 y nunca alcanzó el pleno.",
-        "Ese día el proyecto no descubrió cómo ganar la Bonoloto. Descubrió algo más incómodo y probablemente más valioso: incluso un resultado capaz de emocionarnos podía desaparecer en cuanto se le exigía repetir su historia."
+        "Cinco científicos parecían haber protagonizado la hazaña, pero la deduplicación comportamental mostró que los cinco pensaban exactamente igual. No eran cinco confirmaciones independientes.",
+        "Sin cambiar la fórmula, aquella trayectoria recorrió 591 sorteos posteriores desde 2025. No volvió a producir ningún 5/6 y nunca alcanzó el pleno.",
+        "El laboratorio no descubrió cómo ganar la Bonoloto. Descubrió que incluso un resultado emocionante puede desaparecer cuando se le exige réplica."
       ],
-      "plainLanguage":"Una moneda puede caer diez veces seguidas de cara y seguir siendo una moneda normal. Una coincidencia espectacular necesita repetición antes de convertirse en una regla.",
-      "technicalLayer":"El evento fue OOS dentro de v292 Stage5. Tras colapsar clones funcionales, quedó un único comportamiento independiente con 5/6. La réplica post-freeze acumuló 591 sorteos y produjo 0 nuevos near-full y 0 plenos.",
-      "visual":"Viñeta en cuatro cuadros: 1) aparece un luminoso 5/6; 2) cinco científicos levantan la mano; 3) el escáner revela una sola sombra; 4) un calendario de 591 páginas termina sin repetir el 5/6.",
+      "plainLanguage":"Una coincidencia espectacular no se convierte en ley por ser espectacular. Necesita repetición independiente.",
+      "technicalLayer":"Evento OOS de v292 Stage5; tras colapsar clones funcionales quedó un único comportamiento independiente con 5/6. La réplica post-freeze acumuló 591 sorteos con 0 nuevos near-full y 0 plenos.",
+      "visual":"Un 5/6 luminoso, cinco científicos levantando la mano, un escáner revelando una sola sombra y 591 páginas sin repetición.",
       "evidence":["v292-oos-5of6","v292-behavioral-falsification"]
     },
     {
       "id":"capitulo-vii-dieciocho-espejismos",
       "number":"VII",
       "title":"Dieciocho pistas y un sobre cerrado",
-      "hook":"v294 empezó con una idea sencilla de explicar: dejar de mirar los números uno a uno y tratar cada sorteo como una figura completa.",
+      "hook":"v294 dejó de mirar los números uno a uno y trató cada sorteo como una figura matemática completa.",
       "narrative":[
-        "Hasta entonces muchas familias habían asignado puntuaciones, rangos o probabilidades a elementos individuales. v294 cambió el objeto de estudio. Una combinación completa se convirtió en un estado matemático: distancias entre números, huecos, residuos, órbitas y códigos del conjunto entero.",
-        "La primera criba produjo una escena que parecía prometedora. En El Gordo aparecieron dieciocho comportamientos independientes que alcanzaban al menos un near-full durante selección. En Primitiva aparecieron dos.",
-        "Era exactamente el tipo de momento en que una investigación puede empezar a engañarse. Por eso el laboratorio no abrió todavía los años siguientes. Primero evaluó más densamente, eliminó clones y encerró 32 candidatos —ocho por juego— bajo un hash criptográfico.",
-        "Sólo entonces se abrió el sobre de 2023 y 2024. El resultado fue brutalmente sencillo: cero near-full. Cero plenos. En Bonoloto, Primitiva, Euromillones y El Gordo.",
-        "Las dieciocho pistas no se convirtieron en dieciocho teorías. Se convirtieron en una lección. El pasado puede fabricar dibujos convincentes cuando hacemos suficientes preguntas. El examen ciego existe precisamente para impedir que esos dibujos se conviertan en supersticiones sofisticadas."
+        "Una combinación pasó a describirse por huecos, residuos, órbitas y códigos del conjunto entero.",
+        "La primera criba encontró dieciocho comportamientos de El Gordo y dos de Primitiva con al menos un near-full durante selección.",
+        "Antes de abrir 2023 y 2024, el laboratorio deduplicó y congeló 32 candidatos bajo hash criptográfico.",
+        "Al abrir el sobre ciego: cero near-full y cero plenos en Bonoloto, Primitiva, Euromillones y El Gordo.",
+        "Las pistas se convirtieron en una lección contra el sobreajuste: suficientes preguntas al pasado siempre pueden fabricar dibujos seductores."
       ],
-      "plainLanguage":"Es como entrenar para un examen con cien simulacros. Sacar sobresaliente en uno no garantiza nada si luego suspendes el examen que estaba guardado en un sobre y que nunca habías visto.",
-      "technicalLayer":"v294 evaluó 32.768 configuraciones iniciales y deduplicó a 8.344 comportamientos. Stage3 congeló 32 candidatos con hash 1baab265c9d01870cc54c35aff7dd0210ac65ab4cc1cd43c678a562715a82097. Stage4 OOS 2023-2024 registró 0 near-full y 0 full-main en los cuatro juegos.",
-      "visual":"Figura: una mesa con 18 luces verdes dentro de la zona 'selección'. Una puerta marcada 'OOS' se abre; al otro lado las 18 luces aparecen apagadas. Debajo: 'una señal que no cruza la puerta no es una ventaja demostrada'.",
+      "plainLanguage":"Sacar sobresaliente en un simulacro no vale si suspendes el examen que estaba guardado y nunca habías visto.",
+      "technicalLayer":"v294 evaluó 32.768 configuraciones, deduplicó a 8.344 comportamientos y congeló 32 candidatos. El OOS 2023-2024 produjo 0 near-full y 0 full-main.",
+      "visual":"Luces verdes en selección que se apagan al cruzar una puerta marcada OOS.",
       "evidence":["v294-set-state"]
     },
     {
       "id":"capitulo-viii-comprimir-azar",
       "number":"VIII",
       "title":"¿Se puede comprimir el azar?",
-      "hook":"Después de cerrar otra puerta, la Universidad no preguntó qué parámetro podía retocar. Preguntó qué pregunta completamente distinta podía formular.",
+      "hook":"Cuando una puerta se cerró, la Universidad no retocó el picaporte: formuló una pregunta distinta.",
       "narrative":[
-        "Así nació v295. En lugar de buscar números calientes, vecinos matemáticos o estados similares, el laboratorio planteó una idea procedente de la teoría de la información: si existe estructura temporal real, quizá una descripción inteligente de la secuencia necesite menos información que una descripción ingenua.",
-        "Dicho de otra forma, si una parte del futuro fuese mínimamente predecible por el pasado, quizá esa regularidad permitiera comprimir la historia. El experimento utiliza familias inspiradas en Minimum Description Length y Context Tree Weighting para medir cuánto cuesta describir diferentes continuaciones posibles.",
-        "La palabra compresión puede sonar técnica, pero la intuición es cotidiana. La frase 'ja ja ja ja ja ja' se puede resumir con facilidad porque repite un patrón. Una cadena totalmente irregular exige describir prácticamente cada elemento. La pregunta de v295 es si los sorteos esconden algo que se parezca, aunque sea de forma muchísimo más sutil, a una regularidad comprimible.",
-        "La regla temporal no cambia: 2019-2022 sirve para selección; 2023-2024 permanece cerrado hasta el freeze; 2025 en adelante queda reservado para replicación. Si la compresión sólo parece funcionar después de conocer el futuro, será otra puerta archivada.",
-        "Mientras v295 se prepara para su examen, una nueva familia, v296, espera en otra sala. Su enfoque estudia recurrencias: no si un número aparece mucho, sino si la geometría global de los sorteos vuelve a visitar estados dinámicos parecidos con una organización temporal reproducible."
+        "v295 trasladó la investigación a teoría de la información: si existe estructura temporal real, una descripción inteligente de la secuencia quizá necesite menos información que una descripción ingenua.",
+        "La intuición es sencilla: una secuencia repetitiva se resume; una secuencia irregular exige describir casi cada elemento.",
+        "La separación temporal se mantiene: selección primero, sobre cerrado después y replicación prospectiva al final.",
+        "v296 quedó preparado para estudiar recurrencias y geometría dinámica sin reutilizar información futura."
       ],
-      "plainLanguage":"Comprimir es encontrar una forma más corta de contar lo mismo. Si una secuencia tiene reglas, suele poder resumirse mejor. Si no las tiene, cada nueva pieza hay que contarla casi desde cero.",
-      "technicalLayer":"v295 preregistra codificadores tipo CTW, PPM, MDL de contexto finito y sorpresa Lempel-Ziv sobre varias codificaciones del sorteo. v296 queda preregistrado como Recurrence Quantification Analysis y no se ejecutará mientras otro experimento pesado siga consumiendo Actions.",
-      "visual":"Viñeta: dos rollos de papel. Uno contiene 'ABABABABAB' y cabe en una nota: 'AB × 5'. El otro contiene una cadena irregular y ocupa todo el rollo. Un científico pregunta: '¿A cuál se parece realmente la lotería cuando no podemos mirar el futuro?'.",
+      "plainLanguage":"Si el pasado contiene una regla real, quizá podamos contar la historia de forma más corta. Si no, cada resultado obliga a empezar casi desde cero.",
+      "technicalLayer":"Familias CTW, PPM, MDL de contexto finito, sorpresa Lempel-Ziv y Recurrence Quantification Analysis bajo preregistro temporal.",
+      "visual":"Dos rollos: ABABABAB se comprime en una nota; una cadena irregular ocupa todo el papel.",
       "evidence":["v295-mdl","v296-recurrence-preregister"]
+    },
+    {
+      "id":"capitulo-ix-fecha-inmutable",
+      "number":"IX",
+      "title":"Una fecha que no puede borrarse",
+      "hook":"Un resultado sin fecha puede convertirse, sin querer, en una historia reconstruida. Desde aquí cada intento debe responder primero a una pregunta: ¿para qué sorteo estaba congelado?",
+      "narrative":[
+        "La fecha objetivo deja de ser decoración y pasa a formar parte de la identidad científica del intento.",
+        "Junto a ella se guardan el momento de freeze, el motor, el sello criptográfico, la combinación o pool, el resultado oficial y la evaluación.",
+        "Si un artefacto legado no conservó una explicación normalizada, el laboratorio no la inventa años o días después: marca la carencia y conserva la fuente original.",
+        "Esta disciplina permite leer una derrota sin ambigüedad: sabemos qué se sabía antes, qué ocurrió después y qué parte pertenece a cada lado de la frontera."
+      ],
+      "plainLanguage":"Es como fechar y firmar un pronóstico antes de abrir el sobre con el resultado.",
+      "technicalLayer":"El ledger público normaliza *evaluation.json y obliga a exponer targetDrawDate, frozenAt, engine, seal, officialResult, hits, coste y modo PAPER/REAL.",
+      "visual":"Dos columnas: ANTES DEL SORTEO y DESPUÉS DEL SORTEO, separadas por una línea roja que ningún dato puede cruzar hacia atrás.",
+      "evidence":["loterias-ai/scripts/build-public-attempt-ledger.mjs","loterias-ai/data/shadow/public-attempts-v1.json"]
+    },
+    {
+      "id":"capitulo-x-perder-bien",
+      "number":"X",
+      "title":"Perder no autoriza a inventar una causa",
+      "hook":"Después de una derrota aparece una tentación poderosa: construir una explicación que haga parecer inevitable lo que acaba de ocurrir.",
+      "narrative":[
+        "El laboratorio prohíbe esa comodidad. Saber que una combinación falló no significa saber por qué falló.",
+        "Una derrota puede ser compatible con variabilidad aleatoria, señal insuficiente, mala calibración, un modelo sin ventaja, datos defectuosos o ejecución incorrecta.",
+        "Sólo una prueba adicional puede separar esas posibilidades. Cuando no existe, la atribución causal correcta es UNKNOWN.",
+        "El post-mortem sí debe decir qué observamos, qué hipótesis queda debilitada, qué evidencia falta y cuál es el siguiente experimento capaz de distinguir causas."
+      ],
+      "plainLanguage":"Después de fallar un penalti sabemos que no fue gol; no siempre sabemos si la causa fue la técnica, el portero, el césped o simplemente variación normal.",
+      "technicalLayer":"Taxonomía: model_error, miscalibration, falsified_hypothesis, insufficient_signal, data_or_execution, irreducible_randomness y unknown. La causalidad no se infiere de un solo error.",
+      "visual":"Una derrota en el centro y siete flechas de posibles causas; sólo las flechas con evidencia permanecen coloreadas.",
+      "evidence":["explanation-engine-postmortem","public-attempt-ledger"]
+    },
+    {
+      "id":"capitulo-xi-dinero-firewall",
+      "number":"XI",
+      "title":"El cortafuegos del dinero",
+      "hook":"Una idea puede ser interesante, rentable en una simulación y aun así estar prohibida para dinero real.",
+      "narrative":[
+        "Discovery sirve para descubrir. Validation sirve para comprobar. Holdout sirve para sorprender al modelo con datos que no pudo tocar. Prospectivo sirve para demostrar que la regla sobrevive cuando el futuro llega de verdad.",
+        "PAPER permite cuantificar coste, drawdown y retorno sin convertir una exploración en una apuesta.",
+        "El paso a dinero real no depende de que una gráfica sea verde; depende de gates predefinidos, réplica y trazabilidad.",
+        "En Lightning y en loterías nacionales, realStakeEUR permanece separado del coste teórico."
+      ],
+      "plainLanguage":"Primero se prueba el puente con peso artificial. Que aguante una maqueta no permite abrirlo al tráfico.",
+      "technicalLayer":"Los artefactos económicos actuales declaran mode=PAPER_ONLY y realMoneyAllowed=false. Los intentos Bonoloto evaluados conservan realStakeEUR=0.",
+      "visual":"Cuatro compuertas: Discovery → Validation → Holdout → Prospectivo; detrás, una quinta puerta cerrada: REAL.",
+      "evidence":["economic-multiplier-window-oos-v1","bonoloto-prospective-evaluations"]
+    },
+    {
+      "id":"capitulo-xii-lightning-reglas",
+      "number":"XII",
+      "title":"La ruleta que paga distinto",
+      "hook":"Lightning Roulette parece una ruleta conocida hasta que la economía de una apuesta directa cambia la pregunta.",
+      "narrative":[
+        "El laboratorio separa dos componentes: acertar el número ganador y que ese ganador esté asociado a un multiplicador Lightning.",
+        "Sin multiplicador, el retorno bruto de una apuesta directa se modela como 30 veces la unidad, equivalente a 29 a 1 de beneficio más devolución de la unidad ganadora.",
+        "Los multiplicadores producen una distribución de retornos con colas largas. Por eso un puñado de capturas puede hacer que el ROI parezca extraordinario aunque la selección de números no supere su tasa nula.",
+        "La economía se estudia por sesión, por ronda y por fase temporal."
+      ],
+      "plainLanguage":"No basta con preguntar cuánto paga cuando ganas; hay que preguntar cuántas veces ganas, cuánto gastaste hasta entonces y cuánto depende el resultado de premios raros.",
+      "technicalLayer":"El estudio económico persiste totalStakeEUR=15, normalStraightGrossReturnX=30 y separa normal hits, capturedLightning, P&L, ROI y max drawdown.",
+      "visual":"Dos cajas de retorno: acierto normal y acierto Lightning, conectadas a la misma apuesta pero con distribuciones diferentes.",
+      "evidence":["loterias-ai/casino/lightning/evidence/economic-coverage-window-v1.json"]
+    },
+    {
+      "id":"capitulo-xiii-tres-numeros",
+      "number":"XIII",
+      "title":"Quince euros sobre tres números",
+      "hook":"La intuición económica del usuario se convirtió en una pregunta medible: ¿qué ocurre si 15 euros se reparten entre sólo tres números?",
+      "narrative":[
+        "La cobertura asigna cinco euros a cada número.",
+        "Un único acierto normal en una ronda produce 150 euros de retorno bruto y 135 euros netos respecto a los 15 apostados en esa ronda.",
+        "Pero una sesión acumula coste. Si no hay otros cobros, un único acierto normal mantiene el balance de la sesión en positivo sólo si llega antes de consumir ese margen.",
+        "La tasa aleatoria de cubrir el ganador en una ruleta de 37 números es 3/37. Para ser viable sin depender de Lightning, el selector debe elevar de forma reproducible esa tasa por encima del break-even."
+      ],
+      "plainLanguage":"Ganar mucho una vez no demuestra que el plan gane dinero. Hay que restar todas las rondas que pagamos para llegar hasta ese acierto.",
+      "technicalLayer":"Cobertura 3: 5 EUR/número, hit nulo 8,1081%, hit normal neto +135 EUR, break-even sin Lightning 10%. Un único hit normal sostiene saldo positivo hasta la ronda 9 inclusive; la ronda 10 queda en equilibrio bajo ese escenario simplificado.",
+      "visual":"Una pila de 15 euros que se reduce ronda a ronda y un salto de +150 euros cuando aparece un número cubierto.",
+      "evidence":["economic-coverage-window-v1"]
+    },
+    {
+      "id":"capitulo-xiv-cuatro-numeros",
+      "number":"XIV",
+      "title":"Quince euros sobre cuatro números",
+      "hook":"Cubrir cuatro números aumenta la frecuencia de acierto, pero reduce el importe colocado sobre cada uno.",
+      "narrative":[
+        "Los 15 euros se reparten en 3,75 euros por número.",
+        "Un acierto normal retorna 112,50 euros brutos y deja 97,50 euros netos respecto a la apuesta de esa ronda.",
+        "La probabilidad nula sube a 4/37, pero también sube la frecuencia necesaria para alcanzar break-even sin Lightning.",
+        "La comparación entre tres y cuatro números no se decide por sensación: se decide por retorno, drawdown, frecuencia de acierto y réplica fuera de muestra."
+      ],
+      "plainLanguage":"Cuatro redes pequeñas cubren más agua que tres, pero cada red recibe menos capital. La pregunta es cuál captura suficiente valor para compensar el coste total.",
+      "technicalLayer":"Cobertura 4: 3,75 EUR/número, hit nulo 10,8108%, hit normal neto +97,50 EUR, break-even sin Lightning 13,3333%. Con un único hit normal, la sesión permanece positiva si llega como máximo en la ronda 7.",
+      "visual":"Tres redes y cuatro redes comparadas con el mismo presupuesto total de 15 euros.",
+      "evidence":["economic-coverage-window-v1"]
+    },
+    {
+      "id":"capitulo-xv-no-esta-debido",
+      "number":"XV",
+      "title":"Esperar no significa que esté debido",
+      "hook":"Que hayan pasado muchas rondas sin un ganador Lightning no obliga a la siguiente ruleta a compensarnos.",
+      "narrative":[
+        "La intuición de una ventana de 4 a 10 rondas se trató como hipótesis empírica, no como ley de compensación.",
+        "El laboratorio midió la frecuencia futura de un ganador Lightning después de distintos gaps y horizontes, comparándola con el resto de estados.",
+        "La regla se eligió sólo en discovery. Después quedó congelada antes de entrar en validation y holdout.",
+        "Incluso si la dirección replica, las ventanas solapadas introducen dependencia y no convierten automáticamente la señal en ventaja monetizable."
+      ],
+      "plainLanguage":"Una moneda no recuerda que lleva cinco caras. Si observamos una diferencia real en datos, hay que demostrarla sin confundirla con la idea de que el azar tiene deudas.",
+      "technicalLayer":"Búsqueda discovery sobre thresholds 4,8,12,16,20,24 y horizontes 4–10; métrica: diferencia absoluta entre tasa futura de ganador Lightning en anchors seleccionados y su complemento.",
+      "visual":"Un contador de rondas con un gran cartel: GAP ≠ DEUDA DEL AZAR.",
+      "evidence":["economic-multiplier-window-oos-v1"]
+    },
+    {
+      "id":"capitulo-xvi-timing-cruza-puertas",
+      "number":"XVI",
+      "title":"La señal temporal que cruzó dos puertas",
+      "hook":"Una regla temporal sí consiguió algo que merece atención: mantener la misma dirección al cruzar validation y holdout.",
+      "narrative":[
+        "El discovery congeló la condición: al menos ocho rondas desde el último ganador Lightning y observación de las siete siguientes.",
+        "En el snapshot de 2.103 rondas, discovery registró 37,07% de ventanas con evento frente a 32,66% en el complemento.",
+        "Validation amplió la diferencia: 56,28% frente a 37,67%. Holdout mantuvo la dirección: 35,50% frente a 24,34%.",
+        "Los tres bloques apuntan en la misma dirección, por lo que la hipótesis temporal no se descarta. Sin embargo permanece PAPER y exige prospectivo."
+      ],
+      "plainLanguage":"La brújula apuntó al mismo lado en tres habitaciones distintas. Eso justifica seguir caminando, no declarar que ya conocemos el destino.",
+      "technicalLayer":"Frozen rule gap>=8, horizon=7. Gates validationPositiveLift=true, holdoutPositiveLift=true y replicatedDirection=true; prospectiveStillRequired=true y realMoneyAllowed=false.",
+      "visual":"Tres puertas —discovery, validation, holdout— con una flecha que conserva su dirección; una cuarta puerta prospectiva sigue cerrada.",
+      "evidence":["loterias-ai/casino/lightning/evidence/economic-multiplier-window-oos-v1.json"]
+    },
+    {
+      "id":"capitulo-xvii-timing-no-elige-numero",
+      "number":"XVII",
+      "title":"Saber cuándo no es saber qué número",
+      "hook":"Una señal temporal, aunque fuera real, no resuelve la parte más difícil de la apuesta: seleccionar el ganador.",
+      "narrative":[
+        "La regla gap>=8 puede elevar o no la frecuencia de episodios Lightning; no contiene información suficiente para decidir qué número cubrir.",
+        "Por eso el laboratorio creó una segunda capa independiente de selectores de tres y cuatro números usando sólo historia pasada.",
+        "Se probaron familias hot, cold, recent, notRecent, transition y wheelLast con múltiples lookbacks.",
+        "El selector de números se eligió únicamente en discovery y después quedó congelado. El resultado fue una lección contra mezclar dos señales distintas."
+      ],
+      "plainLanguage":"Saber que podría llover esta tarde no te dice en qué baldosa caerá la primera gota.",
+      "technicalLayer":"La selección de números usa discovery timed-round hit z-score frente al uniforme. El resultado monetario no se usó para seleccionar configuración y no se usaron Lucky Numbers de la ronda actual.",
+      "visual":"Un reloj señala una ventana favorable, pero 37 casillas siguen sin una flecha que identifique el ganador.",
+      "evidence":["economic-timing-number-combo-oos-v1"]
+    },
+    {
+      "id":"capitulo-xviii-tres-verde-verde-rojo",
+      "number":"XVIII",
+      "title":"Tres números: verde, verde, rojo",
+      "hook":"El selector de tres números mostró exactamente por qué holdout existe.",
+      "narrative":[
+        "Discovery eligió cold con lookback 120. En 685 rondas apostadas obtuvo 9,49% de aciertos frente a 8,11% nulo y un ROI PAPER de +1,70%.",
+        "Validation fue todavía más atractivo: 12,64% de aciertos y +53,85% de ROI, impulsado también por cinco capturas Lightning.",
+        "Holdout rompió la historia: 6,25% de aciertos frente a 8,11% nulo, cero capturas Lightning y -37,50% de ROI.",
+        "No se retocó el selector después de mirar el holdout. Se marcó como no replicado."
+      ],
+      "plainLanguage":"Un método puede ganar en entrenamiento y en un examen intermedio, y aun así suspender el examen final. El examen final existe para que ese fracaso sea visible.",
+      "technicalLayer":"3-number gates: validationHitExcessPositive=true, holdoutHitExcessPositive=false, validationRoiPositive=true, holdoutRoiPositive=false, replicatedHitDirection=false y replicatedEconomicDirection=false.",
+      "visual":"Tres luces: verde discovery, verde validation, rojo holdout. Debajo: NO RETUNING.",
+      "evidence":["loterias-ai/casino/lightning/evidence/economic-timing-number-combo-oos-v1.json"]
+    },
+    {
+      "id":"capitulo-xix-cuatro-verde-rojo-rojo",
+      "number":"XIX",
+      "title":"Cuatro números: el espejismo del +48%",
+      "hook":"El selector de cuatro números empezó con un ROI que habría sido fácil vender como éxito. La ciencia obligó a seguir leyendo.",
+      "narrative":[
+        "Discovery eligió cold con lookback 8: 13,14% de aciertos frente a 10,81% nulo y +48,18% de ROI PAPER.",
+        "En validation la tasa bajó a 9,89%, por debajo del nulo, y el ROI cayó a -16,21%.",
+        "Holdout empeoró: 7,08% de aciertos y -39,58% de ROI, con sólo una captura Lightning.",
+        "El +48% inicial no se borra; se conserva precisamente para enseñar cómo una cifra espectacular puede no sobrevivir."
+      ],
+      "plainLanguage":"Si sólo enseñáramos la primera columna parecería una estrategia fantástica. Enseñar las tres columnas cambia completamente la conclusión.",
+      "technicalLayer":"4-number gates: validation/holdout hit excess negativos, ROI negativos y replicatedEconomicDirection=false. realMoneyAllowed=false.",
+      "visual":"Una gran barra verde +48% seguida por dos barras rojas -16% y -40%.",
+      "evidence":["loterias-ai/casino/lightning/evidence/economic-timing-number-combo-oos-v1.json"]
+    },
+    {
+      "id":"capitulo-xx-roi-cola-larga",
+      "number":"XX",
+      "title":"Cuando un multiplicador engaña al ROI",
+      "hook":"En Lightning un ROI positivo puede esconder una selección de números mediocre si unos pocos premios extremos dominan el balance.",
+      "narrative":[
+        "Una captura Lightning puede aportar mucho más dinero que un acierto normal.",
+        "Eso hace necesario mirar dos cuadros a la vez: tasa de acierto frente a NULL y resultado económico.",
+        "El estudio combinado prohíbe declarar éxito sólo porque P&L sea positivo. Exige que el selector también demuestre dirección de acierto y que ambas sobrevivan fuera de muestra.",
+        "Esta separación evita confundir suerte de cola con capacidad predictiva."
+      ],
+      "plainLanguage":"Ganar una lotería dentro de una estrategia perdedora puede dejar el saldo temporalmente verde; no convierte en buena la estrategia que compró el boleto.",
+      "technicalLayer":"Positive PnL alone is insufficient porque rare multipliers can dominate monetary results. Se monitorizan hitExcess, capturedLightning, captureNullRate, ROI y maxDrawdown por fase.",
+      "visual":"Una gráfica de muchos resultados pequeños y un único pico enorme que altera la media.",
+      "evidence":["economic-timing-number-combo-oos-v1"]
+    },
+    {
+      "id":"capitulo-xxi-15-agosto",
+      "number":"XXI",
+      "title":"15 de agosto de 2026: un intento con nombre y fecha",
+      "hook":"Los resultados dejan de ser filas anónimas. Este intento existe con fecha, motor, números y resultado oficial.",
+      "narrative":[
+        "MetaPleno-v10 había congelado dos candidatos para la Bonoloto del 15 de agosto de 2026.",
+        "El resultado oficial fue 11, 15, 16, 22, 34 y 35; complementario 10 y reintegro 1.",
+        "El mejor ticket congelado, 10, 15, 17, 28, 39 y 48, obtuvo 1/6 y además contenía el complementario 10. El segundo ticket obtuvo 0/6.",
+        "El coste teórico registrado fue un euro y el dinero real fue cero.",
+        "La conclusión causal no es 'falló por X'. La conclusión observable es que este intento no alcanzó 5/6 ni 6/6 y debe sumar evidencia a la familia prospectiva."
+      ],
+      "plainLanguage":"Ahora cualquiera puede preguntar: ¿qué jugamos, para qué fecha y qué salió? Las tres respuestas quedan juntas.",
+      "technicalLayer":"status=PROSPECTIVE_SHADOW_EVALUATED; official verification=OFFICIAL_SELAE_VALIDATED; full6=false; near5=false; realStakeEUR=0; immutableSource=true.",
+      "visual":"Ficha de laboratorio con fecha 15/08/2026, combinación congelada, resultado oficial y un sello PAPER.",
+      "evidence":["loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-v10-evaluation.json"]
+    },
+    {
+      "id":"capitulo-xxii-16-agosto",
+      "number":"XXII",
+      "title":"16 de agosto de 2026: ocho números no bastaron",
+      "hook":"Al día siguiente otro diseño intentó cubrir el objetivo con un pool de ocho números bajo un presupuesto PAPER máximo de 15 euros.",
+      "narrative":[
+        "El pool se congeló antes del sorteo: 2, 10, 12, 26, 30, 32, 36 y 40.",
+        "El resultado principal fue 2, 8, 16, 17, 29 y 31.",
+        "El pool sólo contenía el número 2. Por construcción, ninguna combinación simple generada exclusivamente con esos ocho números podía producir el 6/6.",
+        "El coste teórico registrado fue 14 euros, dentro del presupuesto de 15; el dinero real volvió a ser cero.",
+        "La integridad prospectiva permaneció intacta: no hubo retuning y el resultado objetivo no se usó para seleccionar."
+      ],
+      "plainLanguage":"El fallo no se oculta: el conjunto de ocho sólo contenía uno de los seis ganadores. Eso describe lo ocurrido; todavía no demuestra la causa profunda de por qué el modelo eligió mal los otros siete.",
+      "technicalLayer":"freeze 2026-08-15T21:32:50Z, dataCutoff 2026-08-15, outcome mainHits=1, selectionUsedTargetResult=false, prospectiveIntegrity=true, theoreticalCostEUR=14, realStakeEUR=0.",
+      "visual":"Ocho círculos del pool frente a seis círculos oficiales; sólo el 2 aparece conectado.",
+      "evidence":["loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v54-budget8-evaluation.json"]
+    },
+    {
+      "id":"capitulo-xxiii-horizonte-pleno",
+      "number":"XXIII",
+      "title":"Horizonte al pleno: por qué no inventamos una fecha",
+      "hook":"Una interfaz puede escribir '182 días' con enorme seguridad. La ciencia exige demostrar de dónde sale ese número.",
+      "narrative":[
+        "Un horizonte útil necesita una tasa de plenos o una distribución de eventos comparable obtenida sin contaminación futura.",
+        "Un pleno aislado, un near-full histórico o una racha de backtest no bastan para estimar con estabilidad el tiempo esperado hasta otro pleno.",
+        "El sistema debe enseñar cuántos intentos válidos existen, cuál es el mejor acierto observado, qué tasa nula corresponde y qué muestra falta para habilitar la estimación.",
+        "Hasta entonces la respuesta correcta puede ser 'no estimable', pero acompañada por el motivo y el camino exacto que falta recorrer."
+      ],
+      "plainLanguage":"No saber todavía es una respuesta científica; esconder por qué no sabemos es una mala interfaz.",
+      "technicalLayer":"El gate de horizonte requiere eventos independientes/replicados y una base prospectiva suficiente antes de proyectar tiempo-a-pleno. Se conserva referencia NULL separada de cualquier estimación del modelo.",
+      "visual":"Un contador bloqueado con una lista visible de requisitos pendientes, no un simple guion.",
+      "evidence":["horizon-full-hit-gate","prospective-master-scoreboard"]
+    },
+    {
+      "id":"capitulo-xxiv-gabinetes",
+      "number":"XXIV",
+      "title":"Trece gabinetes, trece preguntas",
+      "hook":"Euromillones, Primitiva, Bonoloto, Lotería Nacional y Quiniela no son el mismo problema con otro logotipo.",
+      "narrative":[
+        "El Departamento de Investigación separa los juegos por familia: combinaciones numéricas, números de cinco cifras, fútbol, marcadores y carreras.",
+        "Cada gabinete expone regla, espacio, histórico mínimo, prioridad, líneas de investigación y artefactos congelados cuando realmente existen.",
+        "Bonoloto y Primitiva pueden mostrar combinaciones persistidas; los juegos sin artefacto no inventan una propuesta para llenar la pantalla.",
+        "El resumen lateral convierte la complejidad del laboratorio en preguntas sencillas: qué estudia, qué evidencia existe, qué está congelado y qué falta."
+      ],
+      "plainLanguage":"Una universidad seria no obliga al mismo profesor a resolver estadística numérica, resultados de fútbol y carreras de caballos con la misma fórmula.",
+      "technicalLayer":"Catálogo nacional de 13 juegos con familias numeric, number5, football, football-score y horse; fallback resiliente mantiene desplegables aun si falla una carga dinámica.",
+      "visual":"Trece puertas de laboratorio, cada una con una placa de método distinta.",
+      "evidence":["loterias-ai/data/games.json","loterias-ai/lab/resilience.js"]
+    },
+    {
+      "id":"capitulo-xxv-libro-memoria",
+      "number":"XXV",
+      "title":"El libro deja de ser decoración",
+      "hook":"Un libro de doce páginas podía enseñar una idea. No podía cargar la memoria de un laboratorio de esta escala.",
+      "narrative":[
+        "El Libro Vivo se convierte en otra salida del sistema científico, no en una sección promocional.",
+        "Los experimentos relevantes entran con contexto, explicación llana, capa técnica y referencia a evidencia persistida.",
+        "Las derrotas tienen tanto derecho a un capítulo como los resultados prometedores, porque evitan repetir caminos y documentan cómo cambió la investigación.",
+        "El manuscrito seguirá creciendo mientras crece la evidencia. La edición final no se escribirá reordenando el pasado para construir una épica: conservará la cronología de lo que realmente ocurrió."
+      ],
+      "plainLanguage":"El libro es la caja negra del laboratorio escrita para humanos.",
+      "technicalLayer":"El lector carga el manuscrito versionado desde chapters-v3.json y conserva trazabilidad a artefactos concretos. Esta versión eleva el suplemento editorial hasta el capítulo XXV, además del núcleo I-IV, portada, prólogo y epílogo.",
+      "visual":"Una estantería donde cada experimento crea una página enlazada a su archivo de evidencia.",
+      "evidence":["loterias-ai/universidad/libro/chapters-v3.json","book-event-feed"]
     }
   ],
-  "editorialRules":{"plainBeforeTechnical":true,"storyArcRequired":true,"noUnsupportedDiscoveryClaims":true,"orthographyReviewRequired":true,"visualsMustBeOriginal":true,"factsMustTraceToEvidence":true}
+  "editorialRules":{
+    "plainBeforeTechnical":true,
+    "storyArcRequired":true,
+    "noUnsupportedDiscoveryClaims":true,
+    "orthographyReviewRequired":true,
+    "visualsMustBeOriginal":true,
+    "factsMustTraceToEvidence":true,
+    "failuresMustBeDocumented":true,
+    "causalClaimsRequireEvidence":true,
+    "drawDatesRequiredForAttemptNarratives":true
+  }
 }
