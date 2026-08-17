@@ -28,7 +28,10 @@ if(!target){
   else {
     const pool=[...freeze.pool].map(Number);
     const matched=winning.filter(n=>pool.includes(n));
-    semantic={...base,status:'EVALUATED_NEGATIVE_OR_FULL',pool,winningNumbers:winning,matchedNumbers:matched,poolHits:matched.length,poolMisses:6-matched.length,fullSixCovered:matched.length===6,nearFull5of6:matched.length===5,coverageLines:freeze.coverage?.simpleCombinations??28,claimAllowed:matched.length===6,interpretation:matched.length===6?'pool contained the six official winning numbers; requires independent replication before any claim':matched.length===5?'prospective 5/6 near-full; record only, no retuning':'prospective replication did not reach near-full threshold'};
+    const fullSixCovered=matched.length===6;
+    const nearFull5of6=matched.length===5;
+    const status=fullSixCovered?'EVALUATED_FULL_6_OF_6':nearFull5of6?'EVALUATED_NEAR_FULL_5_OF_6':'EVALUATED_NEGATIVE';
+    semantic={...base,status,pool,winningNumbers:winning,matchedNumbers:matched,poolHits:matched.length,poolMisses:6-matched.length,fullSixCovered,nearFull5of6,coverageLines:freeze.coverage?.simpleCombinations??28,claimAllowed:fullSixCovered,interpretation:fullSixCovered?'pool contained the six official winning numbers; requires independent replication before any claim':nearFull5of6?'prospective 5/6 near-full; record only, no retuning':'prospective replication did not reach near-full threshold'};
   }
 }
 const evaluationHash=crypto.createHash('sha256').update(JSON.stringify(semantic)).digest('hex');
