@@ -1,12 +1,29 @@
 {
   "version": "v314",
   "family": "SIXTH_NUMBER_BOUNDARY_RESCUE_AUDIT",
-  "status": "PREREGISTERED",
-  "goal": "Test whether some historical 5/6 events can be rescued by a strictly causal boundary-ranking mechanism without using target outcomes.",
+  "status": "PREREGISTERED_GUARD_REFINED",
+  "goal": "Test whether historical 5/6 events contain a reproducible strictly causal cutoff-boundary effect that remains after matched-cost null testing, without re-running prior omitted-winner rescue families.",
   "scope": {
     "nearFullDefinition": "exactly 5 of 6 main numbers",
     "boundaryCase": "missing winner rank near the frozen ticket cutoff",
-    "deepCase": "missing winner rank materially outside the frozen cutoff"
+    "deepCase": "missing winner rank materially outside the frozen cutoff",
+    "newQuestionOnly": "Is boundary distance itself prospectively informative after conditioning on the frozen baseline?"
+  },
+  "antiDuplicateGuard": {
+    "priorFamilies": [
+      "v141 sixth-number add/drop rescue",
+      "v142 global near-pleno atlas",
+      "v144 missing-winner bias",
+      "v145 nested missing-winner calibration",
+      "v146 omitted-winner profile rescuer"
+    ],
+    "forbiddenRepeats": [
+      "relearn omitted-number feature profiles",
+      "recalibrate missing-number bias",
+      "post-hoc add/drop thresholds",
+      "reuse target outcomes to choose boundary width"
+    ],
+    "requiredNovelty": "Boundary-rank distance must be frozen pre-holdout and tested as a separate causal covariate against matched-cost nulls and prior frozen baselines."
   },
   "rules": {
     "trainSelectionPreHoldoutOnly": true,
@@ -15,11 +32,11 @@
     "noRetuningAfterHoldout": true,
     "matchedCostNullRequired": true,
     "multiplicityCorrectionRequired": true,
-    "compareAgainstPriorNegativeFamily": "v141 sixth-number add/drop rescue",
+    "antiDuplicateGuardRequired": true,
     "theoreticalBudgetEURMax": 15,
     "realMoneyPass": false,
     "realStakeEUR": 0
   },
-  "successGate": "Must improve reproducibly on frozen baselines in holdout and survive matched-cost null plus multiplicity correction.",
-  "failureGate": "Archive as negative if rescue appears only in discovery, fails null testing, or requires post-hoc threshold changes."
+  "successGate": "Must improve reproducibly on frozen baselines in holdout and survive matched-cost null plus multiplicity correction; discovery-only 5/6 events do not count.",
+  "failureGate": "Archive as negative or duplicate if boundary effect vanishes out of sample, fails corrected null testing, requires post-hoc threshold changes, or merely reconstructs v141/v142/v144/v145/v146."
 }
