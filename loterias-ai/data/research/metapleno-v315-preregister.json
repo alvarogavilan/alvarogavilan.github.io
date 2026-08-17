@@ -1,12 +1,22 @@
 {
   "version": "v315",
   "family": "CROSS_GAME_TRANSFER_AUDIT",
-  "status": "PREREGISTERED",
+  "status": "PREREGISTERED_GUARD_REFINED",
   "goal": "Test whether a mechanism learned on one lottery transfers prospectively to another without target-game tuning.",
   "candidateTransfers": [
     "bonoloto_to_primitiva",
-    "primitiva_to_bonoloto",
     "euromillones_main_numbers_to_6ofN_rank_family"
+  ],
+  "excludedTransfers": [
+    {
+      "transfer": "primitiva_to_bonoloto",
+      "reason": "ANTI_DUPLICATE_GUARD",
+      "priorFamily": "v97 Bonoloto-Primitiva transfer Budget8",
+      "priorResult": "DEPRIORITIZED_NO_POST_FREEZE_SIGNAL",
+      "priorConfigurations": 192,
+      "priorRepeat5PlusModels": 0,
+      "priorRepeatFullModels": 0
+    }
   ],
   "rules": {
     "sourceGameTrainingOnly": true,
@@ -17,10 +27,11 @@
     "matchedCostRandomBaselineRequired": true,
     "multiplicityCorrectionRequired": true,
     "noRetuningAfterTargetResults": true,
+    "antiDuplicateGuardRequired": true,
     "theoreticalBudgetEURMax": 15,
     "realMoneyPass": false,
     "realStakeEUR": 0
   },
   "successGate": "Transfer must beat frozen matched-cost baselines on target holdout and survive multiplicity correction.",
-  "failureGate": "Archive if transfer vanishes out of sample, depends on target tuning, or is explained by marginal frequency/recency."
+  "failureGate": "Archive if transfer vanishes out of sample, depends on target tuning, is explained by marginal frequency/recency, or duplicates an already falsified transfer direction."
 }
