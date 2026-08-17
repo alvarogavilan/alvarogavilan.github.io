@@ -1,7 +1,8 @@
 {
   "version": "economic-multiplier-window-prospective-status-v1",
-  "generatedAt": "2026-08-17T22:05:41.935Z",
+  "generatedAt": "2026-08-17T22:17:58.146Z",
   "freezeVersion": "economic-multiplier-window-prospective-freeze-v1",
+  "decisionProtocolVersion": "economic-multiplier-prospective-decision-protocol-v1",
   "frozenAt": "2026-08-17T21:27:45Z",
   "rule": {
     "stateObservedAfterCompletedRound": true,
@@ -23,6 +24,12 @@
     "primary": 0.384823,
     "secondary": 0.376573
   },
+  "calibration": {
+    "referenceProbability": 0.401606,
+    "referenceSource": "unchanged rule success rate in the untouched pre-freeze OOS holdout at commit 4444ee4284991786718b6b9a55d651b1a7384b10",
+    "referenceInsideCurrentWilson95": false,
+    "formalCriterion": "referenceProbability must lie inside the Wilson 95% interval of the fixed prospective final window"
+  },
   "liftVsPrimary": -0.384823,
   "relativeLiftVsPrimary": -1,
   "pendingEpisode": {
@@ -31,14 +38,36 @@
     "futureRoundsObserved": 3
   },
   "status": "ACCUMULATING",
+  "readPolicy": {
+    "before30": "ADMINISTRATIVE_PROGRESS_ONLY",
+    "after30Before100": "DIRECTIONAL_DESCRIPTIVE_ONLY_NO_PROMOTION",
+    "after100BeforeBoundary": "FORMAL_DESCRIPTIVE_ONLY_NO_PROMOTION",
+    "promotionEvaluation": "FIRST_10000_POST_FREEZE_ROUNDS_ONLY",
+    "postBoundaryDataMayRescueV1": false
+  },
+  "fixedFinal": null,
   "gates": {
     "directionalSampleReached": false,
     "formalSampleReached": false,
     "lowerCiAbovePrimaryNull": false,
     "positiveVsSecondary": false,
+    "calibrationReferenceInsideWilson95": false,
     "minimum10000ProspectiveRoundsReached": false,
+    "fixedFinalTimingGatePass": false,
     "formalTimingGatePass": false,
+    "separateNumberSelectionProspectiveEdge": false,
+    "promotionGatePass": false,
     "realMoneyAllowed": false
   },
-  "recentClosedEpisodes": []
+  "recentClosedEpisodes": [],
+  "guards": {
+    "provenanceVerified": true,
+    "calibrationProtocolRegisteredBeforeFirstClosedEpisode": true,
+    "singleFixedPromotionWindow": true,
+    "post10000OptionalStoppingRescueBlocked": true,
+    "noRetuning": true,
+    "separateProspectiveNumberEdgeRequired": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false
+  }
 }
