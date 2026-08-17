@@ -1,0 +1,25 @@
+{
+  "version": "v314",
+  "family": "SIXTH_NUMBER_BOUNDARY_RESCUE_AUDIT",
+  "status": "PREREGISTERED",
+  "goal": "Test whether some historical 5/6 events can be rescued by a strictly causal boundary-ranking mechanism without using target outcomes.",
+  "scope": {
+    "nearFullDefinition": "exactly 5 of 6 main numbers",
+    "boundaryCase": "missing winner rank near the frozen ticket cutoff",
+    "deepCase": "missing winner rank materially outside the frozen cutoff"
+  },
+  "rules": {
+    "trainSelectionPreHoldoutOnly": true,
+    "freezeBeforeOOS": true,
+    "noTargetOutcomeFeatures": true,
+    "noRetuningAfterHoldout": true,
+    "matchedCostNullRequired": true,
+    "multiplicityCorrectionRequired": true,
+    "compareAgainstPriorNegativeFamily": "v141 sixth-number add/drop rescue",
+    "theoreticalBudgetEURMax": 15,
+    "realMoneyPass": false,
+    "realStakeEUR": 0
+  },
+  "successGate": "Must improve reproducibly on frozen baselines in holdout and survive matched-cost null plus multiplicity correction.",
+  "failureGate": "Archive as negative if rescue appears only in discovery, fails null testing, or requires post-hoc threshold changes."
+}
