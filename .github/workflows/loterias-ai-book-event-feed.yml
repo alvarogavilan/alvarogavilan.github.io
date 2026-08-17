@@ -1,0 +1,55 @@
+name: Loterias AI Book Event Feed
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/universidad/libro/book-event-feed.json'
+      - 'loterias-ai/universidad/libro/book-event-feed-live-*.json'
+      - 'loterias-ai/universidad/libro/build-current-event-feed.mjs'
+      - '.github/workflows/loterias-ai-book-event-feed.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-book-event-feed
+  cancel-in-progress: false
+jobs:
+  aggregate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Build aggregate event memory
+        run: node loterias-ai/universidad/libro/build-current-event-feed.mjs
+      - name: Validate aggregate invariants
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const p='loterias-ai/universidad/libro/book-event-feed-current.json';
+          const d=JSON.parse(fs.readFileSync(p,'utf8'));
+          const ids=d.events.map(x=>x.id);
+          if(new Set(ids).size!==ids.length) throw new Error('Duplicate event IDs in aggregate');
+          for(const required of ['lightning-number-prospective-freeze-v1','lightning-authoritative-prospective-pipeline-v1','lightning-prospective-continuity-v1','today-superseded-completion-v1']){
+            if(!ids.includes(required)) throw new Error('Missing required event '+required);
+          }
+          if(!d.rules?.neverInventMetrics||!d.rules?.supplementsAppendOnly) throw new Error('Memory rules missing');
+          console.log(JSON.stringify({totalEvents:d.totalEvents,sourceFeeds:d.sourceFeeds}));
+          NODE
+      - name: Persist aggregate memory on moving main
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/universidad/libro/book-event-feed-current.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "docs(book): refresh aggregate scientific memory"
+          for attempt in 1 2 3 4; do
+            git pull --rebase origin main || { git rebase --abort || true; sleep $((attempt*2)); continue; }
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
