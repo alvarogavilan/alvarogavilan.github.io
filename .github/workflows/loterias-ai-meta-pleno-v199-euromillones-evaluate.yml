@@ -1,0 +1,42 @@
+name: Loterias AI MetaPleno v199 Euromillones Evaluate
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '18 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/data/archive/euromillones/**'
+      - 'loterias-ai/scripts/meta-pleno-v199-euromillones-complete-5plus2-evaluate.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v199-euromillones-evaluate.yml'
+permissions: {contents: write}
+concurrency: {group: loterias-ai-v199-euromillones-evaluate, cancel-in-progress: false}
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - run: node loterias-ai/scripts/meta-pleno-v199-euromillones-complete-5plus2-evaluate.mjs
+      - name: Enforce blind PAPER gates
+        run: node -e "const x=require('./loterias-ai/data/research/euromillones-v199-complete-5plus2-evaluation.json');if(x.retuningPerformed||x.selectionUsedTargetResult||x.realMoneyPass||x.realStakeEUR!==0||x.bettingRecommendation)process.exit(1)"
+      - name: Persist evaluation safely
+        run: |
+          set -euo pipefail
+          f=loterias-ai/data/research/euromillones-v199-complete-5plus2-evaluation.json
+          cp "$f" /tmp/v199-eval.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3; do
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard "origin/$GITHUB_REF_NAME"
+            cp /tmp/v199-eval.json "$f"
+            git add "$f"
+            git diff --cached --quiet && exit 0
+            git commit -m 'research(loterias-ai): persist blind Euromillones v199 evaluation'
+            git push origin HEAD:"$GITHUB_REF_NAME" && exit 0
+            sleep $((i*2))
+          done
+          exit 1
