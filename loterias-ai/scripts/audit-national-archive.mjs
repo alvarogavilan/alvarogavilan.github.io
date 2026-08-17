@@ -4,6 +4,7 @@ const root='loterias-ai/data/archive';
 const expected={bonoloto:{recentEconomics:true},primitiva:{recentEconomics:true},euromillones:{recentEconomics:true},'gordo-primitiva':{recentEconomics:true},eurodreams:{recentEconomics:true},'loteria-nacional':{recentEconomics:false}};
 const hasEconomics=r=>Boolean((r.economics?.payouts&&Object.keys(r.economics.payouts).length)||(Array.isArray(r.economics?.categories)&&r.economics.categories.length&&r.economics?.validation?.officialSELAE));
 const tuple=a=>Array.isArray(a)?[...a].map(Number).sort((x,y)=>x-y).join(','):'';
+const conflictDate=c=>String(c?.drawDate??c?.date??'');
 const allowedResolutionStatuses=new Set(['RESOLVED_SOURCE_DATE_SHIFT','RESOLVED_OFFICIAL_CORRECTION','RESOLVED_CANONICAL_CONFIRMED']);
 const report={generatedAt:new Date().toISOString(),schemaVersion:4,games:{},totals:{duplicateDates:0,invalidDates:0,parseErrors:0,totalOfficialConflicts:0,resolvedOfficialConflicts:0,openOfficialConflicts:0,missingEconomicsOnRecentStoredDraws:0,officialEconomicsRecords:0},qualityGate:{pass:false,reasons:[]}};
 for(const game of Object.keys(expected)){
@@ -30,10 +31,10 @@ for(const game of Object.keys(expected)){
   const hasOfficialEvidence=evidence.some(e=>e?.authority==='official'&&typeof e?.provider==='string'&&e.provider&&typeof e?.reference==='string'&&e.reference);
   if(!allowedResolutionStatuses.has(resolution.status)||!hasOfficialEvidence){parseErrors.push({file:path.basename(resolutionsPath),error:`invalid-resolution:${resolution.drawDate||'unknown'}`});continue}
   const matches=[];
-  conflicts.forEach((c,i)=>{if(String(c.drawDate)===String(resolution.drawDate)&&tuple(c.stored)===tuple(resolution.stored)&&tuple(c.official)===tuple(resolution.officialSeries))matches.push(i)});
+  conflicts.forEach((c,i)=>{if(conflictDate(c)===String(resolution.drawDate)&&tuple(c.stored)===tuple(resolution.stored)&&tuple(c.official)===tuple(resolution.officialSeries))matches.push(i)});
   if(matches.length!==1){parseErrors.push({file:path.basename(resolutionsPath),error:`resolution-conflict-match-count:${resolution.drawDate||'unknown'}:${matches.length}`});continue}
   const idx=matches[0];if(used.has(idx)){parseErrors.push({file:path.basename(resolutionsPath),error:`duplicate-resolution:${resolution.drawDate}`});continue}
-  used.add(idx);resolved.push({drawDate:resolution.drawDate,status:resolution.status,evidence:resolution.evidence});
+  used.add(idx);resolved.push({drawDate:conflictDate(conflicts[idx]),status:resolution.status,evidence:resolution.evidence});
  }
  const openConflicts=conflicts.filter((_,i)=>!used.has(i)).length,totalConflicts=conflicts.length,resolvedConflicts=used.size;
  const health=dupes.length||invalid||parseErrors.length||openConflicts?'FAIL':missingEconomics.length?'PARTIAL_ECONOMICS':'PASS';
