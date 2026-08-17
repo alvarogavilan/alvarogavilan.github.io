@@ -1,0 +1,35 @@
+{
+  "version": "v304",
+  "family": "CONDITIONAL_TRANSFER_ENTROPY",
+  "status": "PREREGISTERED",
+  "hypothesis": "If lagged draw membership contains directional information about later number membership beyond the immediately preceding structural regime, conditional transition residuals should improve next-draw ranking without reading OOS.",
+  "selectionWindow": "2019-01-01/2023-01-01",
+  "oosWindow": "2023-01-01/2025-01-01",
+  "postFreezeWindow": "2025-01-01+",
+  "lookbacks": [96,192,384,768],
+  "lags": [1,2,3,5],
+  "sourceModes": ["self","wheel-neighbor","mod5-sector","decile-sector"],
+  "contextBins": [2,3,4,5],
+  "priorStrengths": [1,5,20,50],
+  "phases": 8,
+  "logicalScientists": 32768,
+  "historicalScreenMax": 4096,
+  "behavioralDedup": true,
+  "promotion": {
+    "stage1_2": "At least one independent near-full behavior is required before dense selection.",
+    "stage3": "Dense selection-only replay, deduplication and immutable freeze.",
+    "stage4": "Strict blind OOS only after frozen selection evidence survives.",
+    "stage5": "Post-freeze 2025+ only after OOS decision."
+  },
+  "gates": {
+    "validationTouched": false,
+    "postFreezeTouched": false,
+    "retuningAfterFreeze": false,
+    "realMoneyPass": false,
+    "realStakeEUR": 0,
+    "ordinaryBudgetMaxEUR": 4
+  },
+  "antiDuplication": ["v299-symbolic-dynamics","v300-computational-mechanics","v301-wasserstein","v302-copula-residuals","v303-renewal-hazard"],
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
