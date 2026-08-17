@@ -16,6 +16,7 @@ on:
       - 'loterias-ai/data/research/meta-pleno-v138-bonoloto-graph-topology.json'
       - 'loterias-ai/research/megalab/v315-seal-next-prospective.mjs'
       - 'loterias-ai/research/megalab/v315-seal-guarded.mjs'
+      - 'loterias-ai/research/megalab/v315-administrative-status.mjs'
       - '.github/workflows/loterias-ai-v315-prospective-seal.yml'
 permissions:
   contents: write
@@ -54,17 +55,20 @@ jobs:
           }
           console.log(JSON.stringify({sealedFiles:files.length,latest:files.at(-1)}));
           NODE
-      - name: Persist seal against moving main
+      - name: Refresh blinded administrative status
+        run: node loterias-ai/research/megalab/v315-administrative-status.mjs
+      - name: Persist seal and blinded status against moving main
         run: |
           set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add loterias-ai/data/research/v315-prospective-seals
+          git add loterias-ai/data/research/metapleno-v315-prospective-status.json 2>/dev/null || true
           if git diff --cached --quiet; then
-            echo 'Seal already exists identically; nothing to commit.'
+            echo 'Seal/status already current; nothing to commit.'
             exit 0
           fi
-          git commit -m 'research(loterias-ai): seal v315 prospective Primitiva target'
+          git commit -m 'research(loterias-ai): advance blinded v315 prospective state'
           for attempt in 1 2 3 4 5; do
             if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
             git rebase --abort || true
