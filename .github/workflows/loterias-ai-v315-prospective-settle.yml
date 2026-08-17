@@ -12,6 +12,7 @@ on:
       - 'loterias-ai/data/research/metapleno-v315-final-inference-contract-v1.json'
       - 'loterias-ai/research/megalab/v315-settle-official-prospective.mjs'
       - 'loterias-ai/research/megalab/v315-finalize-200.mjs'
+      - 'loterias-ai/research/megalab/v315-administrative-status.mjs'
       - '.github/workflows/loterias-ai-v315-prospective-settle.yml'
 permissions:
   contents: write
@@ -61,15 +62,18 @@ jobs:
           if(d.gates?.realMoneyPass!==false) throw new Error('v315 final must not authorize real money');
           console.log(JSON.stringify({final:'AVAILABLE',familyPass:d.gates.familyPass,realMoneyPass:false}));
           NODE
-      - name: Persist settlements or fixed final against moving main
+      - name: Refresh blinded administrative status
+        run: node loterias-ai/research/megalab/v315-administrative-status.mjs
+      - name: Persist settlements, status or fixed final against moving main
         run: |
           set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add loterias-ai/data/research/v315-prospective-settlements 2>/dev/null || true
+          git add loterias-ai/data/research/metapleno-v315-prospective-status.json 2>/dev/null || true
           git add loterias-ai/data/research/metapleno-v315-final-200.json 2>/dev/null || true
           if git diff --cached --quiet; then
-            echo 'No new official v315 settlement or fixed final.'
+            echo 'No new official v315 settlement/status/final.'
             exit 0
           fi
           git commit -m 'research(loterias-ai): advance v315 prospective evidence'
