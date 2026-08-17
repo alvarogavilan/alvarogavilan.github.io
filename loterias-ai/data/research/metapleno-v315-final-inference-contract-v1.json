@@ -1,0 +1,49 @@
+{
+  "version":"v315-final-inference-contract-v1",
+  "status":"FROZEN_BEFORE_FIRST_ELIGIBLE_TARGET_RESULT",
+  "parentExecutionProtocol":"loterias-ai/data/research/metapleno-v315-execution-protocol-v1.json",
+  "fixedTargetDraws":200,
+  "randomSampler":{
+    "replicates":10000,
+    "slots":12,
+    "support":{"min":1,"max":49,"pick":6},
+    "baseSeed":31520260817,
+    "seedMaterial":"baseSeed|targetDrawDate|replicateIndex|slotIndex",
+    "hash":"sha256 UTF-8 seed material",
+    "seed32":"parse first 8 hexadecimal characters of sha256 digest as unsigned 32-bit integer",
+    "prng":"mulberry32",
+    "withoutReplacementAlgorithm":"Create [1..49]. For i=0..5 choose j=i+floor(rng()*(49-i)), swap a[i] with a[j], then use a[i]. Sort the six selected values only for persistence/debug; order does not affect hits.",
+    "trajectory":"For each slot and replicate, sum hits across the same first 200 settled target dates. Each target date receives its own deterministic seed material."
+  },
+  "randomNullPValue":{
+    "direction":"one-sided; higher mean hits is better",
+    "formula":"p=(1+count(nullTotalHits>=observedTotalHits))/(10000+1)",
+    "randomMean":"mean of the 10000 null total-hit trajectories divided by 200",
+    "candidateMustAlsoExceedRandomMean":true
+  },
+  "holmBonferroni":{
+    "familySize":12,
+    "alpha":0.05,
+    "procedure":"Sort raw p ascending. At ordered position i=0..11 compute scaled=min(1,p*(12-i)); adjusted at i=max(previous adjusted,scaled). Map adjusted values back to original slots.",
+    "passOperator":"adjustedP < 0.05"
+  },
+  "descriptiveBaselines":{
+    "marginalFrequency":"For each slot, mean hits of the corresponding frozen per-window marginal-frequency line across the same 200 dates.",
+    "recencyRecent":"Mean hits of the frozen recent-recency line across the same 200 dates.",
+    "recencyOverdue":"Mean hits of the frozen overdue-recency line across the same 200 dates.",
+    "candidateMustExceedAllThree":true,
+    "operator":"strictly greater than"
+  },
+  "candidatePass":"observedMean > randomMean AND HolmAdjustedP < 0.05 AND observedMean > marginalFrequencyMean AND observedMean > recencyRecentMean AND observedMean > recencyOverdueMean",
+  "familyPass":"at least one of the 12 frozen slots passes candidatePass with intact custody",
+  "boundaryPolicy":{
+    "useExactlyFirst200SettledEligibleTargets":true,
+    "ignoreLaterRowsForV315Decision":true,
+    "noOptionalStopping":true,
+    "noInterimCandidateRanking":true,
+    "post200CannotRescue":true
+  },
+  "promotionPolicy":"A family pass is only a prospective cross-game transfer signal. It requires a new untouched preregistered replication before any stronger claim and never directly authorizes money.",
+  "realMoneyPass":false,
+  "realStakeEUR":0
+}
