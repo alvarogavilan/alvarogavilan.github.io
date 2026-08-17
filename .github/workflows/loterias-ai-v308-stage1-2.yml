@@ -1,0 +1,26 @@
+name: Loterias AI v308 Stage1-2
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v308-graph-laplacian-diffusion]
+    paths: ['loterias-ai/research/megalab/v308-*','.github/workflows/loterias-ai-v308-stage1-2.yml']
+permissions: {contents: write}
+concurrency: {group: loterias-ai-v308-stage1-2, cancel-in-progress: false}
+jobs:
+  screen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - run: node loterias-ai/research/megalab/v308-stage1-2-graph-laplacian-diffusion.mjs
+      - run: node -e "const x=require('./loterias-ai/data/research/metapleno-v308-stage1-2-selection.json');if(x.validationTouched||x.postFreezeTouched||x.retuningPerformed||x.realMoneyPass||x.realStakeEUR!==0)process.exit(1)"
+      - name: Persist evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v308-stage1-2-selection.json
+          git commit -m "research(loterias-ai): persist v308 evidence" || exit 0
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push
