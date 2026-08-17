@@ -24,3 +24,4 @@ const nonEmpty=results.filter(x=>x.status===200&&x.count>0);
 const out={version:'lightning-exact-page-boundary-v1',generatedAt:new Date().toISOString(),base,range:[51,74],lastNonEmpty:nonEmpty.at(-1)||null,firstEmpty:results.find(x=>x.status===200&&x.count===0)||null,results,authenticationBypassAttempted:false,publicReadOnlyAcquisition:true,realMoney:false};
 fs.writeFileSync('loterias-ai/casino/lightning/evidence/exact-page-boundary-v1.json',JSON.stringify(out,null,2)+'\n');
 console.log(JSON.stringify(out,null,2));
+// trigger exact boundary workflow
