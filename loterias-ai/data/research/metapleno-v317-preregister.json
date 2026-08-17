@@ -1,0 +1,84 @@
+{
+  "version": "v317",
+  "family": "FISHER_RAO_INFORMATION_GEOMETRY_AUDIT",
+  "status": "PREREGISTERED",
+  "goal": "Test whether pre-draw lottery-number distributions exhibit stable information-geometric structure on the probability simplex that improves frozen ranking out of sample.",
+  "antiDuplicateGuard": {
+    "searchedTerms": [
+      "Fisher-Rao",
+      "information geometry",
+      "Hellinger distance",
+      "Bhattacharyya distance",
+      "simplex geodesic"
+    ],
+    "repositorySearchResult": "NO_EXISTING_IMPLEMENTATION_FOUND_AT_PREREGISTRATION",
+    "nearestPriorFamilies": [
+      {
+        "version": "v262",
+        "family": "ENERGY_DISTANCE_REGIME_GATE",
+        "difference": "Energy distance is a Euclidean discrepancy family; v317 uses Fisher-Rao/Hellinger geometry on normalized probability measures."
+      },
+      {
+        "version": "v316",
+        "family": "OPTIMAL_TRANSPORT_REGIME_AUDIT",
+        "difference": "Optimal transport uses transport plans and ground costs; v317 uses intrinsic simplex geometry without transport plans."
+      }
+    ],
+    "abortIfEquivalentArtifactFoundLater": true
+  },
+  "games": ["bonoloto", "primitiva", "euromillones", "gordo-primitiva"],
+  "temporalProtocol": {
+    "developmentEnd": "2022-12-31",
+    "blindOosStart": "2023-01-01",
+    "blindOosEnd": "2024-12-31",
+    "postFreezeStart": "2025-01-01",
+    "retuningAfterOos": false,
+    "futureInformationAllowed": false
+  },
+  "design": {
+    "representation": "Construct trailing pre-draw normalized number-frequency measures using only prior draws.",
+    "geometry": {
+      "primaryDistance": "Fisher-Rao geodesic distance via square-root embedding",
+      "secondaryDistance": "Hellinger/Bhattacharyya equivalent diagnostics",
+      "reference": "frozen trailing barycentric reference on the statistical simplex",
+      "score": "rank numbers by frozen contribution to geodesic displacement toward historically recurrent pre-draw states"
+    },
+    "frozenCandidateGrid": {
+      "windowLengths": [32, 64, 128, 256],
+      "referenceWindows": [128, 256, 512],
+      "shrinkage": [0.0, 0.05, 0.1],
+      "maximumLogicalConfigurationsPerGame": 36,
+      "maximumFrozenRepresentativesPerGame": 8,
+      "behavioralDeduplication": true
+    },
+    "matchedCostNulls": [
+      "uniform random lines at identical line count",
+      "trailing marginal-frequency baseline",
+      "recency baseline"
+    ]
+  },
+  "freezeRules": {
+    "selectionData": "development only through 2022-12-31",
+    "maximumFrozenCandidatesTotal": 32,
+    "maximumFrozenCandidatesPerGame": 8,
+    "behaviorHashRequired": true,
+    "manifestHashRequired": true,
+    "noOosPeekBeforeFreeze": true,
+    "noPostFreezePeekBeforeOosDecision": true
+  },
+  "inference": {
+    "primaryMetric": "paired mean main-number hits per line versus matched-cost null",
+    "secondaryMetrics": ["4+ events", "5+ events", "full-hit events", "repeat5+ across distinct dates"],
+    "multiplicity": "Holm-Bonferroni across frozen candidates within each game plus family-level hard audit for any extreme event",
+    "extremeEventAudit": "Any 5+, full hit, repeat5+ or corrected statistical anomaly requires lineage verification, timestamp verification, behavioral deduplication, matched-cost null replay and untouched post-freeze replication before interpretation.",
+    "promotionRule": "No real-money promotion from v317 alone; untouched prospective replication is mandatory."
+  },
+  "budget": {
+    "maximumTheoreticalCostEURPerGameDraw": 15,
+    "realMoneyPass": false,
+    "realStakeEUR": 0
+  },
+  "failureGate": "Persist as negative and do not retune if OOS uplift disappears, fails multiplicity correction, is explained by marginal-frequency/recency baselines, or any extreme event fails audit.",
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
