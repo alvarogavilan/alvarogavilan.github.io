@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - 'loterias-ai/casino/lightning/research/lightning-permutation-walkforward-v2.mjs'
+      - 'loterias-ai/casino/lightning/research/lightning-prospective-frozen-lag8.mjs'
       - 'loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl'
       - '.github/workflows/loterias-ai-lightning-permutation-walkforward.yml'
   schedule:
@@ -31,7 +32,7 @@ jobs:
       - name: Run repaired Lightning walk-forward
         run: node loterias-ai/casino/lightning/research/lightning-permutation-walkforward-v2.mjs
 
-      - name: Fail closed on invalid evidence
+      - name: Fail closed on invalid walk-forward evidence
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
@@ -40,20 +41,37 @@ jobs:
           const ns=[j?.walkForward?.train?.n,j?.walkForward?.validation?.n,j?.walkForward?.test?.n];
           if (!Number.isInteger(j.rounds) || j.rounds < 100) throw new Error(`invalid rounds=${j.rounds}`);
           if (ns.some(n => !Number.isInteger(n) || n < 0)) throw new Error(`invalid segment sizes=${JSON.stringify(ns)}`);
-          if (j?.guards?.realMoney !== false || j?.guards?.claimAllowed !== false) throw new Error('safety guards must remain fail-closed');
+          if (j?.guards?.realMoney !== false || j?.guards?.claimAllowed !== false) throw new Error('walk-forward safety guards must remain fail-closed');
           if (j?.guards?.noNegativeSampleSizes !== true) throw new Error('negative-size guard missing');
           console.log(JSON.stringify({version:j.version,rounds:j.rounds,train:ns[0],validation:ns[1],test:ns[2],chosenLag:j.walkForward.train.chosenLag,realMoney:j.guards.realMoney,claimAllowed:j.guards.claimAllowed},null,2));
           NODE
 
-      - name: Persist evidence when changed
+      - name: Run frozen prospective lag-8 test
+        run: node loterias-ai/casino/lightning/research/lightning-prospective-frozen-lag8.mjs
+
+      - name: Fail closed on prospective evidence
         run: |
-          if git diff --quiet -- loterias-ai/casino/lightning/evidence/permutation-walkforward-v2.json; then
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const f=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/prospective-lag8-freeze.json','utf8'));
+          const j=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/prospective-lag8.json','utf8'));
+          if (f.lag !== 8 || f.immutable !== true || f.realMoney !== false || f.claimAllowed !== false) throw new Error('invalid immutable freeze');
+          if (j?.freeze?.lag !== 8 || j?.freeze?.cutoffTimestamp !== f.cutoffTimestamp) throw new Error('prospective test drifted from frozen hypothesis');
+          if (j?.guards?.realMoney !== false || j?.guards?.realMoneyAuthorized !== false || j?.guards?.authorizedStakeEUR !== 0 || j?.guards?.claimAllowed !== false) throw new Error('prospective safety guards must remain fail-closed');
+          if (!Number.isInteger(j?.prospective?.comparisons) || j.prospective.comparisons < 0) throw new Error('invalid prospective sample size');
+          console.log(JSON.stringify({cutoff:f.cutoffTimestamp,lag:f.lag,comparisons:j.prospective.comparisons,matches:j.prospective.matches,pUpper:j.prospective.pUpper,enoughData:j.prospective.enoughData,statisticallyPass:j.prospective.statisticallyPass,authorizedStakeEUR:j.guards.authorizedStakeEUR},null,2));
+          NODE
+
+      - name: Persist scientific evidence when changed
+        run: |
+          PATHS='loterias-ai/casino/lightning/evidence/permutation-walkforward-v2.json loterias-ai/casino/lightning/evidence/prospective-lag8-freeze.json loterias-ai/casino/lightning/evidence/prospective-lag8.json'
+          if git diff --quiet -- $PATHS; then
             echo 'Evidence unchanged.'
             exit 0
           fi
           git config user.name 'loterias-ai-bot'
           git config user.email 'actions@users.noreply.github.com'
-          git add loterias-ai/casino/lightning/evidence/permutation-walkforward-v2.json
-          git commit -m 'data(casino): persist Lightning permutation walk-forward evidence'
+          git add $PATHS
+          git commit -m 'data(casino): persist Lightning confirmatory evidence'
           git pull --rebase origin main
           git push origin HEAD:main
