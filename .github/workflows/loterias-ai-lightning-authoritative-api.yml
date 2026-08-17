@@ -21,22 +21,23 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: {node-version: 24}
-      - name: Collect authoritative public rounds
-        run: node loterias-ai/casino/lightning/collect-casinoorg-api.mjs
-      - name: Verify readiness locally
-        run: node loterias-ai/casino/lightning/corpus-readiness.mjs
-      - name: Persist only source-owned files safely
+      - name: Collect, verify and persist against moving main
         run: |
           set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          # corpus-readiness.mjs intentionally recomputes two shared QA files.
-          # They belong to the dedicated audit/readiness workflow, so remove
-          # those local changes before rebasing this collector's source files.
-          git restore loterias-ai/casino/lightning/evidence/corpus-readiness.json || true
-          git restore loterias-ai/casino/lightning/evidence/corpus-audit.json || true
-          git add loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json
-          if git diff --cached --quiet; then exit 0; fi
-          git commit -m "research(casino): accumulate authoritative Lightning rounds"
-          git pull --rebase origin "$GITHUB_REF_NAME"
-          git push origin HEAD:"$GITHUB_REF_NAME"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard "origin/$GITHUB_REF_NAME"
+            node loterias-ai/casino/lightning/collect-casinoorg-api.mjs
+            node loterias-ai/casino/lightning/corpus-readiness.mjs
+            # QA/readiness outputs are owned by their dedicated workflow.
+            git restore loterias-ai/casino/lightning/evidence/corpus-readiness.json || true
+            git restore loterias-ai/casino/lightning/evidence/corpus-audit.json || true
+            git add loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m "research(casino): accumulate authoritative Lightning rounds"
+            if git push origin HEAD:"$GITHUB_REF_NAME"; then exit 0; fi
+            sleep $((attempt * 2))
+          done
+          exit 1
