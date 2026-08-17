@@ -1,7 +1,7 @@
 {
   "version": "v314",
   "family": "SIXTH_NUMBER_BOUNDARY_RESCUE_AUDIT",
-  "status": "PREREGISTERED_GUARD_REFINED",
+  "status": "FROZEN_PRE_HOLDOUT",
   "goal": "Test whether historical 5/6 events contain a reproducible strictly causal cutoff-boundary effect that remains after matched-cost null testing, without re-running prior omitted-winner rescue families.",
   "scope": {
     "nearFullDefinition": "exactly 5 of 6 main numbers",
@@ -10,20 +10,39 @@
     "newQuestionOnly": "Is boundary distance itself prospectively informative after conditioning on the frozen baseline?"
   },
   "antiDuplicateGuard": {
-    "priorFamilies": [
-      "v141 sixth-number add/drop rescue",
-      "v142 global near-pleno atlas",
-      "v144 missing-winner bias",
-      "v145 nested missing-winner calibration",
-      "v146 omitted-winner profile rescuer"
-    ],
-    "forbiddenRepeats": [
-      "relearn omitted-number feature profiles",
-      "recalibrate missing-number bias",
-      "post-hoc add/drop thresholds",
-      "reuse target outcomes to choose boundary width"
-    ],
+    "priorFamilies": ["v141 sixth-number add/drop rescue", "v142 global near-pleno atlas", "v144 missing-winner bias", "v145 nested missing-winner calibration", "v146 omitted-winner profile rescuer"],
+    "forbiddenRepeats": ["relearn omitted-number feature profiles", "recalibrate missing-number bias", "post-hoc add/drop thresholds", "reuse target outcomes to choose boundary width"],
     "requiredNovelty": "Boundary-rank distance must be frozen pre-holdout and tested as a separate causal covariate against matched-cost nulls and prior frozen baselines."
+  },
+  "design": {
+    "frozenRankerArtifact": {
+      "path": "loterias-ai/scripts/meta-pleno-v138-bonoloto-graph-topology.mjs",
+      "sourceCommit": "8d61282d4457404a47bbe25358bb0f6c59edad1c",
+      "sourceFamily": "v138 DYNAMIC_COOCCURRENCE_GRAPH_TOPOLOGY",
+      "config": {"id": "w100-d-1-c-1-e1", "w": 100, "dg": -1, "cl": -1, "en": 1},
+      "selectionBasis": "first-ranked v138 discovery leader only; no v138 holdout outcome is used to select this ranker"
+    },
+    "frozenTicketCutoff": 8,
+    "discoveryWindow": {"start": "1989-08-13", "end": "2018-05-24"},
+    "holdoutWindow": {"start": "2018-05-25", "end": "2026-08-14"},
+    "matchedCostNullSpec": {
+      "type": "uniform-rank-permutation-matched-budget",
+      "candidatePoolSize": 8,
+      "universeSize": 49,
+      "comparison": "For each eligible event, permute the 49 rank labels deterministically and measure whether the omitted winner lies at the same or smaller positive rank distance from cutoff=8; ticket/candidate budget remains exactly eight numbers / 28 six-number combinations / 14 EUR theoretical.",
+      "monteCarloReplicates": 10000
+    },
+    "multiplicityFamilySize": 1,
+    "multiplicityMethod": "Holm",
+    "deterministicSeed": "loterias-ai-v314-boundary-20260817",
+    "minimumEligibleEvents": 20,
+    "successMetric": {
+      "name": "boundary_rescue_rate_among_eligible_5of6",
+      "direction": "higher_than_matched_cost_null",
+      "boundaryDefinition": "omitted winning number rank=9, exactly one position below frozen cutoff=8",
+      "alpha": 0.05,
+      "requirements": ["at least 20 eligible discovery-frozen 5/6 events in holdout", "Holm-adjusted p < 0.05", "effect direction positive", "no post-holdout retuning"]
+    }
   },
   "rules": {
     "trainSelectionPreHoldoutOnly": true,
@@ -33,10 +52,20 @@
     "matchedCostNullRequired": true,
     "multiplicityCorrectionRequired": true,
     "antiDuplicateGuardRequired": true,
+    "compareAgainstPriorNegativeFamily": "v141 sixth-number add/drop rescue",
     "theoreticalBudgetEURMax": 15,
     "realMoneyPass": false,
     "realStakeEUR": 0
   },
+  "freezeProvenance": {
+    "frozenAt": "2026-08-17T15:45:00Z",
+    "sourceEvidence": [
+      "v138 source commit 8d61282d4457404a47bbe25358bb0f6c59edad1c defines 32 causal graph-topology configurations, discovery 1989-08-13..2018-05-24, cutoff pool size 8 and 14 EUR theoretical budget",
+      "v141 commit 6ab3c6b324c9320ae2cb38e72bc4f1891ab727be establishes the same chronological split and prior negative sixth-number rescue family"
+    ],
+    "holdoutOutcomeUsedToSelectContract": false,
+    "realMoneyPass": false
+  },
   "successGate": "Must improve reproducibly on frozen baselines in holdout and survive matched-cost null plus multiplicity correction; discovery-only 5/6 events do not count.",
-  "failureGate": "Archive as negative or duplicate if boundary effect vanishes out of sample, fails corrected null testing, requires post-hoc threshold changes, or merely reconstructs v141/v142/v144/v145/v146."
+  "failureGate": "Archive as negative or duplicate if boundary effect vanishes out of sample, fails corrected null testing, has fewer than minimumEligibleEvents, requires post-hoc threshold changes, or merely reconstructs v141/v142/v144/v145/v146."
 }
