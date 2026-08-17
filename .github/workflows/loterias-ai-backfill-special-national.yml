@@ -19,7 +19,7 @@ jobs:
         shell: bash
         run: |
           for pass in 1 2 3 4; do
-            BATCH_LIMIT=6 node loterias-ai/scripts/backfill-special-national-draws.mjs || true
+            BATCH_LIMIT=6 node loterias-ai/scripts/backfill-special-national-draws.mjs
             sleep 3
           done
       - run: node loterias-ai/scripts/build-special-draw-indexes.mjs
