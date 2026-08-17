@@ -1,23 +1,25 @@
 {
   "version": "v310",
   "family": "SPECTRAL_PHASE_COUPLING",
-  "status": "REGISTERED_PRE_EXPERIMENT",
+  "status": "CLOSED_DUPLICATE_GUARD",
   "hypothesis": "Test whether strictly causal low-frequency phase structure or cross-number phase coupling contains reproducible information beyond marginal frequency and recent-history baselines.",
-  "orthogonality": ["not Wasserstein distance", "not copula co-occurrence residuals", "not renewal survival hazard", "not transfer entropy", "not BOCPD regimes", "not MDL/context compression"],
-  "games": ["bonoloto", "primitiva", "euromillones", "gordo-primitiva"],
+  "duplicateGuard": {
+    "decision": "DO_NOT_RUN",
+    "reason": "The repository already contains executed spectral-phase families covering the same core representation. v223 performs causal fixed-harmonic phase extrapolation and v307 performs spectral phase coherence. A new v310 run would not be methodologically orthogonal enough to justify additional multiplicity.",
+    "priorFamilies": [
+      "research/metapleno-v223-spectral-phase",
+      "research/metapleno-v307-spectral-phase-coherence"
+    ]
+  },
   "rules": {
     "causalOnly": true,
     "validationTouched": false,
     "postFreezeTouched": false,
     "retuningAfterFreeze": false,
     "multiplicityCorrectionRequired": true,
+    "theoreticalBudgetEUR": 15,
     "realMoneyPass": false,
     "realStakeEUR": 0
   },
-  "screen": {
-    "logicalConfigurationsTarget": 32768,
-    "historicalRepresentativesTarget": 4096,
-    "closeEarlyIfNoNearFull": true,
-    "denseFreezeOnlyOnPredeclaredSignal": true
-  }
+  "next": "select-genuinely-orthogonal-family"
 }
