@@ -17,16 +17,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
       - uses: actions/setup-node@v4
         with: {node-version: 24}
-      - run: node loterias-ai/casino/lightning/backfill-casinoorg-pages.mjs
-      - run: node loterias-ai/casino/lightning/audit-corpus.mjs
-      - run: node loterias-ai/casino/lightning/corpus-readiness.mjs
-      - name: Persist authoritative backfill and audit
+      - name: Acquire, audit and persist with concurrent-main retry
         run: |
+          set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl loterias-ai/casino/lightning/evidence/casinoorg-page-backfill.json loterias-ai/casino/lightning/evidence/corpus-audit.json loterias-ai/casino/lightning/evidence/corpus-readiness.json
-          git commit -m "data(casino): backfill public Lightning rounds and audit corpus" || exit 0
-          git pull --rebase origin "$GITHUB_REF_NAME"
-          git push origin HEAD:"$GITHUB_REF_NAME"
+          for attempt in 1 2 3 4 5; do
+            echo "authoritative backfill attempt $attempt"
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard "origin/$GITHUB_REF_NAME"
+            node loterias-ai/casino/lightning/backfill-casinoorg-pages.mjs
+            node loterias-ai/casino/lightning/audit-corpus.mjs
+            node loterias-ai/casino/lightning/corpus-readiness.mjs
+            git add loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl loterias-ai/casino/lightning/evidence/casinoorg-page-backfill.json loterias-ai/casino/lightning/evidence/corpus-audit.json loterias-ai/casino/lightning/evidence/corpus-readiness.json
+            if git diff --cached --quiet; then
+              echo "No new authoritative data to persist"
+              exit 0
+            fi
+            git commit -m "data(casino): backfill public Lightning rounds and audit corpus"
+            if git push origin HEAD:"$GITHUB_REF_NAME"; then
+              exit 0
+            fi
+            echo "main moved concurrently; retrying from latest main"
+            sleep $((attempt * 2))
+          done
+          echo "Could not persist after bounded retries" >&2
+          exit 1
