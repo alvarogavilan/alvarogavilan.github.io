@@ -18,20 +18,26 @@ function mainNumbers(r){
   }
   return [];
 }
-const base={version:'bonoloto-v54r1-budget8-prospective-evaluation-v1',generatedAt:new Date().toISOString(),engine:freeze.engine,targetDrawDate:freeze.targetDrawDate,freezeSealSHA256:freeze.sealSHA256,specUnchanged:freeze.specUnchanged===true,retuningPerformed:false,selectionUsedTargetResult:false,realMoneyPass:false,realStakeEUR:0,bettingRecommendation:false};
-let out;
+const base={version:'bonoloto-v54r1-budget8-prospective-evaluation-v1',engine:freeze.engine,targetDrawDate:freeze.targetDrawDate,freezeSealSHA256:freeze.sealSHA256,specUnchanged:freeze.specUnchanged===true,retuningPerformed:false,selectionUsedTargetResult:false,realMoneyPass:false,realStakeEUR:0,bettingRecommendation:false};
+let semantic;
 if(!target){
-  out={...base,status:'WAITING_OFFICIAL_ARCHIVE',pool:freeze.pool,next:'wait for official archived target draw; do not alter freeze'};
+  semantic={...base,status:'WAITING_OFFICIAL_ARCHIVE',pool:freeze.pool,next:'wait for official archived target draw; do not alter freeze'};
 }else{
   const winning=mainNumbers(target);
-  if(winning.length!==6) out={...base,status:'WAITING_COMPLETE_OFFICIAL_RESULT',pool:freeze.pool,archivedTargetFound:true,next:'wait for complete six-number official result'};
+  if(winning.length!==6) semantic={...base,status:'WAITING_COMPLETE_OFFICIAL_RESULT',pool:freeze.pool,archivedTargetFound:true,next:'wait for complete six-number official result'};
   else {
     const pool=[...freeze.pool].map(Number);
     const matched=winning.filter(n=>pool.includes(n));
-    out={...base,status:'EVALUATED_NEGATIVE_OR_FULL',pool,winningNumbers:winning,matchedNumbers:matched,poolHits:matched.length,poolMisses:6-matched.length,fullSixCovered:matched.length===6,nearFull5of6:matched.length===5,coverageLines:freeze.coverage?.simpleCombinations??28,claimAllowed:matched.length===6,interpretation:matched.length===6?'pool contained the six official winning numbers; requires independent replication before any claim':matched.length===5?'prospective 5/6 near-full; record only, no retuning':'prospective replication did not reach near-full threshold'};
+    semantic={...base,status:'EVALUATED_NEGATIVE_OR_FULL',pool,winningNumbers:winning,matchedNumbers:matched,poolHits:matched.length,poolMisses:6-matched.length,fullSixCovered:matched.length===6,nearFull5of6:matched.length===5,coverageLines:freeze.coverage?.simpleCombinations??28,claimAllowed:matched.length===6,interpretation:matched.length===6?'pool contained the six official winning numbers; requires independent replication before any claim':matched.length===5?'prospective 5/6 near-full; record only, no retuning':'prospective replication did not reach near-full threshold'};
   }
 }
-out.evaluationHash=crypto.createHash('sha256').update(JSON.stringify(out)).digest('hex');
+const evaluationHash=crypto.createHash('sha256').update(JSON.stringify(semantic)).digest('hex');
+const existing=fs.existsSync(outPath)?JSON.parse(fs.readFileSync(outPath,'utf8')):null;
+if(existing?.evaluationHash===evaluationHash){
+  console.log(JSON.stringify({...semantic,evaluationHash,persisted:false,reasonNotPersisted:'semantic evaluation unchanged'},null,2));
+  process.exit(0);
+}
+const out={...semantic,generatedAt:new Date().toISOString(),evaluationHash};
 fs.mkdirSync('loterias-ai/data/research',{recursive:true});
 fs.writeFileSync(outPath,JSON.stringify(out,null,2)+'\n');
-console.log(JSON.stringify(out,null,2));
+console.log(JSON.stringify({...out,persisted:true},null,2));
