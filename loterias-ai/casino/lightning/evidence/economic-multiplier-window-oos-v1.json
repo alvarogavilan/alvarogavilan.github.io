@@ -1,0 +1,85 @@
+{
+  "version": "economic-multiplier-window-oos-v1",
+  "generatedAt": "2026-08-17T21:27:41.134Z",
+  "mode": "PAPER_ONLY",
+  "rounds": 2073,
+  "split": {
+    "discovery": [
+      0,
+      1243
+    ],
+    "validation": [
+      1243,
+      1658
+    ],
+    "holdout": [
+      1658,
+      2073
+    ]
+  },
+  "selection": {
+    "candidateThresholds": [
+      4,
+      8,
+      12,
+      16,
+      20,
+      24
+    ],
+    "candidateHorizons": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "minSelectedAnchors": 100,
+    "metric": "absolute difference in future-winning-Lightning rate vs complement, discovery only"
+  },
+  "frozenRule": {
+    "roundsSinceLastWinningLightningAtLeast": 8,
+    "nextRounds": 7,
+    "discovery": {
+      "threshold": 8,
+      "horizon": 7,
+      "selected": 744,
+      "selectedHits": 274,
+      "selectedRate": 0.36828,
+      "other": 492,
+      "otherHits": 161,
+      "otherRate": 0.327236,
+      "absoluteLift": 0.041044,
+      "relativeLift": 0.125426
+    }
+  },
+  "validation": {
+    "selected": 197,
+    "selectedHits": 114,
+    "selectedRate": 0.57868,
+    "other": 211,
+    "otherHits": 79,
+    "otherRate": 0.374408,
+    "absoluteLift": 0.204273,
+    "relativeLift": 0.545589
+  },
+  "holdout": {
+    "selected": 249,
+    "selectedHits": 100,
+    "selectedRate": 0.401606,
+    "other": 159,
+    "otherHits": 50,
+    "otherRate": 0.314465,
+    "absoluteLift": 0.087141,
+    "relativeLift": 0.277108
+  },
+  "gates": {
+    "validationPositiveLift": true,
+    "holdoutPositiveLift": true,
+    "replicatedDirection": true,
+    "prospectiveStillRequired": true,
+    "realMoneyAllowed": false
+  },
+  "interpretation": "La regla se eligió exclusivamente con el 60% más antiguo y se evaluó sin retocar en validación y holdout cronológicos. Las ventanas solapadas generan dependencia, por lo que una dirección positiva no equivale por sí sola a significación ni a ventaja monetizable."
+}
