@@ -1,0 +1,47 @@
+{
+  "version": "v314-readiness-gate-1",
+  "family": "SIXTH_NUMBER_BOUNDARY_RESCUE_AUDIT",
+  "generatedAt": "2026-08-17T15:42:00Z",
+  "preregistration": {
+    "path": "loterias-ai/data/research/metapleno-v314-preregister.json",
+    "contentSha": "4d2242491d15478fa4c9024a8cb9eb6515060d9b",
+    "status": "PREREGISTERED_CONTRACT_FROZEN"
+  },
+  "invariantChecks": {
+    "trainSelectionPreHoldoutOnly": true,
+    "freezeBeforeOOS": true,
+    "noTargetOutcomeFeatures": true,
+    "noRetuningAfterHoldout": true,
+    "matchedCostNullRequired": true,
+    "multiplicityCorrectionRequired": true,
+    "realMoneyPassIsFalse": true,
+    "realStakeIsZero": true
+  },
+  "frozenContract": {
+    "frozenRankerArtifact": "v138 DYNAMIC_COOCCURRENCE_GRAPH_TOPOLOGY; source commit c52642b8c457976c8de6e3c23a1de37583dcf0a2; all 12 previously frozen configurations",
+    "frozenTicketCutoff": "top-8; boundary ranks 9-10; deep rank >=11; 14 EUR theoretical; audit only",
+    "discoveryWindow": "1989-08-13 through 2026-08-17; all previously exposed history is discovery for v314",
+    "holdoutWindow": "2026-08-18 onward, prospective only",
+    "matchedCostNullSpec": "conditional missing-winner rank uniform over 9..49 given exactly 5 winners in frozen top-8; p0 boundary 9-or-10 = 2/41; 100000 deterministic permutations/config",
+    "multiplicityFamilySize": 12,
+    "multiplicityMethod": "Holm-Bonferroni FWER alpha=0.05",
+    "deterministicSeed": 31420260817,
+    "minimumEligibleEvents": 20,
+    "successMetric": "prospective boundary-enrichment rate among eligible 5/6; boundary rank 9 or 10; positive enrichment, Holm-adjusted p<0.05, lower 95% confidence bound above p0, no retuning"
+  },
+  "chronologyCheck": {
+    "status": "PASS",
+    "discoveryEnd": "2026-08-17",
+    "holdoutStart": "2026-08-18"
+  },
+  "archiveReadPerformed": true,
+  "discoveryDataReadPerformed": true,
+  "holdoutDataReadPerformed": false,
+  "targetOutcomeReadPerformed": false,
+  "retuningPerformed": false,
+  "realMoneyPass": false,
+  "realStakeEUR": 0,
+  "status": "READY_FOR_PROSPECTIVE_ACCUMULATION",
+  "decision": "Contract is complete and chronologically fail-closed. Do not score any pre-2026-08-18 result as v314 holdout. Beginning 2026-08-18, freeze ranking evidence before each draw and accumulate prospectively until minimumEligibleEvents is met. A single inferential evaluation may then be performed without retuning.",
+  "scientificInterpretation": "Readiness is procedural only; it is not evidence of predictive edge. No v314 holdout outcome exists yet at the time of this artifact."
+}
