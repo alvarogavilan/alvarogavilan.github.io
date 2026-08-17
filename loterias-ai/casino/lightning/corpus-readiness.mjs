@@ -1,5 +1,47 @@
 #!/usr/bin/env node
-import fs from'node:fs';import path from'node:path';import crypto from'node:crypto';
-const root='loterias-ai/casino/lightning',files=[];function walk(d){if(!fs.existsSync(d))return;for(const n of fs.readdirSync(d)){const p=path.join(d,n),s=fs.statSync(p);if(s.isDirectory())walk(p);else if(n.endsWith('.jsonl'))files.push(p)}}walk(path.join(root,'data'));
-let raw=0,invalid=0,authoritative=0,observations=0;const seenRounds=new Set(),seenObs=new Set(),sources={},days=new Set();for(const f of files){for(const line of fs.readFileSync(f,'utf8').split(/\r?\n/).filter(Boolean)){raw++;try{const r=JSON.parse(line),w=Number(r.winner);if(!Number.isInteger(w)||w<0||w>36){invalid++;continue}const ts=r.timestamp||r.observedAt||null,t=ts?new Date(ts):null;if(!t||Number.isNaN(t.getTime())){invalid++;continue}const source=r.source||'unknown';sources[source]=(sources[source]||0)+1;days.add(t.toISOString().slice(0,10));if(r.timestampQuality==='snapshot_only_no_round_timestamp'||r.roundIdQuality==='absent'||r.trainingEligible===false){const obsKey=r.observationId||crypto.createHash('sha256').update(`${source}|${r.snapshotId||''}|${r.sequenceIndex??''}|${w}|${r.winnerMultiplier??''}`).digest('hex');if(!seenObs.has(obsKey)){seenObs.add(obsKey);observations++}continue}const roundKey=String(r.roundId||crypto.createHash('sha256').update(`${source}|${r.timestamp}|${w}`).digest('hex'));if(!seenRounds.has(roundKey)){seenRounds.add(roundKey);authoritative++}}catch{invalid++}}}
-const minimum=500,out={generatedAt:new Date().toISOString(),files:files.length,rawRows:raw,validPublicObservations:observations,uniqueAuthoritativeRounds:authoritative,invalidRows:invalid,minimumReplayRounds:minimum,remainingAuthoritativeToReplay:Math.max(0,minimum-authoritative),trainingEligible:authoritative>=minimum,observationCorpusUsableForExploratoryPhysicalAnalysis:observations>0,sourceCounts:sources,distinctUtcDays:days.size,aggregateDataAccepted:false,syntheticDataAccepted:false,realMoney:false,next:authoritative>=minimum?'validate-and-replay-paper':'continue-public-observation-and-acquire-authoritative-rounds'};fs.mkdirSync(path.join(root,'evidence'),{recursive:true});fs.writeFileSync(path.join(root,'evidence/corpus-readiness.json'),JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify(out,null,2));
+import fs from 'node:fs';
+import path from 'node:path';
+import {spawnSync} from 'node:child_process';
+
+const root='loterias-ai/casino/lightning';
+const auditScript=path.join(root,'audit-corpus.mjs');
+const auditPath=path.join(root,'evidence/corpus-audit.json');
+const outPath=path.join(root,'evidence/corpus-readiness.json');
+
+// The strict audit is the single source of truth. Recompute it every time so
+// readiness can never become fresher than its QA/provenance evidence.
+const run=spawnSync(process.execPath,[auditScript],{encoding:'utf8'});
+if(run.stdout) process.stdout.write(run.stdout);
+if(run.stderr) process.stderr.write(run.stderr);
+if(!fs.existsSync(auditPath)) throw new Error('STRICT_CORPUS_AUDIT_MISSING');
+const a=JSON.parse(fs.readFileSync(auditPath,'utf8'));
+
+const out={
+  generatedAt:new Date().toISOString(),
+  auditGeneratedAt:a.generatedAt,
+  corpusFingerprint:a.corpusFingerprint,
+  files:a.files,
+  rawRows:a.rawRows,
+  validPublicObservations:a.validPublicObservations,
+  uniqueAuthoritativeRounds:a.uniqueAuthoritativeRounds,
+  duplicateAuthoritativeRows:a.duplicateAuthoritativeRows,
+  invalidRows:a.invalidRows,
+  qualityPass:a.qualityPass,
+  violations:a.violations,
+  minimumReplayRounds:a.minimumReplayRounds,
+  remainingAuthoritativeToReplay:a.remainingAuthoritativeToReplay,
+  // Training is gated by BOTH quantity and strict quality.
+  trainingEligible:a.trainingEligible===true&&a.qualityPass===true,
+  observationCorpusUsableForExploratoryPhysicalAnalysis:a.validPublicObservations>0,
+  sourceCounts:a.sourceCounts,
+  distinctUtcDays:a.distinctUtcDays,
+  authenticationBypassAttempted:false,
+  aggregateDataAccepted:false,
+  syntheticDataAccepted:false,
+  realMoney:false,
+  next:a.next
+};
+fs.mkdirSync(path.dirname(outPath),{recursive:true});
+fs.writeFileSync(outPath,JSON.stringify(out,null,2)+'\n');
+console.log(JSON.stringify(out,null,2));
+if(run.status!==0||!out.qualityPass) process.exitCode=run.status||2;
