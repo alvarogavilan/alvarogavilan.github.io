@@ -1,0 +1,19 @@
+{
+  "version": "2026-08-17-v2",
+  "purpose": "Prevent aggregate statistics from entering the scientific round-level corpus while allowing verified exports/captures/APIs to be normalized immediately.",
+  "minimumReplayRounds": 500,
+  "requiredRoundFields": ["timestamp", "winner", "source"],
+  "optionalRoundFields": ["roundId", "luckyNumbers", "winnerIsLightning", "winnerMultiplier", "table", "provider"],
+  "acceptedSourceClasses": [
+    {"id":"authenticated_structured_api","trainingEligible":true,"requirements":["finalized rounds","stable timestamps","winner 0-36","raw response retained"]},
+    {"id":"user_export","trainingEligible":true,"requirements":["original file retained","chronology recoverable","winner 0-36"]},
+    {"id":"user_video_or_capture","trainingEligible":"conditional","requirements":["round boundaries unambiguous","timestamp or reliable ordering","manual/automated extraction auditable","raw media retained"]},
+    {"id":"public_round_history","trainingEligible":"conditional","requirements":["individual finalized rounds","provenance retained","no authentication bypass"]}
+  ],
+  "rejectedSourceClasses": [
+    {"id":"aggregate_frequency_table","reason":"cannot reconstruct actual chronological rounds"},
+    {"id":"synthetic_rounds","reason":"fabricated observations invalidate replay"},
+    {"id":"inferred_rounds_from_counts","reason":"ordering and Lightning attributes are unknowable"}
+  ],
+  "hardRules": {"realMoney":false,"automaticBetting":false,"martingale":false,"bookInclusion":false}
+}
