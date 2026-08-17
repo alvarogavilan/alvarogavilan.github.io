@@ -21,19 +21,36 @@ jobs:
       LIGHTNING_DELAY_MS: 150
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with: {node-version: 24}
-      - name: Deep public API backfill
-        run: node loterias-ai/casino/lightning/backfill-casinoorg-pages.mjs
-      - name: Refresh readiness and prospective paper
+      - name: Conflict-resilient deep backfill and persist
         run: |
-          node loterias-ai/casino/lightning/corpus-readiness.mjs
-          if [ -f loterias-ai/casino/lightning/prospective-paper-v1.mjs ]; then node loterias-ai/casino/lightning/prospective-paper-v1.mjs; fi
-      - name: Persist corpus and evidence
-        run: |
+          set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add loterias-ai/casino/lightning/data loterias-ai/casino/lightning/evidence
-          git commit -m "research(casino): deep-backfill authoritative Lightning rounds" || exit 0
-          git pull --rebase origin "$GITHUB_REF_NAME"
-          git push origin HEAD:"$GITHUB_REF_NAME"
+          for attempt in 1 2 3 4; do
+            echo "Deep backfill persistence attempt $attempt"
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard "origin/$GITHUB_REF_NAME"
+            node loterias-ai/casino/lightning/backfill-casinoorg-pages.mjs
+            node loterias-ai/casino/lightning/corpus-readiness.mjs
+            if [ -f loterias-ai/casino/lightning/prospective-paper-v1.mjs ]; then
+              node loterias-ai/casino/lightning/prospective-paper-v1.mjs
+            fi
+            git add loterias-ai/casino/lightning/data loterias-ai/casino/lightning/evidence
+            if git diff --cached --quiet; then
+              echo "No new Lightning data to persist"
+              exit 0
+            fi
+            git commit -m "research(casino): deep-backfill authoritative Lightning rounds"
+            if git push origin HEAD:"$GITHUB_REF_NAME"; then
+              echo "Lightning deep backfill persisted successfully"
+              exit 0
+            fi
+            echo "Concurrent main update detected; recalculating from newest main"
+            sleep $((attempt * 2))
+          done
+          echo "Unable to persist after conflict-safe retries" >&2
+          exit 1
