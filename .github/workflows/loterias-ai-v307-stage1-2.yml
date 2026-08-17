@@ -1,0 +1,41 @@
+name: Loterias AI v307 Stage1-2
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/metapleno-v307-spectral-phase-coherence
+    paths:
+      - 'loterias-ai/research/megalab/v307-stage1-2-spectral-phase-coherence.mjs'
+      - 'loterias-ai/research/megalab/v307-spectral-phase-coherence-spec.json'
+      - '.github/workflows/loterias-ai-v307-stage1-2.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-v307-stage1-2
+  cancel-in-progress: false
+
+jobs:
+  screen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Run causal spectral phase coherence screen
+        run: node loterias-ai/research/megalab/v307-stage1-2-spectral-phase-coherence.mjs
+      - name: Enforce blind gates
+        run: |
+          node -e "const x=require('./loterias-ai/data/research/metapleno-v307-stage1-2-selection.json'); if(x.validationTouched||x.postFreezeTouched||x.retuningPerformed||x.realMoneyPass||x.realStakeEUR!==0||x.ordinaryBudgetMaxEUR>4) process.exit(1)"
+      - name: Persist evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v307-stage1-2-selection.json
+          git commit -m "research(loterias-ai): persist v307 stage1-2 evidence" || exit 0
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push

@@ -1,0 +1,33 @@
+name: Loterias AI v307 Dense Freeze
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v307-dense-freeze]
+    paths:
+      - 'loterias-ai/research/megalab/v307-dense-freeze-euromillones.mjs'
+      - '.github/workflows/loterias-ai-v307-dense-freeze.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-v307-dense-freeze
+  cancel-in-progress: false
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - name: Run immutable dense freeze
+        run: node loterias-ai/research/megalab/v307-dense-freeze-euromillones.mjs
+      - name: Enforce blind gates
+        run: node -e "const x=require('./loterias-ai/data/research/metapleno-v307-dense-freeze.json');if(x.validationTouched||x.postFreezeTouched||x.retuningPerformed||x.realMoneyPass||x.realStakeEUR!==0)process.exit(1)"
+      - name: Persist evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v307-dense-freeze.json
+          git commit -m "research(loterias-ai): persist v307 dense freeze evidence" || exit 0
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push
