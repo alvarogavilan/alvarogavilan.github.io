@@ -1,6 +1,6 @@
 {
   "version": "economic-multiplier-window-prospective-status-v1",
-  "generatedAt": "2026-08-17T23:00:21.495Z",
+  "generatedAt": "2026-08-17T23:08:40.733Z",
   "freezeVersion": "economic-multiplier-window-prospective-freeze-v1",
   "decisionProtocolVersion": "economic-multiplier-prospective-decision-protocol-v1",
   "frozenAt": "2026-08-17T21:27:45Z",
@@ -11,14 +11,14 @@
     "outcome": "at least one winning Lightning event in the next 7 chronological rounds",
     "noRetuning": true
   },
-  "postFreezeRounds": 71,
+  "postFreezeRounds": 82,
   "closedEpisodes": 7,
-  "successes": 4,
-  "failures": 3,
-  "successRate": 0.571429,
+  "successes": null,
+  "failures": null,
+  "successRate": null,
   "wilson95": {
-    "lower": 0.250454,
-    "upper": 0.841783
+    "lower": null,
+    "upper": null
   },
   "frozenNull": {
     "primary": 0.384823,
@@ -27,13 +27,28 @@
   "calibration": {
     "referenceProbability": 0.401606,
     "referenceSource": "unchanged rule success rate in the untouched pre-freeze OOS holdout at commit 4444ee4284991786718b6b9a55d651b1a7384b10",
-    "referenceInsideCurrentWilson95": true,
+    "referenceInsideCurrentWilson95": null,
     "formalCriterion": "referenceProbability must lie inside the Wilson 95% interval of the fixed prospective final window"
   },
-  "liftVsPrimary": 0.186606,
-  "relativeLiftVsPrimary": 0.484913,
+  "liftVsPrimary": null,
+  "relativeLiftVsPrimary": null,
   "pendingEpisode": null,
   "status": "ACCUMULATING",
+  "disclosure": {
+    "performanceHidden": true,
+    "minimumClosedEpisodesBeforeDirectionalRead": 30,
+    "policy": "ADMINISTRATIVE_PROGRESS_ONLY",
+    "hiddenFields": [
+      "successes",
+      "failures",
+      "successRate",
+      "wilson95",
+      "liftVsPrimary",
+      "relativeLiftVsPrimary",
+      "directionalGates",
+      "recentClosedEpisodeOutcomes"
+    ]
+  },
   "readPolicy": {
     "before30": "ADMINISTRATIVE_PROGRESS_ONLY",
     "after30Before100": "DIRECTIONAL_DESCRIPTIVE_ONLY_NO_PROMOTION",
@@ -45,9 +60,9 @@
   "gates": {
     "directionalSampleReached": false,
     "formalSampleReached": false,
-    "lowerCiAbovePrimaryNull": false,
-    "positiveVsSecondary": true,
-    "calibrationReferenceInsideWilson95": true,
+    "lowerCiAbovePrimaryNull": null,
+    "positiveVsSecondary": null,
+    "calibrationReferenceInsideWilson95": null,
     "minimum10000ProspectiveRoundsReached": false,
     "fixedFinalTimingGatePass": false,
     "formalTimingGatePass": false,
@@ -55,63 +70,14 @@
     "promotionGatePass": false,
     "realMoneyAllowed": false
   },
-  "recentClosedEpisodes": [
-    {
-      "triggerAt": "2026-08-17T21:28:11.727Z",
-      "gapAtTrigger": 32,
-      "success": true,
-      "closedAt": "2026-08-17T22:07:59.232Z",
-      "futureRounds": 6
-    },
-    {
-      "triggerAt": "2026-08-17T22:20:11.767Z",
-      "gapAtTrigger": 8,
-      "success": true,
-      "closedAt": "2026-08-17T22:21:45.260Z",
-      "futureRounds": 2
-    },
-    {
-      "triggerAt": "2026-08-17T22:28:13.264Z",
-      "gapAtTrigger": 8,
-      "success": false,
-      "closedAt": "2026-08-17T22:33:56.762Z",
-      "futureRounds": 7
-    },
-    {
-      "triggerAt": "2026-08-17T22:33:56.762Z",
-      "gapAtTrigger": 15,
-      "success": false,
-      "closedAt": "2026-08-17T22:39:34.264Z",
-      "futureRounds": 7
-    },
-    {
-      "triggerAt": "2026-08-17T22:39:34.264Z",
-      "gapAtTrigger": 22,
-      "success": false,
-      "closedAt": "2026-08-17T22:45:11.767Z",
-      "futureRounds": 7
-    },
-    {
-      "triggerAt": "2026-08-17T22:45:11.767Z",
-      "gapAtTrigger": 29,
-      "success": true,
-      "closedAt": "2026-08-17T22:48:27.273Z",
-      "futureRounds": 4
-    },
-    {
-      "triggerAt": "2026-08-17T22:59:02.788Z",
-      "gapAtTrigger": 8,
-      "success": true,
-      "closedAt": "2026-08-17T22:59:46.273Z",
-      "futureRounds": 1
-    }
-  ],
+  "recentClosedEpisodes": [],
   "guards": {
     "provenanceVerified": true,
     "calibrationProtocolRegisteredBeforeFirstClosedEpisode": true,
     "emptyProspectiveSampleIsUnevaluable": true,
     "singleFixedPromotionWindow": true,
     "post10000OptionalStoppingRescueBlocked": true,
+    "pre30PerformanceBlindnessEnforced": true,
     "noRetuning": true,
     "separateProspectiveNumberEdgeRequired": true,
     "automaticBettingAllowed": false,
