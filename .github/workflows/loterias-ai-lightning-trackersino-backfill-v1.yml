@@ -26,7 +26,12 @@ jobs:
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add loterias-ai/casino/lightning/data/trackersino-lightningroulette.jsonl loterias-ai/casino/lightning/evidence/trackersino-backfill-checkpoint-v1.json loterias-ai/casino/lightning/evidence/trackersino-backfill-report-v1.json 2>/dev/null || true
+          for f in \
+            loterias-ai/casino/lightning/data/trackersino-lightningroulette.jsonl \
+            loterias-ai/casino/lightning/evidence/trackersino-backfill-checkpoint-v1.json \
+            loterias-ai/casino/lightning/evidence/trackersino-backfill-report-v1.json; do
+            if [ -f "$f" ]; then git add "$f"; fi
+          done
           git commit -m 'research(casino): persist TrackerSino Lightning historical backfill' || exit 0
           git pull --rebase origin main
           git push origin HEAD:main
