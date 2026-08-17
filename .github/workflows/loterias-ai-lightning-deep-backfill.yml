@@ -1,0 +1,39 @@
+name: Loterias AI Lightning Deep Backfill
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/lightning/backfill-casinoorg-pages.mjs'
+      - '.github/workflows/loterias-ai-lightning-deep-backfill.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-lightning-deep-backfill
+  cancel-in-progress: false
+jobs:
+  backfill:
+    if: github.actor != 'github-actions[bot]' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      LIGHTNING_MAX_PAGES: 200
+      LIGHTNING_DELAY_MS: 150
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - name: Deep public API backfill
+        run: node loterias-ai/casino/lightning/backfill-casinoorg-pages.mjs
+      - name: Refresh readiness and prospective paper
+        run: |
+          node loterias-ai/casino/lightning/corpus-readiness.mjs
+          if [ -f loterias-ai/casino/lightning/prospective-paper-v1.mjs ]; then node loterias-ai/casino/lightning/prospective-paper-v1.mjs; fi
+      - name: Persist corpus and evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/casino/lightning/data loterias-ai/casino/lightning/evidence
+          git commit -m "research(casino): deep-backfill authoritative Lightning rounds" || exit 0
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin HEAD:"$GITHUB_REF_NAME"
