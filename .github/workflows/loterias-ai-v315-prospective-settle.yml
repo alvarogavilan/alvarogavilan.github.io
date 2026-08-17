@@ -69,17 +69,38 @@ jobs:
           set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add loterias-ai/data/research/v315-prospective-settlements 2>/dev/null || true
-          git add loterias-ai/data/research/metapleno-v315-prospective-status.json 2>/dev/null || true
-          git add loterias-ai/data/research/metapleno-v315-final-200.json 2>/dev/null || true
-          if git diff --cached --quiet; then
-            echo 'No new official v315 settlement/status/final.'
-            exit 0
-          fi
-          git commit -m 'research(loterias-ai): advance v315 prospective evidence'
+
+          owned=(
+            loterias-ai/data/research/v315-prospective-settlements
+            loterias-ai/data/research/metapleno-v315-prospective-status.json
+            loterias-ai/data/research/metapleno-v315-final-200.json
+          )
+          tmp="$(mktemp -d)"
+          trap 'rm -rf "$tmp"' EXIT
+          for p in "${owned[@]}"; do
+            if [ -e "$p" ]; then
+              mkdir -p "$tmp/$(dirname "$p")"
+              cp -a "$p" "$tmp/$p"
+            fi
+          done
+
           for attempt in 1 2 3 4 5; do
-            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
-            git rebase --abort || true
+            git fetch origin main
+            git reset --hard origin/main
+            for p in "${owned[@]}"; do
+              if [ -e "$tmp/$p" ]; then
+                mkdir -p "$(dirname "$p")"
+                rm -rf "$p"
+                cp -a "$tmp/$p" "$p"
+              fi
+            done
+            git add "${owned[@]}" 2>/dev/null || true
+            if git diff --cached --quiet; then
+              echo 'No new official v315 settlement/status/final.'
+              exit 0
+            fi
+            git commit -m 'research(loterias-ai): advance v315 prospective evidence'
+            if git push origin HEAD:main; then exit 0; fi
             sleep $((attempt*2))
           done
           exit 1
