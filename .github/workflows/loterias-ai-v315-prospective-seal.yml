@@ -1,0 +1,73 @@
+name: Loterias AI MetaPleno v315 Prospective Seal
+on:
+  workflow_dispatch:
+    inputs:
+      target_draw_date:
+        description: 'Optional Primitiva target YYYY-MM-DD; blank resolves next scheduled draw'
+        required: false
+        type: string
+  schedule:
+    - cron: '15 6 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/data/research/metapleno-v315-preregister.json'
+      - 'loterias-ai/data/research/metapleno-v315-execution-protocol-v1.json'
+      - 'loterias-ai/data/research/meta-pleno-v138-bonoloto-graph-topology.json'
+      - 'loterias-ai/research/megalab/v315-seal-next-prospective.mjs'
+      - 'loterias-ai/research/megalab/v315-seal-guarded.mjs'
+      - '.github/workflows/loterias-ai-v315-prospective-seal.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-v315-prospective-seal
+  cancel-in-progress: false
+jobs:
+  seal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Seal next eligible Primitiva target before result
+        env:
+          TARGET_DRAW_DATE: ${{ inputs.target_draw_date }}
+        run: node loterias-ai/research/megalab/v315-seal-guarded.mjs
+      - name: Validate persisted seal safety
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const dir='loterias-ai/data/research/v315-prospective-seals';
+          const files=fs.existsSync(dir)?fs.readdirSync(dir).filter(x=>x.endsWith('.json')).sort():[];
+          if(!files.length) throw new Error('No v315 seal produced or already present');
+          for(const f of files){
+            const d=JSON.parse(fs.readFileSync(`${dir}/${f}`,'utf8'));
+            if(d.lines?.length!==12) throw new Error('v315 seal must preserve 12 configs: '+f);
+            if(d.guards?.targetResultPresentAtSeal!==false||d.guards?.targetOutcomeUsedForSelection!==false) throw new Error('target-outcome safety regression: '+f);
+            if(d.guards?.retuningPerformed!==false||d.guards?.realMoneyPass!==false||Number(d.guards?.realStakeEUR)!==0) throw new Error('retuning/real-money safety regression: '+f);
+            if(d.executionProtocol?.fixedDecisionBoundary!==200) throw new Error('optional-stopping boundary regression: '+f);
+            if(!/^[0-9a-f]{64}$/.test(d.sealHash||'')) throw new Error('missing seal hash: '+f);
+          }
+          console.log(JSON.stringify({sealedFiles:files.length,latest:files.at(-1)}));
+          NODE
+      - name: Persist seal against moving main
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/v315-prospective-seals
+          if git diff --cached --quiet; then
+            echo 'Seal already exists identically; nothing to commit.'
+            exit 0
+          fi
+          git commit -m 'research(loterias-ai): seal v315 prospective Primitiva target'
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            git rebase --abort || true
+            sleep $((attempt*2))
+          done
+          exit 1
