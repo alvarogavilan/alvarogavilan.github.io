@@ -1,0 +1,26 @@
+{
+  "version": "v315",
+  "family": "CROSS_GAME_TRANSFER_AUDIT",
+  "status": "PREREGISTERED",
+  "goal": "Test whether a mechanism learned on one lottery transfers prospectively to another without target-game tuning.",
+  "candidateTransfers": [
+    "bonoloto_to_primitiva",
+    "primitiva_to_bonoloto",
+    "euromillones_main_numbers_to_6ofN_rank_family"
+  ],
+  "rules": {
+    "sourceGameTrainingOnly": true,
+    "targetGameNoTraining": true,
+    "targetGameNoHyperparameterSearch": true,
+    "freezeBeforeTargetEvaluation": true,
+    "regimeCompatibilityRequired": true,
+    "matchedCostRandomBaselineRequired": true,
+    "multiplicityCorrectionRequired": true,
+    "noRetuningAfterTargetResults": true,
+    "theoreticalBudgetEURMax": 15,
+    "realMoneyPass": false,
+    "realStakeEUR": 0
+  },
+  "successGate": "Transfer must beat frozen matched-cost baselines on target holdout and survive multiplicity correction.",
+  "failureGate": "Archive if transfer vanishes out of sample, depends on target tuning, or is explained by marginal frequency/recency."
+}
