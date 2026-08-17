@@ -1,0 +1,40 @@
+name: Loterias AI MetaPleno v54 Bonoloto Budget8 Evaluate
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v54-bonoloto-budget8-evaluate.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v54-bonoloto-budget8-evaluate.yml'
+permissions: {contents: write}
+concurrency: {group: loterias-ai-v54-budget8-evaluate, cancel-in-progress: false}
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - run: node loterias-ai/scripts/meta-pleno-v54-bonoloto-budget8-evaluate.mjs
+      - name: Enforce PAPER integrity
+        run: node -e "const fs=require('fs');const p='loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v54-budget8-evaluation.json';if(fs.existsSync(p)){const x=require('./'+p);if(x.realMoneyPass||x.budget.realStakeEUR!==0||x.scientific.retuningPerformed||x.scientific.selectionUsedTargetResult)process.exit(1)}"
+      - name: Persist evaluation safely
+        run: |
+          set -euo pipefail
+          p=loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v54-budget8-evaluation.json
+          [ -f "$p" ] || exit 0
+          cp "$p" /tmp/v54-evaluation.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3; do
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard "origin/$GITHUB_REF_NAME"
+            cp /tmp/v54-evaluation.json "$p"
+            git add "$p"
+            git diff --cached --quiet && exit 0
+            git commit -m 'research(loterias-ai): persist v54 Budget8 prospective evaluation'
+            git push origin HEAD:"$GITHUB_REF_NAME" && exit 0
+            sleep $((i*2))
+          done
+          exit 1
