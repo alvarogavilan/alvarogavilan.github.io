@@ -1,6 +1,9 @@
 name: Loterias AI Lightning Free Public Capture
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/loterias-ai-lightning-free-public-capture.yml'
   schedule:
     - cron: '7,22,37,52 * * * *'
 permissions:
@@ -15,7 +18,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: {node-version: 24}
+        with:
+          node-version: 24
       - name: Capture free public Lightning evidence
         run: node loterias-ai/casino/lightning/collect-casinoscore-public.mjs
       - name: Certify corpus readiness
