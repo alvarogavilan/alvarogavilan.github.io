@@ -1,0 +1,34 @@
+name: Loterias AI v299 Stage1-2 Symbolic Dynamics
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/metapleno-v299-symbolic-dynamics
+    paths:
+      - '.github/workflows/loterias-ai-v299-stage1-2.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-v299-stage1-2-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run v299 symbolic dynamics screening
+        run: node loterias-ai/research/megalab/v299-stage1-2-symbolic-screen.mjs
+      - name: Verify isolation and money gates
+        run: node -e "const x=require('./loterias-ai/data/research/metapleno-v299-stage1-2-selection.json');if(x.validationTouched||x.postFreezeTouched||x.retuningPerformed||x.realMoneyPass||x.realStakeEUR!==0||x.ordinaryBudgetMaxEUR>4)process.exit(1)"
+      - name: Persist v299 selection evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v299-stage1-2-selection.json
+          git commit -m 'data(loterias-ai): persist v299 symbolic stage1-2' || exit 0
+          git pull --rebase origin research/metapleno-v299-symbolic-dynamics
+          git push
