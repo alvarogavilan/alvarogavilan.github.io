@@ -42,6 +42,29 @@ jobs:
         run: node loterias-ai/casino/lightning/research/economic-multiplier-window-oos-v1.mjs
       - name: Test timing against dependence-preserving nulls
         run: node loterias-ai/casino/lightning/research/economic-multiplier-window-dependence-robustness-v1.mjs
+      - name: Preserve frozen robustness evidence when only generatedAt changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE='loterias-ai/casino/lightning/evidence/economic-multiplier-window-dependence-robustness-v1.json'
+          if ! git cat-file -e "HEAD:${FILE}" 2>/dev/null; then
+            echo "No prior robustness evidence; keeping newly generated file"
+            exit 0
+          fi
+          git show "HEAD:${FILE}" > /tmp/robustness-prev.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file='loterias-ai/casino/lightning/evidence/economic-multiplier-window-dependence-robustness-v1.json';
+          const previous=JSON.parse(fs.readFileSync('/tmp/robustness-prev.json','utf8'));
+          const current=JSON.parse(fs.readFileSync(file,'utf8'));
+          const stable=x=>{const y=structuredClone(x);delete y.generatedAt;return y;};
+          if(JSON.stringify(stable(previous))===JSON.stringify(stable(current))){
+            fs.copyFileSync('/tmp/robustness-prev.json',file);
+            console.log('NO_SEMANTIC_CHANGE: restored prior frozen-corpus robustness evidence');
+          } else {
+            console.log('SEMANTIC_CHANGE: keeping regenerated robustness evidence');
+          }
+          NODE
       - name: Test timing gate plus 3-4 number selectors OOS
         run: node loterias-ai/casino/lightning/research/economic-timing-number-combo-oos-v1.mjs
       - name: Run nested temporal 3-4 number tournament
