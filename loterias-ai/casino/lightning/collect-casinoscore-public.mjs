@@ -1,7 +1,105 @@
 #!/usr/bin/env node
-import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';
-const URL='https://casinoscore.live/es/lightning-roulette/';const html=await (await fetch(URL,{headers:{'user-agent':'LoteriasAI-Research/1.0'}})).text();
-const text=html.replace(/<script[\s\S]*?<\/script>/gi,' ').replace(/<style[\s\S]*?<\/style>/gi,' ').replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/\s+/g,' ');
-const marker=text.search(/Historial de giros en vivo|Live Spin History/i);if(marker<0)throw new Error('CasinoScore public history marker not found');const chunk=text.slice(marker,marker+50000);
-const rx=/(?:Resultado del giro|Spin result)?\s*(\d{1,2})\s+(?:—|–|-|(\d{2,4})x)\s+€?[\d,.]+\s+\d+/g;let m,idx=0;const observedAt=new Date().toISOString(),snapshotId=crypto.createHash('sha256').update(observedAt+'|'+html.length).digest('hex').slice(0,16),rows=[];while((m=rx.exec(chunk))&&rows.length<600){const winner=Number(m[1]);if(winner>36)continue;const mult=m[2]?Number(m[2]):null;rows.push({observationId:`csobs-${snapshotId}-${idx}`,snapshotId,observedAt,winner,luckyNumbers:[],winnerIsLightning:mult!==null,winnerMultiplier:mult,table:'Lightning Roulette',provider:'Evolution',source:'casinoscore-public-window',sequenceIndex:idx,timestampQuality:'snapshot_only_no_round_timestamp',roundIdQuality:'absent',trainingEligible:false,reasonNotTrainingEligible:'public page does not expose authoritative per-row timestamp/roundId in rendered text'});idx++}
-const dir='loterias-ai/casino/lightning/data/public-observation';fs.mkdirSync(dir,{recursive:true});const dest=path.join(dir,`casinoscore-${new Date().toISOString().slice(0,10)}.jsonl`);const existing=fs.existsSync(dest)?fs.readFileSync(dest,'utf8').trim().split('\n').filter(Boolean).map(JSON.parse):[];const priorSnapshots=new Set(existing.map(r=>r.snapshotId).filter(Boolean));const signature=r=>`${r.winner}|${r.winnerMultiplier??''}`;const incomingSig=rows.map(signature).join(',');const existingSnapshotSigs=new Set();for(const sid of priorSnapshots){existingSnapshotSigs.add(existing.filter(r=>r.snapshotId===sid).sort((a,b)=>a.sequenceIndex-b.sequenceIndex).map(signature).join(','));}const duplicateSnapshot=existingSnapshotSigs.has(incomingSig);const appended=duplicateSnapshot?0:rows.length;if(appended)fs.appendFileSync(dest,(existing.length?'':'')+rows.map(r=>JSON.stringify(r)).join('\n')+'\n');const ev={source:URL,observedAt,rowsParsed:rows.length,rowsAppended:appended,duplicateSnapshot,storedRows:existing.length+appended,roundLevelObserved:rows.length>0,trainingEligible:false,free:true,authoritativeTimestamp:false,authoritativeRoundId:false,luckyNumbersComplete:false,destination:dest};fs.mkdirSync('loterias-ai/casino/lightning/evidence',{recursive:true});fs.writeFileSync('loterias-ai/casino/lightning/evidence/casinoscore-public.json',JSON.stringify(ev,null,2)+'\n');console.log(JSON.stringify(ev,null,2));
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+
+const URL = 'https://casinoscore.live/es/lightning-roulette/';
+const html = await (await fetch(URL, { headers: { 'user-agent': 'LoteriasAI-Research/1.0' } })).text();
+const text = html
+  .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+  .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+  .replace(/<[^>]+>/g, ' ')
+  .replace(/&nbsp;/g, ' ')
+  .replace(/\s+/g, ' ');
+
+const marker = text.search(/Historial de giros en vivo|Live Spin History/i);
+if (marker < 0) throw new Error('CasinoScore public history marker not found');
+const chunk = text.slice(marker, marker + 50000);
+const rx = /(?:Resultado del giro|Spin result)?\s*(\d{1,2})\s+(?:—|–|-|(\d{2,4})x)\s+€?[\d,.]+\s+\d+/g;
+
+let m;
+let idx = 0;
+const observedAt = new Date().toISOString();
+const snapshotId = crypto.createHash('sha256').update(observedAt + '|' + html.length).digest('hex').slice(0, 16);
+const rows = [];
+while ((m = rx.exec(chunk)) && rows.length < 600) {
+  const winner = Number(m[1]);
+  if (winner > 36) continue;
+  const mult = m[2] ? Number(m[2]) : null;
+  rows.push({
+    observationId: `csobs-${snapshotId}-${idx}`,
+    snapshotId,
+    observedAt,
+    winner,
+    luckyNumbers: [],
+    winnerIsLightning: mult !== null,
+    winnerMultiplier: mult,
+    table: 'Lightning Roulette',
+    provider: 'Evolution',
+    source: 'casinoscore-public-window',
+    sequenceIndex: idx,
+    timestampQuality: 'snapshot_only_no_round_timestamp',
+    roundIdQuality: 'absent',
+    trainingEligible: false,
+    reasonNotTrainingEligible: 'public page does not expose authoritative per-row timestamp/roundId in rendered text'
+  });
+  idx++;
+}
+
+const dir = 'loterias-ai/casino/lightning/data/public-observation';
+fs.mkdirSync(dir, { recursive: true });
+const dest = path.join(dir, `casinoscore-${new Date().toISOString().slice(0, 10)}.jsonl`);
+const existing = fs.existsSync(dest)
+  ? fs.readFileSync(dest, 'utf8').trim().split('\n').filter(Boolean).map(JSON.parse)
+  : [];
+const priorSnapshots = new Set(existing.map(r => r.snapshotId).filter(Boolean));
+const signature = r => `${r.winner}|${r.winnerMultiplier ?? ''}`;
+const incomingSig = rows.map(signature).join(',');
+const existingSnapshotSigs = new Set();
+for (const sid of priorSnapshots) {
+  existingSnapshotSigs.add(
+    existing
+      .filter(r => r.snapshotId === sid)
+      .sort((a, b) => a.sequenceIndex - b.sequenceIndex)
+      .map(signature)
+      .join(',')
+  );
+}
+
+const duplicateSnapshot = existingSnapshotSigs.has(incomingSig);
+if (duplicateSnapshot) {
+  const transient = {
+    source: URL,
+    observedAt,
+    rowsParsed: rows.length,
+    rowsAppended: 0,
+    duplicateSnapshot: true,
+    storedRows: existing.length,
+    trainingEligible: false,
+    free: true,
+    persisted: false,
+    reasonNotPersisted: 'semantic snapshot already present; duplicate attempt remains in GitHub Actions logs only'
+  };
+  console.log(JSON.stringify(transient, null, 2));
+  process.exit(0);
+}
+
+fs.appendFileSync(dest, rows.map(r => JSON.stringify(r)).join('\n') + (rows.length ? '\n' : ''));
+const ev = {
+  source: URL,
+  observedAt,
+  rowsParsed: rows.length,
+  rowsAppended: rows.length,
+  duplicateSnapshot: false,
+  storedRows: existing.length + rows.length,
+  roundLevelObserved: rows.length > 0,
+  trainingEligible: false,
+  free: true,
+  authoritativeTimestamp: false,
+  authoritativeRoundId: false,
+  luckyNumbersComplete: false,
+  destination: dest
+};
+fs.mkdirSync('loterias-ai/casino/lightning/evidence', { recursive: true });
+fs.writeFileSync('loterias-ai/casino/lightning/evidence/casinoscore-public.json', JSON.stringify(ev, null, 2) + '\n');
+console.log(JSON.stringify(ev, null, 2));
