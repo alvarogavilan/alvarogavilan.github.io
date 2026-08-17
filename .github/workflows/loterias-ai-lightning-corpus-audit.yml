@@ -1,0 +1,32 @@
+name: Loterias AI Lightning Corpus Audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/lightning/audit-corpus.mjs'
+      - 'loterias-ai/casino/lightning/data/**'
+      - '.github/workflows/loterias-ai-lightning-corpus-audit.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-lightning-corpus-audit
+  cancel-in-progress: true
+jobs:
+  audit:
+    if: github.actor != 'github-actions[bot]' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - run: node loterias-ai/casino/lightning/audit-corpus.mjs
+      - name: Persist audit evidence
+        if: always()
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/casino/lightning/evidence/corpus-audit.json
+          git commit -m "qa(lightning): persist corpus audit" || exit 0
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin HEAD:"$GITHUB_REF_NAME"
