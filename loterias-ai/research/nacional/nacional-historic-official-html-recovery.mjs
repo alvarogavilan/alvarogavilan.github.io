@@ -11,8 +11,11 @@ const meta=JSON.parse(fs.readFileSync(metaPath,'utf8'));
 
 function isSeasonal(record){
   const t=String(record?.drawType||'').toUpperCase();
-  return t.includes('NAVIDAD')||t.includes('NIÑO')||t.includes('NINO');
+  const d=String(record?.drawDate||'');
+  const calendarSeasonal=/-(12-22|01-06)$/.test(d);
+  return calendarSeasonal||t.includes('NAVIDAD')||t.includes('NIÑO')||t.includes('NINO');
 }
+function isSeasonalDate(date){return /-(12-22|01-06)$/.test(String(date||''));}
 function isOfficialComplete(record){
   const r=record?.result||{};
   return !!(r.firstPrize&&r.secondPrize&&Array.isArray(r.reintegro)&&r.officialPrizeAmounts&&r.detailedExtractions);
@@ -26,7 +29,7 @@ for(const name of fs.readdirSync(archiveDir).filter(x=>/^\d{4}\.json$/.test(x)).
     archiveDates.push(record.drawDate);
   }
 }
-const metaFailures=(meta.failures||[]).map(x=>x.date).filter(Boolean);
+const metaFailures=(meta.failures||[]).map(x=>x.date).filter(Boolean).filter(date=>!isSeasonalDate(date));
 const failures=[...new Set([...archiveDates,...metaFailures])].sort((a,b)=>b.localeCompare(a));
 const rows=[];
 function slug(date){const d=new Date(date+'T12:00:00Z');const dd=String(d.getUTCDate()).padStart(2,'0'),m=months[d.getUTCMonth()],y=d.getUTCFullYear(),w=weekdays[d.getUTCDay()];return `https://www.loteriasyapuestas.es/es/loteria-nacional/resultados/loteria-nacional-premios-mayores-del-sorteo-del-${w}-${dd}-de-${m}-de-${y}`}
@@ -51,10 +54,11 @@ const report={
   dateRange:rows.length?{newest:rows[0].date,oldest:rows.at(-1).date}:null,
   sourceMeta:{generatedAt:meta.generatedAt,totalNonSeasonal:meta.totalNonSeasonal,officialCompleteSchemaDraws:meta.officialCompleteSchemaDraws,coverage:meta.coverage},
   gapSet:{archiveIncompleteDates:archiveDates.length,metaFailureDates:metaFailures.length,deduplicatedDates:failures.length},
+  exclusions:{seasonalCalendarDates:['*-12-22','*-01-06'],reason:'Navidad/Nino isolated from ordinary Nacional research even when drawType metadata is missing or wrong'},
   scope:'fallback evidence only; first-prize recovery from official SELAE HTML; does not claim full extraction schema',
   authenticationBypassAttempted:false,
   rows
 };
 fs.mkdirSync(path.dirname(out),{recursive:true});
 fs.writeFileSync(out,JSON.stringify(report,null,2)+'\n');
-console.log(JSON.stringify({attempted:report.attempted,recoveredMajorPrizePages:report.recoveredMajorPrizePages,unresolvedPages:report.unresolvedPages,recoveryRate:report.recoveryRate,dateRange:report.dateRange,gapSet:report.gapSet},null,2));
+console.log(JSON.stringify({attempted:report.attempted,recoveredMajorPrizePages:report.recoveredMajorPrizePages,unresolvedPages:report.unresolvedPages,recoveryRate:report.recoveryRate,dateRange:report.dateRange,gapSet:report.gapSet,exclusions:report.exclusions},null,2));
