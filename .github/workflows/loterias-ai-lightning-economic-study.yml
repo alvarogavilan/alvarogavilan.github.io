@@ -14,6 +14,7 @@ on:
       - 'loterias-ai/casino/lightning/research/economic-number-selection-prospective-v1.mjs'
       - 'loterias-ai/casino/lightning/research/economic-multiplier-window-dependence-robustness-v1.mjs'
       - 'loterias-ai/casino/lightning/research/verify-economic-prospective-freeze-v1.mjs'
+      - 'loterias-ai/casino/lightning/research/verify-economic-number-prospective-freeze-v1.mjs'
       - 'loterias-ai/casino/lightning/evidence/economic-multiplier-window-prospective-freeze-v1.json'
       - 'loterias-ai/casino/lightning/evidence/economic-multiplier-prospective-decision-protocol-v1.json'
       - 'loterias-ai/casino/lightning/evidence/economic-number-selection-prospective-freeze-v1.json'
@@ -39,6 +40,8 @@ jobs:
           node-version: '24'
       - name: Verify immutable prospective freeze v1
         run: node loterias-ai/casino/lightning/research/verify-economic-prospective-freeze-v1.mjs
+      - name: Verify immutable future number freeze v1
+        run: node loterias-ai/casino/lightning/research/verify-economic-number-prospective-freeze-v1.mjs
       - name: Run 15 EUR coverage and multiplier-window study
         run: node loterias-ai/casino/lightning/research/economic-coverage-window-v1.mjs
       - name: Select timing rule on discovery and validate OOS
