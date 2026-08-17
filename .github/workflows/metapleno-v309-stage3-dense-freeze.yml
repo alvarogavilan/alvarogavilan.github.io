@@ -1,0 +1,57 @@
+name: MetaPleno v309 Stage3 Dense Freeze
+
+on:
+  push:
+    branches:
+      - research/metapleno-v309-mdl-compression-surprise
+    paths:
+      - 'loterias-ai/research/megalab/v309-dense-freeze-gordo-context1.mjs'
+      - 'loterias-ai/data/research/metapleno-v309-stage1-2-selection.json'
+      - '.github/workflows/metapleno-v309-stage3-dense-freeze.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/metapleno-v309-mdl-compression-surprise
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Generate immutable dense freeze manifest
+        run: node loterias-ai/research/megalab/v309-dense-freeze-gordo-context1.mjs
+      - name: Verify fail-closed and budget gates
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const p='loterias-ai/data/research/metapleno-v309-dense-freeze-manifest.json';
+          const x=JSON.parse(fs.readFileSync(p,'utf8'));
+          const fail=(m)=>{console.error(m);process.exit(1)};
+          if(x.realMoneyPass!==false) fail('realMoneyPass must remain false');
+          if(x.realStakeEUR!==0) fail('realStakeEUR must remain 0');
+          if(!(x.theoreticalBudgetEUR<=15)) fail('theoreticalBudgetEUR exceeds 15');
+          if(x.validationTouched!==false) fail('validation must remain untouched');
+          if(x.postFreezeTouched!==false) fail('post-freeze must remain untouched');
+          if(x.retuningPerformed!==false) fail('retuning must remain false');
+          if(x.freezeRequired!==true) fail('freezeRequired must be true');
+          if(!Array.isArray(x.candidateIds)) fail('candidateIds missing');
+          if(x.candidateCount!==x.candidateIds.length) fail('candidateCount mismatch');
+          console.log(JSON.stringify({candidateCount:x.candidateCount,next:x.next,realMoneyPass:x.realMoneyPass,realStakeEUR:x.realStakeEUR,theoreticalBudgetEUR:x.theoreticalBudgetEUR},null,2));
+          NODE
+      - name: Persist freeze manifest
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/metapleno-v309-dense-freeze-manifest.json
+          if git diff --cached --quiet; then
+            echo 'No manifest change to persist'
+          else
+            git commit -m 'research(loterias-ai): persist v309 dense freeze manifest'
+            git push origin HEAD:research/metapleno-v309-mdl-compression-surprise
+          fi
