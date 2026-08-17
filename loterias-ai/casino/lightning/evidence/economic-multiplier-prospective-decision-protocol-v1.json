@@ -1,0 +1,72 @@
+{
+  "version": "economic-multiplier-prospective-decision-protocol-v1",
+  "registeredAt": "2026-08-17T22:10:00Z",
+  "mode": "PAPER_ONLY",
+  "purpose": "Operationalize the already-frozen confidence/calibration and promotion requirements before the first prospective episode closes, while preventing optional-stopping promotion.",
+  "freeze": {
+    "version": "economic-multiplier-window-prospective-freeze-v1",
+    "frozenAt": "2026-08-17T21:27:45Z",
+    "sourceRoundsAtFreeze": 2073,
+    "rule": {
+      "roundsSinceLastWinningLightningAtLeast": 8,
+      "predictNextRounds": 7,
+      "noRetuning": true
+    },
+    "primaryNull": 0.384823,
+    "secondaryNull": 0.376573
+  },
+  "registrationState": {
+    "closedProspectiveEpisodesObservedBeforeRegistration": 0,
+    "postFreezeRoundsObservedBeforeRegistration": 4,
+    "pendingEpisodeFutureRoundsObserved": 3,
+    "pendingEpisodeOutcomeKnown": false
+  },
+  "calibration": {
+    "referenceProbability": 0.401606,
+    "referenceSource": "unchanged rule success rate in the untouched pre-freeze OOS holdout at commit 4444ee4284991786718b6b9a55d651b1a7384b10",
+    "referenceNumerator": 100,
+    "referenceDenominator": 249,
+    "formalCriterion": "referenceProbability must lie inside the Wilson 95% interval of the fixed prospective final window",
+    "reason": "The freeze already requires calibration but did not operationalize it. The final pre-freeze holdout estimate is used as the single calibration reference because it was the last untouched estimate available before freezing."
+  },
+  "readPolicy": {
+    "before30ClosedEpisodes": "ADMINISTRATIVE_PROGRESS_ONLY",
+    "atOrAfter30ClosedEpisodesBefore100": "DIRECTIONAL_DESCRIPTIVE_ONLY_NO_PROMOTION",
+    "atOrAfter100ClosedEpisodesBefore10000PostFreezeRounds": "FORMAL_DESCRIPTIVE_ONLY_NO_PROMOTION",
+    "promotionEvaluation": "FIRST_10000_POST_FREEZE_ROUNDS_ONLY",
+    "postBoundaryDataMayRescueV1": false,
+    "ifFixedFinalFails": "ARCHIVE_V1_OR_CREATE_NEW_PREREGISTERED_V2; NEVER RETUNE V1"
+  },
+  "fixedFinalBoundary": {
+    "postFreezeRounds": 10000,
+    "includeOnlyRowsWithTimestampAfterFreeze": true,
+    "episodesMustTriggerAndCloseInsideBoundary": true,
+    "episodesDoNotOverlap": true,
+    "minimumClosedEpisodes": 100,
+    "singlePromotionLook": true
+  },
+  "fixedFinalTimingGate": {
+    "requireMinimumClosedEpisodes": true,
+    "requireWilson95LowerAbovePrimaryNull": true,
+    "requireObservedRateAboveSecondaryNull": true,
+    "requireCalibrationReferenceInsideWilson95": true,
+    "requireNoRetuning": true,
+    "requireVerifiedFreezeProvenance": true
+  },
+  "promotionGate": {
+    "timingGateAloneIsInsufficient": true,
+    "requireSeparateProspectivelyFrozenNumberSelectionEdge": true,
+    "numberSelectionEdgeAvailableAtRegistration": false,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false
+  },
+  "guards": {
+    "doesNotChangeFrozenTimingRule": true,
+    "doesNotChangeFrozenNullComparators": true,
+    "doesNotLowerAnyFrozenMinimum": true,
+    "calibrationDefinitionRegisteredBeforeAnyClosedProspectiveEpisode": true,
+    "preventsPost10000OptionalStoppingRescue": true,
+    "futureRuleOrGateRelaxationRequiresV2Restart": true,
+    "realMoneyAllowed": false
+  }
+}
