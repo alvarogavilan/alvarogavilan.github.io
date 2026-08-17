@@ -1,0 +1,37 @@
+{
+  "version": "v313",
+  "family": "OPTIMAL_TRANSPORT_DRIFT",
+  "status": "PRE_REGISTERED_NOT_EVALUATED",
+  "hypothesis": "Test whether strictly causal shifts in the empirical distribution of drawn-number feature mass, measured with optimal-transport distances and barycentric drift, contain reproducible ranking information beyond matched frequency, recency and co-occurrence baselines.",
+  "orthogonality": {
+    "repositoryBranchSearch": "no prior branch containing 'transport' found before preregistration",
+    "knownOverlapToAvoid": [
+      "spectral/phase families",
+      "wavelet families",
+      "Hawkes/self-exciting families",
+      "persistent-homology families",
+      "conformal residual families"
+    ]
+  },
+  "protocol": {
+    "causalOnly": true,
+    "fitWindow": "discovery only",
+    "validation": "frozen hyperparameters only",
+    "holdout": "untouched until model and ticket construction are frozen",
+    "postFreezeRetuning": false,
+    "matchedNullRequired": true,
+    "correlatedNullRequiredIfMultipleModels": true,
+    "multiplicityCorrectionRequired": true,
+    "baselines": ["uniform", "frequency", "recency", "pair-cooccurrence"],
+    "primaryEndpoint": "playable full-hit rate on untouched holdout at matched ticket cost",
+    "secondaryEndpoints": ["unique 5+ dates", "repeat 5+ across eras", "rank of omitted winning number"],
+    "stopRule": "archive early if validation fails to beat matched baselines or if any apparent gain disappears under null testing"
+  },
+  "economics": {
+    "maxTheoreticalCostEUR": 15,
+    "realMoneyPass": false,
+    "realStakeEUR": 0
+  },
+  "result": null,
+  "next": "implement discovery-only transport features and freeze before touching holdout"
+}
