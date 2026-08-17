@@ -126,7 +126,7 @@
   window.LoteriasAI={choose,totalCombinations,frequency,gaps,scoreNumbers,analyze};
 
   if(/\/loterias-ai\/(lab|laboratorio)\/?/.test(location.pathname)){
-    for(const file of ['resilience.js','evidence.js']){
+    for(const file of ['resilience.js','evidence.js','v315-status.js']){
       const s=document.createElement('script');
       s.src=new URL('../lab/'+file,location.href).href;
       s.async=true;
