@@ -1,9 +1,18 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "createdAt": "2026-08-17",
   "study": "Lightning Roulette",
   "purpose": "Evitar dependencia de una unica fuente y separar datos completos de corroboraciones parciales.",
   "sources": [
+    {
+      "id": "casinoorg-evolution-public-api",
+      "role": "PRIMARY_STRUCTURED_PUBLIC",
+      "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+      "fields": ["roundId","timestamp","winner","allLuckyNumbers","allLuckyMultipliers"],
+      "requiresCredential": false,
+      "trainingEligible": true,
+      "note": "Fuente publica estructurada descubierta desde los bundles publicos de CasinoScores. No usar ningun endpoint que requiera autenticacion ni eludir controles de acceso."
+    },
     {
       "id": "trackersino-api",
       "role": "PRIMARY_STRUCTURED",
