@@ -1,0 +1,29 @@
+name: Loterias AI Lightning Deep Page Boundary Probe v1
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/lightning/research/deep-page-boundary-probe-v1.mjs'
+      - '.github/workflows/loterias-ai-lightning-deep-page-boundary-probe-v1.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-lightning-deep-page-boundary-probe-v1
+  cancel-in-progress: false
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - run: node loterias-ai/casino/lightning/research/deep-page-boundary-probe-v1.mjs
+      - name: Persist probe
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/casino/lightning/evidence/deep-page-boundary-probe-v1.json
+          git commit -m "research(casino): persist Lightning deep history boundary probe" || exit 0
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin HEAD:"$GITHUB_REF_NAME"
