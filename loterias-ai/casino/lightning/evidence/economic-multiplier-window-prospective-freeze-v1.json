@@ -1,0 +1,42 @@
+{
+  "version": "economic-multiplier-window-prospective-freeze-v1",
+  "frozenAt": "2026-08-17T21:27:45Z",
+  "mode": "PAPER_ONLY",
+  "origin": {
+    "oosEvidence": "economic-multiplier-window-oos-v1",
+    "sourceRoundsAtFreeze": 2073,
+    "sourceFile": "loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl",
+    "selectionPolicy": "threshold and horizon selected on discovery only, then direction checked unchanged on validation and holdout"
+  },
+  "frozenRule": {
+    "stateObservedAfterCompletedRound": true,
+    "roundsSinceLastWinningLightningAtLeast": 8,
+    "predictNextRounds": 7,
+    "outcome": "at least one winning Lightning event in the next 7 chronological rounds",
+    "noRetuning": true
+  },
+  "prospectiveEpisodeProtocol": {
+    "onlyRoundsWithTimestampAfterFrozenAt": true,
+    "episodesDoNotOverlap": true,
+    "trigger": "when no episode is active and the completed-round state has gap >= 8, open one prediction for the following 7 rounds",
+    "close": "success immediately at first winning Lightning event; otherwise failure after 7 completed future rounds",
+    "noBackfilledPreFreezeRoundCanCount": true
+  },
+  "frozenNull": {
+    "winnerLightningPerRoundRate": 0.067053,
+    "iidProbabilityAtLeastOneIn7": 0.384823,
+    "empiricalAllAnchor7RoundRateAtFreeze": 0.376573,
+    "primaryComparator": "iidProbabilityAtLeastOneIn7",
+    "secondaryComparator": "empiricalAllAnchor7RoundRateAtFreeze"
+  },
+  "gates": {
+    "minimumClosedEpisodesForDirectionalRead": 30,
+    "minimumClosedEpisodesForFormalRead": 100,
+    "minimumProspectivePaperRoundsBeforeAnyPromotion": 10000,
+    "requirePositiveLiftVsBothFrozenNulls": true,
+    "requireConfidenceIntervalAndCalibration": true,
+    "requireSeparateNumberSelectionEdge": true,
+    "realMoneyAllowed": false
+  },
+  "immutability": "Do not change threshold, horizon, trigger, outcome, comparator or gates. Any change creates v2 and restarts prospectivo."
+}
