@@ -1,0 +1,28 @@
+name: Loterias AI Lightning CasinoScores Discovery
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/lightning/discover-casinoscores-public.mjs'
+      - '.github/workflows/loterias-ai-lightning-casinoscores-discovery.yml'
+permissions:
+  contents: write
+jobs:
+  discover:
+    if: github.actor != 'github-actions[bot]' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - run: node loterias-ai/casino/lightning/discover-casinoscores-public.mjs
+      - name: Persist discovery evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/casino/lightning/evidence/casinoscores-discovery.json
+          git commit -m "research(casino): persist CasinoScores public discovery" || exit 0
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin HEAD:"$GITHUB_REF_NAME"
