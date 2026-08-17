@@ -7,8 +7,10 @@ const base='https://api-cs.casino.org/svc-evolution-game-events/api/lightningrou
 const root='loterias-ai/casino/lightning';
 const outFile=path.join(root,'data','casinoorg-lightningroulette.jsonl');
 const evidenceFile=path.join(root,'evidence','casinoorg-page-backfill.json');
-const maxPages=Math.max(20,Math.min(500,Number(process.env.LIGHTNING_MAX_PAGES||200)));
-const pageSize=Math.max(30,Math.min(100,Number(process.env.LIGHTNING_PAGE_SIZE||100)));
+const maxPages=Math.max(20,Math.min(500,Number(process.env.LIGHTNING_MAX_PAGES||75)));
+// Deep-history probing proved that this endpoint paginates reliably at size=30;
+// size=100 returns empty on deep pages and must not be the default for backfill.
+const pageSize=Math.max(1,Math.min(30,Number(process.env.LIGHTNING_PAGE_SIZE||30)));
 const delayMs=Math.max(100,Math.min(2000,Number(process.env.LIGHTNING_DELAY_MS||150)));
 fs.mkdirSync(path.dirname(outFile),{recursive:true});
 fs.mkdirSync(path.dirname(evidenceFile),{recursive:true});
