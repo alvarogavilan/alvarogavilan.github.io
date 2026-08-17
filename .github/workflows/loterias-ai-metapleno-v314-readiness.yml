@@ -1,0 +1,28 @@
+name: Loterias AI MetaPleno v314 Readiness
+on:
+  push:
+    branches:
+      - research/metapleno-v314-prospective-boundary-freeze
+    paths:
+      - 'loterias-ai/data/research/metapleno-v314-preregister.json'
+      - 'loterias-ai/research/megalab/v314-readiness-gate.mjs'
+      - 'loterias-ai/research/megalab/v314-readiness-strict.mjs'
+      - '.github/workflows/loterias-ai-metapleno-v314-readiness.yml'
+  workflow_dispatch:
+
+jobs:
+  readiness:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate frozen v314 contract without prospective outcome access
+        run: node loterias-ai/research/megalab/v314-readiness-strict.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v314-execution-readiness
+          path: loterias-ai/data/research/metapleno-v314-execution-readiness.json
