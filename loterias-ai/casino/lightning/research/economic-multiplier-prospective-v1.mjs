@@ -159,7 +159,7 @@ const result={
     positiveVsSecondary:live.successRate>p1,
     calibrationReferenceInsideWilson95:live.calibrationReferenceInsideWilson95,
     minimum10000ProspectiveRoundsReached:finalBoundaryReached,
-    fixedFinalTimingGatePass,
+    fixedFinalTimingGatePass:fixedFinalTimingPass,
     formalTimingGatePass:fixedFinalTimingPass,
     separateNumberSelectionProspectiveEdge,
     promotionGatePass,
