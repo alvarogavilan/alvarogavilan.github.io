@@ -11,7 +11,7 @@ on:
       - '.github/workflows/loterias-ai-lightning-economic-study.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   economic-study:
@@ -23,7 +23,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
       - name: Run 15 EUR coverage and multiplier-window study
         run: node loterias-ai/casino/lightning/research/economic-coverage-window-v1.mjs
       - name: Upload scientific evidence
@@ -32,3 +32,24 @@ jobs:
           name: lightning-economic-coverage-window-v1
           path: loterias-ai/casino/lightning/evidence/economic-coverage-window-v1.json
           if-no-files-found: error
+      - name: Persist evidence on main
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add loterias-ai/casino/lightning/evidence/economic-coverage-window-v1.json
+          if git diff --cached --quiet; then
+            echo "No evidence change to persist"
+            exit 0
+          fi
+          git commit -m "research(lightning): refresh 15 euro economic evidence"
+          for attempt in 1 2 3; do
+            git pull --rebase origin main
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "Concurrent main update; retrying"
+            sleep 2
+          done
+          echo "Unable to persist evidence after retries" >&2
+          exit 1
