@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: '37 * * * *'
   push:
-    branches: [research/lightning-corpus-ops-v3]
+    branches: [main, research/lightning-corpus-ops-v3]
     paths: ['loterias-ai/casino/lightning/**','.github/workflows/loterias-ai-lightning-corpus-readiness.yml']
 permissions: {contents: write}
 concurrency: {group: lightning-corpus-readiness, cancel-in-progress: false}
