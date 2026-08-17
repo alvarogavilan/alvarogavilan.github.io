@@ -1,0 +1,42 @@
+name: Loterias AI MetaPleno v54r1 Bonoloto Budget8 Replication
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v54r1-bonoloto-budget8-prospective-freeze.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v54r1-bonoloto-budget8-prospective.yml'
+permissions: {contents: write}
+concurrency: {group: loterias-ai-v54r1-budget8-prospective, cancel-in-progress: false}
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - run: node loterias-ai/scripts/meta-pleno-v54r1-bonoloto-budget8-prospective-freeze.mjs
+      - name: Enforce unchanged replication and PAPER gates
+        run: node -e "const x=require('./loterias-ai/data/shadow/bonoloto-v54r1-budget8-freeze-status.json');if(x.realMoneyPass||x.budget.realStakeEUR!==0||x.retuningPerformed||x.specUnchanged!==true)process.exit(1)"
+      - name: Persist freeze safely
+        run: |
+          set -euo pipefail
+          s=loterias-ai/data/shadow/bonoloto-v54r1-budget8-freeze-status.json
+          f=loterias-ai/data/shadow/bonoloto-2026-08-17-metapleno-v54r1-budget8.json
+          cp "$s" /tmp/v54r1-status.json
+          [ ! -f "$f" ] || cp "$f" /tmp/v54r1-freeze.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3; do
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard "origin/$GITHUB_REF_NAME"
+            cp /tmp/v54r1-status.json "$s"
+            if [ -f /tmp/v54r1-freeze.json ] && [ ! -f "$f" ]; then cp /tmp/v54r1-freeze.json "$f"; fi
+            git add "$s" "$f" 2>/dev/null || true
+            git diff --cached --quiet && exit 0
+            git commit -m 'research(loterias-ai): persist v54r1 unchanged prospective freeze'
+            git push origin HEAD:"$GITHUB_REF_NAME" && exit 0
+            sleep $((i*2))
+          done
+          exit 1
