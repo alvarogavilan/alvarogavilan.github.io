@@ -1,0 +1,30 @@
+name: Loterias AI Lightning Free Public Capture
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+permissions:
+  contents: write
+concurrency:
+  group: lightning-free-public-capture
+  cancel-in-progress: false
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - name: Capture free public Lightning evidence
+        run: node loterias-ai/casino/lightning/collect-casinoscore-public.mjs
+      - name: Certify corpus readiness
+        run: node loterias-ai/casino/lightning/corpus-readiness.mjs
+      - name: Persist public observations and evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/casino/lightning
+          git commit -m "research(casino): accumulate free Lightning observations" || exit 0
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin HEAD:"$GITHUB_REF_NAME"

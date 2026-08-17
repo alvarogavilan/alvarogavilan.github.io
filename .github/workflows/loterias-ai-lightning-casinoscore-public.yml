@@ -1,0 +1,26 @@
+name: Loterias AI Lightning CasinoScore Public
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '11 * * * *'
+permissions: {contents: write}
+concurrency: {group: lightning-casinoscore-public, cancel-in-progress: false}
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - run: node loterias-ai/casino/lightning/collect-casinoscore-public.mjs
+      - name: Scientific gate
+        run: node -e "const x=require('./loterias-ai/casino/lightning/evidence/casinoscore-public.json');if(x.trainingEligible)process.exit(1);if(!x.free)process.exit(1)"
+      - name: Persist public observation
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/casino/lightning/data/public-observation loterias-ai/casino/lightning/evidence/casinoscore-public.json
+          git commit -m "research(casino): persist free Lightning public observation" || exit 0
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push
