@@ -18,12 +18,16 @@ for(const f of fs.readdirSync(DIR).filter(x=>/^\d{4}\.json$/.test(x)).sort()){
 rows=rows.filter(r=>r.drawDate&&Array.isArray(r.result?.main)&&r.result.main.length===6&&new Set(r.result.main).size===6).sort((a,b)=>a.drawDate.localeCompare(b.drawDate));
 if(!rows.length){writeStatus('AWAITING_ARCHIVE_DATA');process.exit(0)}
 const latest=rows.at(-1).drawDate;
-if(latest!==REQUIRED_PREVIOUS){writeStatus('AWAITING_REQUIRED_PREVIOUS_DRAW',{latestArchiveDrawDate:latest,reason:`Freeze forbidden until archive latest draw is exactly ${REQUIRED_PREVIOUS}`});process.exit(0)}
 if(fs.existsSync(OUT)){
   const old=JSON.parse(fs.readFileSync(OUT,'utf8'));
   writeStatus('ALREADY_FROZEN_IMMUTABLE',{latestArchiveDrawDate:latest,sealSHA256:old.sealSHA256,pool:old.pool});
   process.exit(0);
 }
+if(latest>REQUIRED_PREVIOUS){
+  writeStatus('MISSED_PROSPECTIVE_FREEZE',{latestArchiveDrawDate:latest,terminal:true,retrospectiveReconstructionAllowed:false,targetResultInspectedForSelection:false,reason:`Prospective freeze window closed: archive advanced beyond required cutoff ${REQUIRED_PREVIOUS} before an immutable freeze was created. Target ${TARGET} will not be reconstructed or backdated.`,next:'Create a new preregistered freeze for a future Bonoloto target using only data available before that target.'});
+  process.exit(0);
+}
+if(latest<REQUIRED_PREVIOUS){writeStatus('AWAITING_REQUIRED_PREVIOUS_DRAW',{latestArchiveDrawDate:latest,reason:`Freeze forbidden until archive latest draw is exactly ${REQUIRED_PREVIOUS}`});process.exit(0)}
 const truth=rows.map(r=>new Set(r.result.main));
 const prefix=Array(rows.length+1);prefix[0]=new Uint16Array(50);
 const lastSeen=new Int32Array(50);lastSeen.fill(-1);
