@@ -19,11 +19,19 @@ jobs:
       - run: node loterias-ai/casino/lightning/corpus-readiness.mjs
       - name: Enforce scientific gates
         run: node -e "const x=require('./loterias-ai/casino/lightning/evidence/corpus-readiness.json');if(x.aggregateDataAccepted||x.syntheticDataAccepted||x.realMoney)process.exit(1)"
-      - name: Persist readiness evidence
+      - name: Persist readiness evidence safely
         run: |
+          set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add loterias-ai/casino/lightning/evidence/corpus-readiness.json
-          git commit -m "research(casino): refresh Lightning corpus readiness" || exit 0
-          git pull --rebase origin "$GITHUB_REF_NAME"
-          git push
+          for attempt in 1 2 3; do
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard "origin/$GITHUB_REF_NAME"
+            node loterias-ai/casino/lightning/corpus-readiness.mjs
+            git add loterias-ai/casino/lightning/evidence/corpus-readiness.json loterias-ai/casino/lightning/evidence/corpus-audit.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m "research(casino): refresh Lightning corpus readiness"
+            if git push origin HEAD:"$GITHUB_REF_NAME"; then exit 0; fi
+            sleep $((attempt * 2))
+          done
+          exit 1
