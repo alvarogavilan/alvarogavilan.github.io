@@ -1,7 +1,7 @@
 {
   "version": "v314",
   "family": "SIXTH_NUMBER_BOUNDARY_RESCUE_AUDIT",
-  "status": "PREREGISTERED",
+  "status": "PREREGISTERED_CONTRACT_FROZEN",
   "goal": "Test whether some historical 5/6 events can be rescued by a strictly causal boundary-ranking mechanism without using target outcomes.",
   "scope": {
     "nearFullDefinition": "exactly 5 of 6 main numbers",
@@ -20,6 +20,78 @@
     "realMoneyPass": false,
     "realStakeEUR": 0
   },
-  "successGate": "Must improve reproducibly on frozen baselines in holdout and survive matched-cost null plus multiplicity correction.",
-  "failureGate": "Archive as negative if rescue appears only in discovery, fails null testing, or requires post-hoc threshold changes."
+  "design": {
+    "frozenRankerArtifact": {
+      "sourceVersion": "v141",
+      "sourceCommit": "6ab3c6b324c9320ae2cb38e72bc4f1891ab727be",
+      "sourcePath": "loterias-ai/data/research/meta-pleno-v141-sixth-rescue.json",
+      "rankerFamily": "v138 DYNAMIC_COOCCURRENCE_GRAPH_TOPOLOGY",
+      "rankerSourceCommit": "c52642b8c457976c8de6e3c23a1de37583dcf0a2",
+      "rankerSourcePath": "loterias-ai/data/research/meta-pleno-v138-bonoloto-graph-topology.json",
+      "frozenConfigs": "all 12 configurations frozen by v141; no configuration may be added, removed or retuned after this contract"
+    },
+    "frozenTicketCutoff": {
+      "poolSize": 8,
+      "cutoffRank": 8,
+      "theoreticalStakeEUR": 14,
+      "boundaryRules": [
+        "rank9_drop8",
+        "rank10_drop8",
+        "rank9_drop7"
+      ],
+      "rulePolicy": "exactly these three pre-existing v141 boundary substitutions; no new rescue rule may be introduced after freeze"
+    },
+    "discoveryWindow": {
+      "start": "1989-08-13",
+      "end": "2026-08-14",
+      "note": "2018-05-25 through 2026-08-14 was previously exposed by v138/v141 and is therefore discovery evidence for v314, not a clean v314 holdout"
+    },
+    "holdoutWindow": {
+      "start": "2026-08-18",
+      "end": "OPEN_PROSPECTIVE",
+      "prospectiveOnly": true,
+      "note": "Only draws whose predictions/rankings are frozen before the official draw may enter v314 validation"
+    },
+    "matchedCostNullSpec": {
+      "conditioning": "same eligible baseline 5/6 event and same frozen 8-number pool",
+      "operation": "one add/drop substitution per tested rescue, preserving pool size 8 and 14 EUR theoretical ticket cost",
+      "addCandidate": "uniform without replacement from numbers 1..49 not in the frozen pool",
+      "dropCandidate": "uniform from the eight numbers in the frozen pool",
+      "replicatesPerEligibleEvent": 10000,
+      "nullUsesTargetOutcomeForSelection": false
+    }
+  },
+  "freeze": {
+    "multiplicityFamilySize": 36,
+    "multiplicityMethod": "Holm-Bonferroni family-wise error control at alpha=0.05 over 12 frozen ranker configurations x 3 frozen boundary rules",
+    "deterministicSeed": 31420260817,
+    "minimumEligibleEvents": 10,
+    "successMetric": "primary: rescued5to6 rate among prospectively eligible baseline 5/6 events; success requires positive uplift over the matched-cost null with Holm-adjusted p<0.05 and no post-freeze retuning"
+  },
+  "inference": {
+    "secondaryMetrics": [
+      "missingWinnerRank distribution relative to cutoff 8",
+      "boundary rank 9/10 occupancy",
+      "deep-miss rate rank >=11",
+      "4/6, 5/6 and 6/6 counts before and after rescue",
+      "uplift versus uniform matched-cost null",
+      "temporal stability by prospectively completed blocks"
+    ],
+    "promotionPolicy": "No predictive claim and no real-money promotion before minimumEligibleEvents is reached and the primary successMetric survives multiplicity correction.",
+    "prospectiveFreezeEvidenceRequired": [
+      "timestamp",
+      "version",
+      "algorithm/config id",
+      "ranked numbers",
+      "frozen pool",
+      "candidate boundary substitution",
+      "theoretical cost",
+      "SHA256 or equivalent immutable seal"
+    ]
+  },
+  "successGate": "Must improve reproducibly on frozen baselines in prospective holdout and survive matched-cost null plus multiplicity correction.",
+  "failureGate": "Archive as negative if rescue appears only in historical discovery, fails the prospective matched-cost null, or requires post-hoc threshold/rule changes.",
+  "scientificNote": "The previously exposed 2018-2026 interval is explicitly not reused as a fresh v314 holdout. v314 validation starts prospectively after this contract freeze.",
+  "realMoneyPass": false,
+  "realStakeEUR": 0
 }
