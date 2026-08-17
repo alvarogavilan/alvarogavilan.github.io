@@ -1,6 +1,11 @@
 name: Loterias AI Lightning TrackerSino Backfill v1
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/lightning/research/trackersino-historical-backfill-v1.mjs'
+      - '.github/workflows/loterias-ai-lightning-trackersino-backfill-v1.yml'
   schedule:
     - cron: '17 * * * *'
 permissions:
