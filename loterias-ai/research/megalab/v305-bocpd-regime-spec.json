@@ -1,0 +1,23 @@
+{
+  "version":"v305",
+  "family":"BAYESIAN_ONLINE_CHANGEPOINT_REGIMES",
+  "status":"PREREGISTERED",
+  "hypothesis":"If the generator exhibits temporary regime shifts, a causal change-point detector fitted only to prior draws may improve next-draw marginals during newly detected regimes.",
+  "selectionWindow":"2019-01-01/2023-01-01",
+  "oosWindow":"2023-01-01/2025-01-01",
+  "postFreezeWindow":"2025-01-01+",
+  "hazards":[32,64,128,256],
+  "minRuns":[16,32,64,96],
+  "decays":[0.95,0.98,0.995,1],
+  "globalBlends":[0,0.25,0.5,0.75],
+  "diversityPenalties":[0,0.05,0.1,0.2],
+  "phases":8,
+  "logicalScientists":32768,
+  "historicalScreenMax":4096,
+  "behavioralDedup":true,
+  "gates":{"validationTouched":false,"postFreezeTouched":false,"retuningAfterFreeze":false,"realMoneyPass":false,"realStakeEUR":0,"ordinaryBudgetMaxEUR":4},
+  "promotion":{"stage1_2":"Near-full independent behavior required for dense selection.","stage3":"Dense selection-only replay and immutable freeze.","stage4":"Strict blind OOS.","stage5":"2025+ only after OOS survival."},
+  "antiDuplication":["v300-causal-states","v303-renewal-hazard","v304-transfer-entropy"],
+  "realMoneyPass":false,
+  "realStakeEUR":0
+}
