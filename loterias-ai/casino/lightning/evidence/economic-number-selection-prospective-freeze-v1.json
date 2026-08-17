@@ -1,0 +1,77 @@
+{
+  "version": "economic-number-selection-prospective-freeze-v1",
+  "mode": "PAPER_ONLY",
+  "registeredFromMain": "cad105e834a88d378b5be21781f6ea9bb0836424",
+  "registeredCorpus": {
+    "authoritativeRounds": 2103,
+    "fingerprint": "5492ef21fe2072d114b3084df798a947e062c9ca607b43b845e9693cccbc1e10"
+  },
+  "prospectiveStartsAt": "2026-08-17T22:30:00Z",
+  "reasonForFutureBarrier": "The start barrier is deliberately later than the freeze commit so the rule family is public in Git history before any eligible outcome can enter the prospective sample.",
+  "objective": "Test whether a fully preregistered family of 3-number or 4-number selectors can predict the roulette winning number above the uniform k/37 null on genuinely future rounds, independently of the Lightning timing hypothesis.",
+  "candidateFamily": {
+    "coverages": [3, 4],
+    "modes": ["hot", "cold", "recent", "notRecent", "transition", "wheelLast"],
+    "lookbacks": [5, 8, 10, 12, 15, 20, 30, 50, 80, 120, 200],
+    "cartesianProduct": true,
+    "candidatesPerCoverage": 66,
+    "totalCandidates": 132,
+    "historicalCandidateSelectionBeforeFreeze": false
+  },
+  "twoPhaseProtocol": {
+    "phaseA": {
+      "name": "PROSPECTIVE_SELECTION",
+      "rounds": 5000,
+      "purpose": "Choose exactly one selector for each coverage using only the first 5000 eligible future rounds.",
+      "selectionMetric": "highest hitExcess versus k/37; tie-break by lower exact one-sided binomial p, then lower lookback, then lexicographic mode",
+      "promotionClaimAllowed": false,
+      "interimPerformanceDisclosure": false
+    },
+    "phaseB": {
+      "name": "PROSPECTIVE_CONFIRMATION",
+      "rounds": 5000,
+      "startsAfterPhaseA": true,
+      "selectors": "the two deterministic phase-A winners only; no retuning",
+      "primaryTest": "exact one-sided binomial against k/37",
+      "familywiseCorrection": "Bonferroni across the 2 coverage finalists",
+      "alphaFamily": 0.05,
+      "alphaPerFinalist": 0.025,
+      "requirePositiveHitExcess": true,
+      "interimPerformanceDisclosure": false
+    },
+    "fixedFinalBoundary": 10000,
+    "postBoundaryDataMayRescueV1": false
+  },
+  "economicReporting": {
+    "stakePerRoundEUR": 15,
+    "reportPaperPnl": true,
+    "paperPnlIsSelectionCriterion": false,
+    "paperPnlIsPrimaryConfirmationGate": false,
+    "reason": "Rare Lightning multipliers can dominate realized P&L; the primary number-selection claim is winner prediction above the uniform null."
+  },
+  "promotionGate": {
+    "minimumEligibleFutureRounds": 10000,
+    "requirePhaseBExactPAtMost": 0.025,
+    "requirePhaseBPositiveHitExcess": true,
+    "requireNoRetuning": true,
+    "requireCandidateFamilyUnchanged": true,
+    "requireSeparateTimingGateForAnyCombinedTimingStrategy": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false
+  },
+  "readPolicy": {
+    "before5000": "ADMINISTRATIVE_COUNTS_ONLY_NO_MODEL_RANKING",
+    "from5000To9999": "PHASE_A_WINNERS_MAY_BE_REVEALED; PHASE_B_OUTCOMES REMAIN BLINDED",
+    "at10000": "SINGLE_FIXED_CONFIRMATION_READ",
+    "after10000": "V1_RESULT_IMMUTABLE; LATER DATA CANNOT RESCUE A FAIL"
+  },
+  "guards": {
+    "noFutureLeakage": true,
+    "noHistoricalWinnerChosenFromOldHoldout": true,
+    "all132CandidatesFrozenBeforeEligibleFuture": true,
+    "phaseBIndependentOfPhaseASelectionOutcomes": true,
+    "optionalStoppingBlocked": true,
+    "timingAndNumberSelectionRemainSeparateClaims": true,
+    "realMoneyAllowed": false
+  }
+}
