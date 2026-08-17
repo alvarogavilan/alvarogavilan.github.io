@@ -1,0 +1,59 @@
+name: Loterias AI - Lightning permutation walk-forward
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/lightning/research/lightning-permutation-walkforward-v2.mjs'
+      - 'loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl'
+      - '.github/workflows/loterias-ai-lightning-permutation-walkforward.yml'
+  schedule:
+    - cron: '17 */6 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-lightning-permutation-walkforward
+  cancel-in-progress: false
+
+jobs:
+  validate-and-persist:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run repaired Lightning walk-forward
+        run: node loterias-ai/casino/lightning/research/lightning-permutation-walkforward-v2.mjs
+
+      - name: Fail closed on invalid evidence
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const p='loterias-ai/casino/lightning/evidence/permutation-walkforward-v2.json';
+          const j=JSON.parse(fs.readFileSync(p,'utf8'));
+          const ns=[j?.walkForward?.train?.n,j?.walkForward?.validation?.n,j?.walkForward?.test?.n];
+          if (!Number.isInteger(j.rounds) || j.rounds < 100) throw new Error(`invalid rounds=${j.rounds}`);
+          if (ns.some(n => !Number.isInteger(n) || n < 0)) throw new Error(`invalid segment sizes=${JSON.stringify(ns)}`);
+          if (j?.guards?.realMoney !== false || j?.guards?.claimAllowed !== false) throw new Error('safety guards must remain fail-closed');
+          if (j?.guards?.noNegativeSampleSizes !== true) throw new Error('negative-size guard missing');
+          console.log(JSON.stringify({version:j.version,rounds:j.rounds,train:ns[0],validation:ns[1],test:ns[2],chosenLag:j.walkForward.train.chosenLag,realMoney:j.guards.realMoney,claimAllowed:j.guards.claimAllowed},null,2));
+          NODE
+
+      - name: Persist evidence when changed
+        run: |
+          if git diff --quiet -- loterias-ai/casino/lightning/evidence/permutation-walkforward-v2.json; then
+            echo 'Evidence unchanged.'
+            exit 0
+          fi
+          git config user.name 'loterias-ai-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add loterias-ai/casino/lightning/evidence/permutation-walkforward-v2.json
+          git commit -m 'data(casino): persist Lightning permutation walk-forward evidence'
+          git pull --rebase origin main
+          git push origin HEAD:main
