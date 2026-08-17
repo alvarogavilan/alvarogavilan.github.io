@@ -12,33 +12,37 @@
     const stats=document.querySelector('.stats');if(!stats)return;
     const sec=document.createElement('section');sec.id='fullHorizon';sec.className='card';
     sec.style.cssText='margin-top:12px;border-color:#cfe7da;background:linear-gradient(180deg,#fff,#f5fbf8)';
-    sec.innerHTML='<div class="row"><div><div class="name">Horizonte al pleno</div><div class="meta">Estimación auditada: nunca cuenta atrás ni promesa.</div></div><span class="badge pending" id="etaBadge">EVIDENCIA EN CURSO</span></div><div class="metrics" style="margin-top:12px"><div class="metric"><small>Sorteos reales observados</small><strong id="etaObserved">—</strong></div><div class="metric"><small>Ritmo empírico AI</small><strong id="etaEmpirical">—</strong></div><div class="metric"><small>Referencia azar Budget8</small><strong id="etaBaseline">—</strong></div></div><div class="evidence" id="etaExplain">Calculando...</div><div class="evidence" id="etaRequirements" style="margin-top:8px"></div>';
+    sec.innerHTML='<div class="row"><div><div class="name">Horizonte al pleno</div><div class="meta">Estado auditado: evidencia útil, nunca cuenta atrás ni promesa.</div></div><span class="badge pending" id="etaBadge">EVIDENCIA EN CURSO</span></div><div class="metrics" style="margin-top:12px"><div class="metric"><small>INTENTOS PROSPECTIVOS EVALUADOS</small><strong id="etaObserved">—</strong></div><div class="metric"><small>MEJOR RESULTADO PROSPECTIVO</small><strong id="etaEmpirical">—</strong></div><div class="metric"><small>REFERENCIA AZAR BUDGET8</small><strong id="etaBaseline">—</strong></div></div><div class="evidence" id="etaExplain">Calculando...</div><div class="evidence" id="etaRequirements" style="margin-top:8px"></div>';
     stats.insertAdjacentElement('afterend',sec)
   }
   async function render(){
     injectShell();if(!document.getElementById('fullHorizon'))return;
-    const seen=read(),draws=new Set(seen.map(x=>`${x.gameId}|${x.targetDate||x.drawDate||'sin-fecha'}`));
-    document.getElementById('etaObserved').textContent=fmt(draws.size);
+    const localSeen=read(),localDraws=new Set(localSeen.map(x=>`${x.gameId}|${x.targetDate||x.drawDate||'sin-fecha'}`));
+    document.getElementById('etaObserved').textContent=fmt(localDraws.size);
+    document.getElementById('etaEmpirical').textContent='—';
     document.getElementById('etaBaseline').textContent='~'+fmt(expected)+' sorteos';
     try{
-      const d=await fetch('../data/research/metapleno-research-registry.json?eta='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw 0;return r.json()});
+      const [d,ledger]=await Promise.all([
+        fetch('../data/research/metapleno-research-registry.json?eta='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw 0;return r.json()}),
+        fetch('../data/shadow/public-attempts-v1.json?eta='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():null).catch(()=>null)
+      ]);
       const s=d.summary||{},clean=Number(s.repeatFullSignalArtifacts||0),configs=Number(s.knownCandidateConfigurations||0),single=Number(s.singleFullSignalArtifacts||0);
-      const remaining=Math.max(0,MIN_REPLICATED_FULLS-clean);
-      const badge=document.getElementById('etaBadge');
+      const attempts=Array.isArray(ledger?.attempts)?ledger.attempts:[],evaluated=Number(ledger?.counts?.evaluated||attempts.length||localDraws.size),best=attempts.length?Math.max(...attempts.map(a=>Number(a.bestMainHits||0))):0;
+      const latest=attempts.slice().sort((a,b)=>String(b.targetDrawDate||'').localeCompare(String(a.targetDrawDate||'')))[0];
+      const remaining=Math.max(0,MIN_REPLICATED_FULLS-clean),badge=document.getElementById('etaBadge');
+      document.getElementById('etaObserved').textContent=fmt(evaluated);
+      document.getElementById('etaEmpirical').textContent=attempts.length?`${best}/6`:'SIN LEDGER';
       if(clean>=MIN_REPLICATED_FULLS){
         const configsPer=Math.max(1,Math.round(configs/clean));
-        document.getElementById('etaEmpirical').textContent='~'+fmt(configsPer)+' cfg/pleno';
-        badge.textContent='CALIBRACIÓN DISPONIBLE';
-        document.getElementById('etaExplain').innerHTML=`El laboratorio acumula <b>${fmt(clean)} plenos replicados</b> sobre <b>${fmt(configs)} configuraciones</b>: ritmo descriptivo ~<b>${fmt(configsPer)} configuraciones por pleno replicado</b>. Esto describe el laboratorio; no predice cuándo llegará el siguiente pleno real.`;
-        document.getElementById('etaRequirements').innerHTML=`<b>Qué exigimos antes de convertirlo en una ETA útil:</b> supervivencia fuera de muestra y prospectiva congelada, comparación contra NULL/azar y estabilidad del efecto. Si la ventaja no sobrevive, la ETA vuelve a bloquearse.`;
+        badge.textContent='CALIBRACIÓN DESCRIPTIVA';
+        document.getElementById('etaExplain').innerHTML=`El laboratorio acumula <b>${fmt(clean)} plenos replicados</b> sobre <b>${fmt(configs)} configuraciones</b> (~<b>${fmt(configsPer)} configuraciones por pleno replicado</b>). En el ledger prospectivo público hay <b>${fmt(evaluated)} intentos evaluados</b> y el mejor resultado observado es <b>${best}/6</b>${latest?.targetDrawDate?` (último objetivo: <b>${latest.targetDrawDate}</b>)`:''}. Esto describe lo ocurrido; no predice la fecha del próximo pleno.`;
+        document.getElementById('etaRequirements').innerHTML='<b>Para convertirlo en un horizonte defendible:</b> la frecuencia debe sobrevivir fuera de muestra, prospectiva congelada, controles NULL/azar y replicación temporal suficiente. Si falla cualquiera de esos controles, el horizonte permanece bloqueado.';
       }else{
-        document.getElementById('etaEmpirical').textContent='NO ESTIMABLE';
-        badge.textContent='BLOQUEADO POR EVIDENCIA';
-        document.getElementById('etaExplain').innerHTML=`<b>Por qué no podemos estimarlo todavía:</b> hay <b>${fmt(configs)} configuraciones investigadas</b>, <b>${fmt(clean)} plenos replicados</b> y ${single?`<b>${fmt(single)} pleno(s) aislado(s)</b>`:'<b>0 plenos aislados registrados</b>'}. Un acierto aislado puede ser azar y no permite inferir una frecuencia reproducible. Inventar ahora una fecha sería científicamente falso.`;
-        document.getElementById('etaRequirements').innerHTML=`<b>Qué falta exactamente:</b> exigimos al menos <b>${MIN_REPLICATED_FULLS} plenos replicados</b> como umbral operativo inicial; faltan <b>${fmt(remaining)}</b>. Después deberán sobrevivir a validación OOS/prospectiva y superar controles NULL. Referencia sin ventaja: 28 líneas entre ${fmt(totalComb)} combinaciones ⇒ esperanza ~<b>${fmt(expected)} sorteos</b>, mediana ~<b>${fmt(median)}</b>.`;
+        badge.textContent='HORIZONTE BLOQUEADO';
+        document.getElementById('etaExplain').innerHTML=`<b>No hay una ETA honesta todavía.</b> Sí hay información útil: <b>${fmt(configs)} configuraciones investigadas</b>, <b>${fmt(clean)} plenos replicados</b>, <b>${fmt(evaluated)} intentos prospectivos evaluados</b> y mejor resultado prospectivo <b>${best}/6</b>${latest?.targetDrawDate?` con último sorteo objetivo <b>${latest.targetDrawDate}</b>`:''}. Un acierto aislado o una muestra corta no permite inferir cuándo llegará un pleno.`;
+        document.getElementById('etaRequirements').innerHTML=`<b>Qué falta exactamente:</b> umbral operativo inicial de <b>${MIN_REPLICATED_FULLS} plenos replicados</b>; faltan <b>${fmt(remaining)}</b>. Después deben sobrevivir OOS/prospectiva y superar NULL. ${single?`Hay además <b>${fmt(single)} señal(es) de pleno aislada(s)</b> que no cuentan como réplica. `:''}<br><b>Referencia sin ventaja:</b> 28 líneas entre ${fmt(totalComb)} combinaciones ⇒ esperanza ~<b>${fmt(expected)} sorteos</b>, mediana ~<b>${fmt(median)}</b>. No es una predicción del laboratorio.`;
       }
     }catch{
-      document.getElementById('etaEmpirical').textContent='DATOS PENDIENTES';
       document.getElementById('etaBadge').textContent='REGISTRO NO DISPONIBLE';
       document.getElementById('etaExplain').textContent='No se ha podido leer el registro científico. El sistema se niega a estimar el horizonte sin evidencia verificable.';
       document.getElementById('etaRequirements').textContent='Acción requerida: recuperar el registro, validar integridad y recalcular. No se sustituye la ausencia de datos por una estimación inventada.';
