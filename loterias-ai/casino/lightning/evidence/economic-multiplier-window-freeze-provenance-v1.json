@@ -1,0 +1,56 @@
+{
+  "version": "economic-multiplier-window-freeze-provenance-v1",
+  "purpose": "Independent chain-of-custody audit for the immutable Lightning timing prospective freeze. This file does not modify the freeze.",
+  "mode": "PAPER_ONLY",
+  "auditedArtifacts": {
+    "oosEvidence": {
+      "path": "loterias-ai/casino/lightning/evidence/economic-multiplier-window-oos-v1.json",
+      "commit": "4444ee4284991786718b6b9a55d651b1a7384b10",
+      "commitTimestamp": "2026-08-17T21:27:42Z",
+      "artifactGeneratedAt": "2026-08-17T21:27:41.134Z",
+      "rounds": 2073,
+      "frozenRule": {
+        "roundsSinceLastWinningLightningAtLeast": 8,
+        "nextRounds": 7
+      },
+      "oosDirection": {
+        "validationPositiveLift": true,
+        "validationAbsoluteLift": 0.204273,
+        "holdoutPositiveLift": true,
+        "holdoutAbsoluteLift": 0.087141,
+        "replicatedDirection": true
+      }
+    },
+    "prospectiveFreeze": {
+      "path": "loterias-ai/casino/lightning/evidence/economic-multiplier-window-prospective-freeze-v1.json",
+      "creationCommit": "f69e5d716962f4ab1bea7a982e735da3bbeeadfb",
+      "creationCommitTimestamp": "2026-08-17T21:28:36Z",
+      "creationCommitParent": "4444ee4284991786718b6b9a55d651b1a7384b10",
+      "frozenAt": "2026-08-17T21:27:45Z",
+      "sourceRoundsAtFreeze": 2073,
+      "frozenRule": {
+        "roundsSinceLastWinningLightningAtLeast": 8,
+        "predictNextRounds": 7,
+        "noRetuning": true
+      }
+    }
+  },
+  "checks": {
+    "freezeCommitDirectlyDescendsFromAuditedOosCommit": true,
+    "oosArtifactPredatesFrozenAt": true,
+    "sameSourceRoundCount": true,
+    "sameThreshold": true,
+    "sameHorizon": true,
+    "ruleMatch": true,
+    "postHocRuleSubstitutionDetected": false,
+    "freezeFileModifiedAfterCreation": false
+  },
+  "verdict": "CHAIN_OF_CUSTODY_VERIFIED",
+  "scientificInterpretation": "The v1 prospective timing rule was frozen from the immediately preceding OOS evidence commit with the same 2073-round source boundary, threshold and horizon. This verifies provenance only; it does not establish predictive or monetary advantage.",
+  "guards": {
+    "realMoneyAllowed": false,
+    "prospectiveEvidenceStillRequired": true,
+    "separateNumberSelectionEdgeStillRequired": true,
+    "doNotModifyFreezeV1": true
+  }
+}
