@@ -1,114 +1,160 @@
 {
-  "generatedAt": "2026-08-17T10:36:04.887Z",
-  "schemaVersion": 3,
-  "storage": "game/year canonical JSON partitions + reference indexes for special draws",
+  "generatedAt": "2026-08-17T10:39:47.180Z",
+  "schemaVersion": 4,
+  "storage": "canonical JSON partitions; legacy Quiniela seasonStart files are season partitions, official year files are calendar-year partitions",
+  "validationSemantics": "fail-closed exact token matching; INVALID/PENDING/UNVERIFIED/CONFLICT never count as validated",
   "games": {
     "bonoloto": {
+      "partitionKinds": [
+        "calendar-year"
+      ],
       "partitions": 39,
       "records": 9357,
       "economicsRecords": 9353,
       "economicsCoverage": 0.9995725125574436,
-      "validatedRecords": 9357,
+      "validatedRecords": 9305,
+      "validationCoverage": 0.9944426632467671,
       "earliest": "1988-02-28",
       "latest": "2026-08-16",
       "latestEconomics": "2026-08-15"
     },
     "elige8": {
+      "partitionKinds": [
+        "calendar-year"
+      ],
       "partitions": 7,
       "records": 456,
       "economicsRecords": 0,
       "economicsCoverage": 0,
-      "validatedRecords": 0,
+      "validatedRecords": 456,
+      "validationCoverage": 1,
       "earliest": "2020-01-05",
       "latest": "2026-08-09",
       "latestEconomics": null
     },
     "eurodreams": {
+      "partitionKinds": [
+        "calendar-year"
+      ],
       "partitions": 4,
       "records": 290,
       "economicsRecords": 290,
       "economicsCoverage": 1,
       "validatedRecords": 0,
+      "validationCoverage": 0,
       "earliest": "2023-11-06",
       "latest": "2026-08-13",
       "latestEconomics": "2026-08-13"
     },
     "euromillones": {
+      "partitionKinds": [
+        "calendar-year"
+      ],
       "partitions": 23,
       "records": 1971,
       "economicsRecords": 1970,
       "economicsCoverage": 0.9994926433282597,
       "validatedRecords": 0,
+      "validationCoverage": 0,
       "earliest": "2004-02-13",
       "latest": "2026-08-14",
       "latestEconomics": "2026-08-14"
     },
     "gordo-primitiva": {
+      "partitionKinds": [
+        "calendar-year"
+      ],
       "partitions": 22,
       "records": 1113,
       "economicsRecords": 1113,
       "economicsCoverage": 1,
       "validatedRecords": 0,
+      "validationCoverage": 0,
       "earliest": "2005-02-06",
       "latest": "2026-08-09",
       "latestEconomics": "2026-08-09"
     },
     "loteria-nacional": {
+      "partitionKinds": [
+        "calendar-year"
+      ],
       "partitions": 15,
       "records": 1428,
       "economicsRecords": 981,
       "economicsCoverage": 0.6869747899159664,
       "validatedRecords": 1,
+      "validationCoverage": 0.0007002801120448179,
       "earliest": "2012-05-12",
       "latest": "2026-08-15",
       "latestEconomics": "2026-08-15"
     },
     "lototurf": {
+      "partitionKinds": [
+        "calendar-year"
+      ],
       "partitions": 17,
       "records": 1154,
       "economicsRecords": 1150,
       "economicsCoverage": 0.9965337954939342,
-      "validatedRecords": 0,
+      "validatedRecords": 1150,
+      "validationCoverage": 0.9965337954939342,
       "earliest": "2010-12-05",
       "latest": "2026-08-12",
       "latestEconomics": "2026-08-12"
     },
     "primitiva": {
+      "partitionKinds": [
+        "calendar-year"
+      ],
       "partitions": 42,
       "records": 4174,
       "economicsRecords": 4174,
       "economicsCoverage": 1,
       "validatedRecords": 0,
+      "validationCoverage": 0,
       "earliest": "1985-10-17",
       "latest": "2026-08-15",
       "latestEconomics": "2026-08-15"
     },
     "quiniela": {
+      "partitionKinds": [
+        "calendar-year",
+        "season"
+      ],
       "partitions": 54,
       "records": 2425,
       "economicsRecords": 1761,
       "economicsCoverage": 0.7261855670103092,
-      "validatedRecords": 0,
+      "validatedRecords": 1761,
+      "validationCoverage": 0.7261855670103092,
       "earliest": "1972-09-03",
       "latest": "2026-08-09",
       "latestEconomics": "2026-08-09"
     },
     "quinigol": {
+      "partitionKinds": [
+        "calendar-year"
+      ],
       "partitions": 10,
       "records": 726,
       "economicsRecords": 689,
       "economicsCoverage": 0.9490358126721763,
-      "validatedRecords": 0,
+      "validatedRecords": 726,
+      "validationCoverage": 1,
       "earliest": "2017-12-06",
       "latest": "2026-08-09",
       "latestEconomics": "2026-08-09"
     },
     "quintuple-plus": {
+      "partitionKinds": [
+        "calendar-year"
+      ],
       "partitions": 17,
       "records": 1143,
       "economicsRecords": 1143,
       "economicsCoverage": 1,
-      "validatedRecords": 0,
+      "validatedRecords": 1143,
+      "validationCoverage": 1,
       "earliest": "2010-12-05",
       "latest": "2026-08-12",
       "latestEconomics": "2026-08-12"
@@ -119,11 +165,12 @@
     "partitions": 250,
     "records": 24237,
     "economicsRecords": 22624,
-    "validatedRecords": 9358
+    "validatedRecords": 14542
   },
   "partitions": [
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 1988,
       "path": "data/archive/bonoloto/1988.json",
       "records": 172,
@@ -135,6 +182,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 1989,
       "path": "data/archive/bonoloto/1989.json",
       "records": 209,
@@ -146,6 +194,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 1990,
       "path": "data/archive/bonoloto/1990.json",
       "records": 209,
@@ -157,6 +206,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 1991,
       "path": "data/archive/bonoloto/1991.json",
       "records": 209,
@@ -168,6 +218,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 1992,
       "path": "data/archive/bonoloto/1992.json",
       "records": 209,
@@ -179,6 +230,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 1993,
       "path": "data/archive/bonoloto/1993.json",
       "records": 208,
@@ -190,6 +242,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 1994,
       "path": "data/archive/bonoloto/1994.json",
       "records": 208,
@@ -201,6 +254,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 1995,
       "path": "data/archive/bonoloto/1995.json",
       "records": 208,
@@ -212,6 +266,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 1996,
       "path": "data/archive/bonoloto/1996.json",
       "records": 210,
@@ -223,6 +278,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 1997,
       "path": "data/archive/bonoloto/1997.json",
       "records": 209,
@@ -234,6 +290,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 1998,
       "path": "data/archive/bonoloto/1998.json",
       "records": 208,
@@ -245,6 +302,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 1999,
       "path": "data/archive/bonoloto/1999.json",
       "records": 209,
@@ -256,6 +314,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2000,
       "path": "data/archive/bonoloto/2000.json",
       "records": 208,
@@ -267,6 +326,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2001,
       "path": "data/archive/bonoloto/2001.json",
       "records": 209,
@@ -278,6 +338,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2002,
       "path": "data/archive/bonoloto/2002.json",
       "records": 209,
@@ -289,6 +350,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2003,
       "path": "data/archive/bonoloto/2003.json",
       "records": 209,
@@ -300,6 +362,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2004,
       "path": "data/archive/bonoloto/2004.json",
       "records": 209,
@@ -311,6 +374,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2005,
       "path": "data/archive/bonoloto/2005.json",
       "records": 208,
@@ -322,6 +386,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2006,
       "path": "data/archive/bonoloto/2006.json",
       "records": 208,
@@ -333,6 +398,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2007,
       "path": "data/archive/bonoloto/2007.json",
       "records": 209,
@@ -344,6 +410,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2008,
       "path": "data/archive/bonoloto/2008.json",
       "records": 210,
@@ -355,6 +422,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2009,
       "path": "data/archive/bonoloto/2009.json",
       "records": 208,
@@ -366,6 +434,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2010,
       "path": "data/archive/bonoloto/2010.json",
       "records": 209,
@@ -377,6 +446,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2011,
       "path": "data/archive/bonoloto/2011.json",
       "records": 208,
@@ -388,6 +458,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2012,
       "path": "data/archive/bonoloto/2012.json",
       "records": 209,
@@ -399,6 +470,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2013,
       "path": "data/archive/bonoloto/2013.json",
       "records": 209,
@@ -410,6 +482,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2014,
       "path": "data/archive/bonoloto/2014.json",
       "records": 209,
@@ -421,6 +494,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2015,
       "path": "data/archive/bonoloto/2015.json",
       "records": 289,
@@ -432,6 +506,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2016,
       "path": "data/archive/bonoloto/2016.json",
       "records": 314,
@@ -443,6 +518,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2017,
       "path": "data/archive/bonoloto/2017.json",
       "records": 312,
@@ -454,6 +530,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2018,
       "path": "data/archive/bonoloto/2018.json",
       "records": 313,
@@ -465,6 +542,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2019,
       "path": "data/archive/bonoloto/2019.json",
       "records": 313,
@@ -476,6 +554,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2020,
       "path": "data/archive/bonoloto/2020.json",
       "records": 254,
@@ -487,6 +566,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2021,
       "path": "data/archive/bonoloto/2021.json",
       "records": 313,
@@ -498,17 +578,19 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2022,
       "path": "data/archive/bonoloto/2022.json",
       "records": 327,
       "earliest": "2022-01-01",
       "latest": "2022-12-31",
       "economicsRecords": 327,
-      "validatedRecords": 327,
+      "validatedRecords": 326,
       "sha256": "8e79fd692ff4ef572efaf2787efb65390e85ba8f0b071ecb0d0d65a3fddf031e"
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2023,
       "path": "data/archive/bonoloto/2023.json",
       "records": 365,
@@ -520,6 +602,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2024,
       "path": "data/archive/bonoloto/2024.json",
       "records": 366,
@@ -531,6 +614,7 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2025,
       "path": "data/archive/bonoloto/2025.json",
       "records": 365,
@@ -542,94 +626,103 @@
     },
     {
       "gameId": "bonoloto",
+      "partitionKind": "calendar-year",
       "year": 2026,
       "path": "data/archive/bonoloto/2026.json",
       "records": 227,
       "earliest": "2026-01-01",
       "latest": "2026-08-16",
       "economicsRecords": 226,
-      "validatedRecords": 227,
+      "validatedRecords": 176,
       "sha256": "19dd9551279992cc561af6f69a7acc1377904ef3c81b094a35fe4c1683e6b004"
     },
     {
       "gameId": "elige8",
+      "partitionKind": "calendar-year",
       "year": 2020,
       "path": "data/archive/elige8/2020.json",
       "records": 55,
       "earliest": "2020-01-05",
       "latest": "2020-12-30",
       "economicsRecords": 0,
-      "validatedRecords": 0,
+      "validatedRecords": 55,
       "sha256": "74bdefe02a8e453871d8cd0c17d9bfd969d62c4d52bac4d853d3776df32cfd2f"
     },
     {
       "gameId": "elige8",
+      "partitionKind": "calendar-year",
       "year": 2021,
       "path": "data/archive/elige8/2021.json",
       "records": 67,
       "earliest": "2021-01-03",
       "latest": "2021-12-26",
       "economicsRecords": 0,
-      "validatedRecords": 0,
+      "validatedRecords": 67,
       "sha256": "afbe796f5d90fb20b51625dac8d20abe1801d133d1b82029fa643f884e8dc78c"
     },
     {
       "gameId": "elige8",
+      "partitionKind": "calendar-year",
       "year": 2022,
       "path": "data/archive/elige8/2022.json",
       "records": 72,
       "earliest": "2022-01-02",
       "latest": "2022-12-31",
       "economicsRecords": 0,
-      "validatedRecords": 0,
+      "validatedRecords": 72,
       "sha256": "a446e053e8b33b8863e750d08e69eade337f36912fa5eb0decd41a76292398e6"
     },
     {
       "gameId": "elige8",
+      "partitionKind": "calendar-year",
       "year": 2023,
       "path": "data/archive/elige8/2023.json",
       "records": 68,
       "earliest": "2023-01-08",
       "latest": "2023-12-31",
       "economicsRecords": 0,
-      "validatedRecords": 0,
+      "validatedRecords": 68,
       "sha256": "255557d06751b8c57b5e78552e0aa48652a70b32a747a91758c7bc55c39c8c22"
     },
     {
       "gameId": "elige8",
+      "partitionKind": "calendar-year",
       "year": 2024,
       "path": "data/archive/elige8/2024.json",
       "records": 74,
       "earliest": "2024-01-03",
       "latest": "2024-12-26",
       "economicsRecords": 0,
-      "validatedRecords": 0,
+      "validatedRecords": 74,
       "sha256": "5edac4073e87ec406b43abc69a45a23cb32794a328d4bda818f61bb08e0ec066"
     },
     {
       "gameId": "elige8",
+      "partitionKind": "calendar-year",
       "year": 2025,
       "path": "data/archive/elige8/2025.json",
       "records": 75,
       "earliest": "2025-01-05",
       "latest": "2025-12-28",
       "economicsRecords": 0,
-      "validatedRecords": 0,
+      "validatedRecords": 75,
       "sha256": "3f3bd900756e17368efc6547ccb9e9f960a7466f94b4307a23f0e9c0c3bffe70"
     },
     {
       "gameId": "elige8",
+      "partitionKind": "calendar-year",
       "year": 2026,
       "path": "data/archive/elige8/2026.json",
       "records": 45,
       "earliest": "2026-01-04",
       "latest": "2026-08-09",
       "economicsRecords": 0,
-      "validatedRecords": 0,
+      "validatedRecords": 45,
       "sha256": "f5fe52bbe97894959fdcbf3d71daebd6ee04516f7342e830b18a1e2a81e3eb4d"
     },
     {
       "gameId": "eurodreams",
+      "partitionKind": "calendar-year",
       "year": 2023,
       "path": "data/archive/eurodreams/2023.json",
       "records": 16,
@@ -641,6 +734,7 @@
     },
     {
       "gameId": "eurodreams",
+      "partitionKind": "calendar-year",
       "year": 2024,
       "path": "data/archive/eurodreams/2024.json",
       "records": 105,
@@ -652,6 +746,7 @@
     },
     {
       "gameId": "eurodreams",
+      "partitionKind": "calendar-year",
       "year": 2025,
       "path": "data/archive/eurodreams/2025.json",
       "records": 104,
@@ -663,6 +758,7 @@
     },
     {
       "gameId": "eurodreams",
+      "partitionKind": "calendar-year",
       "year": 2026,
       "path": "data/archive/eurodreams/2026.json",
       "records": 65,
@@ -674,6 +770,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2004,
       "path": "data/archive/euromillones/2004.json",
       "records": 47,
@@ -685,6 +782,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2005,
       "path": "data/archive/euromillones/2005.json",
       "records": 52,
@@ -696,6 +794,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2006,
       "path": "data/archive/euromillones/2006.json",
       "records": 52,
@@ -707,6 +806,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2007,
       "path": "data/archive/euromillones/2007.json",
       "records": 52,
@@ -718,6 +818,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2008,
       "path": "data/archive/euromillones/2008.json",
       "records": 52,
@@ -729,6 +830,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2009,
       "path": "data/archive/euromillones/2009.json",
       "records": 52,
@@ -740,6 +842,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2010,
       "path": "data/archive/euromillones/2010.json",
       "records": 53,
@@ -751,6 +854,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2011,
       "path": "data/archive/euromillones/2011.json",
       "records": 86,
@@ -762,6 +866,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2012,
       "path": "data/archive/euromillones/2012.json",
       "records": 104,
@@ -773,6 +878,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2013,
       "path": "data/archive/euromillones/2013.json",
       "records": 105,
@@ -784,6 +890,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2014,
       "path": "data/archive/euromillones/2014.json",
       "records": 104,
@@ -795,6 +902,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2015,
       "path": "data/archive/euromillones/2015.json",
       "records": 104,
@@ -806,6 +914,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2016,
       "path": "data/archive/euromillones/2016.json",
       "records": 105,
@@ -817,6 +926,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2017,
       "path": "data/archive/euromillones/2017.json",
       "records": 104,
@@ -828,6 +938,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2018,
       "path": "data/archive/euromillones/2018.json",
       "records": 104,
@@ -839,6 +950,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2019,
       "path": "data/archive/euromillones/2019.json",
       "records": 105,
@@ -850,6 +962,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2020,
       "path": "data/archive/euromillones/2020.json",
       "records": 104,
@@ -861,6 +974,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2021,
       "path": "data/archive/euromillones/2021.json",
       "records": 105,
@@ -872,6 +986,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2022,
       "path": "data/archive/euromillones/2022.json",
       "records": 104,
@@ -883,6 +998,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2023,
       "path": "data/archive/euromillones/2023.json",
       "records": 104,
@@ -894,6 +1010,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2024,
       "path": "data/archive/euromillones/2024.json",
       "records": 105,
@@ -905,6 +1022,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2025,
       "path": "data/archive/euromillones/2025.json",
       "records": 104,
@@ -916,6 +1034,7 @@
     },
     {
       "gameId": "euromillones",
+      "partitionKind": "calendar-year",
       "year": 2026,
       "path": "data/archive/euromillones/2026.json",
       "records": 64,
@@ -927,6 +1046,7 @@
     },
     {
       "gameId": "gordo-primitiva",
+      "partitionKind": "calendar-year",
       "year": 2005,
       "path": "data/archive/gordo-primitiva/2005.json",
       "records": 48,
@@ -938,6 +1058,7 @@
     },
     {
       "gameId": "gordo-primitiva",
+      "partitionKind": "calendar-year",
       "year": 2006,
       "path": "data/archive/gordo-primitiva/2006.json",
       "records": 52,
@@ -949,6 +1070,7 @@
     },
     {
       "gameId": "gordo-primitiva",
+      "partitionKind": "calendar-year",
       "year": 2007,
       "path": "data/archive/gordo-primitiva/2007.json",
       "records": 52,
@@ -960,6 +1082,7 @@
     },
     {
       "gameId": "gordo-primitiva",
+      "partitionKind": "calendar-year",
       "year": 2008,
       "path": "data/archive/gordo-primitiva/2008.json",
       "records": 52,
@@ -971,6 +1094,7 @@
     },
     {
       "gameId": "gordo-primitiva",
+      "partitionKind": "calendar-year",
       "year": 2009,
       "path": "data/archive/gordo-primitiva/2009.json",
       "records": 52,
@@ -982,6 +1106,7 @@
     },
     {
       "gameId": "gordo-primitiva",
+      "partitionKind": "calendar-year",
       "year": 2010,
       "path": "data/archive/gordo-primitiva/2010.json",
       "records": 52,
@@ -993,6 +1118,7 @@
     },
     {
       "gameId": "gordo-primitiva",
+      "partitionKind": "calendar-year",
       "year": 2011,
       "path": "data/archive/gordo-primitiva/2011.json",
       "records": 52,
@@ -1004,6 +1130,7 @@
     },
     {
       "gameId": "gordo-primitiva",
+      "partitionKind": "calendar-year",
       "year": 2012,
       "path": "data/archive/gordo-primitiva/2012.json",
       "records": 53,
@@ -1015,6 +1142,7 @@
     },
     {
       "gameId": "gordo-primitiva",
+      "partitionKind": "calendar-year",
       "year": 2013,
       "path": "data/archive/gordo-primitiva/2013.json",
       "records": 52,
@@ -1026,6 +1154,7 @@
     },
     {
       "gameId": "gordo-primitiva",
+      "partitionKind": "calendar-year",
       "year": 2014,
       "path": "data/archive/gordo-primitiva/2014.json",
       "records": 52,
@@ -1037,6 +1166,7 @@
     },
     {
       "gameId": "gordo-primitiva",
+      "partitionKind": "calendar-year",
       "year": 2015,
       "path": "data/archive/gordo-primitiva/2015.json",
       "records": 52,
@@ -1048,6 +1178,7 @@
     },
     {
       "gameId": "gordo-primitiva",
+      "partitionKind": "calendar-year",
       "year": 2016,
       "path": "data/archive/gordo-primitiva/2016.json",
       "records": 52,
@@ -1059,6 +1190,7 @@
     },
     {
       "gameId": "gordo-primitiva",
+      "partitionKind": "calendar-year",
       "year": 2017,
       "path": "data/archive/gordo-primitiva/2017.json",
       "records": 53,
@@ -1070,6 +1202,7 @@
     },
     {
       "gameId": "gordo-primitiva",
+      "partitionKind": "calendar-year",
       "year": 2018,
       "path": "data/archive/gordo-primitiva/2018.json",
       "records": 52,
@@ -1081,6 +1214,7 @@
     },
     {
       "gameId": "gordo-primitiva",
+      "partitionKind": "calendar-year",
       "year": 2019,
       "path": "data/archive/gordo-primitiva/2019.json",
       "records": 52,
@@ -1092,6 +1226,7 @@
     },
     {
       "gameId": "gordo-primitiva",
+      "partitionKind": "calendar-year",
       "year": 2020,
       "path": "data/archive/gordo-primitiva/2020.json",
       "records": 42,
@@ -1103,6 +1238,7 @@
     },
     {
       "gameId": "gordo-primitiva",
+      "partitionKind": "calendar-year",
       "year": 2021,
       "path": "data/archive/gordo-primitiva/2021.json",
       "records": 52,
@@ -1114,6 +1250,7 @@
     },
     {
       "gameId": "gordo-primitiva",
+      "partitionKind": "calendar-year",
       "year": 2022,
       "path": "data/archive/gordo-primitiva/2022.json",
       "records": 52,
@@ -1125,6 +1262,7 @@
     },
     {
       "gameId": "gordo-primitiva",
+      "partitionKind": "calendar-year",
       "year": 2023,
       "path": "data/archive/gordo-primitiva/2023.json",
       "records": 53,
@@ -1136,6 +1274,7 @@
     },
     {
       "gameId": "gordo-primitiva",
+      "partitionKind": "calendar-year",
       "year": 2024,
       "path": "data/archive/gordo-primitiva/2024.json",
       "records": 52,
@@ -1147,6 +1286,7 @@
     },
     {
       "gameId": "gordo-primitiva",
+      "partitionKind": "calendar-year",
       "year": 2025,
       "path": "data/archive/gordo-primitiva/2025.json",
       "records": 52,
@@ -1158,6 +1298,7 @@
     },
     {
       "gameId": "gordo-primitiva",
+      "partitionKind": "calendar-year",
       "year": 2026,
       "path": "data/archive/gordo-primitiva/2026.json",
       "records": 32,
@@ -1169,6 +1310,7 @@
     },
     {
       "gameId": "loteria-nacional",
+      "partitionKind": "calendar-year",
       "year": 2012,
       "path": "data/archive/loteria-nacional/2012.json",
       "records": 65,
@@ -1180,6 +1322,7 @@
     },
     {
       "gameId": "loteria-nacional",
+      "partitionKind": "calendar-year",
       "year": 2013,
       "path": "data/archive/loteria-nacional/2013.json",
       "records": 99,
@@ -1191,6 +1334,7 @@
     },
     {
       "gameId": "loteria-nacional",
+      "partitionKind": "calendar-year",
       "year": 2014,
       "path": "data/archive/loteria-nacional/2014.json",
       "records": 103,
@@ -1202,6 +1346,7 @@
     },
     {
       "gameId": "loteria-nacional",
+      "partitionKind": "calendar-year",
       "year": 2015,
       "path": "data/archive/loteria-nacional/2015.json",
       "records": 104,
@@ -1213,6 +1358,7 @@
     },
     {
       "gameId": "loteria-nacional",
+      "partitionKind": "calendar-year",
       "year": 2016,
       "path": "data/archive/loteria-nacional/2016.json",
       "records": 102,
@@ -1224,6 +1370,7 @@
     },
     {
       "gameId": "loteria-nacional",
+      "partitionKind": "calendar-year",
       "year": 2017,
       "path": "data/archive/loteria-nacional/2017.json",
       "records": 102,
@@ -1235,6 +1382,7 @@
     },
     {
       "gameId": "loteria-nacional",
+      "partitionKind": "calendar-year",
       "year": 2018,
       "path": "data/archive/loteria-nacional/2018.json",
       "records": 101,
@@ -1246,6 +1394,7 @@
     },
     {
       "gameId": "loteria-nacional",
+      "partitionKind": "calendar-year",
       "year": 2019,
       "path": "data/archive/loteria-nacional/2019.json",
       "records": 101,
@@ -1257,6 +1406,7 @@
     },
     {
       "gameId": "loteria-nacional",
+      "partitionKind": "calendar-year",
       "year": 2020,
       "path": "data/archive/loteria-nacional/2020.json",
       "records": 78,
@@ -1268,6 +1418,7 @@
     },
     {
       "gameId": "loteria-nacional",
+      "partitionKind": "calendar-year",
       "year": 2021,
       "path": "data/archive/loteria-nacional/2021.json",
       "records": 101,
@@ -1279,6 +1430,7 @@
     },
     {
       "gameId": "loteria-nacional",
+      "partitionKind": "calendar-year",
       "year": 2022,
       "path": "data/archive/loteria-nacional/2022.json",
       "records": 101,
@@ -1290,6 +1442,7 @@
     },
     {
       "gameId": "loteria-nacional",
+      "partitionKind": "calendar-year",
       "year": 2023,
       "path": "data/archive/loteria-nacional/2023.json",
       "records": 101,
@@ -1301,6 +1454,7 @@
     },
     {
       "gameId": "loteria-nacional",
+      "partitionKind": "calendar-year",
       "year": 2024,
       "path": "data/archive/loteria-nacional/2024.json",
       "records": 101,
@@ -1312,6 +1466,7 @@
     },
     {
       "gameId": "loteria-nacional",
+      "partitionKind": "calendar-year",
       "year": 2025,
       "path": "data/archive/loteria-nacional/2025.json",
       "records": 103,
@@ -1323,6 +1478,7 @@
     },
     {
       "gameId": "loteria-nacional",
+      "partitionKind": "calendar-year",
       "year": 2026,
       "path": "data/archive/loteria-nacional/2026.json",
       "records": 66,
@@ -1334,193 +1490,211 @@
     },
     {
       "gameId": "lototurf",
+      "partitionKind": "calendar-year",
       "year": 2010,
       "path": "data/archive/lototurf/2010.json",
       "records": 4,
       "earliest": "2010-12-05",
       "latest": "2010-12-26",
       "economicsRecords": 3,
-      "validatedRecords": 0,
+      "validatedRecords": 3,
       "sha256": "4054051be31a6299a1482b84a9fd3b8e43721501bf6e2db3d4750f8698b01074"
     },
     {
       "gameId": "lototurf",
+      "partitionKind": "calendar-year",
       "year": 2011,
       "path": "data/archive/lototurf/2011.json",
       "records": 64,
       "earliest": "2011-01-02",
       "latest": "2011-12-18",
       "economicsRecords": 63,
-      "validatedRecords": 0,
+      "validatedRecords": 63,
       "sha256": "1d52382b28b24fe703420dbdb4a78c096ff19ae91ecdd8f753a93b151351723d"
     },
     {
       "gameId": "lototurf",
+      "partitionKind": "calendar-year",
       "year": 2012,
       "path": "data/archive/lototurf/2012.json",
       "records": 63,
       "earliest": "2012-01-08",
       "latest": "2012-12-30",
       "economicsRecords": 63,
-      "validatedRecords": 0,
+      "validatedRecords": 63,
       "sha256": "b6e2f782bd9278c7201a219a6cd47eb28c33eabc59255532292066d4a2a6fa9a"
     },
     {
       "gameId": "lototurf",
+      "partitionKind": "calendar-year",
       "year": 2013,
       "path": "data/archive/lototurf/2013.json",
       "records": 63,
       "earliest": "2013-01-05",
       "latest": "2013-12-29",
       "economicsRecords": 63,
-      "validatedRecords": 0,
+      "validatedRecords": 63,
       "sha256": "d49ebc8d2ed3f755bde83773047f0cd37cd8115e4add02493e3c88fbd725bd4a"
     },
     {
       "gameId": "lototurf",
+      "partitionKind": "calendar-year",
       "year": 2014,
       "path": "data/archive/lototurf/2014.json",
       "records": 67,
       "earliest": "2014-01-05",
       "latest": "2014-12-28",
       "economicsRecords": 67,
-      "validatedRecords": 0,
+      "validatedRecords": 67,
       "sha256": "9adb3ca807135a2feef043750cbeb9df96c11e9fd910300afb7a0a41932420e7"
     },
     {
       "gameId": "lototurf",
+      "partitionKind": "calendar-year",
       "year": 2015,
       "path": "data/archive/lototurf/2015.json",
       "records": 48,
       "earliest": "2015-01-04",
       "latest": "2015-12-27",
       "economicsRecords": 48,
-      "validatedRecords": 0,
+      "validatedRecords": 48,
       "sha256": "8bad22e68d7be1a10398d792c949774e24f4ee37a52910bc29f7ccd3fd7447d9"
     },
     {
       "gameId": "lototurf",
+      "partitionKind": "calendar-year",
       "year": 2016,
       "path": "data/archive/lototurf/2016.json",
       "records": 76,
       "earliest": "2016-01-03",
       "latest": "2016-12-24",
       "economicsRecords": 75,
-      "validatedRecords": 0,
+      "validatedRecords": 75,
       "sha256": "48f1a29d8e23fb5e18299099d677b3cd31750154bc91a5411614e243e86e9be4"
     },
     {
       "gameId": "lototurf",
+      "partitionKind": "calendar-year",
       "year": 2017,
       "path": "data/archive/lototurf/2017.json",
       "records": 79,
       "earliest": "2017-01-01",
       "latest": "2017-12-31",
       "economicsRecords": 79,
-      "validatedRecords": 0,
+      "validatedRecords": 79,
       "sha256": "e320ceffcd2a1116bd6e83cedda0d3a1545c4a77fd3600e401fae01d2726f837"
     },
     {
       "gameId": "lototurf",
+      "partitionKind": "calendar-year",
       "year": 2018,
       "path": "data/archive/lototurf/2018.json",
       "records": 80,
       "earliest": "2018-01-07",
       "latest": "2018-12-29",
       "economicsRecords": 80,
-      "validatedRecords": 0,
+      "validatedRecords": 80,
       "sha256": "104157b1637763e5e01136907417587e3e28b94d415937c1f2602a33835f6f99"
     },
     {
       "gameId": "lototurf",
+      "partitionKind": "calendar-year",
       "year": 2019,
       "path": "data/archive/lototurf/2019.json",
       "records": 82,
       "earliest": "2019-01-05",
       "latest": "2019-12-29",
       "economicsRecords": 82,
-      "validatedRecords": 0,
+      "validatedRecords": 82,
       "sha256": "cd132dd3854269ee3d467c24515da0be587ad84ce94a1875bcd3013df2e4852b"
     },
     {
       "gameId": "lototurf",
+      "partitionKind": "calendar-year",
       "year": 2020,
       "path": "data/archive/lototurf/2020.json",
       "records": 80,
       "earliest": "2020-01-05",
       "latest": "2020-12-30",
       "economicsRecords": 80,
-      "validatedRecords": 0,
+      "validatedRecords": 80,
       "sha256": "6b17b5a518e8d3de862ee906762e9e90016b8b4a4a23c19f5a2219158a84dad5"
     },
     {
       "gameId": "lototurf",
+      "partitionKind": "calendar-year",
       "year": 2021,
       "path": "data/archive/lototurf/2021.json",
       "records": 80,
       "earliest": "2021-01-01",
       "latest": "2021-12-30",
       "economicsRecords": 79,
-      "validatedRecords": 0,
+      "validatedRecords": 79,
       "sha256": "843b0ae88c7fe8b65f6e88e02ef8b6bfa732b6f5954d075c7b3b7ea82d8bd0d5"
     },
     {
       "gameId": "lototurf",
+      "partitionKind": "calendar-year",
       "year": 2022,
       "path": "data/archive/lototurf/2022.json",
       "records": 80,
       "earliest": "2022-01-09",
       "latest": "2022-12-29",
       "economicsRecords": 80,
-      "validatedRecords": 0,
+      "validatedRecords": 80,
       "sha256": "6509d6d0a8f3edbbe6cce76b76e522e98ffa1b20a8939b559402e368cb41e4e7"
     },
     {
       "gameId": "lototurf",
+      "partitionKind": "calendar-year",
       "year": 2023,
       "path": "data/archive/lototurf/2023.json",
       "records": 80,
       "earliest": "2023-01-08",
       "latest": "2023-12-30",
       "economicsRecords": 80,
-      "validatedRecords": 0,
+      "validatedRecords": 80,
       "sha256": "bbca3797fd46c8da0398ce0e3065fc7254f28f5823882b376a0e03a238f7dd6c"
     },
     {
       "gameId": "lototurf",
+      "partitionKind": "calendar-year",
       "year": 2024,
       "path": "data/archive/lototurf/2024.json",
       "records": 80,
       "earliest": "2024-01-06",
       "latest": "2024-12-29",
       "economicsRecords": 80,
-      "validatedRecords": 0,
+      "validatedRecords": 80,
       "sha256": "657fd431c254584eaff37ff16f487b7ea19b3e8ea9f780f77b7b9d36016e0617"
     },
     {
       "gameId": "lototurf",
+      "partitionKind": "calendar-year",
       "year": 2025,
       "path": "data/archive/lototurf/2025.json",
       "records": 81,
       "earliest": "2025-01-04",
       "latest": "2025-12-28",
       "economicsRecords": 81,
-      "validatedRecords": 0,
+      "validatedRecords": 81,
       "sha256": "a0701cdab72bdcb079282f83e060d3b9b6ebbf6f6cc31df3ce05a8ba756f8eef"
     },
     {
       "gameId": "lototurf",
+      "partitionKind": "calendar-year",
       "year": 2026,
       "path": "data/archive/lototurf/2026.json",
       "records": 47,
       "earliest": "2026-01-04",
       "latest": "2026-08-12",
       "economicsRecords": 47,
-      "validatedRecords": 0,
+      "validatedRecords": 47,
       "sha256": "4756c236b738f42fd5e1c1ee66ff6ff0e90a42f8ce2c94bb4e68bb807cb1657d"
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 1985,
       "path": "data/archive/primitiva/1985.json",
       "records": 10,
@@ -1532,6 +1706,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 1986,
       "path": "data/archive/primitiva/1986.json",
       "records": 51,
@@ -1543,6 +1718,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 1987,
       "path": "data/archive/primitiva/1987.json",
       "records": 53,
@@ -1554,6 +1730,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 1988,
       "path": "data/archive/primitiva/1988.json",
       "records": 52,
@@ -1565,6 +1742,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 1989,
       "path": "data/archive/primitiva/1989.json",
       "records": 52,
@@ -1576,6 +1754,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 1990,
       "path": "data/archive/primitiva/1990.json",
       "records": 67,
@@ -1587,6 +1766,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 1991,
       "path": "data/archive/primitiva/1991.json",
       "records": 81,
@@ -1598,6 +1778,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 1992,
       "path": "data/archive/primitiva/1992.json",
       "records": 105,
@@ -1609,6 +1790,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 1993,
       "path": "data/archive/primitiva/1993.json",
       "records": 104,
@@ -1620,6 +1802,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 1994,
       "path": "data/archive/primitiva/1994.json",
       "records": 105,
@@ -1631,6 +1814,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 1995,
       "path": "data/archive/primitiva/1995.json",
       "records": 104,
@@ -1642,6 +1826,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 1996,
       "path": "data/archive/primitiva/1996.json",
       "records": 104,
@@ -1653,6 +1838,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 1997,
       "path": "data/archive/primitiva/1997.json",
       "records": 104,
@@ -1664,6 +1850,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 1998,
       "path": "data/archive/primitiva/1998.json",
       "records": 105,
@@ -1675,6 +1862,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 1999,
       "path": "data/archive/primitiva/1999.json",
       "records": 104,
@@ -1686,6 +1874,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2000,
       "path": "data/archive/primitiva/2000.json",
       "records": 105,
@@ -1697,6 +1886,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2001,
       "path": "data/archive/primitiva/2001.json",
       "records": 104,
@@ -1708,6 +1898,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2002,
       "path": "data/archive/primitiva/2002.json",
       "records": 104,
@@ -1719,6 +1910,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2003,
       "path": "data/archive/primitiva/2003.json",
       "records": 104,
@@ -1730,6 +1922,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2004,
       "path": "data/archive/primitiva/2004.json",
       "records": 105,
@@ -1741,6 +1934,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2005,
       "path": "data/archive/primitiva/2005.json",
       "records": 105,
@@ -1752,6 +1946,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2006,
       "path": "data/archive/primitiva/2006.json",
       "records": 104,
@@ -1763,6 +1958,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2007,
       "path": "data/archive/primitiva/2007.json",
       "records": 104,
@@ -1774,6 +1970,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2008,
       "path": "data/archive/primitiva/2008.json",
       "records": 104,
@@ -1785,6 +1982,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2009,
       "path": "data/archive/primitiva/2009.json",
       "records": 105,
@@ -1796,6 +1994,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2010,
       "path": "data/archive/primitiva/2010.json",
       "records": 104,
@@ -1807,6 +2006,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2011,
       "path": "data/archive/primitiva/2011.json",
       "records": 105,
@@ -1818,6 +2018,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2012,
       "path": "data/archive/primitiva/2012.json",
       "records": 104,
@@ -1829,6 +2030,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2013,
       "path": "data/archive/primitiva/2013.json",
       "records": 104,
@@ -1840,6 +2042,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2014,
       "path": "data/archive/primitiva/2014.json",
       "records": 104,
@@ -1851,6 +2054,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2015,
       "path": "data/archive/primitiva/2015.json",
       "records": 105,
@@ -1862,6 +2066,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2016,
       "path": "data/archive/primitiva/2016.json",
       "records": 105,
@@ -1873,6 +2078,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2017,
       "path": "data/archive/primitiva/2017.json",
       "records": 104,
@@ -1884,6 +2090,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2018,
       "path": "data/archive/primitiva/2018.json",
       "records": 104,
@@ -1895,6 +2102,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2019,
       "path": "data/archive/primitiva/2019.json",
       "records": 104,
@@ -1906,6 +2114,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2020,
       "path": "data/archive/primitiva/2020.json",
       "records": 87,
@@ -1917,6 +2126,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2021,
       "path": "data/archive/primitiva/2021.json",
       "records": 104,
@@ -1928,6 +2138,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2022,
       "path": "data/archive/primitiva/2022.json",
       "records": 130,
@@ -1939,6 +2150,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2023,
       "path": "data/archive/primitiva/2023.json",
       "records": 156,
@@ -1950,6 +2162,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2024,
       "path": "data/archive/primitiva/2024.json",
       "records": 157,
@@ -1961,6 +2174,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2025,
       "path": "data/archive/primitiva/2025.json",
       "records": 155,
@@ -1972,6 +2186,7 @@
     },
     {
       "gameId": "primitiva",
+      "partitionKind": "calendar-year",
       "year": 2026,
       "path": "data/archive/primitiva/2026.json",
       "records": 97,
@@ -1983,6 +2198,7 @@
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1972,
       "path": "data/archive/quiniela/1972.json",
       "records": 29,
@@ -1994,6 +2210,7 @@
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1973,
       "path": "data/archive/quiniela/1973.json",
       "records": 27,
@@ -2005,6 +2222,7 @@
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1974,
       "path": "data/archive/quiniela/1974.json",
       "records": 32,
@@ -2016,6 +2234,7 @@
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1975,
       "path": "data/archive/quiniela/1975.json",
       "records": 32,
@@ -2027,6 +2246,7 @@
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1976,
       "path": "data/archive/quiniela/1976.json",
       "records": 28,
@@ -2038,6 +2258,7 @@
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1977,
       "path": "data/archive/quiniela/1977.json",
       "records": 33,
@@ -2049,6 +2270,7 @@
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1978,
       "path": "data/archive/quiniela/1978.json",
       "records": 33,
@@ -2060,6 +2282,7 @@
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1979,
       "path": "data/archive/quiniela/1979.json",
       "records": 33,
@@ -2071,6 +2294,7 @@
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1980,
       "path": "data/archive/quiniela/1980.json",
       "records": 34,
@@ -2082,6 +2306,7 @@
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1981,
       "path": "data/archive/quiniela/1981.json",
       "records": 36,
@@ -2093,6 +2318,7 @@
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1982,
       "path": "data/archive/quiniela/1982.json",
       "records": 33,
@@ -2104,6 +2330,7 @@
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1983,
       "path": "data/archive/quiniela/1983.json",
       "records": 35,
@@ -2115,6 +2342,7 @@
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1984,
       "path": "data/archive/quiniela/1984.json",
       "records": 37,
@@ -2126,6 +2354,7 @@
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1985,
       "path": "data/archive/quiniela/1985.json",
       "records": 34,
@@ -2137,6 +2366,7 @@
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1986,
       "path": "data/archive/quiniela/1986.json",
       "records": 36,
@@ -2148,6 +2378,7 @@
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1987,
       "path": "data/archive/quiniela/1987.json",
       "records": 35,
@@ -2159,171 +2390,187 @@
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1988,
       "path": "data/archive/quiniela/1988.json",
       "records": 42,
       "earliest": "1988-09-04",
       "latest": "1989-06-18",
       "economicsRecords": 42,
-      "validatedRecords": 0,
+      "validatedRecords": 42,
       "sha256": "ec569f452ea949ee53ca2e4b3c1a546745105f03042478eaf3bc8d0cf1199c42"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1989,
       "path": "data/archive/quiniela/1989.json",
       "records": 38,
       "earliest": "1989-09-03",
       "latest": "1990-05-27",
       "economicsRecords": 38,
-      "validatedRecords": 0,
+      "validatedRecords": 38,
       "sha256": "232bb51c39a178407954bf3bcecb1c7a3caf414397afee3d63127f2197b4a785"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1990,
       "path": "data/archive/quiniela/1990.json",
       "records": 40,
       "earliest": "1990-09-02",
       "latest": "1991-06-09",
       "economicsRecords": 39,
-      "validatedRecords": 0,
+      "validatedRecords": 39,
       "sha256": "f669c66e76a8bcd58272409b12164e6c5b3a67f16e31fb6fcfe8d24578980cc5"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1991,
       "path": "data/archive/quiniela/1991.json",
       "records": 40,
       "earliest": "1991-09-01",
       "latest": "1992-06-07",
       "economicsRecords": 40,
-      "validatedRecords": 0,
+      "validatedRecords": 40,
       "sha256": "2f4025402755197ca7ea90d7832126fcbad9e6363134b1b2360afc2de555f504"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1992,
       "path": "data/archive/quiniela/1992.json",
       "records": 41,
       "earliest": "1992-09-06",
       "latest": "1993-06-20",
       "economicsRecords": 40,
-      "validatedRecords": 0,
+      "validatedRecords": 40,
       "sha256": "3c7106370381b56be5f7a432e3f30f2112bf7f6a988833f7b9254b6d9429e34a"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1993,
       "path": "data/archive/quiniela/1993.json",
       "records": 36,
       "earliest": "1993-09-05",
       "latest": "1994-05-15",
       "economicsRecords": 36,
-      "validatedRecords": 0,
+      "validatedRecords": 36,
       "sha256": "5e89f49686bbf162e89bd0bf1dedefe92545f3d3a699bfd5e067157fc73346d8"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1994,
       "path": "data/archive/quiniela/1994.json",
       "records": 40,
       "earliest": "1994-09-04",
       "latest": "1995-06-18",
       "economicsRecords": 40,
-      "validatedRecords": 0,
+      "validatedRecords": 40,
       "sha256": "0bf42b1f57bda0cfae4375f7a44aaf78b11d6ee94de6ecb217e7ec8706c9a82a"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1995,
       "path": "data/archive/quiniela/1995.json",
       "records": 38,
       "earliest": "1995-09-03",
       "latest": "1996-05-19",
       "economicsRecords": 38,
-      "validatedRecords": 0,
+      "validatedRecords": 38,
       "sha256": "4353a4626e3fa099efe25166708a2a050f2b874cc20431120edbf79b2b2c51c4"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1996,
       "path": "data/archive/quiniela/1996.json",
       "records": 42,
       "earliest": "1996-09-01",
       "latest": "1997-06-22",
       "economicsRecords": 42,
-      "validatedRecords": 0,
+      "validatedRecords": 42,
       "sha256": "a13ddc04e1704a91ef44c10ec2d0ddc8d41bbfe00e2d7c4d39fbf1196c933cab"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1997,
       "path": "data/archive/quiniela/1997.json",
       "records": 40,
       "earliest": "1997-08-31",
       "latest": "1998-05-17",
       "economicsRecords": 39,
-      "validatedRecords": 0,
+      "validatedRecords": 39,
       "sha256": "856626f24d686a5de22cbc6e6e0cad5002d025ccc13d75992390e7ac82c04771"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1998,
       "path": "data/archive/quiniela/1998.json",
       "records": 42,
       "earliest": "1998-08-30",
       "latest": "1999-06-20",
       "economicsRecords": 42,
-      "validatedRecords": 0,
+      "validatedRecords": 42,
       "sha256": "3be7ff65ece5e9f98ff3e06f491bff566b907f219be3223687b98a5f4095ae59"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 1999,
       "path": "data/archive/quiniela/1999.json",
       "records": 41,
       "earliest": "1999-08-22",
       "latest": "2000-06-04",
       "economicsRecords": 41,
-      "validatedRecords": 0,
+      "validatedRecords": 41,
       "sha256": "883351c8cdc5b346058b16437361214eefc2447fdd40650cdeddf2e6adc51fcd"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 2000,
       "path": "data/archive/quiniela/2000.json",
       "records": 41,
       "earliest": "2000-09-03",
       "latest": "2001-06-10",
       "economicsRecords": 41,
-      "validatedRecords": 0,
+      "validatedRecords": 41,
       "sha256": "c482c6232f3aa5cb3ae614a3caaf1facd2b26d18eb59140efa16f6d6a6f24266"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 2001,
       "path": "data/archive/quiniela/2001.json",
       "records": 43,
       "earliest": "2001-08-26",
       "latest": "2002-06-13",
       "economicsRecords": 43,
-      "validatedRecords": 0,
+      "validatedRecords": 43,
       "sha256": "ed0e08d95e67480cd7f3e2b2dcf005f442e07ecfb610cde64aa2fb74cec1dbec"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 2002,
       "path": "data/archive/quiniela/2002.json",
       "records": 43,
       "earliest": "2002-09-01",
       "latest": "2003-06-29",
       "economicsRecords": 43,
-      "validatedRecords": 0,
+      "validatedRecords": 43,
       "sha256": "5361204d75be3a93d263eaedd4f9c0098065285edbbf9ad0a379c5dfffea7304"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 2003,
       "path": "data/archive/quiniela/2003.json",
       "records": 36,
@@ -2335,6 +2582,7 @@
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 2004,
       "path": "data/archive/quiniela/2004.json",
       "records": 34,
@@ -2346,530 +2594,578 @@
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 2005,
       "path": "data/archive/quiniela/2005.json",
       "records": 43,
       "earliest": "2005-08-28",
       "latest": "2006-06-25",
       "economicsRecords": 43,
-      "validatedRecords": 0,
+      "validatedRecords": 43,
       "sha256": "80b2246a54bcbc8160dcefbbfc44b736e621cda340753a6c2f45f6100abbb644"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 2006,
       "path": "data/archive/quiniela/2006.json",
       "records": 42,
       "earliest": "2006-08-27",
       "latest": "2007-06-17",
       "economicsRecords": 42,
-      "validatedRecords": 0,
+      "validatedRecords": 42,
       "sha256": "30043fc510eb0f9f1ca71a696e25cadff23f3625a270a484bf1be0653d184f37"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 2007,
       "path": "data/archive/quiniela/2007.json",
       "records": 48,
       "earliest": "2007-08-26",
       "latest": "2008-06-15",
       "economicsRecords": 40,
-      "validatedRecords": 0,
+      "validatedRecords": 40,
       "sha256": "cd54c224f1cf33b48426f1d8522984d0a96327749cd7525ac1a840158149268c"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 2008,
       "path": "data/archive/quiniela/2008.json",
       "records": 55,
       "earliest": "2008-08-31",
       "latest": "2009-06-21",
       "economicsRecords": 10,
-      "validatedRecords": 0,
+      "validatedRecords": 10,
       "sha256": "4ecacc10e07ead6239df968efe26b5ef8f0d270dd0a9f386ec34fde83de7f4e8"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 2009,
       "path": "data/archive/quiniela/2009.json",
       "records": 61,
       "earliest": "2009-08-30",
       "latest": "2010-06-25",
       "economicsRecords": 60,
-      "validatedRecords": 0,
+      "validatedRecords": 60,
       "sha256": "6fe3d6b9c2ed49e80cf62823d43cc57ccf98670170a9c48d7eaed3c92432dfec"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 2010,
       "path": "data/archive/quiniela/2010.json",
       "records": 59,
       "earliest": "2010-08-29",
       "latest": "2011-06-05",
       "economicsRecords": 59,
-      "validatedRecords": 0,
+      "validatedRecords": 59,
       "sha256": "22e4637c401796269490bb2c543ecff2b95a5b43980032ee4309c888299eaef9"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 2011,
       "path": "data/archive/quiniela/2011.json",
       "records": 55,
       "earliest": "2011-08-28",
       "latest": "2012-12-11",
       "economicsRecords": 53,
-      "validatedRecords": 0,
+      "validatedRecords": 53,
       "sha256": "79523b55b43b936910d1d8c5049d69eb87172dd82e7ae6f9561192353682351e"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 2012,
       "path": "data/archive/quiniela/2012.json",
       "records": 51,
       "earliest": "2012-08-19",
       "latest": "2013-06-09",
       "economicsRecords": 51,
-      "validatedRecords": 0,
+      "validatedRecords": 51,
       "sha256": "d65adda0da6255dbc87bf4554aedd885ddbb2d3005c7f110465d57893ace155d"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 2013,
       "path": "data/archive/quiniela/2013.json",
       "records": 54,
       "earliest": "2013-08-18",
       "latest": "2014-06-08",
       "economicsRecords": 53,
-      "validatedRecords": 0,
+      "validatedRecords": 53,
       "sha256": "979d340e0fb9b7124e607ddbb6f3e4f1c4af6c0624df48bd4fb2dda496516268"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 2014,
       "path": "data/archive/quiniela/2014.json",
       "records": 47,
       "earliest": "2014-08-24",
       "latest": "2015-06-14",
       "economicsRecords": 45,
-      "validatedRecords": 0,
+      "validatedRecords": 45,
       "sha256": "7d884abae92c9fb4ae9e81ab93988f5c264ec5d389db31d0056e63b6d6827c7b"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 2015,
       "path": "data/archive/quiniela/2015.json",
       "records": 60,
       "earliest": "2015-08-23",
       "latest": "2016-08-14",
       "economicsRecords": 58,
-      "validatedRecords": 0,
+      "validatedRecords": 58,
       "sha256": "458131f46b815f9a48ab79d7e63f577ef0d16541b889ac8202ec48ee6763959a"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "season",
       "year": 2016,
       "path": "data/archive/quiniela/2016.json",
       "records": 57,
       "earliest": "2016-08-21",
       "latest": "2017-08-13",
       "economicsRecords": 54,
-      "validatedRecords": 0,
+      "validatedRecords": 54,
       "sha256": "c33d6c1689f4ad8d2100f2a7c66acbce639ff9f12a48349db2cdc4a07f3b5022"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "calendar-year",
       "year": 2018,
       "path": "data/archive/quiniela/2018.json",
       "records": 67,
       "earliest": "2018-01-07",
       "latest": "2018-12-30",
       "economicsRecords": 67,
-      "validatedRecords": 0,
+      "validatedRecords": 67,
       "sha256": "0c1154d94b8fb02de100a2740540f21fdb7faa79cb0aa05a6353deaf90958d79"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "calendar-year",
       "year": 2019,
       "path": "data/archive/quiniela/2019.json",
       "records": 66,
       "earliest": "2019-01-06",
       "latest": "2019-12-29",
       "economicsRecords": 66,
-      "validatedRecords": 0,
+      "validatedRecords": 66,
       "sha256": "39f29406b64ac8c95656177d7bc8f9af8e7bfa4a347d191fcb2664322235599d"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "calendar-year",
       "year": 2020,
       "path": "data/archive/quiniela/2020.json",
       "records": 55,
       "earliest": "2020-01-05",
       "latest": "2020-12-30",
       "economicsRecords": 55,
-      "validatedRecords": 0,
+      "validatedRecords": 55,
       "sha256": "f89f598b641b50ef49ad4986bd7a6b8a15027799261d3148929f3e8ebabda258"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "calendar-year",
       "year": 2021,
       "path": "data/archive/quiniela/2021.json",
       "records": 67,
       "earliest": "2021-01-03",
       "latest": "2021-12-26",
       "economicsRecords": 67,
-      "validatedRecords": 0,
+      "validatedRecords": 67,
       "sha256": "b22a6e68277a39c3c181b568197a7ca2408084fa7da006f4f954cd658180564b"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "calendar-year",
       "year": 2022,
       "path": "data/archive/quiniela/2022.json",
       "records": 72,
       "earliest": "2022-01-02",
       "latest": "2022-12-31",
       "economicsRecords": 72,
-      "validatedRecords": 0,
+      "validatedRecords": 72,
       "sha256": "b2d88d13086a7a49b4e2103a1d6d3193726ff69f7e3286e8cf04353666f92877"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "calendar-year",
       "year": 2023,
       "path": "data/archive/quiniela/2023.json",
       "records": 68,
       "earliest": "2023-01-08",
       "latest": "2023-12-31",
       "economicsRecords": 68,
-      "validatedRecords": 0,
+      "validatedRecords": 68,
       "sha256": "6d2cbc3decf71b96aafb98cb6cdb005cdcd6338eca6f89bccc6daefe3171eb54"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "calendar-year",
       "year": 2024,
       "path": "data/archive/quiniela/2024.json",
       "records": 74,
       "earliest": "2024-01-03",
       "latest": "2024-12-26",
       "economicsRecords": 74,
-      "validatedRecords": 0,
+      "validatedRecords": 74,
       "sha256": "446d27334e09a8833534ac8a4d5f2108f94736287f9fe118ebaa6ee6d852a045"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "calendar-year",
       "year": 2025,
       "path": "data/archive/quiniela/2025.json",
       "records": 75,
       "earliest": "2025-01-05",
       "latest": "2025-12-28",
       "economicsRecords": 75,
-      "validatedRecords": 0,
+      "validatedRecords": 75,
       "sha256": "196076bdfcf7c124870c37370b47cd1df1631764fd2962d367f3fe351c7411fc"
     },
     {
       "gameId": "quiniela",
+      "partitionKind": "calendar-year",
       "year": 2026,
       "path": "data/archive/quiniela/2026.json",
       "records": 45,
       "earliest": "2026-01-04",
       "latest": "2026-08-09",
       "economicsRecords": 45,
-      "validatedRecords": 0,
+      "validatedRecords": 45,
       "sha256": "ebf39bf308ab10f1497d536b0e3fef537960e389a16d767bc867b41af4f2a046"
     },
     {
       "gameId": "quinigol",
+      "partitionKind": "calendar-year",
       "year": 2017,
       "path": "data/archive/quinigol/2017.json",
       "records": 6,
       "earliest": "2017-12-06",
       "latest": "2017-12-30",
       "economicsRecords": 6,
-      "validatedRecords": 0,
+      "validatedRecords": 6,
       "sha256": "2f086ec23fcb64fdf91fdca91e081b54febc1b16c9087297bfbcff8da52e33f0"
     },
     {
       "gameId": "quinigol",
+      "partitionKind": "calendar-year",
       "year": 2018,
       "path": "data/archive/quinigol/2018.json",
       "records": 86,
       "earliest": "2018-01-03",
       "latest": "2018-12-30",
       "economicsRecords": 86,
-      "validatedRecords": 0,
+      "validatedRecords": 86,
       "sha256": "211edc545c898fe39ac1df097271f102377808b099a7863579ef6f6269dc7695"
     },
     {
       "gameId": "quinigol",
+      "partitionKind": "calendar-year",
       "year": 2019,
       "path": "data/archive/quinigol/2019.json",
       "records": 78,
       "earliest": "2019-01-06",
       "latest": "2019-12-29",
       "economicsRecords": 78,
-      "validatedRecords": 0,
+      "validatedRecords": 78,
       "sha256": "844c4ccad53dbc549703c3789eae6bf3a51db5f0a9e7b77e8fc461645c86ee4d"
     },
     {
       "gameId": "quinigol",
+      "partitionKind": "calendar-year",
       "year": 2020,
       "path": "data/archive/quinigol/2020.json",
       "records": 61,
       "earliest": "2020-01-01",
       "latest": "2020-12-30",
       "economicsRecords": 61,
-      "validatedRecords": 0,
+      "validatedRecords": 61,
       "sha256": "f9c48524bbdc031b81e1cf81a6aa23eb47be7725df927cba125869a6435309b8"
     },
     {
       "gameId": "quinigol",
+      "partitionKind": "calendar-year",
       "year": 2021,
       "path": "data/archive/quinigol/2021.json",
       "records": 74,
       "earliest": "2021-01-03",
       "latest": "2021-12-26",
       "economicsRecords": 74,
-      "validatedRecords": 0,
+      "validatedRecords": 74,
       "sha256": "e71a4d15ba55c851a50f10f84235d65d636f9216a3d95ba3baf3d7f5584ada8d"
     },
     {
       "gameId": "quinigol",
+      "partitionKind": "calendar-year",
       "year": 2022,
       "path": "data/archive/quinigol/2022.json",
       "records": 83,
       "earliest": "2022-01-02",
       "latest": "2022-12-31",
       "economicsRecords": 83,
-      "validatedRecords": 0,
+      "validatedRecords": 83,
       "sha256": "7c241089426cf204f3d789ea205791a4aeb1231316c7214a36703796aa8e6ebf"
     },
     {
       "gameId": "quinigol",
+      "partitionKind": "calendar-year",
       "year": 2023,
       "path": "data/archive/quinigol/2023.json",
       "records": 76,
       "earliest": "2023-01-08",
       "latest": "2023-12-31",
       "economicsRecords": 76,
-      "validatedRecords": 0,
+      "validatedRecords": 76,
       "sha256": "df48b9cc49913bb2e5850a53e3b0b4c3b4a498d94e39eb30936d3434c7d85d36"
     },
     {
       "gameId": "quinigol",
+      "partitionKind": "calendar-year",
       "year": 2024,
       "path": "data/archive/quinigol/2024.json",
       "records": 87,
       "earliest": "2024-01-03",
       "latest": "2024-12-29",
       "economicsRecords": 87,
-      "validatedRecords": 0,
+      "validatedRecords": 87,
       "sha256": "a76d303028ed66507a06beb04bb28097a3db851daafe6c9246f945c602484f05"
     },
     {
       "gameId": "quinigol",
+      "partitionKind": "calendar-year",
       "year": 2025,
       "path": "data/archive/quinigol/2025.json",
       "records": 103,
       "earliest": "2025-01-05",
       "latest": "2025-12-28",
       "economicsRecords": 85,
-      "validatedRecords": 0,
+      "validatedRecords": 103,
       "sha256": "a787e9a62cbd0bafe37019ace6cc3f5a98a186e9bc1418e0fd1498a62dd91746"
     },
     {
       "gameId": "quinigol",
+      "partitionKind": "calendar-year",
       "year": 2026,
       "path": "data/archive/quinigol/2026.json",
       "records": 72,
       "earliest": "2026-01-04",
       "latest": "2026-08-09",
       "economicsRecords": 53,
-      "validatedRecords": 0,
+      "validatedRecords": 72,
       "sha256": "736e72f344ea6e9f0ca3dd79c984fc55358444384b01ae2c8cd8ab386d5e8b48"
     },
     {
       "gameId": "quintuple-plus",
+      "partitionKind": "calendar-year",
       "year": 2010,
       "path": "data/archive/quintuple-plus/2010.json",
       "records": 4,
       "earliest": "2010-12-05",
       "latest": "2010-12-26",
       "economicsRecords": 4,
-      "validatedRecords": 0,
+      "validatedRecords": 4,
       "sha256": "e8c8843d5741df1fce9ef96053d51a3d8bb2165f50242053f085babcc290fb7f"
     },
     {
       "gameId": "quintuple-plus",
+      "partitionKind": "calendar-year",
       "year": 2011,
       "path": "data/archive/quintuple-plus/2011.json",
       "records": 62,
       "earliest": "2011-01-02",
       "latest": "2011-12-18",
       "economicsRecords": 62,
-      "validatedRecords": 0,
+      "validatedRecords": 62,
       "sha256": "b1675d63068954b475524d54d4c0cac30805f1eb73e682d0b379cecc68ea6e05"
     },
     {
       "gameId": "quintuple-plus",
+      "partitionKind": "calendar-year",
       "year": 2012,
       "path": "data/archive/quintuple-plus/2012.json",
       "records": 63,
       "earliest": "2012-01-08",
       "latest": "2012-12-30",
       "economicsRecords": 63,
-      "validatedRecords": 0,
+      "validatedRecords": 63,
       "sha256": "7703dc550e86c50bc960525d2bd4ad05a24479b32da627c93af67fa4ba4e664d"
     },
     {
       "gameId": "quintuple-plus",
+      "partitionKind": "calendar-year",
       "year": 2013,
       "path": "data/archive/quintuple-plus/2013.json",
       "records": 62,
       "earliest": "2013-01-05",
       "latest": "2013-12-29",
       "economicsRecords": 62,
-      "validatedRecords": 0,
+      "validatedRecords": 62,
       "sha256": "0fd7167b68270abf212a4adc28bb06de9b5e0595767e362d10928eee0818f11b"
     },
     {
       "gameId": "quintuple-plus",
+      "partitionKind": "calendar-year",
       "year": 2014,
       "path": "data/archive/quintuple-plus/2014.json",
       "records": 67,
       "earliest": "2014-01-05",
       "latest": "2014-12-28",
       "economicsRecords": 67,
-      "validatedRecords": 0,
+      "validatedRecords": 67,
       "sha256": "68ee71fe23c0ee0c5b37b3f812893489ce192a62f2bb90928b6be4a5c7d979b0"
     },
     {
       "gameId": "quintuple-plus",
+      "partitionKind": "calendar-year",
       "year": 2015,
       "path": "data/archive/quintuple-plus/2015.json",
       "records": 48,
       "earliest": "2015-01-04",
       "latest": "2015-12-27",
       "economicsRecords": 48,
-      "validatedRecords": 0,
+      "validatedRecords": 48,
       "sha256": "d61ff73beb562320331d1f6c054c609489e82df169b1e543f635d9abf5f89c1a"
     },
     {
       "gameId": "quintuple-plus",
+      "partitionKind": "calendar-year",
       "year": 2016,
       "path": "data/archive/quintuple-plus/2016.json",
       "records": 75,
       "earliest": "2016-01-03",
       "latest": "2016-12-24",
       "economicsRecords": 75,
-      "validatedRecords": 0,
+      "validatedRecords": 75,
       "sha256": "006a2721335ffacc83af1f458f08be6483f6fed6c8c2ddb3bb84cf9b871c24ad"
     },
     {
       "gameId": "quintuple-plus",
+      "partitionKind": "calendar-year",
       "year": 2017,
       "path": "data/archive/quintuple-plus/2017.json",
       "records": 79,
       "earliest": "2017-01-01",
       "latest": "2017-12-31",
       "economicsRecords": 79,
-      "validatedRecords": 0,
+      "validatedRecords": 79,
       "sha256": "6494d5395ef888c3db7190f678a82203927ad9d1c7ee0fc802a84727e7556502"
     },
     {
       "gameId": "quintuple-plus",
+      "partitionKind": "calendar-year",
       "year": 2018,
       "path": "data/archive/quintuple-plus/2018.json",
       "records": 79,
       "earliest": "2018-01-07",
       "latest": "2018-12-29",
       "economicsRecords": 79,
-      "validatedRecords": 0,
+      "validatedRecords": 79,
       "sha256": "85cb29ad215d99766cfc6e3ec57179c4c7b1d1ea6243c4e2012c2bbccd35171d"
     },
     {
       "gameId": "quintuple-plus",
+      "partitionKind": "calendar-year",
       "year": 2019,
       "path": "data/archive/quintuple-plus/2019.json",
       "records": 82,
       "earliest": "2019-01-05",
       "latest": "2019-12-29",
       "economicsRecords": 82,
-      "validatedRecords": 0,
+      "validatedRecords": 82,
       "sha256": "f0292d5cafffaaf15142dfbef67440f7df39db61add40934007df36d357a62b9"
     },
     {
       "gameId": "quintuple-plus",
+      "partitionKind": "calendar-year",
       "year": 2020,
       "path": "data/archive/quintuple-plus/2020.json",
       "records": 78,
       "earliest": "2020-01-05",
       "latest": "2020-12-30",
       "economicsRecords": 78,
-      "validatedRecords": 0,
+      "validatedRecords": 78,
       "sha256": "6a0d9d6c06768d2c68b713f5f82d1776537664a033aa08491543fb741cbaa3fe"
     },
     {
       "gameId": "quintuple-plus",
+      "partitionKind": "calendar-year",
       "year": 2021,
       "path": "data/archive/quintuple-plus/2021.json",
       "records": 79,
       "earliest": "2021-01-01",
       "latest": "2021-12-30",
       "economicsRecords": 79,
-      "validatedRecords": 0,
+      "validatedRecords": 79,
       "sha256": "004be38267f79a54a07a6d853a1a05b9d17473e8d081f795a618cd24ac6e02cd"
     },
     {
       "gameId": "quintuple-plus",
+      "partitionKind": "calendar-year",
       "year": 2022,
       "path": "data/archive/quintuple-plus/2022.json",
       "records": 79,
       "earliest": "2022-01-09",
       "latest": "2022-12-29",
       "economicsRecords": 79,
-      "validatedRecords": 0,
+      "validatedRecords": 79,
       "sha256": "8a841550792cb6e6c2f2801408adff34cf36adcc480c74b85644e4c87bbd7ead"
     },
     {
       "gameId": "quintuple-plus",
+      "partitionKind": "calendar-year",
       "year": 2023,
       "path": "data/archive/quintuple-plus/2023.json",
       "records": 79,
       "earliest": "2023-01-08",
       "latest": "2023-12-30",
       "economicsRecords": 79,
-      "validatedRecords": 0,
+      "validatedRecords": 79,
       "sha256": "820875739024334e4d70b3302aa0b1c5e7057ef1faec1c2c04e00e34ce8c8c51"
     },
     {
       "gameId": "quintuple-plus",
+      "partitionKind": "calendar-year",
       "year": 2024,
       "path": "data/archive/quintuple-plus/2024.json",
       "records": 80,
       "earliest": "2024-01-06",
       "latest": "2024-12-29",
       "economicsRecords": 80,
-      "validatedRecords": 0,
+      "validatedRecords": 80,
       "sha256": "3d5246981eaf08479482412a3e055c95dc2e49136f99be43dc257cdd282d266d"
     },
     {
       "gameId": "quintuple-plus",
+      "partitionKind": "calendar-year",
       "year": 2025,
       "path": "data/archive/quintuple-plus/2025.json",
       "records": 80,
       "earliest": "2025-01-04",
       "latest": "2025-12-28",
       "economicsRecords": 80,
-      "validatedRecords": 0,
+      "validatedRecords": 80,
       "sha256": "8759f825fe508d90db3829026eae005a486ca9dc5648d454c50fcfc8f160ceb1"
     },
     {
       "gameId": "quintuple-plus",
+      "partitionKind": "calendar-year",
       "year": 2026,
       "path": "data/archive/quintuple-plus/2026.json",
       "records": 47,
       "earliest": "2026-01-04",
       "latest": "2026-08-12",
       "economicsRecords": 47,
-      "validatedRecords": 0,
+      "validatedRecords": 47,
       "sha256": "ca41a7dab6e0ae00ec516ec93697145471211c2447286adf8cb5c8108b702adb"
     }
   ]
