@@ -16,7 +16,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: {node-version: 24}
-      - run: node loterias-ai/scripts/meta-pleno-v54-bonoloto-budget8-evaluate.mjs
+      - name: Evaluate immutable pre-target freeze against archived target
+        run: node loterias-ai/scripts/meta-pleno-v54-bonoloto-budget8-evaluate.mjs
       - name: Enforce PAPER integrity
         run: node -e "const fs=require('fs');const p='loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v54-budget8-evaluation.json';if(fs.existsSync(p)){const x=require('./'+p);if(x.realMoneyPass||x.budget.realStakeEUR!==0||x.scientific.retuningPerformed||x.scientific.selectionUsedTargetResult)process.exit(1)}"
       - name: Persist evaluation safely
