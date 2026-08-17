@@ -11,8 +11,10 @@ on:
       - 'loterias-ai/casino/lightning/research/economic-multiplier-prospective-v1.mjs'
       - 'loterias-ai/casino/lightning/research/economic-timing-number-combo-oos-v1.mjs'
       - 'loterias-ai/casino/lightning/research/economic-timing-number-nested-oos-v1.mjs'
+      - 'loterias-ai/casino/lightning/research/economic-multiplier-window-dependence-robustness-v1.mjs'
       - 'loterias-ai/casino/lightning/research/verify-economic-prospective-freeze-v1.mjs'
       - 'loterias-ai/casino/lightning/evidence/economic-multiplier-window-prospective-freeze-v1.json'
+      - 'loterias-ai/casino/lightning/evidence/economic-multiplier-window-freeze-provenance-v1.json'
       - 'loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl'
       - '.github/workflows/loterias-ai-lightning-economic-study.yml'
 
@@ -26,6 +28,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -36,6 +40,8 @@ jobs:
         run: node loterias-ai/casino/lightning/research/economic-coverage-window-v1.mjs
       - name: Select timing rule on discovery and validate OOS
         run: node loterias-ai/casino/lightning/research/economic-multiplier-window-oos-v1.mjs
+      - name: Test timing against dependence-preserving nulls
+        run: node loterias-ai/casino/lightning/research/economic-multiplier-window-dependence-robustness-v1.mjs
       - name: Test timing gate plus 3-4 number selectors OOS
         run: node loterias-ai/casino/lightning/research/economic-timing-number-combo-oos-v1.mjs
       - name: Run nested temporal 3-4 number tournament
@@ -49,10 +55,12 @@ jobs:
           path: |
             loterias-ai/casino/lightning/evidence/economic-coverage-window-v1.json
             loterias-ai/casino/lightning/evidence/economic-multiplier-window-oos-v1.json
+            loterias-ai/casino/lightning/evidence/economic-multiplier-window-dependence-robustness-v1.json
             loterias-ai/casino/lightning/evidence/economic-timing-number-combo-oos-v1.json
             loterias-ai/casino/lightning/evidence/economic-timing-number-nested-oos-v1.json
             loterias-ai/casino/lightning/evidence/economic-multiplier-window-prospective-freeze-v1.json
             loterias-ai/casino/lightning/evidence/economic-multiplier-window-prospective-status-v1.json
+            loterias-ai/casino/lightning/evidence/economic-multiplier-window-freeze-provenance-v1.json
           if-no-files-found: error
       - name: Persist evidence on main
         shell: bash
@@ -60,12 +68,12 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add loterias-ai/casino/lightning/evidence/economic-coverage-window-v1.json loterias-ai/casino/lightning/evidence/economic-multiplier-window-oos-v1.json loterias-ai/casino/lightning/evidence/economic-timing-number-combo-oos-v1.json loterias-ai/casino/lightning/evidence/economic-timing-number-nested-oos-v1.json loterias-ai/casino/lightning/evidence/economic-multiplier-window-prospective-status-v1.json
+          git add loterias-ai/casino/lightning/evidence/economic-coverage-window-v1.json loterias-ai/casino/lightning/evidence/economic-multiplier-window-oos-v1.json loterias-ai/casino/lightning/evidence/economic-multiplier-window-dependence-robustness-v1.json loterias-ai/casino/lightning/evidence/economic-timing-number-combo-oos-v1.json loterias-ai/casino/lightning/evidence/economic-timing-number-nested-oos-v1.json loterias-ai/casino/lightning/evidence/economic-multiplier-window-prospective-status-v1.json
           if git diff --cached --quiet; then
             echo "No generated evidence change to persist"
             exit 0
           fi
-          git commit -m "research(lightning): refresh nested economic evidence"
+          git commit -m "research(lightning): refresh dependence-aware economic evidence"
           for attempt in 1 2 3 4; do
             git pull --rebase origin main || { git rebase --abort || true; sleep $((attempt*2)); continue; }
             if git push origin HEAD:main; then
