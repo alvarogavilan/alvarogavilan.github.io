@@ -67,10 +67,14 @@ function normalize(filePath,kind,today){
   let theoreticalCostEUR=money(d?.theoreticalCostEUR,d?.theoreticalStakeEUR,d?.config?.theoreticalStakeEUR,d?.stakeEUR);
   let unitCostEUR=money(d?.unitCostEUR,d?.config?.unitStakeEUR,d?.pricePerColumnEUR, lines.length?theoreticalCostEUR/lines.length:0);
   if(game==='bonoloto'&&Array.isArray(pool)&&pool.length===8&&theoreticalCostEUR===0){theoreticalCostEUR=14;if(unitCostEUR===0)unitCostEUR=.5}
+  const laboratoryCostEUR=theoreticalCostEUR;
+  const realMoneyPass=d?.realMoneyPass===true;
+  const realStakeEUR=money(d?.realStakeEUR);
+  const authorizedCostEUR=realMoneyPass?realStakeEUR:0;
   const purpose=String(d?.purpose||'');
   const alternativeNotAdditive=Boolean(d?.config?.alternativeNotAdditive||/never additive|not additive|alternative/i.test(purpose));
-  const prospectScore=(kind==='PROSPECTIVE'?1000:0)+(d?.evidence?.prospectiveReplication?100:0)+(d?.status?.includes?.('FROZEN')?20:0)-(theoreticalCostEUR*2)+(d?.evidence?.confirmatory===false?-5:0);
-  return {gameId:game,targetDate:date,title:titleOf(game,d,file),version:d?.version||null,status:d?.status||kind,kind,source:`../${filePath.replace(`${ROOT}/`,'')}`,generatedAt:d?.generatedAt||d?.frozenAt||null,theoreticalCostEUR,unitCostEUR,lines,pool,alternativeNotAdditive,realMoneyPass:d?.realMoneyPass===true,realStakeEUR:money(d?.realStakeEUR),purpose:purpose||null,prospectScore};
+  const prospectScore=(kind==='PROSPECTIVE'?1000:0)+(d?.evidence?.prospectiveReplication?100:0)+(d?.status?.includes?.('FROZEN')?20:0)-(laboratoryCostEUR*2)+(d?.evidence?.confirmatory===false?-5:0);
+  return {gameId:game,targetDate:date,title:titleOf(game,d,file),version:d?.version||null,status:d?.status||kind,kind,source:`../${filePath.replace(`${ROOT}/`,'')}`,generatedAt:d?.generatedAt||d?.frozenAt||null,theoreticalCostEUR:authorizedCostEUR,laboratoryCostEUR,authorizedCostEUR,unitCostEUR,lines,pool,alternativeNotAdditive,realMoneyPass,realStakeEUR,purpose:purpose||null,prospectScore};
 }
 
 const today=process.env.TODAY_OVERRIDE||madridDate();
@@ -82,8 +86,8 @@ const games=Object.entries(groups).map(([gameId,arr])=>{
   arr.sort((a,b)=>b.prospectScore-a.prospectScore||String(b.generatedAt||'').localeCompare(String(a.generatedAt||''))||a.source.localeCompare(b.source));
   const primary=arr[0];
   const alternatives=arr.slice(1).map(x=>({...x,alternativeNotAdditive:true}));
-  return {gameId,targetDate:today,primary,alternatives,alternativeCount:alternatives.length,costRule:'ALTERNATIVES_NOT_ADDITIVE',displayCostEUR:primary.theoreticalCostEUR};
+  return {gameId,targetDate:today,primary,alternatives,alternativeCount:alternatives.length,costRule:'ALTERNATIVES_NOT_ADDITIVE',displayCostEUR:primary.authorizedCostEUR};
 }).sort((a,b)=>a.gameId.localeCompare(b.gameId));
-const manifest={generatedAt:new Date().toISOString(),timeZone:'Europe/Madrid',today,strictToday:true,staleFallbackAllowed:false,dedupeKey:'gameId+targetDate',games,totalGames:games.length,policy:{oneVisibleCardPerGame:true,alternativesNotAdditive:true,showYesterdayInToday:false,realMoneyPass:false}};
+const manifest={generatedAt:new Date().toISOString(),timeZone:'Europe/Madrid',today,strictToday:true,staleFallbackAllowed:false,dedupeKey:'gameId+targetDate',games,totalGames:games.length,policy:{oneVisibleCardPerGame:true,alternativesNotAdditive:true,showYesterdayInToday:false,realMoneyPass:false,costDisplay:'AUTHORIZED_ONLY',laboratoryCostSeparate:true}};
 fs.mkdirSync(path.dirname(OUT),{recursive:true});fs.writeFileSync(OUT,JSON.stringify(manifest,null,2)+'\n');
-console.log(JSON.stringify({today,totalGames:games.length,games:games.map(g=>({gameId:g.gameId,primary:g.primary.version,cost:g.displayCostEUR,alternatives:g.alternativeCount}))}));
+console.log(JSON.stringify({today,totalGames:games.length,games:games.map(g=>({gameId:g.gameId,primary:g.primary.version,authorizedCost:g.displayCostEUR,laboratoryCost:g.primary.laboratoryCostEUR,alternatives:g.alternativeCount}))}));
