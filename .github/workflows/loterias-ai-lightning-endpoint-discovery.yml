@@ -1,0 +1,40 @@
+name: Loterias AI Lightning Endpoint Discovery
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/lightning-endpoint-discovery
+    paths:
+      - 'loterias-ai/casino/lightning/discover-public-endpoints.mjs'
+      - '.github/workflows/loterias-ai-lightning-endpoint-discovery.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-lightning-endpoint-discovery
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Discover public unauthenticated endpoints
+        run: node loterias-ai/casino/lightning/discover-public-endpoints.mjs
+      - name: Enforce isolation
+        run: |
+          node -e "const x=require('./loterias-ai/casino/lightning/evidence/public-endpoint-discovery.json');if(x.trainingEligible||x.paperReplayEligible||x.realMoney||x.guardrails.authenticationBypassAttempted||x.guardrails.credentialsUsed)process.exit(1)"
+      - name: Persist discovery evidence
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/casino/lightning/evidence/public-endpoint-discovery.json
+          git commit -m "data(casino): persist public Lightning endpoint discovery" || exit 0
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push
