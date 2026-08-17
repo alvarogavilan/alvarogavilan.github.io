@@ -1,24 +1,22 @@
 {
   "version": "v312",
   "family": "PERSISTENT_HOMOLOGY_COOCCURRENCE_TOPOLOGY",
-  "status": "PREREGISTERED",
+  "status": "BLOCKED_DUPLICATE_BEFORE_EXECUTION",
   "createdFromMainSha": "e0dad66935aae0093f12ff750ea308373371332d",
-  "methodologicalNovelty": "Represent each rolling pre-draw number co-occurrence structure as a weighted graph/metric filtration and extract topological persistence summaries (connected-component and cycle persistence) for candidate ranking. This is distinct from frequency, pairwise Ising/MaxEnt, spectral, kernel, Hawkes and ordinary graph-centrality families because selection is driven by filtration-stable topological features rather than raw edge weights or eigenvectors.",
+  "methodologicalNovelty": "Proposed rolling co-occurrence filtration with persistent H0/H1 summaries.",
   "guard": {
     "searchedTerms": ["persistent homology", "topological data analysis", "simplicial", "persistence diagram", "Betti", "homology"],
-    "duplicateFound": false,
-    "whyDistinct": "No repository implementation was found for persistence diagrams, Betti/persistent-homology summaries or simplicial filtrations."
+    "duplicateFound": true,
+    "duplicateEvidence": [
+      "research/metapleno-v249-persistent-h0",
+      "research/metapleno-v250-persistent-h1",
+      "research/metapleno-v284-consolidated-topological"
+    ],
+    "decision": "Do not execute v312. Existing persistent-topology families already cover the proposed methodological core; opening another variant would increase multiplicity without a genuine orthogonal change."
   },
-  "protocol": {
-    "developmentEndExclusive": "2023-01-01",
-    "blindOosStart": "2023-01-01",
-    "blindOosEndExclusive": "2025-01-01",
-    "postFreezeStart": "2025-01-01",
-    "retuningAfterOos": false,
-    "behavioralDeduplication": true,
-    "hardAuditOnRepeat5PlusOrFull": true,
-    "topologyComputedPreDrawOnly": true
-  },
+  "validationTouched": false,
+  "postFreezeTouched": false,
+  "retuningPerformed": false,
   "economics": {
     "realMoneyPass": false,
     "realStakeEUR": 0,
