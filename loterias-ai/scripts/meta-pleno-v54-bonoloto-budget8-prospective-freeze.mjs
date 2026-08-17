@@ -8,7 +8,22 @@ const TARGET='2026-08-16';
 const REQUIRED_PREVIOUS='2026-08-15';
 const SPEC={id:386952,sw:5,lw:960,wS:8,wL:-1,wGap:-3,wLast:-4,wPrev2:-1,wNum:-4,wParity:-1,wLow:-1,gapCap:160,powerS:1,powerL:2,setSize:8};
 const sha=x=>crypto.createHash('sha256').update(typeof x==='string'?x:JSON.stringify(x)).digest('hex');
-const writeStatus=(status,extra={})=>{fs.mkdirSync('loterias-ai/data/shadow',{recursive:true});const o={generatedAt:new Date().toISOString(),engine:'MetaPleno-v54-bonoloto-budget8-prospective-freeze',status,targetDrawDate:TARGET,requiredPreviousDrawDate:REQUIRED_PREVIOUS,specId:SPEC.id,budget:{numbers:8,combinations:28,theoreticalCostEUR:14,maxEUR:15,realStakeEUR:0},realMoneyPass:false,...extra};fs.writeFileSync(STATUS,JSON.stringify(o,null,2)+'\n');console.log(JSON.stringify(o,null,2));return o};
+const stable=x=>{const {generatedAt,...rest}=x;return JSON.stringify(rest)};
+const writeStatus=(status,extra={})=>{
+  fs.mkdirSync('loterias-ai/data/shadow',{recursive:true});
+  const base={engine:'MetaPleno-v54-bonoloto-budget8-prospective-freeze',status,targetDrawDate:TARGET,requiredPreviousDrawDate:REQUIRED_PREVIOUS,specId:SPEC.id,budget:{numbers:8,combinations:28,theoreticalCostEUR:14,maxEUR:15,realStakeEUR:0},realMoneyPass:false,...extra};
+  if(fs.existsSync(STATUS)){
+    const old=JSON.parse(fs.readFileSync(STATUS,'utf8'));
+    if(stable(old)===JSON.stringify(base)){
+      console.log(JSON.stringify({...old,writeSkipped:true,reason:'NO_SEMANTIC_CHANGE'},null,2));
+      return old;
+    }
+  }
+  const o={generatedAt:new Date().toISOString(),...base};
+  fs.writeFileSync(STATUS,JSON.stringify(o,null,2)+'\n');
+  console.log(JSON.stringify(o,null,2));
+  return o;
+};
 
 let rows=[];
 for(const f of fs.readdirSync(DIR).filter(x=>/^\d{4}\.json$/.test(x)).sort()){
