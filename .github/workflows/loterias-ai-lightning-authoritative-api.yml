@@ -41,18 +41,26 @@ jobs:
             git reset --hard "origin/$GITHUB_REF_NAME"
             node loterias-ai/casino/lightning/collect-casinoorg-api.mjs
 
+            data_changed=true
             if git diff --quiet -- loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl; then
-              echo "No new authoritative rounds; no prospective status rewrite."
-              exit 0
+              data_changed=false
+              if [ "$GITHUB_EVENT_NAME" != "push" ]; then
+                echo "No new authoritative rounds; scheduled/dispatch run has nothing to advance."
+                exit 0
+              fi
+              echo "No new rounds, but this is a scientific push: recomputing prospectives with current frozen data."
             fi
 
-            node loterias-ai/casino/lightning/corpus-readiness.mjs
-            # QA/readiness outputs are owned by their dedicated workflow.
-            git restore loterias-ai/casino/lightning/evidence/corpus-readiness.json || true
-            git restore loterias-ai/casino/lightning/evidence/corpus-audit.json || true
+            if [ "$data_changed" = true ]; then
+              node loterias-ai/casino/lightning/corpus-readiness.mjs
+              # QA/readiness outputs are owned by their dedicated workflow.
+              git restore loterias-ai/casino/lightning/evidence/corpus-readiness.json || true
+              git restore loterias-ai/casino/lightning/evidence/corpus-audit.json || true
+            fi
 
             # Bot pushes made with GITHUB_TOKEN do not start downstream push workflows.
             # Therefore the authoritative collector itself advances both immutable prospectives.
+            # Scientific push events recompute these artifacts even when no fresh round arrived.
             node loterias-ai/casino/lightning/research/verify-economic-prospective-freeze-v1.mjs
             node loterias-ai/casino/lightning/research/verify-economic-number-prospective-freeze-v1.mjs
             node loterias-ai/casino/lightning/research/economic-multiplier-prospective-v1.mjs
