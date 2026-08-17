@@ -1,0 +1,63 @@
+name: Loterias AI MetaPleno v315 Prospective Settlement
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/data/archive/primitiva/**'
+      - 'loterias-ai/data/research/v315-prospective-seals/**'
+      - 'loterias-ai/data/research/metapleno-v315-execution-protocol-v1.json'
+      - 'loterias-ai/research/megalab/v315-settle-official-prospective.mjs'
+      - '.github/workflows/loterias-ai-v315-prospective-settle.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-v315-prospective-settle
+  cancel-in-progress: false
+jobs:
+  settle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Settle only officially cross-checked sealed targets
+        run: node loterias-ai/research/megalab/v315-settle-official-prospective.mjs
+      - name: Validate settlement invariants
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const dir='loterias-ai/data/research/v315-prospective-settlements';
+          const files=fs.existsSync(dir)?fs.readdirSync(dir).filter(x=>x.endsWith('.json')).sort():[];
+          for(const f of files){
+            const d=JSON.parse(fs.readFileSync(`${dir}/${f}`,'utf8'));
+            if(!d.custody?.sealHashVerified||!d.custody?.protocolHashVerified||!d.custody?.officialSELAECrossCheckPassed) throw new Error('custody failure '+f);
+            if(d.disclosure?.candidatePerformanceHidden!==true||d.disclosure?.candidateRankingPublished!==false) throw new Error('interim disclosure regression '+f);
+            if(d.guards?.retuningPerformed!==false||d.guards?.optionalStoppingAllowed!==false||d.guards?.post200RescueAllowed!==false) throw new Error('scientific guard regression '+f);
+            if(d.guards?.realMoneyPass!==false||Number(d.guards?.realStakeEUR)!==0) throw new Error('real-money regression '+f);
+          }
+          console.log(JSON.stringify({settledFiles:files.length,fixedBoundary:200}));
+          NODE
+      - name: Persist new settlements against moving main
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/v315-prospective-settlements || true
+          if git diff --cached --quiet; then
+            echo 'No new official v315 settlement.'
+            exit 0
+          fi
+          git commit -m 'research(loterias-ai): settle official v315 prospective target'
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            git rebase --abort || true
+            sleep $((attempt*2))
+          done
+          exit 1
