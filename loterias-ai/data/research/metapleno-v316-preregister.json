@@ -1,0 +1,84 @@
+{
+  "version": "v316",
+  "family": "OPTIMAL_TRANSPORT_REGIME_AUDIT",
+  "status": "PREREGISTERED",
+  "goal": "Test whether pre-draw lottery-number distributions exhibit transport-stable regime structure that improves frozen ranking out of sample, using Wasserstein/Sinkhorn geometry rather than energy-distance or spectral surrogates.",
+  "antiDuplicateGuard": {
+    "searchedTerms": [
+      "optimal transport",
+      "Wasserstein",
+      "Sinkhorn",
+      "earth mover",
+      "transport distance"
+    ],
+    "repositorySearchResult": "NO_EXISTING_IMPLEMENTATION_FOUND_AT_PREREGISTRATION",
+    "nearestPriorFamilies": [
+      {
+        "version": "v262",
+        "family": "ENERGY_DISTANCE_REGIME_GATE",
+        "difference": "Energy distance is a kernel/distance discrepancy statistic; v316 uses explicit optimal transport plans and Wasserstein barycentric geometry with frozen transport costs."
+      },
+      {
+        "version": "v263",
+        "family": "HAAR_WAVELET_TEMPORAL_RANKER",
+        "difference": "Wavelet temporal ranking is unrelated to transport-plan geometry."
+      }
+    ],
+    "abortIfEquivalentArtifactFoundLater": true
+  },
+  "games": ["bonoloto", "primitiva", "euromillones", "gordo"],
+  "temporalProtocol": {
+    "developmentEnd": "2022-12-31",
+    "blindOosStart": "2023-01-01",
+    "blindOosEnd": "2024-12-31",
+    "postFreezeStart": "2025-01-01",
+    "retuningAfterOos": false,
+    "futureInformationAllowed": false
+  },
+  "design": {
+    "representation": "For each draw, map only prior-draw information into normalized empirical measures over the main-number support using trailing marginal frequency, recency and pairwise co-occurrence summaries; target draw outcomes are excluded.",
+    "transportGeometry": {
+      "distance": "1-Wasserstein / entropic Sinkhorn approximation",
+      "groundCost": "absolute normalized number-index distance with a second frozen co-occurrence-derived cost variant",
+      "barycenter": "trailing-window Wasserstein barycenter computed from prior draws only",
+      "score": "rank numbers by frozen contribution to reducing transport distance between current prior-state measure and the historical barycentric reference"
+    },
+    "frozenCandidateGrid": {
+      "windowLengths": [32, 64, 128, 256],
+      "sinkhornEpsilon": [0.02, 0.05, 0.1],
+      "groundCostVariants": ["INDEX_DISTANCE", "INDEX_PLUS_COOCCURRENCE"],
+      "maximumLogicalConfigurationsPerGame": 24,
+      "maximumFrozenRepresentativesPerGame": 8,
+      "behavioralDeduplication": true
+    },
+    "matchedCostNulls": [
+      "uniform random lines at identical line count",
+      "trailing marginal-frequency baseline",
+      "recency baseline"
+    ]
+  },
+  "freezeRules": {
+    "selectionData": "development only through 2022-12-31",
+    "maximumFrozenCandidatesTotal": 32,
+    "maximumFrozenCandidatesPerGame": 8,
+    "behaviorHashRequired": true,
+    "manifestHashRequired": true,
+    "noOosPeekBeforeFreeze": true,
+    "noPostFreezePeekBeforeOosDecision": true
+  },
+  "inference": {
+    "primaryMetric": "paired mean main-number hits per line versus matched-cost random baseline",
+    "secondaryMetrics": ["4+ events", "5+ events", "full-hit events", "repeat5+ across distinct dates"],
+    "multiplicity": "Holm-Bonferroni across frozen candidates within each game plus family-level audit for any extreme event",
+    "extremeEventAudit": "Any 5+, full hit, repeat5+ or corrected statistical anomaly triggers lineage verification, timestamp verification, behavior deduplication, exact matched-cost null replay and independent post-freeze replication before interpretation.",
+    "promotionRule": "No real-money promotion from v316 alone even if OOS is positive; an untouched prospective replication is mandatory."
+  },
+  "budget": {
+    "maximumTheoreticalCostEURPerGameDraw": 15,
+    "realMoneyPass": false,
+    "realStakeEUR": 0
+  },
+  "failureGate": "Persist as negative and do not retune if OOS uplift disappears, fails multiplicity correction, is explained by marginal-frequency/recency baselines, or any extreme event fails audit.",
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}

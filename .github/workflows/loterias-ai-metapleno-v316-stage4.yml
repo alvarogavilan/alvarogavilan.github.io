@@ -1,0 +1,44 @@
+name: Loterias AI MetaPleno v316 Stage4 Blind OOS
+on:
+  push:
+    branches:
+      - research/v316-optimal-transport-regime
+    paths:
+      - 'loterias-ai/research/megalab/v316-stage4-blind-oos.mjs'
+      - '.github/workflows/loterias-ai-metapleno-v316-stage4.yml'
+      - 'loterias-ai/data/research/metapleno-v316-stage3-freeze.json'
+  workflow_dispatch:
+
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run v316 Stage4 blind OOS
+        run: node loterias-ai/research/megalab/v316-stage4-blind-oos.mjs
+      - name: Verify lineage and safety gates
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const f=JSON.parse(fs.readFileSync('loterias-ai/data/research/metapleno-v316-stage3-freeze.json','utf8'));
+          const o=JSON.parse(fs.readFileSync('loterias-ai/data/research/metapleno-v316-stage4-oos.json','utf8'));
+          if(o.freezeManifestHash!==f.manifestHash) throw new Error('freeze lineage mismatch');
+          if(o.oosWindow!=='2023-01-01/2025-01-01') throw new Error('OOS window mismatch');
+          if(o.postFreezeTouched!==false||o.retuningPerformed!==false) throw new Error('post-freeze isolation failed');
+          if(o.realMoneyPass!==false||Number(o.realStakeEUR)!==0) throw new Error('real-money gate failed');
+          if(Number(o.budget?.maximumTheoreticalCostEURPerGameDraw)>15) throw new Error('budget cap failed');
+          if((o.repeat5Plus||o.fullHit||o.correctedStatisticalAnomaly)&&o.auditRequired!==true) throw new Error('signal not routed to hard audit');
+          NODE
+      - name: Persist OOS result
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/metapleno-v316-stage4-oos.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'data(loterias-ai): persist v316 Stage4 blind OOS'
+          git push
