@@ -1,0 +1,30 @@
+name: Loterias AI Actions Cost Guard
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/loterias-ai-*.yml'
+      - 'loterias-ai/config/actions-budget-policy.json'
+      - 'loterias-ai/scripts/audit-actions-budget.mjs'
+      - '.github/workflows/loterias-ai-actions-cost-guard.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: loterias-ai-actions-cost-guard
+  cancel-in-progress: true
+
+jobs:
+  audit-budget:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Reject unnecessary scheduled Actions
+        run: node loterias-ai/scripts/audit-actions-budget.mjs
