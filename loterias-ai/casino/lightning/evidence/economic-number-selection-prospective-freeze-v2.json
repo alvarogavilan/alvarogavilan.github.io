@@ -24,15 +24,20 @@
   "twoPhaseProtocol": {
     "phaseA": {"name":"PROSPECTIVE_SELECTION","rounds":5000,"startsAfterCleanWarmup":true,"purpose":"Choose exactly one selector for each coverage using only the first 5000 scored clean-segment rounds after the fixed 200-round warmup.","selectionMetric":"highest hitExcess versus k/37; tie-break by lower exact one-sided binomial p, then lower lookback, then lexicographic mode","promotionClaimAllowed":false,"interimPerformanceDisclosure":false},
     "phaseB": {"name":"PROSPECTIVE_CONFIRMATION","rounds":5000,"startsAfterPhaseA":true,"selectors":"the two deterministic phase-A winners only; no retuning","primaryTest":"exact one-sided binomial against k/37","familywiseCorrection":"Bonferroni across the 2 coverage finalists","alphaFamily":0.05,"alphaPerFinalist":0.025,"requirePositiveHitExcess":true,"interimPerformanceDisclosure":false},
+    "fixedFinalBoundary": 10000,
     "fixedScoredBoundary": 10000,
     "fixedTotalSegmentBoundaryIncludingWarmup": 10200,
+    "postBoundaryDataMayRescueV1": false,
     "postBoundaryDataMayRescueV2": false
   },
   "economicReporting": {"stakePerRoundEUR":15,"reportPaperPnl":true,"paperPnlIsSelectionCriterion":false,"paperPnlIsPrimaryConfirmationGate":false},
   "readPolicy": {
     "duringWarmup": "ADMINISTRATIVE_COUNTS_ONLY_NO_SCORING",
+    "before5000": "ADMINISTRATIVE_COUNTS_ONLY_NO_MODEL_RANKING",
     "before5000Scored": "ADMINISTRATIVE_COUNTS_ONLY_NO_MODEL_RANKING",
+    "from5000To9999": "PHASE_A_WINNERS_MAY_BE_REVEALED; PHASE_B_OUTCOMES_REMAIN_BLINDED",
     "from5000To9999Scored": "PHASE_A_WINNERS_MAY_BE_REVEALED; PHASE_B_OUTCOMES_REMAIN_BLINDED",
+    "at10000": "SINGLE_FIXED_CONFIRMATION_READ",
     "at10000Scored": "SINGLE_FIXED_CONFIRMATION_READ",
     "after10000Scored": "V2_RESULT_IMMUTABLE; LATER_DATA_CANNOT_RESCUE_A_FAIL"
   },
