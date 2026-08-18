@@ -12,11 +12,15 @@ on:
       - '.github/workflows/loterias-ai-today-manifest.yml'
 permissions:
   contents: write
+concurrency:
+  group: loterias-ai-today-manifest-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -77,13 +81,32 @@ jobs:
           }
           console.log(JSON.stringify({today:d.today,games:[...seen]}));
           NODE
-      - name: Persist manifest
+      - name: Suppress timestamp-only manifest rewrite
         run: |
+          if git show HEAD:loterias-ai/data/ui/today-manifest.json >/tmp/today-old.json 2>/dev/null; then
+            jq -S 'del(.generatedAt)' /tmp/today-old.json >/tmp/today-old.semantic.json
+            jq -S 'del(.generatedAt)' loterias-ai/data/ui/today-manifest.json >/tmp/today-new.semantic.json
+            if cmp -s /tmp/today-old.semantic.json /tmp/today-new.semantic.json; then
+              git show HEAD:loterias-ai/data/ui/today-manifest.json > loterias-ai/data/ui/today-manifest.json
+              echo 'NO_SEMANTIC_CHANGE today-manifest'
+            fi
+          fi
+      - name: Persist manifest safely
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- loterias-ai/data/ui/today-manifest.json; then
+            exit 0
+          fi
+          cp loterias-ai/data/ui/today-manifest.json /tmp/today-manifest.json
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add loterias-ai/data/ui/today-manifest.json
-          if ! git diff --cached --quiet; then
-            git commit -m "data(loterias-ai): refresh Today manifest"
-            git pull --rebase origin "$GITHUB_REF_NAME"
-            git push origin HEAD:"$GITHUB_REF_NAME"
-          fi
+          for i in 1 2 3 4 5; do
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard "origin/$GITHUB_REF_NAME"
+            cp /tmp/today-manifest.json loterias-ai/data/ui/today-manifest.json
+            git add loterias-ai/data/ui/today-manifest.json
+            git commit -m 'data(loterias-ai): refresh Today manifest' || exit 0
+            git push origin HEAD:"$GITHUB_REF_NAME" && exit 0
+            sleep $((i*3))
+          done
+          exit 1
