@@ -1,0 +1,50 @@
+name: Loterias AI Lightning Casinoorg Source Head Probe
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/lightning/research/probe-casinoorg-source-head.mjs'
+      - '.github/workflows/loterias-ai-lightning-source-head-probe.yml'
+  schedule:
+    - cron: '*/15 * * * *'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-lightning-source-head-probe
+  cancel-in-progress: false
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - name: Probe source head without touching corpus
+        run: node loterias-ai/casino/lightning/research/probe-casinoorg-source-head.mjs
+      - name: Verify diagnostic-only contract
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const j=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-source-head-probe.json','utf8'));
+          if(j.policy?.diagnosticOnly!==true||j.policy?.mayMutateCorpus!==false||j.policy?.mayAdvanceProspectives!==false) throw new Error('source probe contract drift');
+          if(j.guards?.trainingDataMutation!==false||j.guards?.prospectiveOutcomeMutation!==false||j.guards?.realMoneyAllowed!==false) throw new Error('source probe safety drift');
+          NODE
+      - name: Persist source head when semantic/hour state changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET='loterias-ai/casino/lightning/evidence/casinoorg-source-head-probe.json'
+          if [ -z "$(git status --porcelain -- "$TARGET")" ]; then exit 0; fi
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "$TARGET"
+          git commit -m 'ops(lightning): persist Casino.org source head probe'
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase origin main || { git rebase --abort || true; sleep $((attempt*2)); continue; }
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
