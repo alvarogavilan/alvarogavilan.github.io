@@ -48,11 +48,33 @@ function gitHead() {
   return result.status === 0 ? String(result.stdout || '').trim() : 'unavailable';
 }
 
+function restoreCachedEvidence() {
+  if (!fs.existsSync(cacheDir)) return 0;
+  let restored = 0;
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const source = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(source);
+        continue;
+      }
+      if (!entry.isFile()) continue;
+      const relative = path.relative(cacheDir, source);
+      const target = path.join(workspace, relative);
+      fs.mkdirSync(path.dirname(target), { recursive: true });
+      fs.copyFileSync(source, target);
+      restored += 1;
+    }
+  };
+  walk(cacheDir);
+  return restored;
+}
+
 function copySourceWorkspace(sourceHead, state) {
   const marker = path.join(workspace, '.loterias-runtime-head');
   let markerHead = null;
   try { markerHead = fs.readFileSync(marker, 'utf8').trim(); } catch {}
-  if (markerHead === sourceHead && fs.existsSync(path.join(workspace, 'loterias-ai'))) return false;
+  if (markerHead === sourceHead && fs.existsSync(path.join(workspace, 'loterias-ai'))) return { refreshed: false, restored: 0 };
 
   fs.rmSync(workspace, { recursive: true, force: true });
   fs.mkdirSync(workspace, { recursive: true });
@@ -65,10 +87,12 @@ function copySourceWorkspace(sourceHead, state) {
       return first !== '.git' && first !== '.loterias-mac-node';
     }
   });
+  const restored = restoreCachedEvidence();
   fs.writeFileSync(marker, `${sourceHead}\n`);
   state.workspaceHead = sourceHead;
   state.workspaceSyncedAt = new Date().toISOString();
-  return true;
+  state.cachedEvidenceRestored = restored;
+  return { refreshed: true, restored };
 }
 
 function tail(value, max = 4000) {
@@ -111,8 +135,11 @@ state.tasks ||= {};
 const startedAt = Date.now();
 const sourceHead = gitHead();
 let workspaceRefreshed = false;
+let cachedEvidenceRestored = 0;
 try {
-  workspaceRefreshed = copySourceWorkspace(sourceHead, state);
+  const sync = copySourceWorkspace(sourceHead, state);
+  workspaceRefreshed = sync.refreshed;
+  cachedEvidenceRestored = sync.restored;
 } catch (error) {
   writeJsonAtomic(statusPath, {
     generatedAt: new Date().toISOString(),
@@ -187,6 +214,7 @@ for (const task of tasks) {
 state.updatedAt = new Date().toISOString();
 state.sourceHead = sourceHead;
 state.workspaceRefreshedLastTick = workspaceRefreshed;
+state.cachedEvidenceRestoredLastTick = cachedEvidenceRestored;
 writeJsonAtomic(statePath, state);
 
 const configured = tasks.length;
@@ -199,6 +227,7 @@ writeJsonAtomic(statusPath, {
   sourceHead,
   workspace,
   workspaceRefreshed,
+  cachedEvidenceRestored,
   configuredTasks: configured,
   executedThisTick: executed,
   missingEnvTasks,
