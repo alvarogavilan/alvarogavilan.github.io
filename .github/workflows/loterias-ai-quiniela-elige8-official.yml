@@ -2,7 +2,7 @@ name: Loterias AI Quiniela Elige8 Official
 on:
   workflow_dispatch:
   schedule:
-    - cron: '25 7 * * *'
+    - cron: '25 7 * * 1,5'
   push:
     paths:
       - 'loterias-ai/scripts/enrich-quiniela-elige8-official.mjs'
@@ -13,19 +13,20 @@ permissions:
   contents: write
 concurrency:
   group: loterias-ai-quiniela-elige8-official
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   enrich:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Enrich large bounded batches
+      - name: Enrich bounded official batches
         shell: bash
         run: |
-          for i in 1 2 3 4; do
+          for i in 1 2; do
             BATCH_LIMIT=500 node loterias-ai/scripts/enrich-quiniela-elige8-official.mjs
             sleep 2
           done
@@ -48,37 +49,12 @@ jobs:
           node loterias-ai/scripts/build-completeness-index.mjs
           node loterias-ai/scripts/audit-national-archive.mjs
           node loterias-ai/scripts/build-real-money-status.mjs
-
-          # Derived JSON must not move main when the only difference is the clock.
-          # Compare each known derived artifact with HEAD after removing only its
-          # root generatedAt field; restore the HEAD copy when science is equal.
           node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import {execFileSync} from 'node:child_process';
-          const files=[
-            'loterias-ai/data/archive/_meta/archive-audit.json',
-            'loterias-ai/data/archive/_meta/quiniela-elige8-official-enrichment.json',
-            'loterias-ai/data/archive/completeness-index.json',
-            'loterias-ai/data/archive/manifest.json',
-            'loterias-ai/data/backtests/elige8-official-financial-tournament.json',
-            'loterias-ai/data/backtests/quiniela-official-financial-tournament.json',
-            'loterias-ai/data/gates/real-money-status.json'
-          ];
+          import fs from 'node:fs';import {execFileSync} from 'node:child_process';
+          const files=['loterias-ai/data/archive/_meta/archive-audit.json','loterias-ai/data/archive/_meta/quiniela-elige8-official-enrichment.json','loterias-ai/data/archive/completeness-index.json','loterias-ai/data/archive/manifest.json','loterias-ai/data/backtests/elige8-official-financial-tournament.json','loterias-ai/data/backtests/quiniela-official-financial-tournament.json','loterias-ai/data/gates/real-money-status.json'];
           const stable=x=>{const y=structuredClone(x);delete y.generatedAt;return y};
-          for(const file of files){
-            if(!fs.existsSync(file)) continue;
-            let previousText;
-            try{previousText=execFileSync('git',['show',`HEAD:${file}`],{encoding:'utf8'})}catch{continue}
-            try{
-              const previous=JSON.parse(previousText),current=JSON.parse(fs.readFileSync(file,'utf8'));
-              if(JSON.stringify(stable(previous))===JSON.stringify(stable(current))){
-                fs.writeFileSync(file,previousText.endsWith('\n')?previousText:`${previousText}\n`);
-                console.log(`NO_SEMANTIC_CHANGE ${file}`);
-              }
-            }catch{}
-          }
+          for(const file of files){if(!fs.existsSync(file))continue;let previousText;try{previousText=execFileSync('git',['show',`HEAD:${file}`],{encoding:'utf8'})}catch{continue}try{const previous=JSON.parse(previousText),current=JSON.parse(fs.readFileSync(file,'utf8'));if(JSON.stringify(stable(previous))===JSON.stringify(stable(current)))fs.writeFileSync(file,previousText.endsWith('\n')?previousText:`${previousText}\n`)}catch{}}
           NODE
-
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add loterias-ai/data/archive loterias-ai/data/backtests/quiniela-official-financial-tournament.json loterias-ai/data/backtests/elige8-official-financial-tournament.json loterias-ai/data/gates
