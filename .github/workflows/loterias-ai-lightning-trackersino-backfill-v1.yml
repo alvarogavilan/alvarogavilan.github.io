@@ -6,24 +6,21 @@ on:
     paths:
       - 'loterias-ai/casino/lightning/research/trackersino-historical-backfill-v1.mjs'
       - '.github/workflows/loterias-ai-lightning-trackersino-backfill-v1.yml'
-  schedule:
-    - cron: '17 * * * *'
 permissions:
   contents: write
 concurrency:
   group: lightning-trackersino-backfill-v1
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   backfill:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: 24}
-      - name: Backfill documented TrackerSino history
+      - name: Backfill documented TrackerSino history only when explicitly invoked/changed
         env:
           TRACKERSINO_API_KEY: ${{ secrets.TRACKERSINO_API_KEY }}
           TRACKERSINO_MAX_PAGES: '20'
@@ -36,31 +33,18 @@ jobs:
           set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-
-          # Missing credentials are an expected fail-closed state. Do not create
-          # hourly timestamp-only commits while the documented API is unavailable.
           if [ -z "${TRACKERSINO_API_KEY:-}" ]; then
             git checkout -- loterias-ai/casino/lightning/evidence/trackersino-backfill-report-v1.json 2>/dev/null || true
-            echo 'TrackerSino remains BLOCKED_MISSING_API_KEY; no persistence churn.'
+            echo 'TrackerSino BLOCKED_MISSING_API_KEY; scheduled polling disabled by cost policy.'
             exit 0
           fi
-
           for attempt in 1 2 3 4 5; do
-            git fetch origin "$GITHUB_REF_NAME"
-            git reset --hard "origin/$GITHUB_REF_NAME"
-            TRACKERSINO_API_KEY="$TRACKERSINO_API_KEY" TRACKERSINO_MAX_PAGES="$TRACKERSINO_MAX_PAGES" \
-              node loterias-ai/casino/lightning/research/trackersino-historical-backfill-v1.mjs
-
-            for f in \
-              loterias-ai/casino/lightning/data/trackersino-lightningroulette.jsonl \
-              loterias-ai/casino/lightning/evidence/trackersino-backfill-checkpoint-v1.json \
-              loterias-ai/casino/lightning/evidence/trackersino-backfill-report-v1.json; do
-              if [ -f "$f" ]; then git add "$f"; fi
-            done
-
-            if git diff --cached --quiet; then exit 0; fi
+            git fetch origin "$GITHUB_REF_NAME";git reset --hard "origin/$GITHUB_REF_NAME"
+            TRACKERSINO_API_KEY="$TRACKERSINO_API_KEY" TRACKERSINO_MAX_PAGES="$TRACKERSINO_MAX_PAGES" node loterias-ai/casino/lightning/research/trackersino-historical-backfill-v1.mjs
+            for f in loterias-ai/casino/lightning/data/trackersino-lightningroulette.jsonl loterias-ai/casino/lightning/evidence/trackersino-backfill-checkpoint-v1.json loterias-ai/casino/lightning/evidence/trackersino-backfill-report-v1.json; do [ ! -f "$f" ] || git add "$f"; done
+            git diff --cached --quiet && exit 0
             git commit -m 'research(casino): persist TrackerSino Lightning historical backfill'
-            if git push origin HEAD:"$GITHUB_REF_NAME"; then exit 0; fi
-            sleep $((attempt * 2))
+            git push origin HEAD:"$GITHUB_REF_NAME" && exit 0
+            sleep $((attempt*2))
           done
           exit 1
