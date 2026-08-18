@@ -3,6 +3,7 @@ import fs from 'node:fs';
 
 const E='loterias-ai/casino/lightning/evidence';
 const V315='loterias-ai/data/research/metapleno-v315-final-200.json';
+const PF4='loterias-ai/data/research/primitiva-frequency4-prospective-final-50.json';
 const OUT=`${E}/economic-promotion-gate-v1.json`;
 const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'));}catch{return null;}};
 
@@ -13,6 +14,7 @@ const pastLucky=read(`${E}/prospective-past-lucky-family-clean-v2-status-v1.json
 const numberSel=read(`${E}/economic-number-selection-prospective-status-v2.json`);
 const physical=read(`${E}/physical-rng-prospective-v2-status.json`);
 const v315=read(V315);
+const pf4=read(PF4);
 
 const directEconomic=[];
 const scientificSignals=[];
@@ -25,6 +27,11 @@ const timingDone=timing?.progress?.closedEpisodes===200&&timing?.final!==null;
 const timingPass=timingDone&&timing?.final?.replicationPass===true;
 boundary('clean-timing-v3',timingDone,timingPass);
 if(timingPass) componentSignals.push({id:'clean-timing-v3',type:'TIMING_COMPONENT',next:'Requires an untouched combined timing+number economic replication before any monetary claim.'});
+
+const pf4Done=pf4?.fixedBoundary?.draws===50&&pf4?.guards?.all50SealedBeforeResult===true;
+const pf4Pass=pf4Done&&pf4?.gates?.economicPromotionCandidate===true&&Number(pf4?.observed?.roi)>0;
+boundary('primitiva-frequency4-v1',pf4Done,pf4Pass);
+if(pf4Pass) directEconomic.push({id:'primitiva-frequency4-v1',type:'DIRECT_PROSPECTIVE_ECONOMIC_SIGNAL',observedROI:pf4.observed.roi,stakeEUR:pf4.observed.stakeEUR,returnEUR:pf4.observed.returnEUR,matchedRandomMeanROI:pf4.matchedRandom?.meanROI,oneSidedPUpper:pf4.matchedRandom?.oneSidedPUpper,next:'Freeze a second untouched 50-draw replication; real money remains blocked pending explicit review and replication.'});
 
 const lag8Done=lag8?.progress?.comparisonsUsed===1000&&lag8?.final!==null;
 const lag8Pass=lag8Done&&lag8?.final?.scientificPromotionCandidate===true&&lag8?.final?.conservativeBaseRoi>0;
