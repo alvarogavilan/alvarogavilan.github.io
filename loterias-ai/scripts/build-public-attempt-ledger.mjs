@@ -2,85 +2,81 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const ROOT='loterias-ai/data/shadow';
-const OUT=path.join(ROOT,'public-attempts-v1.json');
-const files=fs.readdirSync(ROOT).filter(f=>/evaluation\.json$/i.test(f)).sort();
+const DATA='loterias-ai/data';
+const OUT=`${DATA}/shadow/public-attempts-v1.json`;
+const roots=['shadow','research','prospective'];
+
+function walk(dir,rel=''){
+  if(!fs.existsSync(dir))return[];const out=[];
+  for(const e of fs.readdirSync(dir,{withFileTypes:true})){
+    const r=path.join(rel,e.name),p=path.join(dir,e.name);
+    if(e.isDirectory())out.push(...walk(p,r));
+    else if(/evaluation\.json$/i.test(e.name))out.push(r.replaceAll('\\','/'));
+  }
+  return out;
+}
+const files=roots.flatMap(root=>walk(`${DATA}/${root}`).map(file=>({root,file,path:`${DATA}/${root}/${file}`}))).sort((a,b)=>a.path.localeCompare(b.path));
 
 const arr=v=>Array.isArray(v)?v.map(Number).filter(Number.isFinite):[];
 const first=(...xs)=>xs.find(v=>v!==undefined&&v!==null&&v!=='');
-const inferGame=f=>f.split('-202')[0].replaceAll('-',' ');
-const inferDate=f=>f.match(/\d{4}-\d{2}-\d{2}/)?.[0]||null;
 const num=v=>Number.isFinite(Number(v))?Number(v):null;
+const inferDate=s=>String(s).match(/\d{4}-\d{2}-\d{2}/)?.[0]||null;
+const inferGame=(item,x)=>first(x.gameId,x.game,x.targetGame,item.file.split('-202')[0].replaceAll('-',' '),'unknown');
+const statusEvaluated=s=>/EVALUATED|SETTLED|FINAL|RESULT/i.test(String(s||''))&&!/WAITING|AWAITING|PENDING/i.test(String(s||''));
 
-function normalize(file){
-  let x;
-  try{x=JSON.parse(fs.readFileSync(path.join(ROOT,file),'utf8'));}catch{return null;}
-  const targetDrawDate=first(x.targetDrawDate,x.target?.drawDate,x.drawDate,inferDate(file));
-  const officialMain=arr(first(x.officialResult?.main,x.target?.main,x.official?.main,x.result?.main));
-  const ticketSource=Array.isArray(x.tickets)?x.tickets:Array.isArray(x.outcome?.tickets)?x.outcome.tickets:[];
-  const tickets=ticketSource.map((t,i)=>({
-    label:first(t.ticket,t.rank?`rank ${t.rank}`:null,`ticket ${i+1}`),
-    numbers:arr(first(t.numbers,t.main)),
-    mainHits:num(first(t.mainHits,t.hits)),
-    complementaryHit:Boolean(first(t.complementaryHit,false)),
-    classLabel:first(t.classLabel,null)
-  })).filter(t=>t.numbers.length);
-  const pool=arr(first(x.freeze?.pool,x.pool));
-  const bestHits=num(first(x.bestResult?.mainHits,x.outcome?.mainHits,tickets.length?Math.max(...tickets.map(t=>t.mainHits??-1)):null));
-  const full=Boolean(first(x.successFlags?.full6,x.outcome?.full6of6,bestHits===6));
-  const theoreticalCostEUR=num(first(x.theoreticalCostEUR,x.budget?.theoreticalCostEUR,x.costEUR));
-  const realStakeEUR=num(first(x.realStakeEUR,x.budget?.realStakeEUR,0));
-  const prospectiveIntegrity=first(x.scientific?.prospectiveIntegrity,x.immutableSource,x.sealedBeforeResult,null);
-  const causalAttribution=full?'SUCCESS':'UNKNOWN';
-  const failureClass=full?'FULL_TARGET_HIT':'ATTEMPT_MISSED_TARGET';
-  let learning;
-  if(full) learning='El intento congelado alcanzó el objetivo principal. Requiere replicación independiente antes de inferir ventaja.';
-  else if(pool.length&&bestHits!==null) learning=`El pool congelado cubrió ${bestHits} número(s) principal(es). Al no contener los seis, ninguna combinación simple formada sólo con ese pool podía alcanzar 6/6.`;
-  else if(bestHits!==null) learning=`El mejor candidato congelado obtuvo ${bestHits}/6. Un intento aislado no identifica una causa ni demuestra calibración; se acumula evidencia prospectiva.`;
-  else learning='El artefacto fue evaluado, pero su esquema legado no expone un contador principal normalizado. Se conserva la fuente para auditoría.';
+function normalize(item){
+  let x;try{x=JSON.parse(fs.readFileSync(item.path,'utf8'));}catch{return null;}
+  const targetDrawDate=first(x.targetDrawDate,x.targetDraw,x.target?.drawDate,x.drawDate,inferDate(item.file));
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(String(targetDrawDate||'')))return null;
+  const prospectiveHint=Boolean(
+    /prospective/i.test(String(x.evaluationType||x.engine||x.version||x.status||''))||
+    x.selectionUsedTargetResult===false||x.retuningPerformed===false||x.sealedBeforeResult===true||
+    x.freezeFingerprintSha256||x.freezeSealSHA256||x.sealSHA256||x.freeze?.sealSHA256
+  );
+  if(!prospectiveHint)return null;
+
+  const officialMain=arr(first(x.officialResult?.main,x.winningNumbers,x.winning,x.target?.main,x.official?.main,x.result?.main));
+  const officialStars=arr(first(x.officialResult?.stars,x.winningStars,x.target?.stars,x.result?.stars));
+  const singularTicket=x.ticket&&typeof x.ticket==='object'?[x.ticket]:[];
+  const ticketSource=Array.isArray(x.tickets)?x.tickets:Array.isArray(x.outcome?.tickets)?x.outcome.tickets:singularTicket;
+  const tickets=ticketSource.map((t,i)=>({label:first(t.label,t.ticket,t.rank?`rank ${t.rank}`:null,`ticket ${i+1}`),numbers:arr(first(t.numbers,t.main)),stars:arr(t.stars),mainHits:num(first(t.mainHits,t.hits)),starHits:num(t.starHits),complementaryHit:Boolean(first(t.complementaryHit,false)),classLabel:first(t.classLabel,null)})).filter(t=>t.numbers.length||t.stars.length);
+  const pool=arr(first(x.coveragePool,x.freeze?.pool,x.predictedPool,x.pool));
+  const bestHits=num(first(x.bestPlayableHits,x.poolHits,x.bestResult?.mainHits,x.outcome?.mainHits,tickets.length?Math.max(...tickets.map(t=>t.mainHits??-1)):null));
+  const explicitFull=first(x.full5plus2,x.full6,x.fullSixCovered,x.successFlags?.full6,x.outcome?.full6of6,null);
+  const full=explicitFull===null?bestHits===6:Boolean(explicitFull);
+  const theoreticalCostEUR=num(first(x.theoreticalCostEUR,x.budget?.theoreticalCostEUR,x.budget,x.costEUR,x.coverageLines?Number(x.coverageLines)*0.5:null));
+  const realStakeEUR=num(first(x.realStakeEUR,x.budget?.realStakeEUR,0))??0;
+  const status=String(first(x.status,'EVALUATED'));
+  const officialVerified=Boolean(x.custody?.full5plus2OfficialCrossCheck||x.officialResult?.verification==='OFFICIAL_SELAE_VALIDATED'||x.target?.verification==='OFFICIAL_SELAE_VALIDATED');
+  const outcomeObserved=officialMain.length>0||statusEvaluated(status)&&(bestHits!==null||explicitFull!==null);
+  const prospectiveIntegrity=first(x.scientific?.prospectiveIntegrity,x.immutableSource,x.sealedBeforeResult,x.freezeFingerprintVerified,x.specUnchanged,x.mutationCheck==='PASS',x.selectionUsedTargetResult===false&&x.retuningPerformed===false,null);
+
+  let failureClass='PENDING_RESULT',causalAttribution='UNEVALUATED',explanation='El intento está congelado pero todavía no existe un resultado oficial completo para evaluarlo.',learning='Pendiente de resultado; no se interpreta rendimiento antes de observar y validar el sorteo.',nextAction='Esperar la fuente oficial y liquidar contra el artefacto ya congelado.';
+  if(outcomeObserved){
+    failureClass=full?'FULL_TARGET_HIT':'ATTEMPT_MISSED_TARGET';causalAttribution=full?'SUCCESS':'UNKNOWN';
+    explanation=full?'El objetivo principal se alcanzó prospectivamente, pero un evento aislado no demuestra una causa ni una ventaja reproducible.':'El resultado observado no permite afirmar por qué no acertó. Puede ser variabilidad aleatoria, señal insuficiente o un modelo sin ventaja; no se inventa causalidad.';
+    if(full)learning='El intento congelado alcanzó el objetivo principal. Requiere replicación independiente antes de inferir ventaja.';
+    else if(pool.length&&bestHits!==null)learning=`El pool congelado cubrió ${bestHits} número(s) principal(es). El resultado se conserva como evidencia prospectiva, sin retuning.`;
+    else if(bestHits!==null)learning=`El mejor candidato congelado obtuvo ${bestHits} acierto(s) principales. Un intento aislado no identifica causalidad ni calibración.`;
+    else learning='El resultado quedó persistido, pero el esquema no expone un contador principal normalizado; se conserva la fuente para auditoría.';
+    nextAction=full?'Replicar con la regla intacta en nuevos sorteos prospectivos.':'Mantener la regla intacta y juzgar la familia por su distribución prospectiva acumulada.';
+  }
+
   return {
-    id:file.replace(/\.json$/i,''),
-    source:`../data/shadow/${file}`,
-    game:inferGame(file),
-    engine:first(x.engine,x.model,x.strategy,'unknown'),
-    status:first(x.status,'EVALUATED'),
-    targetDrawDate,
-    evaluatedAt:first(x.evaluatedAt,x.generatedAt,null),
-    frozenAt:first(x.freeze?.frozenAt,x.frozenAt,null),
-    sealSHA256:first(x.freeze?.sealSHA256,x.freeze?.frozenSealSHA256,x.frozenSealSHA256,x.sealSHA256,null),
-    officialResult:{
-      main:officialMain,
-      complementary:num(first(x.officialResult?.complementary,x.target?.complementary,null)),
-      reintegro:num(first(x.officialResult?.reintegro,x.target?.reintegro,null)),
-      verification:first(x.officialResult?.verification,x.target?.verification,officialMain.length?'PERSISTED_RESULT':'UNKNOWN')
-    },
-    tickets,
-    coveragePool:pool,
-    bestMainHits:bestHits,
-    fullTargetHit:full,
-    theoreticalCostEUR,
-    realStakeEUR,
-    mode:realStakeEUR>0?'REAL':'PAPER',
-    prospectiveIntegrity:prospectiveIntegrity===null?'UNKNOWN':Boolean(prospectiveIntegrity),
-    selectionReason:first(x.selectionReason,x.hypothesis,'La selección exacta pertenece al artefacto congelado del motor. Si el esquema legado no guardó una explicación normalizada, no se reconstruye retrospectivamente.'),
-    postmortem:{
-      failureClass,
-      causalAttribution,
-      explanation:full?'Resultado principal alcanzado; la causa de cualquier ventaja sigue sin demostrarse hasta replicación.':'El resultado observado no permite afirmar por qué no acertó. Puede ser variabilidad aleatoria, señal insuficiente o un modelo sin ventaja; no se inventa causalidad.',
-      learning,
-      nextAction:full?'Replicar con la regla intacta en nuevos sorteos prospectivos.':'Mantener el freeze, acumular intentos comparables y juzgar la familia por su distribución prospectiva, no por una sola derrota.'
-    }
+    id:`${item.root}/${item.file}`.replace(/\.json$/i,'').replaceAll('/','-'),
+    source:`../data/${item.root}/${item.file}`,
+    game:String(inferGame(item,x)),engine:first(x.engine,x.model,x.strategy,x.version,'unknown'),status,targetDrawDate,
+    evaluatedAt:first(x.evaluatedAt,x.generatedAt,null),frozenAt:first(x.freeze?.frozenAt,x.frozenAt,null),
+    sealSHA256:first(x.freeze?.sealSHA256,x.freeze?.frozenSealSHA256,x.frozenSealSHA256,x.sealSHA256,x.freezeSealSHA256,x.freezeFingerprintSha256,null),
+    officialResult:{main:officialMain,stars:officialStars,complementary:num(first(x.officialResult?.complementary,x.target?.complementary,null)),reintegro:num(first(x.officialResult?.reintegro,x.target?.reintegro,null)),verification:officialVerified?'OFFICIAL_SELAE_VALIDATED':officialMain.length?'PERSISTED_RESULT':'PENDING'},
+    tickets,coveragePool:pool,bestMainHits:bestHits,fullTargetHit:outcomeObserved&&full,outcomeObserved,
+    theoreticalCostEUR,realStakeEUR,mode:realStakeEUR>0?'REAL':'PAPER',prospectiveIntegrity:prospectiveIntegrity===null?'UNKNOWN':Boolean(prospectiveIntegrity),
+    selectionReason:first(x.selectionReason,x.hypothesis,'La selección exacta pertenece al artefacto congelado; no se reconstruye retrospectivamente.'),
+    postmortem:{failureClass,causalAttribution,explanation,learning,nextAction}
   };
 }
 
-const attempts=files.map(normalize).filter(Boolean).filter(a=>a.targetDrawDate).sort((a,b)=>String(b.targetDrawDate).localeCompare(String(a.targetDrawDate))||a.id.localeCompare(b.id));
-const evaluated=attempts.filter(a=>a.officialResult.main.length||a.bestMainHits!==null);
-const output={
-  version:'public-attempts-v1',
-  generatedAt:new Date().toISOString(),
-  sourcePolicy:'Generated only from persisted *evaluation.json artifacts. No result is reconstructed from chat history.',
-  counts:{filesScanned:files.length,attempts:attempts.length,evaluated:evaluated.length,fullTargetHits:attempts.filter(a=>a.fullTargetHit).length,realMoneyAttempts:attempts.filter(a=>a.realStakeEUR>0).length},
-  attempts
-};
-fs.writeFileSync(OUT,JSON.stringify(output,null,2)+'\n');
-console.log(JSON.stringify(output.counts));
+const attempts=files.map(normalize).filter(Boolean).sort((a,b)=>String(b.targetDrawDate).localeCompare(String(a.targetDrawDate))||a.id.localeCompare(b.id));
+const evaluated=attempts.filter(a=>a.outcomeObserved);
+const output={version:'public-attempts-v2',generatedAt:new Date().toISOString(),sourcePolicy:'Generated only from persisted prospective *evaluation.json artifacts across shadow/research/prospective. Pending results are never counted as failures and no result is reconstructed from chat history.',counts:{filesScanned:files.length,attempts:attempts.length,evaluated:evaluated.length,pending:attempts.length-evaluated.length,fullTargetHits:evaluated.filter(a=>a.fullTargetHit).length,realMoneyAttempts:attempts.filter(a=>a.realStakeEUR>0).length},attempts};
+fs.writeFileSync(OUT,JSON.stringify(output,null,2)+'\n');console.log(JSON.stringify(output.counts));
