@@ -1,8 +1,9 @@
 {
-  "version": "2026-08-14",
+  "version": "2026-08-19-blinded-v2",
   "gameId": "quinigol",
-  "status": "PROSPECTIVE_SHADOW_REQUIRED",
+  "status": "PROSPECTIVE_SHADOW_BLINDED_FIXED_30",
   "realStakeEUR": 0,
+  "frozenBeforeFirstProspectiveOutcome": true,
   "frozenModel": {
     "window": 320,
     "ticketsPerDraw": 2,
@@ -15,15 +16,45 @@
     "holdoutReturnEUR": 583.93,
     "holdoutROI": 0.4104589371980678,
     "fullHistoricalGatePassed": false,
-    "whyNot": "Positive locked holdout but did not beat the maximum ROI observed among all 100 matched random portfolios."
+    "whyNot": "Positive locked holdout but did not beat the maximum ROI observed among all 100 matched random portfolios.",
+    "historicalEvidenceIsContextOnly": true
   },
   "prospectiveRequirements": {
-    "minimumNewJornadas": 30,
+    "fixedBoundaryJornadas": 30,
+    "first30ObservedOnly": true,
     "noParameterChangesDuringShadow": true,
+    "noOptionalStopping": true,
+    "post30CannotRescue": true,
+    "interimHitsHidden": true,
+    "interimROIHidden": true,
+    "interimRandomComparisonHidden": true,
     "positiveNetROIRequired": true,
     "minimumProfitableJornadas": 5,
+    "matchedRandomReplicates": 10000,
+    "matchedRandomSeed": 19082026,
+    "randomGenerator": "LCG1664525_1013904223",
+    "randomTicketRule": "For each replicate and observed jornada, generate exactly two tickets of six independent score-bucket codes. Each position is sampled uniformly from the frozen 16-code alphabet; use the same official ticket cost and payout table as the model tickets.",
+    "oneSidedPValue": "(1 + count(randomROI >= observedROI)) / (10000 + 1)",
+    "alpha": 0.01,
+    "promotionRequires": [
+      "exactly first 30 prospective jornadas after the pre-outcome frozen prediction",
+      "all 30 predictions sealed before their official results",
+      "all 30 official results and economics available",
+      "observed ROI > 0",
+      "at least 5 profitable jornadas",
+      "observed ROI > matched-random mean ROI",
+      "one-sided matched-random p < 0.01",
+      "no model, window or ticket-count drift",
+      "no optional stopping or post-30 rescue"
+    ],
     "maximumRealAllocationBeforePromotionEUR": 0,
-    "promotionRequiresFreshCommitteeReview": true
+    "promotionRequiresFreshCommitteeReview": true,
+    "untouchedReplicationRequiredBeforeRealMoney": true
   },
-  "truth": "This policy freezes the promising historical model and prevents retrospective tuning. Shadow predictions must be timestamped before each future jornada and scored only after official SELAE results arrive."
+  "truth": "The model was frozen before the first prospective outcome. Interim prospective performance is hidden until the fixed 30-jornada boundary; only administrative progress may be disclosed.",
+  "guards": {
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
 }
