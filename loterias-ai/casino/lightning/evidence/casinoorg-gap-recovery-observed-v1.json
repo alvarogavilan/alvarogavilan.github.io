@@ -1,13 +1,13 @@
 {
   "version": "casinoorg-gap-recovery-observed-v1",
-  "generatedAt": "2026-08-18T10:32:04.294Z",
+  "generatedAt": "2026-08-18T10:50:55.830Z",
   "exitCode": 1,
   "signal": null,
   "success": false,
   "stdoutTail": "",
   "stderrTail": "file:///home/runner/work/alvarogavilan.github.io/alvarogavilan.github.io/loterias-ai/casino/lightning/research/recover-casinoorg-pagination-gap-v1.mjs:89\nif(!snapshot)throw new Error(`gap recovery failed closed after ${MAX_ATTEMPTS} attempts: ${lastError}`);\n                   ^\n\nError: gap recovery failed closed after 5 attempts: recovered union max gap 144.5s exceeds 120s\n    at file:///home/runner/work/alvarogavilan.github.io/alvarogavilan.github.io/loterias-ai/casino/lightning/research/recover-casinoorg-pagination-gap-v1.mjs:89:20\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n\nNode.js v24.19.0\n",
   "collector": {
-    "generatedAt": "2026-08-18T10:31:50.867Z",
+    "generatedAt": "2026-08-18T10:50:47.012Z",
     "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
     "status": 200,
     "received": 30,
@@ -23,23 +23,23 @@
       "winner": 24
     },
     "acceptedEarliest": {
-      "roundId": "6a842f07f0c1742da5014b44",
-      "timestamp": "2026-08-18T10:08:07.016Z",
-      "winner": 21
+      "roundId": "6a843363f0c1742da5014c23",
+      "timestamp": "2026-08-18T10:26:43.032Z",
+      "winner": 33
     },
     "acceptedLatest": {
-      "roundId": "6a843493f0c1742da5014c5a",
-      "timestamp": "2026-08-18T10:31:47.542Z",
-      "winner": 7
+      "roundId": "6a84390645835c72707c2d79",
+      "timestamp": "2026-08-18T10:50:45.038Z",
+      "winner": 6
     },
-    "continuityBridgeSeconds": 15036.642,
+    "continuityBridgeSeconds": 16152.658,
     "continuityBridgeSafe": false,
     "sourceLatest": {
-      "roundId": "6a843493f0c1742da5014c5a",
-      "timestamp": "2026-08-18T10:31:47.542Z",
-      "winner": 7
+      "roundId": "6a84390645835c72707c2d79",
+      "timestamp": "2026-08-18T10:50:45.038Z",
+      "winner": 6
     },
-    "sourceResponseSha256": "337f482ddec3050e889c9c0dfad71c8056c7558f453fd503f53cf2cbeafa17e2",
+    "sourceResponseSha256": "3d729f6919cb4c5d236a581e92cf0513cca166ca22b3b612d5ad64b72606ff6a",
     "cachePolicy": "NO_CACHE_NO_STORE",
     "endpointWindowRows": 30,
     "trainingEligibleRows": false,
@@ -48,7 +48,7 @@
   },
   "quarantine": {
     "version": "casinoorg-catchup-quarantine-v1",
-    "generatedAt": "2026-08-18T10:31:50.867Z",
+    "generatedAt": "2026-08-18T10:50:47.011Z",
     "status": "NON_CONTIGUOUS_SOURCE_WINDOW_QUARANTINED",
     "reason": "FIRST_FRESH_ROW_DOES_NOT_BRIDGE_LAST_PERSISTED_ROUND_WITHIN_300_SECONDS",
     "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
@@ -60,586 +60,25 @@
     "sourceWindow": {
       "received": 30,
       "sourceLatest": {
-        "roundId": "6a843493f0c1742da5014c5a",
-        "timestamp": "2026-08-18T10:31:47.542Z",
-        "winner": 7
+        "roundId": "6a84390645835c72707c2d79",
+        "timestamp": "2026-08-18T10:50:45.038Z",
+        "winner": 6
       },
       "acceptedEarliest": {
-        "roundId": "6a842f07f0c1742da5014b44",
-        "timestamp": "2026-08-18T10:08:07.016Z",
-        "winner": 21
+        "roundId": "6a843363f0c1742da5014c23",
+        "timestamp": "2026-08-18T10:26:43.032Z",
+        "winner": 33
       },
       "acceptedLatest": {
-        "roundId": "6a843493f0c1742da5014c5a",
-        "timestamp": "2026-08-18T10:31:47.542Z",
-        "winner": 7
+        "roundId": "6a84390645835c72707c2d79",
+        "timestamp": "2026-08-18T10:50:45.038Z",
+        "winner": 6
       },
-      "responseSha256": "337f482ddec3050e889c9c0dfad71c8056c7558f453fd503f53cf2cbeafa17e2"
+      "responseSha256": "3d729f6919cb4c5d236a581e92cf0513cca166ca22b3b612d5ad64b72606ff6a"
     },
-    "continuityBridgeSeconds": 15036.642,
+    "continuityBridgeSeconds": 16152.658,
     "maximumAllowedBridgeSeconds": 300,
     "quarantinedRows": [
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a842f07f0c1742da5014b44",
-        "timestamp": "2026-08-18T10:08:07.016Z",
-        "winner": 21,
-        "allLuckyNumbers": [
-          26,
-          30
-        ],
-        "allLuckyMultipliers": [
-          50,
-          100
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "744db5e4932fc1eb7f22cf5feebd4b89741e377688f36a089c777a2a965907d8",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a842f38f0c1742da5014b50",
-        "timestamp": "2026-08-18T10:08:56.035Z",
-        "winner": 16,
-        "allLuckyNumbers": [
-          7,
-          27,
-          33
-        ],
-        "allLuckyMultipliers": [
-          100,
-          100,
-          200
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "fcd48c8d29caeff7a0153e4f26db47a0d7a949600ece5ee4fd0cd8e41cda2f4a",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a842f67f0c1742da5014b59",
-        "timestamp": "2026-08-18T10:09:43.035Z",
-        "winner": 3,
-        "allLuckyNumbers": [
-          5,
-          24,
-          33
-        ],
-        "allLuckyMultipliers": [
-          100,
-          100,
-          50
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "9ec6bcdb6aa6c1b6142f6e7eadfdbae0aa66859df11cc8720acdf812a84d7537",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a842f94f0c1742da5014b63",
-        "timestamp": "2026-08-18T10:10:28.513Z",
-        "winner": 28,
-        "allLuckyNumbers": [
-          3,
-          4
-        ],
-        "allLuckyMultipliers": [
-          300,
-          100
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "23037e698d8c4bc1e77967841215645cc501bc8a09ee3c8dfcb50cc77eed0515",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a842fc5f0c1742da5014b6d",
-        "timestamp": "2026-08-18T10:11:17.012Z",
-        "winner": 28,
-        "allLuckyNumbers": [
-          4,
-          7,
-          18
-        ],
-        "allLuckyMultipliers": [
-          100,
-          50,
-          100
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "ce07827d7328ac8aa8c078a76d0100b75ab0d9e7da05117cea378883f03ce6bd",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a842ff7f0c1742da5014b78",
-        "timestamp": "2026-08-18T10:12:07.032Z",
-        "winner": 1,
-        "allLuckyNumbers": [
-          11,
-          33
-        ],
-        "allLuckyMultipliers": [
-          50,
-          50
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "b6183ae460018b8bcede17243e54d0120b2b0a55bcf32318318381ed06b54a94",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a843028f0c1742da5014b82",
-        "timestamp": "2026-08-18T10:12:56.031Z",
-        "winner": 28,
-        "allLuckyNumbers": [
-          7,
-          9,
-          30
-        ],
-        "allLuckyMultipliers": [
-          50,
-          100,
-          50
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "dea03d1a2f5bd0518e1353b8e20937fd09e17b2b272f1522c61a08e8c54baca2",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a843057f0c1742da5014b8b",
-        "timestamp": "2026-08-18T10:13:43.526Z",
-        "winner": 34,
-        "allLuckyNumbers": [
-          3,
-          9,
-          21,
-          32
-        ],
-        "allLuckyMultipliers": [
-          100,
-          50,
-          200,
-          100
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "372c94a47f58e912e208aa506158572b8fd8e0f1a4dadcf3090d2d1a18697250",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a843088f0c1742da5014b94",
-        "timestamp": "2026-08-18T10:14:32.522Z",
-        "winner": 5,
-        "allLuckyNumbers": [
-          19,
-          24,
-          35
-        ],
-        "allLuckyMultipliers": [
-          50,
-          100,
-          200
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "1927ed1521adf358e11eae6e95b3a631bfa7b00e09bfdb613c15ca9d02b148b4",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a8430b6f0c1742da5014b9c",
-        "timestamp": "2026-08-18T10:15:18.019Z",
-        "winner": 2,
-        "allLuckyNumbers": [
-          10,
-          18
-        ],
-        "allLuckyMultipliers": [
-          50,
-          50
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "fccb808b089d4314e14fe10e2d0d9647396253b6313fd3a237c27489dfb46ebd",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a8430e6f0c1742da5014ba5",
-        "timestamp": "2026-08-18T10:16:06.030Z",
-        "winner": 14,
-        "allLuckyNumbers": [
-          8,
-          18,
-          26
-        ],
-        "allLuckyMultipliers": [
-          100,
-          100,
-          50
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "49f2a2083047ab1cf186cd2b7e5efd9d3af0bcf593dc9996afd63064ff07e2ac",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a843114f0c1742da5014bb1",
-        "timestamp": "2026-08-18T10:16:52.525Z",
-        "winner": 19,
-        "allLuckyNumbers": [
-          6,
-          23
-        ],
-        "allLuckyMultipliers": [
-          50,
-          100
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "537321665b7b8522ff4278d547092da93060eae7b3d25c02a5e18f4fe3252a39",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a843142f0c1742da5014bbc",
-        "timestamp": "2026-08-18T10:17:38.023Z",
-        "winner": 32,
-        "allLuckyNumbers": [
-          18,
-          22,
-          29
-        ],
-        "allLuckyMultipliers": [
-          500,
-          200,
-          100
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "07b003c794bdbf0f06df30da66020bf1ae307b757e1061d88276396bc30961b8",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a843176f0c1742da5014bc6",
-        "timestamp": "2026-08-18T10:18:30.526Z",
-        "winner": 1,
-        "allLuckyNumbers": [
-          9,
-          23,
-          26
-        ],
-        "allLuckyMultipliers": [
-          100,
-          100,
-          50
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "c828c030c8992180e495eb771f544f7689050ab2ce8994fd6bfbd75f28768f93",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a8431a7f0c1742da5014bd0",
-        "timestamp": "2026-08-18T10:19:19.533Z",
-        "winner": 12,
-        "allLuckyNumbers": [
-          18,
-          24,
-          26
-        ],
-        "allLuckyMultipliers": [
-          200,
-          150,
-          100
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "d5785747e5eabd335fb642db3f77367f2ed98435069eaa7de16c7113d4e30a1b",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a8431daf0c1742da5014bdc",
-        "timestamp": "2026-08-18T10:20:10.033Z",
-        "winner": 31,
-        "allLuckyNumbers": [
-          34,
-          35
-        ],
-        "allLuckyMultipliers": [
-          50,
-          50
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "48708a36e011d613470ed2072095939b7d81a3b1869b7c28e8b72a3690d202de",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a843209f0c1742da5014be6",
-        "timestamp": "2026-08-18T10:20:57.028Z",
-        "winner": 8,
-        "allLuckyNumbers": [
-          3,
-          6,
-          34
-        ],
-        "allLuckyMultipliers": [
-          100,
-          50,
-          100
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "11feae8b31038afb22dbf4dd64da5978553ddc006676c5526db04dd60c894ed3",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a84323d45835c72707c2d6e",
-        "timestamp": "2026-08-18T10:21:47.514Z",
-        "winner": 7,
-        "allLuckyNumbers": [
-          0,
-          21
-        ],
-        "allLuckyMultipliers": [
-          400,
-          250
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "1e523947d3dee471d3a733df58a88d65101d402aa51fcedac77ab0358d66a16c",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a84326ef0c1742da5014bf8",
-        "timestamp": "2026-08-18T10:22:38.543Z",
-        "winner": 13,
-        "allLuckyNumbers": [
-          10,
-          19,
-          26,
-          34
-        ],
-        "allLuckyMultipliers": [
-          100,
-          50,
-          100,
-          200
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "90844066c044eec82c710d14cbc3ea9247d6913e11784d848326f72e10d9f03b",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a8432a4f0c1742da5014c04",
-        "timestamp": "2026-08-18T10:23:32.036Z",
-        "winner": 19,
-        "allLuckyNumbers": [
-          2,
-          31,
-          36
-        ],
-        "allLuckyMultipliers": [
-          50,
-          50,
-          100
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "4c9a7f3272867e9d52c48f7d5c09e0150e0f6dad58e8d1ee85af0197d4484344",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a8432d6f0c1742da5014c0e",
-        "timestamp": "2026-08-18T10:24:22.023Z",
-        "winner": 22,
-        "allLuckyNumbers": [
-          21,
-          24
-        ],
-        "allLuckyMultipliers": [
-          50,
-          50
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "d0444c26647d4f46739bda4f8c9882ed21266d2693ba67adc8bd88507d4e1ab4",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a843306f0c1742da5014c16",
-        "timestamp": "2026-08-18T10:25:10.533Z",
-        "winner": 16,
-        "allLuckyNumbers": [
-          8,
-          9
-        ],
-        "allLuckyMultipliers": [
-          50,
-          50
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "6cd17efd6520a6384fd0f16ebd73fcbe663481146d2f005bf6c0ea0a9b425055",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
-      {
-        "source": "casinoorg-evolution-public-api",
-        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
-        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
-        "roundId": "6a843334f0c1742da5014c1d",
-        "timestamp": "2026-08-18T10:25:56.040Z",
-        "winner": 34,
-        "allLuckyNumbers": [
-          0,
-          2,
-          20
-        ],
-        "allLuckyMultipliers": [
-          50,
-          50,
-          100
-        ],
-        "roundIdQuality": "authoritative_source_id",
-        "timestampQuality": "authoritative_settled_at",
-        "trainingEligible": false,
-        "confidenceTier": "A",
-        "rawHash": "957820ec65c8e38fd4d12e6459781ebfe63e171b6a8c27f83e6edd7251822a2f",
-        "realMoney": false,
-        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
-      },
       {
         "source": "casinoorg-evolution-public-api",
         "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
@@ -804,6 +243,571 @@
         "trainingEligible": false,
         "confidenceTier": "A",
         "rawHash": "8276d5818ce8e10986b2e834ed2d751e77b80b04eb2480cdc7775fec3dccf254",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a8434c2f0c1742da5014c61",
+        "timestamp": "2026-08-18T10:32:34.534Z",
+        "winner": 33,
+        "allLuckyNumbers": [
+          14,
+          20,
+          36
+        ],
+        "allLuckyMultipliers": [
+          100,
+          50,
+          100
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "caaf11f5a8b60f21860da4e50fa29741c73c2a09afb9ce21a3ca880baedd4778",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a8434f4f0c1742da5014c6e",
+        "timestamp": "2026-08-18T10:33:24.537Z",
+        "winner": 23,
+        "allLuckyNumbers": [
+          15,
+          21
+        ],
+        "allLuckyMultipliers": [
+          100,
+          150
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "0dca68116bc491ac141d48cb4f103bc3db9f41f75dd4aff0beb1eb66d0ddc5e4",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a843527f0c1742da5014c79",
+        "timestamp": "2026-08-18T10:34:15.534Z",
+        "winner": 36,
+        "allLuckyNumbers": [
+          7,
+          28
+        ],
+        "allLuckyMultipliers": [
+          50,
+          100
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "2c8e41a328a4c4bf2f99f16263fc2105675fc5723d024c57c6ffafb08618b4b0",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a843557f0c1742da5014c84",
+        "timestamp": "2026-08-18T10:35:03.032Z",
+        "winner": 22,
+        "allLuckyNumbers": [
+          1,
+          8
+        ],
+        "allLuckyMultipliers": [
+          100,
+          100
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "d468288479938f3003533a809574fa5c8014590b9da6bc74c4a779d2b00b86a2",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a843583f0c1742da5014c8c",
+        "timestamp": "2026-08-18T10:35:47.529Z",
+        "winner": 18,
+        "allLuckyNumbers": [
+          5,
+          13,
+          20
+        ],
+        "allLuckyMultipliers": [
+          200,
+          200,
+          50
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "5970f92792375109b135211c3cf05faf17e602a4ac1926a5a65b93444ab46808",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a8435b6f0c1742da5014c96",
+        "timestamp": "2026-08-18T10:36:38.073Z",
+        "winner": 18,
+        "allLuckyNumbers": [
+          6,
+          24
+        ],
+        "allLuckyMultipliers": [
+          50,
+          500
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "05b8caa2656430cb49f110d4b14d5ae9f340f07e48d7c08456f6194fae80c09f",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a8435e6f0c1742da5014c9d",
+        "timestamp": "2026-08-18T10:37:25.535Z",
+        "winner": 36,
+        "allLuckyNumbers": [
+          3,
+          8,
+          28
+        ],
+        "allLuckyMultipliers": [
+          50,
+          50,
+          200
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "d774d6bfe6cd55c91f0d70c3b3da680a6a4fb0150fd24da07ead066f7ae375f4",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a843617f0c1742da5014ca7",
+        "timestamp": "2026-08-18T10:38:15.038Z",
+        "winner": 1,
+        "allLuckyNumbers": [
+          12,
+          25,
+          35
+        ],
+        "allLuckyMultipliers": [
+          100,
+          50,
+          100
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "61f8aa73e075b15ff465f7e3c2c0b5def06060ca91f92c8275de92b631aecd65",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a843649f0c1742da5014cae",
+        "timestamp": "2026-08-18T10:39:05.047Z",
+        "winner": 8,
+        "allLuckyNumbers": [
+          13,
+          29
+        ],
+        "allLuckyMultipliers": [
+          500,
+          100
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "b67e6141c6f7dfeb06031fb8aa4b04ebe6a86881df6da074eb6df53c0bf31aeb",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a84367bf0c1742da5014cba",
+        "timestamp": "2026-08-18T10:39:55.060Z",
+        "winner": 28,
+        "allLuckyNumbers": [
+          1,
+          16,
+          17,
+          18,
+          28
+        ],
+        "allLuckyMultipliers": [
+          100,
+          100,
+          150,
+          200,
+          100
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "fa1cf5d35741c20f360aa2e5153a9781ec1c268957015c53abe93f54839156d5",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a8436adf0c1742da5014cc6",
+        "timestamp": "2026-08-18T10:40:45.588Z",
+        "winner": 3,
+        "allLuckyNumbers": [
+          11,
+          36
+        ],
+        "allLuckyMultipliers": [
+          50,
+          100
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "6ce4094e454ba3cac1283495f3d77a0c9988b49bb85c405a1f2e74ef4bea7916",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a8436ddf0c1742da5014cce",
+        "timestamp": "2026-08-18T10:41:33.543Z",
+        "winner": 26,
+        "allLuckyNumbers": [
+          13,
+          36
+        ],
+        "allLuckyMultipliers": [
+          100,
+          200
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "b91bfc34b15fdb7f4732e86f337ff1ac4ef2e0842d9ccf9d0f1abcb089da058b",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a84370cf0c1742da5014cd7",
+        "timestamp": "2026-08-18T10:42:20.048Z",
+        "winner": 8,
+        "allLuckyNumbers": [
+          16,
+          20,
+          26
+        ],
+        "allLuckyMultipliers": [
+          100,
+          50,
+          100
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "858200e73a3bc24a53b6ba3a3695f8cb188bbd0a2f51d6a15092a2068ce636dd",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a843741f0c1742da5014ce2",
+        "timestamp": "2026-08-18T10:43:13.550Z",
+        "winner": 4,
+        "allLuckyNumbers": [
+          25,
+          32,
+          34
+        ],
+        "allLuckyMultipliers": [
+          100,
+          50,
+          500
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "950ed62be6718705cc8947b94136eef9e445140168808fa24cc6bd02b1639f5d",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a843771f0c1742da5014cef",
+        "timestamp": "2026-08-18T10:44:01.551Z",
+        "winner": 14,
+        "allLuckyNumbers": [
+          5,
+          24,
+          30,
+          32
+        ],
+        "allLuckyMultipliers": [
+          100,
+          100,
+          300,
+          50
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "d616df00c72c6e3cb0823b546cdaa6379a11c7fa389ac830460eb0f1f87ee7f8",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a8437a3f0c1742da5014cf9",
+        "timestamp": "2026-08-18T10:44:51.043Z",
+        "winner": 27,
+        "allLuckyNumbers": [
+          9,
+          13,
+          14
+        ],
+        "allLuckyMultipliers": [
+          100,
+          150,
+          100
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "b9d1cac2b489bd5cd8143215ffc427ba837a7a632cd546fd7f03e8926c2f06c7",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a8437d6f0c1742da5014d03",
+        "timestamp": "2026-08-18T10:45:42.034Z",
+        "winner": 36,
+        "allLuckyNumbers": [
+          0,
+          21
+        ],
+        "allLuckyMultipliers": [
+          250,
+          200
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "e1581ed2beb7bb9ba7ad618724bcb07f226b858eca6af4d8b8b28b96ea6aca1e",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a843807f0c1742da5014d0f",
+        "timestamp": "2026-08-18T10:46:31.540Z",
+        "winner": 16,
+        "allLuckyNumbers": [
+          9,
+          13,
+          18
+        ],
+        "allLuckyMultipliers": [
+          50,
+          100,
+          50
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "8eaaada1ff1e2d9ea7aa37642163025f0df5f5294e5e54ffdb2523ecba5e87e4",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a843838f0c1742da5014d1b",
+        "timestamp": "2026-08-18T10:47:20.065Z",
+        "winner": 32,
+        "allLuckyNumbers": [
+          7,
+          15,
+          18,
+          32
+        ],
+        "allLuckyMultipliers": [
+          50,
+          50,
+          100,
+          50
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "fd8a818d580f0520c87eb198a211cc02b3434a644b979895096500289ade610a",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a84386af0c1742da5014d27",
+        "timestamp": "2026-08-18T10:48:10.556Z",
+        "winner": 29,
+        "allLuckyNumbers": [
+          21,
+          26
+        ],
+        "allLuckyMultipliers": [
+          100,
+          100
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "25d29625ef26ffabf7d261d8d1857a0a55fcb3eeb774c544c940b3901de7bcac",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a84389bf0c1742da5014d30",
+        "timestamp": "2026-08-18T10:48:59.556Z",
+        "winner": 17,
+        "allLuckyNumbers": [
+          9,
+          11,
+          36
+        ],
+        "allLuckyMultipliers": [
+          50,
+          50,
+          50
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "64f4f47547b0d6cf0d854bdf67fecd7f42e288bf57eb739d6e1205f3b85dcf08",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a8438cff0c1742da5014d39",
+        "timestamp": "2026-08-18T10:49:51.547Z",
+        "winner": 0,
+        "allLuckyNumbers": [
+          10,
+          21,
+          27
+        ],
+        "allLuckyMultipliers": [
+          500,
+          50,
+          100
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "2a0b9d606b8ba4f59d869e24f298fbcf3e1bf7838b30dfa54f342fb1e2e12ad3",
+        "realMoney": false,
+        "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
+      },
+      {
+        "source": "casinoorg-evolution-public-api",
+        "sourceRole": "PRIMARY_STRUCTURED_PUBLIC",
+        "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
+        "roundId": "6a84390645835c72707c2d79",
+        "timestamp": "2026-08-18T10:50:45.038Z",
+        "winner": 6,
+        "allLuckyNumbers": [
+          19,
+          25,
+          36
+        ],
+        "allLuckyMultipliers": [
+          100,
+          50,
+          350
+        ],
+        "roundIdQuality": "authoritative_source_id",
+        "timestampQuality": "authoritative_settled_at",
+        "trainingEligible": false,
+        "confidenceTier": "A",
+        "rawHash": "24278c1c2f237a69ce9a420ea04f8b6aece718e021adad981253ab793cf189b0",
         "realMoney": false,
         "quarantineReason": "NON_CONTIGUOUS_WITH_PERSISTED_CORPUS"
       }
