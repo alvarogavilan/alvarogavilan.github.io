@@ -1,0 +1,32 @@
+{
+  "version": "lightning-prospective-lag-family-clean-v2-freeze-v1",
+  "createdAt": "2026-08-18T22:40:00Z",
+  "prospectiveStartsAt": "2026-08-18T22:41:00Z",
+  "sourceSegment": "authoritative-v2",
+  "ruleFamily": {
+    "lags": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],
+    "prediction": "For each target round, predict the winning number equals the winner observed exactly lag rounds earlier.",
+    "allCandidatesFrozenTogether": true,
+    "noCandidateSelectionBeforeBoundary": true
+  },
+  "fixedBoundaryComparisons": 5000,
+  "nullHitProbability": 0.02702702702702703,
+  "nonMultipliedGrossReturnX": 30,
+  "economicBreakEvenHitRate": 0.03333333333333333,
+  "familyWiseAlpha": 0.01,
+  "multiplicity": "Bonferroni across 20 frozen lags; per-candidate alpha = 0.0005.",
+  "promotionRequires": [
+    "exactly first 5000 eligible future target rounds only",
+    "one-sided binomial p below Bonferroni alpha",
+    "observed hit rate above 1/30 economic break-even",
+    "Wilson 95% lower bound above 1/30 economic break-even",
+    "no retuning or optional stopping",
+    "separate untouched replication before any real-money authorization"
+  ],
+  "disclosurePolicy": "Administrative progress only before the fixed boundary; per-lag hits, rates, rankings and p-values remain hidden.",
+  "immutable": true,
+  "claimAllowed": false,
+  "automaticBettingAllowed": false,
+  "realMoneyAllowed": false,
+  "realStakeEUR": 0
+}
