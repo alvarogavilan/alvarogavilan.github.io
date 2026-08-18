@@ -1,12 +1,15 @@
 name: Loterias AI MetaPleno v31 Prospective Settlement
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '20 23 * * *'
-    - cron: '40 6 * * *'
   push:
+    branches: [main]
     paths:
+      - 'loterias-ai/data/archive/bonoloto/**'
+      - 'loterias-ai/data/archive/primitiva/**'
+      - 'loterias-ai/data/archive/euromillones/**'
+      - 'loterias-ai/data/archive/eurodreams/**'
       - 'loterias-ai/scripts/meta-pleno-v31-settle-prospective-controls.mjs'
+      - 'loterias-ai/data/shadow/meta-pleno-v30-presealed-random-controls.json'
       - '.github/workflows/loterias-ai-meta-pleno-v31-prospective-settlement.yml'
 permissions:
   contents: write
