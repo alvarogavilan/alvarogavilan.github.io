@@ -1,35 +1,57 @@
 name: Loterias AI Nacional Schema Financial Tournament
+
 on:
   workflow_dispatch:
   push:
+    branches: [main]
     paths:
+      - 'loterias-ai/data/archive/loteria-nacional/*.json'
+      - 'loterias-ai/data/models/nacional-rule-era-registry.json'
+      - 'loterias-ai/data/validation/nacional-payout-reconstruction.json'
       - 'loterias-ai/scripts/loteria-nacional-schema-financial-tournament.mjs'
       - '.github/workflows/loterias-ai-nacional-schema-financial-tournament.yml'
+
 permissions:
   contents: write
+
 concurrency:
   group: loterias-ai-nacional-schema-financial-tournament
   cancel-in-progress: true
+
 jobs:
   tournament:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Run validated-schema financial tournament
+      - name: Run unchanged validated-schema financial tournament
         run: node loterias-ai/scripts/loteria-nacional-schema-financial-tournament.mjs
-      - name: Persist tournament evidence safely
+      - name: Persist tournament evidence against moving main
+        shell: bash
         run: |
-          cp loterias-ai/data/backtests/loteria-nacional-schema-financial-tournament.json /tmp/nacional-schema-financial-tournament.json
-          git fetch origin main
-          git reset --hard origin/main
-          mkdir -p loterias-ai/data/backtests
-          cp /tmp/nacional-schema-financial-tournament.json loterias-ai/data/backtests/loteria-nacional-schema-financial-tournament.json
+          set -euo pipefail
+          TARGET='loterias-ai/data/backtests/loteria-nacional-schema-financial-tournament.json'
+          cp "$TARGET" /tmp/nacional-schema-financial-tournament.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add loterias-ai/data/backtests/loteria-nacional-schema-financial-tournament.json
-          git commit -m 'data(loterias-ai): persist validated-schema Nacional tournament' || exit 0
-          git push origin HEAD:main
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p "$(dirname "$TARGET")"
+            cp /tmp/nacional-schema-financial-tournament.json "$TARGET"
+            git add "$TARGET"
+            if git diff --cached --quiet; then
+              echo 'Tournament evidence unchanged.'
+              exit 0
+            fi
+            git commit -m 'data(loterias-ai): refresh validated-schema Nacional tournament'
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt * 2))
+          done
+          echo 'Unable to persist Nacional tournament after retries.' >&2
+          exit 1
