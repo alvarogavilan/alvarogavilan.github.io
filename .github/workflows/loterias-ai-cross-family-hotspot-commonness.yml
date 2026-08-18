@@ -1,0 +1,48 @@
+name: Loterias AI Cross-Family Hotspot Commonness
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/data/research/cross-family-event-clustering-v1.json'
+      - 'loterias-ai/research/megalab/cross-family-hotspot-commonness-v1.mjs'
+      - '.github/workflows/loterias-ai-cross-family-hotspot-commonness.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-cross-family-hotspot-commonness
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - name: Measure pre-draw commonness of shared 5+ hotspots
+        run: node loterias-ai/research/megalab/cross-family-hotspot-commonness-v1.mjs
+      - name: Validate descriptive-only guards
+        run: |
+          node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('loterias-ai/data/research/cross-family-hotspot-commonness-v1.json','utf8'));if(j.scope?.developmentOnly!==true||j.policy?.usesOnlyPreDrawInformationForEachHotspot!==true||j.policy?.notPredictiveEvidence!==true||j.policy?.doesNotAlterAnyExecutedGate!==true||j.policy?.doesNotOpenValidationOrOOS!==true||j.policy?.realMoneyPass!==false)throw Error('hotspot audit guard regression');console.log(JSON.stringify({results:j.results,interpretation:j.interpretation}))"
+      - name: Persist hotspot audit against moving main
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET='loterias-ai/data/research/cross-family-hotspot-commonness-v1.json'
+          cp "$TARGET" /tmp/hotspot-commonness.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/hotspot-commonness.json "$TARGET"
+            git add "$TARGET"
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'research(loterias-ai): persist shared hotspot commonness audit'
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
