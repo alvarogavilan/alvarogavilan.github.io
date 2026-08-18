@@ -5,6 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO="$(cd "$SCRIPT_DIR/../.." && pwd)"
 STATE="$REPO/.loterias-mac-node"
 RUNTIME="$REPO/loterias-ai/ops/lab-runtime.mjs"
+BUDGET_TICK="$REPO/loterias-ai/ops/actions-budget-tick.mjs"
 ENV_FILE="$HOME/.loterias-ai-runtime/env"
 mkdir -p "$STATE"
 cd "$REPO" || exit 1
@@ -43,6 +44,7 @@ NODE=$([ -n "$NODE_BIN" ] && "$NODE_BIN" --version 2>/dev/null || echo unavailab
 NPM=$([ -n "$NPM_BIN" ] && "$NPM_BIN" --version 2>/dev/null || echo unavailable)
 RUNTIME_EXIT=127
 RUNTIME_HEALTH="unavailable"
+BUDGET_EXIT=127
 
 if [ -n "$NODE_BIN" ] && [ -f "$RUNTIME" ]; then
   LOTERIAS_REPO="$REPO" "$NODE_BIN" "$RUNTIME" >> "$STATE/runtime-launch.log" 2>&1
@@ -50,6 +52,11 @@ if [ -n "$NODE_BIN" ] && [ -f "$RUNTIME" ]; then
   if [ -f "$STATE/runtime-status.json" ]; then
     RUNTIME_HEALTH=$("$NODE_BIN" -e "try{const x=require(process.argv[1]);process.stdout.write(String(x.health||'unknown'))}catch{process.stdout.write('invalid')}" "$STATE/runtime-status.json" 2>/dev/null || echo invalid)
   fi
+fi
+
+if [ -n "$NODE_BIN" ] && [ -f "$BUDGET_TICK" ]; then
+  LOTERIAS_REPO="$REPO" "$NODE_BIN" "$BUDGET_TICK" >> "$STATE/actions-budget-launch.log" 2>&1
+  BUDGET_EXIT=$?
 fi
 
 {
@@ -68,6 +75,7 @@ fi
   echo "sync_action=$SYNC"
   echo "runtime_health=$RUNTIME_HEALTH"
   echo "runtime_exit=$RUNTIME_EXIT"
+  echo "actions_budget_exit=$BUDGET_EXIT"
   echo "runtime_env_file_present=$([ -f "$ENV_FILE" ] && echo yes || echo no)"
   echo "disk_free_kb=$(df -k . | tail -1 | awk '{print $4}')"
   echo "load=$(uptime | sed 's/.*load averages*: //')"
