@@ -104,11 +104,20 @@ function cacheOutputs(task) {
   const copied = [];
   for (const relative of task.outputs || []) {
     const source = path.join(workspace, relative);
-    if (!fs.existsSync(source) || !fs.statSync(source).isFile()) continue;
+    if (!fs.existsSync(source)) continue;
+    const stat = fs.statSync(source);
     const target = path.join(cacheDir, relative);
     fs.mkdirSync(path.dirname(target), { recursive: true });
-    fs.copyFileSync(source, target);
-    copied.push(relative);
+    if (stat.isFile()) {
+      fs.copyFileSync(source, target);
+      copied.push(relative);
+      continue;
+    }
+    if (stat.isDirectory()) {
+      fs.rmSync(target, { recursive: true, force: true });
+      fs.cpSync(source, target, { recursive: true });
+      copied.push(`${relative}/`);
+    }
   }
   return copied;
 }
