@@ -1,17 +1,120 @@
 {
-  "version": "public-attempts-v1",
-  "generatedAt": "2026-08-17T21:43:28.849Z",
-  "sourcePolicy": "Generated only from persisted *evaluation.json artifacts. No result is reconstructed from chat history.",
+  "version": "public-attempts-v2",
+  "generatedAt": "2026-08-18T07:16:58.093Z",
+  "sourcePolicy": "Generated only from persisted prospective *evaluation.json artifacts across shadow/research/prospective. Pending results are never counted as failures and no result is reconstructed from chat history.",
   "counts": {
-    "filesScanned": 2,
-    "attempts": 2,
-    "evaluated": 2,
+    "filesScanned": 5,
+    "attempts": 5,
+    "evaluated": 4,
+    "pending": 1,
     "fullTargetHits": 0,
     "realMoneyAttempts": 0
   },
   "attempts": [
     {
-      "id": "bonoloto-2026-08-16-metapleno-v54-budget8-evaluation",
+      "id": "research-euromillones-v199-complete-5plus2-evaluation",
+      "source": "../data/research/euromillones-v199-complete-5plus2-evaluation.json",
+      "game": "euromillones v199 complete 5plus2 evaluation.json",
+      "engine": "euromillones-v199-complete-5plus2-evaluation-v2",
+      "status": "WAITING_COMPLETE_OFFICIAL_RESULT",
+      "targetDrawDate": "2026-08-18",
+      "evaluatedAt": "2026-08-18T07:09:51.537Z",
+      "sealSHA256": "80be12ac21566e65998011d003d7a5048225cb0523c7fa02e8d8c6b54c7a429b",
+      "officialResult": {
+        "main": [],
+        "stars": [],
+        "complementary": null,
+        "reintegro": null,
+        "verification": "PENDING"
+      },
+      "tickets": [
+        {
+          "label": "ticket 1",
+          "numbers": [
+            3,
+            19,
+            31,
+            36,
+            44
+          ],
+          "stars": [
+            2,
+            5
+          ],
+          "mainHits": null,
+          "starHits": null,
+          "complementaryHit": false
+        }
+      ],
+      "coveragePool": [],
+      "bestMainHits": -1,
+      "fullTargetHit": false,
+      "outcomeObserved": false,
+      "theoreticalCostEUR": null,
+      "realStakeEUR": 0,
+      "mode": "PAPER",
+      "prospectiveIntegrity": true,
+      "selectionReason": "La selección exacta pertenece al artefacto congelado; no se reconstruye retrospectivamente.",
+      "postmortem": {
+        "failureClass": "PENDING_RESULT",
+        "causalAttribution": "UNEVALUATED",
+        "explanation": "El intento está congelado pero todavía no existe un resultado oficial completo para evaluarlo.",
+        "learning": "Pendiente de resultado; no se interpreta rendimiento antes de observar y validar el sorteo.",
+        "nextAction": "Esperar la fuente oficial y liquidar contra el artefacto ya congelado."
+      }
+    },
+    {
+      "id": "research-bonoloto-v54r1-budget8-prospective-evaluation",
+      "source": "../data/research/bonoloto-v54r1-budget8-prospective-evaluation.json",
+      "game": "bonoloto v54r1 budget8 prospective evaluation.json",
+      "engine": "MetaPleno-v54r1-bonoloto-budget8-unchanged-replication",
+      "status": "EVALUATED_NEGATIVE",
+      "targetDrawDate": "2026-08-17",
+      "evaluatedAt": "2026-08-18T01:50:25.781Z",
+      "sealSHA256": "be950254317349087ea7e1c45a1e0b2df66e1c021a63c0ba2f7a7b678aa3bf8a",
+      "officialResult": {
+        "main": [
+          10,
+          12,
+          17,
+          28,
+          32,
+          37
+        ],
+        "stars": [],
+        "complementary": null,
+        "reintegro": null,
+        "verification": "PERSISTED_RESULT"
+      },
+      "tickets": [],
+      "coveragePool": [
+        12,
+        13,
+        14,
+        18,
+        30,
+        32,
+        34,
+        36
+      ],
+      "bestMainHits": 2,
+      "fullTargetHit": false,
+      "outcomeObserved": true,
+      "theoreticalCostEUR": 14,
+      "realStakeEUR": 0,
+      "mode": "PAPER",
+      "prospectiveIntegrity": true,
+      "selectionReason": "La selección exacta pertenece al artefacto congelado; no se reconstruye retrospectivamente.",
+      "postmortem": {
+        "failureClass": "ATTEMPT_MISSED_TARGET",
+        "causalAttribution": "UNKNOWN",
+        "explanation": "El resultado observado no permite afirmar por qué no acertó. Puede ser variabilidad aleatoria, señal insuficiente o un modelo sin ventaja; no se inventa causalidad.",
+        "learning": "El pool congelado cubrió 2 número(s) principal(es). El resultado se conserva como evidencia prospectiva, sin retuning.",
+        "nextAction": "Mantener la regla intacta y juzgar la familia por su distribución prospectiva acumulada."
+      }
+    },
+    {
+      "id": "shadow-bonoloto-2026-08-16-metapleno-v54-budget8-evaluation",
       "source": "../data/shadow/bonoloto-2026-08-16-metapleno-v54-budget8-evaluation.json",
       "game": "bonoloto",
       "engine": "MetaPleno-v54-bonoloto-budget8-prospective-evaluation",
@@ -29,6 +132,7 @@
           29,
           31
         ],
+        "stars": [],
         "complementary": null,
         "reintegro": null,
         "verification": "PERSISTED_RESULT"
@@ -46,27 +150,78 @@
       ],
       "bestMainHits": 1,
       "fullTargetHit": false,
+      "outcomeObserved": true,
       "theoreticalCostEUR": 14,
       "realStakeEUR": 0,
       "mode": "PAPER",
       "prospectiveIntegrity": true,
-      "selectionReason": "La selección exacta pertenece al artefacto congelado del motor. Si el esquema legado no guardó una explicación normalizada, no se reconstruye retrospectivamente.",
+      "selectionReason": "La selección exacta pertenece al artefacto congelado; no se reconstruye retrospectivamente.",
       "postmortem": {
         "failureClass": "ATTEMPT_MISSED_TARGET",
         "causalAttribution": "UNKNOWN",
         "explanation": "El resultado observado no permite afirmar por qué no acertó. Puede ser variabilidad aleatoria, señal insuficiente o un modelo sin ventaja; no se inventa causalidad.",
-        "learning": "El pool congelado cubrió 1 número(s) principal(es). Al no contener los seis, ninguna combinación simple formada sólo con ese pool podía alcanzar 6/6.",
-        "nextAction": "Mantener el freeze, acumular intentos comparables y juzgar la familia por su distribución prospectiva, no por una sola derrota."
+        "learning": "El pool congelado cubrió 1 número(s) principal(es). El resultado se conserva como evidencia prospectiva, sin retuning.",
+        "nextAction": "Mantener la regla intacta y juzgar la familia por su distribución prospectiva acumulada."
       }
     },
     {
-      "id": "bonoloto-2026-08-15-metapleno-v10-evaluation",
+      "id": "prospective-bonoloto-v137-evaluation",
+      "source": "../data/prospective/bonoloto-v137-evaluation.json",
+      "game": "bonoloto",
+      "engine": "v137",
+      "status": "EVALUATED",
+      "targetDrawDate": "2026-08-15",
+      "evaluatedAt": "2026-08-18T07:05:31.908Z",
+      "sealSHA256": "c68670cd999548103ab11cccf54128ffed86267daf793f4f79b88aefa191da49",
+      "officialResult": {
+        "main": [
+          11,
+          15,
+          16,
+          22,
+          34,
+          35
+        ],
+        "stars": [],
+        "complementary": null,
+        "reintegro": null,
+        "verification": "PERSISTED_RESULT"
+      },
+      "tickets": [],
+      "coveragePool": [
+        10,
+        22,
+        24,
+        30,
+        31,
+        35,
+        40,
+        45
+      ],
+      "bestMainHits": 2,
+      "fullTargetHit": false,
+      "outcomeObserved": true,
+      "theoreticalCostEUR": 14,
+      "realStakeEUR": 0,
+      "mode": "PAPER",
+      "prospectiveIntegrity": true,
+      "selectionReason": "La selección exacta pertenece al artefacto congelado; no se reconstruye retrospectivamente.",
+      "postmortem": {
+        "failureClass": "ATTEMPT_MISSED_TARGET",
+        "causalAttribution": "UNKNOWN",
+        "explanation": "El resultado observado no permite afirmar por qué no acertó. Puede ser variabilidad aleatoria, señal insuficiente o un modelo sin ventaja; no se inventa causalidad.",
+        "learning": "El pool congelado cubrió 2 número(s) principal(es). El resultado se conserva como evidencia prospectiva, sin retuning.",
+        "nextAction": "Mantener la regla intacta y juzgar la familia por su distribución prospectiva acumulada."
+      }
+    },
+    {
+      "id": "shadow-bonoloto-2026-08-15-metapleno-v10-evaluation",
       "source": "../data/shadow/bonoloto-2026-08-15-metapleno-v10-evaluation.json",
       "game": "bonoloto",
       "engine": "MetaPleno-v10-prospective-evaluator",
       "status": "PROSPECTIVE_SHADOW_EVALUATED",
       "targetDrawDate": "2026-08-15",
-      "evaluatedAt": "2026-08-17T21:37:53.402Z",
+      "evaluatedAt": "2026-08-18T04:03:21.262Z",
       "sealSHA256": "457cdeb2bd530dfa5cc18bbda39071c3258c501247369b56dbed5982b7c252c1",
       "officialResult": {
         "main": [
@@ -77,6 +232,7 @@
           34,
           35
         ],
+        "stars": [],
         "complementary": 10,
         "reintegro": 1,
         "verification": "OFFICIAL_SELAE_VALIDATED"
@@ -92,7 +248,9 @@
             39,
             48
           ],
+          "stars": [],
           "mainHits": 1,
+          "starHits": null,
           "complementaryHit": true,
           "classLabel": "1/6"
         },
@@ -106,7 +264,9 @@
             26,
             42
           ],
+          "stars": [],
           "mainHits": 0,
+          "starHits": null,
           "complementaryHit": false,
           "classLabel": "0/6"
         }
@@ -114,17 +274,18 @@
       "coveragePool": [],
       "bestMainHits": 1,
       "fullTargetHit": false,
+      "outcomeObserved": true,
       "theoreticalCostEUR": 1,
       "realStakeEUR": 0,
       "mode": "PAPER",
       "prospectiveIntegrity": true,
-      "selectionReason": "La selección exacta pertenece al artefacto congelado del motor. Si el esquema legado no guardó una explicación normalizada, no se reconstruye retrospectivamente.",
+      "selectionReason": "La selección exacta pertenece al artefacto congelado; no se reconstruye retrospectivamente.",
       "postmortem": {
         "failureClass": "ATTEMPT_MISSED_TARGET",
         "causalAttribution": "UNKNOWN",
         "explanation": "El resultado observado no permite afirmar por qué no acertó. Puede ser variabilidad aleatoria, señal insuficiente o un modelo sin ventaja; no se inventa causalidad.",
-        "learning": "El mejor candidato congelado obtuvo 1/6. Un intento aislado no identifica una causa ni demuestra calibración; se acumula evidencia prospectiva.",
-        "nextAction": "Mantener el freeze, acumular intentos comparables y juzgar la familia por su distribución prospectiva, no por una sola derrota."
+        "learning": "El mejor candidato congelado obtuvo 1 acierto(s) principales. Un intento aislado no identifica causalidad ni calibración.",
+        "nextAction": "Mantener la regla intacta y juzgar la familia por su distribución prospectiva acumulada."
       }
     }
   ]
