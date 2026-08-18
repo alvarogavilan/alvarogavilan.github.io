@@ -1,5 +1,6 @@
 # Operational trigger after the frozen 2026-08-18T10:50:00Z barrier; scientific protocol unchanged.
 # Cost guard: 10-minute capture preserves a wide safety margin inside the 30-round source window.
+# Derived readiness summaries belong in the application/local runtime, not this continuity-critical loop.
 name: Loterias AI Lightning Clean Segment V2
 
 on:
@@ -12,7 +13,6 @@ on:
       - 'loterias-ai/casino/lightning/research/physical-rng-prospective-v2.mjs'
       - 'loterias-ai/casino/lightning/research/economic-number-selection-prospective-v2.mjs'
       - 'loterias-ai/casino/lightning/research/lightning-prospective-frozen-lag8-clean-v2.mjs'
-      - 'loterias-ai/casino/lightning/research/economic-readiness-ledger-v1.mjs'
       - 'loterias-ai/casino/lightning/evidence/authoritative-segment-v2-freeze.json'
       - 'loterias-ai/casino/lightning/evidence/economic-number-selection-prospective-freeze-v2.json'
       - 'loterias-ai/casino/lightning/evidence/prospective-lag8-clean-v2-freeze-v1.json'
@@ -38,7 +38,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Capture clean segment and advance only clean prospectives
+      - name: Capture clean segment and advance only frozen prospectives
         shell: bash
         run: |
           set -euo pipefail
@@ -67,9 +67,8 @@ jobs:
             node loterias-ai/casino/lightning/research/physical-rng-prospective-v2.mjs
             node loterias-ai/casino/lightning/research/economic-number-selection-prospective-v2.mjs
             node loterias-ai/casino/lightning/research/lightning-prospective-frozen-lag8-clean-v2.mjs
-            node loterias-ai/casino/lightning/research/economic-readiness-ledger-v1.mjs
 
-            node -e "const fs=require('fs');const s=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/authoritative-segment-v2-status.json','utf8'));if(s.freezeVersion!=='authoritative-segment-v2-freeze'||s.guards?.strictlyPostBarrier!==true||s.guards?.oldAmbiguousGapImported!==false||s.guards?.realMoneyAllowed!==false||s.continuity?.bridgeSafe!==true)throw Error('clean segment safety drift');const t=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/timing-replication-v3-status.json','utf8'));if(t.progress?.closedEpisodes<200&&(t.final!==null||t.disclosure?.performanceHidden!==true||t.disclosure?.pValueHidden!==true))throw Error('timing v3 interim blindness regression');if(t.guards?.realMoneyAllowed!==false)throw Error('timing v3 real-money regression');const p=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-v2-status.json','utf8'));if(p.progress?.roundsUsedForV2<5000&&(p.final!==null||p.disclosure?.observedStatisticsHidden!==true||p.disclosure?.pValuesHidden!==true))throw Error('physical v2 blindness regression');if(p.guards?.realMoneyAllowed!==false)throw Error('physical v2 real-money regression');const n=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/economic-number-selection-prospective-status-v2.json','utf8'));if(n.algorithmCustody?.sourceEngineGitBlobSha!=='1e9431d663b6f5ced9dcb24a9d6074bb6bea3874'||n.guards?.v1SelectorAlgorithmUnchanged!==true||n.guards?.cleanWarmupNotScored!==true||n.guards?.realMoneyAllowed!==false)throw Error('number v2 custody regression');if(n.progress?.eligibleFutureRounds<5000&&n.disclosure?.candidatePerformanceHidden!==true)throw Error('number v2 interim ranking disclosure regression');const l=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/prospective-lag8-clean-v2-status-v1.json','utf8'));if(l.freezeVersion!=='lightning-prospective-lag8-clean-v2-freeze-v1'||l.guards?.first1000Only!==true||l.guards?.noOptionalStopping!==true||l.guards?.realMoneyAllowed!==false)throw Error('lag8 clean v2 protocol drift');if(l.progress?.comparisonsUsed<1000&&(l.final!==null||l.disclosure?.performanceHidden!==true||l.disclosure?.pValueHidden!==true||l.disclosure?.directionHidden!==true))throw Error('lag8 clean v2 interim blindness regression');const e=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/economic-readiness-ledger-v1.json','utf8'));if(e.realMoneyAllowed!==false||e.promotionPolicy?.hiddenPerformanceMustRemainHidden!==true)throw Error('economic readiness ledger safety drift')"
+            node -e "const fs=require('fs');const s=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/authoritative-segment-v2-status.json','utf8'));if(s.freezeVersion!=='authoritative-segment-v2-freeze'||s.guards?.strictlyPostBarrier!==true||s.guards?.oldAmbiguousGapImported!==false||s.guards?.realMoneyAllowed!==false||s.continuity?.bridgeSafe!==true)throw Error('clean segment safety drift');const t=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/timing-replication-v3-status.json','utf8'));if(t.progress?.closedEpisodes<200&&(t.final!==null||t.disclosure?.performanceHidden!==true||t.disclosure?.pValueHidden!==true))throw Error('timing v3 interim blindness regression');if(t.guards?.realMoneyAllowed!==false)throw Error('timing v3 real-money regression');const p=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-v2-status.json','utf8'));if(p.progress?.roundsUsedForV2<5000&&(p.final!==null||p.disclosure?.observedStatisticsHidden!==true||p.disclosure?.pValuesHidden!==true))throw Error('physical v2 blindness regression');if(p.guards?.realMoneyAllowed!==false)throw Error('physical v2 real-money regression');const n=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/economic-number-selection-prospective-status-v2.json','utf8'));if(n.algorithmCustody?.sourceEngineGitBlobSha!=='1e9431d663b6f5ced9dcb24a9d6074bb6bea3874'||n.guards?.v1SelectorAlgorithmUnchanged!==true||n.guards?.cleanWarmupNotScored!==true||n.guards?.realMoneyAllowed!==false)throw Error('number v2 custody regression');if(n.progress?.eligibleFutureRounds<5000&&n.disclosure?.candidatePerformanceHidden!==true)throw Error('number v2 interim ranking disclosure regression');const l=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/prospective-lag8-clean-v2-status-v1.json','utf8'));if(l.freezeVersion!=='lightning-prospective-lag8-clean-v2-freeze-v1'||l.guards?.first1000Only!==true||l.guards?.noOptionalStopping!==true||l.guards?.realMoneyAllowed!==false)throw Error('lag8 clean v2 protocol drift');if(l.progress?.comparisonsUsed<1000&&(l.final!==null||l.disclosure?.performanceHidden!==true||l.disclosure?.pValueHidden!==true||l.disclosure?.directionHidden!==true))throw Error('lag8 clean v2 interim blindness regression')"
 
             git add \
               loterias-ai/casino/lightning/data/casinoorg-lightningroulette-segment-v2.jsonl \
@@ -77,8 +76,7 @@ jobs:
               loterias-ai/casino/lightning/evidence/timing-replication-v3-status.json \
               loterias-ai/casino/lightning/evidence/physical-rng-prospective-v2-status.json \
               loterias-ai/casino/lightning/evidence/economic-number-selection-prospective-status-v2.json \
-              loterias-ai/casino/lightning/evidence/prospective-lag8-clean-v2-status-v1.json \
-              loterias-ai/casino/lightning/evidence/economic-readiness-ledger-v1.json 2>/dev/null || true
+              loterias-ai/casino/lightning/evidence/prospective-lag8-clean-v2-status-v1.json 2>/dev/null || true
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'research(casino): advance clean authoritative segment v2'
             if git push origin HEAD:main; then exit 0; fi
