@@ -1,20 +1,57 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
+  "effectiveFrom": "2026-08-19",
+  "mode": "COST_GUARD_ACTIVE",
   "scope": ".github/workflows/loterias-ai-*.yml",
   "maxScheduledRunsPerActiveDay": 8,
   "targetScheduledRunsPerActiveDay": 4,
+  "principle": "GitHub Actions is reserved for external evidence acquisition, official settlement and infrequent integrity gates. Deterministic presentation and derived progress belong in the application/browser whenever persistence is not scientifically required.",
   "policy": {
     "applicationRuntimeIsPrimary": true,
     "githubActionsForCi": true,
     "githubActionsForManualRecovery": true,
     "githubActionsForLowFrequencyFallback": true,
-    "highFrequencyResearchPollingAllowedByDefault": false
+    "highFrequencyResearchPollingAllowedByDefault": false,
+    "noCronForPurePresentation": true,
+    "preferEventDrivenDerivedState": true
+  },
+  "classes": {
+    "CAPTURE_REQUIRED": {"scheduledAllowed": true, "description": "Future evidence that would be lost while the app is closed."},
+    "POST_DRAW_REQUIRED": {"scheduledAllowed": true, "description": "Low-frequency official result retrieval/settlement with immutable custody."},
+    "DERIVED_LOCAL": {"scheduledAllowed": false, "execution": "browser/app or event-driven only", "description": "Counters, ETAs, dashboards, ledgers and deterministic summaries."},
+    "HISTORICAL_MAINTENANCE": {"scheduledAllowed": true, "preferredCadence": "weekly or post-draw"},
+    "DIAGNOSTIC": {"scheduledAllowed": false, "execution": "manual or code-change trigger"}
+  },
+  "lightning": {
+    "authoritativeV2CaptureMinutes": 10,
+    "minimumAllowedScheduledMinutes": 10,
+    "sourceWindowRounds": 30,
+    "legacyV1Scheduled": false,
+    "publicObserversScheduled": false,
+    "sourceWatchdogScheduled": false,
+    "statAuditScheduled": false,
+    "paperV1Scheduled": false
+  },
+  "national": {
+    "dailySettlementSafetyNet": true,
+    "attemptLedger": "event-driven",
+    "archiveQualityAudit": "event-driven",
+    "quinigolShadow": "event-driven",
+    "historicalBackfills": "weekly/post-draw",
+    "expiredOneDateWorkflowsScheduled": false
+  },
+  "guards": {
+    "realMoneyAllowed": false,
+    "neverReduceScientificBoundaryToSaveActions": true,
+    "neverDiscardRequiredFutureEvidenceToSaveActions": true,
+    "preferOneWorkflowToMultipleChainedWorkflows": true,
+    "suppressTimestampOnlyCommits": true
   },
   "temporaryExceptions": {
     ".github/workflows/loterias-ai-lightning-clean-segment-v2.yml": {
       "maxScheduledRunsPerActiveDay": 144,
       "reason": "Continuity-critical authoritative 30-round source window while local runtime activation is not yet verified.",
-      "removeWhen": "Local runtime reports consecutive successful authoritative-segment-v2 captures with bridgeSafe=true."
+      "removeWhen": "A non-Actions runtime reports consecutive successful authoritative-segment-v2 captures with bridgeSafe=true."
     }
   }
 }
