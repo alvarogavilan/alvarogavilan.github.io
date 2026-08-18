@@ -1,16 +1,22 @@
+# Cost control: v1 PAPER evidence is legacy after the authoritative source discontinuity.
+# Keep it reproducible, but do not spend scheduled Actions on it.
 name: Loterias AI Lightning Prospective PAPER v1
+
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '17 * * * *'
   push:
     branches: [main]
     paths:
       - 'loterias-ai/casino/lightning/prospective-paper-v1.mjs'
-      - 'loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl'
       - '.github/workflows/loterias-ai-lightning-prospective-paper-v1.yml'
-permissions: {contents: write}
-concurrency: {group: lightning-prospective-paper-v1, cancel-in-progress: false}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lightning-prospective-paper-v1
+  cancel-in-progress: true
+
 jobs:
   prospective:
     runs-on: ubuntu-latest
@@ -18,24 +24,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: {node-version: 24}
-      - name: Freeze or refresh prospective status
+        with:
+          node-version: 24
+      - name: Recompute legacy prospective status
         run: node loterias-ai/casino/lightning/prospective-paper-v1.mjs
       - name: Enforce no-real-money and no-retuning gates
         run: node -e "const x=require('./loterias-ai/casino/lightning/evidence/prospective-paper-v1-status.json');if(x.summary.realMoneyPass||x.summary.realStakeEUR!==0||x.summary.retuningPerformed||x.safety.realMoney||x.safety.bettingRecommendation)process.exit(1)"
-      - name: Persist prospective evidence safely
+      - name: Persist semantic evidence
+        shell: bash
         run: |
           set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          for attempt in 1 2 3 4 5; do
-            git fetch origin "$GITHUB_REF_NAME"
-            git reset --hard "origin/$GITHUB_REF_NAME"
-            node loterias-ai/casino/lightning/prospective-paper-v1.mjs
-            git add loterias-ai/casino/lightning/evidence/prospective-paper-v1-freeze.json loterias-ai/casino/lightning/evidence/prospective-paper-v1-status.json
-            if git diff --cached --quiet; then exit 0; fi
-            git commit -m "research(casino): persist Lightning prospective PAPER v1"
-            if git push origin HEAD:"$GITHUB_REF_NAME"; then exit 0; fi
-            sleep $((attempt * 2))
-          done
-          exit 1
+          git add loterias-ai/casino/lightning/evidence/prospective-paper-v1-freeze.json loterias-ai/casino/lightning/evidence/prospective-paper-v1-status.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'research(casino): persist Lightning prospective PAPER v1'
+          git pull --rebase origin main
+          git push origin HEAD:main
