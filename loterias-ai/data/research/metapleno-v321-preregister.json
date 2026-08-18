@@ -15,6 +15,7 @@
   "games": ["bonoloto", "primitiva"],
   "regime": {"support":"1..49","drawSize":6,"poolSize":8,"coverageLines":28,"theoreticalCostEUR":14},
   "temporalProtocol": {
+    "developmentEvaluationStart":"2010-01-01",
     "developmentEnd":"2018-12-31",
     "validationStart":"2019-01-01",
     "validationEnd":"2022-12-31",
@@ -29,9 +30,10 @@
   },
   "method": {
     "contextVector":"For target t and context length C, each number n receives sum_{r=1..C} I[n appeared at t-r] * exp(-(r-1)/C). The 49-vector is L2-normalized.",
-    "analogueLibrary":"For each historical endpoint j strictly before t, build the same vector from draws before j; its successor outcome is draw j. Candidate j is admissible only when all context draws and successor j were known before target t.",
+    "analogueLibrary":"For each target t, consider at most the 512 most recent historical endpoints j strictly before t. Build the same vector from draws before j; its successor outcome is draw j. Candidate j is admissible only when all context draws and successor j were known before target t.",
+    "maximumAnalogueEndpoints":512,
     "similarities":["cosine","rbf_l2"],
-    "rbfGamma":"1 / median squared distance across admissible analogue contexts for the target; no fitted target outcome enters gamma.",
+    "rbfGamma":"1 / median squared distance across the frozen admissible analogue library for the target; no fitted target outcome enters gamma.",
     "prediction":"Take K most similar admissible analogue contexts. Score each number by similarity-weighted inclusion frequency in their already-known successor draws. Emit top 8, ties by number ascending.",
     "sameGameBaseline":"Top 8 marginal frequencies over the same frozen frequencyWindow preceding each target.",
     "targetLeakageAllowed":false
@@ -73,6 +75,7 @@
     "targetTuningAllowed":false,
     "validationPeekAllowedBeforeFreeze":false,
     "blindOosPeekAllowedBeforeValidationPass":false,
+    "computeBoundariesLockedBeforeExecution":true,
     "maximumTheoreticalCostEURPerGameDraw":14,
     "realMoneyPass":false,
     "realStakeEUR":0
