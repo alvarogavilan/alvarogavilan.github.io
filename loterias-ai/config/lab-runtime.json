@@ -1,14 +1,18 @@
 {
-  "version": "1.3.0",
+  "version": "1.4.0",
   "mode": "LOCAL_PRIMARY_GITHUB_FALLBACK",
   "tickMinutes": 5,
   "maxTasksPerTick": 2,
+  "persistence": "LOCAL_EVIDENCE_CACHE_BY_DEFAULT",
+  "githubPromotionPolicy": "ONLY_SCIENTIFIC_BOUNDARY_OFFICIAL_SETTLEMENT_OR_EXPLICIT_CUSTODY",
   "policy": {
     "realMoney": false,
     "automaticBetting": false,
     "futureInformationAllowed": false,
-    "githubActionsRole": "LOW_FREQUENCY_FALLBACK_AND_CI_ONLY",
-    "localRuntimeRole": "PRIMARY_RESEARCH_SCHEDULER"
+    "githubActionsRole": "CONTINUITY_CRITICAL_CAPTURE_LOW_FREQUENCY_FALLBACK_AND_CI_ONLY",
+    "localRuntimeRole": "PRIMARY_RESEARCH_AND_DERIVED_STATE_ENGINE",
+    "derivedViewsShouldCommit": false,
+    "timestampOnlyChangesShouldCommit": false
   },
   "tasks": [
     {
@@ -17,7 +21,8 @@
       "priority": 5,
       "everyMinutes": 10,
       "timeoutSeconds": 420,
-      "run": "node loterias-ai/casino/lightning/collect-authoritative-segment-v2.mjs && node loterias-ai/casino/lightning/research/timing-replication-v3.mjs && node loterias-ai/casino/lightning/research/physical-rng-prospective-v2.mjs && node loterias-ai/casino/lightning/research/economic-number-selection-prospective-v2.mjs && node -e \"const fs=require('fs');const s=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/authoritative-segment-v2-status.json','utf8'));if(s.freezeVersion!=='authoritative-segment-v2-freeze'||s.guards?.strictlyPostBarrier!==true||s.guards?.oldAmbiguousGapImported!==false||s.guards?.realMoneyAllowed!==false||s.continuity?.bridgeSafe!==true)throw Error('clean segment safety drift');const t=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/timing-replication-v3-status.json','utf8'));if(t.progress?.closedEpisodes<200&&(t.final!==null||t.disclosure?.performanceHidden!==true||t.disclosure?.pValueHidden!==true))throw Error('timing v3 interim blindness regression');if(t.guards?.realMoneyAllowed!==false)throw Error('timing v3 real-money regression');const p=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-v2-status.json','utf8'));if(p.progress?.roundsUsedForV2<5000&&(p.final!==null||p.disclosure?.observedStatisticsHidden!==true||p.disclosure?.pValuesHidden!==true))throw Error('physical v2 blindness regression');if(p.guards?.realMoneyAllowed!==false)throw Error('physical v2 real-money regression');const n=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/economic-number-selection-prospective-status-v2.json','utf8'));if(n.algorithmCustody?.sourceEngineGitBlobSha!=='1e9431d663b6f5ced9dcb24a9d6074bb6bea3874'||n.guards?.v1SelectorAlgorithmUnchanged!==true||n.guards?.cleanWarmupNotScored!==true||n.guards?.realMoneyAllowed!==false)throw Error('number v2 custody regression');if(n.progress?.eligibleFutureRounds<5000&&n.disclosure?.candidatePerformanceHidden!==true)throw Error('number v2 interim ranking disclosure regression')\"",
+      "class": "CAPTURE_REQUIRED_LOCAL_REDUNDANCY",
+      "run": "node loterias-ai/casino/lightning/collect-authoritative-segment-v2.mjs && node loterias-ai/casino/lightning/research/timing-replication-v3.mjs && node loterias-ai/casino/lightning/research/physical-rng-prospective-v2.mjs && node loterias-ai/casino/lightning/research/economic-number-selection-prospective-v2.mjs && node -e \"const fs=require('fs');const s=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/authoritative-segment-v2-status.json','utf8'));if(s.freezeVersion!=='authoritative-segment-v2-freeze'||s.guards?.strictlyPostBarrier!==true||s.guards?.oldAmbiguousGapImported!==false||s.guards?.realMoneyAllowed!==false||s.continuity?.bridgeSafe!==true)throw Error('clean segment safety drift');const t=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/timing-replication-v3-status.json','utf8'));if(t.progress?.closedEpisodes<200&&(t.final!==null||t.disclosure?.performanceHidden!==true||t.disclosure?.pValueHidden!==true))throw Error('timing v3 interim blindness regression');const p=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-v2-status.json','utf8'));if(p.progress?.roundsUsedForV2<5000&&(p.final!==null||p.disclosure?.observedStatisticsHidden!==true||p.disclosure?.pValuesHidden!==true))throw Error('physical v2 blindness regression');const n=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/economic-number-selection-prospective-status-v2.json','utf8'));if(n.progress?.eligibleFutureRounds<5000&&n.disclosure?.candidatePerformanceHidden!==true)throw Error('number v2 interim ranking disclosure regression')\"",
       "outputs": [
         "loterias-ai/casino/lightning/data/casinoorg-lightningroulette-segment-v2.jsonl",
         "loterias-ai/casino/lightning/evidence/authoritative-segment-v2-status.json",
@@ -27,50 +32,12 @@
       ]
     },
     {
-      "id": "lightning-staleness-diagnostic",
-      "enabled": true,
-      "priority": 10,
-      "everyMinutes": 10,
-      "timeoutSeconds": 120,
-      "run": "node loterias-ai/casino/lightning/research/probe-casinoorg-source-head.mjs && node loterias-ai/casino/lightning/research/source-staleness-watchdog.mjs",
-      "outputs": [
-        "loterias-ai/casino/lightning/evidence/casinoorg-source-head-probe.json",
-        "loterias-ai/casino/lightning/evidence/source-staleness-watchdog.json"
-      ]
-    },
-    {
-      "id": "lightning-collector",
-      "enabled": true,
-      "priority": 20,
-      "everyMinutes": 60,
-      "timeoutSeconds": 420,
-      "requiresEnv": ["TRACKERSINO_API_KEY"],
-      "env": {
-        "LIGHTNING_FETCH_LIMIT": "1000"
-      },
-      "run": "node loterias-ai/casino/lightning/collect-trackersino.mjs && node loterias-ai/casino/lightning/build-dataset.mjs && mkdir -p loterias-ai/casino/lightning/evidence && node loterias-ai/casino/lightning/validate-corpus.mjs loterias-ai/casino/lightning/data/rounds.jsonl > loterias-ai/casino/lightning/evidence/corpus-quality.json",
-      "outputs": [
-        "loterias-ai/casino/lightning/data/rounds.jsonl",
-        "loterias-ai/casino/lightning/evidence/corpus-quality.json"
-      ]
-    },
-    {
-      "id": "lightning-casinoscore-public",
-      "enabled": true,
-      "priority": 25,
-      "everyMinutes": 60,
-      "timeoutSeconds": 180,
-      "run": "node loterias-ai/casino/lightning/collect-casinoscore-public.mjs && node -e \"const x=require('./loterias-ai/casino/lightning/evidence/casinoscore-public.json');if(x.trainingEligible)process.exit(1);if(!x.free)process.exit(1)\"",
-      "outputs": [
-        "loterias-ai/casino/lightning/evidence/casinoscore-public.json"
-      ]
-    },
-    {
       "id": "lightning-corpus-readiness",
       "enabled": true,
       "priority": 30,
-      "everyMinutes": 60,
+      "everyMinutes": 360,
       "timeoutSeconds": 180,
+      "class": "DERIVED_LOCAL",
       "run": "node loterias-ai/casino/lightning/corpus-readiness.mjs",
       "outputs": [
         "loterias-ai/casino/lightning/evidence/corpus-readiness.json",
@@ -78,35 +45,66 @@
       ]
     },
     {
-      "id": "bonoloto-official-sync",
+      "id": "lightning-staleness-diagnostic",
       "enabled": true,
       "priority": 35,
-      "everyMinutes": 60,
+      "everyMinutes": 360,
+      "timeoutSeconds": 120,
+      "class": "DIAGNOSTIC_LOCAL",
+      "run": "node loterias-ai/casino/lightning/research/probe-casinoorg-source-head.mjs && node loterias-ai/casino/lightning/research/source-staleness-watchdog.mjs",
+      "outputs": [
+        "loterias-ai/casino/lightning/evidence/casinoorg-source-head-probe.json",
+        "loterias-ai/casino/lightning/evidence/source-staleness-watchdog.json"
+      ]
+    },
+    {
+      "id": "bonoloto-official-sync",
+      "enabled": true,
+      "priority": 40,
+      "everyMinutes": 1440,
       "timeoutSeconds": 420,
-      "run": "node loterias-ai/scripts/bonoloto-official-rss-sync.mjs && node loterias-ai/scripts/evaluate-bonoloto-2026-08-15-metapleno-v10.mjs && node loterias-ai/scripts/meta-pleno-v54-bonoloto-budget8-prospective-freeze.mjs && node loterias-ai/scripts/meta-pleno-v91-bonoloto-v58-ensemble-prospective-freeze.mjs && node loterias-ai/scripts/prospective-master-scoreboard.mjs",
+      "class": "POST_DRAW_LOCAL",
+      "run": "node loterias-ai/scripts/bonoloto-official-rss-sync.mjs && node loterias-ai/scripts/prospective-master-scoreboard.mjs",
       "outputs": [
         "loterias-ai/data/official/bonoloto-rss-sync-status.json",
         "loterias-ai/data/archive/bonoloto/2026.json",
-        "loterias-ai/data/shadow/prospective-master-scoreboard.json",
-        "loterias-ai/data/shadow/bonoloto-v54-budget8-freeze-status.json",
-        "loterias-ai/data/shadow/bonoloto-v91-v58-ensemble-freeze-status.json",
-        "loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v54-budget8.json",
-        "loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v91-v58-ensemble-budget8.json",
-        "loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-v10-evaluation.json"
+        "loterias-ai/data/shadow/prospective-master-scoreboard.json"
       ]
     },
     {
       "id": "daily-state-and-settlement",
       "enabled": true,
-      "priority": 40,
+      "priority": 50,
       "everyMinutes": 1440,
       "timeoutSeconds": 900,
+      "class": "POST_DRAW_LOCAL",
       "run": "node loterias-ai/scripts/probe-selae.mjs && node loterias-ai/scripts/build-daily-state.mjs && node loterias-ai/scripts/settle-prospective-shadows.mjs && node loterias-ai/tests/core.test.mjs && node loterias-ai/tests/evidence.test.mjs && node loterias-ai/tests/schedule.test.mjs",
       "outputs": [
         "loterias-ai/data/source-probe-latest.json",
         "loterias-ai/data/daily/latest.json",
         "loterias-ai/data/system-status.json"
       ]
+    },
+    {
+      "id": "lightning-trackersino-optional",
+      "enabled": false,
+      "priority": 90,
+      "everyMinutes": 1440,
+      "timeoutSeconds": 420,
+      "class": "OPTIONAL_EXTERNAL_SOURCE",
+      "requiresEnv": ["TRACKERSINO_API_KEY"],
+      "run": "node loterias-ai/casino/lightning/collect-trackersino.mjs && node loterias-ai/casino/lightning/build-dataset.mjs",
+      "outputs": ["loterias-ai/casino/lightning/data/rounds.jsonl"]
+    },
+    {
+      "id": "lightning-casinoscore-public-optional",
+      "enabled": false,
+      "priority": 95,
+      "everyMinutes": 1440,
+      "timeoutSeconds": 180,
+      "class": "DIAGNOSTIC_LOCAL",
+      "run": "node loterias-ai/casino/lightning/collect-casinoscore-public.mjs",
+      "outputs": ["loterias-ai/casino/lightning/evidence/casinoscore-public.json"]
     }
   ]
 }
