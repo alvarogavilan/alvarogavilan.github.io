@@ -8,6 +8,7 @@ const out='loterias-ai/data/research/nacional-historic-official-html-recovery.js
 const months=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const weekdays=['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
 const meta=JSON.parse(fs.readFileSync(metaPath,'utf8'));
+const MAX_ATTEMPTS=3;
 
 function isSeasonal(record){
   const t=String(record?.drawType||'').toUpperCase();
@@ -33,24 +34,42 @@ const metaFailures=(meta.failures||[]).map(x=>x.date).filter(Boolean).filter(dat
 const failures=[...new Set([...archiveDates,...metaFailures])].sort((a,b)=>b.localeCompare(a));
 const rows=[];
 function slug(date){const d=new Date(date+'T12:00:00Z');const dd=String(d.getUTCDate()).padStart(2,'0'),m=months[d.getUTCMonth()],y=d.getUTCFullYear(),w=weekdays[d.getUTCDay()];return `https://www.loteriasyapuestas.es/es/loteria-nacional/resultados/loteria-nacional-premios-mayores-del-sorteo-del-${w}-${dd}-de-${m}-de-${y}`}
+function transientStatus(status){return status===408||status===425||status===429||status>=500;}
+async function fetchOfficialHtml(url){
+  let status=0,text='',error=null,attempts=0;
+  for(let attempt=1;attempt<=MAX_ATTEMPTS;attempt++){
+    attempts=attempt; status=0; text=''; error=null;
+    try{
+      const r=await fetch(url,{headers:{'user-agent':'LoteriasAI-research/1.1',accept:'text/html','cache-control':'no-cache, no-store, max-age=0',pragma:'no-cache'}});
+      status=r.status; text=await r.text();
+      if(!transientStatus(status)) break;
+    }catch(e){error=String(e)}
+    if(attempt<MAX_ATTEMPTS) await new Promise(r=>setTimeout(r,300*attempt));
+  }
+  return{status,text,error,attempts};
+}
 for(const date of failures){
-  const url=slug(date);let status=0,text='',error=null;
-  try{const r=await fetch(url,{headers:{'user-agent':'LoteriasAI-research/1.0',accept:'text/html'}});status=r.status;text=await r.text();}catch(e){error=String(e)}
+  const url=slug(date);
+  const fetched=await fetchOfficialHtml(url);
+  const {status,text,error,attempts}=fetched;
   const plain=text.replace(/<script[\s\S]*?<\/script>/gi,' ').replace(/<style[\s\S]*?<\/style>/gi,' ').replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/\s+/g,' ');
   const m=plain.match(/premio ha correspondido al n(?:ú|u)mero\s+([0-9]{1,5})/i);
   const firstPrize=m?String(m[1]).padStart(5,'0'):null;
-  rows.push({date,url,status,firstPrize,officialPageRecovered:status===200&&!!firstPrize,error});
+  rows.push({date,url,status,firstPrize,officialPageRecovered:status===200&&!!firstPrize,error,attempts,transientFailureAfterRetries:transientStatus(status)||!!error});
   await new Promise(r=>setTimeout(r,120));
 }
 const recovered=rows.filter(x=>x.officialPageRecovered);
 const unresolved=rows.filter(x=>!x.officialPageRecovered);
+const transientUnresolved=unresolved.filter(x=>x.transientFailureAfterRetries);
 const report={
   generatedAt:new Date().toISOString(),
   source:'SELAE official historical HTML pages',
   attempted:rows.length,
   recoveredMajorPrizePages:recovered.length,
   unresolvedPages:unresolved.length,
+  transientUnresolvedPages:transientUnresolved.length,
   recoveryRate:rows.length?recovered.length/rows.length:0,
+  retryPolicy:{maxAttempts:MAX_ATTEMPTS,retryOnlyStatuses:[408,425,429,'5xx'],networkErrors:true,404Retried:false},
   dateRange:rows.length?{newest:rows[0].date,oldest:rows.at(-1).date}:null,
   sourceMeta:{generatedAt:meta.generatedAt,totalNonSeasonal:meta.totalNonSeasonal,officialCompleteSchemaDraws:meta.officialCompleteSchemaDraws,coverage:meta.coverage},
   gapSet:{archiveIncompleteDates:archiveDates.length,metaFailureDates:metaFailures.length,deduplicatedDates:failures.length},
@@ -61,4 +80,4 @@ const report={
 };
 fs.mkdirSync(path.dirname(out),{recursive:true});
 fs.writeFileSync(out,JSON.stringify(report,null,2)+'\n');
-console.log(JSON.stringify({attempted:report.attempted,recoveredMajorPrizePages:report.recoveredMajorPrizePages,unresolvedPages:report.unresolvedPages,recoveryRate:report.recoveryRate,dateRange:report.dateRange,gapSet:report.gapSet,exclusions:report.exclusions},null,2));
+console.log(JSON.stringify({attempted:report.attempted,recoveredMajorPrizePages:report.recoveredMajorPrizePages,unresolvedPages:report.unresolvedPages,transientUnresolvedPages:report.transientUnresolvedPages,recoveryRate:report.recoveryRate,dateRange:report.dateRange,gapSet:report.gapSet,exclusions:report.exclusions},null,2));
