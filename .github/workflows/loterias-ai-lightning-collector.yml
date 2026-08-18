@@ -2,8 +2,10 @@ name: Loterias AI Lightning Collector
 
 on:
   workflow_dispatch:
+  # Cost guard: local laboratory runtime is the preferred collector.
+  # GitHub remains only a low-frequency fallback until the local node is fully online.
   schedule:
-    - cron: '17 * * * *'
+    - cron: '17 */6 * * *'
 
 permissions:
   contents: write
