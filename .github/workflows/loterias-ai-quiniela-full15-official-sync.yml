@@ -2,7 +2,7 @@ name: Loterias AI Quiniela Full15 Official Sync
 on:
   workflow_dispatch:
   schedule:
-    - cron: '17 */4 * * *'
+    - cron: '17 6 * * *'
   push:
     paths:
       - 'loterias-ai/scripts/quiniela-prospective-full15-official-sync-v2.mjs'
@@ -13,7 +13,7 @@ permissions:
   contents: write
 concurrency:
   group: loterias-ai-quiniela-full15-official-sync
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   sync:
     runs-on: ubuntu-latest
@@ -25,28 +25,13 @@ jobs:
         with: {node-version: 22}
       - name: Install PDF/OCR tooling
         run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils tesseract-ocr tesseract-ocr-spa
-      - name: Sync official upcoming jornada and freeze Full15 if possible
-        run: node loterias-ai/scripts/quiniela-prospective-full15-official-sync-v2.mjs
-      - name: Export human-readable jornada combination
-        run: node loterias-ai/scripts/quiniela-export-current-combination.mjs
+      - run: node loterias-ai/scripts/quiniela-prospective-full15-official-sync-v2.mjs
+      - run: node loterias-ai/scripts/quiniela-export-current-combination.mjs
       - name: Suppress volatile-only rewrites
         shell: bash
         run: |
           set -euo pipefail
-          restore_if_semantically_equal() {
-            file="$1"
-            filter="$2"
-            [ -f "$file" ] || return 0
-            if ! git show "HEAD:$file" > /tmp/quiniela-old.json 2>/dev/null; then
-              return 0
-            fi
-            jq -S "$filter" /tmp/quiniela-old.json > /tmp/quiniela-old.semantic.json
-            jq -S "$filter" "$file" > /tmp/quiniela-new.semantic.json
-            if cmp -s /tmp/quiniela-old.semantic.json /tmp/quiniela-new.semantic.json; then
-              git show "HEAD:$file" > "$file"
-              echo "NO_SEMANTIC_CHANGE $file"
-            fi
-          }
+          restore_if_semantically_equal(){ file="$1";filter="$2";[ -f "$file" ]||return 0;if ! git show "HEAD:$file" >/tmp/quiniela-old.json 2>/dev/null;then return 0;fi;jq -S "$filter" /tmp/quiniela-old.json >/tmp/quiniela-old.semantic.json;jq -S "$filter" "$file" >/tmp/quiniela-new.semantic.json;if cmp -s /tmp/quiniela-old.semantic.json /tmp/quiniela-new.semantic.json;then git show "HEAD:$file" >"$file";fi; }
           restore_if_semantically_equal loterias-ai/data/official/quiniela-upcoming-sync.json 'del(.generatedAt)'
           restore_if_semantically_equal loterias-ai/data/official/quiniela-upcoming.json 'del(.generatedAt,.source.capturedAt)'
           restore_if_semantically_equal loterias-ai/data/shadow/quiniela-current-combination.json 'del(.generatedAt,.exportHash)'
@@ -58,17 +43,6 @@ jobs:
           cp -f loterias-ai/data/shadow/quiniela-meta-pleno-ledger.json /tmp/loterias-full15/loterias-ai/data/shadow/ || true
           cp -f loterias-ai/data/shadow/quiniela-current-combination.json /tmp/loterias-full15/loterias-ai/data/shadow/ || true
           cp -f loterias-ai/data/shadow/quiniela-*-jornada-*-combination.json /tmp/loterias-full15/loterias-ai/data/shadow/ 2>/dev/null || true
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          for i in 1 2 3 4 5; do
-            git fetch origin main
-            git reset --hard origin/main
-            mkdir -p loterias-ai/data/official loterias-ai/data/shadow
-            cp -f /tmp/loterias-full15/loterias-ai/data/official/* loterias-ai/data/official/ 2>/dev/null || true
-            cp -f /tmp/loterias-full15/loterias-ai/data/shadow/* loterias-ai/data/shadow/ 2>/dev/null || true
-            git add loterias-ai/data/official loterias-ai/data/shadow/quiniela-meta-pleno-ledger.json loterias-ai/data/shadow/quiniela-current-combination.json loterias-ai/data/shadow/quiniela-*-jornada-*-combination.json
-            git commit -m 'data(loterias-ai): sync official Quiniela prospective Full15 and jornada combination' || exit 0
-            git push origin HEAD:main && exit 0
-            sleep $((i*3))
-          done
+          git config user.name github-actions[bot];git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3 4 5;do git fetch origin main;git reset --hard origin/main;mkdir -p loterias-ai/data/official loterias-ai/data/shadow;cp -f /tmp/loterias-full15/loterias-ai/data/official/* loterias-ai/data/official/ 2>/dev/null||true;cp -f /tmp/loterias-full15/loterias-ai/data/shadow/* loterias-ai/data/shadow/ 2>/dev/null||true;git add loterias-ai/data/official loterias-ai/data/shadow/quiniela-meta-pleno-ledger.json loterias-ai/data/shadow/quiniela-current-combination.json loterias-ai/data/shadow/quiniela-*-jornada-*-combination.json;git commit -m 'data(loterias-ai): sync official Quiniela prospective Full15 and jornada combination'||exit 0;git push origin HEAD:main&&exit 0;sleep $((i*3));done
           exit 1
