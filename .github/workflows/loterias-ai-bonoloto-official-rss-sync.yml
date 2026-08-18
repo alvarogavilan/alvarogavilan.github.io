@@ -1,8 +1,10 @@
+# Cost control: the local Loterias AI runtime is the primary hourly official sync.
+# GitHub keeps only one late UTC fallback pass per day.
 name: Loterias AI Bonoloto Official SELAE RSS Sync
 on:
   workflow_dispatch:
   schedule:
-    - cron: '11 */3 * * *'
+    - cron: '11 23 * * *'
   push:
     paths:
       - 'loterias-ai/scripts/bonoloto-official-rss-sync.mjs'
@@ -15,7 +17,7 @@ permissions:
   contents: write
 concurrency:
   group: loterias-ai-bonoloto-official-rss-sync
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   sync:
     runs-on: ubuntu-latest
