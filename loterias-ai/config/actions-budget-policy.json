@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "scope": ".github/workflows/loterias-ai-*.yml",
+  "maxScheduledRunsPerActiveDay": 8,
+  "targetScheduledRunsPerActiveDay": 4,
+  "policy": {
+    "applicationRuntimeIsPrimary": true,
+    "githubActionsForCi": true,
+    "githubActionsForManualRecovery": true,
+    "githubActionsForLowFrequencyFallback": true,
+    "highFrequencyResearchPollingAllowedByDefault": false
+  },
+  "temporaryExceptions": {
+    ".github/workflows/loterias-ai-lightning-clean-segment-v2.yml": {
+      "maxScheduledRunsPerActiveDay": 144,
+      "reason": "Continuity-critical authoritative 30-round source window while local runtime activation is not yet verified.",
+      "removeWhen": "Local runtime reports consecutive successful authoritative-segment-v2 captures with bridgeSafe=true."
+    }
+  }
+}
