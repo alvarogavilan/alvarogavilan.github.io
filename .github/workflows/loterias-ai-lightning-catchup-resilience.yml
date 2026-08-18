@@ -61,8 +61,8 @@ jobs:
                   loterias-ai/casino/lightning/evidence/casinoorg-catchup-quarantine.json 2>/dev/null || true
                 if git diff --cached --quiet; then exit 0; fi
                 git commit -m 'ops(lightning): quarantine non-contiguous authoritative window'
-                git pull --rebase origin main || { git rebase --abort || true; sleep $((attempt*2)); continue; }
                 if git push origin HEAD:main; then exit 0; fi
+                echo 'main moved while persisting quarantine; discard this attempt and recompute from the latest main.'
                 sleep $((attempt*2))
                 continue
               fi
