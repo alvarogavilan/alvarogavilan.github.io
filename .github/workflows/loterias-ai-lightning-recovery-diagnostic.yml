@@ -1,0 +1,97 @@
+name: Loterias AI Lightning Recovery Diagnostic
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/loterias-ai-lightning-recovery-diagnostic.yml'
+      - 'loterias-ai/casino/lightning/research/recover-casinoorg-pagination-gap-v1.mjs'
+      - 'loterias-ai/casino/lightning/collect-casinoorg-api.mjs'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-lightning-recovery-diagnostic
+  cancel-in-progress: false
+
+jobs:
+  recover-or-diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Attempt authoritative recovery and always write diagnosis
+        shell: bash
+        run: |
+          set -euo pipefail
+          DIAG='loterias-ai/casino/lightning/evidence/casinoorg-recovery-diagnostic.json'
+          mkdir -p "$(dirname "$DIAG")"
+          set +e
+          node loterias-ai/casino/lightning/research/probe-casinoorg-source-head.mjs > /tmp/probe.log 2>&1
+          PROBE_CODE=$?
+          node loterias-ai/casino/lightning/collect-casinoorg-api.mjs > /tmp/collector.log 2>&1
+          COLLECT_CODE=$?
+          BRIDGE_SAFE=$(node -e "const fs=require('fs');try{const c=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json','utf8'));process.stdout.write(c.continuityBridgeSafe===true?'yes':'no')}catch{process.stdout.write('unknown')}" 2>/dev/null)
+          RECOVERY_CODE=0
+          RECOVERY_ATTEMPTED=false
+          if [ "$COLLECT_CODE" -eq 0 ] && [ "$BRIDGE_SAFE" != yes ]; then
+            RECOVERY_ATTEMPTED=true
+            node loterias-ai/casino/lightning/research/recover-casinoorg-pagination-gap-v1.mjs > /tmp/recovery.log 2>&1
+            RECOVERY_CODE=$?
+          else
+            : > /tmp/recovery.log
+          fi
+          set -e
+
+          SAFE=false
+          if [ "$PROBE_CODE" -eq 0 ] && [ "$COLLECT_CODE" -eq 0 ]; then
+            if [ "$BRIDGE_SAFE" = yes ]; then SAFE=true; fi
+            if [ "$RECOVERY_ATTEMPTED" = true ] && [ "$RECOVERY_CODE" -eq 0 ]; then SAFE=true; fi
+          fi
+
+          if [ "$SAFE" = true ] && ! git diff --quiet -- loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl; then
+            set +e
+            node loterias-ai/casino/lightning/research/verify-economic-prospective-freeze-v1.mjs > /tmp/advance.log 2>&1 && \
+            node loterias-ai/casino/lightning/research/verify-economic-number-prospective-freeze-v1.mjs >> /tmp/advance.log 2>&1 && \
+            node loterias-ai/casino/lightning/research/economic-multiplier-prospective-v1.mjs >> /tmp/advance.log 2>&1 && \
+            node loterias-ai/casino/lightning/research/economic-number-selection-prospective-v1.mjs >> /tmp/advance.log 2>&1 && \
+            node loterias-ai/casino/lightning/research/prospective-capture-continuity-v1.mjs >> /tmp/advance.log 2>&1 && \
+            node loterias-ai/casino/lightning/research/lightning-prospective-frozen-lag8.mjs >> /tmp/advance.log 2>&1 && \
+            node loterias-ai/casino/lightning/research/physical-rng-prospective-idempotent-v1.mjs >> /tmp/advance.log 2>&1 && \
+            node loterias-ai/casino/lightning/research/timing-replication-v2.mjs >> /tmp/advance.log 2>&1
+            ADVANCE_CODE=$?
+            set -e
+          else
+            ADVANCE_CODE=99
+            echo 'Prospectives intentionally not advanced because authoritative continuity was not proven.' > /tmp/advance.log
+          fi
+
+          PROBE_CODE="$PROBE_CODE" COLLECT_CODE="$COLLECT_CODE" BRIDGE_SAFE="$BRIDGE_SAFE" RECOVERY_ATTEMPTED="$RECOVERY_ATTEMPTED" RECOVERY_CODE="$RECOVERY_CODE" SAFE="$SAFE" ADVANCE_CODE="$ADVANCE_CODE" node -e "const fs=require('fs');const tail=p=>{try{return fs.readFileSync(p,'utf8').slice(-12000)}catch{return''}};const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'))}catch{return null}};const o={version:'casinoorg-recovery-diagnostic-v1',generatedAt:new Date().toISOString(),probeExit:Number(process.env.PROBE_CODE),collectorExit:Number(process.env.COLLECT_CODE),bridgeSafe:process.env.BRIDGE_SAFE,recoveryAttempted:process.env.RECOVERY_ATTEMPTED==='true',recoveryExit:Number(process.env.RECOVERY_CODE),continuityProven:process.env.SAFE==='true',prospectiveAdvanceExit:Number(process.env.ADVANCE_CODE),probe:read('loterias-ai/casino/lightning/evidence/casinoorg-source-head-probe.json'),collector:read('loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json'),recovery:read('loterias-ai/casino/lightning/evidence/casinoorg-gap-recovery-v1.json'),logs:{probe:tail('/tmp/probe.log'),collector:tail('/tmp/collector.log'),recovery:tail('/tmp/recovery.log'),advance:tail('/tmp/advance.log')},guards:{diagnosticMayPromoteAlternateSource:false,automaticBettingAllowed:false,realMoneyAllowed:false}};fs.writeFileSync(process.argv[1],JSON.stringify(o,null,2)+'\n')" "$DIAG"
+
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "$DIAG" \
+            loterias-ai/casino/lightning/evidence/casinoorg-source-head-probe.json \
+            loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json \
+            loterias-ai/casino/lightning/evidence/casinoorg-catchup-quarantine.json \
+            loterias-ai/casino/lightning/evidence/casinoorg-gap-recovery-v1.json \
+            loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl \
+            loterias-ai/casino/lightning/evidence/economic-multiplier-window-prospective-status-v1.json \
+            loterias-ai/casino/lightning/evidence/economic-number-selection-prospective-status-v1.json \
+            loterias-ai/casino/lightning/evidence/prospective-capture-continuity-v1.json \
+            loterias-ai/casino/lightning/evidence/prospective-lag8.json \
+            loterias-ai/casino/lightning/evidence/physical-rng-prospective-status-v1.json \
+            loterias-ai/casino/lightning/evidence/timing-replication-v2-status.json 2>/dev/null || true
+          git commit -m 'ops(lightning): persist authoritative recovery diagnostic' || exit 0
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:main; then exit 0; fi
+            git pull --rebase origin main || { git rebase --abort || true; sleep $((attempt*2)); continue; }
+          done
+          exit 1
