@@ -1,0 +1,69 @@
+{
+  "version": "v319",
+  "family": "VARIABLE_ORDER_CONTEXT_MIXTURE_6OF49",
+  "status": "PREREGISTERED_BEFORE_EXECUTION",
+  "goal": "Test whether the binary inclusion history of each lottery number contains reproducible variable-order temporal memory that improves a frozen top-8 pool over a same-window order-0 frequency model and an exact random pool.",
+  "antiDuplicateGuard": {
+    "searchedTerms": ["context tree weighting", "CTW", "variable order Markov", "markov lag transition binary inclusion"],
+    "repositorySearchResult": "NO_EXISTING_EQUIVALENT_CONTEXT_MIXTURE_FOUND_AT_PREREGISTRATION",
+    "nearestPriorFamilies": [
+      {"version":"v111","family":"BOCPD","difference":"v111 detects run-length/change points; v319 predicts number inclusion from explicit finite binary contexts."},
+      {"version":"v308","family":"GRAPH_LAPLACIAN_DIFFUSION","difference":"v308 diffuses scores over a co-occurrence graph; v319 uses only each number's own temporal inclusion sequence."}
+    ]
+  },
+  "games": ["bonoloto", "primitiva"],
+  "regime": {"support":"1..49","drawSize":6,"poolSize":8,"linesPerPool":28,"theoreticalCostEUR":14},
+  "temporalProtocol": {
+    "developmentEnd": "2018-12-31",
+    "validationStart": "2019-01-01",
+    "validationEnd": "2022-12-31",
+    "blindOosStart": "2023-01-01",
+    "blindOosEnd": "2024-12-31",
+    "postFreezeStart": "2025-01-01",
+    "noValidationReadBeforeDevelopmentSelection": true,
+    "noOosReadBeforeValidationFreeze": true,
+    "retuningAfterValidation": false
+  },
+  "model": {
+    "binarySequence": "For each number n, x_t(n)=1 if n appears among the six main numbers in draw t, otherwise 0.",
+    "contextOrders": "For each candidate maximum order D, compute KT-smoothed conditional probabilities for context depths d=0..D using only the frozen trailing window before the target draw.",
+    "ktEstimate": "p_d=(ones_after_context+0.5)/(context_occurrences+1). If a nonzero-depth context has zero occurrences, its KT value is 0.5 and receives its predeclared mixture weight.",
+    "mixtureWeights": "w_d proportional to 2^(-d), d=0..D, normalized to sum 1; fixed before execution and never fit to outcomes.",
+    "prediction": "p_mix(n)=sum_d w_d*p_d(n). Rank 1..49 descending by p_mix; ties by number ascending; select top 8.",
+    "nestedControl": "D=0 using the same trailing window and KT estimate."
+  },
+  "frozenGrid": {
+    "windows": [256,512,1024,2048],
+    "maxOrders": [1,2,3,4,5,6],
+    "logicalCandidatesPerGame": 24,
+    "maximumDevelopmentSurvivorsPerGame": 6
+  },
+  "developmentGate": {
+    "minimumEvaluatedDraws": 500,
+    "primaryMetric": "fivePlusPoolHits",
+    "mustBeatOrder0SameWindow": true,
+    "minimumAbsoluteFivePlusExcessOverOrder0": 1,
+    "mustBeatMatchedRandomExpectation": true,
+    "behavioralDeduplication": true,
+    "ifNoCandidatePasses": "CLOSE_V319_WITHOUT_READING_2019_PLUS"
+  },
+  "validationGate": {
+    "candidateDefinitionsFrozenBeforeRead": true,
+    "mustRetainPositiveFivePlusExcessOverOrder0": true,
+    "mustRetainPositiveFivePlusExcessOverMatchedRandom": true,
+    "minimumDistinctFivePlusDates": 2,
+    "ifNoCandidatePasses": "CLOSE_V319_WITHOUT_READING_2023_PLUS"
+  },
+  "matchedNull": {
+    "fivePlusProbability": "[C(6,5)C(43,3)+C(6,6)C(43,2)]/C(49,8)",
+    "fullSixProbability": "C(43,2)/C(49,8)",
+    "samePoolSizeAndCost": true
+  },
+  "guards": {
+    "futureInformationAllowed": false,
+    "targetTuningAllowed": false,
+    "realMoneyPass": false,
+    "realStakeEUR": 0,
+    "maximumTheoreticalCostEURPerGameDraw": 14
+  }
+}
