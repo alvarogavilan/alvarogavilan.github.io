@@ -7,20 +7,7 @@
       "type": "scientific-event",
       "title": "El nuevo segmento Lightning recibe sus primeras rondas después de la barrera pública",
       "plain": "El primer ciclo posterior a la barrera 2026-08-18T10:50:00Z persistió exactamente dos rondas de la misma fuente autoritativa. La primera llegó a las 10:50:45.038Z y la segunda a las 10:51:32.054Z. Ninguna fila anterior al freeze fue importada. El siguiente ciclo elevó el segmento a cinco rondas con puente de 46,988 segundos y máximo de 50,496 segundos. Timing v3 permaneció ciego con cero episodios cerrados; el control físico v2 acumuló las mismas rondas sin publicar estadísticas; el selector v2 comenzó su warm-up limpio sin puntuar candidatos.",
-      "metrics": {
-        "freezeBarrier":"2026-08-18T10:50:00Z",
-        "firstCleanRoundAt":"2026-08-18T10:50:45.038Z",
-        "secondCleanRoundAt":"2026-08-18T10:51:32.054Z",
-        "firstCycleRows":2,
-        "secondCycleRows":5,
-        "secondCycleBridgeSeconds":46.988,
-        "secondCycleMaxInterRoundSeconds":50.496,
-        "oldAmbiguousGapImported":false,
-        "timingV3PerformanceHidden":true,
-        "physicalV2StatisticsHidden":true,
-        "numberV2WarmupNotScored":true,
-        "realMoneyAllowed":false
-      },
+      "metrics": {"freezeBarrier":"2026-08-18T10:50:00Z","firstCleanRoundAt":"2026-08-18T10:50:45.038Z","secondCleanRoundAt":"2026-08-18T10:51:32.054Z","firstCycleRows":2,"secondCycleRows":5,"secondCycleBridgeSeconds":46.988,"secondCycleMaxInterRoundSeconds":50.496,"oldAmbiguousGapImported":false,"timingV3PerformanceHidden":true,"physicalV2StatisticsHidden":true,"numberV2WarmupNotScored":true,"realMoneyAllowed":false},
       "evidenceState":"MERGED_MAIN"
     },
     {
@@ -28,18 +15,32 @@
       "type":"falsification",
       "title":"Los análogos kernel producen 5+ aislados pero no repetición suficiente para abrir validation",
       "plain":"v321 evaluó contextos kernel en desarrollo 2010–2018 usando como máximo 512 análogos históricos y sin abrir 2019+. En Bonoloto aparecieron varios eventos 5+ aislados en configuraciones distintas, pero cada comportamiento tuvo como máximo una fecha 5+. El gate había exigido al menos dos fechas distintas además de superar frecuencia y NULL. Ningún candidato sobrevivió y el laboratorio cerró la familia sin consumir validation ni OOS.",
-      "metrics": {
-        "developmentEvaluationStart":"2010-01-01",
-        "developmentEnd":"2018-12-31",
-        "bonolotoDrawsRead":6827,
-        "bonolotoDevelopmentTargets":2272,
-        "maximumAnalogueEndpoints":512,
-        "selectedTotal":0,
-        "validationTouched":false,
-        "blindOosTouched":false,
-        "realMoneyPass":false
-      },
+      "metrics": {"developmentEvaluationStart":"2010-01-01","developmentEnd":"2018-12-31","bonolotoDrawsRead":6827,"bonolotoDevelopmentTargets":2272,"maximumAnalogueEndpoints":512,"selectedTotal":0,"validationTouched":false,"blindOosTouched":false,"realMoneyPass":false},
       "evidenceState":"MERGED_MAIN"
+    },
+    {
+      "id":"euromillones-v199-official-negative-v1",
+      "type":"prospective-settlement",
+      "title":"Euromillones v199 se liquida 5+2 contra SELAE y termina 1+0",
+      "plain":"La combinación v199 fue congelada antes del sorteo del 18 de agosto de 2026: 3, 19, 31, 36, 44 con estrellas 2 y 5. El evaluador usa el contrato oficial del repositorio: fechav3.combinacion contiene cinco números principales seguidos de dos estrellas. SELAE devolvió 3, 9, 38, 40, 50 con estrellas 6 y 10. El resultado prospectivo fue 1 número y 0 estrellas. No hubo retuning, no se usó el resultado para seleccionar y no existe recomendación de apuesta.",
+      "metrics":{"targetDrawDate":"2026-08-18","frozenNumbers":[3,19,31,36,44],"frozenStars":[2,5],"officialNumbers":[3,9,38,40,50],"officialStars":[6,10],"numberHits":1,"starHits":0,"full5plus2":false,"officialServiceFull5plus2Validated":true,"realMoneyAllowed":false},
+      "evidenceState":"MERGED_MAIN"
+    },
+    {
+      "id":"metapleno-v322-v324-v326-development-falsification-v1",
+      "type":"falsification",
+      "title":"Nuevas familias conjuntas encuentran eventos aislados, pero no repetición de development",
+      "plain":"v322 (diversidad determinantal), v323 (Haar multiescala), v324 (centralidad espectral residual) y v326 (máxima entropía de pares) fueron preregistradas y ejecutadas sólo hasta 2018. Localizaron configuraciones con eventos 5+ aislados que en algunos casos batían al baseline de frecuencia, pero ninguna consiguió el mínimo preregistrado de dos fechas independientes y ventaja sobre los controles. Por contrato se cerraron sin abrir 2019–2022 ni el OOS 2023–2024.",
+      "metrics":{"familiesClosedInDevelopment":["v322","v323","v324","v326"],"validationReadForTheseFamilies":false,"blindOosReadForTheseFamilies":false,"realMoneyAllowed":false},
+      "evidenceState":"MERGED_MAIN"
+    },
+    {
+      "id":"metapleno-v325-stability-selection-custody-audit-v1",
+      "type":"scientific-integrity",
+      "title":"v325 supera development, falla en 2019–2022 y revela un defecto de prueba de custodia",
+      "plain":"v325 stability selection fue la primera de la nueva secuencia en superar el gate de development. Bonoloto B=128, lambda=0,5, hot produjo dos eventos 5+ en 2015-05-29 y 2018-06-11 frente a uno del baseline; Primitiva B=256, lambda=2, hot produjo dos eventos 5+ en 2010-04-24 y 2011-12-08 frente a cero del baseline. En 2019–2022 ambos candidatos produjeron cero eventos 5+. Una auditoría posterior detectó que el workflow confundió un freeze local no rastreado con un archivo ya publicado, porque git reset --hard no elimina archivos untracked. La validación negativa se conserva como evidencia descriptiva, pero la afirmación de freeze público previo queda invalidada. No se intenta reparar retrospectivamente, no se repite 2019–2022 como muestra fresca y 2023–2024 permanece sin abrir para v325.",
+      "metrics":{"developmentSurvivors":2,"bonolotoDevelopmentFivePlus":2,"bonolotoValidationFivePlus":0,"primitivaDevelopmentFivePlus":2,"primitivaValidationFivePlus":0,"validationReportedStatus":"CLOSED_VALIDATION_FAILED","confirmatoryInferenceAllowed":false,"blindOos2023to2024Touched":false,"retroactiveFreezeRepairAllowed":false,"realMoneyAllowed":false},
+      "evidenceState":"MERGED_MAIN_WITH_CUSTODY_CORRECTION"
     }
   ],
   "rules":{"appendOnly":true,"neverInventMetrics":true,"doNotOverwritePreviousFeeds":true}
