@@ -2,8 +2,6 @@ name: Loterias AI Quiniela Official Program Watch
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '15 7,13 * * *'
   push:
     paths:
       - '.github/workflows/loterias-ai-quiniela-official-program-watch.yml'
@@ -13,11 +11,9 @@ on:
 
 permissions:
   contents: write
-
 concurrency:
   group: loterias-ai-quiniela-program-watch
-  cancel-in-progress: false
-
+  cancel-in-progress: true
 jobs:
   watch:
     runs-on: ubuntu-24.04
@@ -31,38 +27,16 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq poppler-utils
-          curl -fL --retry 3 --compressed \
-            -A 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/140 Safari/537.36' \
-            -H 'Accept: application/pdf,text/html;q=0.9,*/*;q=0.8' \
-            -H 'Accept-Language: es-ES,es;q=0.9' \
-            -H 'Referer: https://www.loteriasyapuestas.es/es/centro-de-ayuda/centro-de-informacion-y-ayuda' \
-            'https://www.loteriasyapuestas.es/f/loterias/documentos/Quiniela/Calendarios/Proximas_jornadas_deportivas.pdf' \
-            -o /tmp/proximas-jornadas.pdf
+          curl -fL --retry 3 --compressed -A 'Mozilla/5.0' -H 'Accept: application/pdf,text/html;q=0.9,*/*;q=0.8' 'https://www.loteriasyapuestas.es/f/loterias/documentos/Quiniela/Calendarios/Proximas_jornadas_deportivas.pdf' -o /tmp/proximas-jornadas.pdf
           test "$(stat -c%s /tmp/proximas-jornadas.pdf)" -gt 1000
           pdftotext -layout /tmp/proximas-jornadas.pdf /tmp/proximas-jornadas.txt
-      - name: Parse official future program
-        run: PROGRAM_TEXT=/tmp/proximas-jornadas.txt node loterias-ai/scripts/quiniela-official-program-watch.mjs
-      - name: Seal full15 ticket only when official program exists
-        run: node loterias-ai/scripts/quiniela-pleno15-prospective-seal.mjs
+      - run: PROGRAM_TEXT=/tmp/proximas-jornadas.txt node loterias-ai/scripts/quiniela-official-program-watch.mjs
+      - run: node loterias-ai/scripts/quiniela-pleno15-prospective-seal.mjs
       - name: Persist watcher state and immutable ticket safely
         shell: bash
         run: |
           cp loterias-ai/data/shadow/quiniela-next-official-program.json /tmp/program.json
           [ -f loterias-ai/data/shadow/quiniela-pleno15-prospective-ticket.json ] && cp loterias-ai/data/shadow/quiniela-pleno15-prospective-ticket.json /tmp/ticket.json || true
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          for i in 1 2 3 4 5; do
-            git fetch origin main
-            git reset --hard origin/main
-            cp /tmp/program.json loterias-ai/data/shadow/quiniela-next-official-program.json
-            if [ -f /tmp/ticket.json ] && [ ! -f loterias-ai/data/shadow/quiniela-pleno15-prospective-ticket.json ]; then
-              cp /tmp/ticket.json loterias-ai/data/shadow/quiniela-pleno15-prospective-ticket.json
-            fi
-            git add loterias-ai/data/shadow/quiniela-next-official-program.json
-            [ -f loterias-ai/data/shadow/quiniela-pleno15-prospective-ticket.json ] && git add loterias-ai/data/shadow/quiniela-pleno15-prospective-ticket.json || true
-            git diff --cached --quiet && exit 0
-            git commit -m 'data(loterias-ai): update Quiniela official program watch'
-            git push origin HEAD:main && exit 0
-            sleep $((i*2))
-          done
+          git config user.name github-actions[bot];git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for i in 1 2 3 4 5;do git fetch origin main;git reset --hard origin/main;cp /tmp/program.json loterias-ai/data/shadow/quiniela-next-official-program.json;if [ -f /tmp/ticket.json ]&&[ ! -f loterias-ai/data/shadow/quiniela-pleno15-prospective-ticket.json ];then cp /tmp/ticket.json loterias-ai/data/shadow/quiniela-pleno15-prospective-ticket.json;fi;git add loterias-ai/data/shadow/quiniela-next-official-program.json;[ ! -f loterias-ai/data/shadow/quiniela-pleno15-prospective-ticket.json ]||git add loterias-ai/data/shadow/quiniela-pleno15-prospective-ticket.json;git diff --cached --quiet&&exit 0;git commit -m 'data(loterias-ai): update Quiniela official program watch';git push origin HEAD:main&&exit 0;sleep $((i*2));done
           exit 1
