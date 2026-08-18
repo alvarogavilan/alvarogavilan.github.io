@@ -52,13 +52,46 @@ jobs:
             node loterias-ai/tests/evidence.test.mjs
             node loterias-ai/tests/schedule.test.mjs
 
+            # Restore JSON outputs whose only changes are volatile root timestamps.
+            mapfile -t changed_json < <(git diff --name-only -- \
+              loterias-ai/data/source-probe-latest.json \
+              loterias-ai/data/daily/latest.json \
+              loterias-ai/data/system-status.json \
+              'loterias-ai/data/research/prospective/*.settlement.json')
+
+            for path in "${changed_json[@]}"; do
+              before="$(mktemp)"
+              if git show "HEAD:${path}" > "${before}" 2>/dev/null; then
+                if node - "${before}" "${path}" <<'NODE'
+const fs = require('fs');
+const [beforePath, afterPath] = process.argv.slice(2);
+const before = JSON.parse(fs.readFileSync(beforePath, 'utf8'));
+const after = JSON.parse(fs.readFileSync(afterPath, 'utf8'));
+for (const obj of [before, after]) {
+  if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+    delete obj.generatedAt;
+    delete obj.checkedAt;
+    delete obj.auditGeneratedAt;
+  }
+}
+const stable = (value) => JSON.stringify(value, Object.keys(value || {}).sort());
+process.exit(stable(before) === stable(after) ? 0 : 1);
+NODE
+                then
+                  git checkout HEAD -- "${path}"
+                  echo "Restored timestamp-only change: ${path}"
+                fi
+              fi
+              rm -f "${before}"
+            done
+
             git add loterias-ai/data/source-probe-latest.json \
                     loterias-ai/data/daily/latest.json \
                     loterias-ai/data/system-status.json \
                     loterias-ai/data/research/prospective/*.settlement.json || true
 
             if git diff --cached --quiet; then
-              echo "No daily evidence changes"
+              echo "No semantic daily evidence changes"
               exit 0
             fi
 
