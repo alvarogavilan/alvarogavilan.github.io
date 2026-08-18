@@ -47,6 +47,8 @@ async function exposeEuromillionsV199(){
   const m=await r.json(),t=m?.ticket,nums=Array.isArray(t?.numbers)?t.numbers:[],stars=Array.isArray(t?.stars)?t.stars:[];
   if(m?.freezeFingerprintVerified!==true||nums.length!==5||stars.length!==2)return;
   det.dataset.state=m.status||'FREEZE V199';
+  const syncSide=()=>{if(!det.open)return;const st=document.getElementById('sideState'),co=document.getElementById('sideCombos');if(st)st.textContent=m.status||'FREEZE V199';if(co)co.textContent=`1 combinación 5+2 congelada · objetivo ${m.targetDrawDate||'—'}`;};
+  det.addEventListener('toggle',syncSide);
   const tag=det.querySelector('summary .tag');if(tag){tag.classList.remove('work');tag.classList.add('live');tag.textContent='FREEZE V199';}
   const model=det.querySelector('.model');
   if(model){
@@ -56,6 +58,7 @@ async function exposeEuromillionsV199(){
   }
   const metrics=[...det.querySelectorAll('.metric')];
   metrics.forEach(x=>{const k=x.querySelector('small')?.textContent?.trim();const v=x.querySelector('strong');if(!v)return;if(k==='ARTEFACTO'){v.textContent='sí';v.classList.add('good');}if(k==='ESTADO')v.textContent='freeze v199';});
+  syncSide();
  }catch{}
 }
 fetch('../data/backtests/master-walkforward.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(r.status);return r.json()}).then(x=>{wf=x;apply();setTimeout(apply,1000);setTimeout(apply,3000)}).catch(()=>{});
