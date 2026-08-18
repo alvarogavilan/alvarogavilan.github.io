@@ -1,0 +1,75 @@
+{
+  "version": "v320",
+  "family": "GAP_COMPOSITION_6OF49_AUDIT",
+  "status": "PREREGISTERED_BEFORE_EXECUTION",
+  "goal": "Test whether the ordered gap composition of 6-of-49 draws contains stable pre-draw structure that produces a top-8 number pool with more 5-of-6 coverage than an equal-window marginal-frequency baseline and an exact random pool.",
+  "antiDuplicateGuard": {
+    "searchedTerms": ["Dirichlet spacings", "gap composition", "order statistics gaps", "composition order statistics lottery"],
+    "repositorySearchResult": "NO_EXISTING_EQUIVALENT_GAP_COMPOSITION_FAMILY_FOUND_AT_PREREGISTRATION",
+    "nearestPriorFamilies": [
+      {"version":"v308","family":"GRAPH_LAPLACIAN_DIFFUSION","difference":"v308 models number co-occurrence graph geometry; v320 models the seven ordered empty-slot gaps of each sorted 6/49 combination."},
+      {"version":"v319","family":"VARIABLE_ORDER_CONTEXT_MIXTURE_6OF49","difference":"v319 models each number's binary temporal history; v320 ignores temporal binary contexts and models within-draw ordered composition geometry."}
+    ]
+  },
+  "games": ["bonoloto", "primitiva"],
+  "representation": {
+    "sortedMain": "x1<...<x6 in {1,...,49}",
+    "gaps": ["g0=x1-1", "g1=x2-x1-1", "g2=x3-x2-1", "g3=x4-x3-1", "g4=x5-x4-1", "g5=x6-x5-1", "g6=49-x6"],
+    "sumConstraint": 43,
+    "bijection": "Every 6-subset of 1..49 corresponds to exactly one nonnegative 7-part composition of 43 and vice versa."
+  },
+  "model": {
+    "training": "For each of the seven gap positions separately, count gap values 0..43 in a frozen trailing window of target-game draws strictly before the target.",
+    "smoothing": "q_i(g)=(count_i(g)+alpha)/(window+44*alpha).",
+    "compositionWeight": "For a candidate gap vector summing to 43, unnormalized weight is product_i q_i(g_i). The sum=43 constraint is imposed exactly.",
+    "marginalization": "Use forward/backward dynamic programming over gap index and remaining sum to compute exact conditional marginal inclusion weight for every number 1..49 without enumerating all C(49,6) combinations.",
+    "selection": "Rank numbers by exact conditional inclusion probability, descending; ties by number ascending; select top 8.",
+    "nestedBaseline": "Trailing marginal inclusion frequency for each number over the same target-game window with Laplace 1 smoothing; top 8, same tie rule."
+  },
+  "temporalProtocol": {
+    "developmentEnd": "2018-12-31",
+    "validationStart": "2019-01-01",
+    "validationEnd": "2022-12-31",
+    "blindOosStart": "2023-01-01",
+    "blindOosEnd": "2024-12-31",
+    "postFreezeStart": "2025-01-01",
+    "validationMustRemainUnreadUntilDevelopmentFreeze": true,
+    "blindOosMustRemainUnreadUntilValidationFreeze": true,
+    "retuningAfterValidation": false,
+    "post2024MayRescueV320": false
+  },
+  "frozenGrid": {
+    "windows": [128,256,512,1024],
+    "dirichletAlpha": [0.25,1,4,16],
+    "logicalConfigurationsPerGame": 16,
+    "maximumDevelopmentSurvivorsPerGame": 6
+  },
+  "developmentGate": {
+    "minimumEvaluatedDraws": 500,
+    "primaryMetric": "fivePlusPoolHits",
+    "minimumAbsoluteFivePlusExcessOverFrequencyBaseline": 1,
+    "mustBeatMatchedRandomExpectation": true,
+    "behavioralDeduplication": true,
+    "ifNoCandidatePasses": "CLOSE_V320_WITHOUT_READING_2019_PLUS"
+  },
+  "validationGate": {
+    "candidateDefinitionsFrozenBeforeRead": true,
+    "mustRetainPositiveFivePlusExcessOverFrequencyBaseline": true,
+    "mustRetainPositiveFivePlusExcessOverMatchedRandom": true,
+    "minimumDistinctFivePlusDates": 2,
+    "ifNoCandidatePasses": "CLOSE_V320_WITHOUT_READING_2023_PLUS"
+  },
+  "matchedNull": {
+    "poolSize": 8,
+    "fivePlusProbability": "[C(6,5)C(43,3)+C(6,6)C(43,2)]/C(49,8)",
+    "fullSixProbability": "C(43,2)/C(49,8)",
+    "samePoolSizeAndCost": true
+  },
+  "guards": {
+    "futureInformationAllowed": false,
+    "targetTuningAllowed": false,
+    "realMoneyPass": false,
+    "realStakeEUR": 0,
+    "maximumTheoreticalCostEURPerGameDraw": 14
+  }
+}
