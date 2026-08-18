@@ -11,6 +11,7 @@ on:
       - 'loterias-ai/casino/lightning/research/lightning-prospective-frozen-lag8.mjs'
       - 'loterias-ai/casino/lightning/research/physical-rng-prospective-v1.mjs'
       - 'loterias-ai/casino/lightning/research/physical-rng-prospective-idempotent-v1.mjs'
+      - 'loterias-ai/casino/lightning/research/timing-replication-v2.mjs'
       - 'loterias-ai/casino/lightning/research/verify-economic-prospective-freeze-v1.mjs'
       - 'loterias-ai/casino/lightning/research/verify-economic-number-prospective-freeze-v1.mjs'
       - 'loterias-ai/casino/lightning/evidence/economic-multiplier-window-prospective-freeze-v1.json'
@@ -19,6 +20,7 @@ on:
       - 'loterias-ai/casino/lightning/evidence/economic-multiplier-window-freeze-provenance-v1.json'
       - 'loterias-ai/casino/lightning/evidence/prospective-lag8-freeze.json'
       - 'loterias-ai/casino/lightning/evidence/physical-rng-prospective-freeze-v1.json'
+      - 'loterias-ai/casino/lightning/evidence/timing-replication-v2-freeze.json'
       - '.github/workflows/loterias-ai-lightning-authoritative-api.yml'
   schedule:
     - cron: '*/5 * * * *'
@@ -50,11 +52,12 @@ jobs:
             if git diff --quiet -- loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl; then
               data_changed=false
               if [ "$GITHUB_EVENT_NAME" != "push" ]; then
-                echo "No new authoritative rounds; refresh only the new idempotent physical prospective state."
+                echo "No new authoritative rounds; refresh only idempotent new prospective states."
                 node loterias-ai/casino/lightning/research/physical-rng-prospective-idempotent-v1.mjs
-                git add loterias-ai/casino/lightning/evidence/physical-rng-prospective-status-v1.json 2>/dev/null || true
+                node loterias-ai/casino/lightning/research/timing-replication-v2.mjs
+                git add loterias-ai/casino/lightning/evidence/physical-rng-prospective-status-v1.json loterias-ai/casino/lightning/evidence/timing-replication-v2-status.json 2>/dev/null || true
                 if git diff --cached --quiet; then exit 0; fi
-                git commit -m 'research(casino): initialize physical RNG prospective state'
+                git commit -m 'research(casino): advance blinded replication states'
                 if git push origin HEAD:"$GITHUB_REF_NAME"; then exit 0; fi
                 sleep $((attempt * 2))
                 continue
@@ -75,6 +78,7 @@ jobs:
             node loterias-ai/casino/lightning/research/prospective-capture-continuity-v1.mjs
             node loterias-ai/casino/lightning/research/lightning-prospective-frozen-lag8.mjs
             node loterias-ai/casino/lightning/research/physical-rng-prospective-idempotent-v1.mjs
+            node loterias-ai/casino/lightning/research/timing-replication-v2.mjs
 
             node --input-type=module <<'NODE'
             import fs from 'node:fs';
@@ -89,6 +93,11 @@ jobs:
             if (ps.freezeVersion !== pf.version || ps.prospectiveStartsAt !== pf.prospectiveStartsAt) throw new Error('physical RNG prospective drifted from freeze');
             if (ps.progress?.roundsUsedForV1 > 5000 || ps.guards?.noOptionalStopping !== true || ps.guards?.realMoneyAllowed !== false) throw new Error('physical RNG prospective safety regression');
             if (ps.progress?.roundsUsedForV1 < 5000 && (ps.final !== null || ps.disclosure?.observedStatisticsHidden !== true || ps.disclosure?.pValuesHidden !== true)) throw new Error('physical RNG pre-boundary blindness regression');
+            const rf=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/timing-replication-v2-freeze.json','utf8'));
+            const rs=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/timing-replication-v2-status.json','utf8'));
+            if(rf.fixedSample?.closedEpisodes!==200||rf.fixedSample?.noInterimPerformanceRead!==true||rf.guards?.noOptionalStopping!==true) throw new Error('timing v2 freeze drift');
+            if(rs.freezeVersion!==rf.version||rs.prospectiveStartsAt!==rf.prospectiveStartsAt||rs.guards?.realMoneyAllowed!==false) throw new Error('timing v2 status drift');
+            if(rs.progress?.closedEpisodes<200&&(rs.final!==null||rs.disclosure?.performanceHidden!==true||rs.disclosure?.pValueHidden!==true)) throw new Error('timing v2 interim blindness regression');
             NODE
 
             git add \
@@ -98,7 +107,8 @@ jobs:
               loterias-ai/casino/lightning/evidence/economic-number-selection-prospective-status-v1.json \
               loterias-ai/casino/lightning/evidence/prospective-capture-continuity-v1.json \
               loterias-ai/casino/lightning/evidence/prospective-lag8.json \
-              loterias-ai/casino/lightning/evidence/physical-rng-prospective-status-v1.json
+              loterias-ai/casino/lightning/evidence/physical-rng-prospective-status-v1.json \
+              loterias-ai/casino/lightning/evidence/timing-replication-v2-status.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m "research(casino): advance authoritative Lightning prospectives"
             if git push origin HEAD:"$GITHUB_REF_NAME"; then exit 0; fi
