@@ -1,0 +1,79 @@
+{
+  "version": "v318",
+  "family": "HIERARCHICAL_6OF49_SHRINKAGE_AUDIT",
+  "status": "PREREGISTERED_BEFORE_EXECUTION",
+  "goal": "Test whether number-specific deviations estimated independently in Bonoloto and Primitiva contain a stable shared 6-of-49 component that improves a fixed top-8 pool out of sample relative to same-game-only shrinkage and an exact matched random pool.",
+  "antiDuplicateGuard": {
+    "searchedTerms": ["v318", "bayesian hierarchical", "empirical bayes", "hierarchical shrinkage"],
+    "repositorySearchResult": "NO_EXISTING_EQUIVALENT_FAMILY_FOUND_AT_PREREGISTRATION",
+    "nearestPriorFamilies": [
+      {"version":"v315","family":"CROSS_GAME_TRANSFER_AUDIT","difference":"v315 freezes a one-way selected transfer rule; v318 estimates a symmetric shared latent deviation and requires improvement over an explicitly nested same-game-only model."},
+      {"version":"v316","family":"OPTIMAL_TRANSPORT_REGIME_AUDIT","difference":"v316 uses transport geometry; v318 uses shrinkage of marginal number deviations around the exact 6/49 inclusion rate."}
+    ],
+    "abortIfEquivalentArtifactFoundLater": true
+  },
+  "games": ["bonoloto", "primitiva"],
+  "regime": {"support":"1..49", "drawSize":6, "poolSize":8, "linesPerPool":28, "theoreticalCostEUR":14},
+  "temporalProtocol": {
+    "developmentEnd": "2018-12-31",
+    "validationStart": "2019-01-01",
+    "validationEnd": "2022-12-31",
+    "blindOosStart": "2023-01-01",
+    "blindOosEnd": "2024-12-31",
+    "postFreezeStart": "2025-01-01",
+    "stage1MayReadDevelopmentOnly": true,
+    "stage2MayReadValidationOnlyAfterCandidateDefinitionsFreeze": true,
+    "blindOosMustRemainUnreadUntilStage3Freeze": true,
+    "retuningAfterValidation": false,
+    "post2024MayRescueV318": false
+  },
+  "model": {
+    "marginalNullInclusionProbability": 0.12244897959183673,
+    "ownDeviation": "For each number n and target draw t, (count_n + priorStrength*6/49)/(6*window + priorStrength) - 1/49, computed from same-game draws strictly before t.",
+    "sharedDeviation": "Average of the standardized posterior deviations for the same number identity in Bonoloto and Primitiva, each using only draws strictly before target date.",
+    "score": "ownZ + crossWeight*otherZ. crossWeight=0 is the nested same-game control.",
+    "selection": "Top 8 scores; all C(8,6)=28 lines are the fixed theoretical coverage object. Ties break by number ascending."
+  },
+  "frozenGrid": {
+    "windows": [128,256,512,1024],
+    "priorStrengths": [24,96,384],
+    "crossWeights": [0,0.25,0.5,1],
+    "logicalConfigurationsPerGame": 48,
+    "maximumSelectedCrossGameCandidatesPerGameAfterDevelopment": 6
+  },
+  "developmentGate": {
+    "minimumEvaluatedDraws": 250,
+    "primaryMetric": "fivePlusPoolHits",
+    "mustBeatNestedSameGameControlWithSameWindowAndPrior": true,
+    "mustBeatMatchedRandomExpectation": true,
+    "minimumAbsoluteFivePlusExcessOverNested": 1,
+    "behavioralDeduplication": true,
+    "ifNoCandidatePasses": "CLOSE_V318_WITHOUT_READING_VALIDATION_OR_OOS"
+  },
+  "validationGate": {
+    "candidateParametersFrozenFromDevelopment": true,
+    "mustRetainPositiveFivePlusExcessOverNested": true,
+    "mustRetainPositiveFivePlusExcessOverMatchedRandom": true,
+    "repeatFivePlusOnAtLeastTwoDistinctValidationDates": true,
+    "ifNoCandidatePasses": "CLOSE_V318_WITHOUT_READING_2023_PLUS"
+  },
+  "matchedNull": {
+    "poolSize": 8,
+    "fivePlusProbability": "[C(6,5)C(43,3)+C(6,6)C(43,2)]/C(49,8)",
+    "fullSixProbability": "C(43,2)/C(49,8)",
+    "sameCostAsCandidate": true
+  },
+  "stage3Freeze": {
+    "maximumCandidatesTotal": 12,
+    "manifestHashRequired": true,
+    "behaviorHashRequired": true,
+    "noOosPeekBeforeFreeze": true
+  },
+  "guards": {
+    "futureInformationAllowed": false,
+    "targetTuningAllowed": false,
+    "realMoneyPass": false,
+    "realStakeEUR": 0,
+    "maximumTheoreticalCostEURPerGameDraw": 14
+  }
+}
