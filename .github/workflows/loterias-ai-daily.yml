@@ -74,8 +74,16 @@ for (const obj of [before, after]) {
     delete obj.auditGeneratedAt;
   }
 }
-const stable = (value) => JSON.stringify(value, Object.keys(value || {}).sort());
-process.exit(stable(before) === stable(after) ? 0 : 1);
+function canonical(value) {
+  if (Array.isArray(value)) return value.map(canonical);
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.keys(value).sort().map((key) => [key, canonical(value[key])])
+    );
+  }
+  return value;
+}
+process.exit(JSON.stringify(canonical(before)) === JSON.stringify(canonical(after)) ? 0 : 1);
 NODE
                 then
                   git checkout HEAD -- "${path}"
