@@ -1,8 +1,9 @@
+# Cost control: Lototurf/Quintuple historical archive maintenance is weekly; manual runs remain available.
 name: Loterias AI Horse Official Archive
 on:
   workflow_dispatch:
   schedule:
-    - cron: '55 6 * * *'
+    - cron: '55 6 * * 1'
   push:
     paths:
       - 'loterias-ai/scripts/enrich-lototurf-official-fechav3.mjs'
@@ -12,7 +13,7 @@ permissions:
   contents: write
 concurrency:
   group: loterias-ai-horse-official-archive
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   archive:
     runs-on: ubuntu-latest
