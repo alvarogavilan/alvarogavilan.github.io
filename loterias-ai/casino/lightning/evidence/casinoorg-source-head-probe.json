@@ -1,6 +1,6 @@
 {
-  "version": "casinoorg-source-head-probe-v1",
-  "checkedHour": "2026-08-18T14:00:00Z",
+  "version": "casinoorg-source-head-probe-v2",
+  "checkedHour": "2026-08-18T15:00:00Z",
   "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
   "httpStatus": 200,
   "httpOk": true,
@@ -8,23 +8,43 @@
   "parseError": null,
   "received": 30,
   "validParsed": 30,
-  "responseSha256": "e1ff7f5d97a1a3573ee2d24caf18231c935977b010a4f61d2de28d43c587ba20",
+  "responseSha256": "ea8c495218e14df0d1ef4b1fa78193282b9b7bd723eec4e7eee3dc7245181e56",
   "sourceLatest": {
-    "roundId": "6a846f2b01681154c9773de7",
-    "timestamp": "2026-08-18T14:41:47.732Z",
-    "winner": 19
+    "roundId": "6a84735a01681154c9773ece",
+    "timestamp": "2026-08-18T14:59:38.675Z",
+    "winner": 15
+  },
+  "activeCorpus": {
+    "segment": "authoritative-v2",
+    "latest": {
+      "roundId": "6a846ba601681154c9773d26",
+      "timestamp": "2026-08-18T14:26:46.168Z",
+      "winner": 14
+    },
+    "rows": 262
+  },
+  "legacyCorpus": {
+    "latest": {
+      "roundId": "6a83f44a19aef3109978c232",
+      "timestamp": "2026-08-18T05:57:30.374Z",
+      "winner": 24
+    },
+    "rows": 2473,
+    "retiredFromScheduledCapture": true
   },
   "corpusLatest": {
-    "roundId": "6a83f44a19aef3109978c232",
-    "timestamp": "2026-08-18T05:57:30.374Z",
-    "winner": 24
+    "roundId": "6a846ba601681154c9773d26",
+    "timestamp": "2026-08-18T14:26:46.168Z",
+    "winner": 14
   },
-  "corpusRows": 2473,
+  "corpusRows": 262,
   "sourceLatestLagBucket": "LT15M",
+  "sourceToActiveCorpusGapBucket": "30_60M",
   "sourceAheadOfCorpus": true,
   "sourceSameHeadAsCorpus": false,
   "policy": {
     "diagnosticOnly": true,
+    "activeContinuityReference": "authoritative-v2",
     "mayMutateCorpus": false,
     "mayAdvanceProspectives": false,
     "authenticationBypassAttempted": false
