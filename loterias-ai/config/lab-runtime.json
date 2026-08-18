@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "mode": "LOCAL_PRIMARY_GITHUB_FALLBACK",
   "tickMinutes": 5,
   "maxTasksPerTick": 2,
@@ -11,6 +11,21 @@
     "localRuntimeRole": "PRIMARY_RESEARCH_SCHEDULER"
   },
   "tasks": [
+    {
+      "id": "lightning-authoritative-segment-v2",
+      "enabled": true,
+      "priority": 5,
+      "everyMinutes": 10,
+      "timeoutSeconds": 420,
+      "run": "node loterias-ai/casino/lightning/collect-authoritative-segment-v2.mjs && node loterias-ai/casino/lightning/research/timing-replication-v3.mjs && node loterias-ai/casino/lightning/research/physical-rng-prospective-v2.mjs && node loterias-ai/casino/lightning/research/economic-number-selection-prospective-v2.mjs && node -e \"const fs=require('fs');const s=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/authoritative-segment-v2-status.json','utf8'));if(s.freezeVersion!=='authoritative-segment-v2-freeze'||s.guards?.strictlyPostBarrier!==true||s.guards?.oldAmbiguousGapImported!==false||s.guards?.realMoneyAllowed!==false||s.continuity?.bridgeSafe!==true)throw Error('clean segment safety drift');const t=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/timing-replication-v3-status.json','utf8'));if(t.progress?.closedEpisodes<200&&(t.final!==null||t.disclosure?.performanceHidden!==true||t.disclosure?.pValueHidden!==true))throw Error('timing v3 interim blindness regression');if(t.guards?.realMoneyAllowed!==false)throw Error('timing v3 real-money regression');const p=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-v2-status.json','utf8'));if(p.progress?.roundsUsedForV2<5000&&(p.final!==null||p.disclosure?.observedStatisticsHidden!==true||p.disclosure?.pValuesHidden!==true))throw Error('physical v2 blindness regression');if(p.guards?.realMoneyAllowed!==false)throw Error('physical v2 real-money regression');const n=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/economic-number-selection-prospective-status-v2.json','utf8'));if(n.algorithmCustody?.sourceEngineGitBlobSha!=='1e9431d663b6f5ced9dcb24a9d6074bb6bea3874'||n.guards?.v1SelectorAlgorithmUnchanged!==true||n.guards?.cleanWarmupNotScored!==true||n.guards?.realMoneyAllowed!==false)throw Error('number v2 custody regression');if(n.progress?.eligibleFutureRounds<5000&&n.disclosure?.candidatePerformanceHidden!==true)throw Error('number v2 interim ranking disclosure regression')\"",
+      "outputs": [
+        "loterias-ai/casino/lightning/data/casinoorg-lightningroulette-segment-v2.jsonl",
+        "loterias-ai/casino/lightning/evidence/authoritative-segment-v2-status.json",
+        "loterias-ai/casino/lightning/evidence/timing-replication-v3-status.json",
+        "loterias-ai/casino/lightning/evidence/physical-rng-prospective-v2-status.json",
+        "loterias-ai/casino/lightning/evidence/economic-number-selection-prospective-status-v2.json"
+      ]
+    },
     {
       "id": "lightning-staleness-diagnostic",
       "enabled": true,
