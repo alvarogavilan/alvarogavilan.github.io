@@ -4,6 +4,8 @@ import fs from 'node:fs';
 const ROOT='loterias-ai/casino/lightning/evidence';
 const MASTER='loterias-ai/data/shadow/prospective-master-scoreboard.json';
 const V315='loterias-ai/data/research/metapleno-v315-prospective-status.json';
+const PF4='loterias-ai/data/research/primitiva-frequency4-prospective-status.json';
+const PF4_FINAL='loterias-ai/data/research/primitiva-frequency4-prospective-final-50.json';
 const OUT=`${ROOT}/economic-readiness-ledger-v1.json`;
 
 const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'));}catch{return null;}};
@@ -16,6 +18,8 @@ const pastLucky=read(`${ROOT}/prospective-past-lucky-family-clean-v2-status-v1.j
 const legacyTiming=read(`${ROOT}/economic-multiplier-window-prospective-status-v1.json`)||{};
 const master=read(MASTER)||{};
 const v315=read(V315)||{};
+const pf4=read(PF4)||{};
+const pf4Final=read(PF4_FINAL)||{};
 
 const pct=(used,total)=>total>0?Number((100*Number(used||0)/Number(total)).toFixed(2)):0;
 const lane=(id,label,used,total,status,extra={})=>({
@@ -29,6 +33,17 @@ const lanes=[
     disclosure:timing?.disclosure?.policy||null,
     outcomePerformanceVisible:timing?.disclosure?.performanceHidden!==true,
     realMoneyAllowed:timing?.guards?.realMoneyAllowed===true
+  }),
+  lane('primitiva-frequency4-v1','Primitiva frequency/4 — fixed 50-draw economic replication',pf4?.progress?.resultAndEconomicsAvailable,pf4?.progress?.fixedBoundaryDraws,'BLINDED_ACCUMULATING',{
+    disclosure:pf4?.disclosure?.administrativeProgressOnly===true?'ADMINISTRATIVE_PROGRESS_ONLY':null,
+    outcomePerformanceVisible:pf4?.disclosure?.interimEconomicPerformanceHidden!==true,
+    sealedTargets:Number(pf4?.progress?.sealedTargets||0),
+    resultAndEconomicsAvailable:Number(pf4?.progress?.resultAndEconomicsAvailable||0),
+    latestSealedTarget:pf4?.progress?.latestSealedTarget||null,
+    historicalLineage:{lockedFinancialHoldoutDraws:15,lockedFinancialROI:0.4193333333333333,predictiveRelativeLiftAtLeast3:0.5466666666666667,contextOnly:true},
+    fixedFinalAvailable:Boolean(pf4?.finalAvailable),
+    fixedFinalEconomicPromotionCandidate:pf4Final?.gates?.economicPromotionCandidate===true,
+    realMoneyAllowed:false
   }),
   lane('clean-lag8-economic-v1','Lightning lag-8 conservative economic replication',lag8?.progress?.comparisonsUsed,lag8?.progress?.fixedBoundaryComparisons,'BLINDED_ACCUMULATING',{
     disclosure:lag8?.disclosure?.policy||null,
@@ -98,7 +113,14 @@ const traditionalLottery={
     fixedBoundary:Number(v315?.progress?.fixedDecisionBoundary||200),
     latestSealedTarget:v315?.progress?.latestSealedTarget||null
   },
-  status:Number(master?.counts?.realMoneyPass||0)>0?'PROMOTION_CANDIDATE_PRESENT':'NO_VALIDATED_ECONOMIC_EDGE_YET'
+  primitivaFrequency4:{
+    sealedTargets:Number(pf4?.progress?.sealedTargets||0),
+    settledTargets:Number(pf4?.progress?.resultAndEconomicsAvailable||0),
+    fixedBoundary:Number(pf4?.progress?.fixedBoundaryDraws||50),
+    latestSealedTarget:pf4?.progress?.latestSealedTarget||null,
+    economicPromotionCandidate:pf4Final?.gates?.economicPromotionCandidate===true
+  },
+  status:(Number(master?.counts?.realMoneyPass||0)>0||pf4Final?.gates?.economicPromotionCandidate===true)?'PROMOTION_CANDIDATE_PRESENT':'NO_VALIDATED_ECONOMIC_EDGE_YET'
 };
 
 const payload={
