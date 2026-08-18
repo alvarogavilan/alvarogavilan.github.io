@@ -220,10 +220,26 @@ for (const task of tasks) {
   executed += 1;
 }
 
+let derivedEconomicState = 'NOT_RUN';
+if (executed > 0) {
+  const derived = run(process.execPath, ['loterias-ai/ops/refresh-derived-economic-state.mjs'], { cwd: workspace, timeoutMs: 60_000 });
+  const derivedOk = derived.status === 0 && !derived.error;
+  const copied = cacheOutputs({ outputs: [
+    'loterias-ai/casino/lightning/evidence/economic-readiness-ledger-v1.json',
+    'loterias-ai/casino/lightning/evidence/economic-promotion-gate-v1.json'
+  ] });
+  derivedEconomicState = derivedOk ? 'SUCCESS' : 'FAILED_NONCRITICAL';
+  events.push({ id: 'derived-economic-state', status: derivedEconomicState, copiedOutputs: copied });
+  fs.appendFileSync(path.join(logsDir, 'derived-economic-state.log'),
+    `\n[${new Date().toISOString()}] status=${derivedEconomicState} exit=${derived.status}\n${derived.stdout || ''}${derived.stderr || ''}\n`
+  );
+}
+
 state.updatedAt = new Date().toISOString();
 state.sourceHead = sourceHead;
 state.workspaceRefreshedLastTick = workspaceRefreshed;
 state.cachedEvidenceRestoredLastTick = cachedEvidenceRestored;
+state.derivedEconomicStateLastTick = derivedEconomicState;
 writeJsonAtomic(statePath, state);
 
 const configured = tasks.length;
@@ -239,6 +255,7 @@ writeJsonAtomic(statusPath, {
   cachedEvidenceRestored,
   configuredTasks: configured,
   executedThisTick: executed,
+  derivedEconomicState,
   missingEnvTasks,
   failures,
   elapsedMs: Date.now() - startedAt,
@@ -246,4 +263,4 @@ writeJsonAtomic(statusPath, {
   policy: config.policy
 });
 
-console.log(`LOTERIAS_LOCAL_RUNTIME health=${failures ? 'degraded' : 'ok'} executed=${executed} configured=${configured} head=${sourceHead}`);
+console.log(`LOTERIAS_LOCAL_RUNTIME health=${failures ? 'degraded' : 'ok'} executed=${executed} configured=${configured} derived=${derivedEconomicState} head=${sourceHead}`);
