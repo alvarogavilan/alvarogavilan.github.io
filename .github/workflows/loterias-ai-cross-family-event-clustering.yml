@@ -1,0 +1,53 @@
+name: Loterias AI Cross-Family Event Clustering
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/data/research/metapleno-v321-stage1-development.json'
+      - 'loterias-ai/data/research/metapleno-v322-stage1-development.json'
+      - 'loterias-ai/data/research/metapleno-v323-stage1-development.json'
+      - 'loterias-ai/data/research/metapleno-v324-stage1-development.json'
+      - 'loterias-ai/data/research/metapleno-v325-stage1-development.json'
+      - 'loterias-ai/data/research/metapleno-v326-stage1-development.json'
+      - 'loterias-ai/research/megalab/cross-family-event-clustering-v1.mjs'
+      - '.github/workflows/loterias-ai-cross-family-event-clustering.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-cross-family-event-clustering
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - name: Measure shared development 5+ dates
+        run: node loterias-ai/research/megalab/cross-family-event-clustering-v1.mjs
+      - name: Validate non-predictive audit guards
+        run: |
+          node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('loterias-ai/data/research/cross-family-event-clustering-v1.json','utf8'));if(j.scope?.developmentOnly!==true||j.policy?.doesNotOpenValidationOrOOS!==true||j.policy?.notPredictiveEvidence!==true||j.policy?.realMoneyPass!==false)throw Error('cross-family audit guard regression');console.log(JSON.stringify({counts:j.counts,topDate:j.topDate,interpretation:j.interpretation}))"
+      - name: Persist audit against moving main
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET='loterias-ai/data/research/cross-family-event-clustering-v1.json'
+          cp "$TARGET" /tmp/cross-family.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/cross-family.json "$TARGET"
+            git add "$TARGET"
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'research(loterias-ai): persist cross-family 5+ clustering audit'
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
