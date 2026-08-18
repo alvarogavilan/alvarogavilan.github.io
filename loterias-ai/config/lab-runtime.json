@@ -1,5 +1,5 @@
 {
-  "version": "1.8.0",
+  "version": "1.9.0",
   "mode": "LOCAL_PRIMARY_GITHUB_FALLBACK",
   "tickMinutes": 5,
   "maxTasksPerTick": 2,
@@ -76,18 +76,21 @@
       ]
     },
     {
-      "id": "primitiva-v315-prospective",
+      "id": "primitiva-prospective",
       "enabled": true,
       "priority": 45,
       "everyMinutes": 360,
       "timeoutSeconds": 900,
       "class": "PROSPECTIVE_CUSTODY_LOCAL",
-      "run": "node loterias-ai/research/megalab/v315-seal-guarded.mjs && node loterias-ai/research/megalab/v315-settle-official-prospective.mjs && node loterias-ai/research/megalab/v315-finalize-200.mjs && node loterias-ai/research/megalab/v315-administrative-status.mjs",
+      "run": "node loterias-ai/ops/primitiva-prospective-local.mjs",
       "outputs": [
         "loterias-ai/data/research/v315-prospective-seals",
         "loterias-ai/data/research/v315-prospective-settlements",
         "loterias-ai/data/research/metapleno-v315-prospective-status.json",
-        "loterias-ai/data/research/metapleno-v315-final-200.json"
+        "loterias-ai/data/research/metapleno-v315-final-200.json",
+        "loterias-ai/data/research/primitiva-frequency4-prospective-seals",
+        "loterias-ai/data/research/primitiva-frequency4-prospective-status.json",
+        "loterias-ai/data/research/primitiva-frequency4-prospective-final-50.json"
       ]
     },
     {
