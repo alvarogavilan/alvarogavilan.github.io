@@ -1,8 +1,9 @@
+# Cost control: Elige8 historical/progressive backfill is research infrastructure, not a live prospective collector.
 name: Loterias AI Elige8 Progressive
 on:
   workflow_dispatch:
   schedule:
-    - cron: '40 7 * * *'
+    - cron: '40 7 * * 0'
   push:
     paths:
       - 'loterias-ai/scripts/import-elige8-official-progressive.mjs'
@@ -12,7 +13,7 @@ permissions:
   contents: write
 concurrency:
   group: loterias-ai-elige8-progressive
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   ingest:
     runs-on: ubuntu-latest
