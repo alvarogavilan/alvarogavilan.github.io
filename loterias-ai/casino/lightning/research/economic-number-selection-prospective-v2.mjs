@@ -44,6 +44,15 @@ out.progress.cleanWarmupRequired=WARMUP;
 out.progress.cleanWarmupObserved=Math.min(WARMUP,totalSegmentRows);
 out.progress.cleanWarmupComplete=totalSegmentRows>=WARMUP;
 out.progress.totalCleanSegmentRows=totalSegmentRows;
+if(Object.hasOwn(out.progress,'postBoundaryRowsIgnoredForV1')){
+  out.progress.postBoundaryRowsIgnoredForV2=out.progress.postBoundaryRowsIgnoredForV1;
+  delete out.progress.postBoundaryRowsIgnoredForV1;
+}
+if(totalSegmentRows<WARMUP){
+  out.phase='CLEAN_WARMUP_BLINDED';
+  out.disclosure={candidatePerformanceHidden:true,reason:'CLEAN_WARMUP_NOT_SCORED'};
+  out.interpretation=`Warm-up limpio ${totalSegmentRows}/${WARMUP}. Ninguna de estas rondas puntúa candidatos y no se publica rendimiento.`;
+}
 out.guards.v1SelectorAlgorithmUnchanged=true;
 out.guards.cleanWarmupNotScored=true;
 out.guards.realMoneyAllowed=false;
