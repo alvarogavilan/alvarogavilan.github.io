@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "mode": "LOCAL_PRIMARY_GITHUB_FALLBACK",
   "tickMinutes": 5,
   "maxTasksPerTick": 2,
@@ -37,6 +37,17 @@
       "outputs": [
         "loterias-ai/casino/lightning/data/rounds.jsonl",
         "loterias-ai/casino/lightning/evidence/corpus-quality.json"
+      ]
+    },
+    {
+      "id": "lightning-casinoscore-public",
+      "enabled": true,
+      "priority": 25,
+      "everyMinutes": 60,
+      "timeoutSeconds": 180,
+      "run": "node loterias-ai/casino/lightning/collect-casinoscore-public.mjs && node -e \"const x=require('./loterias-ai/casino/lightning/evidence/casinoscore-public.json');if(x.trainingEligible)process.exit(1);if(!x.free)process.exit(1)\"",
+      "outputs": [
+        "loterias-ai/casino/lightning/evidence/casinoscore-public.json"
       ]
     },
     {
