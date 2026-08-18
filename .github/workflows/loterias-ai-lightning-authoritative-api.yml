@@ -9,6 +9,7 @@ on:
       - 'loterias-ai/casino/lightning/research/economic-number-selection-prospective-v1.mjs'
       - 'loterias-ai/casino/lightning/research/prospective-capture-continuity-v1.mjs'
       - 'loterias-ai/casino/lightning/research/lightning-prospective-frozen-lag8.mjs'
+      - 'loterias-ai/casino/lightning/research/physical-rng-prospective-v1.mjs'
       - 'loterias-ai/casino/lightning/research/verify-economic-prospective-freeze-v1.mjs'
       - 'loterias-ai/casino/lightning/research/verify-economic-number-prospective-freeze-v1.mjs'
       - 'loterias-ai/casino/lightning/evidence/economic-multiplier-window-prospective-freeze-v1.json'
@@ -16,6 +17,7 @@ on:
       - 'loterias-ai/casino/lightning/evidence/economic-number-selection-prospective-freeze-v1.json'
       - 'loterias-ai/casino/lightning/evidence/economic-multiplier-window-freeze-provenance-v1.json'
       - 'loterias-ai/casino/lightning/evidence/prospective-lag8-freeze.json'
+      - 'loterias-ai/casino/lightning/evidence/physical-rng-prospective-freeze-v1.json'
       - '.github/workflows/loterias-ai-lightning-authoritative-api.yml'
   schedule:
     - cron: '*/5 * * * *'
@@ -28,7 +30,7 @@ jobs:
   collect:
     if: github.actor != 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -55,20 +57,17 @@ jobs:
 
             if [ "$data_changed" = true ]; then
               node loterias-ai/casino/lightning/corpus-readiness.mjs
-              # QA/readiness outputs are owned by their dedicated workflow.
               git restore loterias-ai/casino/lightning/evidence/corpus-readiness.json || true
               git restore loterias-ai/casino/lightning/evidence/corpus-audit.json || true
             fi
 
-            # Bot pushes made with GITHUB_TOKEN do not start downstream push workflows.
-            # Therefore the authoritative collector itself advances immutable prospectives.
-            # Scientific push events recompute these artifacts even when no fresh round arrived.
             node loterias-ai/casino/lightning/research/verify-economic-prospective-freeze-v1.mjs
             node loterias-ai/casino/lightning/research/verify-economic-number-prospective-freeze-v1.mjs
             node loterias-ai/casino/lightning/research/economic-multiplier-prospective-v1.mjs
             node loterias-ai/casino/lightning/research/economic-number-selection-prospective-v1.mjs
             node loterias-ai/casino/lightning/research/prospective-capture-continuity-v1.mjs
             node loterias-ai/casino/lightning/research/lightning-prospective-frozen-lag8.mjs
+            node loterias-ai/casino/lightning/research/physical-rng-prospective-v1.mjs
 
             node --input-type=module <<'NODE'
             import fs from 'node:fs';
@@ -77,6 +76,13 @@ jobs:
             if (f.lag !== 8 || f.immutable !== true || f.realMoney !== false || f.claimAllowed !== false) throw new Error('invalid immutable lag-8 freeze');
             if (j?.freeze?.lag !== 8 || j?.freeze?.cutoffTimestamp !== f.cutoffTimestamp) throw new Error('lag-8 prospective drifted from frozen hypothesis');
             if (j?.guards?.realMoney !== false || j?.guards?.realMoneyAuthorized !== false || j?.guards?.authorizedStakeEUR !== 0 || j?.guards?.claimAllowed !== false) throw new Error('lag-8 safety guards drifted');
+
+            const pf=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-freeze-v1.json','utf8'));
+            const ps=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-status-v1.json','utf8'));
+            if (pf.fixedBoundaryRounds !== 5000 || pf.alphaFamilyWise !== 0.01 || pf.permutation?.replicates !== 10000) throw new Error('physical RNG fixed protocol drifted');
+            if (ps.freezeVersion !== pf.version || ps.prospectiveStartsAt !== pf.prospectiveStartsAt) throw new Error('physical RNG prospective drifted from freeze');
+            if (ps.progress?.roundsUsedForV1 > 5000 || ps.guards?.noOptionalStopping !== true || ps.guards?.realMoneyAllowed !== false) throw new Error('physical RNG prospective safety regression');
+            if (ps.progress?.roundsUsedForV1 < 5000 && (ps.final !== null || ps.disclosure?.observedStatisticsHidden !== true || ps.disclosure?.pValuesHidden !== true)) throw new Error('physical RNG pre-boundary blindness regression');
             NODE
 
             git add \
@@ -85,7 +91,8 @@ jobs:
               loterias-ai/casino/lightning/evidence/economic-multiplier-window-prospective-status-v1.json \
               loterias-ai/casino/lightning/evidence/economic-number-selection-prospective-status-v1.json \
               loterias-ai/casino/lightning/evidence/prospective-capture-continuity-v1.json \
-              loterias-ai/casino/lightning/evidence/prospective-lag8.json
+              loterias-ai/casino/lightning/evidence/prospective-lag8.json \
+              loterias-ai/casino/lightning/evidence/physical-rng-prospective-status-v1.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m "research(casino): advance authoritative Lightning prospectives"
             if git push origin HEAD:"$GITHUB_REF_NAME"; then exit 0; fi
