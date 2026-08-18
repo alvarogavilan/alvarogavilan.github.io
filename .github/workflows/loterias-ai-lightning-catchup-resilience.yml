@@ -92,7 +92,7 @@ jobs:
             let acquisitionOk=c.cachePolicy==='NO_CACHE_NO_STORE'&&c.sourceLatest?.timestamp&&Number(c.persistedRows)>0&&c.continuityBridgeSafe===true;
             if(fs.existsSync('/tmp/gap-recovered')){
               const r=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-gap-recovery-v1.json','utf8'));
-              acquisitionOk=r.status==='RECOVERED_CONTIGUOUS_AUTHORITATIVE_GAP'&&r.exactRoundIdOverlapVerified===true&&r.stableHeadHashVerified===true&&Number(r.recoveredRows)>0&&Number(r.firstBridgeSeconds)<=120&&Number(r.maxInterRoundSeconds)<=120&&r.guards?.realMoneyAllowed===false;
+              acquisitionOk=r.status==='RECOVERED_CONTIGUOUS_AUTHORITATIVE_GAP'&&r.exactRoundIdOverlapVerified===true&&r.continuityUnionVerified===true&&Number(r.canonicalDuplicateConflicts)===0&&Number(r.recoveredRows)>0&&Number(r.firstBridgeSeconds)<=120&&Number(r.maxInterRoundSeconds)<=120&&Number(r.tailBridgeSeconds)<=120&&r.quarantineClearedAfterRecovery===true&&r.guards?.realMoneyAllowed===false;
             }
             if(!acquisitionOk) throw new Error('catchup did not prove safe authoritative persistence');
             const pf=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-freeze-v1.json','utf8'));
