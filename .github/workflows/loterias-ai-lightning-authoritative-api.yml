@@ -5,11 +5,11 @@ on:
     branches: [main]
     paths:
       - 'loterias-ai/casino/lightning/collect-casinoorg-api.mjs'
+      - 'loterias-ai/casino/lightning/research/recover-casinoorg-pagination-gap-v1.mjs'
       - 'loterias-ai/casino/lightning/research/economic-multiplier-prospective-v1.mjs'
       - 'loterias-ai/casino/lightning/research/economic-number-selection-prospective-v1.mjs'
       - 'loterias-ai/casino/lightning/research/prospective-capture-continuity-v1.mjs'
       - 'loterias-ai/casino/lightning/research/lightning-prospective-frozen-lag8.mjs'
-      - 'loterias-ai/casino/lightning/research/physical-rng-prospective-v1.mjs'
       - 'loterias-ai/casino/lightning/research/physical-rng-prospective-idempotent-v1.mjs'
       - 'loterias-ai/casino/lightning/research/timing-replication-v2.mjs'
       - 'loterias-ai/casino/lightning/research/verify-economic-prospective-freeze-v1.mjs'
@@ -36,45 +36,62 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with: {node-version: 24}
-      - name: Collect, verify prospectives and persist against moving main
+      - name: Collect, heal authoritative gaps, verify and persist
+        shell: bash
         run: |
           set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
           for attempt in 1 2 3 4 5; do
+            rm -f /tmp/gap-recovered /tmp/recovery-failed
             git fetch origin "$GITHUB_REF_NAME"
             git reset --hard "origin/$GITHUB_REF_NAME"
+
             node loterias-ai/casino/lightning/collect-casinoorg-api.mjs
+            DATA_CHANGED=no
+            if ! git diff --quiet -- loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl; then DATA_CHANGED=yes; fi
 
-            data_changed=true
-            if git diff --quiet -- loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl; then
-              data_changed=false
-              if [ "$GITHUB_EVENT_NAME" != "push" ]; then
-                echo "No contiguous authoritative rounds; refresh blinded states and persist collector/quarantine diagnostics only."
-                node loterias-ai/casino/lightning/research/physical-rng-prospective-idempotent-v1.mjs
-                node loterias-ai/casino/lightning/research/timing-replication-v2.mjs
-                git add \
-                  loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json \
-                  loterias-ai/casino/lightning/evidence/casinoorg-catchup-quarantine.json \
-                  loterias-ai/casino/lightning/evidence/physical-rng-prospective-status-v1.json \
-                  loterias-ai/casino/lightning/evidence/timing-replication-v2-status.json 2>/dev/null || true
-                if git diff --cached --quiet; then exit 0; fi
-                git commit -m 'ops(lightning): persist source quarantine and blinded states'
-                if git push origin HEAD:"$GITHUB_REF_NAME"; then exit 0; fi
-                sleep $((attempt * 2))
-                continue
+            BRIDGE_SAFE=$(node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json','utf8'));process.stdout.write(c.continuityBridgeSafe===true?'yes':'no')")
+            QUARANTINED=$(node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json','utf8'));process.stdout.write(Number(c.quarantinedRows||0)>0?'yes':'no')")
+
+            if [ "$DATA_CHANGED" = no ] && { [ "$BRIDGE_SAFE" != yes ] || [ "$QUARANTINED" = yes ]; }; then
+              echo 'Primary collector found a non-contiguous fresh window; attempting same-source paginated recovery before any prospective.'
+              if node loterias-ai/casino/lightning/research/recover-casinoorg-pagination-gap-v1.mjs; then
+                echo yes > /tmp/gap-recovered
+                DATA_CHANGED=yes
+              else
+                echo yes > /tmp/recovery-failed
               fi
-              echo "No new contiguous rows, but this is a scientific push: recomputing only from the unchanged authoritative corpus."
             fi
 
-            if [ "$data_changed" = true ]; then
-              node loterias-ai/casino/lightning/corpus-readiness.mjs
-              git restore loterias-ai/casino/lightning/evidence/corpus-readiness.json || true
-              git restore loterias-ai/casino/lightning/evidence/corpus-audit.json || true
+            if [ "$DATA_CHANGED" = no ]; then
+              echo 'No new contiguous authoritative rows. Persist diagnostics/blinded states only; do not advance outcome-bearing prospectives.'
+              node loterias-ai/casino/lightning/research/physical-rng-prospective-idempotent-v1.mjs
+              node loterias-ai/casino/lightning/research/timing-replication-v2.mjs
+              git add \
+                loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json \
+                loterias-ai/casino/lightning/evidence/casinoorg-catchup-quarantine.json \
+                loterias-ai/casino/lightning/evidence/physical-rng-prospective-status-v1.json \
+                loterias-ai/casino/lightning/evidence/timing-replication-v2-status.json 2>/dev/null || true
+              if git diff --cached --quiet; then exit 0; fi
+              git commit -m 'ops(lightning): persist source quarantine and blinded states'
+              if git push origin HEAD:"$GITHUB_REF_NAME"; then exit 0; fi
+              sleep $((attempt * 2))
+              continue
             fi
 
+            if [ -f /tmp/gap-recovered ]; then
+              node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-gap-recovery-v1.json','utf8'));const ok=r.status==='RECOVERED_CONTIGUOUS_AUTHORITATIVE_GAP'&&r.exactRoundIdOverlapVerified===true&&r.continuityUnionVerified===true&&Number(r.canonicalDuplicateConflicts)===0&&Number(r.recoveredRows)>0&&Number(r.firstBridgeSeconds)<=120&&Number(r.maxInterRoundSeconds)<=120&&Number(r.tailBridgeSeconds)<=120&&r.quarantineClearedAfterRecovery===true&&r.guards?.realMoneyAllowed===false;if(!ok)throw Error('gap recovery evidence failed closed')"
+            fi
+
+            node loterias-ai/casino/lightning/corpus-readiness.mjs
+            git restore loterias-ai/casino/lightning/evidence/corpus-readiness.json || true
+            git restore loterias-ai/casino/lightning/evidence/corpus-audit.json || true
             node loterias-ai/casino/lightning/research/verify-economic-prospective-freeze-v1.mjs
             node loterias-ai/casino/lightning/research/verify-economic-number-prospective-freeze-v1.mjs
             node loterias-ai/casino/lightning/research/economic-multiplier-prospective-v1.mjs
@@ -84,38 +101,26 @@ jobs:
             node loterias-ai/casino/lightning/research/physical-rng-prospective-idempotent-v1.mjs
             node loterias-ai/casino/lightning/research/timing-replication-v2.mjs
 
-            node --input-type=module <<'NODE'
-            import fs from 'node:fs';
-            const f=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/prospective-lag8-freeze.json','utf8'));
-            const j=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/prospective-lag8.json','utf8'));
-            if (f.lag !== 8 || f.immutable !== true || f.realMoney !== false || f.claimAllowed !== false) throw new Error('invalid immutable lag-8 freeze');
-            if (j?.freeze?.lag !== 8 || j?.freeze?.cutoffTimestamp !== f.cutoffTimestamp) throw new Error('lag-8 prospective drifted from frozen hypothesis');
-            if (j?.guards?.realMoney !== false || j?.guards?.realMoneyAuthorized !== false || j?.guards?.authorizedStakeEUR !== 0 || j?.guards?.claimAllowed !== false) throw new Error('lag-8 safety guards drifted');
-            const pf=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-freeze-v1.json','utf8'));
-            const ps=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-status-v1.json','utf8'));
-            if (pf.fixedBoundaryRounds !== 5000 || pf.alphaFamilyWise !== 0.01 || pf.permutation?.replicates !== 10000) throw new Error('physical RNG fixed protocol drifted');
-            if (ps.freezeVersion !== pf.version || ps.prospectiveStartsAt !== pf.prospectiveStartsAt) throw new Error('physical RNG prospective drifted from freeze');
-            if (ps.progress?.roundsUsedForV1 > 5000 || ps.guards?.noOptionalStopping !== true || ps.guards?.realMoneyAllowed !== false) throw new Error('physical RNG prospective safety regression');
-            if (ps.progress?.roundsUsedForV1 < 5000 && (ps.final !== null || ps.disclosure?.observedStatisticsHidden !== true || ps.disclosure?.pValuesHidden !== true)) throw new Error('physical RNG pre-boundary blindness regression');
-            const rf=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/timing-replication-v2-freeze.json','utf8'));
-            const rs=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/timing-replication-v2-status.json','utf8'));
-            if(rf.fixedSample?.closedEpisodes!==200||rf.fixedSample?.noInterimPerformanceRead!==true||rf.guards?.noOptionalStopping!==true) throw new Error('timing v2 freeze drift');
-            if(rs.freezeVersion!==rf.version||rs.prospectiveStartsAt!==rf.prospectiveStartsAt||rs.guards?.realMoneyAllowed!==false) throw new Error('timing v2 status drift');
-            if(rs.progress?.closedEpisodes<200&&(rs.final!==null||rs.disclosure?.performanceHidden!==true||rs.disclosure?.pValueHidden!==true)) throw new Error('timing v2 interim blindness regression');
-            NODE
+            node -e "const fs=require('fs');const f=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/prospective-lag8-freeze.json','utf8')),j=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/prospective-lag8.json','utf8'));if(f.lag!==8||f.immutable!==true||f.realMoney!==false||f.claimAllowed!==false)throw Error('invalid lag8 freeze');if(j?.freeze?.lag!==8||j?.freeze?.cutoffTimestamp!==f.cutoffTimestamp||j?.guards?.realMoney!==false||j?.guards?.authorizedStakeEUR!==0)throw Error('lag8 drift');const pf=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-freeze-v1.json','utf8')),ps=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-status-v1.json','utf8'));if(pf.fixedBoundaryRounds!==5000||pf.alphaFamilyWise!==0.01||pf.permutation?.replicates!==10000||ps.freezeVersion!==pf.version||ps.guards?.realMoneyAllowed!==false)throw Error('physical prospective drift');if(ps.progress?.roundsUsedForV1<5000&&(ps.final!==null||ps.disclosure?.observedStatisticsHidden!==true||ps.disclosure?.pValuesHidden!==true))throw Error('physical blindness regression');const rf=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/timing-replication-v2-freeze.json','utf8')),rs=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/timing-replication-v2-status.json','utf8'));if(rf.fixedSample?.closedEpisodes!==200||rf.fixedSample?.noInterimPerformanceRead!==true||rf.guards?.noOptionalStopping!==true||rs.freezeVersion!==rf.version||rs.guards?.realMoneyAllowed!==false)throw Error('timing v2 drift');if(rs.progress?.closedEpisodes<200&&(rs.final!==null||rs.disclosure?.performanceHidden!==true||rs.disclosure?.pValueHidden!==true))throw Error('timing v2 blindness regression')"
 
             git add \
               loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl \
               loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json \
               loterias-ai/casino/lightning/evidence/casinoorg-catchup-quarantine.json \
+              loterias-ai/casino/lightning/evidence/casinoorg-gap-recovery-v1.json \
               loterias-ai/casino/lightning/evidence/economic-multiplier-window-prospective-status-v1.json \
               loterias-ai/casino/lightning/evidence/economic-number-selection-prospective-status-v1.json \
               loterias-ai/casino/lightning/evidence/prospective-capture-continuity-v1.json \
               loterias-ai/casino/lightning/evidence/prospective-lag8.json \
               loterias-ai/casino/lightning/evidence/physical-rng-prospective-status-v1.json \
               loterias-ai/casino/lightning/evidence/timing-replication-v2-status.json 2>/dev/null || true
+
             if git diff --cached --quiet; then exit 0; fi
-            git commit -m "research(casino): advance authoritative Lightning prospectives"
+            if [ -f /tmp/gap-recovered ]; then
+              git commit -m 'research(casino): recover gap and advance authoritative Lightning prospectives'
+            else
+              git commit -m 'research(casino): advance authoritative Lightning prospectives'
+            fi
             if git push origin HEAD:"$GITHUB_REF_NAME"; then exit 0; fi
             sleep $((attempt * 2))
           done
