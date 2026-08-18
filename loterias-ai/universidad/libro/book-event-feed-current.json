@@ -1,6 +1,6 @@
 {
-  "version": 7,
-  "generatedAt": "2026-08-18T10:44:39.776Z",
+  "version": 8,
+  "generatedAt": "2026-08-18T10:44:53.527Z",
   "purpose": "Vista agregada determinista de la memoria científica/editorial. El historial base permanece intacto y los suplementos son append-only.",
   "sourceFeeds": [
     {
@@ -12,9 +12,14 @@
       "path": "loterias-ai/universidad/libro/book-event-feed-live-v1.json",
       "version": 4,
       "eventCount": 9
+    },
+    {
+      "path": "loterias-ai/universidad/libro/book-event-feed-live-v2.json",
+      "version": 1,
+      "eventCount": 3
     }
   ],
-  "totalEvents": 25,
+  "totalEvents": 28,
   "events": [
     {
       "id": "university-created",
@@ -492,6 +497,70 @@
       },
       "evidenceState": "MERGED_MAIN",
       "_feedSource": "loterias-ai/universidad/libro/book-event-feed-live-v1.json"
+    },
+    {
+      "id": "lightning-source-discontinuity-censored-v1",
+      "type": "scientific-integrity",
+      "title": "Una discontinuidad de captura censura la extensión de los prospectivos antes de contaminarla",
+      "plain": "El corpus autoritativo de Lightning quedó continuo hasta 2026-08-18T05:57:30.374Z. La fuente pública siguió viva, pero el siguiente bloque recuperable contenía al menos un intervalo de 144,5 segundos que no satisfacía el gate de continuidad de 120 segundos previamente fijado. El laboratorio no relajó el gate después de observar el problema. Conservó los 35 episodios de timing v1 como evidencia descriptiva censurada, dejó la réplica v2 y el control físico sin observaciones elegibles, archivó las 340 rondas ciegas del selector sin revelar ranking y prohibió empalmar la zona ambigua con futuros prospectivos.",
+      "metrics": {
+        "lastSafeRoundAt": "2026-08-18T05:57:30.374Z",
+        "timingSafeClosedEpisodes": 35,
+        "timingSafeSuccesses": 16,
+        "timingSafeFailures": 19,
+        "timingSafeRate": 0.457143,
+        "timingPrimaryNull": 0.384823,
+        "numberSelectorSafeBlindRounds": 340,
+        "numberSelectorRankingDisclosed": false,
+        "observedRecoveryMaxGapSeconds": 144.5,
+        "preExistingContinuityGateSeconds": 120,
+        "continuityGateRelaxedAfterObservation": false,
+        "ambiguousRowsAdmitted": false,
+        "realMoneyAllowed": false
+      },
+      "evidenceState": "MERGED_MAIN",
+      "_feedSource": "loterias-ai/universidad/libro/book-event-feed-live-v2.json"
+    },
+    {
+      "id": "lightning-clean-authoritative-segment-v2",
+      "type": "scientific-event",
+      "title": "Lightning reinicia sus exámenes en un segmento autoritativo futuro y limpio",
+      "plain": "En vez de reparar retrospectivamente una zona ambigua, el laboratorio publicó una nueva frontera antes de la primera observación elegible: 2026-08-18T10:50:00Z. El segmento v2 sólo admite rondas de la misma API autoritativa con timestamp posterior a esa barrera, IDs únicos y continuidad de captura. Timing v3 conserva exactamente la regla gap mayor o igual a 8 y horizonte 7 con 200 episodios cerrados; el control físico v2 conserva 5.000 rondas y 10.000 permutaciones; la selección de números v2 conserva las 132 configuraciones de v1 y añade 200 rondas limpias de calentamiento antes de puntuar 5.000 + 5.000 rondas. El primer ciclo se ejecutó antes de la barrera y persistió cero observaciones en los tres carriles, demostrando que no entró información anterior.",
+      "metrics": {
+        "freezeCommit": "1c3faa5e71585da5a291be2da6ef4eb0e34e71ef",
+        "zeroPointCommit": "679a89aa8de91ec2c462750b95e6f0a7cfeb4e7f",
+        "prospectiveStartsAt": "2026-08-18T10:50:00Z",
+        "timingV3BoundaryEpisodes": 200,
+        "physicalV2BoundaryRounds": 5000,
+        "numberV2WarmupRounds": 200,
+        "numberV2PhaseARounds": 5000,
+        "numberV2PhaseBRounds": 5000,
+        "numberV2Candidates": 132,
+        "selectorV1EngineBlob": "1e9431d663b6f5ced9dcb24a9d6074bb6bea3874",
+        "zeroPointSegmentRows": 0,
+        "zeroPointTimingEpisodes": 0,
+        "zeroPointPhysicalRows": 0,
+        "zeroPointNumberScoredRows": 0,
+        "realMoneyAllowed": false
+      },
+      "evidenceState": "MERGED_MAIN",
+      "_feedSource": "loterias-ai/universidad/libro/book-event-feed-live-v2.json"
+    },
+    {
+      "id": "nacional-expanded-official-falsification-v1",
+      "type": "falsification",
+      "title": "La ampliación oficial de Lotería Nacional refuerza la falsación de dos familias atractivas",
+      "plain": "La recuperación de extracciones SELAE amplió el universo liquidable de 669 a 872 sorteos. Se volvieron a ejecutar exactamente los modelos ya definidos, sin retuning. El torneo posicional/sufijos terminó con ROI de -54,51%, por debajo del baseline uniforme exacto de -41,96%. El replay de primeros premios volvió a mostrar algunas mejoras relativas frente al uniforme, pero su mejor horizonte permaneció profundamente negativo, alrededor de -31,93% ROI. La conclusión se refuerza: ninguna de estas familias justifica promoción ni dinero real.",
+      "metrics": {
+        "officialLiquidatableDraws": 872,
+        "schemaTournamentModelROI": -0.545135,
+        "schemaTournamentUniformROI": -0.419624,
+        "schemaTournamentEdgePercentagePoints": -12.551,
+        "firstPrizeReplayBestROIApprox": -0.319254,
+        "realMoneyAllowed": false
+      },
+      "evidenceState": "MERGED_MAIN",
+      "_feedSource": "loterias-ai/universidad/libro/book-event-feed-live-v2.json"
     }
   ],
   "rules": {
