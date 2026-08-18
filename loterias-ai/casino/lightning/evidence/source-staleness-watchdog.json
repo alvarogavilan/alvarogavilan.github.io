@@ -1,13 +1,26 @@
 {
-  "version": "lightning-source-staleness-watchdog-v1",
-  "status": "AUTHORITATIVE_ROUND_SOURCE_STALE_PUBLIC_OBSERVER_NOT_FRESH",
-  "authoritative": {
+  "version": "lightning-source-staleness-watchdog-v2",
+  "status": "SOURCE_FRESH_CORPUS_INGESTION_LAGGING",
+  "authoritativeCorpus": {
     "source": "casinoorg-api",
     "latestRoundAt": "2026-08-18T05:57:30.374Z",
     "totalStored": 2473,
     "collectorStatus": 200,
     "roundLagBucket": "60_120M",
     "collectorAgeBucket": "60_120M"
+  },
+  "authoritativeSourceProbe": {
+    "httpOk": true,
+    "checkedHour": "2026-08-18T07:00:00Z",
+    "sourceLatest": {
+      "roundId": "6a840e909ccc4d15e8ad9fd7",
+      "timestamp": "2026-08-18T07:49:36.450Z",
+      "winner": 35
+    },
+    "sourceHeadLagBucket": "LT15M",
+    "probeAgeBucket": "30_60M",
+    "sourceAheadOfCorpus": true,
+    "responseSha256": "5152e86deddbd65c2d0b1e4a24b19fcfb295864ad8899e8ba1907e2b7dd9b283"
   },
   "independentObserver": {
     "source": "tracksino-public-web",
@@ -23,11 +36,11 @@
     "requiresRoundLevelLuckyMultiplierData": true,
     "requiresIndependentProvenanceAuditBeforeAlternateSource": true
   },
-  "action": "Keep scientific prospectives paused on missing authoritative rounds; investigate source visibility without substituting unqualified data.",
+  "action": "Repair or rerun the authoritative collector; do not substitute another source because Casino.org source head is fresh and ahead of the corpus.",
   "guards": {
     "trainingDataMutation": false,
     "prospectiveOutcomeMutation": false,
     "realMoneyAllowed": false
   },
-  "checkedAt": "2026-08-18T07:40:15.086Z"
+  "checkedAt": "2026-08-18T07:52:04.718Z"
 }
