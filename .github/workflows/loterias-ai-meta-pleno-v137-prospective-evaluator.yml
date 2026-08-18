@@ -6,26 +6,51 @@ on:
       - research/metapleno-v137-prospective-evaluator
     paths:
       - 'loterias-ai/data/archive/bonoloto/**'
+      - 'loterias-ai/data/prospective/bonoloto-v135-freeze.json'
+      - 'loterias-ai/data/prospective/v135-freeze-policy.json'
       - 'loterias-ai/scripts/meta-pleno-v137-prospective-evaluator.mjs'
       - '.github/workflows/loterias-ai-meta-pleno-v137-prospective-evaluator.yml'
+  schedule:
+    - cron: '23 */2 * * *'
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: loterias-ai-metapleno-v137-prospective
+  cancel-in-progress: false
 jobs:
   evaluate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - run: node loterias-ai/scripts/meta-pleno-v137-prospective-evaluator.mjs
-      - name: Persist evaluation only if target exists
+      - name: Persist immutable evaluation safely
         run: |
-          if [ -f loterias-ai/data/prospective/bonoloto-v137-evaluation.json ]; then
-            git config user.name github-actions[bot]
-            git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-            git add loterias-ai/data/prospective/bonoloto-v137-evaluation.json
-            git diff --cached --quiet || git commit -m "data(loterias-ai): persist v137 prospective evaluation"
-            git push
+          set -euo pipefail
+          OUT='loterias-ai/data/prospective/bonoloto-v137-evaluation.json'
+          if [ ! -f "$OUT" ]; then
+            echo 'Target result not available yet.'
+            exit 0
           fi
+          cp "$OUT" /tmp/bonoloto-v137-evaluation.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/bonoloto-v137-evaluation.json "$OUT"
+            git add "$OUT"
+            if git diff --cached --quiet; then
+              echo 'v137 evaluation already current.'
+              exit 0
+            fi
+            git commit -m 'data(loterias-ai): persist v137 prospective evaluation'
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
