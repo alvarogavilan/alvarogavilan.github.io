@@ -1,8 +1,6 @@
 name: Loterias AI Today Manifest
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '7 * * * *'
   push:
     branches: [main, fix/loterias-hoy-live-dedupe, fix/loterias-hoy-euromillones-5plus2, fix/loterias-hoy-bonoloto-pool8-cost, fix/loterias-today-budget8-lab-cost-fixture]
     paths:
@@ -14,7 +12,7 @@ permissions:
   contents: write
 concurrency:
   group: loterias-ai-today-manifest-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,91 +20,46 @@ jobs:
       - uses: actions/checkout@v4
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+        with: {node-version: '20'}
       - name: Validate Euromillones complete ticket fixture
         run: |
           TODAY_OVERRIDE=2026-08-18 node loterias-ai/scripts/build-today-manifest.mjs
           node - <<'NODE'
           const fs=require('fs');
           const d=JSON.parse(fs.readFileSync('loterias-ai/data/ui/today-manifest.json','utf8'));
-          const g=d.games.find(x=>x.gameId==='euromillones');
-          if(!g) throw new Error('Missing Euromillones in 2026-08-18 fixture');
-          const entries=[g.primary,...(g.alternatives||[])];
-          const v199=entries.find(x=>String(x.version).toLowerCase()==='v199');
-          if(!v199) throw new Error('Missing v199 Euromillones entry');
-          const line=v199.lines?.[0];
-          if(!line?.copy?.includes('Estrellas 2 5')) throw new Error('Stars missing from copy payload: '+JSON.stringify(line));
-          if(!line?.display?.includes('⭐ 2 · 5')) throw new Error('Stars missing from display payload: '+JSON.stringify(line));
-          if(v199.unitCostEUR!==2.5) throw new Error('Unexpected Euromillones unit cost: '+v199.unitCostEUR);
-          if(g.alternativeCount!==0) throw new Error('Superseded v28 leaked as visible alternative: '+JSON.stringify(g.alternatives));
-          if(g.supersededCount!==1) throw new Error('Expected exactly one superseded Euromillones predecessor: '+JSON.stringify({supersededCount:g.supersededCount}));
-          if(d.policy?.supersededCompletionsHidden!==true) throw new Error('Superseded-completion policy missing');
-          console.log(JSON.stringify({copy:line.copy,display:line.display,unitCostEUR:v199.unitCostEUR,alternatives:g.alternativeCount,superseded:g.supersededCount}));
+          const g=d.games.find(x=>x.gameId==='euromillones');if(!g)throw new Error('Missing Euromillones fixture');
+          const entries=[g.primary,...(g.alternatives||[])],v199=entries.find(x=>String(x.version).toLowerCase()==='v199');if(!v199)throw new Error('Missing v199');
+          const line=v199.lines?.[0];if(!line?.copy?.includes('Estrellas 2 5')||!line?.display?.includes('⭐ 2 · 5')||v199.unitCostEUR!==2.5||g.alternativeCount!==0||g.supersededCount!==1||d.policy?.supersededCompletionsHidden!==true)throw new Error('Euromillones fixture regression');
           NODE
       - name: Validate Bonoloto pool8 laboratory cost fixture
         run: |
           TODAY_OVERRIDE=2026-08-16 node loterias-ai/scripts/build-today-manifest.mjs
           node - <<'NODE'
-          const fs=require('fs');
-          const d=JSON.parse(fs.readFileSync('loterias-ai/data/ui/today-manifest.json','utf8'));
-          const g=d.games.find(x=>x.gameId==='bonoloto');
-          if(!g) throw new Error('Missing Bonoloto fixture');
-          const entries=[g.primary,...(g.alternatives||[])];
-          const poolOnly=entries.filter(x=>x?.pool?.length===8&&x?.lines?.length===0);
-          if(!poolOnly.length) throw new Error('No pool-only Budget8 entries found');
-          for(const e of poolOnly){
-            if(e.laboratoryCostEUR!==14||e.unitCostEUR!==.5||e.authorizedCostEUR!==0||e.realStakeEUR!==0||e.realMoneyPass!==false){
-              throw new Error('Bad Budget8 safety/cost '+JSON.stringify({v:e.version,lab:e.laboratoryCostEUR,auth:e.authorizedCostEUR,stake:e.realStakeEUR,pass:e.realMoneyPass,u:e.unitCostEUR}));
-            }
-          }
-          console.log(JSON.stringify(poolOnly.map(x=>({version:x.version,laboratoryCostEUR:x.laboratoryCostEUR,authorizedCostEUR:x.authorizedCostEUR,realStakeEUR:x.realStakeEUR,realMoneyPass:x.realMoneyPass,unit:x.unitCostEUR}))));
+          const fs=require('fs'),d=JSON.parse(fs.readFileSync('loterias-ai/data/ui/today-manifest.json','utf8')),g=d.games.find(x=>x.gameId==='bonoloto');if(!g)throw new Error('Missing Bonoloto fixture');
+          const poolOnly=[g.primary,...(g.alternatives||[])].filter(x=>x?.pool?.length===8&&x?.lines?.length===0);if(!poolOnly.length)throw new Error('No pool-only Budget8');
+          for(const e of poolOnly)if(e.laboratoryCostEUR!==14||e.unitCostEUR!==.5||e.authorizedCostEUR!==0||e.realStakeEUR!==0||e.realMoneyPass!==false)throw new Error('Budget8 safety/cost regression');
           NODE
-      - name: Build Madrid-local Today manifest
-        run: node loterias-ai/scripts/build-today-manifest.mjs
-      - name: Validate strict Today invariants
+      - name: Build and validate strict Madrid-local Today manifest
         run: |
+          node loterias-ai/scripts/build-today-manifest.mjs
           node - <<'NODE'
-          const fs=require('fs');
-          const p='loterias-ai/data/ui/today-manifest.json';
-          const d=JSON.parse(fs.readFileSync(p,'utf8'));
-          if(!d.strictToday||d.staleFallbackAllowed) throw new Error('Today stale policy regression');
-          const seen=new Set();
-          for(const g of d.games){
-            if(g.targetDate!==d.today) throw new Error('Non-today game leaked: '+g.gameId);
-            if(seen.has(g.gameId)) throw new Error('Duplicate visible game: '+g.gameId);
-            seen.add(g.gameId);
-            if(g.primary.targetDate!==d.today) throw new Error('Stale primary: '+g.gameId);
-            if(g.primary.realMoneyPass) throw new Error('Unexpected real-money pass in Today');
-          }
-          console.log(JSON.stringify({today:d.today,games:[...seen]}));
+          const fs=require('fs'),d=JSON.parse(fs.readFileSync('loterias-ai/data/ui/today-manifest.json','utf8'));if(!d.strictToday||d.staleFallbackAllowed)throw new Error('Today stale policy regression');const seen=new Set();for(const g of d.games){if(g.targetDate!==d.today||seen.has(g.gameId)||g.primary.targetDate!==d.today||g.primary.realMoneyPass)throw new Error('Today invariant regression '+g.gameId);seen.add(g.gameId)}
           NODE
       - name: Suppress timestamp-only manifest rewrite
         run: |
           if git show HEAD:loterias-ai/data/ui/today-manifest.json >/tmp/today-old.json 2>/dev/null; then
             jq -S 'del(.generatedAt)' /tmp/today-old.json >/tmp/today-old.semantic.json
             jq -S 'del(.generatedAt)' loterias-ai/data/ui/today-manifest.json >/tmp/today-new.semantic.json
-            if cmp -s /tmp/today-old.semantic.json /tmp/today-new.semantic.json; then
-              git show HEAD:loterias-ai/data/ui/today-manifest.json > loterias-ai/data/ui/today-manifest.json
-              echo 'NO_SEMANTIC_CHANGE today-manifest'
-            fi
+            if cmp -s /tmp/today-old.semantic.json /tmp/today-new.semantic.json; then git show HEAD:loterias-ai/data/ui/today-manifest.json > loterias-ai/data/ui/today-manifest.json; fi
           fi
       - name: Persist manifest safely
         run: |
           set -euo pipefail
-          if git diff --quiet -- loterias-ai/data/ui/today-manifest.json; then
-            exit 0
-          fi
+          git diff --quiet -- loterias-ai/data/ui/today-manifest.json && exit 0
           cp loterias-ai/data/ui/today-manifest.json /tmp/today-manifest.json
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           for i in 1 2 3 4 5; do
-            git fetch origin "$GITHUB_REF_NAME"
-            git reset --hard "origin/$GITHUB_REF_NAME"
-            cp /tmp/today-manifest.json loterias-ai/data/ui/today-manifest.json
-            git add loterias-ai/data/ui/today-manifest.json
-            git commit -m 'data(loterias-ai): refresh Today manifest' || exit 0
-            git push origin HEAD:"$GITHUB_REF_NAME" && exit 0
-            sleep $((i*3))
+            git fetch origin "$GITHUB_REF_NAME";git reset --hard "origin/$GITHUB_REF_NAME";cp /tmp/today-manifest.json loterias-ai/data/ui/today-manifest.json;git add loterias-ai/data/ui/today-manifest.json;git commit -m 'data(loterias-ai): refresh Today manifest' || exit 0;git push origin HEAD:"$GITHUB_REF_NAME" && exit 0;sleep $((i*3));
           done
           exit 1
