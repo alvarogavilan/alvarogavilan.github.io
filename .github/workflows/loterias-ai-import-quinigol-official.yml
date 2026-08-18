@@ -1,8 +1,9 @@
+# Cost control: official Quinigol archive refresh twice weekly; shadow settlement is event-driven from archive changes.
 name: Loterias AI Import Quinigol Official
 on:
   workflow_dispatch:
   schedule:
-    - cron: '35 6 * * *'
+    - cron: '35 6 * * 1,5'
   push:
     paths:
       - 'loterias-ai/scripts/import-quinigol-official-progressive.mjs'
@@ -12,7 +13,7 @@ permissions:
   contents: write
 concurrency:
   group: loterias-ai-quinigol-official
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   ingest:
     runs-on: ubuntu-latest
@@ -26,7 +27,6 @@ jobs:
         run: |
           passes=0
           for i in 1 2; do
-            echo "Quinigol official pass $i"
             if BATCH_LIMIT=500 node loterias-ai/scripts/import-quinigol-official-progressive.mjs; then passes=$((passes+1)); else break; fi
             sleep 2
           done
