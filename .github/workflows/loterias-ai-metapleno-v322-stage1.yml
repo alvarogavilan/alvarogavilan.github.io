@@ -1,0 +1,51 @@
+name: Loterias AI MetaPleno v322 Stage1
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/data/research/metapleno-v322-preregister.json'
+      - 'loterias-ai/research/megalab/v322-stage1-development.mjs'
+      - '.github/workflows/loterias-ai-metapleno-v322-stage1.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-metapleno-v322-stage1
+  cancel-in-progress: false
+
+jobs:
+  stage1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - name: Run development-only determinantal screen
+        run: node loterias-ai/research/megalab/v322-stage1-development.mjs
+      - name: Prove development isolation
+        run: |
+          node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('loterias-ai/data/research/metapleno-v322-stage1-development.json','utf8'));if(j.temporalIsolation?.validationTouched!==false||j.temporalIsolation?.blindOosTouched!==false||j.temporalIsolation?.postFreezeTouched!==false)throw Error('v322 temporal isolation failed');for(const xs of Object.values(j.temporalIsolation?.openedFiles||{}))for(const f of xs)if(Number(String(f).slice(0,4))>2018)throw Error('v322 opened validation file '+f);if(j.guards?.realMoneyPass!==false||Number(j.guards?.realStakeEUR)!==0)throw Error('v322 real-money regression');console.log(JSON.stringify({status:j.status,selectedTotal:j.selectedTotal,validationTouched:false,blindOosTouched:false}))"
+      - name: Persist development evidence against moving main
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET='loterias-ai/data/research/metapleno-v322-stage1-development.json'
+          cp "$TARGET" /tmp/v322-stage1.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/v322-stage1.json "$TARGET"
+            git add "$TARGET"
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'data(loterias-ai): persist v322 determinantal development'
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
