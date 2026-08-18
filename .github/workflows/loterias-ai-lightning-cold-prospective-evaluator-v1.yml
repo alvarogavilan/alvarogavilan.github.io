@@ -1,12 +1,9 @@
 name: Loterias AI Lightning Cold Prospective Evaluator v1
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '17 * * * *'
   push:
     branches: [main]
     paths:
-      - 'loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl'
       - 'loterias-ai/casino/lightning/evidence/cold-prospective-freeze-v1.json'
       - 'loterias-ai/casino/lightning/research/cold-prospective-evaluator-v1.mjs'
       - '.github/workflows/loterias-ai-lightning-cold-prospective-evaluator-v1.yml'
@@ -14,39 +11,28 @@ permissions:
   contents: write
 concurrency:
   group: loterias-ai-lightning-cold-prospective-evaluator-v1
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   evaluate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: 24}
-      - name: Evaluate frozen prospective protocol
-        run: node loterias-ai/casino/lightning/research/cold-prospective-evaluator-v1.mjs
-      - name: Persist evaluation safely under concurrent corpus commits
+      - run: node loterias-ai/casino/lightning/research/cold-prospective-evaluator-v1.mjs
+      - name: Persist evaluation safely
         shell: bash
         run: |
           set -euo pipefail
           EVIDENCE='loterias-ai/casino/lightning/evidence/cold-prospective-evaluation-v1.json'
           cp "$EVIDENCE" /tmp/cold-prospective-evaluation-v1.json
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git config user.name github-actions[bot];git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           for attempt in 1 2 3 4 5; do
-            git fetch origin main
-            git reset --hard origin/main
-            cp /tmp/cold-prospective-evaluation-v1.json "$EVIDENCE"
-            git add "$EVIDENCE"
-            if git diff --cached --quiet; then
-              echo 'Prospective evaluation already current.'
-              exit 0
-            fi
+            git fetch origin main;git reset --hard origin/main;cp /tmp/cold-prospective-evaluation-v1.json "$EVIDENCE";git add "$EVIDENCE"
+            git diff --cached --quiet && exit 0
             git commit -m 'research(casino): refresh Lightning cold prospective evaluation'
-            if git push origin HEAD:main; then
-              exit 0
-            fi
+            git push origin HEAD:main && exit 0
             sleep $((attempt*3))
           done
           exit 1
