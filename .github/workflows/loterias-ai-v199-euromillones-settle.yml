@@ -40,10 +40,14 @@ jobs:
           if(d.retuningPerformed!==false||d.selectionUsedTargetResult!==false) throw new Error('v199 anti-leakage regression');
           if(d.realMoneyPass!==false||Number(d.realStakeEUR)!==0||d.bettingRecommendation!==false) throw new Error('v199 real-money regression');
           if(d.status==='EVALUATED_OFFICIAL_5PLUS2'){
-            if(d.custody?.officialPageValidated!==true||d.custody?.officialServiceMainCrossCheck!==true||d.custody?.full5plus2OfficialCrossCheck!==true) throw new Error('v199 official custody incomplete');
+            if(d.custody?.officialSourceSufficient!==true) throw new Error('v199 official source not sufficient');
+            const serviceFull=d.custody?.officialServiceFull5plus2Validated===true;
+            const pagePlusMain=d.custody?.officialPageValidated===true&&d.custody?.officialServiceMainCrossCheck===true;
+            if(!serviceFull&&!pagePlusMain) throw new Error('v199 lacks a valid official 5+2 custody route');
             if(d.winningNumbers?.length!==5||d.winningStars?.length!==2) throw new Error('v199 official 5+2 incomplete');
           }
-          console.log(JSON.stringify({status:d.status,official5plus2:d.custody?.full5plus2OfficialCrossCheck===true,realMoneyPass:false}));
+          if(d.status==='OFFICIAL_SOURCE_DISAGREEMENT_FAIL_CLOSED'&&d.custody?.officialSourceSufficient!==false) throw new Error('v199 disagreement must remain fail-closed');
+          console.log(JSON.stringify({status:d.status,serviceFull5plus2:d.custody?.officialServiceFull5plus2Validated===true,pageCorroborated:d.custody?.officialPageCorroborated===true,realMoneyPass:false}));
           NODE
       - name: Persist semantic v199 state safely
         run: |
