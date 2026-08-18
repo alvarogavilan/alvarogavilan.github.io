@@ -1,8 +1,7 @@
+# Cost control: Quinigol shadow advances when the official archive changes; no timer required.
 name: Loterias AI Quinigol Prospective Shadow
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '15 7,20 * * *'
   push:
     paths:
       - 'loterias-ai/scripts/quinigol-prospective-shadow.mjs'
@@ -13,7 +12,7 @@ permissions:
   contents: write
 concurrency:
   group: loterias-ai-quinigol-shadow
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   shadow:
     runs-on: ubuntu-latest
