@@ -1,0 +1,41 @@
+{
+  "version": "lightning-prospective-lag-family-clean-v2-status-v1",
+  "generatedAt": "2026-08-18T22:42:50.621Z",
+  "freezeVersion": "lightning-prospective-lag-family-clean-v2-freeze-v1",
+  "sourceSegment": "authoritative-v2",
+  "prospectiveStartsAt": "2026-08-18T22:41:00Z",
+  "progress": {
+    "totalCleanRows": 872,
+    "fixedBoundaryComparisons": 5000,
+    "comparisonsUsed": 2,
+    "comparisonsRemaining": 4998,
+    "firstEligibleAt": "2026-08-18T22:41:16.935Z",
+    "lastEligibleAt": "2026-08-18T22:42:05.435Z",
+    "postBoundaryRowsIgnored": 0
+  },
+  "disclosure": {
+    "policy": "ADMINISTRATIVE_PROGRESS_ONLY",
+    "candidatePerformanceHidden": true,
+    "candidateRankingHidden": true,
+    "pValuesHidden": true
+  },
+  "final": null,
+  "gates": {
+    "fixedBoundaryComplete": false,
+    "anyStatisticalAndEconomicPass": false,
+    "independentReplicationStillRequired": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false
+  },
+  "guards": {
+    "all20LagsFrozenBeforeProspectiveStart": true,
+    "first5000Only": true,
+    "noRetuning": true,
+    "noOptionalStopping": true,
+    "bonferroniFamilyWiseAlpha": 0.01,
+    "perCandidateAlpha": 0.0005,
+    "postBoundaryCannotRescue": true,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
