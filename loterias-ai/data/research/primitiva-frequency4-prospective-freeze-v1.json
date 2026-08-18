@@ -44,6 +44,10 @@
     "jokerExcluded": true,
     "matchedRandomReplicates": 10000,
     "randomSeed": 420260820,
+    "randomGenerator": "mulberry32",
+    "randomSeedDerivation": "seed = (randomSeed + replicateIndex * 2654435761) modulo 2^32; consume sequentially in chronological target order, ticket slots 1..4; sample six unique numbers without replacement from 1..49 for every ticket",
+    "monteCarloStatistic": "cumulative ROI over the same 50 target draws using each draw's frozen main-category payout table and identical EUR 4 cost per draw",
+    "oneSidedPValue": "(1 + count(randomROI >= observedROI)) / (matchedRandomReplicates + 1)",
     "familyAlpha": 0.01,
     "promotionRequires": [
       "exactly first 50 eligible prospective targets",
