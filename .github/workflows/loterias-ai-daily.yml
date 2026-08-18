@@ -27,29 +27,51 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Probe SELAE sources
-        run: node loterias-ai/scripts/probe-selae.mjs
-      - name: Build daily operating state
-        run: node loterias-ai/scripts/build-daily-state.mjs
-      - name: Settle immutable prospective shadow picks when official archived results exist
-        run: node loterias-ai/scripts/settle-prospective-shadows.mjs
-      - name: Validate core and evidence gates
+      - name: Recompute and persist daily evidence on latest main
+        shell: bash
         run: |
-          node loterias-ai/tests/core.test.mjs
-          node loterias-ai/tests/evidence.test.mjs
-          node loterias-ai/tests/schedule.test.mjs
-      - name: Commit refreshed daily state and prospective settlements
-        run: |
+          set -euo pipefail
           git config user.name "loterias-ai-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add loterias-ai/data/source-probe-latest.json loterias-ai/data/daily/latest.json loterias-ai/data/system-status.json loterias-ai/data/research/prospective/*.settlement.json || true
-          if git diff --cached --quiet; then
-            echo "No daily state changes"
-          else
+
+          for attempt in 1 2 3 4 5; do
+            echo "Daily cycle attempt ${attempt}/5"
+            git fetch origin main
+            git reset --hard origin/main
+
+            node loterias-ai/scripts/probe-selae.mjs
+            node loterias-ai/scripts/build-daily-state.mjs
+            node loterias-ai/scripts/settle-prospective-shadows.mjs
+
+            node loterias-ai/tests/core.test.mjs
+            node loterias-ai/tests/evidence.test.mjs
+            node loterias-ai/tests/schedule.test.mjs
+
+            git add loterias-ai/data/source-probe-latest.json \
+                    loterias-ai/data/daily/latest.json \
+                    loterias-ai/data/system-status.json \
+                    loterias-ai/data/research/prospective/*.settlement.json || true
+
+            if git diff --cached --quiet; then
+              echo "No daily evidence changes"
+              exit 0
+            fi
+
             git commit -m "chore(loterias-ai): refresh daily state and settle shadows"
-            git pull --rebase origin main
-            git push origin main
-          fi
+
+            # Push only if main has not moved since this attempt was computed.
+            if git push origin HEAD:main; then
+              echo "Daily evidence persisted safely"
+              exit 0
+            fi
+
+            echo "main moved during daily cycle; discarding stale computation and retrying"
+          done
+
+          echo "Unable to persist daily evidence after 5 fresh recomputations" >&2
+          exit 1
