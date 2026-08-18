@@ -1,8 +1,6 @@
 name: Loterias AI MetaPleno v54r1 Bonoloto Evaluate
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '12 * * * *'
   push:
     branches: [main]
     paths:
@@ -10,7 +8,7 @@ on:
       - 'loterias-ai/scripts/meta-pleno-v54r1-bonoloto-budget8-prospective-evaluate.mjs'
       - '.github/workflows/loterias-ai-meta-pleno-v54r1-bonoloto-budget8-evaluate.yml'
 permissions: {contents: write}
-concurrency: {group: loterias-ai-v54r1-budget8-evaluate, cancel-in-progress: false}
+concurrency: {group: loterias-ai-v54r1-budget8-evaluate, cancel-in-progress: true}
 jobs:
   evaluate:
     runs-on: ubuntu-latest
@@ -27,13 +25,9 @@ jobs:
           set -euo pipefail
           f=loterias-ai/data/research/bonoloto-v54r1-budget8-prospective-evaluation.json
           cp "$f" /tmp/v54r1-eval.json
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git config user.name github-actions[bot];git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           for i in 1 2 3; do
-            git fetch origin "$GITHUB_REF_NAME"
-            git reset --hard "origin/$GITHUB_REF_NAME"
-            cp /tmp/v54r1-eval.json "$f"
-            git add "$f"
+            git fetch origin "$GITHUB_REF_NAME";git reset --hard "origin/$GITHUB_REF_NAME";cp /tmp/v54r1-eval.json "$f";git add "$f"
             git diff --cached --quiet && exit 0
             git commit -m 'research(loterias-ai): persist blind v54r1 Bonoloto evaluation'
             git push origin HEAD:"$GITHUB_REF_NAME" && exit 0
