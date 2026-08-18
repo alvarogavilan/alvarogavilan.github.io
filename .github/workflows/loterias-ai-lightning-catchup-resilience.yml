@@ -1,20 +1,19 @@
+# Cost control: legacy v1 catchup is retired from scheduled execution.
+# Authoritative segment v2 owns live continuity; keep this workflow only for manual recovery or recovery-code changes.
 name: Loterias AI Lightning Catchup Resilience
 on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
-      - 'loterias-ai/casino/lightning/evidence/casinoorg-source-head-probe.json'
       - 'loterias-ai/casino/lightning/collect-casinoorg-api.mjs'
       - 'loterias-ai/casino/lightning/research/recover-casinoorg-pagination-gap-v1.mjs'
       - '.github/workflows/loterias-ai-lightning-catchup-resilience.yml'
-  schedule:
-    - cron: '*/5 * * * *'
 permissions:
   contents: write
 concurrency:
   group: loterias-ai-lightning-catchup-resilience
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   catchup:
     runs-on: ubuntu-latest
