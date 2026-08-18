@@ -1,8 +1,9 @@
+# Cost control: detailed Nacional cross-check/research is historical validation, not a live collector.
 name: Loterias AI Nacional Detailed Crosscheck
 on:
   workflow_dispatch:
   schedule:
-    - cron: '10 8 * * *'
+    - cron: '10 8 * * 0'
   push:
     paths:
       - 'loterias-ai/scripts/enrich-nacional-detailed-crosschecked.mjs'
@@ -12,7 +13,7 @@ permissions:
   contents: write
 concurrency:
   group: loterias-ai-nacional-detailed-crosscheck
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   enrich:
     runs-on: ubuntu-latest
