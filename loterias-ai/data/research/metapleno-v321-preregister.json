@@ -1,0 +1,80 @@
+{
+  "version": "v321",
+  "family": "KERNEL_CONTEXT_ANALOGUES_6OF49",
+  "status": "PREREGISTERED_BEFORE_EXECUTION",
+  "goal": "Test whether strictly-past 6-of-49 draw contexts have reproducible analogues whose known next draws improve a fixed top-8 pool over a same-game marginal-frequency baseline and an exact matched random pool.",
+  "antiDuplicateGuard": {
+    "searchedTerms": ["maximum mean discrepancy", "MMD", "kernel mean embedding", "conditional kernel", "nearest neighbor", "Jaccard kernel", "kernel context analogues"],
+    "repositorySearchResult": "NO_EQUIVALENT_KERNEL_CONTEXT_ANALOGUE_FAMILY_FOUND_AT_PREREGISTRATION",
+    "nearestPriorFamilies": [
+      {"version":"v319","difference":"v319 models variable-order symbolic context probabilities directly; v321 performs nonparametric analogue retrieval in a continuous recency-state space and predicts only from already-observed successor draws."},
+      {"version":"v320","difference":"v320 models gap-composition scores; v321 uses similarity between complete recent-state vectors and historical analogue successors."}
+    ],
+    "abortIfEquivalentArtifactFoundLater": true
+  },
+  "games": ["bonoloto", "primitiva"],
+  "regime": {"support":"1..49","drawSize":6,"poolSize":8,"coverageLines":28,"theoreticalCostEUR":14},
+  "temporalProtocol": {
+    "developmentEnd":"2018-12-31",
+    "validationStart":"2019-01-01",
+    "validationEnd":"2022-12-31",
+    "blindOosStart":"2023-01-01",
+    "blindOosEnd":"2024-12-31",
+    "postFreezeStart":"2025-01-01",
+    "stage1MayReadThrough":"2018-12-31",
+    "validationMustRemainUnreadUntilCandidateFreeze":true,
+    "blindOosMustRemainUnreadUntilValidationPassAndSecondFreeze":true,
+    "retuningAfterDevelopment":false,
+    "post2024MayRescueV321":false
+  },
+  "method": {
+    "contextVector":"For target t and context length C, each number n receives sum_{r=1..C} I[n appeared at t-r] * exp(-(r-1)/C). The 49-vector is L2-normalized.",
+    "analogueLibrary":"For each historical endpoint j strictly before t, build the same vector from draws before j; its successor outcome is draw j. Candidate j is admissible only when all context draws and successor j were known before target t.",
+    "similarities":["cosine","rbf_l2"],
+    "rbfGamma":"1 / median squared distance across admissible analogue contexts for the target; no fitted target outcome enters gamma.",
+    "prediction":"Take K most similar admissible analogue contexts. Score each number by similarity-weighted inclusion frequency in their already-known successor draws. Emit top 8, ties by number ascending.",
+    "sameGameBaseline":"Top 8 marginal frequencies over the same frozen frequencyWindow preceding each target.",
+    "targetLeakageAllowed":false
+  },
+  "frozenGrid": {
+    "contextLengths":[4,8,16,32],
+    "neighbours":[16,32,64,128],
+    "similarities":["cosine","rbf_l2"],
+    "frequencyWindows":[128,256],
+    "logicalConfigurationsPerGame":64,
+    "maximumDevelopmentSurvivorsPerGame":6
+  },
+  "developmentGate": {
+    "minimumEvaluatedDraws":300,
+    "primaryMetric":"fivePlusPoolHits",
+    "mustBeatMatchedFrequencyBaselineByAtLeast":1,
+    "mustBeatExactMatchedRandomExpectation":true,
+    "minimumDistinctFivePlusDates":2,
+    "behavioralDeduplication":true,
+    "selectionPriority":["fivePlusExcessOverFrequency","fivePlusExcessOverRandom","distinctFivePlusDates","meanPoolHits"],
+    "ifNoCandidatePasses":"CLOSE_V321_WITHOUT_READING_2019_PLUS"
+  },
+  "validationGate": {
+    "candidateParametersFrozenFromDevelopment":true,
+    "minimumEvaluatedDraws":250,
+    "positiveFivePlusExcessOverFrequencyRequired":true,
+    "positiveFivePlusExcessOverMatchedRandomRequired":true,
+    "minimumDistinctFivePlusDates":2,
+    "noRetuning":true,
+    "ifNoCandidatePasses":"CLOSE_V321_WITHOUT_READING_2023_PLUS"
+  },
+  "matchedNull": {
+    "fivePlusProbability":"[C(6,5)C(43,3)+C(6,6)C(43,2)]/C(49,8)",
+    "fullSixProbability":"C(43,2)/C(49,8)",
+    "samePoolSize":8
+  },
+  "guards": {
+    "futureInformationAllowed":false,
+    "targetTuningAllowed":false,
+    "validationPeekAllowedBeforeFreeze":false,
+    "blindOosPeekAllowedBeforeValidationPass":false,
+    "maximumTheoreticalCostEURPerGameDraw":14,
+    "realMoneyPass":false,
+    "realStakeEUR":0
+  }
+}
