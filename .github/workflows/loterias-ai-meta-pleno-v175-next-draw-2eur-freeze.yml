@@ -1,9 +1,6 @@
 name: Loterias AI MetaPleno v175 Next Draw 2EUR Freeze
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '30 22 15 8 *'
-    - cron: '15 0,6,12,17 16 8 *'
   push:
     branches: [main, research/metapleno-v175-next-draw-2eur-freeze, fix/v175-use-official-rss-sync]
     paths:
@@ -30,10 +27,7 @@ jobs:
           rc=$?
           cat /tmp/v175.out
           if [ $rc -ne 0 ]; then
-            if grep -q 'WAITING_OFFICIAL_PREVIOUS_DRAW' /tmp/v175.out; then
-              echo 'Previous official result not ingested yet; safe no-op.'
-              exit 0
-            fi
+            if grep -q 'WAITING_OFFICIAL_PREVIOUS_DRAW' /tmp/v175.out; then exit 0; fi
             exit $rc
           fi
       - name: Validate prospective timing
