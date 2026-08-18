@@ -1,0 +1,40 @@
+{
+  "version": "v318-validation-freeze-v1",
+  "family": "HIERARCHICAL_6OF49_SHRINKAGE_AUDIT",
+  "status": "FROZEN_BEFORE_VALIDATION_READ",
+  "sourceStage1": "loterias-ai/data/research/metapleno-v318-stage1-development.json",
+  "sourceStage1GeneratedAt": "2026-08-18T07:26:03.672Z",
+  "amendmentApplied": "v318-preexecution-amendment-1",
+  "temporalCustody": {
+    "developmentEnd": "2018-12-31",
+    "validationStart": "2019-01-01",
+    "validationEnd": "2022-12-31",
+    "blindOosStart": "2023-01-01",
+    "validationReadBeforeFreeze": false,
+    "blindOosReadBeforeFreeze": false
+  },
+  "candidates": [
+    {"id":"B512-P96-X0.5","game":"bonoloto","window":512,"priorStrength":96,"crossWeight":0.5,"developmentBehaviorHash":"8dee1bf50622c3718db2a815b311eb73f7517cce4eb1b06e79fa1cca8c02e949"},
+    {"id":"B512-P24-X0.5","game":"bonoloto","window":512,"priorStrength":24,"crossWeight":0.5,"developmentBehaviorHash":"268a6bc2ee93053f508245ea66188391c536c454d7d4d13032464630094afd55"},
+    {"id":"B512-P384-X0.5","game":"bonoloto","window":512,"priorStrength":384,"crossWeight":0.5,"developmentBehaviorHash":"9ecda538d57871567fc5799693ae690713e7ee1f15ab22df318747d83440d64c"},
+    {"id":"B128-P384-X1","game":"bonoloto","window":128,"priorStrength":384,"crossWeight":1,"developmentBehaviorHash":"799bd44f50353115f9f66c0ee8b11d3f7fb98fe71e6f63a1b0a603564080889e"},
+    {"id":"B1024-P24-X1","game":"bonoloto","window":1024,"priorStrength":24,"crossWeight":1,"developmentBehaviorHash":"1369407844f0a67b5d8fae860676d9afca07df4e93ccd7f23afb8bdead3b5248"},
+    {"id":"B1024-P384-X1","game":"bonoloto","window":1024,"priorStrength":384,"crossWeight":1,"developmentBehaviorHash":"35dd0e5ec43dce831e39434e3e411e368a4b89384a68d60972c1e4d88843ab66"},
+    {"id":"P1024-P384-X1","game":"primitiva","window":1024,"priorStrength":384,"crossWeight":1,"developmentBehaviorHash":"8404e6bb29c3db27abdd9cdee3483e96a49acae9eb3a650679826668c4b41cfe"}
+  ],
+  "validationGate": {
+    "mustRetainPositiveFivePlusExcessOverNested": true,
+    "mustRetainPositiveFivePlusExcessOverMatchedRandom": true,
+    "repeatFivePlusOnAtLeastTwoDistinctValidationDates": true,
+    "noParameterChanges": true,
+    "ifNoCandidatePasses": "CLOSE_V318_WITHOUT_READING_2023_PLUS"
+  },
+  "guards": {
+    "candidateCount": 7,
+    "futureInformationAllowed": false,
+    "retuningAllowed": false,
+    "realMoneyPass": false,
+    "realStakeEUR": 0,
+    "maximumTheoreticalCostEURPerGameDraw": 14
+  }
+}
