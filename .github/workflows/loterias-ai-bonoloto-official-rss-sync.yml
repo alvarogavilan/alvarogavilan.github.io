@@ -49,20 +49,46 @@ jobs:
           if [ -f loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-v10-evaluation.json ]; then cp loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-v10-evaluation.json /tmp/bono-shadow/v10-eval.json; fi
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          semantic_copy() {
+            src="$1"
+            dst="$2"
+            [ -f "$src" ] || return 0
+            if [ -f "$dst" ] && node - "$src" "$dst" <<'NODE'
+          const fs=require('fs');
+          function clean(v){
+            if(Array.isArray(v)) return v.map(clean);
+            if(v && typeof v==='object'){
+              const out={};
+              for(const [k,val] of Object.entries(v)){
+                if(k==='generatedAt') continue;
+                out[k]=clean(val);
+              }
+              return out;
+            }
+            return v;
+          }
+          const a=clean(JSON.parse(fs.readFileSync(process.argv[2],'utf8')));
+          const b=clean(JSON.parse(fs.readFileSync(process.argv[3],'utf8')));
+          process.exit(JSON.stringify(a)===JSON.stringify(b)?0:1);
+          NODE
+            then
+              return 0
+            fi
+            mkdir -p "$(dirname "$dst")"
+            cp "$src" "$dst"
+            git add "$dst"
+          }
           for i in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
-            mkdir -p loterias-ai/data/official loterias-ai/data/archive/bonoloto loterias-ai/data/shadow
-            cp /tmp/bono-official/status.json loterias-ai/data/official/bonoloto-rss-sync-status.json
-            cp /tmp/bono-shadow/master-scoreboard.json loterias-ai/data/shadow/prospective-master-scoreboard.json
-            git add loterias-ai/data/official/bonoloto-rss-sync-status.json loterias-ai/data/shadow/prospective-master-scoreboard.json
-            if [ -f /tmp/bono-official/year.json ]; then cp /tmp/bono-official/year.json loterias-ai/data/archive/bonoloto/${YEAR}.json; git add loterias-ai/data/archive/bonoloto/${YEAR}.json; fi
-            cp /tmp/bono-shadow/v54-status.json loterias-ai/data/shadow/bonoloto-v54-budget8-freeze-status.json
-            cp /tmp/bono-shadow/v91-status.json loterias-ai/data/shadow/bonoloto-v91-v58-ensemble-freeze-status.json
-            git add loterias-ai/data/shadow/bonoloto-v54-budget8-freeze-status.json loterias-ai/data/shadow/bonoloto-v91-v58-ensemble-freeze-status.json
-            if [ -f /tmp/bono-shadow/v54-freeze.json ]; then cp /tmp/bono-shadow/v54-freeze.json loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v54-budget8.json; git add loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v54-budget8.json; fi
-            if [ -f /tmp/bono-shadow/v91-freeze.json ]; then cp /tmp/bono-shadow/v91-freeze.json loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v91-v58-ensemble-budget8.json; git add loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v91-v58-ensemble-budget8.json; fi
-            if [ -f /tmp/bono-shadow/v10-eval.json ]; then cp /tmp/bono-shadow/v10-eval.json loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-v10-evaluation.json; git add loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-v10-evaluation.json; fi
+            semantic_copy /tmp/bono-official/status.json loterias-ai/data/official/bonoloto-rss-sync-status.json
+            semantic_copy /tmp/bono-shadow/master-scoreboard.json loterias-ai/data/shadow/prospective-master-scoreboard.json
+            if [ -f /tmp/bono-official/year.json ]; then semantic_copy /tmp/bono-official/year.json loterias-ai/data/archive/bonoloto/${YEAR}.json; fi
+            semantic_copy /tmp/bono-shadow/v54-status.json loterias-ai/data/shadow/bonoloto-v54-budget8-freeze-status.json
+            semantic_copy /tmp/bono-shadow/v91-status.json loterias-ai/data/shadow/bonoloto-v91-v58-ensemble-freeze-status.json
+            if [ -f /tmp/bono-shadow/v54-freeze.json ]; then semantic_copy /tmp/bono-shadow/v54-freeze.json loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v54-budget8.json; fi
+            if [ -f /tmp/bono-shadow/v91-freeze.json ]; then semantic_copy /tmp/bono-shadow/v91-freeze.json loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v91-v58-ensemble-budget8.json; fi
+            if [ -f /tmp/bono-shadow/v10-eval.json ]; then semantic_copy /tmp/bono-shadow/v10-eval.json loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-v10-evaluation.json; fi
             git diff --cached --quiet && exit 0
             git commit -m 'data(loterias-ai): sync official Bonoloto and refresh prospective evidence'
             git push origin HEAD:main && exit 0
