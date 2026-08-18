@@ -1,9 +1,8 @@
+# Cost control: the daily cycle already probes SELAE. Keep this workflow for manual diagnostics and probe-code changes only.
 name: Loterias AI SELAE Source Probe
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '17 * * * *'
   push:
     paths:
       - 'loterias-ai/scripts/probe-selae.mjs'
@@ -15,7 +14,7 @@ permissions:
 
 concurrency:
   group: loterias-ai-selae-source-probe
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   probe:
@@ -26,34 +25,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Probe official SELAE endpoints and persist against moving main
+      - name: Probe official SELAE endpoints and persist semantic changes only
+        shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          for attempt in 1 2 3 4 5; do
-            git fetch origin main
-            git reset --hard origin/main
-            node loterias-ai/scripts/probe-selae.mjs
-
-            node --input-type=module <<'NODE'
-            import fs from 'node:fs';
-            import {execFileSync} from 'node:child_process';
-            const path='loterias-ai/data/source-probe-latest.json';
-            let old=null;
-            try{old=JSON.parse(execFileSync('git',['show',`HEAD:${path}`],{encoding:'utf8'}));}catch{}
-            const cur=JSON.parse(fs.readFileSync(path,'utf8'));
-            const stable=x=>{const y=structuredClone(x);delete y.checkedAt;return y};
-            if(old&&JSON.stringify(stable(old))===JSON.stringify(stable(cur))){
-              execFileSync('git',['restore',path]);
-              console.log('No semantic SELAE probe change; checkedAt-only refresh suppressed.');
-            }
-            NODE
-
-            git add loterias-ai/data/source-probe-latest.json
-            if git diff --cached --quiet; then exit 0; fi
-            git commit -m 'chore(loterias-ai): refresh SELAE source probe'
-            if git push origin HEAD:main; then exit 0; fi
-            sleep $((attempt * 2))
-          done
-          exit 1
+          git fetch origin main
+          git reset --hard origin/main
+          node loterias-ai/scripts/probe-selae.mjs
+          git add loterias-ai/data/source-probe-latest.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'chore(loterias-ai): refresh SELAE source probe'
+          git push origin HEAD:main
