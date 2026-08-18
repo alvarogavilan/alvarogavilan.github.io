@@ -29,6 +29,27 @@ jobs:
         run: node loterias-ai/scripts/quiniela-prospective-full15-official-sync-v2.mjs
       - name: Export human-readable jornada combination
         run: node loterias-ai/scripts/quiniela-export-current-combination.mjs
+      - name: Suppress volatile-only rewrites
+        shell: bash
+        run: |
+          set -euo pipefail
+          restore_if_semantically_equal() {
+            file="$1"
+            filter="$2"
+            [ -f "$file" ] || return 0
+            if ! git show "HEAD:$file" > /tmp/quiniela-old.json 2>/dev/null; then
+              return 0
+            fi
+            jq -S "$filter" /tmp/quiniela-old.json > /tmp/quiniela-old.semantic.json
+            jq -S "$filter" "$file" > /tmp/quiniela-new.semantic.json
+            if cmp -s /tmp/quiniela-old.semantic.json /tmp/quiniela-new.semantic.json; then
+              git show "HEAD:$file" > "$file"
+              echo "NO_SEMANTIC_CHANGE $file"
+            fi
+          }
+          restore_if_semantically_equal loterias-ai/data/official/quiniela-upcoming-sync.json 'del(.generatedAt)'
+          restore_if_semantically_equal loterias-ai/data/official/quiniela-upcoming.json 'del(.generatedAt,.source.capturedAt)'
+          restore_if_semantically_equal loterias-ai/data/shadow/quiniela-current-combination.json 'del(.generatedAt,.exportHash)'
       - name: Persist official evidence safely
         run: |
           mkdir -p /tmp/loterias-full15/loterias-ai/data/official /tmp/loterias-full15/loterias-ai/data/shadow
