@@ -1,0 +1,59 @@
+name: Loterias AI MetaPleno v317 Conformal Stage1-2
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/data/research/metapleno-v317-preregister.json'
+      - 'loterias-ai/research/megalab/v317-stage1-2-conformal-coverage.mjs'
+      - '.github/workflows/loterias-ai-metapleno-v317-stage1-2.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-metapleno-v317-stage1-2
+  cancel-in-progress: false
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run development-only conformal screen
+        run: node loterias-ai/research/megalab/v317-stage1-2-conformal-coverage.mjs
+      - name: Verify temporal isolation, budget and candidate caps
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const j=JSON.parse(fs.readFileSync('loterias-ai/data/research/metapleno-v317-stage1-2-selection.json','utf8'));
+          if(j.developmentBoundary?.validationTouched!==false||j.developmentBoundary?.postFreezeTouched!==false) throw new Error('v317 temporal isolation failed');
+          if(j.games?.some(g=>g.lastDrawRead>'2022-12-31')) throw new Error('v317 read blind OOS');
+          if(j.candidateGrid?.totalLogical!==144) throw new Error('v317 candidate grid drift');
+          if(j.games?.some(g=>g.selected?.length>8)||Number(j.selectedTotal)>16) throw new Error('v317 selection cap drift');
+          for(const g of j.games||[])for(const c of g.selected||[]){if(c.playableEvaluations<50||c.fivePlusCount<1||c.fivePlusExcessVsMatchedRandom<=0) throw new Error('v317 selected candidate failed preregistered development gate');}
+          if(Number(j.budget?.maximumTheoreticalCostEURPerGameDraw)>14) throw new Error('v317 budget drift');
+          if(j.retuningPerformed!==false||j.realMoneyPass!==false||Number(j.realStakeEUR)!==0) throw new Error('v317 safety regression');
+          console.log(JSON.stringify({status:j.status,selectedTotal:j.selectedTotal,freezeAllowed:j.freezeAllowed,realMoneyPass:false}));
+          NODE
+      - name: Persist Stage1-2 result safely
+        run: |
+          set -euo pipefail
+          OUT='loterias-ai/data/research/metapleno-v317-stage1-2-selection.json'
+          cp "$OUT" /tmp/v317-stage1-2.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/v317-stage1-2.json "$OUT"
+            git add "$OUT"
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'data(loterias-ai): persist v317 conformal Stage1-2'
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
