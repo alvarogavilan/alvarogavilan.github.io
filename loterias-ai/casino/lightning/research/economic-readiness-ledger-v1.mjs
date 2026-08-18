@@ -12,6 +12,7 @@ const physical=read(`${ROOT}/physical-rng-prospective-v2-status.json`)||{};
 const selector=read(`${ROOT}/economic-number-selection-prospective-status-v2.json`)||{};
 const lag8=read(`${ROOT}/prospective-lag8-clean-v2-status-v1.json`)||{};
 const lagFamily=read(`${ROOT}/prospective-lag-family-clean-v2-status-v1.json`)||{};
+const pastLucky=read(`${ROOT}/prospective-past-lucky-family-clean-v2-status-v1.json`)||{};
 const legacyTiming=read(`${ROOT}/economic-multiplier-window-prospective-status-v1.json`)||{};
 const master=read(MASTER)||{};
 const v315=read(V315)||{};
@@ -44,6 +45,16 @@ const lanes=[
     perCandidateAlpha:lagFamily?.guards?.perCandidateAlpha??0.0005,
     economicBreakEvenHitRate:1/30,
     realMoneyAllowed:lagFamily?.guards?.realMoneyAllowed===true
+  }),
+  lane('clean-past-lucky-family-v1','Lightning past-Lucky selectors — clean V2',pastLucky?.progress?.roundsUsed,pastLucky?.progress?.fixedBoundaryRounds,'BLINDED_ACCUMULATING',{
+    disclosure:pastLucky?.disclosure?.policy||null,
+    outcomePerformanceVisible:pastLucky?.disclosure?.candidatePerformanceHidden!==true,
+    frozenCandidates:4,
+    familyWiseAlpha:pastLucky?.guards?.bonferroniFamilyWiseAlpha??0.01,
+    perCandidateAlpha:pastLucky?.guards?.perCandidateAlpha??0.0025,
+    pastInformationOnly:pastLucky?.guards?.pastInformationOnly===true,
+    currentRoundLuckySelectionForbidden:pastLucky?.guards?.currentRoundLuckySelectionForbidden===true,
+    realMoneyAllowed:pastLucky?.guards?.realMoneyAllowed===true
   }),
   lane('physical-rng-v2','Lightning physical RNG prospective — clean V2',physical?.progress?.roundsUsedForV2,physical?.progress?.fixedBoundaryRounds,'BLINDED_ACCUMULATING',{
     disclosure:physical?.disclosure?.policy||null,
