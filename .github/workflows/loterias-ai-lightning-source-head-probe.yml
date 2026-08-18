@@ -22,28 +22,28 @@ jobs:
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: 24}
-      - name: Probe source head without touching corpus
-        run: node loterias-ai/casino/lightning/research/probe-casinoorg-source-head.mjs
-      - name: Verify diagnostic-only contract
+      - name: Probe and persist source head against latest main
+        shell: bash
         run: |
-          node - <<'NODE'
+          set -euo pipefail
+          TARGET='loterias-ai/casino/lightning/evidence/casinoorg-source-head-probe.json'
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            node loterias-ai/casino/lightning/research/probe-casinoorg-source-head.mjs
+
+            node - <<'NODE'
           const fs=require('fs');
           const j=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-source-head-probe.json','utf8'));
           if(j.policy?.diagnosticOnly!==true||j.policy?.mayMutateCorpus!==false||j.policy?.mayAdvanceProspectives!==false) throw new Error('source probe contract drift');
           if(j.guards?.trainingDataMutation!==false||j.guards?.prospectiveOutcomeMutation!==false||j.guards?.realMoneyAllowed!==false) throw new Error('source probe safety drift');
           NODE
-      - name: Persist source head when semantic/hour state changes
-        shell: bash
-        run: |
-          set -euo pipefail
-          TARGET='loterias-ai/casino/lightning/evidence/casinoorg-source-head-probe.json'
-          if [ -z "$(git status --porcelain -- "$TARGET")" ]; then exit 0; fi
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add "$TARGET"
-          git commit -m 'ops(lightning): persist Casino.org source head probe'
-          for attempt in 1 2 3 4 5; do
-            git pull --rebase origin main || { git rebase --abort || true; sleep $((attempt*2)); continue; }
+
+            git add "$TARGET"
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'ops(lightning): persist Casino.org source head probe'
             if git push origin HEAD:main; then exit 0; fi
             sleep $((attempt*2))
           done
