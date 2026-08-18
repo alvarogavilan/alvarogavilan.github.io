@@ -1,19 +1,24 @@
+# Cost control: authoritative segment v2 is the only scheduled Lightning round-level source.
+# This free aggregate/public capture remains available manually or when its collector changes.
 name: Loterias AI Lightning Free Public Capture
+
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
-  schedule:
-    - cron: '7,22,37,52 * * * *'
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/lightning/collect-casinoscore-public.mjs'
+      - '.github/workflows/loterias-ai-lightning-free-public-capture.yml'
+
 permissions:
   contents: write
+
 concurrency:
   group: lightning-free-public-capture
-  cancel-in-progress: false
+  cancel-in-progress: true
+
 jobs:
   capture:
-    if: github.actor != 'github-actions[bot]' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -23,31 +28,16 @@ jobs:
           node-version: 24
       - name: Capture free public Lightning evidence
         run: node loterias-ai/casino/lightning/collect-casinoscore-public.mjs
-      - name: Certify corpus readiness when capture changed tracked evidence
-        run: |
-          if git diff --quiet -- loterias-ai/casino/lightning/data/public-observation loterias-ai/casino/lightning/evidence/casinoscore-public.json; then
-            echo "No semantic public-capture change; readiness rewrite skipped."
-            exit 0
-          fi
-          node loterias-ai/casino/lightning/corpus-readiness.mjs
-      - name: Persist from latest main without timestamp-only commits
+      - name: Enforce non-training isolation
+        run: node -e "const x=require('./loterias-ai/casino/lightning/evidence/casinoscore-public.json');if(x.trainingEligible||!x.free)process.exit(1)"
+      - name: Persist semantic changes only
+        shell: bash
         run: |
           set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          for i in 1 2 3 4 5; do
-            git fetch origin "$GITHUB_REF_NAME"
-            git reset --hard "origin/$GITHUB_REF_NAME"
-            node loterias-ai/casino/lightning/collect-casinoscore-public.mjs
-            if git diff --quiet -- loterias-ai/casino/lightning/data/public-observation loterias-ai/casino/lightning/evidence/casinoscore-public.json; then
-              echo "No semantic public-capture change; no commit."
-              exit 0
-            fi
-            node loterias-ai/casino/lightning/corpus-readiness.mjs
-            git add loterias-ai/casino/lightning
-            if git diff --cached --quiet; then exit 0; fi
-            git commit -m "research(casino): accumulate free Lightning observations"
-            if git push origin HEAD:"$GITHUB_REF_NAME"; then exit 0; fi
-            sleep $((i*2))
-          done
-          exit 1
+          git add loterias-ai/casino/lightning/data/public-observation loterias-ai/casino/lightning/evidence/casinoscore-public.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'research(casino): accumulate free Lightning observations'
+          git pull --rebase origin main
+          git push origin HEAD:main
