@@ -9,6 +9,8 @@ on:
       - 'loterias-ai/casino/lightning/evidence/casinoorg-source-head-probe.json'
       - 'loterias-ai/casino/lightning/evidence/public-observer.json'
       - 'loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl'
+      - 'loterias-ai/casino/lightning/data/casinoorg-lightningroulette-segment-v2.jsonl'
+      - 'loterias-ai/casino/lightning/evidence/authoritative-segment-v2-status.json'
       - 'loterias-ai/casino/lightning/research/source-staleness-watchdog.mjs'
       - 'loterias-ai/casino/lightning/research/probe-casinoorg-source-head.mjs'
       - 'loterias-ai/casino/lightning/research/recover-casinoorg-pagination-gap-v1.mjs'
@@ -34,7 +36,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Probe, heal if possible, and persist against moving main
+      - name: Probe active source state and persist against moving main
         shell: bash
         run: |
           set -euo pipefail
@@ -49,10 +51,13 @@ jobs:
             node loterias-ai/casino/lightning/research/probe-casinoorg-source-head.mjs
             node loterias-ai/casino/lightning/research/source-staleness-watchdog.mjs
 
+            ACTIVE_SEGMENT=$(node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-source-head-probe.json','utf8'));process.stdout.write(p.activeCorpus?.segment||'legacy-v1-fallback')")
             SOURCE_AHEAD=$(node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-source-head-probe.json','utf8'));process.stdout.write(p.sourceAheadOfCorpus===true?'yes':'no')")
 
-            if [ "$SOURCE_AHEAD" = yes ]; then
-              echo 'Fresh Casino.org head is ahead of corpus; attempting same-run authoritative recovery.'
+            if [ "$ACTIVE_SEGMENT" = 'authoritative-v2' ]; then
+              echo 'Clean authoritative v2 is active; legacy v1 recovery is retired. The v2 collector owns continuity recovery.'
+            elif [ "$SOURCE_AHEAD" = yes ]; then
+              echo 'Legacy fallback only: fresh Casino.org head is ahead; attempting v1 recovery.'
               node loterias-ai/casino/lightning/collect-casinoorg-api.mjs
               BRIDGE_SAFE=$(node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json','utf8'));process.stdout.write(c.continuityBridgeSafe===true?'yes':'no')")
 
@@ -60,7 +65,7 @@ jobs:
                 if node loterias-ai/casino/lightning/research/recover-casinoorg-pagination-gap-v1.mjs; then
                   echo yes > /tmp/gap-recovered
                 else
-                  echo 'Recovery cannot prove a contiguous bridge; quarantine remains isolated and prospectives do not advance.'
+                  echo 'Legacy recovery cannot prove a contiguous bridge; quarantine remains isolated.'
                   echo yes > /tmp/quarantine-only
                 fi
               fi
@@ -83,7 +88,7 @@ jobs:
             node loterias-ai/casino/lightning/research/probe-casinoorg-source-head.mjs
             node loterias-ai/casino/lightning/research/source-staleness-watchdog.mjs
 
-            node -e "const fs=require('fs');const w=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/source-staleness-watchdog.json','utf8'));if(w.policy?.aggregateObserverMayReplaceRoundCorpus!==false)throw Error('aggregate observer promotion regression');if(w.policy?.automaticSourcePromotion!==false)throw Error('automatic source promotion regression');if(w.policy?.requiresRoundLevelLuckyMultiplierData!==true)throw Error('round-level multiplier requirement drift');if(w.guards?.trainingDataMutation!==false||w.guards?.prospectiveOutcomeMutation!==false)throw Error('watchdog safety drift');if(w.guards?.realMoneyAllowed!==false)throw Error('real-money safety regression');if(fs.existsSync('/tmp/gap-recovered')){const r=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-gap-recovery-v1.json','utf8'));const ok=r.status==='RECOVERED_CONTIGUOUS_AUTHORITATIVE_GAP'&&r.exactRoundIdOverlapVerified===true&&r.continuityUnionVerified===true&&Number(r.canonicalDuplicateConflicts)===0&&Number(r.recoveredRows)>0&&Number(r.firstBridgeSeconds)<=120&&Number(r.maxInterRoundSeconds)<=120&&Number(r.tailBridgeSeconds)<=120&&r.quarantineClearedAfterRecovery===true&&r.guards?.realMoneyAllowed===false;if(!ok)throw Error('self-heal recovery evidence failed closed')}"
+            node -e "const fs=require('fs');const w=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/source-staleness-watchdog.json','utf8'));if(w.policy?.aggregateObserverMayReplaceRoundCorpus!==false)throw Error('aggregate observer promotion regression');if(w.policy?.automaticSourcePromotion!==false)throw Error('automatic source promotion regression');if(w.policy?.requiresRoundLevelLuckyMultiplierData!==true)throw Error('round-level multiplier requirement drift');if(w.policy?.legacyV1MayResumeScheduledCapture!==false)throw Error('legacy v1 retirement regression');if(w.guards?.trainingDataMutation!==false||w.guards?.prospectiveOutcomeMutation!==false)throw Error('watchdog safety drift');if(w.guards?.realMoneyAllowed!==false)throw Error('real-money safety regression');if(fs.existsSync('/tmp/gap-recovered')){const r=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-gap-recovery-v1.json','utf8'));const ok=r.status==='RECOVERED_CONTIGUOUS_AUTHORITATIVE_GAP'&&r.exactRoundIdOverlapVerified===true&&r.continuityUnionVerified===true&&Number(r.canonicalDuplicateConflicts)===0&&Number(r.recoveredRows)>0&&Number(r.firstBridgeSeconds)<=120&&Number(r.maxInterRoundSeconds)<=120&&Number(r.tailBridgeSeconds)<=120&&r.quarantineClearedAfterRecovery===true&&r.guards?.realMoneyAllowed===false;if(!ok)throw Error('legacy self-heal recovery evidence failed closed')}"
 
             git add \
               loterias-ai/casino/lightning/evidence/source-staleness-watchdog.json \
@@ -100,21 +105,21 @@ jobs:
               loterias-ai/casino/lightning/evidence/timing-replication-v2-status.json 2>/dev/null || true
 
             if git diff --cached --quiet; then
-              echo 'No semantic watchdog or recovery state changed.'
+              echo 'No semantic watchdog state changed.'
               exit 0
             fi
 
             if [ -f /tmp/quarantine-only ]; then
-              git commit -m 'ops(lightning): watchdog quarantine unresolved authoritative gap'
+              git commit -m 'ops(lightning): watchdog quarantine unresolved legacy gap'
             elif [ -f /tmp/gap-recovered ]; then
-              git commit -m 'research(casino): watchdog recover contiguous authoritative Lightning gap'
+              git commit -m 'research(casino): watchdog recover contiguous legacy Lightning gap'
             else
-              git commit -m 'ops(lightning): persist source staleness state'
+              git commit -m 'ops(lightning): persist active source staleness state'
             fi
 
             if git push origin HEAD:main; then exit 0; fi
             sleep $((attempt * 2))
           done
 
-          echo 'Unable to persist watchdog/recovery state after retries.' >&2
+          echo 'Unable to persist watchdog state after retries.' >&2
           exit 1
