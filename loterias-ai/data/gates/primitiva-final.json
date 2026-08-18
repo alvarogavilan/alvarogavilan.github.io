@@ -1,39 +1,51 @@
 {
-  "generatedAt":"2026-08-14T18:23:00+02:00",
-  "gameId":"primitiva",
-  "decision":"CANDIDATE_SHADOW_PRIORITY",
-  "realMoneyAllocation":0,
-  "shadowAllocation":4,
-  "frozenConfiguration":{"strategy":"frequency","tickets":4,"ticketCost":1},
-  "evidence":{
-    "historyDraws":4173,
-    "predictiveHoldoutDraws":1177,
-    "predictiveModelHitRateAtLeast3":0.09855564995751911,
-    "predictiveRandomHitRateAtLeast3":0.0637213254035684,
-    "predictiveRelativeLift":0.5466666666666667,
-    "predictivePaired95Lower":0.012634416861440186,
-    "predictivePaired95Upper":0.057034232246461265,
-    "predictiveBeats100Baselines":true,
-    "financialHoldoutDraws":15,
-    "financialHoldoutStake":60,
-    "financialHoldoutReturn":85.16,
-    "financialHoldoutPL":25.16,
-    "financialHoldoutROI":0.4193333333333333,
-    "financialRandomAverageROI":-0.7888916666666664,
-    "financialRandomMaxROI":0.3909999999999999
+  "generatedAt": "2026-08-19T01:15:00+02:00",
+  "gameId": "primitiva",
+  "decision": "SUPERSEDED_REJECTED_EXPANDED_OFFICIAL_VALIDATION",
+  "realMoneyAllocation": 0,
+  "shadowAllocation": 0,
+  "frozenConfiguration": {"strategy":"frequency","tickets":4,"ticketCost":1},
+  "supersededBy": "loterias-ai/data/backtests/primitiva-official-financial-validation.json",
+  "legacySmallSampleEvidence": {
+    "generatedAt": "2026-08-14T18:23:00+02:00",
+    "financialHoldoutDraws": 15,
+    "financialHoldoutStake": 60,
+    "financialHoldoutReturn": 85.16,
+    "financialHoldoutPL": 25.16,
+    "financialHoldoutROI": 0.4193333333333333,
+    "predictiveHoldoutDraws": 1177,
+    "predictiveRelativeLift": 0.5466666666666667,
+    "interpretation": "Small-sample positive financial result retained for audit history only; it is not current evidence of positive expected value."
   },
-  "hardGates":{
-    "history":true,
-    "lockedPredictiveHoldout":true,
-    "predictiveMultiBaselineStress":true,
-    "positiveFinancialHoldout":true,
-    "beats100FinancialBaselines":true,
-    "financialSampleSufficient":false,
-    "prospectiveShadowProfitability":false
+  "expandedOfficialValidation": {
+    "officialEconomicDraws": 4123,
+    "holdoutDraws": 1162,
+    "holdoutStake": 4648,
+    "holdoutReturn": 695.76,
+    "holdoutPL": -3952.24,
+    "holdoutROI": -0.8503098106712564,
+    "randomAverageROI": -0.7245745912220307,
+    "randomMaxROI": 0.09503227194492256,
+    "sampleSufficient": true,
+    "positiveROI": false,
+    "beatAll100Random": false,
+    "realMoneyPass": false
   },
-  "minimumFinancialHoldoutDraws":50,
-  "promotionRule":"REAL_MONEY_ELIGIBLE requires at least 50 predeclared financial holdout draws with the frozen configuration, continued positive ROI versus matched random baselines, and supportive prospective Shadow Ledger. No retrospective strategy changes are allowed after observing new results.",
-  "nextDraw":"2026-08-15",
-  "nextStatus":"SHADOW_PRIORITY",
-  "reason":"This is the strongest current candidate: predictive holdout and 100-baseline stress pass, and the first locked financial holdout is positive. The 15-draw financial sample is too small to release real bankroll."
+  "prospectiveFrequency4Experiment": {
+    "status": "FALSIFICATION_CONTINUES_ALREADY_PRESEALED",
+    "fixedBoundaryDraws": 50,
+    "firstTarget": "2026-08-20",
+    "purpose": "Resolve the historical contradiction on untouched future draws; not confirmation of an existing edge.",
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  },
+  "hardGates": {
+    "expandedFinancialSampleSufficient": true,
+    "positiveExpandedFinancialROI": false,
+    "expandedBeatsRandom": false,
+    "realMoneyPass": false
+  },
+  "nextStatus": "REJECTED_HISTORICALLY_PROSPECTIVE_FALSIFICATION_ONLY",
+  "reason": "The earlier 15-draw positive financial result was contradicted by a much larger frozen official-economics validation of 1162 holdout draws with ROI -85.03%. No real-money edge is supported. The already-sealed 50-draw prospective experiment remains only as an independent falsification lane."
 }
