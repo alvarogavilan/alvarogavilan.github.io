@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-18T16:00:15.295Z",
+  "generatedAt": "2026-08-18T16:04:03.373Z",
   "files": 4,
   "rawRows": 2869,
   "invalidRows": 0,
@@ -10,7 +10,27 @@
   "validPublicObservations": 42,
   "minimumReplayRounds": 500,
   "remainingAuthoritativeToReplay": 0,
-  "trainingEligible": true,
+  "trainingEligible": false,
+  "historicalReplayEligible": true,
+  "continuity": {
+    "barrierPresent": true,
+    "authoritativeSegments": [
+      {
+        "segment": "authoritative-v2",
+        "count": 354
+      },
+      {
+        "segment": "legacy-unsegmented",
+        "count": 2473
+      }
+    ],
+    "activeSegment": "authoritative-v2",
+    "activeSegmentRounds": 354,
+    "activeSegmentMinimumRounds": 500,
+    "activeSegmentRemainingToTraining": 146,
+    "activeSegmentTrainingEligible": false,
+    "crossSegmentTrainingAllowed": false
+  },
   "sourceCounts": {
     "casinoorg-evolution-public-api": 2827,
     "casinoscore-public-window": 42
@@ -23,5 +43,5 @@
   "syntheticDataAccepted": false,
   "realMoney": false,
   "corpusFingerprint": "2975d53a66d5e782fc2fd50b60e4e32b278a2009629939756c0d3a0e0fefc3d3",
-  "next": "validate-and-replay-paper"
+  "next": "continue-clean-active-segment-acquisition"
 }
