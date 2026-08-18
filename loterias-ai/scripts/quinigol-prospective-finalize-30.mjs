@@ -1,0 +1,59 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+
+const archive='loterias-ai/data/archive/quinigol';
+const policyPath='loterias-ai/data/policies/quinigol-shadow-policy.json';
+const ledgerPath='loterias-ai/data/shadow/quinigol-ledger.json';
+const outPath='loterias-ai/data/shadow/quinigol-prospective-final-30.json';
+const policy=JSON.parse(fs.readFileSync(policyPath,'utf8'));
+const ledger=JSON.parse(fs.readFileSync(ledgerPath,'utf8'));
+const req=policy.prospectiveRequirements||{};
+const boundary=Number(req.fixedBoundaryJornadas);
+const reps=Number(req.matchedRandomReplicates);
+const alpha=Number(req.alpha);
+const seed0=Number(req.matchedRandomSeed)>>>0;
+if(policy.version!=='2026-08-19-blinded-v2'||boundary!==30||reps!==10000||alpha!==0.01||policy.guards?.realMoneyAllowed!==false)throw new Error('Quinigol finalization policy drift');
+const observed=ledger.entries.filter(e=>e.status==='OBSERVED_OFFICIAL_BLINDED');
+if(observed.length<boundary){console.log(JSON.stringify({status:'WAITING_FOR_FIXED_30',observed:observed.length,remaining:boundary-observed.length}));process.exit(0)}
+if(observed.length!==boundary)throw new Error('post-30 observations forbidden');
+const pending=ledger.entries.filter(e=>e.status==='PREDICTED_SHADOW');
+if(pending.length)throw new Error('pending prediction remains at fixed boundary');
+let rows=[];for(const f of fs.readdirSync(archive).filter(x=>/^\d{4}\.json$/.test(x)).sort())rows.push(...(JSON.parse(fs.readFileSync(`${archive}/${f}`,'utf8')).records||[]));
+rows=rows.filter(r=>r.drawDate&&Array.isArray(r.result?.codes)&&r.result.codes.length===6&&r.economics?.validation?.officialSELAE).sort((a,b)=>a.drawDate.localeCompare(b.drawDate));
+const byId=new Map(rows.map(r=>[r.drawId,r])),byDate=new Map(rows.map(r=>[r.drawDate,r]));
+const buckets=['0','1','2','M'],codes=[];for(const a of buckets)for(const b of buckets)codes.push(`${a}-${b}`);
+const payout=(rec,hits)=>{for(const c of rec.economics?.categories||[]){const l=String(c.label||'').toLowerCase();if(new RegExp(`(^|\\D)${hits}\\s*aciert`).test(l))return Number(c.prize||0)}return 0};
+const evalTicket=(rec,t)=>{let h=0;for(let i=0;i<6;i++)if(t[i]===String(rec.result.codes[i]).toUpperCase())h++;return{hits:h,ret:payout(rec,h)}};
+const targets=[];
+for(const e of observed){
+  const rec=(e.drawId&&byId.get(e.drawId))||byDate.get(e.drawDate);
+  if(!rec)throw new Error(`missing official target ${e.drawId||e.drawDate}`);
+  if(!(rec.drawDate>e.anchorLastOfficialDate))throw new Error(`target not after anchor ${e.entryId}`);
+  if(e.model?.window!==320||e.model?.ticketsPerDraw!==2||e.tickets?.length!==2||Number(e.realStakeEUR||0)!==0)throw new Error(`prediction custody drift ${e.entryId}`);
+  targets.push({e,rec});
+}
+let stake=0,ret=0,profitable=0,bestHits=0,hitHistogram=[0,0,0,0,0,0,0];
+for(const {e,rec} of targets){let drawStake=0,drawRet=0;for(const t of e.tickets){const x=evalTicket(rec,t);drawStake+=Number(rec.economics.ticketCost||1);drawRet+=x.ret;bestHits=Math.max(bestHits,x.hits);hitHistogram[x.hits]++;}stake+=drawStake;ret+=drawRet;if(drawRet>drawStake)profitable++;}
+const roi=stake?(ret-stake)/stake:null;
+function rng(seed){let x=seed>>>0;return()=>((x=(1664525*x+1013904223)>>>0)/4294967296)}
+function randomTicket(rr){return Array.from({length:6},()=>codes[Math.floor(rr()*codes.length)])}
+const nullRois=[];
+for(let rep=0;rep<reps;rep++){
+  const rr=rng((seed0+Math.imul(rep,2654435761))>>>0);let bs=0,br=0;
+  for(const {rec} of targets)for(let k=0;k<2;k++){const x=evalTicket(rec,randomTicket(rr));bs+=Number(rec.economics.ticketCost||1);br+=x.ret}
+  nullRois.push(bs?(br-bs)/bs:null);
+}
+const valid=nullRois.filter(Number.isFinite),mean=a=>a.reduce((s,x)=>s+x,0)/a.length,sorted=[...valid].sort((a,b)=>a-b),quant=p=>sorted[Math.min(sorted.length-1,Math.max(0,Math.floor(p*(sorted.length-1))))];
+const nullMean=mean(valid),ge=valid.filter(x=>x>=roi).length,pUpper=(1+ge)/(valid.length+1);
+const pass=roi>0&&profitable>=Number(req.minimumProfitableJornadas)&&roi>nullMean&&pUpper<alpha;
+const out={
+ version:'quinigol-prospective-final-30-v1',generatedAt:new Date().toISOString(),policyVersion:policy.version,
+ fixedBoundary:{jornadas:30,firstTarget:targets[0].rec.drawDate,lastTarget:targets.at(-1).rec.drawDate,post30CanRescue:false},
+ observed:{stakeEUR:stake,returnEUR:ret,plEUR:ret-stake,roi,profitableJornadas:profitable,bestHits,hitHistogramAcross60Tickets:hitHistogram},
+ matchedRandom:{replicates:valid.length,meanROI:nullMean,p50ROI:quant(.5),p95ROI:quant(.95),p99ROI:quant(.99),maxROI:sorted.at(-1),randomAtLeastObserved:ge,oneSidedPUpper:pUpper},
+ gates:{positiveROI:roi>0,minimumProfitableJornadas:profitable>=Number(req.minimumProfitableJornadas),beatsMatchedRandomMean:roi>nullMean,pBelowAlpha:pUpper<alpha,economicPromotionCandidate:pass,realMoneyPass:false},
+ interpretation:pass?'Fixed 30-jornada prospective economics passed; an untouched replication and explicit review are still mandatory before any real-money consideration.':'Fixed 30-jornada prospective economic gate did not pass; later jornadas cannot rescue this version.',
+ guards:{all30PredictionsSealedBeforeResult:true,noRetuning:true,noOptionalStopping:true,post30RescueAllowed:false,automaticBettingAllowed:false,realMoneyAllowed:false,realStakeEUR:0}
+};
+fs.writeFileSync(outPath,JSON.stringify(out,null,2)+'\n');
+console.log(JSON.stringify(out,null,2));
