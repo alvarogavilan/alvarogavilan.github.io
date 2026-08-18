@@ -1,0 +1,31 @@
+{
+  "version": "v318-preexecution-amendment-1",
+  "appliesTo": "loterias-ai/data/research/metapleno-v318-preregister.json",
+  "status": "BINDING_PRE_EXECUTION_CORRECTION",
+  "reason": "The initial prose mistakenly treated each of the six positions as the Bernoulli denominator and centered at 1/49. The modeled event is number inclusion in a draw, whose exact null probability is 6/49.",
+  "executionStateAtAmendment": {
+    "stage1ScriptExists": false,
+    "candidateEvaluationRun": false,
+    "developmentMetricsObserved": false,
+    "validationTouched": false,
+    "blindOosTouched": false
+  },
+  "supersedesModelFields": {
+    "ownDeviation": "For each number n and target draw t, posteriorMean_n - 6/49, where posteriorMean_n=(count_n + priorStrength*(6/49))/(window + priorStrength). count_n is the number of prior draws in the frozen same-game window containing n.",
+    "ownZ": "(posteriorMean_n - 6/49) / sqrt((6/49)*(43/49)/(window+priorStrength)). This scale is used for ranking only.",
+    "otherZ": "Apply the identical formula to the other 6-of-49 game using only its draws with drawDate strictly earlier than the target date and the same frozen window/priorStrength.",
+    "score": "ownZ + crossWeight*otherZ; crossWeight=0 remains the nested same-game control."
+  },
+  "unchanged": {
+    "windows": [128,256,512,1024],
+    "priorStrengths": [24,96,384],
+    "crossWeights": [0,0.25,0.5,1],
+    "poolSize": 8,
+    "developmentEnd": "2018-12-31",
+    "validationWindow": "2019-01-01/2022-12-31",
+    "blindOosWindow": "2023-01-01/2024-12-31",
+    "realMoneyPass": false,
+    "realStakeEUR": 0
+  },
+  "guard": "Every v318 executable must load this amendment and abort if its status is not BINDING_PRE_EXECUTION_CORRECTION."
+}
