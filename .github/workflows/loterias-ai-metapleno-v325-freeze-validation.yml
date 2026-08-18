@@ -1,0 +1,52 @@
+name: Loterias AI MetaPleno v325 Freeze Validation
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/data/research/metapleno-v325-preregister.json'
+      - 'loterias-ai/data/research/metapleno-v325-stage1-development.json'
+      - 'loterias-ai/research/megalab/v325-freeze-validation.mjs'
+      - '.github/workflows/loterias-ai-metapleno-v325-freeze-validation.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-metapleno-v325-freeze-validation
+  cancel-in-progress: false
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - name: Seal exact development survivors
+        run: node loterias-ai/research/megalab/v325-freeze-validation.mjs
+      - name: Validate pre-validation custody
+        run: |
+          node -e "const fs=require('fs');const f=JSON.parse(fs.readFileSync('loterias-ai/data/research/metapleno-v325-validation-freeze.json','utf8'));if(f.status!=='FROZEN_BEFORE_VALIDATION_READ'||!Array.isArray(f.survivors)||f.survivors.length<1)throw Error('v325 freeze missing survivors');if(f.guards?.validationReadBeforeFreeze!==false||f.guards?.blindOosRead!==false||f.guards?.noRetuning!==true||f.guards?.realMoneyPass!==false)throw Error('v325 freeze guard regression');console.log(JSON.stringify({survivors:f.survivors,freezeSha256:f.freezeSha256}))"
+      - name: Persist immutable validation freeze against moving main
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET='loterias-ai/data/research/metapleno-v325-validation-freeze.json'
+          cp "$TARGET" /tmp/v325-freeze.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            if [ -f "$TARGET" ]; then
+              node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync('/tmp/v325-freeze.json','utf8')),b=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));if(a.freezeSha256!==b.freezeSha256)process.exit(2)" "$TARGET" || { echo 'Existing v325 freeze differs'; exit 1; }
+              exit 0
+            fi
+            cp /tmp/v325-freeze.json "$TARGET"
+            git add "$TARGET"
+            git commit -m 'research(loterias-ai): freeze v325 survivors before validation'
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
