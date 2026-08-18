@@ -16,8 +16,7 @@ if(run.stderr) process.stderr.write(run.stderr);
 if(!fs.existsSync(auditPath)) throw new Error('STRICT_CORPUS_AUDIT_MISSING');
 const a=JSON.parse(fs.readFileSync(auditPath,'utf8'));
 
-const out={
-  generatedAt:new Date().toISOString(),
+const scientificState={
   auditGeneratedAt:a.generatedAt,
   corpusFingerprint:a.corpusFingerprint,
   files:a.files,
@@ -41,7 +40,21 @@ const out={
   realMoney:false,
   next:a.next
 };
+
+let out={generatedAt:new Date().toISOString(),...scientificState};
+if(fs.existsSync(outPath)){
+  try{
+    const previous=JSON.parse(fs.readFileSync(outPath,'utf8'));
+    const {generatedAt:_previousGeneratedAt,...previousScientificState}=previous;
+    if(JSON.stringify(previousScientificState)===JSON.stringify(scientificState)){
+      out=previous;
+      console.log(JSON.stringify({...out,persistence:'NO_SEMANTIC_CHANGE'},null,2));
+      if(run.status!==0||!out.qualityPass) process.exitCode=run.status||2;
+      process.exit();
+    }
+  }catch{}
+}
 fs.mkdirSync(path.dirname(outPath),{recursive:true});
 fs.writeFileSync(outPath,JSON.stringify(out,null,2)+'\n');
-console.log(JSON.stringify(out,null,2));
+console.log(JSON.stringify({...out,persistence:'UPDATED_SEMANTIC_CHANGE'},null,2));
 if(run.status!==0||!out.qualityPass) process.exitCode=run.status||2;
