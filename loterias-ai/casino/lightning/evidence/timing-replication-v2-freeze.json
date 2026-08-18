@@ -1,0 +1,51 @@
+{
+  "version": "timing-replication-v2-freeze",
+  "createdAt": "2026-08-18T07:22:59Z",
+  "prospectiveStartsAt": "2026-08-18T07:35:00Z",
+  "motivation": "v1 crossed its preregistered 30-episode directional read with positive direction; v2 is frozen only after that observation and therefore uses entirely later episodes as a replication sample.",
+  "rule": {
+    "stateObservedAfterCompletedRound": true,
+    "roundsSinceLastWinningLightningAtLeast": 8,
+    "predictNextRounds": 7,
+    "outcome": "at least one winning Lightning event in the next 7 chronological rounds",
+    "episodesNonOverlapping": true,
+    "noRetuning": true
+  },
+  "fixedSample": {
+    "closedEpisodes": 200,
+    "useFirst200ClosedEpisodesOnly": true,
+    "postBoundaryEpisodesIgnoredForV2": true,
+    "noInterimPerformanceRead": true
+  },
+  "frozenNull": {
+    "primaryProbability": 0.384823,
+    "secondaryProbability": 0.376573,
+    "source": "same pre-v1 frozen null family; no null is re-estimated from v2 outcomes"
+  },
+  "inference": {
+    "primaryTest": "one-sided exact binomial test P[X>=observedSuccesses] under p0=0.384823",
+    "alpha": 0.01,
+    "supportingCriterion": "Wilson 95% lower bound must exceed primaryProbability",
+    "directionCriterion": "successRate must exceed both frozen null probabilities",
+    "replicationPassRequiresAll": true
+  },
+  "disclosure": {
+    "before200ClosedEpisodes": "ADMINISTRATIVE_COUNTS_ONLY",
+    "hideSuccesses": true,
+    "hideFailures": true,
+    "hideSuccessRate": true,
+    "hideConfidenceInterval": true,
+    "hidePValue": true
+  },
+  "guards": {
+    "startsAfterV1DirectionalObservation": true,
+    "v1RuleUnchanged": true,
+    "noRetuning": true,
+    "noOptionalStopping": true,
+    "doesNotModifyV1": true,
+    "passDoesNotAuthorizeRealMoney": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
