@@ -6,8 +6,15 @@ REPO="$(cd "$SCRIPT_DIR/../.." && pwd)"
 PLIST="$HOME/Library/LaunchAgents/com.loterias.macnode.plist"
 SCRIPT="$REPO/loterias-ai/ops/mac-node-heartbeat.sh"
 STATE="$REPO/.loterias-mac-node"
+RUNTIME_ROOT="$HOME/.loterias-ai-runtime"
+ENV_FILE="$RUNTIME_ROOT/env"
 
-mkdir -p "$HOME/Library/LaunchAgents" "$STATE" "$HOME/.loterias-ai-runtime"
+mkdir -p "$HOME/Library/LaunchAgents" "$STATE" "$RUNTIME_ROOT"
+if [ ! -f "$ENV_FILE" ]; then
+  : > "$ENV_FILE"
+fi
+chmod 600 "$ENV_FILE" 2>/dev/null || true
+
 cat > "$PLIST" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -30,4 +37,5 @@ echo "LOTERIAS_MAC_NODE_INSTALLED"
 echo "repo=$REPO"
 echo "cadence_seconds=300"
 echo "runtime=local-primary"
+echo "local_env=$ENV_FILE"
 cat "$STATE/status.txt"
