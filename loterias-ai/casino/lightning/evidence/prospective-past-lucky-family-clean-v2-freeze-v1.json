@@ -1,0 +1,35 @@
+{
+  "version": "lightning-prospective-past-lucky-family-clean-v2-freeze-v1",
+  "createdAt": "2026-08-18T22:45:00Z",
+  "prospectiveStartsAt": "2026-08-18T22:50:00Z",
+  "sourceSegment": "authoritative-v2",
+  "predictorInformationRule": "Only Lucky Numbers, their multipliers and winner from completed prior rounds may be used. Current-round Lucky Numbers or multipliers are forbidden for selection.",
+  "candidateFamily": [
+    "previousLuckyMaxMultiplier",
+    "previousLuckyMinMultiplier",
+    "previousLuckyWheelNearestPreviousWinner",
+    "previousLuckyWheelFarthestPreviousWinner"
+  ],
+  "tieBreak": "ascending roulette number",
+  "fixedBoundaryRounds": 5000,
+  "nullHitProbability": 0.02702702702702703,
+  "nonMultipliedGrossReturnX": 30,
+  "economicBreakEvenHitRate": 0.03333333333333333,
+  "familyWiseAlpha": 0.01,
+  "multiplicity": "Bonferroni across four frozen selectors; per-candidate alpha=0.0025.",
+  "promotionRequires": [
+    "first 5000 eligible future target rounds only",
+    "one-sided binomial p below Bonferroni alpha",
+    "observed hit rate above 1/30 conservative economic break-even",
+    "Wilson 95% lower bound above 1/30",
+    "positive conservative ROI ignoring all current-round Lucky multiplier uplift",
+    "no retuning and no optional stopping",
+    "new untouched replication before any real-money authorization"
+  ],
+  "disclosurePolicy": "Administrative progress only before 5000 rounds; selector hits, rates, ROI, rankings and p-values remain hidden.",
+  "immutable": true,
+  "claimAllowed": false,
+  "automaticBettingAllowed": false,
+  "realMoneyAllowed": false,
+  "realStakeEUR": 0
+}
