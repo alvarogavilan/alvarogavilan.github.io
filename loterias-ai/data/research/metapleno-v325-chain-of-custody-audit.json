@@ -1,0 +1,44 @@
+{
+  "version": "v325-chain-of-custody-audit-v1",
+  "family": "MULTISCALE_STABILITY_SELECTION_6OF49",
+  "auditedAt": "2026-08-18T21:56:00Z",
+  "status": "VALIDATION_NEGATIVE_BUT_PUBLIC_FREEZE_PROOF_INVALIDATED",
+  "finding": {
+    "severity": "SCIENTIFIC_CUSTODY_FAILURE",
+    "summary": "The validation workflow generated the v325 freeze locally, but its publish step tested file existence after git reset --hard. Because git reset --hard does not remove untracked files, the locally generated freeze remained present and was incorrectly interpreted as already present in origin/main. No commit containing metapleno-v325-validation-freeze.json is present in the main history before validation.",
+    "mechanism": "UNTRACKED_FILE_SURVIVED_GIT_RESET_AND_FALSELY_SATISFIED_PUBLICATION_CHECK",
+    "affectedClaim": "validationReadAfterFreeze/public freeze proof",
+    "notAffected": [
+      "v325 preregistration existed before Stage 1",
+      "Stage 1 read no files after 2018",
+      "the two development survivors were selected mechanically from the persisted Stage 1 artifact",
+      "validation result was negative",
+      "no 2023-2024 blind OOS file was opened by v325",
+      "real money remained disabled"
+    ]
+  },
+  "development": {
+    "status": "DEVELOPMENT_SURVIVORS_READY_FOR_VALIDATION_FREEZE",
+    "selectedTotal": 2,
+    "sourceArtifact": "loterias-ai/data/research/metapleno-v325-stage1-development.json"
+  },
+  "validation": {
+    "sourceArtifact": "loterias-ai/data/research/metapleno-v325-stage2-validation.json",
+    "reportedStatus": "CLOSED_VALIDATION_FAILED",
+    "resultDirection": "NEGATIVE",
+    "bonolotoFivePlus": 0,
+    "primitivaFivePlus": 0,
+    "blindOosTouched": false,
+    "confirmatoryInferenceAllowed": false,
+    "reason": "The exact freeze was not demonstrably public before validation read. A negative result may be retained as descriptive evidence but cannot be upgraded into a clean confirmatory test."
+  },
+  "decision": {
+    "v325PromotionAllowed": false,
+    "rerun2019to2022AsFreshValidationAllowed": false,
+    "retroactiveFreezeMayRepairCustody": false,
+    "open2023to2024ToRescueV325": false,
+    "realMoneyPass": false,
+    "realStakeEUR": 0,
+    "next": "Archive v325. Preserve 2023-2024 as untouched by this family. Fix publication proof before any future validation family."
+  }
+}
