@@ -1,18 +1,13 @@
 {
   "version": "economic-readiness-ledger-v1",
-  "generatedAt": "2026-08-18T22:37:32.799Z",
+  "generatedAt": "2026-08-18T23:05:00Z",
   "mission": "Identify reproducible positive expected value without future-information leakage or optional stopping.",
-  "strongestCurrentLead": "LIGHTNING_CLEAN_TIMING_REPLICATION",
+  "strongestCurrentLead": "clean-timing-v3",
   "closestBlindBoundary": {
     "id": "clean-timing-v3",
     "label": "Lightning timing replication — clean V2",
     "status": "BLINDED_ACCUMULATING",
-    "progress": {
-      "used": 87,
-      "boundary": 200,
-      "percent": 43.5,
-      "remaining": 113
-    },
+    "progress": {"used": 89, "boundary": 200, "percent": 44.5, "remaining": 111},
     "disclosure": "ADMINISTRATIVE_COUNTS_ONLY",
     "outcomePerformanceVisible": false,
     "realMoneyAllowed": false
@@ -22,12 +17,7 @@
       "id": "clean-timing-v3",
       "label": "Lightning timing replication — clean V2",
       "status": "BLINDED_ACCUMULATING",
-      "progress": {
-        "used": 87,
-        "boundary": 200,
-        "percent": 43.5,
-        "remaining": 113
-      },
+      "progress": {"used": 89, "boundary": 200, "percent": 44.5, "remaining": 111},
       "disclosure": "ADMINISTRATIVE_COUNTS_ONLY",
       "outcomePerformanceVisible": false,
       "realMoneyAllowed": false
@@ -36,12 +26,7 @@
       "id": "physical-rng-v2",
       "label": "Lightning physical RNG prospective — clean V2",
       "status": "BLINDED_ACCUMULATING",
-      "progress": {
-        "used": 866,
-        "boundary": 5000,
-        "percent": 17.32,
-        "remaining": 4134
-      },
+      "progress": {"used": 879, "boundary": 5000, "percent": 17.58, "remaining": 4121},
       "disclosure": "ADMINISTRATIVE_PROGRESS_ONLY",
       "outcomePerformanceVisible": false,
       "realMoneyAllowed": false
@@ -50,12 +35,7 @@
       "id": "number-selection-v2",
       "label": "Lightning economic number selection — clean V2 Phase A",
       "status": "BLINDED_ACCUMULATING",
-      "progress": {
-        "used": 666,
-        "boundary": 5000,
-        "percent": 13.32,
-        "remaining": 4334
-      },
+      "progress": {"used": 679, "boundary": 5000, "percent": 13.58, "remaining": 4321},
       "disclosure": "ADMINISTRATIVE_COUNTS_ONLY_NO_MODEL_RANKING",
       "outcomePerformanceVisible": false,
       "frozenCandidates": 132,
@@ -65,16 +45,63 @@
       "id": "clean-lag8-economic-v1",
       "label": "Lightning lag-8 conservative economic replication",
       "status": "BLINDED_ACCUMULATING",
-      "progress": {
-        "used": 3,
-        "boundary": 1000,
-        "percent": 0.3,
-        "remaining": 997
-      },
+      "progress": {"used": 16, "boundary": 1000, "percent": 1.6, "remaining": 984},
       "disclosure": "ADMINISTRATIVE_PROGRESS_ONLY",
       "outcomePerformanceVisible": false,
       "conservativeEconomicModel": true,
       "luckyMultiplierUpliftExcluded": true,
+      "realMoneyAllowed": false
+    },
+    {
+      "id": "primitiva-frequency4-v1",
+      "label": "Primitiva frequency/4 — fixed 50-draw economic replication",
+      "status": "BLINDED_ACCUMULATING",
+      "progress": {"used": 0, "boundary": 50, "percent": 0, "remaining": 50},
+      "sealedTargets": 1,
+      "resultAndEconomicsAvailable": 0,
+      "latestSealedTarget": "2026-08-20",
+      "disclosure": "ADMINISTRATIVE_PROGRESS_ONLY",
+      "outcomePerformanceVisible": false,
+      "historicalLineage": {
+        "lockedFinancialHoldoutDraws": 15,
+        "lockedFinancialROI": 0.4193333333333333,
+        "predictiveRelativeLiftAtLeast3": 0.5466666666666667,
+        "contextOnly": true
+      },
+      "realMoneyAllowed": false
+    },
+    {
+      "id": "clean-lag-family-v1",
+      "label": "Lightning lag family 1–20 — clean V2",
+      "status": "BLINDED_ACCUMULATING",
+      "progress": {"used": 9, "boundary": 5000, "percent": 0.18, "remaining": 4991},
+      "disclosure": "ADMINISTRATIVE_PROGRESS_ONLY",
+      "outcomePerformanceVisible": false,
+      "frozenCandidates": 20,
+      "familyWiseAlpha": 0.01,
+      "perCandidateAlpha": 0.0005,
+      "realMoneyAllowed": false
+    },
+    {
+      "id": "clean-past-lucky-family-v1",
+      "label": "Lightning past-Lucky selectors — clean V2",
+      "status": "BLINDED_ACCUMULATING",
+      "progress": {"used": 0, "boundary": 5000, "percent": 0, "remaining": 5000},
+      "disclosure": "ADMINISTRATIVE_PROGRESS_ONLY",
+      "outcomePerformanceVisible": false,
+      "frozenCandidates": 4,
+      "pastInformationOnly": true,
+      "currentRoundLuckySelectionForbidden": true,
+      "realMoneyAllowed": false
+    },
+    {
+      "id": "primitiva-v315",
+      "label": "Primitiva MetaPleno v315 cross-game transfer",
+      "status": "BLINDED_ACCUMULATING",
+      "progress": {"used": 0, "boundary": 200, "percent": 0, "remaining": 200},
+      "sealedTargets": 1,
+      "latestSealedTarget": "2026-08-20",
+      "outcomePerformanceVisible": false,
       "realMoneyAllowed": false
     }
   ],
@@ -90,9 +117,14 @@
     "reason": "Legacy directional evidence only; clean V2 replication is the promotion lane."
   },
   "traditionalLottery": {
-    "trackedProspectiveArtifacts": 47,
-    "evaluated": 4,
     "realMoneyPasses": 0,
+    "primitivaFrequency4": {
+      "sealedTargets": 1,
+      "settledTargets": 0,
+      "fixedBoundary": 50,
+      "latestSealedTarget": "2026-08-20",
+      "economicPromotionCandidate": false
+    },
     "status": "NO_VALIDATED_ECONOMIC_EDGE_YET"
   },
   "promotionPolicy": {
