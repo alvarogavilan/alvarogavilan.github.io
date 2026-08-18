@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "purpose": "Suplemento append-only de hitos posteriores a v321 y al arranque del segmento Lightning v2.",
+  "events": [
+    {
+      "id":"v322-determinantal-development-falsification",
+      "type":"falsification",
+      "title":"La selección conjunta determinantal no supera a la frecuencia en desarrollo",
+      "plain":"v322 probó una familia distinta: en lugar de puntuar números aisladamente, construyó un kernel PSD con calidad marginal y perfiles históricos de coocurrencia, y eligió pools de ocho mediante una aproximación greedy de máximo determinante. El desarrollo quedó limitado a 2010–2018. La mejor zona Bonoloto produjo un evento 5+ el 11 de junio de 2018, pero el baseline de frecuencia del mismo horizonte también produjo un 5+ y no hubo repetición en una segunda fecha. Ninguna configuración superó los gates preregistrados, por lo que validation y OOS permanecieron cerrados.",
+      "metrics": {
+        "family":"DETERMINANTAL_SET_DIVERSITY_6OF49",
+        "developmentStart":"2010-01-01",
+        "developmentEnd":"2018-12-31",
+        "logicalConfigurationsPerGame":18,
+        "bestObservedFivePlus":1,
+        "bestObservedFivePlusDate":"2018-06-11",
+        "matchedFrequencyFivePlus":1,
+        "fivePlusExcessOverFrequency":0,
+        "minimumRequiredDistinctFivePlusDates":2,
+        "selectedTotal":0,
+        "validationTouched":false,
+        "blindOosTouched":false,
+        "realMoneyPass":false
+      },
+      "evidenceState":"MERGED_MAIN"
+    },
+    {
+      "id":"lightning-clean-segment-dashboard-v1",
+      "type":"infrastructure",
+      "title":"El segmento limpio obtiene un panel separado para no mezclar v1 censurado con v2",
+      "plain":"Se creó una vista independiente para seguir el segmento autoritativo limpio. La pantalla carga directamente el estado de la fuente v2, timing v3, RNG físico v2 y selección de números v2. Muestra sólo contadores administrativos cuando el protocolo exige cegado, señala explícitamente que el hueco anterior no fue importado y mantiene PAPER/€0 visible. Esta separación evita que la dirección descriptiva del timing v1 censurado se confunda con el nuevo examen independiente.",
+      "metrics": {
+        "dashboardCommit":"9eaeefb398246664cb6069d2a48a50f1bcd49eb7",
+        "route":"loterias-ai/casino/economia/segmento-limpio/",
+        "sourceArtifacts":4,
+        "timingInterimPerformanceHidden":true,
+        "physicalInterimStatisticsHidden":true,
+        "numberInterimRankingHidden":true,
+        "realMoneyAllowed":false
+      },
+      "evidenceState":"MERGED_MAIN"
+    }
+  ],
+  "rules":{"appendOnly":true,"neverInventMetrics":true,"doNotOverwritePreviousFeeds":true}
+}
