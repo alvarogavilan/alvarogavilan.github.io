@@ -1,0 +1,61 @@
+{
+  "version": "physical-rng-prospective-freeze-v1",
+  "createdAt": "2026-08-18T07:01:08Z",
+  "prospectiveStartsAt": "2026-08-18T07:10:00Z",
+  "source": "loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl",
+  "hypothesis": "The physical winning-number process remains compatible with a uniform 37-number wheel and lacks reproducible short-lag or wheel-neighbour dependence in a fresh fixed future sample.",
+  "fixedBoundaryRounds": 5000,
+  "alphaFamilyWise": 0.01,
+  "primaryTests": [
+    {
+      "id": "uniform37",
+      "statistic": "Pearson chi-square across winner counts 0..36",
+      "null": "uniform categorical probability 1/37",
+      "pValue": "chi-square survival approximation with df=36"
+    },
+    {
+      "id": "serial-max20",
+      "statistic": "maximum absolute standardized same-number match deviation across lags 1..20",
+      "null": "serial independence with marginal sequence preserved by permutation",
+      "pValue": "10000 deterministic random permutations of the 5000-round winner sequence; max statistic recalculated each replicate"
+    },
+    {
+      "id": "wheel-neighbour-max",
+      "statistic": "maximum absolute standardized deviation for consecutive wheel distance <=1 and <=2",
+      "null": "serial independence with marginal sequence preserved by permutation",
+      "pValue": "same deterministic permutation family, each replicate recalculates both neighbour statistics and takes their maximum"
+    }
+  ],
+  "multiplicity": {
+    "method": "Holm-Bonferroni across the 3 primary p-values",
+    "familySize": 3,
+    "familyWiseAlpha": 0.01
+  },
+  "permutation": {
+    "replicates": 10000,
+    "seed": 31820260818,
+    "algorithm": "mulberry32 plus Fisher-Yates shuffle",
+    "continuityCorrection": "(1 + exceedances) / (replicates + 1)"
+  },
+  "disclosure": {
+    "beforeFixedBoundary": "ADMINISTRATIVE_PROGRESS_ONLY",
+    "hideObservedStatistics": true,
+    "hidePValues": true,
+    "hideDirection": true
+  },
+  "decision": {
+    "evaluateExactlyAtRounds": 5000,
+    "postBoundaryRowsMayRescueV1": false,
+    "anyHolmRejectedTest": "ANOMALY_REQUIRES_INDEPENDENT_REPLICATION_NOT_BETTING",
+    "noRejectedTests": "NO_REPRODUCIBLE_PHYSICAL_RNG_ANOMALY_DETECTED_IN_V1"
+  },
+  "guards": {
+    "exploratoryPastExcluded": true,
+    "noRetuning": true,
+    "noOptionalStopping": true,
+    "claimAllowedBeforeBoundary": false,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
