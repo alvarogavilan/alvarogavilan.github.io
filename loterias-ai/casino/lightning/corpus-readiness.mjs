@@ -29,8 +29,11 @@ const scientificState={
   violations:a.violations,
   minimumReplayRounds:a.minimumReplayRounds,
   remainingAuthoritativeToReplay:a.remainingAuthoritativeToReplay,
-  // Training is gated by BOTH quantity and strict quality.
+  // Global training must fail closed across a censored continuity barrier.
   trainingEligible:a.trainingEligible===true&&a.qualityPass===true,
+  historicalReplayEligible:a.historicalReplayEligible===true&&a.qualityPass===true,
+  continuity:a.continuity||null,
+  activeSegmentTrainingEligible:a.continuity?.activeSegmentTrainingEligible===true&&a.qualityPass===true,
   observationCorpusUsableForExploratoryPhysicalAnalysis:a.validPublicObservations>0,
   sourceCounts:a.sourceCounts,
   distinctUtcDays:a.distinctUtcDays,
