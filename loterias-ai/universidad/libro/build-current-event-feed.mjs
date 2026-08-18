@@ -4,7 +4,10 @@ import path from 'node:path';
 
 const ROOT='loterias-ai/universidad/libro';
 const BASE=`${ROOT}/book-event-feed.json`;
-const SUPPLEMENTS=[`${ROOT}/book-event-feed-live-v1.json`];
+const SUPPLEMENTS=fs.readdirSync(ROOT)
+  .filter(name=>/^book-event-feed-live-v\d+\.json$/.test(name))
+  .sort((a,b)=>Number(a.match(/v(\d+)/)?.[1]||0)-Number(b.match(/v(\d+)/)?.[1]||0))
+  .map(name=>`${ROOT}/${name}`);
 const OUT=`${ROOT}/book-event-feed-current.json`;
 
 const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
@@ -24,7 +27,7 @@ for(const src of sources){
   }
 }
 const current={
-  version:Number(base.version||0)+SUPPLEMENTS.filter(fs.existsSync).length,
+  version:Number(base.version||0)+SUPPLEMENTS.length,
   generatedAt:new Date().toISOString(),
   purpose:'Vista agregada determinista de la memoria científica/editorial. El historial base permanece intacto y los suplementos son append-only.',
   sourceFeeds:sources.map(s=>({path:s.path,version:s.version,eventCount:s.events.length})),
