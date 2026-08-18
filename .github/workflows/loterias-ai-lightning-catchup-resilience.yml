@@ -7,6 +7,8 @@ on:
       - 'loterias-ai/casino/lightning/evidence/casinoorg-source-head-probe.json'
       - 'loterias-ai/casino/lightning/collect-casinoorg-api.mjs'
       - '.github/workflows/loterias-ai-lightning-catchup-resilience.yml'
+  schedule:
+    - cron: '*/5 * * * *'
 permissions:
   contents: write
 concurrency:
