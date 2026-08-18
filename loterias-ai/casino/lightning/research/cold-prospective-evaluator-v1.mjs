@@ -5,13 +5,83 @@ const OUT='loterias-ai/casino/lightning/evidence/cold-prospective-evaluation-v1.
 const freeze=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/cold-prospective-freeze-v1.json','utf8'));
 const rows=fs.readFileSync('loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl','utf8').trim().split('\n').filter(Boolean).map(JSON.parse).filter(r=>Number.isInteger(r.winner)&&r.timestamp).sort((a,b)=>new Date(a.timestamp)-new Date(b.timestamp));
 const future=rows.filter(r=>new Date(r.timestamp)>new Date(freeze.freezeLastTimestamp));
-function selectAt(idx,c){const start=Math.max(0,idx-c.lookback);const hist=rows.slice(start,idx);const counts=Array(37).fill(0);for(const r of hist)counts[r.winner]++;return [...Array(37).keys()].sort((a,b)=>counts[a]-counts[b]||a-b).slice(0,c.pickCount)}
+const minimumProspectiveRounds=Number(freeze.minimumProspectiveRounds)||500;
+// Lock inference to the preregistered boundary. Rows arriving after the first 500
+// remain observable as corpus growth but must not alter the primary frozen test.
+const evaluationFuture=future.slice(0,minimumProspectiveRounds);
+
+function selectAt(idx,c){
+  const start=Math.max(0,idx-c.lookback);
+  const hist=rows.slice(start,idx);
+  const counts=Array(37).fill(0);
+  for(const r of hist)counts[r.winner]++;
+  return [...Array(37).keys()].sort((a,b)=>counts[a]-counts[b]||a-b).slice(0,c.pickCount);
+}
+
+function luckyMultiplierForWinner(r){
+  if(Array.isArray(r.allLuckyNumbers)&&Array.isArray(r.allLuckyMultipliers)){
+    const i=r.allLuckyNumbers.findIndex(n=>Number(n)===r.winner);
+    if(i>=0)return Number(r.allLuckyMultipliers[i]??0);
+  }
+  const lucky=Array.isArray(r.lightningNumbers)?r.lightningNumbers:[];
+  const entry=lucky.find(x=>Number(x?.number??x?.value??x?.num)===r.winner);
+  return entry?Number(entry.multiplier??entry.x??0):0;
+}
+
 const startIdx=rows.findIndex(r=>new Date(r.timestamp)>new Date(freeze.freezeLastTimestamp));
-const candidates=freeze.candidates.map(c=>{let hits=0,luckyHits=0,big100=0,big200=0,big500=0;for(let j=0;j<future.length;j++){const idx=startIdx+j;const sel=selectAt(idx,c);const r=rows[idx];if(sel.includes(r.winner)){hits++;const lucky=Array.isArray(r.lightningNumbers)?r.lightningNumbers:[];const entry=lucky.find(x=>(x.number??x.value??x.num)===r.winner);if(entry){luckyHits++;const m=Number(entry.multiplier??entry.x??0);if(m>=100)big100++;if(m>=200)big200++;if(m>=500)big500++;}}}const nullRate=c.pickCount/37;return{id:c.id,lookback:c.lookback,pickCount:c.pickCount,rounds:future.length,hits,hitRate:future.length?hits/future.length:null,nullRate,excess:future.length?hits/future.length-nullRate:null,luckyHits,big100,big200,big500};});
-const scientific={version:'lightning-cold-prospective-evaluation-v1',freezeHash:freeze.freezeHash,freezeRoundCount:freeze.freezeRoundCount,freezeLastTimestamp:freeze.freezeLastTimestamp,currentRoundCount:rows.length,prospectiveRounds:future.length,minimumProspectiveRounds:freeze.minimumProspectiveRounds,candidates,claimAllowed:future.length>=freeze.minimumProspectiveRounds,retuningPerformed:false,realMoney:false};
+const candidates=freeze.candidates.map(c=>{
+  let hits=0,luckyHits=0,big100=0,big200=0,big500=0;
+  for(let j=0;j<evaluationFuture.length;j++){
+    const idx=startIdx+j;
+    const sel=selectAt(idx,c);
+    const r=rows[idx];
+    if(sel.includes(r.winner)){
+      hits++;
+      const m=luckyMultiplierForWinner(r);
+      if(m>0){
+        luckyHits++;
+        if(m>=100)big100++;
+        if(m>=200)big200++;
+        if(m>=500)big500++;
+      }
+    }
+  }
+  const nullRate=c.pickCount/37;
+  return{
+    id:c.id,
+    lookback:c.lookback,
+    pickCount:c.pickCount,
+    rounds:evaluationFuture.length,
+    hits,
+    hitRate:evaluationFuture.length?hits/evaluationFuture.length:null,
+    nullRate,
+    excess:evaluationFuture.length?hits/evaluationFuture.length-nullRate:null,
+    luckyHits,big100,big200,big500
+  };
+});
+
+const scientific={
+  version:'lightning-cold-prospective-evaluation-v1',
+  freezeHash:freeze.freezeHash,
+  freezeRoundCount:freeze.freezeRoundCount,
+  freezeLastTimestamp:freeze.freezeLastTimestamp,
+  currentRoundCount:rows.length,
+  observedProspectiveRounds:future.length,
+  prospectiveRounds:evaluationFuture.length,
+  minimumProspectiveRounds,
+  boundaryReached:future.length>=minimumProspectiveRounds,
+  excludedPostBoundaryRounds:Math.max(0,future.length-minimumProspectiveRounds),
+  candidates,
+  claimAllowed:future.length>=minimumProspectiveRounds,
+  retuningPerformed:false,
+  realMoney:false
+};
 let previous=null;try{previous=JSON.parse(fs.readFileSync(OUT,'utf8'))}catch{}
 const previousScientific=previous?Object.fromEntries(Object.entries(previous).filter(([k])=>k!=='generatedAt')):null;
-if(previousScientific&&JSON.stringify(previousScientific)===JSON.stringify(scientific)){console.log(JSON.stringify({status:'UNCHANGED',...scientific},null,2));process.exit(0)}
+if(previousScientific&&JSON.stringify(previousScientific)===JSON.stringify(scientific)){
+  console.log(JSON.stringify({status:'UNCHANGED',...scientific},null,2));
+  process.exit(0);
+}
 const out={...scientific,generatedAt:new Date().toISOString()};
 fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
 console.log(JSON.stringify({status:'UPDATED',...out},null,2));
