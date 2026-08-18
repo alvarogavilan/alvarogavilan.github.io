@@ -1,0 +1,87 @@
+name: Loterias AI Lightning Catchup Resilience
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/lightning/evidence/casinoorg-source-head-probe.json'
+      - 'loterias-ai/casino/lightning/collect-casinoorg-api.mjs'
+      - '.github/workflows/loterias-ai-lightning-catchup-resilience.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-lightning-authoritative-api
+  cancel-in-progress: false
+jobs:
+  catchup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - name: Catch up only when source head is ahead
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            node loterias-ai/casino/lightning/research/probe-casinoorg-source-head.mjs
+            node --input-type=module <<'NODE' > /tmp/source-ahead
+            import fs from 'node:fs';
+            const p=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-source-head-probe.json','utf8'));
+            process.stdout.write(p.sourceAheadOfCorpus?'yes':'no');
+            NODE
+            if [ "$(cat /tmp/source-ahead)" != yes ]; then
+              echo 'Source head is not ahead of corpus; no catchup required.'
+              exit 0
+            fi
+
+            node loterias-ai/casino/lightning/collect-casinoorg-api.mjs
+            if git diff --quiet -- loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl; then
+              echo 'ERROR: source probe is ahead but collector produced no new authoritative rows.' >&2
+              exit 1
+            fi
+
+            node loterias-ai/casino/lightning/corpus-readiness.mjs
+            git restore loterias-ai/casino/lightning/evidence/corpus-readiness.json || true
+            git restore loterias-ai/casino/lightning/evidence/corpus-audit.json || true
+            node loterias-ai/casino/lightning/research/verify-economic-prospective-freeze-v1.mjs
+            node loterias-ai/casino/lightning/research/verify-economic-number-prospective-freeze-v1.mjs
+            node loterias-ai/casino/lightning/research/economic-multiplier-prospective-v1.mjs
+            node loterias-ai/casino/lightning/research/economic-number-selection-prospective-v1.mjs
+            node loterias-ai/casino/lightning/research/prospective-capture-continuity-v1.mjs
+            node loterias-ai/casino/lightning/research/lightning-prospective-frozen-lag8.mjs
+            node loterias-ai/casino/lightning/research/physical-rng-prospective-idempotent-v1.mjs
+            node loterias-ai/casino/lightning/research/timing-replication-v2.mjs
+
+            node --input-type=module <<'NODE'
+            import fs from 'node:fs';
+            const c=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json','utf8'));
+            if(c.cachePolicy!=='NO_CACHE_NO_STORE'||!c.sourceLatest?.timestamp||Number(c.accepted)<=0) throw new Error('catchup collector did not prove fresh accepted rows');
+            const pf=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-freeze-v1.json','utf8'));
+            const ps=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-status-v1.json','utf8'));
+            if(ps.freezeVersion!==pf.version||ps.guards?.realMoneyAllowed!==false) throw new Error('physical prospective drift');
+            const rf=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/timing-replication-v2-freeze.json','utf8'));
+            const rs=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/timing-replication-v2-status.json','utf8'));
+            if(rs.freezeVersion!==rf.version||rs.guards?.realMoneyAllowed!==false) throw new Error('timing v2 drift');
+            NODE
+
+            git add \
+              loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl \
+              loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json \
+              loterias-ai/casino/lightning/evidence/economic-multiplier-window-prospective-status-v1.json \
+              loterias-ai/casino/lightning/evidence/economic-number-selection-prospective-status-v1.json \
+              loterias-ai/casino/lightning/evidence/prospective-capture-continuity-v1.json \
+              loterias-ai/casino/lightning/evidence/prospective-lag8.json \
+              loterias-ai/casino/lightning/evidence/physical-rng-prospective-status-v1.json \
+              loterias-ai/casino/lightning/evidence/timing-replication-v2-status.json
+            git commit -m 'research(casino): catch up fresh authoritative Lightning rounds'
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
