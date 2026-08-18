@@ -23,6 +23,8 @@ jobs:
         with: {node-version: 22}
       - run: node loterias-ai/scripts/quinigol-prospective-shadow.mjs
       - run: node loterias-ai/scripts/quinigol-prospective-finalize-30.mjs
+      - run: node loterias-ai/casino/lightning/research/economic-readiness-ledger-v1.mjs
+      - run: node loterias-ai/casino/lightning/research/economic-promotion-gate-v1.mjs
       - name: Validate blinded/final safety
         run: |
           node - <<'NODE'
@@ -32,22 +34,28 @@ jobs:
           if((l.summary?.observedJornadas||0)<30&&(l.summary?.simulatedROI!==null||l.summary?.profitableJornadas!==null||l.disclosure?.interimROIHidden!==true))throw new Error('Quinigol interim blindness regression');
           const p='loterias-ai/data/shadow/quinigol-prospective-final-30.json';
           if(fs.existsSync(p)){const f=JSON.parse(fs.readFileSync(p,'utf8'));if(f.fixedBoundary?.jornadas!==30||f.fixedBoundary?.post30CanRescue!==false||f.guards?.noRetuning!==true||f.guards?.noOptionalStopping!==true||f.guards?.realMoneyAllowed!==false||f.gates?.realMoneyPass!==false)throw new Error('Quinigol final guard regression')}
+          const r=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/economic-readiness-ledger-v1.json','utf8'));if(r.realMoneyAllowed!==false||r.promotionPolicy?.hiddenPerformanceMustRemainHidden!==true)throw new Error('economic readiness guard regression');
+          const g=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/economic-promotion-gate-v1.json','utf8'));if(g.policy?.onlyFixedBoundaryFinalsMayPromote!==true||g.policy?.hiddenInterimPerformanceNeverRead!==true||g.policy?.realMoneyAllowed!==false)throw new Error('economic promotion gate regression');
           NODE
-      - name: Persist blinded ledger or fixed final safely
+      - name: Persist blinded ledger, fixed final and economic radar safely
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p /tmp/quinigol-shadow
           cp loterias-ai/data/shadow/quinigol-ledger.json /tmp/quinigol-shadow/quinigol-ledger.json
+          cp loterias-ai/casino/lightning/evidence/economic-readiness-ledger-v1.json /tmp/quinigol-shadow/economic-readiness-ledger-v1.json
+          cp loterias-ai/casino/lightning/evidence/economic-promotion-gate-v1.json /tmp/quinigol-shadow/economic-promotion-gate-v1.json
           if [ -f loterias-ai/data/shadow/quinigol-prospective-final-30.json ]; then cp loterias-ai/data/shadow/quinigol-prospective-final-30.json /tmp/quinigol-shadow/quinigol-prospective-final-30.json; fi
           git fetch origin main
           git reset --hard origin/main
-          mkdir -p loterias-ai/data/shadow
+          mkdir -p loterias-ai/data/shadow loterias-ai/casino/lightning/evidence
           cp /tmp/quinigol-shadow/quinigol-ledger.json loterias-ai/data/shadow/quinigol-ledger.json
+          cp /tmp/quinigol-shadow/economic-readiness-ledger-v1.json loterias-ai/casino/lightning/evidence/economic-readiness-ledger-v1.json
+          cp /tmp/quinigol-shadow/economic-promotion-gate-v1.json loterias-ai/casino/lightning/evidence/economic-promotion-gate-v1.json
           if [ -f /tmp/quinigol-shadow/quinigol-prospective-final-30.json ]; then cp /tmp/quinigol-shadow/quinigol-prospective-final-30.json loterias-ai/data/shadow/quinigol-prospective-final-30.json; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add loterias-ai/data/shadow/quinigol-ledger.json loterias-ai/data/shadow/quinigol-prospective-final-30.json 2>/dev/null || true
+          git add loterias-ai/data/shadow/quinigol-ledger.json loterias-ai/data/shadow/quinigol-prospective-final-30.json loterias-ai/casino/lightning/evidence/economic-readiness-ledger-v1.json loterias-ai/casino/lightning/evidence/economic-promotion-gate-v1.json 2>/dev/null || true
           git diff --cached --quiet && exit 0
-          git commit -m 'data(loterias-ai): advance blinded Quinigol prospective evidence'
+          git commit -m 'data(loterias-ai): advance blinded Quinigol and economic radar'
           git push origin HEAD:main
