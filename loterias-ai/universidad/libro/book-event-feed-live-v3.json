@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "purpose": "Suplemento append-only de hitos posteriores al reinicio limpio de Lightning.",
+  "events": [
+    {
+      "id": "lightning-segment-v2-first-clean-rows",
+      "type": "scientific-event",
+      "title": "El nuevo segmento Lightning recibe sus primeras rondas después de la barrera pública",
+      "plain": "El primer ciclo posterior a la barrera 2026-08-18T10:50:00Z persistió exactamente dos rondas de la misma fuente autoritativa. La primera llegó a las 10:50:45.038Z y la segunda a las 10:51:32.054Z. Ninguna fila anterior al freeze fue importada. El siguiente ciclo elevó el segmento a cinco rondas con puente de 46,988 segundos y máximo de 50,496 segundos. Timing v3 permaneció ciego con cero episodios cerrados; el control físico v2 acumuló las mismas rondas sin publicar estadísticas; el selector v2 comenzó su warm-up limpio sin puntuar candidatos.",
+      "metrics": {
+        "freezeBarrier":"2026-08-18T10:50:00Z",
+        "firstCleanRoundAt":"2026-08-18T10:50:45.038Z",
+        "secondCleanRoundAt":"2026-08-18T10:51:32.054Z",
+        "firstCycleRows":2,
+        "secondCycleRows":5,
+        "secondCycleBridgeSeconds":46.988,
+        "secondCycleMaxInterRoundSeconds":50.496,
+        "oldAmbiguousGapImported":false,
+        "timingV3PerformanceHidden":true,
+        "physicalV2StatisticsHidden":true,
+        "numberV2WarmupNotScored":true,
+        "realMoneyAllowed":false
+      },
+      "evidenceState":"MERGED_MAIN"
+    },
+    {
+      "id":"v321-kernel-context-development-falsification",
+      "type":"falsification",
+      "title":"Los análogos kernel producen 5+ aislados pero no repetición suficiente para abrir validation",
+      "plain":"v321 evaluó contextos kernel en desarrollo 2010–2018 usando como máximo 512 análogos históricos y sin abrir 2019+. En Bonoloto aparecieron varios eventos 5+ aislados en configuraciones distintas, pero cada comportamiento tuvo como máximo una fecha 5+. El gate había exigido al menos dos fechas distintas además de superar frecuencia y NULL. Ningún candidato sobrevivió y el laboratorio cerró la familia sin consumir validation ni OOS.",
+      "metrics": {
+        "developmentEvaluationStart":"2010-01-01",
+        "developmentEnd":"2018-12-31",
+        "bonolotoDrawsRead":6827,
+        "bonolotoDevelopmentTargets":2272,
+        "maximumAnalogueEndpoints":512,
+        "selectedTotal":0,
+        "validationTouched":false,
+        "blindOosTouched":false,
+        "realMoneyPass":false
+      },
+      "evidenceState":"MERGED_MAIN"
+    }
+  ],
+  "rules":{"appendOnly":true,"neverInventMetrics":true,"doNotOverwritePreviousFeeds":true}
+}
