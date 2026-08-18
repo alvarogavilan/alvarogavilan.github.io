@@ -1,0 +1,71 @@
+{
+  "version":"v322",
+  "family":"DETERMINANTAL_SET_DIVERSITY_6OF49",
+  "status":"PREREGISTERED_BEFORE_EXECUTION",
+  "goal":"Test whether a fixed determinantal point-process style set objective built strictly from past marginal quality and co-occurrence-profile diversity can select top-8 pools with reproducible 5+ coverage beyond same-window frequency and exact matched random baselines.",
+  "antiDuplicateGuard":{
+    "searchedTerms":["determinantal point process","DPP","determinantal","set diversity","repulsion kernel"],
+    "repositorySearchResult":"NO_EQUIVALENT_DPP_FAMILY_FOUND_AT_PREREGISTRATION",
+    "nearestPriorFamilies":[
+      {"version":"v138/v315","difference":"Graph topology scores numbers individually; v322 optimizes the determinant of the entire 8-number set."},
+      {"version":"v320","difference":"Gap-composition models ordered spacing; v322 uses a PSD Gram kernel of past co-occurrence profiles and a joint set determinant."}
+    ],
+    "abortIfEquivalentArtifactFoundLater":true
+  },
+  "games":["bonoloto","primitiva"],
+  "regime":{"support":"1..49","drawSize":6,"poolSize":8,"coverageLines":28,"theoreticalCostEUR":14},
+  "temporalProtocol":{
+    "developmentEvaluationStart":"2010-01-01",
+    "developmentEnd":"2018-12-31",
+    "validationStart":"2019-01-01",
+    "validationEnd":"2022-12-31",
+    "blindOosStart":"2023-01-01",
+    "blindOosEnd":"2024-12-31",
+    "stage1MayReadThrough":"2018-12-31",
+    "validationMustRemainUnreadUntilCandidateFreeze":true,
+    "blindOosMustRemainUnreadUntilValidationPassAndSecondFreeze":true,
+    "retuningAfterDevelopment":false,
+    "post2024MayRescueV322":false
+  },
+  "model":{
+    "quality":"q_n = max(1e-9, ((count_n + 1)/(window + 2)) / (6/49)); counts use only the frozen rolling window before target.",
+    "cooccurrenceProfile":"For each n, feature_m=(cooccur(n,m)+1)/(count_n+49); the 49-vector is L2 normalized. cooccur uses only the same past rolling window.",
+    "gram":"G_ij = dot(normalizedProfile_i, normalizedProfile_j), a PSD Gram matrix.",
+    "similarityKernel":"S=(1-beta)I + beta*G, preserving PSD for beta in [0,1].",
+    "LKernel":"L_ij = q_i^qualityExponent * S_ij * q_j^qualityExponent.",
+    "selection":"Greedy 8-step MAP approximation: at each step add the number maximizing log(det(L_S + 1e-12 I)); ties by lower number. The algorithm and jitter are fixed before execution.",
+    "frequencyBaseline":"Top 8 q_n from the same rolling window, ties by lower number.",
+    "targetLeakageAllowed":false
+  },
+  "frozenGrid":{
+    "windows":[128,256,512],
+    "beta":[0.25,0.5,0.75],
+    "qualityExponent":[0.5,1.0],
+    "logicalConfigurationsPerGame":18,
+    "maximumDevelopmentSurvivorsPerGame":6
+  },
+  "developmentGate":{
+    "minimumEvaluatedDraws":300,
+    "primaryMetric":"fivePlusPoolHits",
+    "mustBeatSameWindowFrequencyByAtLeast":1,
+    "mustBeatExactMatchedRandomExpectation":true,
+    "minimumDistinctFivePlusDates":2,
+    "behavioralDeduplication":true,
+    "ifNoCandidatePasses":"CLOSE_V322_WITHOUT_READING_2019_PLUS"
+  },
+  "validationGate":{
+    "candidateParametersFrozenFromDevelopment":true,
+    "minimumEvaluatedDraws":250,
+    "positiveFivePlusExcessOverFrequencyRequired":true,
+    "positiveFivePlusExcessOverMatchedRandomRequired":true,
+    "minimumDistinctFivePlusDates":2,
+    "noRetuning":true,
+    "ifNoCandidatePasses":"CLOSE_V322_WITHOUT_READING_2023_PLUS"
+  },
+  "matchedNull":{
+    "fivePlusProbability":"[C(6,5)C(43,3)+C(6,6)C(43,2)]/C(49,8)",
+    "fullSixProbability":"C(43,2)/C(49,8)",
+    "samePoolSize":8
+  },
+  "guards":{"futureInformationAllowed":false,"targetTuningAllowed":false,"validationPeekAllowedBeforeFreeze":false,"blindOosPeekAllowedBeforeValidationPass":false,"maximumTheoreticalCostEURPerGameDraw":14,"realMoneyPass":false,"realStakeEUR":0}
+}
