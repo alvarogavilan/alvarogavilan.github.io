@@ -1,11 +1,23 @@
+# Cost control: readiness is deterministic and the clean v2 collector already enforces active-segment safety.
+# Re-run only when readiness logic/workflow changes or manually.
 name: Loterias AI Lightning Corpus Readiness
+
 on:
   workflow_dispatch:
   push:
     branches: [main, research/lightning-corpus-ops-v3]
-    paths: ['loterias-ai/casino/lightning/**','.github/workflows/loterias-ai-lightning-corpus-readiness.yml']
-permissions: {contents: write}
-concurrency: {group: lightning-corpus-readiness, cancel-in-progress: false}
+    paths:
+      - 'loterias-ai/casino/lightning/corpus-readiness.mjs'
+      - 'loterias-ai/casino/lightning/audit-corpus.mjs'
+      - '.github/workflows/loterias-ai-lightning-corpus-readiness.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lightning-corpus-readiness
+  cancel-in-progress: true
+
 jobs:
   readiness:
     runs-on: ubuntu-latest
@@ -13,23 +25,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: {node-version: 24}
+        with:
+          node-version: 24
       - run: node loterias-ai/casino/lightning/corpus-readiness.mjs
       - name: Enforce scientific gates
         run: node -e "const x=require('./loterias-ai/casino/lightning/evidence/corpus-readiness.json');if(x.aggregateDataAccepted||x.syntheticDataAccepted||x.realMoney)process.exit(1)"
-      - name: Persist readiness evidence safely
+      - name: Persist readiness evidence
+        shell: bash
         run: |
           set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          for attempt in 1 2 3; do
-            git fetch origin "$GITHUB_REF_NAME"
-            git reset --hard "origin/$GITHUB_REF_NAME"
-            node loterias-ai/casino/lightning/corpus-readiness.mjs
-            git add loterias-ai/casino/lightning/evidence/corpus-readiness.json loterias-ai/casino/lightning/evidence/corpus-audit.json
-            if git diff --cached --quiet; then exit 0; fi
-            git commit -m "research(casino): refresh Lightning corpus readiness"
-            if git push origin HEAD:"$GITHUB_REF_NAME"; then exit 0; fi
-            sleep $((attempt * 2))
-          done
-          exit 1
+          git add loterias-ai/casino/lightning/evidence/corpus-readiness.json loterias-ai/casino/lightning/evidence/corpus-audit.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'research(casino): refresh Lightning corpus readiness'
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin HEAD:"$GITHUB_REF_NAME"
