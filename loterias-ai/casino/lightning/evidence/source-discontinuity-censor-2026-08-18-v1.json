@@ -1,0 +1,66 @@
+{
+  "version": "source-discontinuity-censor-2026-08-18-v1",
+  "createdAt": "2026-08-18T10:35:00Z",
+  "lastContinuouslyAcceptedRound": {
+    "roundId": "6a83f44a19aef3109978c232",
+    "timestamp": "2026-08-18T05:57:30.374Z"
+  },
+  "discontinuity": {
+    "detectedBy": "authoritative collector quarantine + overlap recovery audit",
+    "freshSourceStillAvailable": true,
+    "firstFreshQuarantinedWindowObservedAt": "2026-08-18T10:05:39.518Z",
+    "latestObservedRecoveryFailure": "recovered union max gap 144.5s exceeds frozen 120s continuity gate",
+    "decision": "Do not relax the continuity gate after observing the gap. Do not splice ambiguous rows into any fixed prospective sample. Start a new authoritative segment behind a future barrier."
+  },
+  "affectedExperiments": [
+    {
+      "experiment": "economic-multiplier-window-prospective-v1",
+      "safeEvidenceThrough": "2026-08-18T05:57:30.374Z",
+      "safeClosedEpisodes": 35,
+      "safeSuccesses": 16,
+      "safeFailures": 19,
+      "safeSuccessRate": 0.457143,
+      "primaryNull": 0.384823,
+      "status": "CENSORED_SOURCE_DISCONTINUITY_DESCRIPTIVE_ONLY",
+      "promotionAllowed": false,
+      "reason": "The positive directional read remains historical evidence but cannot be extended across an interval whose round-level completeness is not proven."
+    },
+    {
+      "experiment": "timing-replication-v2",
+      "eligibleRowsBeforeDiscontinuityAfterItsStart": 0,
+      "closedEpisodes": 0,
+      "status": "SUPERSEDED_BEFORE_FIRST_ELIGIBLE_OBSERVATION",
+      "promotionAllowed": false
+    },
+    {
+      "experiment": "physical-rng-prospective-v1",
+      "eligibleRowsBeforeDiscontinuityAfterItsStart": 0,
+      "status": "SUPERSEDED_BEFORE_FIRST_ELIGIBLE_OBSERVATION",
+      "promotionAllowed": false
+    },
+    {
+      "experiment": "economic-number-selection-prospective-v1",
+      "safePhaseARounds": 340,
+      "phaseARequired": 5000,
+      "candidateRankingDisclosed": false,
+      "phaseAWinnerDisclosed": false,
+      "status": "CENSORED_INCOMPLETE_BLINDED",
+      "promotionAllowed": false,
+      "reason": "A fixed first-5000 sample cannot contain an unverified acquisition discontinuity. The identical preregistered family may be restarted on a clean future segment because no candidate ranking or winner was disclosed."
+    },
+    {
+      "experiment": "prospective-lag8-v1",
+      "status": "CENSORED_SOURCE_DISCONTINUITY",
+      "promotionAllowed": false
+    }
+  ],
+  "guards": {
+    "oldEvidenceDeleted": false,
+    "oldPositiveDirectionReinterpretedAsProof": false,
+    "continuityThresholdRelaxedAfterOutcome": false,
+    "ambiguousRowsAdmittedToProspective": false,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
