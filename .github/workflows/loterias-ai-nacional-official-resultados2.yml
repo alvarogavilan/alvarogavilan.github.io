@@ -1,8 +1,9 @@
+# Cost control: Lotería Nacional normally adds results around Thursday/Saturday draws; refresh on the following UTC mornings.
 name: Loterias AI Nacional Official Resultados2
 on:
   workflow_dispatch:
   schedule:
-    - cron: '25 8 * * *'
+    - cron: '25 8 * * 0,5'
   push:
     paths:
       - 'loterias-ai/scripts/enrich-nacional-official-resultados2.mjs'
@@ -28,31 +29,17 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-
           for attempt in 1 2 3 4 5; do
-            # Never carry a Nacional archive calculated on an older main across a concurrent update.
             git fetch origin main
             git reset --hard origin/main
-
             BATCH_LIMIT=400 node loterias-ai/scripts/enrich-nacional-official-resultados2.mjs
             node loterias-ai/scripts/build-national-archive-index.mjs
             node loterias-ai/scripts/build-completeness-index.mjs
             node loterias-ai/scripts/audit-national-archive.mjs
-
             git add loterias-ai/data/archive
-            if git diff --cached --quiet; then
-              echo 'No semantic Nacional archive change.'
-              exit 0
-            fi
-
+            if git diff --cached --quiet; then exit 0; fi
             git commit -m 'data(loterias-ai): persist full official Nacional extractions'
-            if git push origin HEAD:main; then
-              exit 0
-            fi
-
-            echo "main moved during Nacional persistence; recomputing from latest main (attempt ${attempt}/5)."
+            if git push origin HEAD:main; then exit 0; fi
             sleep $((attempt * 2))
           done
-
-          echo 'Unable to persist Nacional backfill after 5 recomputations.' >&2
           exit 1
