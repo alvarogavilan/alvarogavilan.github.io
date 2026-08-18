@@ -40,5 +40,24 @@ function apply(){
  });
  const open=list.querySelector('.game[open]');if(open)updateSide(open);
 }
+async function exposeEuromillionsV199(){
+ const det=document.querySelector('.game[data-id="euromillones"]');if(!det)return;
+ try{
+  const r=await fetch('../data/research/euromillones-v199-complete-5plus2-evaluation.json?v='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);
+  const m=await r.json(),t=m?.ticket,nums=Array.isArray(t?.numbers)?t.numbers:[],stars=Array.isArray(t?.stars)?t.stars:[];
+  if(m?.freezeFingerprintVerified!==true||nums.length!==5||stars.length!==2)return;
+  det.dataset.state=m.status||'FREEZE V199';
+  const tag=det.querySelector('summary .tag');if(tag){tag.classList.remove('work');tag.classList.add('live');tag.textContent='FREEZE V199';}
+  const model=det.querySelector('.model');
+  if(model){
+   const copy=[...nums,'+','E',...stars].join(' ');
+   model.innerHTML=`<div class="box"><div class="boxtitle">EUROMILLONES v199 · FREEZE PROSPECTIVO 5+2</div><div class="ticket"><div><div class="nums">${esc(nums.join(' · '))} <span style="color:#ffd166">★ ${esc(stars.join(' · '))}</span></div><div class="meta">Objetivo ${esc(m.targetDrawDate||'—')} · estado ${esc(m.status||'—')}</div></div><button class="copy" id="copy-v199" type="button">COPIAR</button></div><div class="notice">Freeze verificado antes del resultado objetivo. Evaluación obligatoria del <b>5+2 completo</b>. Sin retuning, sin usar el resultado objetivo para seleccionar y con <b>0 € reales</b>.</div></div>`;
+   const b=model.querySelector('#copy-v199');if(b)b.addEventListener('click',async e=>{e.stopPropagation();try{await navigator.clipboard.writeText(copy);const toast=document.getElementById('toast');if(toast){toast.textContent='Euromillones v199 copiado';toast.classList.add('on');setTimeout(()=>toast.classList.remove('on'),1200);}}catch{}});
+  }
+  const metrics=[...det.querySelectorAll('.metric')];
+  metrics.forEach(x=>{const k=x.querySelector('small')?.textContent?.trim();const v=x.querySelector('strong');if(!v)return;if(k==='ARTEFACTO'){v.textContent='sí';v.classList.add('good');}if(k==='ESTADO')v.textContent='freeze v199';});
+ }catch{}
+}
 fetch('../data/backtests/master-walkforward.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(r.status);return r.json()}).then(x=>{wf=x;apply();setTimeout(apply,1000);setTimeout(apply,3000)}).catch(()=>{});
+exposeEuromillionsV199();
 })();
