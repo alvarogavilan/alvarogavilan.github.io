@@ -1,0 +1,84 @@
+{
+  "version": "economic-number-selection-prospective-status-v2",
+  "generatedAt": "2026-08-18T10:41:16.261Z",
+  "freezeVersion": "economic-number-selection-prospective-freeze-v2",
+  "prospectiveStartsAt": "2026-08-18T10:50:00Z",
+  "source": {
+    "file": "loterias-ai/casino/lightning/data/casinoorg-lightningroulette-segment-v2.jsonl",
+    "currentEligibleCorpusRows": 0,
+    "currentMaxTimestamp": null
+  },
+  "frozenFamily": {
+    "coverages": [
+      3,
+      4
+    ],
+    "modes": [
+      "hot",
+      "cold",
+      "recent",
+      "notRecent",
+      "transition",
+      "wheelLast"
+    ],
+    "lookbacks": [
+      5,
+      8,
+      10,
+      12,
+      15,
+      20,
+      30,
+      50,
+      80,
+      120,
+      200
+    ],
+    "totalCandidates": 132
+  },
+  "progress": {
+    "eligibleFutureRounds": 0,
+    "fixedBoundaryUsedRounds": 0,
+    "phaseARoundsRequired": 5000,
+    "phaseBRoundsRequired": 5000,
+    "fixedFinalBoundary": 10000,
+    "roundsUntilPhaseA": 5000,
+    "roundsUntilFixedFinal": 10000,
+    "postBoundaryRowsIgnoredForV2": 0,
+    "cleanWarmupRequired": 200,
+    "cleanWarmupObserved": 0,
+    "cleanWarmupComplete": false,
+    "totalCleanSegmentRows": 0
+  },
+  "administrativeEta": null,
+  "phase": "WAITING_FOR_PROSPECTIVE_START",
+  "disclosure": {
+    "candidatePerformanceHidden": true,
+    "reason": "ADMINISTRATIVE_COUNTS_ONLY_NO_SCORING"
+  },
+  "phaseAWinners": null,
+  "confirmation": null,
+  "gates": {
+    "phaseAComplete": false,
+    "fixedFinalComplete": false,
+    "numberSelectionProspectiveEdge": false,
+    "separateTimingGateStillRequired": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false
+  },
+  "guards": {
+    "noHistoricalModelSelection": true,
+    "all132CandidatesFrozenBeforeStart": true,
+    "optionalStoppingBlocked": true,
+    "v1SelectorAlgorithmUnchanged": true,
+    "cleanWarmupNotScored": true,
+    "realMoneyAllowed": false
+  },
+  "algorithmCustody": {
+    "sourceEngine": "loterias-ai/casino/lightning/research/economic-number-selection-prospective-v1.mjs",
+    "sourceEngineGitBlobSha": "1e9431d663b6f5ced9dcb24a9d6074bb6bea3874",
+    "derivation": "same frozen selector algorithm; no scored round exists yet"
+  },
+  "sourceSegment": "authoritative-v2",
+  "interpretation": "Administrative zero point only; no selector performance exists or is disclosed."
+}
