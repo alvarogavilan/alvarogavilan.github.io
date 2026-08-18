@@ -1,5 +1,5 @@
 {
-  "version":3,
+  "version":4,
   "purpose":"Suplemento append-only de hitos operativos y científicos posteriores al book-event-feed base. Se agrega de forma determinista sin reescribir la historia anterior.",
   "events":[
     {
@@ -40,6 +40,38 @@
       "title":"Bonoloto entrega doce mecanismos a Primitiva y el primer sorteo queda sellado antes de existir",
       "plain":"v315 no vuelve a buscar parámetros en Primitiva. Toma exactamente los doce mecanismos de topología de grafos congelados en Bonoloto v138 y los transfiere al mismo espacio principal 6 de 49. Antes de observar el primer resultado elegible, el laboratorio fijó una frontera primaria de 200 sorteos exactos, diez mil réplicas aleatorias por configuración, corrección Holm y baselines de frecuencia y recencia. El primer objetivo, La Primitiva del 20 de agosto de 2026, quedó sellado el 17 de agosto a las 22:59:09Z usando sólo históricos hasta el día 17. El resultado aún no existía en el archivo y el rendimiento de los doce candidatos permanece oculto hasta la frontera fija, salvo un eventual 5/6 o 6/6 que sólo activaría auditoría extrema.",
       "metrics":{"parentFreezeCommit":"1daecea8f211175207a19199ab6697b1fdf91501","executionProtocolCommit":"7c01324e618c4464058b2316121ee6e48cc6558c","firstSealCommit":"f7a387ced41201d71552f969a4d83639bb09cc36","firstTarget":"2026-08-20","sealedAt":"2026-08-17T22:59:09.222Z","sealHash":"feb6c229e88e29e7c5ab090aac860ce3c314247838892dab8be621c94ae40662","sourceBlob":"2b41d7e931aff8d5f211fd8690a5dc3c37cffe45","strictPriorHistoryDraws":4175,"historyLastDrawDate":"2026-08-17","frozenConfigurations":12,"matchedRandomReplicates":10000,"fixedDecisionBoundary":200,"familyWiseAlpha":0.05,"candidateRankingPublished":false,"post200MayRescue":false,"realMoneyPass":false,"realStakeEUR":0},
+      "evidenceState":"MERGED_MAIN"
+    },
+    {
+      "id":"lightning-timing-directional-30-v1",
+      "type":"scientific-event",
+      "title":"El timing congelado supera su primera frontera prospectiva con dirección positiva, todavía sin permiso formal",
+      "plain":"La regla Lightning congelada alcanzó por primera vez la frontera preregistrada de lectura direccional de treinta episodios sin cambiar parámetros. En 35 episodios cerrados hubo 16 éxitos y 19 fallos: 45,7143% frente al NULL primario congelado de 38,4823%, un lift absoluto de 7,232 puntos y relativo de 18,793%. El intervalo Wilson 95% todavía cruza el NULL, por lo que el resultado es descriptivo y no constituye una ventaja demostrada ni un gate de promoción.",
+      "metrics":{"postFreezeRounds":374,"closedEpisodes":35,"successes":16,"failures":19,"successRate":0.457143,"primaryNull":0.384823,"absoluteLift":0.07232,"relativeLift":0.18793,"wilson95":{"lower":0.304658,"upper":0.618105},"directionalSampleReached":true,"formalSampleReached":false,"lowerCiAbovePrimaryNull":false,"fixedFinalTimingGatePass":false,"promotionGatePass":false,"realMoneyAllowed":false},
+      "evidenceState":"MERGED_MAIN"
+    },
+    {
+      "id":"bonoloto-full-history-crossvalidated-v1",
+      "type":"infrastructure",
+      "title":"Bonoloto queda con una serie completa de 9.358 sorteos y controles cruzados oficiales",
+      "plain":"La base de Bonoloto se amplió hasta 9.358 sorteos entre 1988 y el 17 de agosto de 2026. Unicidad y rangos pasan, los spot-checks oficiales pasan, los 365 sorteos de 2025 se verifican y las frecuencias de los 49 números de 2025 coinciden con SELAE sin discrepancias. Esta mejora eleva la calidad de falsación y entrenamiento; no es por sí sola evidencia predictiva.",
+      "metrics":{"importCommit":"04f1e2f070eebe99b8353c0b22e7ae3032ee65bc","totalRecords":9358,"earliest":"1988-02-28","latest":"2026-08-17","rangeAndUniqueness":"PASS","officialSpotChecks":"PASS","selae2025DrawCount":365,"selae2025All49FrequencyCounts":"PASS","mismatchCount":0},
+      "evidenceState":"MERGED_MAIN"
+    },
+    {
+      "id":"v317-conformal-fast-falsification",
+      "type":"falsification",
+      "title":"Conformal prediction falla antes del holdout porque no consigue pools jugables",
+      "plain":"v317 preregistró 144 configuraciones de cobertura conformal para Bonoloto y Primitiva. El procedimiento debía producir de forma natural un pool de seis a ocho números; estaba prohibido truncar un conjunto mayor. En desarrollo hasta 2022, todas las configuraciones colapsaron al mismo comportamiento no jugable: cero evaluaciones con K menor o igual a ocho. El laboratorio cerró v317 sin abrir 2023–2024 y sin retuning.",
+      "metrics":{"preregisterCommit":"ce6f2b5fe49da2436233bb06d77752c6630bb76b","definitionFreezeCommit":"1ccfd233cff75fe5f408dae3c0ae5dbe475560a5","resultCommit":"b681a3d41bd14e8ad53e8cafa5c5976b4471e4bc","logicalConfigurations":144,"bonolotoDrawsRead":8034,"primitivaDrawsRead":3609,"lastDrawRead":"2022-12-31","playableEvaluations":0,"selectedTotal":0,"blindOosOpened":false,"retuningPerformed":false,"realMoneyPass":false},
+      "evidenceState":"MERGED_MAIN"
+    },
+    {
+      "id":"lightning-physical-rng-prospective-v1",
+      "type":"scientific-event",
+      "title":"El laboratorio abre un examen físico de la rueda que no puede escoger la anomalía después",
+      "plain":"Tras considerar exploratorios los tests físicos anteriores, se congeló una prueba completamente futura para 5.000 rondas posteriores a las 07:10Z del 18 de agosto. Las tres pruebas primarias son uniformidad 0–36, máximo de dependencia serial en lags 1–20 y máximo de vecindad física de rueda. Se aplicará Holm al 1% y diez mil permutaciones para las dos familias seriales. Antes de la frontera sólo se publica progreso administrativo; el punto cero quedó persistido con cero rondas elegibles.",
+      "metrics":{"freezeCommit":"9ac9d31710e38734bd31416f1b7ac0fdf1fd5e0f","evaluatorCommit":"f201a5565c972a0256c1915e60f6077efe46cb04","zeroPointCommit":"a082a1e33e42b17fd562b10d39ea5d0cb3379a38","prospectiveStartsAt":"2026-08-18T07:10:00Z","fixedBoundaryRounds":5000,"primaryTests":3,"permutationReplicates":10000,"familyWiseAlpha":0.01,"eligibleAtZeroPoint":0,"observedStatisticsHidden":true,"pValuesHidden":true,"noOptionalStopping":true,"realMoneyAllowed":false},
       "evidenceState":"MERGED_MAIN"
     }
   ],
