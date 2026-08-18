@@ -11,11 +11,21 @@ const evidenceFile=path.join(root,'evidence','casinoorg-api-collector.json');
 fs.mkdirSync(outDir,{recursive:true});
 fs.mkdirSync(path.dirname(evidenceFile),{recursive:true});
 
-const res=await fetch(endpoint,{headers:{accept:'application/json','user-agent':'LoteriasAI-research/1.0'}});
+// The public endpoint is CDN-backed. A diagnostic probe proved that normal fetches
+// could receive an old 30-round page while an explicit no-cache request already
+// exposed a newer source head. Scientific prospectives must advance from fresh
+// authoritative rounds, never from a cached page, so cache bypass is explicit.
+const res=await fetch(endpoint,{headers:{
+  accept:'application/json',
+  'user-agent':'LoteriasAI-research/1.1',
+  'cache-control':'no-cache, no-store, max-age=0',
+  pragma:'no-cache'
+}});
 const text=await res.text();
 if(!res.ok) throw new Error(`HTTP ${res.status}`);
 let payload; try{payload=JSON.parse(text)}catch{throw new Error('invalid JSON')}
 const items=Array.isArray(payload)?payload:Array.isArray(payload?.data)?payload.data:[];
+const sourceResponseSha256=crypto.createHash('sha256').update(text).digest('hex');
 
 const existing=new Set();
 if(fs.existsSync(outFile)){
@@ -24,14 +34,16 @@ if(fs.existsSync(outFile)){
   }
 }
 
-let accepted=0,duplicates=0,rejected=0; const rows=[];
+let accepted=0,duplicates=0,rejected=0; const rows=[];let sourceLatest=null;
 for(const item of items){
   const d=item?.data||item;
   const roundId=String(item?.id||d?.id||'');
   const timestamp=d?.settledAt||d?.startedAt||null;
   const winner=Number(d?.result?.outcome?.number);
   const lucky=Array.isArray(d?.result?.luckyNumbersList)?d.result.luckyNumbersList:[];
-  if(!roundId||!timestamp||!Number.isInteger(winner)||winner<0||winner>36){rejected++;continue}
+  if(!roundId||!timestamp||Number.isNaN(Date.parse(timestamp))||!Number.isInteger(winner)||winner<0||winner>36){rejected++;continue}
+  const iso=new Date(timestamp).toISOString();
+  if(!sourceLatest||iso>sourceLatest.timestamp)sourceLatest={roundId,timestamp:iso,winner};
   if(existing.has(roundId)){duplicates++;continue}
   const luckyNumbers=[]; const luckyMultipliers=[];
   for(const x of lucky){
@@ -39,10 +51,11 @@ for(const item of items){
     if(Number.isInteger(n)&&n>=0&&n<=36&&Number.isFinite(m)&&m>0){luckyNumbers.push(n);luckyMultipliers.push(m)}
   }
   const rawHash=crypto.createHash('sha256').update(JSON.stringify(item)).digest('hex');
-  rows.push({source:'casinoorg-evolution-public-api',sourceRole:'PRIMARY_STRUCTURED_PUBLIC',endpoint,roundId,timestamp,winner,allLuckyNumbers:luckyNumbers,allLuckyMultipliers:luckyMultipliers,roundIdQuality:'authoritative_source_id',timestampQuality:'authoritative_settled_at',trainingEligible:true,confidenceTier:'A',rawHash,realMoney:false});
+  rows.push({source:'casinoorg-evolution-public-api',sourceRole:'PRIMARY_STRUCTURED_PUBLIC',endpoint,roundId,timestamp:iso,winner,allLuckyNumbers:luckyNumbers,allLuckyMultipliers:luckyMultipliers,roundIdQuality:'authoritative_source_id',timestampQuality:'authoritative_settled_at',trainingEligible:true,confidenceTier:'A',rawHash,realMoney:false});
   existing.add(roundId);accepted++;
 }
+rows.sort((a,b)=>a.timestamp.localeCompare(b.timestamp)||a.roundId.localeCompare(b.roundId));
 if(rows.length) fs.appendFileSync(outFile,rows.map(r=>JSON.stringify(r)).join('\n')+'\n');
-const report={generatedAt:new Date().toISOString(),endpoint,status:res.status,received:items.length,accepted,duplicates,rejected,totalStored:existing.size,trainingEligibleRows:true,authenticationBypassAttempted:false,realMoney:false};
+const report={generatedAt:new Date().toISOString(),endpoint,status:res.status,received:items.length,accepted,duplicates,rejected,totalStored:existing.size,sourceLatest,sourceResponseSha256,cachePolicy:'NO_CACHE_NO_STORE',trainingEligibleRows:true,authenticationBypassAttempted:false,realMoney:false};
 fs.writeFileSync(evidenceFile,JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify(report,null,2));
