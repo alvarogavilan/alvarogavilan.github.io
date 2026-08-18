@@ -71,7 +71,7 @@
     wrap.id='lightningEconomicLink';
     wrap.className='truth';
     wrap.style.marginTop='12px';
-    wrap.innerHTML='<b style="display:block;color:#ffd166;margin-bottom:5px">⚡ ECONOMÍA LIGHTNING</b><span>15 € · cobertura 3–4 números · timing 4–10 · discovery/validation/holdout.</span><br><a href="../casino/economia/" style="display:inline-block;margin-top:7px">Abrir estudio económico →</a>';
+    wrap.innerHTML='<b style="display:block;color:#ffd166;margin-bottom:5px">⚡ LIGHTNING · SEGMENTO LIMPIO V2</b><span>Fuente autoritativa nueva tras la discontinuidad · timing v3 · RNG físico v2 · 132 selectores con warm-up ciego.</span><br><a href="../casino/economia/segmento-limpio/" style="display:inline-block;margin-top:7px;font-weight:900">Abrir panel limpio →</a><br><a href="../casino/economia/" style="display:inline-block;margin-top:7px">Abrir estudio económico completo →</a>';
     side.appendChild(wrap);
   }
 
