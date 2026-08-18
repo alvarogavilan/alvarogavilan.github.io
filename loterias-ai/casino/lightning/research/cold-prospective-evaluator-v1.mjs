@@ -8,7 +8,7 @@ const future=rows.filter(r=>new Date(r.timestamp)>new Date(freeze.freezeLastTime
 const minimumProspectiveRounds=Number(freeze.minimumProspectiveRounds)||500;
 const alpha=0.05;
 // Lock inference to the preregistered boundary. Rows arriving after the first 500
-// remain observable as corpus growth but must not alter the primary frozen test.
+// remain part of corpus monitoring but must never alter this terminal primary test.
 const evaluationFuture=future.slice(0,minimumProspectiveRounds);
 
 function selectAt(idx,c){
@@ -95,22 +95,29 @@ if(evaluationFuture.length){
 
 const boundaryReached=future.length>=minimumProspectiveRounds;
 const edgeClaimAllowed=boundaryReached&&candidates.some(c=>c.significantHolm);
+const terminalDecision=!boundaryReached
+  ? 'ACCUMULATING_PREREGISTERED_SAMPLE'
+  : edgeClaimAllowed
+    ? 'POSITIVE_EDGE_SURVIVES_HOLM'
+    : 'NEGATIVE_NO_EDGE_AFTER_HOLM';
 const scientific={
   version:'lightning-cold-prospective-evaluation-v1',
   freezeHash:freeze.freezeHash,
   freezeRoundCount:freeze.freezeRoundCount,
   freezeLastTimestamp:freeze.freezeLastTimestamp,
-  currentRoundCount:rows.length,
-  observedProspectiveRounds:future.length,
+  // The primary artifact is sealed at the preregistered boundary. Corpus growth
+  // after that boundary belongs to separate confirmatory monitoring artifacts.
+  inferenceRoundCount:boundaryReached?freeze.freezeRoundCount+minimumProspectiveRounds:rows.length,
+  observedProspectiveRounds:evaluationFuture.length,
   prospectiveRounds:evaluationFuture.length,
   minimumProspectiveRounds,
   boundaryReached,
-  excludedPostBoundaryRounds:Math.max(0,future.length-minimumProspectiveRounds),
   inferenceReady:boundaryReached,
   primaryInference:'one-sided exact binomial versus frozen pick-count null; Holm family-wise correction across frozen candidates',
   alpha,
   multiplicityMethod:'Holm-Bonferroni',
   candidates,
+  terminalDecision,
   claimAllowed:edgeClaimAllowed,
   edgeObserved:edgeClaimAllowed,
   retuningPerformed:false,
