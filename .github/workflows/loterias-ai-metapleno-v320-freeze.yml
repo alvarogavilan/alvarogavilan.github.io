@@ -1,0 +1,48 @@
+name: Loterias AI MetaPleno v320 Validation Freeze
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/data/research/metapleno-v320-stage1-development.json'
+      - 'loterias-ai/research/megalab/v320-stage2-freeze.mjs'
+      - '.github/workflows/loterias-ai-metapleno-v320-freeze.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-metapleno-v320-freeze
+  cancel-in-progress: false
+jobs:
+  freeze:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - run: node loterias-ai/research/megalab/v320-stage2-freeze.mjs
+      - name: Verify freeze custody
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),crypto=require('crypto');
+          const j=JSON.parse(fs.readFileSync('loterias-ai/data/research/metapleno-v320-validation-freeze.json','utf8'));
+          if(j.status!=='FROZEN_BEFORE_VALIDATION_READ'||j.temporalCustody?.validationReadBeforeFreeze!==false||j.temporalCustody?.blindOosReadBeforeFreeze!==false) throw new Error('freeze custody failed');
+          if(j.guards?.parametersFrozen!==true||j.guards?.retuningAllowed!==false||j.guards?.realMoneyPass!==false||Number(j.guards?.realStakeEUR)!==0) throw new Error('freeze safety failed');
+          const {manifestHash,generatedAt,...core}=j;const expected=crypto.createHash('sha256').update(JSON.stringify(core)).digest('hex');if(expected!==manifestHash)throw new Error('manifest hash mismatch');
+          NODE
+      - name: Persist freeze race-safe
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET='loterias-ai/data/research/metapleno-v320-validation-freeze.json'
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "$TARGET"
+          git diff --cached --quiet && exit 0
+          git commit -m 'data(loterias-ai): persist v320 validation freeze'
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase origin main || { git rebase --abort || true; sleep $((attempt*2)); continue; }
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
