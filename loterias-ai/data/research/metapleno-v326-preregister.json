@@ -1,0 +1,68 @@
+{
+  "version": "v326",
+  "family": "PAIRWISE_MAXENTROPY_SET_6OF49",
+  "status": "PREREGISTERED_BEFORE_EXECUTION",
+  "goal": "Test whether a fixed pairwise maximum-entropy-inspired set objective, using past-only marginal fields plus residual pair interactions, yields reproducible 5+ coverage beyond same-window frequency and exact matched random baselines.",
+  "antiDuplicateGuard": {
+    "searchedTerms": ["Ising", "maximum entropy", "pseudolikelihood", "conditional log odds", "pairwise residual"],
+    "repositorySearchResult": "NO_EQUIVALENT_PAIRWISE_MAXENTROPY_FAMILY_FOUND_AT_PREREGISTRATION",
+    "nearestPriorFamilies": [
+      {"version": "mass-pair-transition", "difference": "Pair-transition models cross-draw transitions; v326 models same-window within-draw pair interactions after dividing out marginal occurrence probabilities."},
+      {"version": "v322", "difference": "DPP uses determinant repulsion; v326 uses signed log residual pair interactions in an Ising-style set objective."}
+    ],
+    "abortIfEquivalentArtifactFoundLater": true
+  },
+  "games": ["bonoloto", "primitiva"],
+  "regime": {"support": "1..49", "drawSize": 6, "poolSize": 8, "coverageLines": 28, "theoreticalCostEUR": 14},
+  "temporalProtocol": {
+    "developmentEvaluationStart": "2010-01-01",
+    "developmentEnd": "2018-12-31",
+    "validationStart": "2019-01-01",
+    "validationEnd": "2022-12-31",
+    "blindOosStart": "2023-01-01",
+    "blindOosEnd": "2024-12-31",
+    "stage1MayReadThrough": "2018-12-31",
+    "validationMustRemainUnreadUntilCandidateFreeze": true,
+    "blindOosMustRemainUnreadUntilValidationPassAndSecondFreeze": true,
+    "retuningAfterDevelopment": false,
+    "post2024MayRescueV326": false
+  },
+  "model": {
+    "marginal": "p_i=(count_i+1)/(W+2) using only previous W draws; field_i=log(p_i/(1-p_i)), then z-standardize fields across 49 numbers.",
+    "pairInteraction": "J_ij=clip(log(p_ij/(p_i*p_j)),-2,2), with p_ij=(cooccur_ij+0.5)/(W+1).",
+    "greedySetObjective": "Start empty. At each of 8 steps add i maximizing zField_i + eta*mean_{j in selected}(J_ij); for the first element the interaction term is 0. Ties by lower number.",
+    "frequencyBaseline": "Top 8 count_i over the same W, ties by lower number.",
+    "targetLeakageAllowed": false
+  },
+  "frozenGrid": {
+    "windows": [128,256,512],
+    "eta": [0.25,0.5,1,2],
+    "interactionClip": 2,
+    "logicalConfigurationsPerGame": 12,
+    "maximumDevelopmentSurvivorsPerGame": 6
+  },
+  "developmentGate": {
+    "minimumEvaluatedDraws": 300,
+    "primaryMetric": "fivePlusPoolHits",
+    "mustBeatSameWindowFrequencyByAtLeast": 1,
+    "mustBeatExactMatchedRandomExpectation": true,
+    "minimumDistinctFivePlusDates": 2,
+    "behavioralDeduplication": true,
+    "ifNoCandidatePasses": "CLOSE_V326_WITHOUT_READING_2019_PLUS"
+  },
+  "validationGate": {
+    "candidateParametersFrozenFromDevelopment": true,
+    "minimumEvaluatedDraws": 250,
+    "positiveFivePlusExcessOverFrequencyRequired": true,
+    "positiveFivePlusExcessOverMatchedRandomRequired": true,
+    "minimumDistinctFivePlusDates": 2,
+    "noRetuning": true,
+    "ifNoCandidatePasses": "CLOSE_V326_WITHOUT_READING_2023_PLUS"
+  },
+  "matchedNull": {
+    "fivePlusProbability": "[C(6,5)C(43,3)+C(6,6)C(43,2)]/C(49,8)",
+    "fullSixProbability": "C(43,2)/C(49,8)",
+    "samePoolSize": 8
+  },
+  "guards": {"futureInformationAllowed":false,"targetTuningAllowed":false,"validationPeekAllowedBeforeFreeze":false,"blindOosPeekAllowedBeforeValidationPass":false,"maximumTheoreticalCostEURPerGameDraw":14,"realMoneyPass":false,"realStakeEUR":0}
+}
