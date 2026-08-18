@@ -2,10 +2,14 @@ name: Loterias AI Attempt Ledger
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '37 * * * *'
   push:
     branches: [main]
     paths:
       - 'loterias-ai/data/shadow/**/*evaluation.json'
+      - 'loterias-ai/data/research/**/*evaluation.json'
+      - 'loterias-ai/data/prospective/**/*evaluation.json'
       - 'loterias-ai/scripts/build-public-attempt-ledger.mjs'
       - '.github/workflows/loterias-ai-attempt-ledger.yml'
 
@@ -14,7 +18,7 @@ permissions:
 
 concurrency:
   group: loterias-ai-attempt-ledger
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build-ledger:
@@ -29,23 +33,39 @@ jobs:
           node-version: '24'
       - name: Build normalized public attempt ledger
         run: node loterias-ai/scripts/build-public-attempt-ledger.mjs
-      - name: Commit ledger if changed
+      - name: Validate ledger semantics
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const p='loterias-ai/data/shadow/public-attempts-v1.json';
+          const d=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(d.version!=='public-attempts-v2') throw new Error('attempt ledger version drift');
+          if(d.counts?.realMoneyAttempts!==0) throw new Error('unexpected real-money attempt');
+          for(const a of d.attempts||[]){
+            if(!a.outcomeObserved&&a.postmortem?.failureClass!=='PENDING_RESULT') throw new Error('pending result misclassified as failure');
+            if(a.outcomeObserved&&a.postmortem?.failureClass==='PENDING_RESULT') throw new Error('observed result left pending');
+          }
+          console.log(JSON.stringify(d.counts));
+          NODE
+      - name: Commit ledger safely if changed
         shell: bash
         run: |
           set -euo pipefail
           TARGET='loterias-ai/data/shadow/public-attempts-v1.json'
-          if [ -z "$(git status --porcelain -- "$TARGET")" ]; then
-            echo 'Attempt ledger unchanged.'
-            exit 0
-          fi
+          cp "$TARGET" /tmp/public-attempts-v1.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add "$TARGET"
-          git commit -m 'data(results): refresh normalized attempt ledger'
-          for attempt in 1 2 3 4; do
-            git pull --rebase origin main || { git rebase --abort || true; sleep $((attempt*2)); continue; }
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/public-attempts-v1.json "$TARGET"
+            git add "$TARGET"
+            if git diff --cached --quiet; then
+              echo 'Attempt ledger already current.'
+              exit 0
+            fi
+            git commit -m 'data(results): refresh normalized attempt ledger'
             if git push origin HEAD:main; then exit 0; fi
             sleep $((attempt*2))
           done
-          echo 'Unable to publish ledger after retries.' >&2
           exit 1
