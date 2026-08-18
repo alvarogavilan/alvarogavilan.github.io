@@ -62,16 +62,95 @@ jobs:
           console.log(JSON.stringify({cutoff:f.cutoffTimestamp,lag:f.lag,comparisons:j.prospective.comparisons,matches:j.prospective.matches,pUpper:j.prospective.pUpper,enoughData:j.prospective.enoughData,statisticallyPass:j.prospective.statisticallyPass,authorizedStakeEUR:j.guards.authorizedStakeEUR},null,2));
           NODE
 
+      - name: Suppress timestamp-only evidence churn
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {execFileSync} from 'node:child_process';
+          const paths=[
+            'loterias-ai/casino/lightning/evidence/permutation-walkforward-v2.json',
+            'loterias-ai/casino/lightning/evidence/prospective-lag8.json'
+          ];
+          const stable = value => {
+            if (Array.isArray(value)) return value.map(stable);
+            if (!value || typeof value !== 'object') return value;
+            const out={};
+            for (const [k,v] of Object.entries(value)) {
+              if (k === 'generatedAt') continue;
+              out[k]=stable(v);
+            }
+            return out;
+          };
+          for (const p of paths) {
+            let previous;
+            try { previous=execFileSync('git',['show',`HEAD:${p}`],{encoding:'utf8'}); }
+            catch { continue; }
+            const current=fs.readFileSync(p,'utf8');
+            if (JSON.stringify(stable(JSON.parse(previous))) === JSON.stringify(stable(JSON.parse(current)))) {
+              fs.writeFileSync(p,previous);
+              console.log(`Restored ${p}: generatedAt-only change.`);
+            }
+          }
+          NODE
+
       - name: Persist scientific evidence when changed
         run: |
+          set -euo pipefail
           PATHS='loterias-ai/casino/lightning/evidence/permutation-walkforward-v2.json loterias-ai/casino/lightning/evidence/prospective-lag8-freeze.json loterias-ai/casino/lightning/evidence/prospective-lag8.json'
           if git diff --quiet -- $PATHS; then
             echo 'Evidence unchanged.'
             exit 0
           fi
+
           git config user.name 'loterias-ai-bot'
           git config user.email 'actions@users.noreply.github.com'
-          git add $PATHS
-          git commit -m 'data(casino): persist Lightning confirmatory evidence'
-          git pull --rebase origin main
-          git push origin HEAD:main
+
+          for attempt in 1 2 3 4 5; do
+            echo "Persist attempt ${attempt}/5 against latest main"
+            git fetch origin main
+            git reset --hard origin/main
+
+            node loterias-ai/casino/lightning/research/lightning-permutation-walkforward-v2.mjs
+            node loterias-ai/casino/lightning/research/lightning-prospective-frozen-lag8.mjs
+
+            node --input-type=module <<'NODE'
+            import fs from 'node:fs';
+            import {execFileSync} from 'node:child_process';
+            const paths=[
+              'loterias-ai/casino/lightning/evidence/permutation-walkforward-v2.json',
+              'loterias-ai/casino/lightning/evidence/prospective-lag8.json'
+            ];
+            const stable=value=>{
+              if(Array.isArray(value)) return value.map(stable);
+              if(!value||typeof value!=='object') return value;
+              const out={};
+              for(const [k,v] of Object.entries(value)){ if(k!=='generatedAt') out[k]=stable(v); }
+              return out;
+            };
+            for(const p of paths){
+              let previous;
+              try { previous=execFileSync('git',['show',`HEAD:${p}`],{encoding:'utf8'}); } catch { continue; }
+              const current=fs.readFileSync(p,'utf8');
+              if(JSON.stringify(stable(JSON.parse(previous)))===JSON.stringify(stable(JSON.parse(current)))) fs.writeFileSync(p,previous);
+            }
+            const f=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/prospective-lag8-freeze.json','utf8'));
+            const j=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/prospective-lag8.json','utf8'));
+            if(f.lag!==8||f.immutable!==true||f.realMoney!==false||f.claimAllowed!==false) throw new Error('invalid immutable lag-8 freeze');
+            if(j?.freeze?.lag!==8||j?.freeze?.cutoffTimestamp!==f.cutoffTimestamp) throw new Error('prospective test drifted from frozen hypothesis');
+            if(j?.guards?.realMoney!==false||j?.guards?.claimAllowed!==false||j?.guards?.authorizedStakeEUR!==0) throw new Error('prospective safety guards drifted');
+            NODE
+
+            git add $PATHS
+            if git diff --cached --quiet; then
+              echo 'No semantic evidence change against latest main.'
+              exit 0
+            fi
+            git commit -m 'data(casino): persist Lightning confirmatory evidence'
+            if git push origin HEAD:main; then
+              echo 'Evidence persisted.'
+              exit 0
+            fi
+            echo 'main moved during push; retrying from newest main.'
+          done
+          echo 'Unable to persist after 5 race-safe attempts.' >&2
+          exit 1
