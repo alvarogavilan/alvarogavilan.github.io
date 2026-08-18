@@ -44,8 +44,27 @@ jobs:
             fi
 
             node loterias-ai/casino/lightning/collect-casinoorg-api.mjs
+            node --input-type=module <<'NODE' > /tmp/bridge-safe
+            import fs from 'node:fs';
+            const c=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json','utf8'));
+            process.stdout.write(c.continuityBridgeSafe===true?'yes':'no');
+            NODE
+
+            if [ "$(cat /tmp/bridge-safe)" != yes ]; then
+              echo 'Fresh source window is non-contiguous with persisted corpus: quarantine only, no prospective advances.'
+              git add \
+                loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json \
+                loterias-ai/casino/lightning/evidence/casinoorg-catchup-quarantine.json 2>/dev/null || true
+              if git diff --cached --quiet; then exit 0; fi
+              git commit -m 'ops(lightning): quarantine non-contiguous authoritative window'
+              git pull --rebase origin main || { git rebase --abort || true; sleep $((attempt*2)); continue; }
+              if git push origin HEAD:main; then exit 0; fi
+              sleep $((attempt*2))
+              continue
+            fi
+
             if git diff --quiet -- loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl; then
-              echo 'ERROR: source probe is ahead but collector produced no new authoritative rows.' >&2
+              echo 'ERROR: source is ahead, bridge says safe, but no contiguous corpus rows were persisted.' >&2
               exit 1
             fi
 
@@ -64,7 +83,7 @@ jobs:
             node --input-type=module <<'NODE'
             import fs from 'node:fs';
             const c=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json','utf8'));
-            if(c.cachePolicy!=='NO_CACHE_NO_STORE'||!c.sourceLatest?.timestamp||Number(c.accepted)<=0) throw new Error('catchup collector did not prove fresh accepted rows');
+            if(c.cachePolicy!=='NO_CACHE_NO_STORE'||!c.sourceLatest?.timestamp||Number(c.persistedRows)<=0||c.continuityBridgeSafe!==true) throw new Error('catchup collector did not prove contiguous fresh persisted rows');
             const pf=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-freeze-v1.json','utf8'));
             const ps=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-status-v1.json','utf8'));
             if(ps.freezeVersion!==pf.version||ps.guards?.realMoneyAllowed!==false) throw new Error('physical prospective drift');
@@ -82,7 +101,7 @@ jobs:
               loterias-ai/casino/lightning/evidence/prospective-lag8.json \
               loterias-ai/casino/lightning/evidence/physical-rng-prospective-status-v1.json \
               loterias-ai/casino/lightning/evidence/timing-replication-v2-status.json
-            git commit -m 'research(casino): catch up fresh authoritative Lightning rounds'
+            git commit -m 'research(casino): catch up contiguous authoritative Lightning rounds'
             if git push origin HEAD:main; then exit 0; fi
             sleep $((attempt*2))
           done
