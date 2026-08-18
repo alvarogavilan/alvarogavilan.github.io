@@ -11,7 +11,7 @@ function walk(d){if(!fs.existsSync(d))return;for(const n of fs.readdirSync(d)){c
 walk(dataRoot);
 
 let rawRows=0,invalidRows=0,authoritativeRows=0,observationRows=0;
-const roundIds=new Set(),duplicates=[],sources={},days=new Set(),violations=[];
+const roundIds=new Set(),duplicates=[],sources={},days=new Set(),violations=[],segmentCounts={};
 for(const f of files){
   let lineNo=0;
   for(const line of fs.readFileSync(f,'utf8').split(/\r?\n/).filter(Boolean)){
@@ -23,6 +23,8 @@ for(const f of files){
     const partial=r.timestampQuality==='snapshot_only_no_round_timestamp'||r.roundIdQuality==='absent'||r.trainingEligible===false;
     if(partial){observationRows++;continue}
     authoritativeRows++;
+    const segment=String(r.segment||'legacy-unsegmented');
+    segmentCounts[segment]=(segmentCounts[segment]||0)+1;
     if(!r.roundId){violations.push({file:f,line:lineNo,type:'authoritative_missing_round_id'});continue}
     const id=String(r.roundId); if(roundIds.has(id))duplicates.push(id); else roundIds.add(id);
     if(r.roundIdQuality!=='authoritative_source_id') violations.push({file:f,line:lineNo,type:'non_authoritative_id_quality',value:r.roundIdQuality??null});
@@ -35,15 +37,34 @@ for(const f of files){
 }
 const minimumReplayRounds=500;
 const uniqueAuthoritativeRounds=roundIds.size;
+const qualityPass=invalidRows===0&&violations.length===0&&duplicates.length===0;
+const authoritativeSegments=Object.entries(segmentCounts).filter(([,count])=>count>0).map(([segment,count])=>({segment,count}));
+const activeSegment=segmentCounts['authoritative-v2']>0?'authoritative-v2':(authoritativeSegments.length===1?authoritativeSegments[0].segment:null);
+const activeSegmentRounds=activeSegment?segmentCounts[activeSegment]||0:0;
+const continuityBarrierPresent=authoritativeSegments.length>1;
+const historicalReplayEligible=uniqueAuthoritativeRounds>=minimumReplayRounds&&qualityPass;
+const activeSegmentTrainingEligible=activeSegmentRounds>=minimumReplayRounds&&qualityPass;
+// Never expose the union of scientifically discontinuous eras as one trainable corpus.
+const trainingEligible=!continuityBarrierPresent&&historicalReplayEligible;
 const scientificState={
   files:files.length,rawRows,invalidRows,authoritativeRows,uniqueAuthoritativeRounds,
   duplicateAuthoritativeRoundIds:[...new Set(duplicates)],duplicateAuthoritativeRows:duplicates.length,validPublicObservations:observationRows,
   minimumReplayRounds,remainingAuthoritativeToReplay:Math.max(0,minimumReplayRounds-uniqueAuthoritativeRounds),
-  trainingEligible:uniqueAuthoritativeRounds>=minimumReplayRounds&&violations.length===0&&duplicates.length===0,
-  sourceCounts:sources,distinctUtcDays:days.size,violations,qualityPass:invalidRows===0&&violations.length===0&&duplicates.length===0,
+  trainingEligible,historicalReplayEligible,
+  continuity:{
+    barrierPresent:continuityBarrierPresent,
+    authoritativeSegments,
+    activeSegment,
+    activeSegmentRounds,
+    activeSegmentMinimumRounds:minimumReplayRounds,
+    activeSegmentRemainingToTraining:Math.max(0,minimumReplayRounds-activeSegmentRounds),
+    activeSegmentTrainingEligible,
+    crossSegmentTrainingAllowed:false
+  },
+  sourceCounts:sources,distinctUtcDays:days.size,violations,qualityPass,
   authenticationBypassAttempted:false,aggregateDataAccepted:false,syntheticDataAccepted:false,realMoney:false,
   corpusFingerprint:crypto.createHash('sha256').update([...roundIds].sort().join('\n')).digest('hex'),
-  next:uniqueAuthoritativeRounds>=minimumReplayRounds?'validate-and-replay-paper':'continue-authoritative-public-acquisition'
+  next:activeSegment&&activeSegmentRounds<minimumReplayRounds?'continue-clean-active-segment-acquisition':(activeSegmentTrainingEligible?'validate-active-segment-only':'validate-and-replay-historical-paper-only')
 };
 
 let audit={generatedAt:new Date().toISOString(),...scientificState};
