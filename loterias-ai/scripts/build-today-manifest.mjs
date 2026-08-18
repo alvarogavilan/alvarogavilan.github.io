@@ -102,15 +102,17 @@ for(const s of SOURCES){if(!fs.existsSync(s.dir))continue;for(const name of fs.r
 const groups={};
 for(const x of items)(groups[x.gameId]??=[]).push(x);
 let supersededTotal=0;
+let hiddenSecondaryTotal=0;
 const games=Object.entries(groups).map(([gameId,arr])=>{
   arr.sort((a,b)=>b.prospectScore-a.prospectScore||String(b.generatedAt||'').localeCompare(String(a.generatedAt||''))||a.source.localeCompare(b.source));
   const primary=arr[0];
   const secondary=arr.slice(1);
   const superseded=secondary.filter(x=>primaryCompletesSecondary(primary,x));
   supersededTotal+=superseded.length;
-  const alternatives=secondary.filter(x=>!primaryCompletesSecondary(primary,x)).map(x=>({...x,alternativeNotAdditive:true}));
-  return {gameId,targetDate:today,primary,alternatives,alternativeCount:alternatives.length,supersededCount:superseded.length,costRule:'ALTERNATIVES_NOT_ADDITIVE',displayCostEUR:primary.authorizedCostEUR};
+  const secondaryResearch=secondary.filter(x=>!primaryCompletesSecondary(primary,x));
+  hiddenSecondaryTotal+=secondaryResearch.length;
+  return {gameId,targetDate:today,primary,alternatives:[],alternativeCount:0,hiddenSecondaryResearchCount:secondaryResearch.length,supersededCount:superseded.length,costRule:'ONE_VISIBLE_DECISION_ONLY',displayCostEUR:primary.authorizedCostEUR};
 }).sort((a,b)=>a.gameId.localeCompare(b.gameId));
-const manifest={generatedAt:new Date().toISOString(),timeZone:'Europe/Madrid',today,strictToday:true,staleFallbackAllowed:false,dedupeKey:'gameId+targetDate',games,totalGames:games.length,supersededTotal,policy:{oneVisibleCardPerGame:true,alternativesNotAdditive:true,supersededCompletionsHidden:true,showYesterdayInToday:false,realMoneyPass:false,costDisplay:'AUTHORIZED_ONLY',laboratoryCostSeparate:true}};
+const manifest={generatedAt:new Date().toISOString(),timeZone:'Europe/Madrid',today,strictToday:true,staleFallbackAllowed:false,dedupeKey:'gameId+targetDate',games,totalGames:games.length,supersededTotal,hiddenSecondaryTotal,policy:{oneVisibleCardPerGame:true,secondaryResearchHiddenFromToday:true,alternativesNotAdditive:true,supersededCompletionsHidden:true,showYesterdayInToday:false,realMoneyPass:false,costDisplay:'AUTHORIZED_ONLY',laboratoryCostSeparate:true}};
 fs.mkdirSync(path.dirname(OUT),{recursive:true});fs.writeFileSync(OUT,JSON.stringify(manifest,null,2)+'\n');
-console.log(JSON.stringify({today,totalGames:games.length,supersededTotal,games:games.map(g=>({gameId:g.gameId,primary:g.primary.version,authorizedCost:g.displayCostEUR,laboratoryCost:g.primary.laboratoryCostEUR,alternatives:g.alternativeCount,superseded:g.supersededCount}))}));
+console.log(JSON.stringify({today,totalGames:games.length,supersededTotal,hiddenSecondaryTotal,games:games.map(g=>({gameId:g.gameId,primary:g.primary.version,authorizedCost:g.displayCostEUR,laboratoryCost:g.primary.laboratoryCostEUR,hiddenSecondary:g.hiddenSecondaryResearchCount,superseded:g.supersededCount}))}));
