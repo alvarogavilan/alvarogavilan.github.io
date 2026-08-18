@@ -1,0 +1,74 @@
+{
+  "version": "primitiva-frequency4-prospective-freeze-v1",
+  "createdAt": "2026-08-18T22:58:00Z",
+  "status": "FROZEN_BEFORE_FIRST_TARGET_RESULT",
+  "gameId": "primitiva",
+  "prospectiveStartsAt": "2026-08-20",
+  "fixedBoundaryDraws": 50,
+  "schedule": {
+    "timeZone": "Europe/Madrid",
+    "weekdays": ["MONDAY", "THURSDAY", "SATURDAY"]
+  },
+  "strategy": {
+    "id": "frequency",
+    "ticketsPerDraw": 4,
+    "ticketCostEUR": 1,
+    "diversificationPenalty": 0.10,
+    "weights": {
+      "longFrequency": 0.45,
+      "shortMomentum": 0.25,
+      "gap": 0.05,
+      "stability": 0.10,
+      "pairAffinity": 0.05,
+      "entropy": 0.05,
+      "meanReversion": 0.05
+    },
+    "selectionRule": "Use only Primitiva main-result history strictly before targetDrawDate; run the frozen Mega Numeric Engine portfolio with exactly four tickets and the frozen frequency weights.",
+    "enginePath": "loterias-ai/js/mega-numeric-engine.js",
+    "engineGitBlobSha": "ac9db191426618a5b3738251d84c422e728ecd2b"
+  },
+  "lineage": {
+    "sourceGate": "loterias-ai/data/gates/primitiva-final.json",
+    "sourceFinancialTournament": "loterias-ai/data/backtests/primitiva-financial-tournament.json",
+    "sourceDecision": "CANDIDATE_SHADOW_PRIORITY",
+    "historicalLockedFinancialHoldoutDraws": 15,
+    "historicalLockedFinancialROI": 0.4193333333333333,
+    "historicalPredictiveRelativeLiftAtLeast3": 0.5466666666666667,
+    "historicalEvidenceIsContextOnly": true,
+    "prospective50IsPrimaryPromotionEvidence": true
+  },
+  "economics": {
+    "mainCategoryPrizesOnly": true,
+    "includedCategories": ["six", "fiveC", "five", "four", "three"],
+    "reintegroExcluded": true,
+    "jokerExcluded": true,
+    "matchedRandomReplicates": 10000,
+    "randomSeed": 420260820,
+    "familyAlpha": 0.01,
+    "promotionRequires": [
+      "exactly first 50 eligible prospective targets",
+      "all 50 predictions sealed before target result",
+      "all 50 target results and category payouts pass custody/validation",
+      "observed cumulative ROI greater than zero",
+      "one-sided matched-cost Monte Carlo p < 0.01",
+      "observed ROI greater than matched-random mean ROI",
+      "no strategy, weight, ticket-count or engine drift",
+      "no optional stopping or post-50 rescue"
+    ]
+  },
+  "disclosure": {
+    "interimEconomicPerformanceHidden": true,
+    "administrativeProgressAllowed": true,
+    "extremeHitAuditAllowed": true,
+    "candidateRetuningAllowed": false
+  },
+  "guards": {
+    "noFutureInformation": true,
+    "noRetuning": true,
+    "noOptionalStopping": true,
+    "post50CannotRescue": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
