@@ -1,12 +1,12 @@
 {
   "version": "economic-number-selection-prospective-status-v2",
-  "generatedAt": "2026-08-18T10:51:42.249Z",
+  "generatedAt": "2026-08-18T10:54:01.557Z",
   "freezeVersion": "economic-number-selection-prospective-freeze-v2",
   "prospectiveStartsAt": "2026-08-18T10:50:00Z",
   "source": {
     "file": "loterias-ai/casino/lightning/data/casinoorg-lightningroulette-segment-v2.jsonl",
-    "currentEligibleCorpusRows": 2,
-    "currentMaxTimestamp": "2026-08-18T10:51:32.054Z"
+    "currentEligibleCorpusRows": 5,
+    "currentMaxTimestamp": "2026-08-18T10:53:58.549Z"
   },
   "frozenFamily": {
     "coverages": [
@@ -44,11 +44,11 @@
     "fixedFinalBoundary": 10000,
     "roundsUntilPhaseA": 5000,
     "roundsUntilFixedFinal": 10000,
-    "postBoundaryRowsIgnoredForV1": 0,
     "cleanWarmupRequired": 200,
-    "cleanWarmupObserved": 2,
+    "cleanWarmupObserved": 5,
     "cleanWarmupComplete": false,
-    "totalCleanSegmentRows": 2
+    "totalCleanSegmentRows": 5,
+    "postBoundaryRowsIgnoredForV2": 0
   },
   "administrativeEta": {
     "method": "Observed eligible future-round cadence only; no selector outcomes or rankings are used.",
@@ -62,10 +62,10 @@
     "descriptiveOnly": true,
     "notAScientificGate": true
   },
-  "phase": "WAITING_FOR_PROSPECTIVE_START",
+  "phase": "CLEAN_WARMUP_BLINDED",
   "disclosure": {
     "candidatePerformanceHidden": true,
-    "reason": "ADMINISTRATIVE_COUNTS_ONLY_NO_MODEL_RANKING"
+    "reason": "CLEAN_WARMUP_NOT_SCORED"
   },
   "phaseAWinners": null,
   "confirmation": null,
@@ -91,7 +91,7 @@
     "v1SelectorAlgorithmUnchanged": true,
     "cleanWarmupNotScored": true
   },
-  "interpretation": "No selector ranking is disclosed before the fixed 5000-round prospective selection boundary.",
+  "interpretation": "Warm-up limpio 5/200. Ninguna de estas rondas puntúa candidatos y no se publica rendimiento.",
   "algorithmCustody": {
     "sourceEngine": "loterias-ai/casino/lightning/research/economic-number-selection-prospective-v1.mjs",
     "sourceEngineGitBlobSha": "1e9431d663b6f5ced9dcb24a9d6074bb6bea3874",
