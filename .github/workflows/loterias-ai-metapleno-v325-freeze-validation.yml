@@ -1,92 +1,23 @@
-name: Loterias AI MetaPleno v325 Freeze Validation
+name: Loterias AI MetaPleno v325 Validation Archived
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'loterias-ai/data/research/metapleno-v325-preregister.json'
-      - 'loterias-ai/data/research/metapleno-v325-stage1-development.json'
-      - 'loterias-ai/research/megalab/v325-freeze-validation.mjs'
-      - 'loterias-ai/research/megalab/v325-stage2-validation.mjs'
-      - '.github/workflows/loterias-ai-metapleno-v325-freeze-validation.yml'
+
 permissions:
-  contents: write
-concurrency:
-  group: loterias-ai-metapleno-v325-freeze-validation
-  cancel-in-progress: false
+  contents: read
+
 jobs:
-  freeze-then-validate:
+  archived:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-        with: {fetch-depth: 0}
-      - uses: actions/setup-node@v4
-        with: {node-version: 24}
-      - name: Seal exact development survivors without reading validation
-        run: node loterias-ai/research/megalab/v325-freeze-validation.mjs
-      - name: Validate pre-validation custody
+      - name: Refuse retroactive v325 revalidation
         run: |
-          node -e "const fs=require('fs');const f=JSON.parse(fs.readFileSync('loterias-ai/data/research/metapleno-v325-validation-freeze.json','utf8'));if(f.status!=='FROZEN_BEFORE_VALIDATION_READ'||!Array.isArray(f.survivors)||f.survivors.length<1)throw Error('v325 freeze missing survivors');if(f.guards?.validationReadBeforeFreeze!==false||f.guards?.blindOosRead!==false||f.guards?.noRetuning!==true||f.guards?.realMoneyPass!==false)throw Error('v325 freeze guard regression');console.log(JSON.stringify({survivors:f.survivors,freezeSha256:f.freezeSha256}))"
-      - name: Publish immutable freeze before any validation read
-        id: publish-freeze
-        shell: bash
-        run: |
-          set -euo pipefail
-          TARGET='loterias-ai/data/research/metapleno-v325-validation-freeze.json'
-          cp "$TARGET" /tmp/v325-freeze.json
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          PUBLISHED=''
-          for attempt in 1 2 3 4 5; do
-            git fetch origin main
-            git reset --hard origin/main
-            if [ -f "$TARGET" ]; then
-              node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync('/tmp/v325-freeze.json','utf8')),b=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));if(a.freezeSha256!==b.freezeSha256)process.exit(2)" "$TARGET" || { echo 'Existing v325 freeze differs'; exit 1; }
-              PUBLISHED=$(git rev-parse origin/main)
-              break
-            fi
-            cp /tmp/v325-freeze.json "$TARGET"
-            git add "$TARGET"
-            git commit -m 'research(loterias-ai): freeze v325 survivors before validation'
-            SHA=$(git rev-parse HEAD)
-            if git push origin HEAD:main; then PUBLISHED="$SHA"; break; fi
-            sleep $((attempt*2))
-          done
-          [ -n "$PUBLISHED" ] || exit 1
-          echo "freeze_commit=$PUBLISHED" >> "$GITHUB_OUTPUT"
-      - name: Prove freeze is public before opening validation
-        shell: bash
-        run: |
-          set -euo pipefail
-          git fetch origin main
-          FREEZE_COMMIT='${{ steps.publish-freeze.outputs.freeze_commit }}'
-          git merge-base --is-ancestor "$FREEZE_COMMIT" origin/main
-          git reset --hard origin/main
-          test -f loterias-ai/data/research/metapleno-v325-validation-freeze.json
-          node -e "const fs=require('fs');const f=JSON.parse(fs.readFileSync('loterias-ai/data/research/metapleno-v325-validation-freeze.json','utf8'));if(f.status!=='FROZEN_BEFORE_VALIDATION_READ')throw Error('public v325 freeze unavailable');console.log(JSON.stringify({publicFreeze:true,freezeSha256:f.freezeSha256}))"
-      - name: Run frozen 2019-2022 validation only after public freeze
-        run: node loterias-ai/research/megalab/v325-stage2-validation.mjs
-      - name: Prove OOS remained unread
-        run: |
-          node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('loterias-ai/data/research/metapleno-v325-stage2-validation.json','utf8'));if(j.temporalIsolation?.blindOosTouched!==false||j.temporalIsolation?.postFreezeTouched!==false||j.guards?.parametersUnchangedFromFreeze!==true||j.guards?.retuningPerformed!==false||j.guards?.realMoneyPass!==false)throw Error('v325 validation isolation failed');for(const xs of Object.values(j.temporalIsolation?.openedFiles||{}))for(const f of xs)if(Number(String(f).slice(0,4))>2022)throw Error('v325 opened OOS file '+f);console.log(JSON.stringify({status:j.status,survivors:j.survivors?.length||0,blindOosTouched:false}))"
-      - name: Persist validation evidence against moving main
-        shell: bash
-        run: |
-          set -euo pipefail
-          TARGET='loterias-ai/data/research/metapleno-v325-stage2-validation.json'
-          cp "$TARGET" /tmp/v325-validation.json
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          for attempt in 1 2 3 4 5; do
-            git fetch origin main
-            git reset --hard origin/main
-            cp /tmp/v325-validation.json "$TARGET"
-            git add "$TARGET"
-            if git diff --cached --quiet; then exit 0; fi
-            git commit -m 'research(loterias-ai): persist frozen v325 validation'
-            if git push origin HEAD:main; then exit 0; fi
-            sleep $((attempt*2))
-          done
-          exit 1
+          node - <<'NODE'
+          const fs=require('fs');
+          const p='loterias-ai/data/research/metapleno-v325-chain-of-custody-audit.json';
+          if(!fs.existsSync(p)) throw new Error('v325 custody audit missing');
+          const a=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(a.status!=='VALIDATION_NEGATIVE_BUT_PUBLIC_FREEZE_PROOF_INVALIDATED') throw new Error('unexpected v325 custody status');
+          console.log('v325 is archived. 2019-2022 cannot be rerun as fresh validation and 2023-2024 cannot be opened to rescue it.');
+          NODE
