@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lightning · Segmento limpio v2</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#071018;color:#edf7f4;font-family:Inter,system-ui,-apple-system,sans-serif}.wrap{max-width:1100px;margin:auto;padding:22px}.top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}.back{color:#9edbd0;text-decoration:none}.pill{display:inline-block;padding:5px 9px;border:1px solid #2c655d;border-radius:999px;font-size:12px;color:#aee9dd}.hero,.card{background:#0c1821;border:1px solid #1c3440;border-radius:18px}.hero{padding:22px;margin:18px 0}.hero h1{margin:0 0 8px;font-size:clamp(26px,5vw,44px)}.muted{color:#98adb6}.good{color:#93e7bd}.warn{color:#ffd48a}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}.card{padding:17px}.card h2{font-size:17px;margin:0 0 12px}.big{font-size:28px;font-weight:800}.bar{height:9px;background:#162b34;border-radius:99px;overflow:hidden;margin:10px 0}.bar>i{display:block;height:100%;background:#8dd8ca;width:0}.line{display:flex;justify-content:space-between;gap:10px;margin:7px 0;font-size:13px}.foot{margin:18px 0;padding:14px;border:1px solid #283d46;border-radius:14px;color:#a8bac1;font-size:13px}code{color:#c7f2ea}.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.ok{border-color:#276b55;color:#9be9c2}.locked{border-color:#6a5428;color:#ffd48a}
+</style>
+</head>
+<body><main class="wrap">
+<div class="top"><a class="back" href="../">← Economía Lightning</a><span class="pill ok">PAPER · €0 real</span></div>
+<section class="hero"><div class="pill">SEGMENTO AUTORITATIVO V2</div><h1>Lightning · muestra limpia</h1><p class="muted">Reinicio posterior a la discontinuidad de captura. Sólo entran rondas de Casino.org con timestamp posterior a la barrera congelada. El tramo ambiguo anterior nunca se importa.</p><div class="badges"><span id="state" class="pill">cargando…</span><span id="start" class="pill"></span><span class="pill locked">sin retuning</span><span class="pill locked">sin dinero real</span></div></section>
+<div class="grid">
+<section class="card"><h2>Fuente limpia</h2><div id="rows" class="big">—</div><div class="muted">rondas persistidas</div><div class="bar"><i id="sourceBar"></i></div><div class="line"><span>Primera</span><strong id="first">—</strong></div><div class="line"><span>Última</span><strong id="last">—</strong></div><div class="line"><span>Máx. intervalo</span><strong id="gap">—</strong></div><div class="line"><span>Hueco viejo importado</span><strong id="oldGap">—</strong></div></section>
+<section class="card"><h2>Timing v3 · réplica</h2><div id="episodes" class="big">— / 200</div><div class="bar"><i id="timingBar"></i></div><p id="timingText" class="muted">Rendimiento oculto hasta cerrar 200 episodios no solapados.</p><div class="line"><span>Regla</span><strong>gap ≥ 8 · 7 rondas</strong></div><div class="line"><span>Optional stopping</span><strong>bloqueado</strong></div></section>
+<section class="card"><h2>RNG físico v2</h2><div id="physical" class="big">— / 5.000</div><div class="bar"><i id="physicalBar"></i></div><p class="muted">Uniformidad, dependencia serial y vecindad física. Estadísticas y p-values ocultos hasta la frontera fija.</p><div class="line"><span>Permutaciones</span><strong>10.000</strong></div><div class="line"><span>α familiar</span><strong>0,01</strong></div></section>
+<section class="card"><h2>Números v2 · 132 selectores</h2><div id="warm" class="big">— / 200</div><div id="warmLabel" class="muted">warm-up limpio</div><div class="bar"><i id="numberBar"></i></div><div class="line"><span>Rondas puntuadas</span><strong id="scored">—</strong></div><div class="line"><span>Fase A</span><strong>5.000</strong></div><div class="line"><span>Fase B</span><strong>5.000</strong></div><p class="muted">El ranking permanece oculto. El motor v1 se reutiliza por huella Git; las 200 primeras rondas sólo calientan los lookbacks y no puntúan.</p></section>
+</div>
+<div class="foot"><strong>Cadena de custodia:</strong> el v1 conserva sus 35 episodios como evidencia descriptiva censurada (16/35), pero no se prolonga a través del hueco. Este v2 comenzó detrás de una nueva barrera pública y no puede usar filas anteriores para rescatar resultados. Ningún panel de esta página autoriza apuestas.</div>
+</main>
+<script>
+const $=id=>document.getElementById(id),pct=(a,b)=>b?Math.min(100,100*a/b):0,fmt=t=>t?new Date(t).toLocaleString('es-ES',{timeZone:'Europe/Madrid',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}):'—';
+async function j(p){const r=await fetch(p+'?t='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error(p+' '+r.status);return r.json()}
+async function load(){try{
+ const [s,t,p,n]=await Promise.all([
+  j('../../lightning/evidence/authoritative-segment-v2-status.json'),
+  j('../../lightning/evidence/timing-replication-v3-status.json'),
+  j('../../lightning/evidence/physical-rng-prospective-v2-status.json'),
+  j('../../lightning/evidence/economic-number-selection-prospective-status-v2.json')]);
+ $('state').textContent=s.state||'—';$('state').className='pill '+(s.continuity?.bridgeSafe?'ok':'locked');$('start').textContent='barrera '+fmt(s.prospectiveStartsAt);
+ $('rows').textContent=s.progress?.rows??0;$('first').textContent=fmt(s.progress?.firstAt);$('last').textContent=fmt(s.progress?.lastAt);$('gap').textContent=(s.continuity?.maxObservedInterRoundSeconds??0).toFixed(3)+' s';$('oldGap').textContent=s.guards?.oldAmbiguousGapImported?'SÍ':'NO';$('sourceBar').style.width=pct(s.progress?.rows,200)+'%';
+ const ep=t.progress?.closedEpisodes??0;$('episodes').textContent=ep+' / 200';$('timingBar').style.width=pct(ep,200)+'%';$('timingText').textContent=t.disclosure?.performanceHidden?'Rendimiento oculto hasta cerrar 200 episodios no solapados.':'Frontera final abierta: consultar evaluación fija.';
+ const pr=p.progress?.roundsUsedForV2??0;$('physical').textContent=pr.toLocaleString('es-ES')+' / 5.000';$('physicalBar').style.width=pct(pr,5000)+'%';
+ const w=n.progress?.cleanWarmupObserved??0,sc=n.progress?.eligibleFutureRounds??0;$('warm').textContent=w+' / 200';$('scored').textContent=sc.toLocaleString('es-ES');$('numberBar').style.width=pct(w<200?w:200+Math.min(sc,5000),5200)+'%';$('warmLabel').textContent=w<200?'warm-up limpio · no puntuado':'warm-up completo · fase A ciega';
+}catch(e){$('state').textContent='ERROR DE LECTURA';$('state').className='pill locked';console.error(e)}}load();setInterval(load,30000);
+</script></body></html>
