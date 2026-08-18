@@ -1,49 +1,42 @@
+# Cost control: legacy v1 corpus is retired from scheduled capture; this audit is now manual/code-change only.
 name: Loterias AI Lightning Stat Audit
+
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '43 * * * *'
   push:
     branches: [main]
     paths:
-      - 'loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl'
       - 'loterias-ai/casino/lightning/research/lightning-stat-audit-v1.mjs'
       - '.github/workflows/loterias-ai-lightning-stat-audit.yml'
+
 permissions:
   contents: write
+
 concurrency:
   group: loterias-ai-lightning-stat-audit
-  cancel-in-progress: false
+  cancel-in-progress: true
+
 jobs:
   audit:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: actions/setup-node@v4
-        with: {node-version: 24}
+        with:
+          node-version: 24
       - run: node loterias-ai/casino/lightning/research/lightning-stat-audit-v1.mjs
-      - name: Persist only changed statistical evidence safely
+      - name: Persist changed statistical evidence
         shell: bash
         run: |
           set -euo pipefail
           EVIDENCE='loterias-ai/casino/lightning/evidence/stat-audit-v1.json'
-          cp "$EVIDENCE" /tmp/lightning-stat-audit-v1.json
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          for attempt in 1 2 3 4 5; do
-            git fetch origin main
-            git reset --hard origin/main
-            cp /tmp/lightning-stat-audit-v1.json "$EVIDENCE"
-            git add "$EVIDENCE"
-            if git diff --cached --quiet; then
-              echo 'Lightning statistical evidence already current.'
-              exit 0
-            fi
-            git commit -m 'research(casino): persist Lightning statistical audit'
-            if git push origin HEAD:main; then exit 0; fi
-            cp "$EVIDENCE" /tmp/lightning-stat-audit-v1.json
-            sleep $((attempt*2))
-          done
-          exit 1
+          git add "$EVIDENCE"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'research(casino): persist Lightning statistical audit'
+          git pull --rebase origin main
+          git push origin HEAD:main
