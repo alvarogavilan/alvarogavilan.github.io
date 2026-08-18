@@ -1,0 +1,76 @@
+{
+  "version": "v317",
+  "family": "CONFORMAL_COVERAGE_AUDIT",
+  "status": "PREREGISTERED_BEFORE_STAGE1_2",
+  "goal": "Test whether strictly-past number rankings can be conformalized into naturally small 6-of-49 prediction pools that retain reproducible 5-of-6 coverage without target tuning.",
+  "antiDuplicateGuard": {
+    "searchedTerms": ["conformal prediction", "conformalized", "exchangeability", "conformal coverage"],
+    "repositorySearchResult": "NO_EXISTING_CONFORMAL_FAMILY_FOUND_AT_PREREGISTRATION",
+    "nearestPriorFamilies": [
+      {"version":"v294","family":"SET_STATE","difference":"v294 searches recurrent set states; v317 calibrates a coverage threshold from strictly prior rank residuals."},
+      {"version":"v316","family":"OPTIMAL_TRANSPORT_REGIME_AUDIT","difference":"v316 uses transport geometry; v317 uses finite-sample conformal rank coverage and a hard playable-set-size gate."}
+    ],
+    "abortIfEquivalentArtifactFoundLater": true
+  },
+  "games": ["bonoloto", "primitiva"],
+  "regime": {"support":"1..49","drawSize":6,"reason":"Keep one shared 6-of-49 regime; no cross-regime mapping inside v317."},
+  "temporalProtocol": {
+    "stage1_2DevelopmentEnd": "2022-12-31",
+    "blindOosStart": "2023-01-01",
+    "blindOosEnd": "2024-12-31",
+    "postFreezeStart": "2025-01-01",
+    "stage1_2MustNotRead2023Plus": true,
+    "retuningAfterFreeze": false
+  },
+  "method": {
+    "targetEvent": "At least 5 of the 6 winning main numbers are contained in a pre-draw conformal pool.",
+    "nonconformityScore": "For each historical draw, rank all 49 numbers using a base ranking computed only from earlier draws; the score is the rank position of the fifth-best-ranked winning number. Smaller is better.",
+    "calibration": "For each target draw, use only previous nonconformity scores from the frozen rolling calibration window. The conformal quantile is ceil((n+1)*(1-alpha))/n with the standard finite-sample upper order statistic convention.",
+    "playability": "The conformal pool is the top K ranked numbers where K=max(6, conformal quantile). The draw is playable for this experiment only when K<=8. No truncation from K>8 to 8 is allowed.",
+    "budget": "For K=6..8 evaluate all C(K,6) lines. At K=8 this is 28 lines and 14 EUR under the project Bonoloto-equivalent 0.50 EUR line convention; real stake remains zero."
+  },
+  "frozenCandidateGrid": {
+    "rankingModes": ["hot", "overdue", "recent", "hot_gap_hybrid"],
+    "rankingWindows": [50,100,250],
+    "calibrationWindows": [64,128,256],
+    "alpha": [0.10,0.20],
+    "logicalConfigurationsPerGame": 72,
+    "maximumFrozenBehavioralRepresentativesPerGame": 8
+  },
+  "stage1_2SelectionRules": {
+    "minimumPlayableEvaluations": 50,
+    "requiredObservedFivePlusEvents": 1,
+    "requiredObservedMinusMatchedRandomExpectedFivePlus": 0,
+    "behavioralDeduplication": true,
+    "rankingPriority": ["fivePlusExcessVsMatchedRandom", "fivePlusCount", "playableEvaluations", "fullSixCount"],
+    "failurePolicy": "If no configuration meets all predeclared gates in development, close v317 without opening blind OOS."
+  },
+  "matchedNull": {
+    "type": "Exact hypergeometric matched to each emitted pool size K",
+    "fivePlusProbability": "[C(6,5)C(43,K-5)+C(6,6)C(43,K-6)]/C(49,K)",
+    "fullSixProbability": "C(43,K-6)/C(49,K)",
+    "usesTargetOutcomeForSelection": false
+  },
+  "stage3Freeze": {
+    "maximumTotalCandidates": 16,
+    "manifestHashRequired": true,
+    "behaviorHashRequired": true,
+    "noBlindOosReadBeforeFreeze": true
+  },
+  "stage4BlindOosGate": {
+    "minimumPlayableEvaluationsPerCandidate": 50,
+    "positiveFivePlusExcessVsMatchedRandomRequired": true,
+    "repeatFivePlusAcrossDistinctDatesRequiredForPromotion": true,
+    "fullSixTriggersHardAudit": true,
+    "noPostFreezeRetuning": true,
+    "post2024CannotRescueV317": true
+  },
+  "guards": {
+    "futureInformationAllowed": false,
+    "targetTuningAllowed": false,
+    "truncateUnplayableConformalPool": false,
+    "theoreticalBudgetEURMax": 14,
+    "realMoneyPass": false,
+    "realStakeEUR": 0
+  }
+}
