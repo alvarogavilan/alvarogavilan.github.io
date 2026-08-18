@@ -1,39 +1,94 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import crypto from 'node:crypto';
+import vm from 'node:vm';
 
 const freezePath='loterias-ai/data/prospective/euromillones-v199-complete-5plus2-2026-08-18.json';
-const archiveDir='loterias-ai/data/archive/euromillones';
+const adapterPath='loterias-ai/js/selae-adapter.js';
+const endpointsPath='loterias-ai/data/selae-feed-endpoints.json';
 const outPath='loterias-ai/data/research/euromillones-v199-complete-5plus2-evaluation.json';
 const freeze=JSON.parse(fs.readFileSync(freezePath,'utf8'));
+const cfg=JSON.parse(fs.readFileSync(endpointsPath,'utf8'));
 const targetDate=freeze.config.target;
-let rows=[];
-for(const f of fs.readdirSync(archiveDir).filter(x=>/^\d{4}\.json$/.test(x)).sort()){
-  const d=JSON.parse(fs.readFileSync(`${archiveDir}/${f}`,'utf8'));
-  rows.push(...(Array.isArray(d)?d:(d.records||d.draws||d.results||[])));
-}
-const dateOf=r=>String(r?.drawDate||r?.date||r?.fecha||'').slice(0,10);
-const target=rows.find(r=>dateOf(r)===targetDate);
-const arr=(...xs)=>{for(const x of xs){if(Array.isArray(x)){const a=x.map(Number).filter(Number.isFinite);if(a.length)return a}if(typeof x==='string'){const a=(x.match(/\d+/g)||[]).map(Number);if(a.length)return a}}return[]};
-const base={version:'euromillones-v199-complete-5plus2-evaluation-v1',targetDrawDate:targetDate,freezeFingerprintSha256:freeze.fingerprintSha256,retuningPerformed:false,selectionUsedTargetResult:false,realMoneyPass:false,realStakeEUR:0,bettingRecommendation:false};
-let semantic;
-if(!target) semantic={...base,status:'WAITING_OFFICIAL_ARCHIVE',ticket:freeze.tickets[0],next:'wait for official archived target draw; do not alter freeze'};
-else {
-  const nums=arr(target?.result?.main,target?.result?.numbers,target?.numbers,target?.combination,target?.winningNumbers).slice(0,5);
-  const stars=arr(target?.result?.stars,target?.stars,target?.estrellas).slice(0,2);
-  if(nums.length!==5||stars.length!==2) semantic={...base,status:'WAITING_COMPLETE_OFFICIAL_RESULT',ticket:freeze.tickets[0],archivedTargetFound:true};
-  else {
-    const t=freeze.tickets[0], nHits=t.numbers.filter(n=>nums.includes(Number(n))).length, sHits=t.stars.filter(s=>stars.includes(Number(s))).length;
-    semantic={...base,status:'EVALUATED',ticket:t,winningNumbers:nums,winningStars:stars,numberHits:nHits,starHits:sHits,category:`${nHits}+${sHits}`,full5plus2:nHits===5&&sHits===2,nearFull:nHits>=4||nHits===5,claimAllowed:nHits===5&&sHits===2,interpretation:nHits===5&&sHits===2?'prospective 5+2 matched; requires independent replication before any predictive claim':'record prospective result only; no retuning'};
+const ticket=freeze.tickets?.[0];
+if(!ticket||ticket.numbers?.length!==5||ticket.stars?.length!==2)throw new Error('v199 frozen ticket is incomplete');
+if(freeze.status!=='FROZEN_BEFORE_TARGET_RESULT'||freeze.realMoneyPass!==false||Number(freeze.realStakeEUR)!==0)throw new Error('v199 freeze safety regression');
+
+const expectedFingerprint=crypto.createHash('sha256').update(JSON.stringify({
+  target:targetDate,
+  numbers:ticket.numbers.map(Number),
+  stars:ticket.stars.map(Number),
+  baseSeal:freeze.config.mainSourceSeal,
+  starConfig:freeze.config.starSelection.config
+})).digest('hex');
+if(expectedFingerprint!==freeze.fingerprintSha256)throw new Error('v199 freeze fingerprint mismatch');
+
+const context={globalThis:{},window:undefined,console,Date,Math,JSON,Number,String,Array,Set,Object,Error};
+vm.createContext(context);vm.runInContext(fs.readFileSync(adapterPath,'utf8'),context);
+const adapter=context.globalThis.SELAEAdapter;
+const feed=cfg.feeds.find(x=>x.gameId==='euromillones');
+if(!feed)throw new Error('official Euromillones endpoint not registered');
+const ymd=targetDate.replaceAll('-','');
+const pageUrl=cfg.datedEndpointBase+feed.template.replace('{YYYYMMDD}',ymd);
+const serviceUrl=cfg.dataServiceBase+cfg.dataServiceTemplate.replace('{GAME_ID}',feed.selaeGameId).replace('{YYYYMMDD}',ymd);
+
+const base={
+  version:'euromillones-v199-complete-5plus2-evaluation-v2',
+  targetDrawDate:targetDate,
+  freezeFingerprintSha256:freeze.fingerprintSha256,
+  freezeFingerprintVerified:true,
+  ticket,
+  retuningPerformed:false,
+  selectionUsedTargetResult:false,
+  realMoneyPass:false,
+  realStakeEUR:0,
+  bettingRecommendation:false,
+  custody:{
+    freezeStatus:freeze.status,
+    officialPageUrl:pageUrl,
+    officialServiceUrl:serviceUrl,
+    officialPageValidated:false,
+    officialServiceMainCrossCheck:false,
+    full5plus2OfficialCrossCheck:false
   }
+};
+
+async function fetchText(url){
+  const r=await fetch(url,{redirect:'follow',signal:AbortSignal.timeout(20000),headers:{'user-agent':'Mozilla/5.0 LoteriasAI immutable v199 settlement','accept':'*/*'}});
+  if(!r.ok)throw new Error(`HTTP ${r.status}`);
+  return r.text();
 }
+async function fetchJson(url){
+  const r=await fetch(url,{redirect:'follow',signal:AbortSignal.timeout(20000),headers:{'user-agent':'Mozilla/5.0 LoteriasAI immutable v199 settlement','accept':'application/json,*/*'}});
+  if(!r.ok)throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}
+function norm(a){return [...a].map(Number).sort((x,y)=>x-y)}
+function same(a,b){return a.length===b.length&&norm(a).every((x,i)=>x===norm(b)[i])}
+
+let semantic;
+try{
+  const [pageRaw,serviceJson]=await Promise.all([fetchText(pageUrl),fetchJson(serviceUrl)]);
+  const draw=adapter.extractNumeric('euromillones',pageRaw);
+  const validation=adapter.validateNumericDraw(draw);
+  const pageReady=validation.ok&&draw.drawDate===targetDate&&draw.main?.length===5&&draw.secondary?.length===2;
+  const row=Array.isArray(serviceJson)?serviceJson[0]:null;
+  const serviceCombo=String(row?.combinacion||'').match(/\d+/g)?.map(Number)||[];
+  const serviceMain=serviceCombo.slice(0,5);
+  const serviceReady=Boolean(row&&serviceMain.length===5&&pageReady&&same(serviceMain,draw.main));
+  if(!pageReady||!serviceReady){
+    semantic={...base,status:'WAITING_COMPLETE_OFFICIAL_RESULT',custody:{...base.custody,officialPageValidated:pageReady,officialServiceMainCrossCheck:serviceReady,full5plus2OfficialCrossCheck:false},officialReadiness:{pageDrawDate:draw.drawDate||null,pageIssues:validation.issues,serviceRowAvailable:Boolean(row),serviceMainCount:serviceMain.length},next:'wait for complete official SELAE 5+2 result; do not alter freeze'};
+  }else{
+    const nums=norm(draw.main),stars=norm(draw.secondary),nHits=ticket.numbers.filter(n=>nums.includes(Number(n))).length,sHits=ticket.stars.filter(s=>stars.includes(Number(s))).length;
+    semantic={...base,status:'EVALUATED_OFFICIAL_5PLUS2',custody:{...base.custody,officialPageValidated:true,officialServiceMainCrossCheck:true,full5plus2OfficialCrossCheck:true},winningNumbers:nums,winningStars:stars,numberHits:nHits,starHits:sHits,category:`${nHits}+${sHits}`,full5plus2:nHits===5&&sHits===2,nearFull:nHits>=4||nHits===5,claimAllowed:false,replicationRequiredIfExtreme:nHits===5&&sHits===2,interpretation:nHits===5&&sHits===2?'prospective 5+2 matched; extreme event requires independent replication and lineage audit before any predictive claim':'official prospective result recorded; no retuning or post-result mutation allowed'};
+  }
+}catch(e){
+  semantic={...base,status:'WAITING_OFFICIAL_SELAE',errorClass:'OFFICIAL_SOURCE_NOT_READY_OR_UNAVAILABLE',next:'retry official SELAE sources without changing freeze'};
+}
+
 const evaluationHash=crypto.createHash('sha256').update(JSON.stringify(semantic)).digest('hex');
 const existing=fs.existsSync(outPath)?JSON.parse(fs.readFileSync(outPath,'utf8')):null;
-if(existing?.evaluationHash===evaluationHash){
-  console.log(JSON.stringify({...semantic,evaluationHash,persisted:false,reasonNotPersisted:'semantic evaluation unchanged'},null,2));
-  process.exit(0);
-}
+if(existing?.evaluationHash===evaluationHash){console.log(JSON.stringify({...semantic,evaluationHash,persisted:false,reasonNotPersisted:'semantic evaluation unchanged'},null,2));process.exit(0)}
 const out={...semantic,generatedAt:new Date().toISOString(),evaluationHash};
-fs.mkdirSync('loterias-ai/data/research',{recursive:true});
-fs.writeFileSync(outPath,JSON.stringify(out,null,2)+'\n');
+fs.mkdirSync('loterias-ai/data/research',{recursive:true});fs.writeFileSync(outPath,JSON.stringify(out,null,2)+'\n');
 console.log(JSON.stringify({...out,persisted:true},null,2));
