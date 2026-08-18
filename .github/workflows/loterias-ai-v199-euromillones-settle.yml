@@ -1,0 +1,68 @@
+name: Loterias AI Euromillones v199 Official 5+2 Settlement
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/data/prospective/euromillones-v199-complete-5plus2-2026-08-18.json'
+      - 'loterias-ai/scripts/meta-pleno-v199-euromillones-complete-5plus2-evaluate.mjs'
+      - 'loterias-ai/js/selae-adapter.js'
+      - 'loterias-ai/data/selae-feed-endpoints.json'
+      - '.github/workflows/loterias-ai-v199-euromillones-settle.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-v199-euromillones-settle
+  cancel-in-progress: false
+jobs:
+  settle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Evaluate immutable v199 only from official SELAE sources
+        run: node loterias-ai/scripts/meta-pleno-v199-euromillones-complete-5plus2-evaluate.mjs
+      - name: Validate custody and real-money guards
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const p='loterias-ai/data/research/euromillones-v199-complete-5plus2-evaluation.json';
+          if(!fs.existsSync(p)) throw new Error('v199 evaluation missing');
+          const d=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(d.freezeFingerprintVerified!==true) throw new Error('v199 freeze fingerprint not verified');
+          if(d.retuningPerformed!==false||d.selectionUsedTargetResult!==false) throw new Error('v199 anti-leakage regression');
+          if(d.realMoneyPass!==false||Number(d.realStakeEUR)!==0||d.bettingRecommendation!==false) throw new Error('v199 real-money regression');
+          if(d.status==='EVALUATED_OFFICIAL_5PLUS2'){
+            if(d.custody?.officialPageValidated!==true||d.custody?.officialServiceMainCrossCheck!==true||d.custody?.full5plus2OfficialCrossCheck!==true) throw new Error('v199 official custody incomplete');
+            if(d.winningNumbers?.length!==5||d.winningStars?.length!==2) throw new Error('v199 official 5+2 incomplete');
+          }
+          console.log(JSON.stringify({status:d.status,official5plus2:d.custody?.full5plus2OfficialCrossCheck===true,realMoneyPass:false}));
+          NODE
+      - name: Persist semantic v199 state safely
+        run: |
+          set -euo pipefail
+          OUT='loterias-ai/data/research/euromillones-v199-complete-5plus2-evaluation.json'
+          cp "$OUT" /tmp/v199-evaluation.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/v199-evaluation.json "$OUT"
+            git add "$OUT"
+            if git diff --cached --quiet; then
+              echo 'v199 evaluation already current.'
+              exit 0
+            fi
+            git commit -m 'research(euromillones): advance official v199 5+2 settlement'
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
