@@ -6,11 +6,15 @@ on:
     paths:
       - 'loterias-ai/data/archive/primitiva/**'
       - 'loterias-ai/data/research/v315-prospective-seals/**'
+      - 'loterias-ai/data/research/primitiva-frequency4-prospective-seals/**'
       - 'loterias-ai/data/research/metapleno-v315-execution-protocol-v1.json'
       - 'loterias-ai/data/research/metapleno-v315-final-inference-contract-v1.json'
+      - 'loterias-ai/data/research/primitiva-frequency4-prospective-freeze-v1.json'
       - 'loterias-ai/research/megalab/v315-settle-official-prospective.mjs'
       - 'loterias-ai/research/megalab/v315-finalize-200.mjs'
       - 'loterias-ai/research/megalab/v315-administrative-status.mjs'
+      - 'loterias-ai/research/megalab/primitiva-frequency4-status.mjs'
+      - 'loterias-ai/research/megalab/primitiva-frequency4-finalize-50.mjs'
       - '.github/workflows/loterias-ai-v315-prospective-settle.yml'
 permissions:
   contents: write
@@ -27,24 +31,37 @@ jobs:
       - uses: actions/setup-node@v4
         with: {node-version: 24}
       - run: node loterias-ai/research/megalab/v315-settle-official-prospective.mjs
-      - name: Validate settlement invariants
+      - name: Validate v315 settlement invariants
         run: |
           node - <<'NODE'
           const fs=require('fs'),dir='loterias-ai/data/research/v315-prospective-settlements',files=fs.existsSync(dir)?fs.readdirSync(dir).filter(x=>x.endsWith('.json')).sort():[];for(const f of files){const d=JSON.parse(fs.readFileSync(`${dir}/${f}`,'utf8'));if(!d.custody?.sealHashVerified||!d.custody?.protocolHashVerified||!d.custody?.officialSELAECrossCheckPassed||d.disclosure?.candidatePerformanceHidden!==true||d.disclosure?.candidateRankingPublished!==false||d.guards?.retuningPerformed!==false||d.guards?.optionalStoppingAllowed!==false||d.guards?.post200RescueAllowed!==false||d.guards?.realMoneyPass!==false||Number(d.guards?.realStakeEUR)!==0)throw new Error('v315 settlement safety regression '+f)}
           NODE
       - run: node loterias-ai/research/megalab/v315-finalize-200.mjs
-      - name: Validate final result if boundary exists
+      - name: Validate v315 final result if boundary exists
         run: |
           node - <<'NODE'
           const fs=require('fs'),p='loterias-ai/data/research/metapleno-v315-final-200.json';if(!fs.existsSync(p))process.exit(0);const d=JSON.parse(fs.readFileSync(p,'utf8'));if(d.fixedBoundary?.draws!==200||d.fixedBoundary?.post200CanRescue!==false||d.candidates?.length!==12||d.guards?.noRetuning!==true||d.guards?.noOptionalStopping!==true||d.guards?.post200RescueAllowed!==false||d.gates?.realMoneyPass!==false)throw new Error('v315 final safety regression')
           NODE
       - run: node loterias-ai/research/megalab/v315-administrative-status.mjs
-      - name: Persist settlements, status or fixed final against moving main
+      - name: Advance blinded frequency4 status and fixed final only at 50
+        run: |
+          node loterias-ai/research/megalab/primitiva-frequency4-status.mjs
+          node loterias-ai/research/megalab/primitiva-frequency4-finalize-50.mjs
+      - name: Validate frequency4 custody and fixed-final safety
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const s='loterias-ai/data/research/primitiva-frequency4-prospective-status.json';
+          if(fs.existsSync(s)){const d=JSON.parse(fs.readFileSync(s,'utf8'));if(d.disclosure?.interimEconomicPerformanceHidden!==true||d.disclosure?.interimROIHidden!==true||d.guards?.noRetuning!==true||d.guards?.noOptionalStopping!==true||d.guards?.post50CannotRescue!==true||d.gates?.realMoneyAllowed!==false)throw new Error('frequency4 status safety regression')}
+          const p='loterias-ai/data/research/primitiva-frequency4-prospective-final-50.json';
+          if(fs.existsSync(p)){const d=JSON.parse(fs.readFileSync(p,'utf8'));if(d.fixedBoundary?.draws!==50||d.fixedBoundary?.post50CanRescue!==false||d.guards?.all50SealedBeforeResult!==true||d.guards?.noRetuning!==true||d.guards?.noOptionalStopping!==true||d.guards?.post50RescueAllowed!==false||d.gates?.realMoneyPass!==false)throw new Error('frequency4 final safety regression')}
+          NODE
+      - name: Persist settlements, blinded status or fixed finals against moving main
         shell: bash
         run: |
           set -euo pipefail
           git config user.name github-actions[bot];git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          owned=(loterias-ai/data/research/v315-prospective-settlements loterias-ai/data/research/metapleno-v315-prospective-status.json loterias-ai/data/research/metapleno-v315-final-200.json);tmp="$(mktemp -d)";trap 'rm -rf "$tmp"' EXIT
+          owned=(loterias-ai/data/research/v315-prospective-settlements loterias-ai/data/research/metapleno-v315-prospective-status.json loterias-ai/data/research/metapleno-v315-final-200.json loterias-ai/data/research/primitiva-frequency4-prospective-status.json loterias-ai/data/research/primitiva-frequency4-prospective-final-50.json);tmp="$(mktemp -d)";trap 'rm -rf "$tmp"' EXIT
           for p in "${owned[@]}";do if [ -e "$p" ];then mkdir -p "$tmp/$(dirname "$p")";cp -a "$p" "$tmp/$p";fi;done
-          for attempt in 1 2 3 4 5;do git fetch origin main;git reset --hard origin/main;for p in "${owned[@]}";do if [ -e "$tmp/$p" ];then mkdir -p "$(dirname "$p")";rm -rf "$p";cp -a "$tmp/$p" "$p";fi;done;git add "${owned[@]}" 2>/dev/null||true;git diff --cached --quiet&&exit 0;git commit -m 'research(loterias-ai): advance v315 prospective evidence';git push origin HEAD:main&&exit 0;sleep $((attempt*2));done
+          for attempt in 1 2 3 4 5;do git fetch origin main;git reset --hard origin/main;for p in "${owned[@]}";do if [ -e "$tmp/$p" ];then mkdir -p "$(dirname "$p")";rm -rf "$p";cp -a "$tmp/$p" "$p";fi;done;git add "${owned[@]}" 2>/dev/null||true;git diff --cached --quiet&&exit 0;git commit -m 'research(loterias-ai): advance Primitiva blinded prospective evidence';git push origin HEAD:main&&exit 0;sleep $((attempt*2));done
           exit 1
