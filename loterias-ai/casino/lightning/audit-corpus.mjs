@@ -35,8 +35,8 @@ for(const f of files){
 }
 const minimumReplayRounds=500;
 const uniqueAuthoritativeRounds=roundIds.size;
-const audit={
-  generatedAt:new Date().toISOString(),files:files.length,rawRows,invalidRows,authoritativeRows,uniqueAuthoritativeRounds,
+const scientificState={
+  files:files.length,rawRows,invalidRows,authoritativeRows,uniqueAuthoritativeRounds,
   duplicateAuthoritativeRoundIds:[...new Set(duplicates)],duplicateAuthoritativeRows:duplicates.length,validPublicObservations:observationRows,
   minimumReplayRounds,remainingAuthoritativeToReplay:Math.max(0,minimumReplayRounds-uniqueAuthoritativeRounds),
   trainingEligible:uniqueAuthoritativeRounds>=minimumReplayRounds&&violations.length===0&&duplicates.length===0,
@@ -45,7 +45,21 @@ const audit={
   corpusFingerprint:crypto.createHash('sha256').update([...roundIds].sort().join('\n')).digest('hex'),
   next:uniqueAuthoritativeRounds>=minimumReplayRounds?'validate-and-replay-paper':'continue-authoritative-public-acquisition'
 };
+
+let audit={generatedAt:new Date().toISOString(),...scientificState};
+if(fs.existsSync(outPath)){
+  try{
+    const previous=JSON.parse(fs.readFileSync(outPath,'utf8'));
+    const {generatedAt:_previousGeneratedAt,...previousScientificState}=previous;
+    if(JSON.stringify(previousScientificState)===JSON.stringify(scientificState)){
+      audit=previous;
+      console.log(JSON.stringify({...audit,persistence:'NO_SEMANTIC_CHANGE'},null,2));
+      if(!audit.qualityPass) process.exitCode=2;
+      process.exit();
+    }
+  }catch{}
+}
 fs.mkdirSync(path.dirname(outPath),{recursive:true});
 fs.writeFileSync(outPath,JSON.stringify(audit,null,2)+'\n');
-console.log(JSON.stringify(audit,null,2));
+console.log(JSON.stringify({...audit,persistence:'UPDATED_SEMANTIC_CHANGE'},null,2));
 if(!audit.qualityPass) process.exitCode=2;
