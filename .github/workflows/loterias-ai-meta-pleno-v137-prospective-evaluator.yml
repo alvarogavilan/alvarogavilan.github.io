@@ -10,8 +10,6 @@ on:
       - 'loterias-ai/data/prospective/v135-freeze-policy.json'
       - 'loterias-ai/scripts/meta-pleno-v137-prospective-evaluator.mjs'
       - '.github/workflows/loterias-ai-meta-pleno-v137-prospective-evaluator.yml'
-  schedule:
-    - cron: '23 */2 * * *'
   workflow_dispatch:
 permissions:
   contents: write
@@ -33,10 +31,7 @@ jobs:
         run: |
           set -euo pipefail
           OUT='loterias-ai/data/prospective/bonoloto-v137-evaluation.json'
-          if [ ! -f "$OUT" ]; then
-            echo 'Target result not available yet.'
-            exit 0
-          fi
+          if [ ! -f "$OUT" ]; then echo 'Target result not available yet.'; exit 0; fi
           cp "$OUT" /tmp/bonoloto-v137-evaluation.json
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
@@ -45,10 +40,7 @@ jobs:
             git reset --hard origin/main
             cp /tmp/bonoloto-v137-evaluation.json "$OUT"
             git add "$OUT"
-            if git diff --cached --quiet; then
-              echo 'v137 evaluation already current.'
-              exit 0
-            fi
+            if git diff --cached --quiet; then exit 0; fi
             git commit -m 'data(loterias-ai): persist v137 prospective evaluation'
             if git push origin HEAD:main; then exit 0; fi
             sleep $((attempt*2))
