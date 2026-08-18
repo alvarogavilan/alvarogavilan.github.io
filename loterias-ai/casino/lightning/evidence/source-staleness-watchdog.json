@@ -1,46 +1,57 @@
 {
-  "version": "lightning-source-staleness-watchdog-v2",
-  "status": "SOURCE_FRESH_CORPUS_INGESTION_LAGGING",
+  "version": "lightning-source-staleness-watchdog-v3",
+  "status": "SOURCE_FRESH_ACTIVE_SEGMENT_INGESTION_LAGGING",
   "authoritativeCorpus": {
     "source": "casinoorg-api",
-    "latestRoundAt": "2026-08-18T05:57:30.374Z",
-    "totalStored": 2473,
+    "activeSegment": "authoritative-v2",
+    "latestRoundAt": "2026-08-18T22:08:08.957Z",
+    "totalStored": 830,
     "collectorStatus": 200,
-    "roundLagBucket": "GE240M",
+    "roundLagBucket": "LT15M",
     "collectorAgeBucket": "GE240M"
   },
   "authoritativeSourceProbe": {
     "httpOk": true,
-    "checkedHour": "2026-08-18T09:00:00Z",
+    "checkedHour": "2026-08-18T22:00:00Z",
     "sourceLatest": {
-      "roundId": "6a842cbcfff41cc231c2d4ee",
-      "timestamp": "2026-08-18T09:58:20.016Z",
-      "winner": 33
+      "roundId": "6a84d7f51db707c955698245",
+      "timestamp": "2026-08-18T22:08:52.912Z",
+      "winner": 8
     },
-    "sourceHeadLagBucket": "15_30M",
-    "probeAgeBucket": "60_120M",
-    "sourceAheadOfCorpus": true,
-    "responseSha256": "b2bff98bf5b83090225338c6806dcb2345e12980f6b8577757e84e884fc74898"
+    "activeCorpus": {
+      "segment": "authoritative-v2",
+      "latest": {
+        "roundId": "6a84d7c91db707c95569823e",
+        "timestamp": "2026-08-18T22:08:08.957Z",
+        "winner": 21
+      },
+      "rows": 830
+    },
+    "sourceHeadLagBucket": "LT15M",
+    "probeAgeBucket": "LT15M",
+    "sourceAheadOfActiveSegment": true,
+    "responseSha256": "1d4afa2c2a5c3056ddcf5ac8bb685f86303ec1180673f7132c9c2099b6bdb969"
   },
   "independentObserver": {
     "source": "tracksino-public-web",
-    "observedAt": "2026-08-18T07:06:16.416Z",
+    "observedAt": "2026-08-18T18:58:17.880Z",
     "visibility": true,
     "observerAgeBucket": "120_240M",
     "roundLevelData": false,
     "trainingEligible": false
   },
   "policy": {
+    "legacyV1MayResumeScheduledCapture": false,
     "aggregateObserverMayReplaceRoundCorpus": false,
     "automaticSourcePromotion": false,
     "requiresRoundLevelLuckyMultiplierData": true,
     "requiresIndependentProvenanceAuditBeforeAlternateSource": true
   },
-  "action": "Repair or rerun the authoritative collector; do not substitute another source because Casino.org source head is fresh and ahead of the corpus.",
+  "action": "Repair or rerun clean-segment v2 capture/recovery; do not reactivate legacy v1 or substitute an unaudited source.",
   "guards": {
     "trainingDataMutation": false,
     "prospectiveOutcomeMutation": false,
     "realMoneyAllowed": false
   },
-  "checkedAt": "2026-08-18T10:13:34.996Z"
+  "checkedAt": "2026-08-18T22:09:10.698Z"
 }
