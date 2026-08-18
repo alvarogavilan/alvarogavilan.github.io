@@ -1,0 +1,81 @@
+{
+  "version": "v324",
+  "family": "SPECTRAL_RESIDUAL_CENTRALITY_6OF49",
+  "status": "PREREGISTERED_BEFORE_EXECUTION",
+  "goal": "Test whether the dominant Perron direction of a past-only positive residual co-occurrence network contains reproducible 5+ pool information beyond same-window marginal frequency and exact matched random baselines.",
+  "antiDuplicateGuard": {
+    "searchedTerms": ["PCA", "principal component", "eigenvector", "spectral covariance", "Perron", "eigenvector centrality"],
+    "repositorySearchResult": "NO_EQUIVALENT_SPECTRAL_EIGENVECTOR_FAMILY_FOUND_AT_PREREGISTRATION",
+    "nearestPriorFamilies": [
+      {"version": "v138/v315", "difference": "Those graph models use weighted degree, local clustering and neighbour entropy; v324 uses a globally coupled dominant eigenvector after subtracting marginal co-occurrence expectation."},
+      {"version": "v322", "difference": "DPP v322 optimizes a determinant of the selected set; v324 ranks numbers by the leading eigenvector of a residual network."}
+    ],
+    "abortIfEquivalentArtifactFoundLater": true
+  },
+  "games": ["bonoloto", "primitiva"],
+  "regime": {"support": "1..49", "drawSize": 6, "poolSize": 8, "coverageLines": 28, "theoreticalCostEUR": 14},
+  "temporalProtocol": {
+    "developmentEvaluationStart": "2010-01-01",
+    "developmentEnd": "2018-12-31",
+    "validationStart": "2019-01-01",
+    "validationEnd": "2022-12-31",
+    "blindOosStart": "2023-01-01",
+    "blindOosEnd": "2024-12-31",
+    "stage1MayReadThrough": "2018-12-31",
+    "validationMustRemainUnreadUntilCandidateFreeze": true,
+    "blindOosMustRemainUnreadUntilValidationPassAndSecondFreeze": true,
+    "retuningAfterDevelopment": false,
+    "post2024MayRescueV324": false
+  },
+  "model": {
+    "windowCounts": "For each target and W, count_i and cooccur_ij use only the previous W draws.",
+    "expectedCooccurrence": "E_ij = count_i*count_j/W for i!=j.",
+    "positiveResidual": "A_ij=max(0,(cooccur_ij-E_ij)/sqrt(max(1e-12,E_ij))) for i!=j; A_ii=0.",
+    "spectralVector": "Start v_i=1/sqrt(49); apply exactly 12 L2-normalized power iterations to A; if zero norm use uniform vector. Perron sign is nonnegative by construction.",
+    "frequencyZ": "zFreq_i=(count_i-6W/49)/sqrt(max(1e-12,W*(6/49)*(43/49))).",
+    "score": "score_i = alpha*zFreq_i + (1-alpha)*zSpectral_i, where zSpectral standardizes the 49 final eigenvector entries within the target.",
+    "selection": "Top 8 score_i, ties by lower number.",
+    "frequencyBaseline": "Top 8 count_i from the same W, ties by lower number.",
+    "targetLeakageAllowed": false
+  },
+  "frozenGrid": {
+    "windows": [128,256,512],
+    "alpha": [0,0.25,0.5,0.75],
+    "powerIterations": 12,
+    "logicalConfigurationsPerGame": 12,
+    "maximumDevelopmentSurvivorsPerGame": 6
+  },
+  "developmentGate": {
+    "minimumEvaluatedDraws": 300,
+    "primaryMetric": "fivePlusPoolHits",
+    "mustBeatSameWindowFrequencyByAtLeast": 1,
+    "mustBeatExactMatchedRandomExpectation": true,
+    "minimumDistinctFivePlusDates": 2,
+    "behavioralDeduplication": true,
+    "ifNoCandidatePasses": "CLOSE_V324_WITHOUT_READING_2019_PLUS"
+  },
+  "validationGate": {
+    "candidateParametersFrozenFromDevelopment": true,
+    "minimumEvaluatedDraws": 250,
+    "positiveFivePlusExcessOverFrequencyRequired": true,
+    "positiveFivePlusExcessOverMatchedRandomRequired": true,
+    "minimumDistinctFivePlusDates": 2,
+    "noRetuning": true,
+    "ifNoCandidatePasses": "CLOSE_V324_WITHOUT_READING_2023_PLUS"
+  },
+  "matchedNull": {
+    "fivePlusProbability": "[C(6,5)C(43,3)+C(6,6)C(43,2)]/C(49,8)",
+    "fullSixProbability": "C(43,2)/C(49,8)",
+    "samePoolSize": 8
+  },
+  "guards": {
+    "futureInformationAllowed": false,
+    "targetTuningAllowed": false,
+    "validationPeekAllowedBeforeFreeze": false,
+    "blindOosPeekAllowedBeforeValidationPass": false,
+    "powerIterationsLockedBeforeExecution": true,
+    "maximumTheoreticalCostEURPerGameDraw": 14,
+    "realMoneyPass": false,
+    "realStakeEUR": 0
+  }
+}
