@@ -1,0 +1,60 @@
+{
+  "version": "actions-budget-policy-v1",
+  "effectiveFrom": "2026-08-19",
+  "mode": "COST_GUARD_ACTIVE",
+  "principle": "GitHub Actions is reserved for external evidence acquisition, official post-draw settlement, and infrequent integrity gates. Deterministic presentation and derived progress belong in the application/browser whenever persistence is not scientifically required.",
+  "classes": {
+    "CAPTURE_REQUIRED": {
+      "description": "Future evidence that would be lost if the app is closed.",
+      "scheduledAllowed": true,
+      "examples": ["Lightning authoritative clean segment v2"]
+    },
+    "POST_DRAW_REQUIRED": {
+      "description": "Low-frequency official result retrieval/settlement where immutable custody matters.",
+      "scheduledAllowed": true,
+      "preferredCadence": "daily or aligned to draw calendar"
+    },
+    "DERIVED_LOCAL": {
+      "description": "Counters, dashboards, ETAs, summaries, ledgers, rankings that remain blinded, and other deterministic views of persisted evidence.",
+      "scheduledAllowed": false,
+      "execution": "browser/app or event-driven only"
+    },
+    "HISTORICAL_MAINTENANCE": {
+      "description": "Backfills, archive enrichment and research audits that do not protect a live prospective sample.",
+      "scheduledAllowed": true,
+      "preferredCadence": "weekly or post-draw; never high-frequency"
+    },
+    "DIAGNOSTIC": {
+      "description": "Source probes, public observers, legacy audits and recovery diagnostics.",
+      "scheduledAllowed": false,
+      "execution": "manual or code-change trigger"
+    }
+  },
+  "lightning": {
+    "authoritativeV2CaptureMinutes": 10,
+    "minimumAllowedScheduledMinutes": 10,
+    "sourceWindowRounds": 30,
+    "derivedStatusComputedInsideCaptureRun": true,
+    "legacyV1Scheduled": false,
+    "publicObserversScheduled": false,
+    "sourceWatchdogScheduled": false,
+    "statAuditScheduled": false,
+    "paperV1Scheduled": false
+  },
+  "national": {
+    "dailySettlementSafetyNet": true,
+    "attemptLedger": "event-driven",
+    "archiveQualityAudit": "event-driven",
+    "quinigolShadow": "event-driven",
+    "historicalBackfills": "weekly/post-draw",
+    "expiredOneDateWorkflowsScheduled": false
+  },
+  "guards": {
+    "realMoneyAllowed": false,
+    "neverReduceScientificBoundaryToSaveActions": true,
+    "neverDiscardRequiredFutureEvidenceToSaveActions": true,
+    "preferOneWorkflowToMultipleChainedWorkflows": true,
+    "suppressTimestampOnlyCommits": true,
+    "noCronForPurePresentation": true
+  }
+}
