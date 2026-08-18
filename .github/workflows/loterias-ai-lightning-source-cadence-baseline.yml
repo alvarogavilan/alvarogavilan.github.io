@@ -1,0 +1,43 @@
+name: Loterias AI Lightning Source Cadence Baseline
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/lightning/research/source-cadence-baseline-v1.mjs'
+      - '.github/workflows/loterias-ai-lightning-source-cadence-baseline.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  cadence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - name: Audit only pre-gap authoritative cadence
+        run: node loterias-ai/casino/lightning/research/source-cadence-baseline-v1.mjs
+      - name: Persist baseline against moving main
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET='loterias-ai/casino/lightning/evidence/source-cadence-baseline-v1.json'
+          cp "$TARGET" /tmp/source-cadence-baseline-v1.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/source-cadence-baseline-v1.json "$TARGET"
+            git add "$TARGET"
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'research(lightning): persist pre-gap source cadence baseline'
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
