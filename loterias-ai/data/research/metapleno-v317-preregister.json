@@ -25,9 +25,15 @@
   "method": {
     "targetEvent": "At least 5 of the 6 winning main numbers are contained in a pre-draw conformal pool.",
     "nonconformityScore": "For each historical draw, rank all 49 numbers using a base ranking computed only from earlier draws; the score is the rank position of the fifth-best-ranked winning number. Smaller is better.",
-    "calibration": "For each target draw, use only previous nonconformity scores from the frozen rolling calibration window. The conformal quantile is ceil((n+1)*(1-alpha))/n with the standard finite-sample upper order statistic convention.",
-    "playability": "The conformal pool is the top K ranked numbers where K=max(6, conformal quantile). The draw is playable for this experiment only when K<=8. No truncation from K>8 to 8 is allowed.",
-    "budget": "For K=6..8 evaluate all C(K,6) lines. At K=8 this is 28 lines and 14 EUR under the project Bonoloto-equivalent 0.50 EUR line convention; real stake remains zero."
+    "calibration": "For each target draw, use only previous nonconformity scores from the frozen rolling calibration window. Let m be the number of calibration scores and j=min(m,ceil((m+1)*(1-alpha))); Kraw is the j-th smallest calibration score.",
+    "playability": "The conformal pool is the top K ranked numbers where K=max(6,Kraw). The draw is playable for this experiment only when K<=8. No truncation from K>8 to 8 is allowed.",
+    "budget": "For K=6..8 evaluate all C(K,6) lines. At K=8 this is 28 lines and 14 EUR under the project Bonoloto-equivalent 0.50 EUR line convention; real stake remains zero.",
+    "rankingDefinitions": {
+      "hot": "Within the strictly prior trailing W draws, rank 1..49 by descending appearance count; tie-break lower number first.",
+      "overdue": "Using strictly prior history and capped search within trailing W draws, rank by descending draws-since-last-appearance; never-seen-inside-window is assigned gap W+1; tie-break lower number first.",
+      "recent": "Same frozen gap statistic as overdue, but rank ascending gap; tie-break lower number first.",
+      "hot_gap_hybrid": "For each number compute frequencyShare=count/(6W) and gapShare=min(gap,W+1)/(W+1); score=0.65*frequencyShare+0.35*gapShare; rank descending score, tie-break lower number first. Coefficients are frozen before Stage1-2."
+    }
   },
   "frozenCandidateGrid": {
     "rankingModes": ["hot", "overdue", "recent", "hot_gap_hybrid"],
@@ -38,10 +44,12 @@
     "maximumFrozenBehavioralRepresentativesPerGame": 8
   },
   "stage1_2SelectionRules": {
+    "developmentEvaluationStart": "2018-01-01",
     "minimumPlayableEvaluations": 50,
     "requiredObservedFivePlusEvents": 1,
     "requiredObservedMinusMatchedRandomExpectedFivePlus": 0,
     "behavioralDeduplication": true,
+    "behaviorHash": "SHA-256 of chronological emitted playable target date, K and pool for the development evaluation window.",
     "rankingPriority": ["fivePlusExcessVsMatchedRandom", "fivePlusCount", "playableEvaluations", "fullSixCount"],
     "failurePolicy": "If no configuration meets all predeclared gates in development, close v317 without opening blind OOS."
   },
@@ -53,6 +61,7 @@
   },
   "stage3Freeze": {
     "maximumTotalCandidates": 16,
+    "maximumPerGame": 8,
     "manifestHashRequired": true,
     "behaviorHashRequired": true,
     "noBlindOosReadBeforeFreeze": true
