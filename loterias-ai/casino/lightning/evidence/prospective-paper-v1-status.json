@@ -1,11 +1,11 @@
 {
   "version": "lightning-prospective-paper-v1-status",
-  "generatedAt": "2026-08-18T01:49:45.452Z",
   "freezeCutoffTimestamp": "2026-08-17T05:01:32.675Z",
-  "futureRoundsObserved": 787,
+  "futureRoundsObservedAtInference": 500,
   "futureRoundsRequired": 500,
   "remaining": 0,
   "mature": true,
+  "inferenceReady": true,
   "models": {
     "uniform": {
       "accuracy": 0.02702702702702703,
@@ -13,37 +13,40 @@
       "brier": 0.972972972972973
     },
     "frequency": {
-      "n": 787,
-      "hits": 17,
-      "accuracy": 0.021601016518424398,
-      "logLoss": 3.6448325667404577,
-      "brier": 0.9749173235165782,
-      "pValue": 0.8541391151070712,
-      "predictionsHash": "4e599ba56db6db507278ee8ff42f5e2889bdbd106c318a2f8fa0233bd80805df",
+      "n": 500,
+      "hits": 10,
+      "accuracy": 0.02,
+      "logLoss": 3.650343824091966,
+      "brier": 0.9752253030665267,
+      "pValue": 0.8689410604639549,
+      "predictionsHash": "444ae238c420fec8c7b8d758f2220bc15dde951d13048bca30fdfcb52e1fb55e",
       "promotes": false
     },
     "markov1": {
-      "n": 787,
-      "hits": 17,
-      "accuracy": 0.021601016518424398,
-      "logLoss": 3.6809574504993043,
-      "brier": 0.9778845841535505,
-      "pValue": 0.8541391151070712,
-      "predictionsHash": "3e8d95e78f0c7d9d6c57e3a07016fd02e0e9c7209eb9089fd4570c11292aae71",
+      "n": 500,
+      "hits": 13,
+      "accuracy": 0.026,
+      "logLoss": 3.67892282853516,
+      "brier": 0.9775971025014273,
+      "pValue": 0.5942604116302479,
+      "predictionsHash": "752650ca67d21524202b3526ce9819b1301d5942795af4ae8578e5ea8c87a688",
       "promotes": false
     }
   },
   "summary": {
+    "terminalDecision": "NEGATIVE_NO_EDGE_AT_500",
     "edgeObserved": false,
-    "claimAllowed": true,
+    "claimAllowed": false,
     "retuningPerformed": false,
+    "optionalStoppingPerformed": false,
     "realMoneyPass": false,
     "realStakeEUR": 0,
-    "next": "freeze conclusion; do not retune on this holdout"
+    "next": "terminal primary inference sealed at 500; later rounds belong to separate confirmatory monitoring"
   },
   "safety": {
     "realMoney": false,
     "bettingRecommendation": false,
     "authenticationBypassAttempted": false
-  }
+  },
+  "generatedAt": "2026-08-18T02:03:55.342Z"
 }
