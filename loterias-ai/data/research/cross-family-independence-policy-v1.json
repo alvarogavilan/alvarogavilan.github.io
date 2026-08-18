@@ -1,0 +1,31 @@
+{
+  "version": "cross-family-independence-policy-v1",
+  "createdAt": "2026-08-18T22:02:00Z",
+  "status": "ACTIVE_FOR_FUTURE_META_EVIDENCE_ONLY",
+  "motivation": {
+    "sourceAudit": "loterias-ai/data/research/cross-family-event-clustering-v1.json",
+    "finding": "A large fraction of recent 5+ behavior events cluster on the same historical draws, so counting models or parameterizations as independent replications overstates evidence.",
+    "topSharedDate": "2018-06-11",
+    "topSharedDateBehaviorEvents": 16,
+    "topSharedDateFamilyCount": 3,
+    "topSharedDateShareOfBehaviorEvents": 0.34782608695652173
+  },
+  "rules": {
+    "effectiveReplicationUnit": "game + official draw date, not model configuration",
+    "sameGameSameDateAcrossFamiliesCountsAs": 1,
+    "sameGameSameDateAcrossParameterizationsCountsAs": 1,
+    "differentDatesMayCountSeparately": true,
+    "differentGamesOnSameDateAreNotAutomaticallyIndependent": "must be justified by separate drawing process/source; do not assume independence merely from game label",
+    "candidateLevelExistingGatesRemainUnchanged": true,
+    "retroactiveGateChangesForbidden": true,
+    "futureCrossFamilyClaimsMustReportUniqueDrawDates": true,
+    "futureCrossFamilyClaimsMustReportHotspotConcentration": true,
+    "sharedHistoricalFullHitsDoNotAuthorizeProspectivePromotion": true
+  },
+  "promotion": {
+    "crossFamilyHistoricalAgreementAloneCanPromote": false,
+    "requiresIndependentFutureProspectiveEvidence": true,
+    "realMoneyPass": false,
+    "realStakeEUR": 0
+  }
+}
