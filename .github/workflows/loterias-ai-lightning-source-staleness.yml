@@ -15,8 +15,10 @@ on:
       - 'loterias-ai/casino/lightning/research/probe-casinoorg-source-head.mjs'
       - 'loterias-ai/casino/lightning/research/recover-casinoorg-pagination-gap-v1.mjs'
       - '.github/workflows/loterias-ai-lightning-source-staleness.yml'
+  # Cost guard: GitHub Actions is now only a low-frequency safety fallback.
+  # The primary cadence is owned by the Loterias AI local laboratory runtime.
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '13 */6 * * *'
 
 permissions:
   contents: write
