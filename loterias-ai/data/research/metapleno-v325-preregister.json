@@ -1,0 +1,79 @@
+{
+  "version": "v325",
+  "family": "MULTISCALE_STABILITY_SELECTION_6OF49",
+  "status": "PREREGISTERED_BEFORE_EXECUTION",
+  "goal": "Test whether numbers whose standardized incidence deviation is directionally stable across nested past windows yield reproducible 5+ coverage beyond the largest-window frequency baseline and exact matched random 8-of-49 null.",
+  "antiDuplicateGuard": {
+    "searchedTerms": ["stability selection", "consensus stability", "subwindow stability", "median MAD", "multiscale stable ranking"],
+    "repositorySearchResult": "NO_EQUIVALENT_STABILITY_SELECTION_FAMILY_FOUND_AT_PREREGISTRATION",
+    "nearestPriorFamilies": [
+      {"version": "v323", "difference": "v323 uses signed Haar contrasts between adjacent blocks; v325 requires level deviation to agree across nested windows and explicitly penalizes dispersion."},
+      {"version": "v5/v91 ensembles", "difference": "Prior ensembles combine model outputs; v325 is a single preregistered robust statistic computed directly from nested past incidence windows."}
+    ],
+    "abortIfEquivalentArtifactFoundLater": true
+  },
+  "games": ["bonoloto", "primitiva"],
+  "regime": {"support": "1..49", "drawSize": 6, "poolSize": 8, "coverageLines": 28, "theoreticalCostEUR": 14},
+  "temporalProtocol": {
+    "developmentEvaluationStart": "2010-01-01",
+    "developmentEnd": "2018-12-31",
+    "validationStart": "2019-01-01",
+    "validationEnd": "2022-12-31",
+    "blindOosStart": "2023-01-01",
+    "blindOosEnd": "2024-12-31",
+    "stage1MayReadThrough": "2018-12-31",
+    "validationMustRemainUnreadUntilCandidateFreeze": true,
+    "blindOosMustRemainUnreadUntilValidationPassAndSecondFreeze": true,
+    "retuningAfterDevelopment": false,
+    "post2024MayRescueV325": false
+  },
+  "model": {
+    "nestedWindows": "For base B use [B/4,B/2,B] previous draws only.",
+    "standardizedDeviation": "z_h(n)=(count_h(n)-6h/49)/sqrt(max(1e-12,h*(6/49)*(43/49))).",
+    "location": "medianZ(n)=median of the three z_h(n).",
+    "instability": "MAD(n)=median(|z_h(n)-medianZ(n)|).",
+    "score": "hot mode: medianZ-lambda*MAD; cold mode: -medianZ-lambda*MAD.",
+    "selection": "Top 8 scores, ties by lower number.",
+    "frequencyBaseline": "Top 8 count over the largest window B, ties by lower number.",
+    "targetLeakageAllowed": false
+  },
+  "frozenGrid": {
+    "baseWindows": [128,256,512],
+    "lambda": [0,0.5,1,2],
+    "modes": ["hot","cold"],
+    "logicalConfigurationsPerGame": 24,
+    "maximumDevelopmentSurvivorsPerGame": 6
+  },
+  "developmentGate": {
+    "minimumEvaluatedDraws": 300,
+    "primaryMetric": "fivePlusPoolHits",
+    "mustBeatSameWindowFrequencyByAtLeast": 1,
+    "mustBeatExactMatchedRandomExpectation": true,
+    "minimumDistinctFivePlusDates": 2,
+    "behavioralDeduplication": true,
+    "ifNoCandidatePasses": "CLOSE_V325_WITHOUT_READING_2019_PLUS"
+  },
+  "validationGate": {
+    "candidateParametersFrozenFromDevelopment": true,
+    "minimumEvaluatedDraws": 250,
+    "positiveFivePlusExcessOverFrequencyRequired": true,
+    "positiveFivePlusExcessOverMatchedRandomRequired": true,
+    "minimumDistinctFivePlusDates": 2,
+    "noRetuning": true,
+    "ifNoCandidatePasses": "CLOSE_V325_WITHOUT_READING_2023_PLUS"
+  },
+  "matchedNull": {
+    "fivePlusProbability": "[C(6,5)C(43,3)+C(6,6)C(43,2)]/C(49,8)",
+    "fullSixProbability": "C(43,2)/C(49,8)",
+    "samePoolSize": 8
+  },
+  "guards": {
+    "futureInformationAllowed": false,
+    "targetTuningAllowed": false,
+    "validationPeekAllowedBeforeFreeze": false,
+    "blindOosPeekAllowedBeforeValidationPass": false,
+    "maximumTheoreticalCostEURPerGameDraw": 14,
+    "realMoneyPass": false,
+    "realStakeEUR": 0
+  }
+}
