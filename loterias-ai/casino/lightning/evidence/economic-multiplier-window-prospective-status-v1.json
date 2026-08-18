@@ -1,6 +1,6 @@
 {
   "version": "economic-multiplier-window-prospective-status-v1",
-  "generatedAt": "2026-08-18T04:20:40.833Z",
+  "generatedAt": "2026-08-18T04:57:41.422Z",
   "freezeVersion": "economic-multiplier-window-prospective-freeze-v1",
   "decisionProtocolVersion": "economic-multiplier-prospective-decision-protocol-v1",
   "frozenAt": "2026-08-17T21:27:45Z",
@@ -11,14 +11,14 @@
     "outcome": "at least one winning Lightning event in the next 7 chronological rounds",
     "noRetuning": true
   },
-  "postFreezeRounds": 284,
-  "closedEpisodes": 26,
-  "successes": null,
-  "failures": null,
-  "successRate": null,
+  "postFreezeRounds": 314,
+  "closedEpisodes": 30,
+  "successes": 13,
+  "failures": 17,
+  "successRate": 0.433333,
   "wilson95": {
-    "lower": null,
-    "upper": null
+    "lower": 0.273772,
+    "upper": 0.60803
   },
   "frozenNull": {
     "primary": 0.384823,
@@ -27,31 +27,18 @@
   "calibration": {
     "referenceProbability": 0.401606,
     "referenceSource": "unchanged rule success rate in the untouched pre-freeze OOS holdout at commit 4444ee4284991786718b6b9a55d651b1a7384b10",
-    "referenceInsideCurrentWilson95": null,
+    "referenceInsideCurrentWilson95": true,
     "formalCriterion": "referenceProbability must lie inside the Wilson 95% interval of the fixed prospective final window"
   },
-  "liftVsPrimary": null,
-  "relativeLiftVsPrimary": null,
-  "pendingEpisode": {
-    "triggerAt": "2026-08-18T04:19:32.830Z",
-    "gapAtTrigger": 8,
-    "futureRoundsObserved": 1
-  },
-  "status": "ACCUMULATING",
+  "liftVsPrimary": 0.04851,
+  "relativeLiftVsPrimary": 0.126059,
+  "pendingEpisode": null,
+  "status": "DIRECTIONAL_DESCRIPTIVE_ONLY",
   "disclosure": {
-    "performanceHidden": true,
+    "performanceHidden": false,
     "minimumClosedEpisodesBeforeDirectionalRead": 30,
-    "policy": "ADMINISTRATIVE_PROGRESS_ONLY",
-    "hiddenFields": [
-      "successes",
-      "failures",
-      "successRate",
-      "wilson95",
-      "liftVsPrimary",
-      "relativeLiftVsPrimary",
-      "directionalGates",
-      "recentClosedEpisodeOutcomes"
-    ]
+    "policy": "DIRECTIONAL_OR_LATER_READ_POLICY_ACTIVE",
+    "hiddenFields": []
   },
   "readPolicy": {
     "before30": "ADMINISTRATIVE_PROGRESS_ONLY",
@@ -62,11 +49,11 @@
   },
   "fixedFinal": null,
   "gates": {
-    "directionalSampleReached": false,
+    "directionalSampleReached": true,
     "formalSampleReached": false,
-    "lowerCiAbovePrimaryNull": null,
-    "positiveVsSecondary": null,
-    "calibrationReferenceInsideWilson95": null,
+    "lowerCiAbovePrimaryNull": false,
+    "positiveVsSecondary": true,
+    "calibrationReferenceInsideWilson95": true,
     "minimum10000ProspectiveRoundsReached": false,
     "fixedFinalTimingGatePass": false,
     "formalTimingGatePass": false,
@@ -74,7 +61,148 @@
     "promotionGatePass": false,
     "realMoneyAllowed": false
   },
-  "recentClosedEpisodes": [],
+  "recentClosedEpisodes": [
+    {
+      "triggerAt": "2026-08-17T23:33:48.781Z",
+      "gapAtTrigger": 22,
+      "success": false,
+      "closedAt": "2026-08-17T23:39:34.788Z",
+      "futureRounds": 7
+    },
+    {
+      "triggerAt": "2026-08-17T23:39:34.788Z",
+      "gapAtTrigger": 29,
+      "success": true,
+      "closedAt": "2026-08-17T23:41:56.316Z",
+      "futureRounds": 3
+    },
+    {
+      "triggerAt": "2026-08-17T23:48:11.300Z",
+      "gapAtTrigger": 8,
+      "success": false,
+      "closedAt": "2026-08-18T00:02:48.307Z",
+      "futureRounds": 7
+    },
+    {
+      "triggerAt": "2026-08-18T00:02:48.307Z",
+      "gapAtTrigger": 15,
+      "success": true,
+      "closedAt": "2026-08-18T00:05:08.819Z",
+      "futureRounds": 3
+    },
+    {
+      "triggerAt": "2026-08-18T01:39:58.237Z",
+      "gapAtTrigger": 8,
+      "success": false,
+      "closedAt": "2026-08-18T01:45:51.732Z",
+      "futureRounds": 7
+    },
+    {
+      "triggerAt": "2026-08-18T01:45:51.732Z",
+      "gapAtTrigger": 15,
+      "success": false,
+      "closedAt": "2026-08-18T01:51:54.731Z",
+      "futureRounds": 7
+    },
+    {
+      "triggerAt": "2026-08-18T01:51:54.731Z",
+      "gapAtTrigger": 22,
+      "success": false,
+      "closedAt": "2026-08-18T02:31:49.761Z",
+      "futureRounds": 7
+    },
+    {
+      "triggerAt": "2026-08-18T02:31:49.761Z",
+      "gapAtTrigger": 29,
+      "success": false,
+      "closedAt": "2026-08-18T02:37:49.256Z",
+      "futureRounds": 7
+    },
+    {
+      "triggerAt": "2026-08-18T02:37:49.256Z",
+      "gapAtTrigger": 36,
+      "success": false,
+      "closedAt": "2026-08-18T02:43:31.265Z",
+      "futureRounds": 7
+    },
+    {
+      "triggerAt": "2026-08-18T02:43:31.265Z",
+      "gapAtTrigger": 43,
+      "success": true,
+      "closedAt": "2026-08-18T02:46:46.769Z",
+      "futureRounds": 4
+    },
+    {
+      "triggerAt": "2026-08-18T02:53:33.290Z",
+      "gapAtTrigger": 8,
+      "success": false,
+      "closedAt": "2026-08-18T03:18:55.296Z",
+      "futureRounds": 7
+    },
+    {
+      "triggerAt": "2026-08-18T03:18:55.296Z",
+      "gapAtTrigger": 15,
+      "success": true,
+      "closedAt": "2026-08-18T03:23:03.791Z",
+      "futureRounds": 5
+    },
+    {
+      "triggerAt": "2026-08-18T03:32:11.798Z",
+      "gapAtTrigger": 8,
+      "success": false,
+      "closedAt": "2026-08-18T03:38:08.793Z",
+      "futureRounds": 7
+    },
+    {
+      "triggerAt": "2026-08-18T03:38:08.793Z",
+      "gapAtTrigger": 15,
+      "success": true,
+      "closedAt": "2026-08-18T03:39:52.308Z",
+      "futureRounds": 2
+    },
+    {
+      "triggerAt": "2026-08-18T04:05:42.312Z",
+      "gapAtTrigger": 8,
+      "success": false,
+      "closedAt": "2026-08-18T04:11:14.316Z",
+      "futureRounds": 7
+    },
+    {
+      "triggerAt": "2026-08-18T04:11:14.316Z",
+      "gapAtTrigger": 15,
+      "success": true,
+      "closedAt": "2026-08-18T04:11:59.816Z",
+      "futureRounds": 1
+    },
+    {
+      "triggerAt": "2026-08-18T04:19:32.830Z",
+      "gapAtTrigger": 8,
+      "success": true,
+      "closedAt": "2026-08-18T04:32:02.834Z",
+      "futureRounds": 2
+    },
+    {
+      "triggerAt": "2026-08-18T04:40:27.333Z",
+      "gapAtTrigger": 8,
+      "success": false,
+      "closedAt": "2026-08-18T04:46:13.846Z",
+      "futureRounds": 7
+    },
+    {
+      "triggerAt": "2026-08-18T04:46:13.846Z",
+      "gapAtTrigger": 15,
+      "success": false,
+      "closedAt": "2026-08-18T04:52:55.849Z",
+      "futureRounds": 7
+    },
+    {
+      "triggerAt": "2026-08-18T04:52:55.849Z",
+      "gapAtTrigger": 22,
+      "success": true,
+      "closedAt": "2026-08-18T04:57:08.853Z",
+      "futureRounds": 5
+    }
+  ],
   "guards": {
     "provenanceVerified": true,
     "calibrationProtocolRegisteredBeforeFirstClosedEpisode": true,
