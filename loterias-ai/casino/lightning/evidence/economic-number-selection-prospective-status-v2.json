@@ -1,12 +1,12 @@
 {
   "version": "economic-number-selection-prospective-status-v2",
-  "generatedAt": "2026-08-18T10:41:16.261Z",
+  "generatedAt": "2026-08-18T10:51:42.249Z",
   "freezeVersion": "economic-number-selection-prospective-freeze-v2",
   "prospectiveStartsAt": "2026-08-18T10:50:00Z",
   "source": {
     "file": "loterias-ai/casino/lightning/data/casinoorg-lightningroulette-segment-v2.jsonl",
-    "currentEligibleCorpusRows": 0,
-    "currentMaxTimestamp": null
+    "currentEligibleCorpusRows": 2,
+    "currentMaxTimestamp": "2026-08-18T10:51:32.054Z"
   },
   "frozenFamily": {
     "coverages": [
@@ -44,17 +44,28 @@
     "fixedFinalBoundary": 10000,
     "roundsUntilPhaseA": 5000,
     "roundsUntilFixedFinal": 10000,
-    "postBoundaryRowsIgnoredForV2": 0,
+    "postBoundaryRowsIgnoredForV1": 0,
     "cleanWarmupRequired": 200,
-    "cleanWarmupObserved": 0,
+    "cleanWarmupObserved": 2,
     "cleanWarmupComplete": false,
-    "totalCleanSegmentRows": 0
+    "totalCleanSegmentRows": 2
   },
-  "administrativeEta": null,
+  "administrativeEta": {
+    "method": "Observed eligible future-round cadence only; no selector outcomes or rankings are used.",
+    "firstEligibleAt": null,
+    "lastEligibleAt": null,
+    "observedRoundsPerHour": null,
+    "phaseAEstimatedHoursRemaining": null,
+    "fixedFinalEstimatedHoursRemaining": null,
+    "phaseAEstimatedAt": null,
+    "fixedFinalEstimatedAt": null,
+    "descriptiveOnly": true,
+    "notAScientificGate": true
+  },
   "phase": "WAITING_FOR_PROSPECTIVE_START",
   "disclosure": {
     "candidatePerformanceHidden": true,
-    "reason": "ADMINISTRATIVE_COUNTS_ONLY_NO_SCORING"
+    "reason": "ADMINISTRATIVE_COUNTS_ONLY_NO_MODEL_RANKING"
   },
   "phaseAWinners": null,
   "confirmation": null,
@@ -69,16 +80,22 @@
   "guards": {
     "noHistoricalModelSelection": true,
     "all132CandidatesFrozenBeforeStart": true,
+    "phaseAUsesOnlyFirst5000EligibleFutureRounds": true,
+    "phaseBUsesOnlyNext5000EligibleFutureRounds": true,
+    "phaseBSelectorDeterministicFromPhaseA": true,
+    "bonferroniAcrossTwoFinalists": true,
     "optionalStoppingBlocked": true,
+    "post10000RowsIgnoredForV2": true,
+    "administrativeEtaUsesTimestampsOnly": true,
+    "realMoneyAllowed": false,
     "v1SelectorAlgorithmUnchanged": true,
-    "cleanWarmupNotScored": true,
-    "realMoneyAllowed": false
+    "cleanWarmupNotScored": true
   },
+  "interpretation": "No selector ranking is disclosed before the fixed 5000-round prospective selection boundary.",
   "algorithmCustody": {
     "sourceEngine": "loterias-ai/casino/lightning/research/economic-number-selection-prospective-v1.mjs",
     "sourceEngineGitBlobSha": "1e9431d663b6f5ced9dcb24a9d6074bb6bea3874",
-    "derivation": "same frozen selector algorithm; no scored round exists yet"
+    "derivation": "path/output substitutions plus fixed 200-row clean warmup; selector ranking logic unchanged"
   },
-  "sourceSegment": "authoritative-v2",
-  "interpretation": "Administrative zero point only; no selector performance exists or is disclosed."
+  "sourceSegment": "authoritative-v2"
 }
