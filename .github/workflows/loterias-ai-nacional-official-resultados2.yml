@@ -15,28 +15,44 @@ concurrency:
 jobs:
   enrich:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with: {node-version: 22}
-      - name: Backfill official SELAE result arrays
-        run: BATCH_LIMIT=400 node loterias-ai/scripts/enrich-nacional-official-resultados2.mjs
-      - name: Persist safely
+      - name: Recompute and persist official SELAE backfill safely
+        shell: bash
         run: |
-          mkdir -p /tmp/nacional-official
-          cp -r loterias-ai/data/archive/loteria-nacional /tmp/nacional-official/
-          cp loterias-ai/data/archive/_meta/nacional-official-resultados2.json /tmp/nacional-official/summary.json
-          git fetch origin main
-          git reset --hard origin/main
-          rm -rf loterias-ai/data/archive/loteria-nacional
-          cp -r /tmp/nacional-official/loteria-nacional loterias-ai/data/archive/
-          cp /tmp/nacional-official/summary.json loterias-ai/data/archive/_meta/nacional-official-resultados2.json
-          node loterias-ai/scripts/build-national-archive-index.mjs
-          node loterias-ai/scripts/build-completeness-index.mjs
-          node loterias-ai/scripts/audit-national-archive.mjs
+          set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add loterias-ai/data/archive
-          git commit -m 'data(loterias-ai): persist full official Nacional extractions' || exit 0
-          git push origin HEAD:main
+
+          for attempt in 1 2 3 4 5; do
+            # Never carry a Nacional archive calculated on an older main across a concurrent update.
+            git fetch origin main
+            git reset --hard origin/main
+
+            BATCH_LIMIT=400 node loterias-ai/scripts/enrich-nacional-official-resultados2.mjs
+            node loterias-ai/scripts/build-national-archive-index.mjs
+            node loterias-ai/scripts/build-completeness-index.mjs
+            node loterias-ai/scripts/audit-national-archive.mjs
+
+            git add loterias-ai/data/archive
+            if git diff --cached --quiet; then
+              echo 'No semantic Nacional archive change.'
+              exit 0
+            fi
+
+            git commit -m 'data(loterias-ai): persist full official Nacional extractions'
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+
+            echo "main moved during Nacional persistence; recomputing from latest main (attempt ${attempt}/5)."
+            sleep $((attempt * 2))
+          done
+
+          echo 'Unable to persist Nacional backfill after 5 recomputations.' >&2
+          exit 1
