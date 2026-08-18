@@ -6,6 +6,7 @@ on:
     paths:
       - 'loterias-ai/casino/lightning/collect-casinoorg-api.mjs'
       - 'loterias-ai/casino/lightning/research/recover-casinoorg-pagination-gap-v1.mjs'
+      - 'loterias-ai/casino/lightning/research/recover-casinoorg-pagination-gap-observed-v1.mjs'
       - 'loterias-ai/casino/lightning/research/economic-multiplier-prospective-v1.mjs'
       - 'loterias-ai/casino/lightning/research/economic-number-selection-prospective-v1.mjs'
       - 'loterias-ai/casino/lightning/research/prospective-capture-continuity-v1.mjs'
@@ -60,8 +61,8 @@ jobs:
             QUARANTINED=$(node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json','utf8'));process.stdout.write(Number(c.quarantinedRows||0)>0?'yes':'no')")
 
             if [ "$DATA_CHANGED" = no ] && { [ "$BRIDGE_SAFE" != yes ] || [ "$QUARANTINED" = yes ]; }; then
-              echo 'Primary collector found a non-contiguous fresh window; attempting same-source paginated recovery before any prospective.'
-              if node loterias-ai/casino/lightning/research/recover-casinoorg-pagination-gap-v1.mjs; then
+              echo 'Primary collector found a non-contiguous fresh window; attempting observed same-source paginated recovery before any prospective.'
+              if node loterias-ai/casino/lightning/research/recover-casinoorg-pagination-gap-observed-v1.mjs; then
                 echo yes > /tmp/gap-recovered
                 DATA_CHANGED=yes
               else
@@ -70,16 +71,17 @@ jobs:
             fi
 
             if [ "$DATA_CHANGED" = no ]; then
-              echo 'No new contiguous authoritative rows. Persist diagnostics/blinded states only; do not advance outcome-bearing prospectives.'
+              echo 'No new contiguous authoritative rows. Persist exact recovery diagnostics/blinded states only; do not advance outcome-bearing prospectives.'
               node loterias-ai/casino/lightning/research/physical-rng-prospective-idempotent-v1.mjs
               node loterias-ai/casino/lightning/research/timing-replication-v2.mjs
               git add \
                 loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json \
                 loterias-ai/casino/lightning/evidence/casinoorg-catchup-quarantine.json \
+                loterias-ai/casino/lightning/evidence/casinoorg-gap-recovery-observed-v1.json \
                 loterias-ai/casino/lightning/evidence/physical-rng-prospective-status-v1.json \
                 loterias-ai/casino/lightning/evidence/timing-replication-v2-status.json 2>/dev/null || true
               if git diff --cached --quiet; then exit 0; fi
-              git commit -m 'ops(lightning): persist source quarantine and blinded states'
+              git commit -m 'ops(lightning): persist exact recovery failure and blinded states'
               if git push origin HEAD:"$GITHUB_REF_NAME"; then exit 0; fi
               sleep $((attempt * 2))
               continue
@@ -108,6 +110,7 @@ jobs:
               loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json \
               loterias-ai/casino/lightning/evidence/casinoorg-catchup-quarantine.json \
               loterias-ai/casino/lightning/evidence/casinoorg-gap-recovery-v1.json \
+              loterias-ai/casino/lightning/evidence/casinoorg-gap-recovery-observed-v1.json \
               loterias-ai/casino/lightning/evidence/economic-multiplier-window-prospective-status-v1.json \
               loterias-ai/casino/lightning/evidence/economic-number-selection-prospective-status-v1.json \
               loterias-ai/casino/lightning/evidence/prospective-capture-continuity-v1.json \
