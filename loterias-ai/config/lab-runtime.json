@@ -1,0 +1,68 @@
+{
+  "version": "1.0.0",
+  "mode": "LOCAL_PRIMARY_GITHUB_FALLBACK",
+  "tickMinutes": 5,
+  "maxTasksPerTick": 2,
+  "policy": {
+    "realMoney": false,
+    "automaticBetting": false,
+    "futureInformationAllowed": false,
+    "githubActionsRole": "LOW_FREQUENCY_FALLBACK_AND_CI_ONLY",
+    "localRuntimeRole": "PRIMARY_RESEARCH_SCHEDULER"
+  },
+  "tasks": [
+    {
+      "id": "lightning-staleness-diagnostic",
+      "enabled": true,
+      "priority": 10,
+      "everyMinutes": 10,
+      "timeoutSeconds": 120,
+      "run": "node loterias-ai/casino/lightning/research/probe-casinoorg-source-head.mjs && node loterias-ai/casino/lightning/research/source-staleness-watchdog.mjs",
+      "outputs": [
+        "loterias-ai/casino/lightning/evidence/casinoorg-source-head-probe.json",
+        "loterias-ai/casino/lightning/evidence/source-staleness-watchdog.json"
+      ]
+    },
+    {
+      "id": "lightning-collector",
+      "enabled": true,
+      "priority": 20,
+      "everyMinutes": 60,
+      "timeoutSeconds": 420,
+      "requiresEnv": ["TRACKERSINO_API_KEY"],
+      "env": {
+        "LIGHTNING_FETCH_LIMIT": "1000"
+      },
+      "run": "node loterias-ai/casino/lightning/collect-trackersino.mjs && node loterias-ai/casino/lightning/build-dataset.mjs && mkdir -p loterias-ai/casino/lightning/evidence && node loterias-ai/casino/lightning/validate-corpus.mjs loterias-ai/casino/lightning/data/rounds.jsonl > loterias-ai/casino/lightning/evidence/corpus-quality.json",
+      "outputs": [
+        "loterias-ai/casino/lightning/data/rounds.jsonl",
+        "loterias-ai/casino/lightning/evidence/corpus-quality.json"
+      ]
+    },
+    {
+      "id": "lightning-corpus-readiness",
+      "enabled": true,
+      "priority": 30,
+      "everyMinutes": 60,
+      "timeoutSeconds": 180,
+      "run": "node loterias-ai/casino/lightning/corpus-readiness.mjs",
+      "outputs": [
+        "loterias-ai/casino/lightning/evidence/corpus-readiness.json",
+        "loterias-ai/casino/lightning/evidence/corpus-audit.json"
+      ]
+    },
+    {
+      "id": "daily-state-and-settlement",
+      "enabled": true,
+      "priority": 40,
+      "everyMinutes": 1440,
+      "timeoutSeconds": 900,
+      "run": "node loterias-ai/scripts/probe-selae.mjs && node loterias-ai/scripts/build-daily-state.mjs && node loterias-ai/scripts/settle-prospective-shadows.mjs && node loterias-ai/tests/core.test.mjs && node loterias-ai/tests/evidence.test.mjs && node loterias-ai/tests/schedule.test.mjs",
+      "outputs": [
+        "loterias-ai/data/source-probe-latest.json",
+        "loterias-ai/data/daily/latest.json",
+        "loterias-ai/data/system-status.json"
+      ]
+    }
+  ]
+}
