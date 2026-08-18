@@ -31,11 +31,21 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Build normalized public attempt ledger
-        run: node loterias-ai/scripts/build-public-attempt-ledger.mjs
-      - name: Validate ledger semantics
+      - name: Recompute, validate and persist normalized ledger on latest main
+        shell: bash
         run: |
-          node - <<'NODE'
+          set -euo pipefail
+          TARGET='loterias-ai/data/shadow/public-attempts-v1.json'
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+
+            node loterias-ai/scripts/build-public-attempt-ledger.mjs
+
+            node - <<'NODE'
           const fs=require('fs');
           const p='loterias-ai/data/shadow/public-attempts-v1.json';
           const d=JSON.parse(fs.readFileSync(p,'utf8'));
@@ -44,28 +54,23 @@ jobs:
           for(const a of d.attempts||[]){
             if(!a.outcomeObserved&&a.postmortem?.failureClass!=='PENDING_RESULT') throw new Error('pending result misclassified as failure');
             if(a.outcomeObserved&&a.postmortem?.failureClass==='PENDING_RESULT') throw new Error('observed result left pending');
+            if(!a.outcomeObserved&&a.evaluatedAt!==null) throw new Error('pending attempt must not carry a volatile evaluation timestamp');
           }
           console.log(JSON.stringify(d.counts));
           NODE
-      - name: Commit ledger safely if changed
-        shell: bash
-        run: |
-          set -euo pipefail
-          TARGET='loterias-ai/data/shadow/public-attempts-v1.json'
-          cp "$TARGET" /tmp/public-attempts-v1.json
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          for attempt in 1 2 3 4 5; do
-            git fetch origin main
-            git reset --hard origin/main
-            cp /tmp/public-attempts-v1.json "$TARGET"
+
             git add "$TARGET"
             if git diff --cached --quiet; then
               echo 'Attempt ledger already current.'
               exit 0
             fi
+
             git commit -m 'data(results): refresh normalized attempt ledger'
-            if git push origin HEAD:main; then exit 0; fi
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+
+            echo "main moved during attempt ${attempt}; recomputing from latest main"
             sleep $((attempt*2))
           done
           exit 1
