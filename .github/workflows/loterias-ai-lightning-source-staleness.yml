@@ -49,22 +49,12 @@ jobs:
             node loterias-ai/casino/lightning/research/probe-casinoorg-source-head.mjs
             node loterias-ai/casino/lightning/research/source-staleness-watchdog.mjs
 
-            SOURCE_AHEAD=$(node --input-type=module <<'NODE'
-            import fs from 'node:fs';
-            const p=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-source-head-probe.json','utf8'));
-            process.stdout.write(p.sourceAheadOfCorpus===true?'yes':'no');
-            NODE
-            )
+            SOURCE_AHEAD=$(node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-source-head-probe.json','utf8'));process.stdout.write(p.sourceAheadOfCorpus===true?'yes':'no')")
 
             if [ "$SOURCE_AHEAD" = yes ]; then
               echo 'Fresh Casino.org head is ahead of corpus; attempting same-run authoritative recovery.'
               node loterias-ai/casino/lightning/collect-casinoorg-api.mjs
-              BRIDGE_SAFE=$(node --input-type=module <<'NODE'
-              import fs from 'node:fs';
-              const c=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json','utf8'));
-              process.stdout.write(c.continuityBridgeSafe===true?'yes':'no');
-              NODE
-              )
+              BRIDGE_SAFE=$(node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json','utf8'));process.stdout.write(c.continuityBridgeSafe===true?'yes':'no')")
 
               if [ "$BRIDGE_SAFE" != yes ]; then
                 if node loterias-ai/casino/lightning/research/recover-casinoorg-pagination-gap-v1.mjs; then
@@ -90,24 +80,10 @@ jobs:
               fi
             fi
 
-            # Recompute watchdog after any attempted repair so persisted state describes this checkout.
             node loterias-ai/casino/lightning/research/probe-casinoorg-source-head.mjs
             node loterias-ai/casino/lightning/research/source-staleness-watchdog.mjs
 
-            node --input-type=module <<'NODE'
-            import fs from 'node:fs';
-            const w=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/source-staleness-watchdog.json','utf8'));
-            if(w.policy?.aggregateObserverMayReplaceRoundCorpus!==false) throw new Error('aggregate observer promotion regression');
-            if(w.policy?.automaticSourcePromotion!==false) throw new Error('automatic source promotion regression');
-            if(w.policy?.requiresRoundLevelLuckyMultiplierData!==true) throw new Error('round-level multiplier requirement drift');
-            if(w.guards?.trainingDataMutation!==false||w.guards?.prospectiveOutcomeMutation!==false) throw new Error('watchdog safety drift');
-            if(w.guards?.realMoneyAllowed!==false) throw new Error('real-money safety regression');
-            if(fs.existsSync('/tmp/gap-recovered')){
-              const r=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-gap-recovery-v1.json','utf8'));
-              const ok=r.status==='RECOVERED_CONTIGUOUS_AUTHORITATIVE_GAP'&&r.exactRoundIdOverlapVerified===true&&r.continuityUnionVerified===true&&Number(r.canonicalDuplicateConflicts)===0&&Number(r.recoveredRows)>0&&Number(r.firstBridgeSeconds)<=120&&Number(r.maxInterRoundSeconds)<=120&&Number(r.tailBridgeSeconds)<=120&&r.quarantineClearedAfterRecovery===true&&r.guards?.realMoneyAllowed===false;
-              if(!ok) throw new Error('self-heal recovery evidence failed closed');
-            }
-            NODE
+            node -e "const fs=require('fs');const w=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/source-staleness-watchdog.json','utf8'));if(w.policy?.aggregateObserverMayReplaceRoundCorpus!==false)throw Error('aggregate observer promotion regression');if(w.policy?.automaticSourcePromotion!==false)throw Error('automatic source promotion regression');if(w.policy?.requiresRoundLevelLuckyMultiplierData!==true)throw Error('round-level multiplier requirement drift');if(w.guards?.trainingDataMutation!==false||w.guards?.prospectiveOutcomeMutation!==false)throw Error('watchdog safety drift');if(w.guards?.realMoneyAllowed!==false)throw Error('real-money safety regression');if(fs.existsSync('/tmp/gap-recovered')){const r=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/casinoorg-gap-recovery-v1.json','utf8'));const ok=r.status==='RECOVERED_CONTIGUOUS_AUTHORITATIVE_GAP'&&r.exactRoundIdOverlapVerified===true&&r.continuityUnionVerified===true&&Number(r.canonicalDuplicateConflicts)===0&&Number(r.recoveredRows)>0&&Number(r.firstBridgeSeconds)<=120&&Number(r.maxInterRoundSeconds)<=120&&Number(r.tailBridgeSeconds)<=120&&r.quarantineClearedAfterRecovery===true&&r.guards?.realMoneyAllowed===false;if(!ok)throw Error('self-heal recovery evidence failed closed')}"
 
             git add \
               loterias-ai/casino/lightning/evidence/source-staleness-watchdog.json \
