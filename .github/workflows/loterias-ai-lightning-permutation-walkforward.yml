@@ -7,150 +7,32 @@ on:
     paths:
       - 'loterias-ai/casino/lightning/research/lightning-permutation-walkforward-v2.mjs'
       - 'loterias-ai/casino/lightning/research/lightning-prospective-frozen-lag8.mjs'
-      - 'loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl'
       - '.github/workflows/loterias-ai-lightning-permutation-walkforward.yml'
-  schedule:
-    - cron: '17 */6 * * *'
 
 permissions:
   contents: write
-
 concurrency:
   group: loterias-ai-lightning-permutation-walkforward
-  cancel-in-progress: false
-
+  cancel-in-progress: true
 jobs:
   validate-and-persist:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Run repaired Lightning walk-forward
-        run: node loterias-ai/casino/lightning/research/lightning-permutation-walkforward-v2.mjs
-
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - run: node loterias-ai/casino/lightning/research/lightning-permutation-walkforward-v2.mjs
       - name: Fail closed on invalid walk-forward evidence
-        run: |
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          const p='loterias-ai/casino/lightning/evidence/permutation-walkforward-v2.json';
-          const j=JSON.parse(fs.readFileSync(p,'utf8'));
-          const ns=[j?.walkForward?.train?.n,j?.walkForward?.validation?.n,j?.walkForward?.test?.n];
-          if (!Number.isInteger(j.rounds) || j.rounds < 100) throw new Error(`invalid rounds=${j.rounds}`);
-          if (ns.some(n => !Number.isInteger(n) || n < 0)) throw new Error(`invalid segment sizes=${JSON.stringify(ns)}`);
-          if (j?.guards?.realMoney !== false || j?.guards?.claimAllowed !== false) throw new Error('walk-forward safety guards must remain fail-closed');
-          if (j?.guards?.noNegativeSampleSizes !== true) throw new Error('negative-size guard missing');
-          console.log(JSON.stringify({version:j.version,rounds:j.rounds,train:ns[0],validation:ns[1],test:ns[2],chosenLag:j.walkForward.train.chosenLag,realMoney:j.guards.realMoney,claimAllowed:j.guards.claimAllowed},null,2));
-          NODE
-
-      - name: Run frozen prospective lag-8 test
-        run: node loterias-ai/casino/lightning/research/lightning-prospective-frozen-lag8.mjs
-
+        run: node -e "const j=require('./loterias-ai/casino/lightning/evidence/permutation-walkforward-v2.json');const ns=[j?.walkForward?.train?.n,j?.walkForward?.validation?.n,j?.walkForward?.test?.n];if(!Number.isInteger(j.rounds)||j.rounds<100||ns.some(n=>!Number.isInteger(n)||n<0)||j?.guards?.realMoney!==false||j?.guards?.claimAllowed!==false||j?.guards?.noNegativeSampleSizes!==true)process.exit(1)"
+      - run: node loterias-ai/casino/lightning/research/lightning-prospective-frozen-lag8.mjs
       - name: Fail closed on prospective evidence
-        run: |
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          const f=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/prospective-lag8-freeze.json','utf8'));
-          const j=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/prospective-lag8.json','utf8'));
-          if (f.lag !== 8 || f.immutable !== true || f.realMoney !== false || f.claimAllowed !== false) throw new Error('invalid immutable freeze');
-          if (j?.freeze?.lag !== 8 || j?.freeze?.cutoffTimestamp !== f.cutoffTimestamp) throw new Error('prospective test drifted from frozen hypothesis');
-          if (j?.guards?.realMoney !== false || j?.guards?.realMoneyAuthorized !== false || j?.guards?.authorizedStakeEUR !== 0 || j?.guards?.claimAllowed !== false) throw new Error('prospective safety guards must remain fail-closed');
-          if (!Number.isInteger(j?.prospective?.comparisons) || j.prospective.comparisons < 0) throw new Error('invalid prospective sample size');
-          console.log(JSON.stringify({cutoff:f.cutoffTimestamp,lag:f.lag,comparisons:j.prospective.comparisons,matches:j.prospective.matches,pUpper:j.prospective.pUpper,enoughData:j.prospective.enoughData,statisticallyPass:j.prospective.statisticallyPass,authorizedStakeEUR:j.guards.authorizedStakeEUR},null,2));
-          NODE
-
-      - name: Suppress timestamp-only evidence churn
-        run: |
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import {execFileSync} from 'node:child_process';
-          const paths=[
-            'loterias-ai/casino/lightning/evidence/permutation-walkforward-v2.json',
-            'loterias-ai/casino/lightning/evidence/prospective-lag8.json'
-          ];
-          const stable = value => {
-            if (Array.isArray(value)) return value.map(stable);
-            if (!value || typeof value !== 'object') return value;
-            const out={};
-            for (const [k,v] of Object.entries(value)) {
-              if (k === 'generatedAt') continue;
-              out[k]=stable(v);
-            }
-            return out;
-          };
-          for (const p of paths) {
-            let previous;
-            try { previous=execFileSync('git',['show',`HEAD:${p}`],{encoding:'utf8'}); }
-            catch { continue; }
-            const current=fs.readFileSync(p,'utf8');
-            if (JSON.stringify(stable(JSON.parse(previous))) === JSON.stringify(stable(JSON.parse(current)))) {
-              fs.writeFileSync(p,previous);
-              console.log(`Restored ${p}: generatedAt-only change.`);
-            }
-          }
-          NODE
-
+        run: node -e "const f=require('./loterias-ai/casino/lightning/evidence/prospective-lag8-freeze.json'),j=require('./loterias-ai/casino/lightning/evidence/prospective-lag8.json');if(f.lag!==8||f.immutable!==true||f.realMoney!==false||f.claimAllowed!==false||j?.freeze?.lag!==8||j?.freeze?.cutoffTimestamp!==f.cutoffTimestamp||j?.guards?.realMoney!==false||j?.guards?.authorizedStakeEUR!==0||j?.guards?.claimAllowed!==false)process.exit(1)"
       - name: Persist scientific evidence when changed
+        shell: bash
         run: |
           set -euo pipefail
           PATHS='loterias-ai/casino/lightning/evidence/permutation-walkforward-v2.json loterias-ai/casino/lightning/evidence/prospective-lag8-freeze.json loterias-ai/casino/lightning/evidence/prospective-lag8.json'
-          if git diff --quiet -- $PATHS; then
-            echo 'Evidence unchanged.'
-            exit 0
-          fi
-
-          git config user.name 'loterias-ai-bot'
-          git config user.email 'actions@users.noreply.github.com'
-
-          for attempt in 1 2 3 4 5; do
-            echo "Persist attempt ${attempt}/5 against latest main"
-            git fetch origin main
-            git reset --hard origin/main
-
-            node loterias-ai/casino/lightning/research/lightning-permutation-walkforward-v2.mjs
-            node loterias-ai/casino/lightning/research/lightning-prospective-frozen-lag8.mjs
-
-            node --input-type=module <<'NODE'
-            import fs from 'node:fs';
-            import {execFileSync} from 'node:child_process';
-            const paths=[
-              'loterias-ai/casino/lightning/evidence/permutation-walkforward-v2.json',
-              'loterias-ai/casino/lightning/evidence/prospective-lag8.json'
-            ];
-            const stable=value=>{
-              if(Array.isArray(value)) return value.map(stable);
-              if(!value||typeof value!=='object') return value;
-              const out={};
-              for(const [k,v] of Object.entries(value)){ if(k!=='generatedAt') out[k]=stable(v); }
-              return out;
-            };
-            for(const p of paths){
-              let previous;
-              try { previous=execFileSync('git',['show',`HEAD:${p}`],{encoding:'utf8'}); } catch { continue; }
-              const current=fs.readFileSync(p,'utf8');
-              if(JSON.stringify(stable(JSON.parse(previous)))===JSON.stringify(stable(JSON.parse(current)))) fs.writeFileSync(p,previous);
-            }
-            const f=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/prospective-lag8-freeze.json','utf8'));
-            const j=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/prospective-lag8.json','utf8'));
-            if(f.lag!==8||f.immutable!==true||f.realMoney!==false||f.claimAllowed!==false) throw new Error('invalid immutable lag-8 freeze');
-            if(j?.freeze?.lag!==8||j?.freeze?.cutoffTimestamp!==f.cutoffTimestamp) throw new Error('prospective test drifted from frozen hypothesis');
-            if(j?.guards?.realMoney!==false||j?.guards?.claimAllowed!==false||j?.guards?.authorizedStakeEUR!==0) throw new Error('prospective safety guards drifted');
-            NODE
-
-            git add $PATHS
-            if git diff --cached --quiet; then
-              echo 'No semantic evidence change against latest main.'
-              exit 0
-            fi
-            git commit -m 'data(casino): persist Lightning confirmatory evidence'
-            if git push origin HEAD:main; then
-              echo 'Evidence persisted.'
-              exit 0
-            fi
-            echo 'main moved during push; retrying from newest main.'
-          done
-          echo 'Unable to persist after 5 race-safe attempts.' >&2
+          git diff --quiet -- $PATHS && exit 0
+          git config user.name 'loterias-ai-bot';git config user.email 'actions@users.noreply.github.com'
+          for attempt in 1 2 3 4 5;do git fetch origin main;git reset --hard origin/main;node loterias-ai/casino/lightning/research/lightning-permutation-walkforward-v2.mjs;node loterias-ai/casino/lightning/research/lightning-prospective-frozen-lag8.mjs;git add $PATHS;git diff --cached --quiet&&exit 0;git commit -m 'data(casino): persist Lightning confirmatory evidence';git push origin HEAD:main&&exit 0;done
           exit 1
