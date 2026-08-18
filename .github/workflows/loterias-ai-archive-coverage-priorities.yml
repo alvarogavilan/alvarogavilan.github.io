@@ -5,17 +5,16 @@ on:
   push:
     branches: [main]
     paths:
+      - 'loterias-ai/data/archive/**'
       - 'loterias-ai/scripts/build-archive-coverage-priorities.mjs'
       - '.github/workflows/loterias-ai-archive-coverage-priorities.yml'
-  schedule:
-    - cron: '13 5 * * *'
 
 permissions:
   contents: write
 
 concurrency:
   group: loterias-ai-archive-coverage-priorities
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build-and-persist:
@@ -23,51 +22,26 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Rebuild source-of-truth manifest
-        run: node loterias-ai/scripts/build-national-archive-index.mjs
-      - name: Rebuild quality audit
-        run: node loterias-ai/scripts/audit-national-archive.mjs
-      - name: Build coverage priorities
-        run: node loterias-ai/scripts/build-archive-coverage-priorities.mjs
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/build-national-archive-index.mjs
+      - run: node loterias-ai/scripts/audit-national-archive.mjs
+      - run: node loterias-ai/scripts/build-archive-coverage-priorities.mjs
       - name: Assert priority evidence
-        run: |
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          const j=JSON.parse(fs.readFileSync('loterias-ai/data/archive/_meta/archive-coverage-priorities.json','utf8'));
-          if(j?.schemaVersion!==1) throw new Error('bad coverage schema');
-          if(!Array.isArray(j?.priorities)||j.priorities.length<1) throw new Error('no priorities');
-          if(j?.totals?.records<1) throw new Error('empty archive');
-          if(j?.totals?.validationGap<0) throw new Error('negative validation gap');
-          if(j.priorities.some(x=>x.validationGap<0||x.economicsGap<0||x.officialEconomicsGap<0)) throw new Error('negative game gap');
-          console.log(JSON.stringify({totals:j.totals,topPriority:j.topPriority},null,2));
-          NODE
+        run: node --input-type=module -e "import fs from 'node:fs';const j=JSON.parse(fs.readFileSync('loterias-ai/data/archive/_meta/archive-coverage-priorities.json','utf8'));if(j?.schemaVersion!==1||!Array.isArray(j?.priorities)||j.priorities.length<1||j?.totals?.records<1||j?.totals?.validationGap<0||j.priorities.some(x=>x.validationGap<0||x.economicsGap<0||x.officialEconomicsGap<0))throw Error('coverage priority evidence failed')"
       - name: Persist only priority evidence safely
         shell: bash
         run: |
           set -euo pipefail
           EVIDENCE='loterias-ai/data/archive/_meta/archive-coverage-priorities.json'
           cp "$EVIDENCE" /tmp/archive-coverage-priorities.json
-          git config user.name 'loterias-ai-bot'
-          git config user.email 'actions@users.noreply.github.com'
+          git config user.name 'loterias-ai-bot';git config user.email 'actions@users.noreply.github.com'
           for attempt in 1 2 3 4 5; do
-            git fetch origin main
-            git reset --hard origin/main
-            cp /tmp/archive-coverage-priorities.json "$EVIDENCE"
-            git add "$EVIDENCE"
-            if git diff --cached --quiet; then
-              echo 'Priority evidence already current.'
-              exit 0
-            fi
+            git fetch origin main;git reset --hard origin/main;cp /tmp/archive-coverage-priorities.json "$EVIDENCE";git add "$EVIDENCE"
+            git diff --cached --quiet && exit 0
             git commit -m 'data(loterias-ai): refresh archive coverage priorities'
-            if git push origin HEAD:main; then
-              exit 0
-            fi
-            cp "$EVIDENCE" /tmp/archive-coverage-priorities.json
+            git push origin HEAD:main && exit 0
             sleep $((attempt*3))
           done
           exit 1
