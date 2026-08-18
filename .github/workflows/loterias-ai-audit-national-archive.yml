@@ -1,3 +1,4 @@
+# Cost control: archive quality is checked when archive/code changes; no daily duplicate audit.
 name: Loterias AI - Archive quality gate
 
 on:
@@ -9,8 +10,6 @@ on:
       - 'loterias-ai/scripts/audit-national-archive.mjs'
       - 'loterias-ai/scripts/build-national-archive-index.mjs'
       - '.github/workflows/loterias-ai-audit-national-archive.yml'
-  schedule:
-    - cron: '41 4 * * *'
 
 permissions:
   contents: read
@@ -46,5 +45,4 @@ jobs:
           if(j?.qualityGate?.pass !== true) throw new Error(`archive gate failed: ${JSON.stringify(j?.qualityGate)}`);
           if((j?.totals?.parseErrors||0)!==0) throw new Error(`parseErrors=${j.totals.parseErrors}`);
           if((j?.totals?.openOfficialConflicts||0)!==0) throw new Error(`openOfficialConflicts=${j.totals.openOfficialConflicts}`);
-          console.log(JSON.stringify({manifestTotals:manifest.totals,qualityGate:j.qualityGate,auditTotals:j.totals},null,2));
           NODE
