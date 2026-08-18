@@ -7,7 +7,7 @@ on:
         required: false
         type: string
   schedule:
-    - cron: '15 6 * * *'
+    - cron: '15 6 * * 1,4,6'
   push:
     branches: [main]
     paths:
@@ -17,6 +17,7 @@ on:
       - 'loterias-ai/research/megalab/v315-seal-next-prospective.mjs'
       - 'loterias-ai/research/megalab/v315-seal-guarded.mjs'
       - 'loterias-ai/research/megalab/v315-administrative-status.mjs'
+      - 'loterias-ai/data/draw-schedule.json'
       - '.github/workflows/loterias-ai-v315-prospective-seal.yml'
 permissions:
   contents: write
@@ -29,11 +30,9 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
-        with:
-          node-version: 24
+        with: {node-version: 24}
       - name: Seal next eligible Primitiva target before result
         env:
           TARGET_DRAW_DATE: ${{ inputs.target_draw_date }}
@@ -41,58 +40,15 @@ jobs:
       - name: Validate persisted seal safety
         run: |
           node - <<'NODE'
-          const fs=require('fs');
-          const dir='loterias-ai/data/research/v315-prospective-seals';
-          const files=fs.existsSync(dir)?fs.readdirSync(dir).filter(x=>x.endsWith('.json')).sort():[];
-          if(!files.length) throw new Error('No v315 seal produced or already present');
-          for(const f of files){
-            const d=JSON.parse(fs.readFileSync(`${dir}/${f}`,'utf8'));
-            if(d.lines?.length!==12) throw new Error('v315 seal must preserve 12 configs: '+f);
-            if(d.guards?.targetResultPresentAtSeal!==false||d.guards?.targetOutcomeUsedForSelection!==false) throw new Error('target-outcome safety regression: '+f);
-            if(d.guards?.retuningPerformed!==false||d.guards?.realMoneyPass!==false||Number(d.guards?.realStakeEUR)!==0) throw new Error('retuning/real-money safety regression: '+f);
-            if(d.executionProtocol?.fixedDecisionBoundary!==200) throw new Error('optional-stopping boundary regression: '+f);
-            if(!/^[0-9a-f]{64}$/.test(d.sealHash||'')) throw new Error('missing seal hash: '+f);
-          }
-          console.log(JSON.stringify({sealedFiles:files.length,latest:files.at(-1)}));
+          const fs=require('fs'),dir='loterias-ai/data/research/v315-prospective-seals',files=fs.existsSync(dir)?fs.readdirSync(dir).filter(x=>x.endsWith('.json')).sort():[];if(!files.length)throw new Error('No v315 seal produced or already present');for(const f of files){const d=JSON.parse(fs.readFileSync(`${dir}/${f}`,'utf8'));if(d.lines?.length!==12||d.guards?.targetResultPresentAtSeal!==false||d.guards?.targetOutcomeUsedForSelection!==false||d.guards?.retuningPerformed!==false||d.guards?.realMoneyPass!==false||Number(d.guards?.realStakeEUR)!==0||d.executionProtocol?.fixedDecisionBoundary!==200||!/^[0-9a-f]{64}$/.test(d.sealHash||''))throw new Error('v315 seal safety regression '+f)}
           NODE
-      - name: Refresh blinded administrative status
-        run: node loterias-ai/research/megalab/v315-administrative-status.mjs
+      - run: node loterias-ai/research/megalab/v315-administrative-status.mjs
       - name: Persist seal and blinded status against moving main
+        shell: bash
         run: |
           set -euo pipefail
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-
-          owned=(
-            loterias-ai/data/research/v315-prospective-seals
-            loterias-ai/data/research/metapleno-v315-prospective-status.json
-          )
-          tmp="$(mktemp -d)"
-          trap 'rm -rf "$tmp"' EXIT
-          for p in "${owned[@]}"; do
-            if [ -e "$p" ]; then
-              mkdir -p "$tmp/$(dirname "$p")"
-              cp -a "$p" "$tmp/$p"
-            fi
-          done
-
-          for attempt in 1 2 3 4 5; do
-            git fetch origin main
-            git reset --hard origin/main
-            for p in "${owned[@]}"; do
-              if [ -e "$tmp/$p" ]; then
-                mkdir -p "$(dirname "$p")"
-                rm -rf "$p"
-                cp -a "$tmp/$p" "$p"
-              fi
-            done
-            git add "${owned[@]}" 2>/dev/null || true
-            if git diff --cached --quiet; then
-              echo 'Seal/status already current; nothing to commit.'
-              exit 0
-            fi
-            git commit -m 'research(loterias-ai): advance blinded v315 prospective state'
-            if git push origin HEAD:main; then exit 0; fi
-            sleep $((attempt*2))
-          done
+          git config user.name github-actions[bot];git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          owned=(loterias-ai/data/research/v315-prospective-seals loterias-ai/data/research/metapleno-v315-prospective-status.json);tmp="$(mktemp -d)";trap 'rm -rf "$tmp"' EXIT
+          for p in "${owned[@]}";do if [ -e "$p" ];then mkdir -p "$tmp/$(dirname "$p")";cp -a "$p" "$tmp/$p";fi;done
+          for attempt in 1 2 3 4 5;do git fetch origin main;git reset --hard origin/main;for p in "${owned[@]}";do if [ -e "$tmp/$p" ];then mkdir -p "$(dirname "$p")";rm -rf "$p";cp -a "$tmp/$p" "$p";fi;done;git add "${owned[@]}" 2>/dev/null||true;git diff --cached --quiet&&exit 0;git commit -m 'research(loterias-ai): advance blinded v315 prospective state';git push origin HEAD:main&&exit 0;sleep $((attempt*2));done
           exit 1
