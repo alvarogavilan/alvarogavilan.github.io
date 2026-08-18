@@ -10,6 +10,7 @@ on:
       - 'loterias-ai/casino/lightning/research/prospective-capture-continuity-v1.mjs'
       - 'loterias-ai/casino/lightning/research/lightning-prospective-frozen-lag8.mjs'
       - 'loterias-ai/casino/lightning/research/physical-rng-prospective-v1.mjs'
+      - 'loterias-ai/casino/lightning/research/physical-rng-prospective-idempotent-v1.mjs'
       - 'loterias-ai/casino/lightning/research/verify-economic-prospective-freeze-v1.mjs'
       - 'loterias-ai/casino/lightning/research/verify-economic-number-prospective-freeze-v1.mjs'
       - 'loterias-ai/casino/lightning/evidence/economic-multiplier-window-prospective-freeze-v1.json'
@@ -49,8 +50,14 @@ jobs:
             if git diff --quiet -- loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl; then
               data_changed=false
               if [ "$GITHUB_EVENT_NAME" != "push" ]; then
-                echo "No new authoritative rounds; scheduled/dispatch run has nothing to advance."
-                exit 0
+                echo "No new authoritative rounds; refresh only the new idempotent physical prospective state."
+                node loterias-ai/casino/lightning/research/physical-rng-prospective-idempotent-v1.mjs
+                git add loterias-ai/casino/lightning/evidence/physical-rng-prospective-status-v1.json 2>/dev/null || true
+                if git diff --cached --quiet; then exit 0; fi
+                git commit -m 'research(casino): initialize physical RNG prospective state'
+                if git push origin HEAD:"$GITHUB_REF_NAME"; then exit 0; fi
+                sleep $((attempt * 2))
+                continue
               fi
               echo "No new rounds, but this is a scientific push: recomputing prospectives with current frozen data."
             fi
@@ -67,7 +74,7 @@ jobs:
             node loterias-ai/casino/lightning/research/economic-number-selection-prospective-v1.mjs
             node loterias-ai/casino/lightning/research/prospective-capture-continuity-v1.mjs
             node loterias-ai/casino/lightning/research/lightning-prospective-frozen-lag8.mjs
-            node loterias-ai/casino/lightning/research/physical-rng-prospective-v1.mjs
+            node loterias-ai/casino/lightning/research/physical-rng-prospective-idempotent-v1.mjs
 
             node --input-type=module <<'NODE'
             import fs from 'node:fs';
@@ -76,7 +83,6 @@ jobs:
             if (f.lag !== 8 || f.immutable !== true || f.realMoney !== false || f.claimAllowed !== false) throw new Error('invalid immutable lag-8 freeze');
             if (j?.freeze?.lag !== 8 || j?.freeze?.cutoffTimestamp !== f.cutoffTimestamp) throw new Error('lag-8 prospective drifted from frozen hypothesis');
             if (j?.guards?.realMoney !== false || j?.guards?.realMoneyAuthorized !== false || j?.guards?.authorizedStakeEUR !== 0 || j?.guards?.claimAllowed !== false) throw new Error('lag-8 safety guards drifted');
-
             const pf=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-freeze-v1.json','utf8'));
             const ps=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-status-v1.json','utf8'));
             if (pf.fixedBoundaryRounds !== 5000 || pf.alphaFamilyWise !== 0.01 || pf.permutation?.replicates !== 10000) throw new Error('physical RNG fixed protocol drifted');
