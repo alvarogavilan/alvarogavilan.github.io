@@ -1,5 +1,5 @@
 {
-  "version": "1.2.0",
+  "version": "1.3.0",
   "mode": "LOCAL_PRIMARY_GITHUB_FALLBACK",
   "tickMinutes": 5,
   "maxTasksPerTick": 2,
@@ -75,6 +75,24 @@
       "outputs": [
         "loterias-ai/casino/lightning/evidence/corpus-readiness.json",
         "loterias-ai/casino/lightning/evidence/corpus-audit.json"
+      ]
+    },
+    {
+      "id": "bonoloto-official-sync",
+      "enabled": true,
+      "priority": 35,
+      "everyMinutes": 60,
+      "timeoutSeconds": 420,
+      "run": "node loterias-ai/scripts/bonoloto-official-rss-sync.mjs && node loterias-ai/scripts/evaluate-bonoloto-2026-08-15-metapleno-v10.mjs && node loterias-ai/scripts/meta-pleno-v54-bonoloto-budget8-prospective-freeze.mjs && node loterias-ai/scripts/meta-pleno-v91-bonoloto-v58-ensemble-prospective-freeze.mjs && node loterias-ai/scripts/prospective-master-scoreboard.mjs",
+      "outputs": [
+        "loterias-ai/data/official/bonoloto-rss-sync-status.json",
+        "loterias-ai/data/archive/bonoloto/2026.json",
+        "loterias-ai/data/shadow/prospective-master-scoreboard.json",
+        "loterias-ai/data/shadow/bonoloto-v54-budget8-freeze-status.json",
+        "loterias-ai/data/shadow/bonoloto-v91-v58-ensemble-freeze-status.json",
+        "loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v54-budget8.json",
+        "loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v91-v58-ensemble-budget8.json",
+        "loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-v10-evaluation.json"
       ]
     },
     {
