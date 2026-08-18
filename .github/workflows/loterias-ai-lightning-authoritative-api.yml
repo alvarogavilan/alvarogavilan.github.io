@@ -52,17 +52,21 @@ jobs:
             if git diff --quiet -- loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl; then
               data_changed=false
               if [ "$GITHUB_EVENT_NAME" != "push" ]; then
-                echo "No new authoritative rounds; refresh only idempotent new prospective states."
+                echo "No contiguous authoritative rounds; refresh blinded states and persist collector/quarantine diagnostics only."
                 node loterias-ai/casino/lightning/research/physical-rng-prospective-idempotent-v1.mjs
                 node loterias-ai/casino/lightning/research/timing-replication-v2.mjs
-                git add loterias-ai/casino/lightning/evidence/physical-rng-prospective-status-v1.json loterias-ai/casino/lightning/evidence/timing-replication-v2-status.json 2>/dev/null || true
+                git add \
+                  loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json \
+                  loterias-ai/casino/lightning/evidence/casinoorg-catchup-quarantine.json \
+                  loterias-ai/casino/lightning/evidence/physical-rng-prospective-status-v1.json \
+                  loterias-ai/casino/lightning/evidence/timing-replication-v2-status.json 2>/dev/null || true
                 if git diff --cached --quiet; then exit 0; fi
-                git commit -m 'research(casino): advance blinded replication states'
+                git commit -m 'ops(lightning): persist source quarantine and blinded states'
                 if git push origin HEAD:"$GITHUB_REF_NAME"; then exit 0; fi
                 sleep $((attempt * 2))
                 continue
               fi
-              echo "No new rounds, but this is a scientific push: recomputing prospectives with current frozen data."
+              echo "No new contiguous rows, but this is a scientific push: recomputing only from the unchanged authoritative corpus."
             fi
 
             if [ "$data_changed" = true ]; then
@@ -103,12 +107,13 @@ jobs:
             git add \
               loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl \
               loterias-ai/casino/lightning/evidence/casinoorg-api-collector.json \
+              loterias-ai/casino/lightning/evidence/casinoorg-catchup-quarantine.json \
               loterias-ai/casino/lightning/evidence/economic-multiplier-window-prospective-status-v1.json \
               loterias-ai/casino/lightning/evidence/economic-number-selection-prospective-status-v1.json \
               loterias-ai/casino/lightning/evidence/prospective-capture-continuity-v1.json \
               loterias-ai/casino/lightning/evidence/prospective-lag8.json \
               loterias-ai/casino/lightning/evidence/physical-rng-prospective-status-v1.json \
-              loterias-ai/casino/lightning/evidence/timing-replication-v2-status.json
+              loterias-ai/casino/lightning/evidence/timing-replication-v2-status.json 2>/dev/null || true
             if git diff --cached --quiet; then exit 0; fi
             git commit -m "research(casino): advance authoritative Lightning prospectives"
             if git push origin HEAD:"$GITHUB_REF_NAME"; then exit 0; fi
