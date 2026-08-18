@@ -13,6 +13,9 @@ on:
       - '.github/workflows/loterias-ai-metapleno-v217-research-registry.yml'
 permissions:
   contents: write
+concurrency:
+  group: loterias-ai-metapleno-research-registry-${{ github.ref_name }}
+  cancel-in-progress: false
 jobs:
   registry:
     runs-on: ubuntu-latest
@@ -27,12 +30,26 @@ jobs:
       - name: Validate registry
         run: node -e "const x=require('./loterias-ai/data/research/metapleno-research-registry.json');if(x.summary.realMoneyPasses!==0)process.exit(1);if(x.summary.artifacts<20)process.exit(1)"
       - name: Persist latest registry safely
+        shell: bash
         run: |
+          set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git reset --hard HEAD
-          git pull --rebase origin "${GITHUB_REF_NAME}"
-          node loterias-ai/scripts/build-metapleno-research-registry.mjs
-          git add loterias-ai/data/research/metapleno-research-registry.json
-          git diff --cached --quiet || git commit -m 'research(loterias-ai): refresh MetaPleno registry'
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin "${GITHUB_REF_NAME}"
+            git reset --hard "origin/${GITHUB_REF_NAME}"
+            node loterias-ai/scripts/build-metapleno-research-registry.mjs
+            node -e "const x=require('./loterias-ai/data/research/metapleno-research-registry.json');if(x.summary.realMoneyPasses!==0)process.exit(1);if(x.summary.artifacts<20)process.exit(1)"
+            git add loterias-ai/data/research/metapleno-research-registry.json
+            if git diff --cached --quiet; then
+              echo 'MetaPleno registry has no semantic change.'
+              exit 0
+            fi
+            git commit -m 'research(loterias-ai): refresh MetaPleno registry'
+            if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+              exit 0
+            fi
+            echo "Concurrent main update detected; recomputing registry from latest main (attempt ${attempt}/5)."
+          done
+          echo 'Failed to persist MetaPleno registry after 5 race-safe recomputations.' >&2
+          exit 1
