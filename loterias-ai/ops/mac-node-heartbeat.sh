@@ -5,8 +5,17 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO="$(cd "$SCRIPT_DIR/../.." && pwd)"
 STATE="$REPO/.loterias-mac-node"
 RUNTIME="$REPO/loterias-ai/ops/lab-runtime.mjs"
+ENV_FILE="$HOME/.loterias-ai-runtime/env"
 mkdir -p "$STATE"
 cd "$REPO" || exit 1
+
+# Local-only secrets/config. This file is outside Git and never persisted by the runtime.
+if [ -f "$ENV_FILE" ]; then
+  set -a
+  # shellcheck disable=SC1090
+  . "$ENV_FILE"
+  set +a
+fi
 
 find_bin() {
   NAME="$1"
@@ -59,6 +68,7 @@ fi
   echo "sync_action=$SYNC"
   echo "runtime_health=$RUNTIME_HEALTH"
   echo "runtime_exit=$RUNTIME_EXIT"
+  echo "runtime_env_file_present=$([ -f "$ENV_FILE" ] && echo yes || echo no)"
   echo "disk_free_kb=$(df -k . | tail -1 | awk '{print $4}')"
   echo "load=$(uptime | sed 's/.*load averages*: //')"
 } > "$STATE/status.txt"
