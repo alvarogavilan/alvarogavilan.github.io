@@ -1,0 +1,43 @@
+{
+  "version": "physical-covariate-layer-v1",
+  "createdAt": "2026-08-19T10:29:00Z",
+  "sourceManifest": "rtve-video-manifest-v1.json",
+  "officialSourcesOnly": ["rtve.es","SELAE"],
+  "currentlyObservableWithoutMediaBypass": [
+    "draw/video date",
+    "official video duration",
+    "game or combined-program identity",
+    "publication/episode ordering",
+    "whether multiple games share one broadcast segment"
+  ],
+  "requiresAuthorizedVisualMeasurement": [
+    "seconds between individual ball extractions",
+    "pre-extraction mixing duration",
+    "machine/drum identity and configuration",
+    "visible ball speed or relative cadence",
+    "operator intervention or mechanical pause",
+    "ball position/trajectory features"
+  ],
+  "analysisPolicy": {
+    "metadataCovariatesAreDiscoveryOnly": true,
+    "noOutcomeAssociationMayBePromotedFromRetrospectiveVideoTiming": true,
+    "anyCandidateMustBeFrozenBeforeFutureDraws": true,
+    "combinedBroadcastDurationCannotBeAssignedToOneGameWithoutSegmentation": true,
+    "missingPhysicalMeasurementsMustRemainNull": true
+  },
+  "plannedSpecialists": [
+    {"game":"Bonoloto","role":"physical-draw cadence specialist"},
+    {"game":"La Primitiva","role":"physical-draw cadence specialist"},
+    {"game":"Euromillones","role":"physical-draw cadence specialist"},
+    {"game":"El Gordo de la Primitiva","role":"physical-draw cadence specialist"},
+    {"game":"Lotería Nacional","role":"physical mechanism specialist"},
+    {"game":"EuroDreams","role":"physical-draw cadence specialist"}
+  ],
+  "guards": {
+    "noOCR": true,
+    "noTokenBypass": true,
+    "noFutureLeakage": true,
+    "noRetuningAfterFutureOutcome": true,
+    "realMoneyAllowed": false
+  }
+}
