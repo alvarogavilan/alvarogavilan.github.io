@@ -1,6 +1,6 @@
 {
-  "version": "botemania-fishin-execution-parameters-v1",
-  "generatedAt": "2026-08-19T22:18:00Z",
+  "version": "botemania-fishin-execution-parameters-v1.1",
+  "generatedAt": "2026-08-19T22:24:00Z",
   "operator": "botemania-es",
   "game": "Fishin' Frenzy: Jackpot King",
   "officialGameUrl": "https://www.botemania.es/juegos/slots-online/fishin-frenzy-jackpot-king",
@@ -19,12 +19,18 @@
   "stakePerSpinEUR": null,
   "maxTotalStakeEUR": 5,
   "stakeReason": "Botemania publishes a coin-value range and 10 paylines, while Blueprint states the available TOTAL BET options depend on operator configuration. Coin value is not treated as an exact Spain total-stake ladder without direct in-game verification.",
-  "timingEdgeValidated": false,
-  "timingReason": "No validated evidence currently supports a special clock minute or second. Execution timing must be driven by a validated jackpot state and freshness window, not an invented clock-time pattern.",
+  "executionTiming": {
+    "specialClockMinuteRequired": false,
+    "specialClockMinuteValidated": false,
+    "entryTrigger": "VALIDATED_JACKPOT_STATE_PLUS_FRESHNESS",
+    "maximumExecutionSignalAgeSeconds": 90,
+    "reason": "No evidence supports a privileged wall-clock minute or second. If a positive economic state is validated, the correct timing instruction is an immediate state-triggered window with a short expiry, not a lucky-time prediction."
+  },
   "guards": {
     "coinValueNotAssumedToEqualTotalStake": true,
     "noDerivedMinimumAsExactFact": true,
     "noClockTimePrediction": true,
+    "stateTriggeredTimingOnly": true,
     "noAutomaticBetting": true,
     "realMoneyAllowed": false
   }
