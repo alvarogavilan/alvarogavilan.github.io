@@ -7,6 +7,7 @@ on:
   push:
     paths:
       - 'loterias-ai/scripts/crosscheck-primitiva-official-results.mjs'
+      - 'loterias-ai/scripts/certify-primitiva-pre-reintegro-era.mjs'
       - 'loterias-ai/scripts/build-national-archive-index.mjs'
       - 'loterias-ai/scripts/build-archive-coverage-priorities.mjs'
       - '.github/workflows/loterias-ai-primitiva-official-result-crosscheck.yml'
@@ -68,17 +69,20 @@ jobs:
             git reset --hard origin/main
 
             BATCH_LIMIT=180 node loterias-ai/scripts/crosscheck-primitiva-official-results.mjs
+            node loterias-ai/scripts/certify-primitiva-pre-reintegro-era.mjs
             node loterias-ai/scripts/build-national-archive-index.mjs
             node loterias-ai/scripts/build-archive-coverage-priorities.mjs
 
             restore_if_volatile_only loterias-ai/data/archive/_meta/primitiva-official-result-crosscheck.json
             restore_if_volatile_only loterias-ai/data/archive/_meta/primitiva-official-result-conflicts.json
+            restore_if_volatile_only loterias-ai/data/archive/_meta/primitiva-pre-reintegro-certification.json
             restore_if_volatile_only loterias-ai/data/archive/manifest.json
             restore_if_volatile_only loterias-ai/data/archive/_meta/archive-coverage-priorities.json
 
             git add loterias-ai/data/archive/primitiva \
                     loterias-ai/data/archive/_meta/primitiva-official-result-crosscheck.json \
                     loterias-ai/data/archive/_meta/primitiva-official-result-conflicts.json \
+                    loterias-ai/data/archive/_meta/primitiva-pre-reintegro-certification.json \
                     loterias-ai/data/archive/manifest.json \
                     loterias-ai/data/archive/_meta/archive-coverage-priorities.json
 
