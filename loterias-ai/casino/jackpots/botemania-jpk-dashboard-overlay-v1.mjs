@@ -21,12 +21,18 @@ const overlay={
   cleanResets:Number(g.evidence?.cleanResets||0),
   canalBingoSharedPotCorroborated:g.evidence?.canalBingoSharedPotCorroborated===true,
   canalBingoResolvedVenture:g.evidence?.canalBingoResolvedVenture||null,
-  inferredNetworkEconomics:{
+  observedNetworkFlow:{
     observationsUsed:Number(f.observationsUsed||0),
     cleanGrowthIntervals:Number(f.cleanGrowthIntervals||0),
-    impliedNetworkStakeEUR:Number(f.aggregate?.impliedNetworkStakeEUR||0),
-    allocationShares:f.aggregate?.allocationShares||null
+    activePotGrowthEUR:Number(f.aggregate?.activePotGrowthEUR||0),
+    allocationShares:f.aggregate?.allocationShares||null,
+    fishinFrenzyStakeEquivalentEUR:Number(f.aggregate?.fishinFrenzyStakeEquivalentEUR||0),
+    networkStakeEUR:null,
+    networkStakeIdentifiableFromPotGrowthAlone:false,
+    mixedNetworkContributionRates:true,
+    note:f.aggregate?.note||'Do not infer total network wagering from a single game contribution rate.'
   },
+  correction:{priorImpliedNetworkStakeMetricWithdrawn:f.corrections?.priorImpliedNetworkStakeFieldWithdrawn===true},
   economicPromotionCandidate:g.decision?.economicPromotionCandidate===true,
   realMoneyAllowed:false,
   automaticBettingAllowed:false
@@ -36,4 +42,4 @@ d.economics.mechanismRadar.botemaniaJackpotKing=overlay;
 d.economics.progressiveNetworks.botemaniaJackpotKing=overlay;
 d.generatedAt=new Date().toISOString();
 fs.writeFileSync(DASH,JSON.stringify(d,null,2)+'\n');
-console.log(JSON.stringify({liveGateState:overlay.liveGateState,liveGateReason:overlay.liveGateReason,currentPotsEUR:overlay.currentPotsEUR,researchBand:overlay.researchBand,canalBingoSharedPotCorroborated:overlay.canalBingoSharedPotCorroborated,realMoneyAllowed:false},null,2));
+console.log(JSON.stringify({liveGateState:overlay.liveGateState,liveGateReason:overlay.liveGateReason,currentPotsEUR:overlay.currentPotsEUR,researchBand:overlay.researchBand,observedNetworkFlow:overlay.observedNetworkFlow,correction:overlay.correction,realMoneyAllowed:false},null,2));
