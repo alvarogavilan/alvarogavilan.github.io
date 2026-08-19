@@ -10,7 +10,6 @@ const runOptional=script=>{const r=spawnSync(process.execPath,[script],{encoding
 runScript('loterias-ai/casino/lightning/research/lightning-prospective-transition-family-v1.mjs');
 const transition=read(`${E}/prospective-transition-family-v1-status.json`)||{};
 
-// Rebuild administrative readiness, preserving official operator monitors that are time-series state.
 const readinessPath=`${E}/economic-readiness-ledger-v1.json`;
 const priorReadiness=read(readinessPath)||{};
 runScript('loterias-ai/casino/lightning/research/economic-readiness-ledger-v1.mjs');
@@ -18,7 +17,6 @@ let readiness=read(readinessPath)||{};
 for(const key of ['jackpotKingOfficialMonitor','jackpotKingHazardProspectiveV1','ageOfGodsOfficialMonitor','sharedProgressiveNetworkObserver'])if(priorReadiness[key])readiness[key]=priorReadiness[key];
 fs.writeFileSync(readinessPath,JSON.stringify(readiness,null,2)+'\n');
 
-// Jackpot monitors are observation-only and optional: failure must never affect Lightning custody.
 runOptional('loterias-ai/casino/jackpots/pokerstars-jackpot-king-observer.mjs');
 runOptional('loterias-ai/casino/playuzu/playuzu-age-of-gods-observer.mjs');
 runOptional('loterias-ai/casino/playuzu/playuzu-progressive-networks-observer-v1.mjs');
@@ -42,6 +40,7 @@ fs.writeFileSync(readinessPath,JSON.stringify(readiness,null,2)+'\n');
 const gate=read(`${E}/economic-promotion-gate-v1.json`)||{};
 const prior=new Map((gate.boundaries||[]).map(x=>[x.id,x.complete===true]));
 const timing=read(`${E}/timing-replication-v3-status.json`),timingV4=read(`${E}/timing-replication-v4-status.json`),lag8=read(`${E}/prospective-lag8-clean-v2-status-v1.json`),lag8V3=read(`${E}/prospective-lag8-clean-v3-status-v1.json`),lagFamily=read(`${E}/prospective-lag-family-clean-v2-status-v1.json`),pastLucky=read(`${E}/prospective-past-lucky-family-clean-v2-status-v1.json`),numberSel=read(`${E}/economic-number-selection-prospective-status-v2.json`),physical=read(`${E}/physical-rng-prospective-v2-status.json`);
+if(lag8?.final&&lag8?.gates?.scientificPromotionCandidate!==true&&readiness.strongestDirectEconomicLane==='clean-lag8-economic-v1')throw new Error('rejected lag8 resurfaced as strongest direct economic lane');
 const current={
   'clean-timing-v3':Boolean(timing?.final)&&Number(timing?.progress?.closedEpisodes)===Number(timing?.progress?.fixedBoundaryClosedEpisodes),
   'clean-timing-v4':Boolean(timingV4?.final)&&Number(timingV4?.progress?.closedEpisodes)===Number(timingV4?.progress?.fixedBoundaryClosedEpisodes),
@@ -68,3 +67,4 @@ console.log(JSON.stringify({refreshedReadiness:true,promotionRefresh:true,newlyC
 // Validation pulse: preserve future-only Jackpot King hazard state and verify new canonical observer.
 // One-shot operational pulse marker 2026-08-19T12:28Z near lag8/timing fixed boundaries; no cadence or scientific rule changed.
 // Jackpot King hazard observer fix validation pulse 2026-08-19T12:31Z; no scientific rule or cadence changed.
+// Rejected-lag8 ledger safety validation pulse 2026-08-19T12:38Z; no cadence or scientific rule changed.
