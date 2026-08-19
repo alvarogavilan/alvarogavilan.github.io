@@ -5,11 +5,12 @@ import crypto from 'node:crypto';
 const DISC='loterias-ai/casino/playuzu/evidence/shared-jackpot-networks-v1.json';
 const PLAN='loterias-ai/casino/playuzu/evidence/progressive-network-monitor-plan-v1.json';
 const PROTOCOL='loterias-ai/casino/playuzu/evidence/progressive-network-observation-protocol-v1.json';
-const OUT='loterias-ai/casino/playuzu/evidence/progressive-network-observations-v1.json';
+const LEDGER='loterias-ai/casino/lightning/evidence/economic-readiness-ledger-v1.json';
 const disc=JSON.parse(fs.readFileSync(DISC,'utf8')),plan=JSON.parse(fs.readFileSync(PLAN,'utf8')),protocol=JSON.parse(fs.readFileSync(PROTOCOL,'utf8'));
 if(disc.version!=='shared-jackpot-networks-v1'||plan.version!=='progressive-network-monitor-plan-v1'||protocol.version!=='progressive-network-observation-protocol-v1')throw new Error('progressive network evidence version drift');
 if(protocol.guards?.immutable!==true||protocol.guards?.realMoneyAllowed!==false||plan.guards?.futureGrowthOrResetNotUsed!==true||plan.guards?.currencyTrusted!==false)throw new Error('progressive protocol safety drift');
-const prior=fs.existsSync(OUT)?JSON.parse(fs.readFileSync(OUT,'utf8')):{version:'progressive-network-observations-v1',observations:[],networkTotals:{},guards:{}};
+const ledger=JSON.parse(fs.readFileSync(LEDGER,'utf8'));
+const prior=ledger.sharedProgressiveNetworkObserver||{version:'progressive-network-observations-v1',observations:[],networkTotals:{},guards:{}};
 const now=new Date().toISOString();
 const last=(prior.observations||[]).at(-1);
 if(last?.observedAt&&Date.now()-Date.parse(last.observedAt)<3600000){console.log(JSON.stringify({skipped:true,reason:'HOURLY_THROTTLE',lastObservedAt:last.observedAt,realMoneyAllowed:false},null,2));process.exit(0)}
@@ -19,7 +20,7 @@ const pages=[];const entries=[];
 for(const page of plan.selectedPages||[]){
  const url=`${disc.backendPath}?page=${Number(page)}&appName=${encodeURIComponent(disc.appName)}`;
  try{
-  const r=await fetch(url,{headers:{accept:'application/json','user-agent':'loterias-ai-progressive-networks-observer/1.0','referer':disc.sourcePage,'origin':'https://www.playuzu.es','cache-control':'no-cache, no-store, max-age=0'}});
+  const r=await fetch(url,{headers:{accept:'application/json','user-agent':'loterias-ai-progressive-networks-observer/1.1','referer':disc.sourcePage,'origin':'https://www.playuzu.es','cache-control':'no-cache, no-store, max-age=0'}});
   const text=await r.text();let j=null;try{j=JSON.parse(text)}catch{}
   const data=Array.isArray(j?.data)?j.data:[];
   pages.push({page:Number(page),url,httpStatus:r.status,itemCount:data.length,responseSha256:crypto.createHash('sha256').update(text).digest('hex')});
@@ -44,4 +45,5 @@ const observations=[...(prior.observations||[]),obs].slice(-720);
 const networkTotals={...(prior.networkTotals||{})};
 for(const r of networkRows){const t=networkTotals[r.networkId]||{validObservations:0,resets:0,lastRawNetworkCounter:null};if(r.corroborated){t.validObservations++;if(r.possibleReset)t.resets++;t.lastRawNetworkCounter=r.rawNetworkCounter;t.lastObservedAt=now;}networkTotals[r.networkId]=t;}
 const payload={version:'progressive-network-observations-v1',generatedAt:now,protocolVersion:protocol.version,monitorPlanVersion:plan.version,discoveryVersion:disc.version,summary:{selectedPages:Number(plan.pageCount||0),networksPlanned:Number(plan.networkCount||0),networksCorroboratedThisObservation:networkRows.filter(r=>r.corroborated).length,minimumObservationsBeforeStateSummary:Number(protocol.observation?.minimumObservationCountBeforeStateSummary||168),allRequiredPagesHttp200:obs.allRequiredPagesHttp200},networkTotals,observations,guards:{networkMembershipFrozenFromDiscoverySnapshot:true,futureGrowthCannotChangeMembership:true,currencyTrusted:false,noInterpolationAcrossMissingSnapshots:true,noOptionalStopping:true,counterSizeAloneCanNeverPass:true,automaticBettingAllowed:false,realMoneyAllowed:false,realStakeEUR:0}};
-fs.writeFileSync(OUT,JSON.stringify(payload,null,2)+'\n');console.log(JSON.stringify({summary:payload.summary,networks:networkRows.map(x=>({id:x.networkId,ok:x.corroborated,raw:x.rawNetworkCounter,reset:x.possibleReset}))},null,2));
+ledger.sharedProgressiveNetworkObserver=payload;
+fs.writeFileSync(LEDGER,JSON.stringify(ledger,null,2)+'\n');console.log(JSON.stringify({summary:payload.summary,networks:networkRows.map(x=>({id:x.networkId,ok:x.corroborated,raw:x.rawNetworkCounter,reset:x.possibleReset}))},null,2));
