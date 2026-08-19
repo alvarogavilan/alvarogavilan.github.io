@@ -1,0 +1,57 @@
+name: Loterias AI Botemania JPK Burst Observer V1
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/jackpots/botemania-jpk-fast-sampler-v1.mjs'
+      - '.github/workflows/loterias-ai-botemania-jpk-burst-observer-v1.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-botemania-jackpot-king-observer-v1
+  cancel-in-progress: false
+
+jobs:
+  burst-observe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Capture multiple future public Botemania samples without retuning
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git fetch origin main
+          git reset --hard origin/main
+          for sample in 1 2 3 4 5 6 7 8; do
+            echo "Future sample ${sample}/8"
+            node loterias-ai/casino/jackpots/botemania-jpk-fast-sampler-v1.mjs
+            node loterias-ai/casino/jackpots/botemania-jpk-flow-model-v1.mjs
+            node loterias-ai/casino/jackpots/botemania-jpk-allocation-prospective-status-v1.mjs
+            node loterias-ai/casino/jackpots/botemania-jpk-live-gate-v1.mjs
+            node loterias-ai/casino/jackpots/botemania-jpk-structural-evidence-synthesis-v1.mjs
+            node loterias-ai/casino/five-euro-real-pilot-gate-v1.mjs
+            if [ "$sample" -lt 8 ]; then sleep 30; fi
+          done
+          git add \
+            loterias-ai/casino/jackpots/evidence/botemania-jackpot-king-observer-v1.json \
+            loterias-ai/casino/jackpots/evidence/botemania-jpk-flow-model-v1.json \
+            loterias-ai/casino/jackpots/evidence/botemania-jpk-allocation-prospective-status-v1.json \
+            loterias-ai/casino/jackpots/evidence/botemania-jpk-live-gate-v1.json \
+            loterias-ai/casino/jackpots/evidence/botemania-jpk-structural-evidence-synthesis-v1.json \
+            loterias-ai/casino/evidence/five-euro-real-pilot-gate-v1.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'data(casino): burst capture frozen Botemania prospective intervals'
+          git pull --rebase origin main
+          git push origin HEAD:main
