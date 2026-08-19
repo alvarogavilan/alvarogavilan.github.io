@@ -1,0 +1,94 @@
+{
+  "version": "xxxtreme-prospective-selected-family-v1-freeze",
+  "createdAt": "2026-08-19T08:11:49.064Z",
+  "selectedFrom": "xxxtreme-selected-family-v1",
+  "selectionCutoff": "2026-08-19T03:00:00Z",
+  "prospectiveStartsAt": "2026-08-19T08:30:00Z",
+  "selectedCandidates": [
+    {
+      "id": "111dcef482753bb8",
+      "spec": {
+        "type": "wheelOffset",
+        "offset": 18
+      },
+      "rankAtFreeze": 1
+    },
+    {
+      "id": "a22d21c6b0245138",
+      "spec": {
+        "type": "wheelOffset",
+        "offset": 4
+      },
+      "rankAtFreeze": 2
+    },
+    {
+      "id": "bee146544f89e4fc",
+      "spec": {
+        "type": "wheelOffset",
+        "offset": 16
+      },
+      "rankAtFreeze": 3
+    },
+    {
+      "id": "7c63d8cdda288752",
+      "spec": {
+        "type": "wheelOffset",
+        "offset": -5
+      },
+      "rankAtFreeze": 4
+    },
+    {
+      "id": "80b77d7070534a34",
+      "spec": {
+        "type": "lag",
+        "k": 1
+      },
+      "rankAtFreeze": 5
+    },
+    {
+      "id": "89b124accf1a5ab5",
+      "spec": {
+        "type": "wheelOffset",
+        "offset": 0
+      },
+      "rankAtFreeze": 6
+    },
+    {
+      "id": "494a7e79f7826412",
+      "spec": {
+        "type": "frequencyHot",
+        "window": 10
+      },
+      "rankAtFreeze": 7
+    },
+    {
+      "id": "d91de8d84624474a",
+      "spec": {
+        "type": "wheelOffset",
+        "offset": 12
+      },
+      "rankAtFreeze": 8
+    }
+  ],
+  "prospectiveWarmupRounds": 100,
+  "fixedBoundaryRounds": 3000,
+  "uniformNullHitProbability": 0.02702702702702703,
+  "familyWiseAlpha": 0.01,
+  "perCandidateAlpha": 0.00125,
+  "confirmationRule": "Evaluate all eight frozen candidates on the first 3000 scored rounds after a 100-round post-start warmup. No candidate may be added, removed or retuned.",
+  "economicInterpretationAllowed": false,
+  "disclosurePolicy": "Administrative counts only until 3000 scored rounds.",
+  "guards": {
+    "postCutoffHistoricalRowsNotUsedForCandidateSelection": true,
+    "freezeWrittenBeforeProspectiveStart": true,
+    "postStartWarmupNotScored": true,
+    "currentRoundLuckyFeaturesForbidden": true,
+    "noRetuning": true,
+    "noOptionalStopping": true,
+    "postBoundaryCannotRescue": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  },
+  "immutable": true
+}
