@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// Operational one-shot capture pulse requested 2026-08-19; scientific logic unchanged.
 import fs from 'node:fs';
 import { spawnSync } from 'node:child_process';
 
