@@ -32,13 +32,25 @@ if(sourceFresh&&inResearchBand&&exactMbwb&&exactHazard) state='EV_VERIFICATION_R
 const actionable=sourceFresh&&inResearchBand&&exactMbwb&&exactHazard&&currentScreenPass;
 if(actionable) state='ACTIONABLE';
 
+const canalDecision=canal.decision||{};
 const potAt=(name,q)=>Number.isFinite(q)?Number((Number(seedHyp[name])+(Number(capHyp[name])-Number(seedHyp[name]))*q).toFixed(2)):null;
 const out={
-  version:'botemania-jpk-live-gate-v1',generatedAt:new Date().toISOString(),operator:'botemania-es',
+  version:'botemania-jpk-live-gate-v1.1',generatedAt:new Date().toISOString(),operator:'botemania-es',
   state,
   current:{observedAt:obs.latest?.observedAt||null,sourceFresh,potsEUR:{JACKPOT_KING:Number(pots.JACKPOT_KING)||null,REGAL:Number(pots.REGAL)||null,ROYAL:Number(pots.ROYAL)||null},normalizedSeedToCapHypothesis:{ROYAL:qRoyal,REGAL:qRegal}},
   researchBand:{hypothesisOnly:!exactMbwb,conservativeAllCurvesStartNormalized:Number.isFinite(conservativeBand)?conservativeBand:null,thresholdPotsHypothesisEUR:{ROYAL:potAt('ROYAL',conservativeBand),REGAL:potAt('REGAL',conservativeBand)},inBand:inResearchBand},
-  evidence:{exactSpainMbwbKnown:exactMbwb,exactHazardKnown:exactHazard,cleanResets:Number(flow.hazard?.cleanResets||0),minimumResetsForFit:Number(flow.hazard?.minimumResetsForFit||10),canalBingoSharedPotCorroborated:canal.decision?.sharedPotCorroborated===true,canalBingoResolvedVenture:canal.decision?.resolvedVenture||null,currentScreenPass},
+  evidence:{
+    exactSpainMbwbKnown:exactMbwb,
+    exactHazardKnown:exactHazard,
+    cleanResets:Number(flow.hazard?.cleanResets||0),
+    minimumResetsForFit:Number(flow.hazard?.minimumResetsForFit||10),
+    canalBingoSharedPotCorroborated:canalDecision.canalBingoSharedPotCorroborated===true || canalDecision.sharedPotCorroborated===true,
+    canalBingoResolvedVenture:canalDecision.resolvedCanalBingoVenture||canalDecision.resolvedVenture||null,
+    monopolyCasinoVentureResolved:canalDecision.monopolyCasinoVentureResolved===true,
+    monopolyCasinoSameAsBotemania:canalDecision.monopolyCasinoSameAsBotemania===true,
+    monopolyCasinoIndependentSpanishNetwork:canalDecision.monopolyCasinoIndependentSpanishNetwork===true,
+    currentScreenPass
+  },
   decision:{economicPromotionCandidate:actionable,realMoneyAllowed:false,automaticBettingAllowed:false,reason:actionable?'SEPARATE_REAL_MONEY_AUTHORIZATION_STILL_REQUIRED':!sourceFresh?'NO_FRESH_SOURCE':!inResearchBand?'BELOW_CONSERVATIVE_RESEARCH_BAND':!exactMbwb?'EXACT_SPAIN_MBWB_NOT_VERIFIED':!exactHazard?'HAZARD_NOT_VERIFIED':'CONSERVATIVE_EV_NOT_ABOVE_ONE'},
   guards:{hypothesisNeverPromotes:true,noCrossMarketCapAsFact:true,noBetting:true,realMoneyAllowed:false,automaticBettingAllowed:false}
 };
