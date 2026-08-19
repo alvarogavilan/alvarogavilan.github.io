@@ -18,6 +18,7 @@ on:
       - 'loterias-ai/data/archive/quinigol/**'
       - 'loterias-ai/data/archive/lototurf/**'
       - 'loterias-ai/data/archive/quintuple-plus/**'
+      - 'loterias-ai/data/archive/manifest.json'
       - '.github/workflows/loterias-ai-archive-derived-sync.yml'
   schedule:
     - cron: '42 * * * *'
@@ -54,7 +55,10 @@ jobs:
             cp loterias-ai/data/archive/_meta/archive-audit.json /tmp/archive-audit.prev.json 2>/dev/null || true
             cp loterias-ai/data/archive/_meta/archive-coverage-priorities.json /tmp/archive-priorities.prev.json 2>/dev/null || true
 
+            set +e
             node loterias-ai/scripts/audit-national-archive.mjs
+            audit_rc=$?
+            set -e
             node loterias-ai/scripts/build-archive-coverage-priorities.mjs
 
             node <<'NODE'
@@ -83,7 +87,6 @@ jobs:
             const manifest=JSON.parse(fs.readFileSync('loterias-ai/data/archive/manifest.json','utf8'));
             const audit=JSON.parse(fs.readFileSync('loterias-ai/data/archive/_meta/archive-audit.json','utf8'));
             const priorities=JSON.parse(fs.readFileSync('loterias-ai/data/archive/_meta/archive-coverage-priorities.json','utf8'));
-            if(audit.qualityGate?.pass!==true) throw Error('archive audit quality gate failed');
             const manifestRecords=Number(manifest.totals?.records)||0;
             const manifestValidated=Number(manifest.totals?.validatedRecords)||0;
             const manifestEconomics=Number(manifest.totals?.economicsRecords)||0;
@@ -91,6 +94,7 @@ jobs:
             if(Number(priorities.totals?.validatedRecords)!==manifestValidated) throw Error(`archive validated mismatch: priorities=${priorities.totals?.validatedRecords} manifest=${manifestValidated}`);
             if(Number(priorities.totals?.economicsRecords)!==manifestEconomics) throw Error(`archive economics mismatch: priorities=${priorities.totals?.economicsRecords} manifest=${manifestEconomics}`);
             if(manifestRecords<=0||manifestValidated<0||manifestValidated>manifestRecords) throw Error('invalid archive manifest totals');
+            if(!audit.qualityGate || typeof audit.qualityGate.pass!=='boolean') throw Error('archive audit missing explicit quality gate');
             NODE
 
             git add \
@@ -99,11 +103,19 @@ jobs:
 
             if git diff --cached --quiet; then
               echo 'Archive derived QA already synchronized.'
+              if [ "$audit_rc" -ne 0 ]; then
+                echo 'Archive QA remains fail-closed; diagnostics are already persisted.' >&2
+                exit "$audit_rc"
+              fi
               exit 0
             fi
 
             git commit -m 'qa(archive): synchronize audit and coverage priorities'
             if git push origin HEAD:main; then
+              if [ "$audit_rc" -ne 0 ]; then
+                echo 'Persisted current archive QA diagnostics; failing run because quality gate is closed.' >&2
+                exit "$audit_rc"
+              fi
               exit 0
             fi
 
