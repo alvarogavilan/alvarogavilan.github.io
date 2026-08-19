@@ -54,15 +54,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ ! -f loterias-ai/edge-live/telegram-alert-state.json ]; then exit 0; fi
+          STATE=loterias-ai/edge-live/telegram-alert-state.json
+          if [ ! -f "$STATE" ]; then exit 0; fi
+          cp "$STATE" /tmp/edge-live-telegram-alert-state.json
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git reset --hard HEAD
-          git checkout HEAD -- loterias-ai/edge-live/telegram-alert-state.json 2>/dev/null || true
-          # Restore state produced by the watcher if checkout removed an untracked file.
-          # The alert script creates/updates it only on an actual transition.
-          if [ ! -f loterias-ai/edge-live/telegram-alert-state.json ]; then exit 0; fi
-          git add loterias-ai/edge-live/telegram-alert-state.json
+          mkdir -p loterias-ai/edge-live
+          cp /tmp/edge-live-telegram-alert-state.json "$STATE"
+          git add "$STATE"
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'data(edge-live): persist fast Telegram transition state'
           for attempt in 1 2 3; do
