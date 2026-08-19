@@ -21,6 +21,7 @@ fs.writeFileSync(readinessPath,JSON.stringify(readiness,null,2)+'\n');
 // Jackpot monitors are observation-only and optional: failure must never affect Lightning custody.
 runOptional('loterias-ai/casino/jackpots/pokerstars-jackpot-king-observer.mjs');
 runOptional('loterias-ai/casino/playuzu/playuzu-age-of-gods-observer.mjs');
+runOptional('loterias-ai/casino/playuzu/playuzu-progressive-networks-observer-v1.mjs');
 readiness=read(readinessPath)||readiness;
 readiness.transitionFamilyV1={
   status:transition?.final?'FIXED_FINAL_AVAILABLE':'BLINDED_ACCUMULATING',
