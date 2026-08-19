@@ -56,3 +56,5 @@ const refreshed=read(`${E}/economic-promotion-gate-v1.json`)||{};
 for(const id of newlyClosed){const row=(refreshed.boundaries||[]).find(x=>x.id===id);if(row?.complete!==true)throw new Error(`boundary ${id} closed in source but not reflected in promotion gate`)}
 if(refreshed.policy?.onlyFixedBoundaryFinalsMayPromote!==true||refreshed.policy?.hiddenInterimPerformanceNeverRead!==true||refreshed.policy?.realMoneyAllowed!==false)throw new Error('promotion safety drift after boundary refresh');
 console.log(JSON.stringify({refreshedReadiness:true,promotionRefresh:true,newlyClosed,transitionFamilyV1:readiness.transitionFamilyV1,progressiveNetworks:monitorSummary,state:refreshed.state,realMoneyAllowed:refreshed.policy?.realMoneyAllowed},null,2));
+
+// One-shot operational pulse marker 2026-08-19T09:50Z; no cadence or scientific rule changed.
