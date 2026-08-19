@@ -1,0 +1,37 @@
+name: Loterias AI Standard Roulette Historical Audit
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/standard-roulette/research/historical-cross-stream-audit-v1.mjs'
+      - '.github/workflows/loterias-ai-standard-roulette-historical-audit.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Run one-shot cross-stream temporal audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git fetch origin main
+          git reset --hard origin/main
+          node loterias-ai/casino/standard-roulette/research/historical-cross-stream-audit-v1.mjs
+          git add loterias-ai/casino/standard-roulette/evidence/historical-cross-stream-audit-v1.json
+          git commit -m 'data(roulette): persist cross-stream historical audit' || exit 0
+          git pull --rebase origin main
+          git push origin HEAD:main
