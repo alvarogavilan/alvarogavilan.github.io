@@ -34,15 +34,36 @@ jobs:
           EDGE_LIVE_TELEGRAM_CHAT_ID: ${{ secrets.EDGE_LIVE_TELEGRAM_CHAT_ID }}
           EDGE_LIVE_URL: https://alvarogavilan.github.io/loterias-ai/edge-live/
         run: node loterias-ai/edge-live/telegram-edge-alert-v1.mjs
-      - name: Persist alert state when changed
+      - name: Persist safe Telegram diagnostic and transition state
+        if: always()
         shell: bash
         run: |
           set -euo pipefail
-          if [ ! -f loterias-ai/edge-live/telegram-alert-state.json ]; then exit 0; fi
+          DIAG=loterias-ai/edge-live/telegram-alert-diagnostic.json
+          STATE=loterias-ai/edge-live/telegram-alert-state.json
+          mkdir -p /tmp/edge-live-telegram
+          copied=0
+          for f in "$DIAG" "$STATE"; do
+            if [ -f "$f" ]; then
+              cp "$f" "/tmp/edge-live-telegram/$(basename "$f")"
+              copied=1
+            fi
+          done
+          if [ "$copied" -eq 0 ]; then exit 0; fi
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add loterias-ai/edge-live/telegram-alert-state.json
+          git reset --hard HEAD
+          mkdir -p loterias-ai/edge-live
+          for f in "$DIAG" "$STATE"; do
+            b=$(basename "$f")
+            if [ -f "/tmp/edge-live-telegram/$b" ]; then cp "/tmp/edge-live-telegram/$b" "$f"; fi
+          done
+          git add -- "$DIAG"
+          if [ -f "$STATE" ]; then git add -- "$STATE"; fi
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'data(edge-live): persist exact Telegram execution alert state'
-          git pull --rebase origin main
-          git push origin HEAD:main
+          git commit -m 'data(edge-live): persist Telegram connection diagnostic'
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
