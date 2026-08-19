@@ -1,0 +1,48 @@
+{
+  "version": "quinigol-independent-replication-v4-freeze-v1",
+  "createdAt": "2026-08-19T07:34:00Z",
+  "gameId": "quinigol",
+  "activation": {
+    "requiresFirstProspectiveFixed30Complete": true,
+    "firstProspectiveFinal": "loterias-ai/data/shadow/quinigol-prospective-final-30.json",
+    "startsStrictlyAfterFirstProspectiveLastTarget": true,
+    "activationIndependentOfFirstProspectiveOutcome": true
+  },
+  "frozenModel": {
+    "window": 320,
+    "ticketsPerDraw": 2,
+    "algorithm": "same deterministic positional score-bucket predictor and second-ticket perturbation as quinigol prospective v3"
+  },
+  "fixedBoundary": {
+    "jornadas": 30,
+    "first30Only": true,
+    "matchedRandomReplicates": 10000,
+    "matchedRandomSeed": 20082026,
+    "alpha": 0.01,
+    "minimumProfitableJornadas": 5
+  },
+  "promotionRule": {
+    "observedROIPositive": true,
+    "profitableJornadasAtLeast": 5,
+    "observedROIAboveMatchedRandomMean": true,
+    "oneSidedMatchedRandomPBelow": 0.01,
+    "v3AndV4BothRequiredForIndependentConfirmation": true
+  },
+  "disclosure": {
+    "interimHitsHidden": true,
+    "interimROIHidden": true,
+    "interimRandomComparisonHidden": true,
+    "administrativeCountsOnlyBefore30": true
+  },
+  "guards": {
+    "preRegisteredBeforeAnyV3ProspectiveOutcome": true,
+    "v3ObservedJornadasAtFreeze": 0,
+    "noRetuning": true,
+    "noOptionalStopping": true,
+    "post30CannotRescue": true,
+    "noOutcomeDependentActivation": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
