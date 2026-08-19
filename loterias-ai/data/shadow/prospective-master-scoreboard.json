@@ -1,16 +1,16 @@
 {
   "version": "prospective-master-scoreboard-v2",
-  "generatedAt": "2026-08-19T05:04:44.569Z",
+  "generatedAt": "2026-08-19T20:01:23.913Z",
   "engine": "Prospective-Master-Scoreboard",
   "sourcePolicy": "Aggregates persisted prospective/freeze/evaluation artifacts across shadow, research and prospective stores. Pending artifacts are not counted as evaluated.",
   "counts": {
-    "total": 50,
-    "pending": 2,
-    "frozen": 26,
+    "total": 51,
+    "pending": 3,
+    "frozen": 27,
     "evaluated": 4,
     "realMoneyPass": 0,
     "byStore": {
-      "shadow": 24,
+      "shadow": 25,
       "research": 23,
       "prospective": 3
     }
@@ -513,6 +513,25 @@
       "store": "research",
       "status": "UNKNOWN",
       "targetDrawDate": null,
+      "outcomeObserved": false,
+      "realStakeEUR": 0,
+      "realMoneyPass": false
+    },
+    {
+      "sourcePath": "shadow/elige8-minimum-stake-prospective-freeze-v1.json",
+      "file": "elige8-minimum-stake-prospective-freeze-v1.json",
+      "store": "shadow",
+      "status": "MODEL_FROZEN_WAITING_OFFICIAL_NEXT_FIXTURE_COMPOSITION",
+      "targetDrawDate": null,
+      "engine": {
+        "name": "CAUSAL_TEAM_HOME_AWAY_SIGN_FREQUENCY_WITH_LAPLACE_SMOOTHING_SELECT_TOP8_CONFIDENCE",
+        "sourceAudit": "loterias-ai/data/research/elige8-minimum-stake-holdout-audit-v1.json",
+        "rule": "For each of the 14 official selectable fixtures, estimate 1/X/2 from strictly earlier Quiniela home/away team frequencies with Laplace smoothing; choose the eight fixtures with highest predicted-sign confidence; play exactly one sign on each selected fixture.",
+        "hyperparameters": "NONE_AFTER_FREEZE",
+        "retuningAllowed": false,
+        "fixtureSelectionRuleChangeAllowed": false,
+        "signRuleChangeAllowed": false
+      },
       "outcomeObserved": false,
       "realStakeEUR": 0,
       "realMoneyPass": false
