@@ -163,13 +163,37 @@
         }
       },
       "verification": {
-        "status": "SECONDARY_VALIDATED",
+        "status": "OFFICIAL_BOE_VALIDATED",
         "checks": [
           "csv-shape",
           "ranges",
-          "unique-main"
-        ]
-      }
+          "unique-main",
+          "official-boe-result-validation",
+          "selae-series-date-shift-diagnosed"
+        ],
+        "authorityResolution": {
+          "provider": "BOE",
+          "official": true,
+          "reference": "BOE-A-2001-738",
+          "reviewedAt": "2026-08-17T10:45:00.000Z",
+          "resolutionStatus": "RESOLVED_SOURCE_DATE_SHIFT",
+          "canonical": {
+            "numbers": [
+              12,
+              17,
+              28,
+              33,
+              48,
+              49
+            ],
+            "complementario": 22,
+            "reintegro": 4
+          },
+          "seriesActuallyMatchesDrawDate": "2001-01-02",
+          "complete": true
+        }
+      },
+      "trainingEligible": true
     },
     {
       "drawId": "bonoloto-2001-01-05",
