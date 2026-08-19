@@ -6,6 +6,13 @@ const E='loterias-ai/casino/lightning/evidence';
 const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'));}catch{return null;}};
 const runScript=script=>{const r=spawnSync(process.execPath,[script],{encoding:'utf8',stdio:['ignore','pipe','pipe']});if(r.status!==0){process.stderr.write(r.stdout||'');process.stderr.write(r.stderr||`refresh failed: ${script}\n`);process.exit(r.status||1)}};
 const runOptional=script=>{const r=spawnSync(process.execPath,[script],{encoding:'utf8',stdio:['ignore','pipe','pipe']});if(r.status!==0){process.stderr.write(r.stdout||'');process.stderr.write(r.stderr||`optional refresh failed: ${script}\n`);return false}return true;};
+const attachCrossTable=()=>{
+  runScript('loterias-ai/ops/attach-cross-table-convergence-to-promotion-gate-v1.mjs');
+  runScript('loterias-ai/ops/attach-cross-table-convergence-to-economic-readiness-v1.mjs');
+  const r=read(`${E}/economic-readiness-ledger-v1.json`)||{},g=read(`${E}/economic-promotion-gate-v1.json`)||{};
+  if(r.crossTableConvergence?.claimPolicy?.requiresIndependentPassInBothTables!==true||r.crossTableConvergence?.realMoneyAllowed!==false)throw new Error('cross-table readiness custody drift');
+  if(g.policy?.crossTableReplicationAloneCannotAuthorizeRealMoney!==true||g.crossTableLag1Replication?.realMoneyAllowed!==false)throw new Error('cross-table promotion custody drift');
+};
 
 runScript('loterias-ai/casino/lightning/research/lightning-prospective-transition-family-v1.mjs');
 const transition=read(`${E}/prospective-transition-family-v1-status.json`)||{};
@@ -53,12 +60,17 @@ const current={
 };
 const newlyClosed=Object.entries(current).filter(([id,done])=>done&&prior.get(id)!==true).map(([id])=>id);
 const monitorSummary={jackpotKing:{sourceReadable:readiness.jackpotKingOfficialMonitor?.sourceReadable??null,potEUR:readiness.jackpotKingOfficialMonitor?.latest?.networkPotEUR??null},jackpotKingHazard:{validFutureObservations:readiness.jackpotKingHazardProspectiveV1?.progress?.validObservations??0,hardResets:readiness.jackpotKingHazardProspectiveV1?.progress?.hardResets??0},ageOfGods:{sourceReadable:readiness.ageOfGodsOfficialMonitor?.sourceReadable??null,rawNetworkCounter:readiness.ageOfGodsOfficialMonitor?.latest?.rawNetworkCounter??null,currencyTrusted:readiness.ageOfGodsOfficialMonitor?.latest?.currencyTrusted===true},sharedPlayUZUNetworks:{networksCorroboratedLatest:readiness.sharedProgressiveNetworkObserver?.summary?.networksCorroboratedThisObservation??0,latestObservedAt:readiness.sharedProgressiveNetworkObserver?.observations?.at(-1)?.observedAt??null}};
+
+// Even without a newly closed boundary, refreshing readiness must not erase or stale the
+// preregistered Lightning↔XXXtreme convergence progress in either derived decision surface.
+attachCrossTable();
 if(!newlyClosed.length){console.log(JSON.stringify({refreshedReadiness:true,promotionRefresh:false,reason:'NO_NEW_FIXED_BOUNDARY',transitionFamilyV1:readiness.transitionFamilyV1,progressiveNetworks:monitorSummary,current},null,2));process.exit(0)}
 
 runScript('loterias-ai/casino/lightning/research/economic-promotion-gate-v1.mjs');
+attachCrossTable();
 const refreshed=read(`${E}/economic-promotion-gate-v1.json`)||{};
 for(const id of newlyClosed){const row=(refreshed.boundaries||[]).find(x=>x.id===id);if(row?.complete!==true)throw new Error(`boundary ${id} closed in source but not reflected in promotion gate`)}
-if(refreshed.policy?.onlyFixedBoundaryFinalsMayPromote!==true||refreshed.policy?.hiddenInterimPerformanceNeverRead!==true||refreshed.policy?.realMoneyAllowed!==false)throw new Error('promotion safety drift after boundary refresh');
+if(refreshed.policy?.onlyFixedBoundaryFinalsMayPromote!==true||refreshed.policy?.hiddenInterimPerformanceNeverRead!==true||refreshed.policy?.realMoneyAllowed!==false||refreshed.policy?.crossTableReplicationAloneCannotAuthorizeRealMoney!==true)throw new Error('promotion safety drift after boundary refresh');
 console.log(JSON.stringify({refreshedReadiness:true,promotionRefresh:true,newlyClosed,transitionFamilyV1:readiness.transitionFamilyV1,progressiveNetworks:monitorSummary,state:refreshed.state,realMoneyAllowed:refreshed.policy?.realMoneyAllowed},null,2));
 
 // One-shot operational pulse marker 2026-08-19T09:50Z; no cadence or scientific rule changed.
