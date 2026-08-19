@@ -1,0 +1,56 @@
+{
+  "generatedAt": "2026-08-19T07:32:25.883Z",
+  "gameId": "quinigol",
+  "version": "quinigol-holdout-montecarlo-audit-v1",
+  "mode": "POST_HOC_FIXED_HOLDOUT_SIGNIFICANCE_AUDIT",
+  "fixedStrategy": {
+    "window": 320,
+    "ticketsPerDraw": 2,
+    "selectionSource": "discovery-only tournament before holdout evaluation"
+  },
+  "holdout": {
+    "draws": 207,
+    "stakeEUR": 414,
+    "returnEUR": 583.9300000000001,
+    "plEUR": 169.93000000000006,
+    "roi": 0.4104589371980678
+  },
+  "randomModel": {
+    "positionMatchProbability": 0.0625,
+    "hitsDistribution": "Binomial(6, 1/16)",
+    "ticketsPerDraw": 2,
+    "runs": 50000,
+    "exactExpectedReturnEUR": 132.99113835453986,
+    "exactExpectedROI": -0.6787653662933819,
+    "monteCarloMeanROI": -0.6845760821256061,
+    "monteCarloSdROI": 1.454701787726914,
+    "roiQuantiles": {
+      "p50": -0.8506763285024155,
+      "p90": -0.7011835748792271,
+      "p95": -0.537391304347826,
+      "p99": 2.8377536231884055,
+      "p999": 26.242270531400965,
+      "max": 48.00842995169082
+    },
+    "runsAtOrAboveObserved": 1222,
+    "oneSidedEmpiricalPUpper": 0.024459510809783803
+  },
+  "interpretation": "HOLDOUT_RETURN_NOT_RARE_ENOUGH_UNDER_MATCHED_RANDOM_MODEL",
+  "gates": {
+    "positiveObservedROI": true,
+    "descriptivePBelowOnePercent": false,
+    "postHocAuditStrong": false,
+    "prospectiveReplicationStillRequired": true,
+    "realMoneyPass": false
+  },
+  "guards": {
+    "strategyNotRetuned": true,
+    "holdoutDatesUnchanged": true,
+    "officialSELAEEconomicsOnly": true,
+    "postHocTestSpecification": true,
+    "cannotPromoteByItself": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
