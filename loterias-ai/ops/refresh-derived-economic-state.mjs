@@ -5,6 +5,8 @@ const scripts=[
   'loterias-ai/casino/lightning/research/timing-replication-v4.mjs',
   'loterias-ai/casino/lightning/research/lightning-prospective-frozen-lag8-clean-v3.mjs',
   'loterias-ai/ops/quinigol-prospective-local.mjs',
+  'loterias-ai/scripts/quinigol-replication-v4.mjs',
+  'loterias-ai/scripts/quinigol-replication-v4-finalize-30.mjs',
   'loterias-ai/casino/lightning/research/economic-readiness-ledger-v1.mjs',
   'loterias-ai/casino/lightning/research/economic-promotion-gate-v1.mjs'
 ];
