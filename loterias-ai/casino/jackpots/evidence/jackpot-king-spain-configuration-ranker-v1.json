@@ -1,0 +1,115 @@
+{
+  "version": "jackpot-king-spain-configuration-ranker-v1",
+  "createdAt": "2026-08-19T15:55:00Z",
+  "purpose": "Rank Spain-facing Jackpot King configurations for near-cap research using public operator rules; this does not authorize wagering.",
+  "formula": {
+    "hypothesis": "Uniform hidden trigger between reserve S and cap C; provider has NOT confirmed this distribution.",
+    "baseGameRtp": "B",
+    "targetPotContributionPerEUR": "r",
+    "currentPot": "P",
+    "cap": "C",
+    "approxTargetJackpotEvPerEUR": "r*P/(C-P)",
+    "approxTotalEvPerEUR": "B + r*P/(C-P)",
+    "breakEvenFractionOfCap": "P/C >= (1-B)/(1-B+r)",
+    "warning": "The formula is a screening model only. Actual trigger law and allocation across Royal/Regal/Jackpot King must be verified before economic promotion."
+  },
+  "configurations": [
+    {
+      "rankForNearCapResearch": 1,
+      "game": "Fishin' Frenzy: Jackpot King",
+      "operator": "Botemania Spain",
+      "source": "https://www.botemania.es/juegos/slots-online/fishin-frenzy-jackpot-king",
+      "operatorLicensedSpain": true,
+      "baseRtp": 0.9332,
+      "progressiveContribution": 0.0232,
+      "reserveContribution": 0.0068,
+      "anyStakeEligible": true,
+      "jackpotChanceProportionalToTotalBet": true,
+      "jackpotChanceIncreasesWithPot": true,
+      "royalRegalMbwbExists": true,
+      "sharedBlueprintNetwork": true,
+      "screen": {
+        "ifAllProgressiveContributionFeedsTargetPot": 0.7422222222222221,
+        "ifHalfFeedsTargetPot": 0.8520408163265306,
+        "ifEqualThreeWaySplit": 0.8962432915921288
+      },
+      "interpretation": "Best current Spain-facing research leverage because the public page explicitly assigns 2.32% of wager to the progressive meter. Exact split among the three pots remains unknown."
+    },
+    {
+      "rankForNearCapResearch": 2,
+      "game": "Irish Riches Megaways: Jackpot King",
+      "operator": "Botemania Spain",
+      "source": "https://www.botemania.es/juegos/slots-online/irish-riches-megaways-jackpot-king",
+      "operatorLicensedSpain": true,
+      "baseRtp": 0.9593,
+      "publishedAdditionalRtp": 0.01,
+      "progressiveContributionExact": null,
+      "anyStakeEligible": true,
+      "screenConditionalOnOnePercentBeingTargetableProgressiveContribution": {
+        "ifAllFeedsTargetPot": 0.8027613412228795,
+        "ifHalfFeedsTargetPot": 0.8905908096280087,
+        "ifEqualThreeWaySplit": 0.9242997728993186
+      },
+      "interpretation": "High base RTP, but the public page states +1% without a clean current split between progressive and reserve; ranked below Fishin' Frenzy until semantics are resolved."
+    },
+    {
+      "rankForNearCapResearch": 3,
+      "game": "Eye of Horus: Jackpot King",
+      "operator": "Botemania Spain",
+      "source": "https://www.botemania.es/juegos/slots-online/eye-of-horus-jackpot-king",
+      "operatorLicensedSpain": true,
+      "baseRtp": 0.9546,
+      "progressiveContribution": 0.0038,
+      "reserveContribution": 0.0011,
+      "anyStakeEligible": true,
+      "jackpotChanceProportionalToTotalBet": true,
+      "jackpotChanceIncreasesWithPot": true,
+      "royalRegalMbwbExists": true,
+      "sharedBlueprintNetwork": true,
+      "screen": {
+        "ifAllProgressiveContributionFeedsTargetPot": 0.9227642276422765,
+        "ifHalfFeedsTargetPot": 0.959830866807611,
+        "ifEqualThreeWaySplit": 0.9728571428571429
+      }
+    },
+    {
+      "rankForNearCapResearch": 4,
+      "game": "Eye of Horus Megaways: Jackpot King",
+      "operator": "Botemania Spain",
+      "source": "https://www.botemania.es/juegos/slots-online/eye-of-horus-megaways-jackpot-king",
+      "operatorLicensedSpain": true,
+      "baseRtp": 0.945,
+      "progressiveContribution": 0.0038,
+      "reserveContribution": 0.0011,
+      "anyStakeEligible": true,
+      "jackpotChanceIncreasesWithPot": true,
+      "royalRegalMbwbExists": true,
+      "sharedBlueprintNetwork": true,
+      "screen": {
+        "ifAllProgressiveContributionFeedsTargetPot": 0.935374149659864,
+        "ifHalfFeedsTargetPot": 0.9666080843585237,
+        "ifEqualThreeWaySplit": 0.9774881516587678
+      }
+    }
+  ],
+  "currentResearchChoice": {
+    "game": "Fishin' Frenzy: Jackpot King",
+    "operator": "Botemania Spain",
+    "reason": "Highest explicit progressive contribution among the cleanly parsed Spain-facing configurations reviewed while retaining the verified Jackpot King state-dependent mechanism.",
+    "notARealMoneyRecommendation": true
+  },
+  "nextGates": [
+    "Resolve exact Spain Royal and Regal MBWB values from in-game paytable or operator-authoritative source",
+    "Resolve progressive contribution allocation among Royal, Regal and Jackpot King",
+    "Observe clean resets and fit hazard without using legacy reset labels",
+    "Test conservative lower-bound total EV above 100% on untouched future states"
+  ],
+  "guards": {
+    "noUniformHazardAssumedAsFact": true,
+    "noCrossMarketThresholdSubstitution": true,
+    "noDoubleCountingProgressiveRtp": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
