@@ -1,0 +1,28 @@
+name: Loterias AI XXXtreme Discovery Backfill
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/xxxtreme/backfill-discovery-72h.mjs'
+      - '.github/workflows/loterias-ai-xxxtreme-discovery-backfill.yml'
+permissions:
+  contents: write
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Fetch pre-barrier discovery history only
+        run: node loterias-ai/casino/xxxtreme/backfill-discovery-72h.mjs
+      - name: Persist discovery corpus
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/casino/xxxtreme/discovery/history-72h.jsonl loterias-ai/casino/xxxtreme/discovery/history-72h-status.json
+          git commit -m 'data(xxxtreme): persist isolated 72h discovery history' || exit 0
+          git push
