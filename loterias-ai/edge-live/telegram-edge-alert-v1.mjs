@@ -16,7 +16,6 @@ if(!token){
 
 async function discoverChannelId(){
   if(configuredChatId) return String(configuredChatId);
-  if(prior.telegramChatId) return String(prior.telegramChatId);
   const r=await fetch(`https://api.telegram.org/bot${token}/getUpdates?limit=100&allowed_updates=${encodeURIComponent(JSON.stringify(['channel_post','edited_channel_post']))}`);
   if(!r.ok) throw new Error(`Telegram getUpdates HTTP ${r.status}`);
   const body=await r.json();
@@ -86,9 +85,8 @@ const r=await fetch(`https://api.telegram.org/bot${token}/sendMessage`,{
 if(!r.ok)throw new Error(`Telegram HTTP ${r.status}: ${(await r.text()).slice(0,300)}`);
 
 fs.writeFileSync(STATE,JSON.stringify({
-  version:'edge-live-telegram-alert-state-v5-private-channel',
+  version:'edge-live-telegram-alert-state-v6-private-id-not-persisted',
   updatedAt:new Date().toISOString(),
-  telegramChatId:String(chatId),
   lastReady:ready,
   lastExecutionSignature:executionSignature,
   lastPlanGeneratedAt:plan?.generatedAt||null,
