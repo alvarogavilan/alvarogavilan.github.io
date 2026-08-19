@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+
+const DATA='loterias-ai/casino/lightning/data/casinoorg-lightningroulette.jsonl';
+const OUT='loterias-ai/casino/lightning/research/cross-table-lag1-historical-audit.json';
+const CUTOFF='2026-08-18T10:50:00Z';
+const p0=1/37, baseGross=30, breakEven=1/30;
+const rows=fs.readFileSync(DATA,'utf8').split(/\r?\n/).filter(Boolean).map(JSON.parse)
+  .filter(r=>r.trainingEligible===true&&Number.isInteger(Number(r.winner))&&String(r.timestamp)<CUTOFF)
+  .sort((a,b)=>String(a.timestamp).localeCompare(String(b.timestamp))||String(a.roundId).localeCompare(String(b.roundId)));
+const uniq=[];const seen=new Set();for(const r of rows){if(!seen.has(String(r.roundId))){seen.add(String(r.roundId));uniq.push(r)}}
+function binomTail(n,k,p){if(k<=0)return 1;let prob=(1-p)**n,cdf=prob;for(let x=0;x<k-1;x++){prob*=((n-x)/(x+1))*(p/(1-p));cdf+=prob;}return Math.max(0,Math.min(1,1-cdf));}
+function evalRange(a,b){let hits=0,gross=0;const returns=[];for(let i=Math.max(1,a);i<b;i++){const pred=Number(uniq[i-1].winner),truth=Number(uniq[i].winner);let ret=0;if(pred===truth){hits++;const nums=uniq[i].allLuckyNumbers||[], mults=uniq[i].allLuckyMultipliers||[];const j=nums.findIndex(n=>Number(n)===truth);ret=j>=0&&Number(mults[j])>0?Number(mults[j]):baseGross;}gross+=ret;returns.push(ret);}const n=Math.max(0,b-Math.max(1,a)),rate=n?hits/n:0,p=binomTail(n,hits,p0),baseROI=n?(hits*baseGross-n)/n:0,obsROI=n?(gross-n)/n:0;const largest=returns.length?Math.max(...returns):0;const roiWithoutLargest=n>1?((gross-largest)-(n-1))/(n-1):null;return{n,hits,hitRate:rate,liftVsUniform:rate/p0,pValue:p,baseBreakEvenHitRate:breakEven,baseROI,observedMultiplierROI:obsROI,largestSingleGrossReturnX:largest,roiWithoutLargestObservedReturn:roiWithoutLargest};}
+const nTargets=Math.max(0,uniq.length-1), splitIndex=1+Math.floor(nTargets/2);
+const first=evalRange(1,splitIndex), second=evalRange(splitIndex,uniq.length), full=evalRange(1,uniq.length);
+const payload={version:'lightning-cross-table-lag1-historical-audit-v1',generatedAt:new Date().toISOString(),mode:'INDEPENDENT_CROSS_TABLE_HISTORICAL_AUDIT_ONLY',hypothesis:'winner_t equals winner_t-1',hypothesisOrigin:'Observed as best predictive selector in untouched XXXtreme post-selection audit; Lightning legacy rows were not used to select the hypothesis.',cutoff:CUTOFF,rows:uniq.length,targets:nTargets,source:'persisted Lightning public structured history',economics:{nonMultipliedProfitPayout:'29:1',baseGrossReturnX:30,conservativeBreakEvenHitRate:breakEven},firstHalf:first,secondHalf:second,full,summary:{bothHalvesAboveUniform:first.hitRate>p0&&second.hitRate>p0,bothHalvesAboveEconomicBreakEven:first.hitRate>breakEven&&second.hitRate>breakEven,fullAboveEconomicBreakEven:full.hitRate>breakEven,fullPBelow001:full.pValue<0.01,robustObservedMultiplierROIPositiveAfterRemovingLargest:Number(full.roiWithoutLargestObservedReturn)>0,crossTableHistoricalSignal:full.hitRate>breakEven&&full.pValue<0.01&&first.hitRate>p0&&second.hitRate>p0},guards:{doesNotReadCleanProspectiveLagFamilyInterim:true,doesNotReadTimingProspectiveInterim:true,historicalAuditCannotPromote:true,newUntouchedProspectiveSingleHypothesisRequired:true,automaticBettingAllowed:false,realMoneyAllowed:false,realStakeEUR:0}};
+fs.writeFileSync(OUT,JSON.stringify(payload,null,2)+'\n');console.log(JSON.stringify(payload,null,2));
