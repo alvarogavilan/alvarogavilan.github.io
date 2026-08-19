@@ -1,13 +1,16 @@
 {
-  "version": "elige8-minimum-stake-prospective-freeze-v1",
-  "frozenAt": "2026-08-19T15:50:00Z",
+  "version": "elige8-minimum-stake-prospective-freeze-v1.1",
+  "modelFrozenAt": "2026-08-19T15:50:00Z",
+  "economicsCorrectedAt": "2026-08-19T15:56:00Z",
   "status": "MODEL_FROZEN_WAITING_OFFICIAL_NEXT_FIXTURE_COMPOSITION",
   "game": "elige8",
   "stakePolicy": {
-    "ticketsPerDraw": 1,
-    "unitStakeEUR": 0.5,
+    "quinielaSimpleLineEUR": 0.75,
+    "elige8AddonEUR": 0.5,
+    "jointMinimumTicketEUR": 1.25,
     "realStakeEUR": 0,
-    "paperStakeEUR": 0.5
+    "paperStakeEUR": 1.25,
+    "correctionReason": "Elige8 is an add-on to a Quiniela wager and cannot be treated economically as a standalone EUR0.50 ticket. The model rule itself was not changed."
   },
   "target": {
     "nextProvisionalQuinielaJornada": 2,
@@ -26,21 +29,28 @@
     "signRuleChangeAllowed": false
   },
   "preFreezeEvidence": {
-    "discovery": {"draws": 205, "exact8of8": 1},
-    "validation": {"draws": 103, "exact8of8": 1},
-    "holdout": {
-      "draws": 103,
-      "exact8of8": 2,
-      "stakeEUR": 51.5,
-      "returnEUR": 176.41,
-      "plEUR": 124.91,
-      "roi": 2.4254368932038832
+    "exactHitCounts": {
+      "discovery": {"draws": 205, "exact8of8": 1},
+      "validation": {"draws": 103, "exact8of8": 1},
+      "holdout": {"draws": 103, "exact8of8": 2}
     },
-    "matchedRandomExactNull": {
-      "holdoutOneSidedP": 0.00012078497501404287,
-      "holdoutBonferroni11Games": 0.0013286347251544716,
-      "validationPlusHoldoutOneSidedP": 0.000004967285767028924,
-      "validationPlusHoldoutBonferroni11Games": 0.00005464014343731817
+    "trueJointMinimumEconomics": {
+      "source": "loterias-ai/data/research/elige8-joint-minimum-ticket-audit-v3.json",
+      "holdoutDraws": 103,
+      "stakeEUR": 128.75,
+      "returnEUR": 211.74,
+      "plEUR": 82.99,
+      "roi": 0.6445825242718444,
+      "largestPrizeShare": 0.8654009634457355,
+      "robustToRemovingLargestPrize": false
+    },
+    "realisticOutcomeNull": {
+      "source": "loterias-ai/data/research/elige8-realistic-null-audit-v2.json",
+      "holdoutPermutationP": 0.003649817509124544,
+      "validationPlusHoldoutPermutationP": 0.003799810009499525,
+      "validationPlusHoldoutBonferroni11": 0.04179791010449478,
+      "survivesOnePercent": true,
+      "survivesOnePercentAfter11GameCorrection": false
     }
   },
   "prospectiveProtocol": {
@@ -51,10 +61,10 @@
     "fixedHorizonDraws": 20,
     "noOptionalStopping": true,
     "noPerformanceDrivenRetuning": true,
-    "control": "One deterministic matched-random Elige8 ticket sealed at the same time",
+    "control": "One deterministic matched-random joint Quiniela+Elige8 ticket sealed at the same time and charged the same EUR1.25 total.",
     "promotionGate": "No economic promotion from retrospective evidence alone. Require live prospective evidence and independent replication."
   },
-  "classification": "STRONG_RETROSPECTIVE_SIGNAL_FROZEN_FOR_LIVE_PROSPECTIVE_REPLICATION",
+  "classification": "PROMISING_RETROSPECTIVE_CAUSAL_SIGNAL_FROZEN_FOR_LIVE_PROSPECTIVE_REPLICATION",
   "realMoneyPass": false,
   "automaticBettingAllowed": false
 }
