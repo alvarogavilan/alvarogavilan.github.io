@@ -1,0 +1,25 @@
+{
+  "version": "authoritative-segment-v2-continuity-addendum-v1",
+  "createdAt": "2026-08-19T09:57:00Z",
+  "scope": "operational continuity only; no prediction, outcome, ranking or economic rule changes",
+  "reason": "Wall-clock gaps can reflect table inactivity. A fixed 300-second clock threshold alone can quarantine a complete authoritative event sequence even when no round is missing.",
+  "policy": {
+    "maximumBridgeSecondsRemainsDiagnostic": 300,
+    "alternateSourceImportForbidden": true,
+    "preBarrierImportForbidden": true,
+    "exactPreviousRoundOverlapRequired": true,
+    "previousRoundSemanticMatchRequired": true,
+    "authoritativeAdjacencyMayOverrideClockAlarm": true,
+    "authoritativeAdjacencyDefinition": "The persisted previous round must be present verbatim in the recovered same-source union and the first fresh round must be the immediately following event in that ordered authoritative union; every subsequent recovered pair must also be consecutive in that same recovered union.",
+    "outcomeValuesMayNotBeUsedToDecideContinuity": true,
+    "wallClockGapAloneNeverCreatesOrDeletesRounds": true
+  },
+  "guards": {
+    "sameAuthoritativeEndpointOnly": true,
+    "noRetuningOfScientificModels": true,
+    "noOptionalStopping": true,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  },
+  "immutable": true
+}
