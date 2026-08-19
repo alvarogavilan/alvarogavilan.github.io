@@ -1,0 +1,60 @@
+{
+  "version": "elige8-minimum-stake-prospective-freeze-v1",
+  "frozenAt": "2026-08-19T15:50:00Z",
+  "status": "MODEL_FROZEN_WAITING_OFFICIAL_NEXT_FIXTURE_COMPOSITION",
+  "game": "elige8",
+  "stakePolicy": {
+    "ticketsPerDraw": 1,
+    "unitStakeEUR": 0.5,
+    "realStakeEUR": 0,
+    "paperStakeEUR": 0.5
+  },
+  "target": {
+    "nextProvisionalQuinielaJornada": 2,
+    "provisionalDate": "2026-08-23",
+    "officialFixtureCompositionRequiredBeforeTicketSeal": true,
+    "fixtureCompositionAvailableInRepositoryAtFreeze": false,
+    "noTicketInventedWithoutOfficialFixtures": true
+  },
+  "model": {
+    "name": "CAUSAL_TEAM_HOME_AWAY_SIGN_FREQUENCY_WITH_LAPLACE_SMOOTHING_SELECT_TOP8_CONFIDENCE",
+    "sourceAudit": "loterias-ai/data/research/elige8-minimum-stake-holdout-audit-v1.json",
+    "rule": "For each of the 14 official selectable fixtures, estimate 1/X/2 from strictly earlier Quiniela home/away team frequencies with Laplace smoothing; choose the eight fixtures with highest predicted-sign confidence; play exactly one sign on each selected fixture.",
+    "hyperparameters": "NONE_AFTER_FREEZE",
+    "retuningAllowed": false,
+    "fixtureSelectionRuleChangeAllowed": false,
+    "signRuleChangeAllowed": false
+  },
+  "preFreezeEvidence": {
+    "discovery": {"draws": 205, "exact8of8": 1},
+    "validation": {"draws": 103, "exact8of8": 1},
+    "holdout": {
+      "draws": 103,
+      "exact8of8": 2,
+      "stakeEUR": 51.5,
+      "returnEUR": 176.41,
+      "plEUR": 124.91,
+      "roi": 2.4254368932038832
+    },
+    "matchedRandomExactNull": {
+      "holdoutOneSidedP": 0.00012078497501404287,
+      "holdoutBonferroni11Games": 0.0013286347251544716,
+      "validationPlusHoldoutOneSidedP": 0.000004967285767028924,
+      "validationPlusHoldoutBonferroni11Games": 0.00005464014343731817
+    }
+  },
+  "prospectiveProtocol": {
+    "onlyOfficialFixtureComposition": true,
+    "onlyInformationStrictlyBeforeTicketSeal": true,
+    "ticketMustBePersistedBeforeAnyTargetResult": true,
+    "settlementOnlyFromOfficialSELAEResult": true,
+    "fixedHorizonDraws": 20,
+    "noOptionalStopping": true,
+    "noPerformanceDrivenRetuning": true,
+    "control": "One deterministic matched-random Elige8 ticket sealed at the same time",
+    "promotionGate": "No economic promotion from retrospective evidence alone. Require live prospective evidence and independent replication."
+  },
+  "classification": "STRONG_RETROSPECTIVE_SIGNAL_FROZEN_FOR_LIVE_PROSPECTIVE_REPLICATION",
+  "realMoneyPass": false,
+  "automaticBettingAllowed": false
+}
