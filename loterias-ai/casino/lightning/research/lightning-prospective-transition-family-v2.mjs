@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+
+const DATA='loterias-ai/casino/lightning/data/casinoorg-lightningroulette-segment-v2.jsonl';
+const V1_FREEZE='loterias-ai/casino/lightning/evidence/prospective-transition-family-v1-freeze.json';
+const V1_STATUS='loterias-ai/casino/lightning/evidence/prospective-transition-family-v1-status.json';
+const V2_FREEZE='loterias-ai/casino/lightning/evidence/prospective-transition-family-v2-freeze.json';
+const OUT='loterias-ai/casino/lightning/evidence/prospective-transition-family-v2-status.json';
+const read=p=>JSON.parse(fs.readFileSync(p,'utf8')),v1f=read(V1_FREEZE),v2f=read(V2_FREEZE),v1=read(V1_STATUS);
+const N=Number(v2f.fixedBoundaryRounds),p0=Number(v2f.nullHitProbability),alpha=Number(v2f.perCandidateAlpha),ids=v2f.candidateFamily;
+if(v2f.version!=='lightning-prospective-transition-family-v2-freeze'||N!==5000||alpha!==0.00125||v2f.guards?.preRegisteredBeforeAnyV1EligibleRound!==true||v2f.guards?.realMoneyAllowed!==false)throw new Error('transition V2 freeze drift');
+if(JSON.stringify(ids)!==JSON.stringify(v1f.candidateFamily))throw new Error('transition V2 family drift');
+const wheel=v1f.rouletteWheelOrder.map(Number),wheelIndex=new Map(wheel.map((n,i)=>[n,i]));
+const rows=fs.readFileSync(DATA,'utf8').split(/\r?\n/).filter(Boolean).map(JSON.parse).filter(r=>r.trainingEligible===true&&Number.isInteger(Number(r.winner))).sort((a,b)=>String(a.timestamp).localeCompare(String(b.timestamp))),winners=rows.map(r=>Number(r.winner));
+const v1Complete=Number(v1?.progress?.roundsUsed)===5000&&v1?.final!==null;
+const anchor=v1Complete?v1?.progress?.lastEligibleAt:null;
+const addWheel=(n,d)=>wheel[(wheelIndex.get(n)+d+wheel.length)%wheel.length];
+function markovMode(i,limit){const prev=winners[i-1];if(prev===undefined)return 0;const counts=new Map(),first=Math.max(0,i-1-limit);for(let j=first;j<i-1;j++)if(winners[j]===prev){const nx=winners[j+1];counts.set(nx,(counts.get(nx)||0)+1)}if(!counts.size)return prev;return [...counts.entries()].sort((a,b)=>b[1]-a[1]||a[0]-b[0])[0][0];}
+function predictions(i){const prev=winners[i-1]??0,two=winners[i-2]??prev;return[prev,two,addWheel(prev,1),addWheel(prev,-1),addWheel(prev,Math.floor(wheel.length/2)),markovMode(i,50),markovMode(i,200),markovMode(i,Number.MAX_SAFE_INTEGER)];}
+const eligible=v1Complete?rows.map((r,i)=>({r,i})).filter(x=>String(x.r.timestamp)>String(anchor)).slice(0,N):[],stats=Object.fromEntries(ids.map(id=>[id,{hits:0}]));
+for(const {i} of eligible){const truth=winners[i],pred=predictions(i);for(let k=0;k<ids.length;k++)if(pred[k]===truth)stats[ids[k]].hits++;}
+function binomTail(n,k,p){if(k<=0)return 1;let prob=(1-p)**n,cdf=prob;for(let x=0;x<k-1;x++){prob*=((n-x)/(x+1))*(p/(1-p));cdf+=prob;}return Math.max(0,Math.min(1,1-cdf));}
+function wilsonLower(k,n,z=1.959963984540054){if(!n)return 0;const ph=k/n,den=1+z*z/n,center=ph+z*z/(2*n),adj=z*Math.sqrt(ph*(1-ph)/n+z*z/(4*n*n));return (center-adj)/den;}
+let final=null;if(eligible.length===N){const candidates=ids.map(id=>{const hits=stats[id].hits,hitRate=hits/N,pValue=binomTail(N,hits,p0),wilson95Lower=wilsonLower(hits,N),conservativeROI=(hits*Number(v2f.nonMultipliedGrossReturnX)-N)/N,pass=pValue<alpha&&hitRate>Number(v2f.economicBreakEvenHitRate)&&wilson95Lower>Number(v2f.economicBreakEvenHitRate)&&conservativeROI>0;return{id,hits,hitRate,pValue,wilson95Lower,conservativeROI,pass};}).sort((a,b)=>a.pValue-b.pValue||b.hitRate-a.hitRate||a.id.localeCompare(b.id));const v1Pass=new Set((v1.final?.candidates||[]).filter(x=>x.pass===true).map(x=>x.id));const both=candidates.filter(x=>x.pass&&v1Pass.has(x.id)).map(x=>x.id);final={fixedBoundaryRounds:N,candidates,sameSelectorsPassingBoth:both,independentEconomicConfirmation:both.length>0,interpretation:both.length?'SAME_FROZEN_SELECTOR_PASSED_BOTH_INDEPENDENT_FIXED_SAMPLES':'NO_SELECTOR_CONFIRMED_ACROSS_BOTH_FIXED_SAMPLES'};}
+const status={version:'lightning-prospective-transition-family-v2-status',generatedAt:new Date().toISOString(),freezeVersion:v2f.version,state:!v1Complete?'WAITING_FOR_V1_FIXED_5000':eligible.length<N?'BLINDED_ACCUMULATING':'FIXED_FINAL_AVAILABLE',activation:{v1Complete,anchorV1LastEligibleAt:anchor,activationIndependentOfV1Outcome:true,replicateEntireFamily:true},progress:{fixedBoundaryRounds:N,roundsUsed:eligible.length,roundsRemaining:Math.max(0,N-eligible.length),firstEligibleAt:eligible.length?eligible[0].r.timestamp:null,lastEligibleAt:eligible.length?eligible.at(-1).r.timestamp:null},disclosure:{policy:'ADMINISTRATIVE_PROGRESS_ONLY',candidatePerformanceHidden:eligible.length<N,candidateRankingHidden:eligible.length<N,roiHidden:eligible.length<N,pValuesHidden:eligible.length<N},final,gates:{fixedBoundaryComplete:eligible.length===N,independentEconomicConfirmation:final?.independentEconomicConfirmation===true,automaticBettingAllowed:false,realMoneyAllowed:false},guards:{sameEightSelectorsAsV1:true,postV1BoundaryTargetsOnly:true,noRetuning:true,noOptionalStopping:true,perCandidateAlpha:alpha,realMoneyAllowed:false,realStakeEUR:0}};
+fs.writeFileSync(OUT,JSON.stringify(status,null,2)+'\n');console.log(JSON.stringify({state:status.state,activation:status.activation,progress:status.progress,gates:status.gates},null,2));
