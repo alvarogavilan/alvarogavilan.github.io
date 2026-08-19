@@ -1,0 +1,74 @@
+{
+  "version": "jackpot-king-mbwb-cross-market-triangulation-v2",
+  "createdAt": "2026-08-19T22:10:00+02:00",
+  "scope": "DISCOVERY_ONLY_CROSS_MARKET_JACKPOT_KING_DELUXE_MBWB",
+  "objective": "Triangulate the Royal/Regal seed and must-be-won-by values used by Jackpot King Deluxe outside Botemania Spain, without promoting those values to Spain-specific fact.",
+  "hypothesis": {
+    "ROYAL": {"seed": 500, "mustBeWonBy": 3500},
+    "REGAL": {"seed": 5000, "mustBeWonBy": 35000}
+  },
+  "evidence": [
+    {
+      "type": "OPERATOR_RULES_TABLE",
+      "operator": "Betano UK",
+      "url": "https://www.betano.co.uk/en-gb/casino/games/1015168-fishin-frenzy-big-catch-jackpot-king",
+      "reported": {
+        "ROYAL": {"seed": 500, "mustBeWonBy": 3500},
+        "REGAL": {"seed": 5000, "mustBeWonBy": 35000},
+        "JACKPOT_KING": {"seed": 50000, "mustBeWonBy": null}
+      }
+    },
+    {
+      "type": "OPERATOR_GAME_RULES",
+      "operator": "BetVictor UK",
+      "url": "https://www.betvictor.com/en-gb/casino/games/1008313-king-spin-deluxe",
+      "reported": {
+        "ROYAL": {"mustBeWonBy": 3500},
+        "REGAL": {"mustBeWonBy": 35000}
+      }
+    },
+    {
+      "type": "INDUSTRY_REPORTING_OF_PROVIDER_LAUNCH",
+      "publisher": "InterGame",
+      "url": "https://www.intergameonline.com/land-based-gaming/blueprint-gaming-adds-must-win-pots-to-jackpot-king-deluxe",
+      "reported": {
+        "ROYAL": {"mustBeWonBy": 3500},
+        "REGAL": {"mustBeWonBy": 35000}
+      },
+      "note": "Reports Blueprint Gaming's Jackpot King Deluxe launch values; not a Botemania Spain paytable."
+    },
+    {
+      "type": "PROVIDER_HELP_MECHANISM",
+      "provider": "Blueprint Gaming",
+      "profile": "jackpotkingdeluxe3",
+      "url": "https://fileservice.blueprintgaming.com/?affiliate=&customer=Betfair_Sky&fileType=help&gameEngineID=fishingfrenzyjk&language=EN&profile=jackpotkingdeluxe3",
+      "verifiedMechanism": {
+        "royalAndRegalMustBeWonByExist": true,
+        "chanceIncreasesWithJackpotValue": true,
+        "resetToReserveAfterWin": true
+      },
+      "numericValuesPublishedInThisHelp": false
+    }
+  ],
+  "assessment": {
+    "crossMarketMbwbTriangulationStrong": true,
+    "crossMarketSeedTriangulationModerate": true,
+    "sameProductFamilyMechanismConfirmed": true,
+    "exactSpainMbwbKnown": false,
+    "spainSpecificPromotionAllowed": false,
+    "reason": "Independent cross-market sources converge on the same Deluxe values, but no Botemania-Spain-specific authoritative numeric paytable has yet been recovered."
+  },
+  "falsification": [
+    "Any fresh Botemania Royal observation above 3500 falsifies the Royal cap hypothesis.",
+    "Any fresh Botemania Regal observation above 35000 falsifies the Regal cap hypothesis.",
+    "Any Botemania/Blueprint Spain-specific authoritative paytable with different values supersedes this cross-market triangulation immediately."
+  ],
+  "guards": {
+    "discoveryOnly": true,
+    "noCrossMarketValueAsSpainFact": true,
+    "noEconomicPromotion": true,
+    "noBetting": true,
+    "realMoneyAllowed": false,
+    "automaticBettingAllowed": false
+  }
+}
