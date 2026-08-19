@@ -1,0 +1,71 @@
+{
+  "version": "jackpot-king-official-economics-v1",
+  "createdAt": "2026-08-19T12:30:00Z",
+  "scope": "King Kong Cash Jackpot King / Jackpot King Deluxe network mechanics relevant to PokerStars Spain",
+  "officialSources": [
+    {
+      "provider": "PokerStars Spain",
+      "url": "https://www.pokerstars.es/casino/game/king-kong-cash-jpk/1017/100/",
+      "facts": {
+        "game": "King Kong Cash JPK",
+        "publishedRtpPct": 95.01,
+        "publishedJackpotAllocationPct": 0.38,
+        "publishedReserveAllocationPct": 0.11,
+        "jackpotFeatureMayTriggerRandomlyOnAnySpin": true,
+        "progressivePotsNamed": ["Royal Pot", "Regal Pot", "Jackpot King"]
+      }
+    },
+    {
+      "provider": "Blueprint Gaming",
+      "url": "https://blueprintgaming.com/games/king-kong-cash-jackpot-king",
+      "facts": {
+        "gameId": "BP_KingKongCashJK",
+        "lowVariantNotation": "93.00% Low + JK %",
+        "highVariantNotation": "95.01% High + JK %",
+        "jackpotComponentExplicitlySeparatedInProviderRtpNotation": true
+      }
+    },
+    {
+      "provider": "Blueprint Gaming help service",
+      "url": "https://fileservice.blueprintgaming.com/?customer=PADDYPOWERBETFAIR&fileType=help&gameEngineID=tedjk&language=EN&profile=jackpotkingdeluxe3",
+      "facts": {
+        "jackpotsFundedByPlayerStakeContributionsExceptInitialOperatorSeeds": true,
+        "jackpotChanceIncreasesWithJackpotValue": true,
+        "royalAndRegalGuaranteedByMustBeWonByValue": true,
+        "wonJackpotResetsToReserveAmount": true
+      }
+    }
+  ],
+  "resolved": {
+    "baseRtpPctForKingKongHighVariant": 95.01,
+    "publishedJackpotAllocationPct": 0.38,
+    "publishedReserveAllocationPct": 0.11,
+    "stateDependentJackpotProbability": true,
+    "stakeFundedProgressive": true,
+    "mustBeWonByExistsForRoyalAndRegal": true
+  },
+  "unresolved": {
+    "exactRoyalMustBeWonByEUR": null,
+    "exactRegalMustBeWonByEUR": null,
+    "exactReserveAmountsByPotEUR": null,
+    "allocationSplitAcrossProgressivePots": null,
+    "identityOfPokerStarsDisplayedNetworkPot": null,
+    "exactTriggerProbabilityAsFunctionOfPot": null,
+    "whetherPokerStars95_01TextShouldBeAddedToOrInterpretedTogetherWithThe0_38And0_11ForPlayableTotalRtp": null,
+    "totalRtpAtCurrentObservedPot": null
+  },
+  "scientificInterpretation": {
+    "importantAdvance": "Jackpot King is not an unparameterized black box anymore: a stake-funded jackpot allocation and reserve allocation are explicitly published for the exact PokerStars Spain King Kong Cash JPK game, while Blueprint separately labels the high variant as 95.01% + JK%.",
+    "positiveEVKnown": false,
+    "reasonNoPositiveEVClaim": "Must-be-won-by thresholds, pot identity, allocation split and jackpot hazard function remain unresolved. Current pot size alone cannot establish expected value."
+  },
+  "guards": {
+    "officialSourcesOnly": true,
+    "noAssumptionThat95_01Plus0_38Plus0_11IsPlayableTotalRtp": true,
+    "noEconomicPromotionFromPotSizeAlone": true,
+    "noBetting": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
