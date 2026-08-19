@@ -1,6 +1,7 @@
 {
-  "version": "jackpot-king-official-economics-v1",
+  "version": "jackpot-king-official-economics-v1.1",
   "createdAt": "2026-08-19T12:30:00Z",
+  "updatedAt": "2026-08-19T12:33:00Z",
   "scope": "King Kong Cash Jackpot King / Jackpot King Deluxe network mechanics relevant to PokerStars Spain",
   "officialSources": [
     {
@@ -8,11 +9,21 @@
       "url": "https://www.pokerstars.es/casino/game/king-kong-cash-jpk/1017/100/",
       "facts": {
         "game": "King Kong Cash JPK",
-        "publishedRtpPct": 95.01,
+        "publishedBaseRtpPct": 95.01,
         "publishedJackpotAllocationPct": 0.38,
         "publishedReserveAllocationPct": 0.11,
         "jackpotFeatureMayTriggerRandomlyOnAnySpin": true,
         "progressivePotsNamed": ["Royal Pot", "Regal Pot", "Jackpot King"]
+      }
+    },
+    {
+      "provider": "PokerStars Spain official casino guide",
+      "url": "https://www.pokerstars.es/casino/news/las-tragaperras-con-jackpot-mas-exclusivas-de-pokerstars-casino-para-que-te-diviertas-a-lo-grande/",
+      "facts": {
+        "game": "King Kong Cash Jackpot King",
+        "publishedGlobalRtpIncludingJackpotContributionPct": 95.50,
+        "networkJackpotsGrowWithSpinsAcrossPlayers": true,
+        "jackpotMayTriggerOnAnySpin": true
       }
     },
     {
@@ -40,6 +51,9 @@
     "baseRtpPctForKingKongHighVariant": 95.01,
     "publishedJackpotAllocationPct": 0.38,
     "publishedReserveAllocationPct": 0.11,
+    "publishedGlobalRtpIncludingJackpotContributionPct": 95.50,
+    "longRunGapToBreakEvenPctPoints": 4.50,
+    "arithmeticConsistency95_01Plus0_38Plus0_11Equals95_50": true,
     "stateDependentJackpotProbability": true,
     "stakeFundedProgressive": true,
     "mustBeWonByExistsForRoyalAndRegal": true
@@ -51,17 +65,18 @@
     "allocationSplitAcrossProgressivePots": null,
     "identityOfPokerStarsDisplayedNetworkPot": null,
     "exactTriggerProbabilityAsFunctionOfPot": null,
-    "whetherPokerStars95_01TextShouldBeAddedToOrInterpretedTogetherWithThe0_38And0_11ForPlayableTotalRtp": null,
+    "stateDependentRtpUpliftAboveLongRunAverageAtCurrentPotPctPoints": null,
     "totalRtpAtCurrentObservedPot": null
   },
   "scientificInterpretation": {
-    "importantAdvance": "Jackpot King is not an unparameterized black box anymore: a stake-funded jackpot allocation and reserve allocation are explicitly published for the exact PokerStars Spain King Kong Cash JPK game, while Blueprint separately labels the high variant as 95.01% + JK%.",
+    "importantAdvance": "PokerStars now supplies both the exact 0.38% jackpot allocation / 0.11% reserve allocation and an official 95.50% global RTP including jackpot contribution. The long-run average game therefore remains 4.50 percentage points below break-even; any positive-EV state would need a rigorously demonstrated state-dependent jackpot uplift greater than that gap.",
     "positiveEVKnown": false,
-    "reasonNoPositiveEVClaim": "Must-be-won-by thresholds, pot identity, allocation split and jackpot hazard function remain unresolved. Current pot size alone cannot establish expected value."
+    "reasonNoPositiveEVClaim": "Must-be-won-by thresholds, pot identity, allocation split and jackpot hazard function remain unresolved. Current pot size alone cannot establish a state-dependent uplift above the 4.50 percentage-point long-run deficit."
   },
   "guards": {
     "officialSourcesOnly": true,
-    "noAssumptionThat95_01Plus0_38Plus0_11IsPlayableTotalRtp": true,
+    "globalRtp95_50MayBeUsedAsLongRunAverageOnly": true,
+    "currentPotRtpMustNotBeDerivedWithoutHazard": true,
     "noEconomicPromotionFromPotSizeAlone": true,
     "noBetting": true,
     "automaticBettingAllowed": false,
