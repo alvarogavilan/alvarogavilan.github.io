@@ -15,7 +15,7 @@ const readinessPath=`${E}/economic-readiness-ledger-v1.json`;
 const priorReadiness=read(readinessPath)||{};
 runScript('loterias-ai/casino/lightning/research/economic-readiness-ledger-v1.mjs');
 let readiness=read(readinessPath)||{};
-for(const key of ['jackpotKingOfficialMonitor','ageOfGodsOfficialMonitor','sharedProgressiveNetworkObserver'])if(priorReadiness[key])readiness[key]=priorReadiness[key];
+for(const key of ['jackpotKingOfficialMonitor','jackpotKingHazardProspectiveV1','ageOfGodsOfficialMonitor','sharedProgressiveNetworkObserver'])if(priorReadiness[key])readiness[key]=priorReadiness[key];
 fs.writeFileSync(readinessPath,JSON.stringify(readiness,null,2)+'\n');
 
 // Jackpot monitors are observation-only and optional: failure must never affect Lightning custody.
@@ -30,6 +30,7 @@ readiness.transitionFamilyV1={
 };
 readiness.progressiveNetworks={
   jackpotKing:{sourceReadable:readiness.jackpotKingOfficialMonitor?.sourceReadable??false,latestPotEUR:readiness.jackpotKingOfficialMonitor?.latest?.networkPotEUR??null,observations:readiness.jackpotKingOfficialMonitor?.observationCountTotal??0,resets:readiness.jackpotKingOfficialMonitor?.resetCountTotal??0,stateDependentMechanicVerified:true,positiveEVClaimAllowed:false},
+  jackpotKingHazard:{validFutureObservations:readiness.jackpotKingHazardProspectiveV1?.progress?.validObservations??0,hardResets:readiness.jackpotKingHazardProspectiveV1?.progress?.hardResets??0,minimumHardResetsBeforeHazardDiscovery:readiness.jackpotKingHazardProspectiveV1?.progress?.minimumHardResetsBeforeHazardDiscovery??10,totalRtpAtCurrentPotKnown:false,positiveEVClaimAllowed:false},
   ageOfGods:{sourceReadable:readiness.ageOfGodsOfficialMonitor?.sourceReadable??false,rawNetworkCounter:readiness.ageOfGodsOfficialMonitor?.latest?.rawNetworkCounter??null,currencyTrusted:readiness.ageOfGodsOfficialMonitor?.latest?.currencyTrusted===true,observations:readiness.ageOfGodsOfficialMonitor?.observationCountTotal??0,resets:readiness.ageOfGodsOfficialMonitor?.resetCountTotal??0,positiveEVClaimAllowed:false},
   sharedPlayUZUNetworks:{networksPlanned:readiness.sharedProgressiveNetworkObserver?.summary?.networksPlanned??0,networksCorroboratedLatest:readiness.sharedProgressiveNetworkObserver?.summary?.networksCorroboratedThisObservation??0,minimumObservationsBeforeStateSummary:readiness.sharedProgressiveNetworkObserver?.summary?.minimumObservationsBeforeStateSummary??168,latestObservedAt:readiness.sharedProgressiveNetworkObserver?.observations?.at(-1)?.observedAt??null,currencyTrusted:false,positiveEVClaimAllowed:false}
 };
@@ -50,7 +51,7 @@ const current={
   'physical-rng-v2':Boolean(physical?.final)&&Number(physical?.progress?.roundsUsedForV2)===Number(physical?.progress?.fixedBoundaryRounds)
 };
 const newlyClosed=Object.entries(current).filter(([id,done])=>done&&prior.get(id)!==true).map(([id])=>id);
-const monitorSummary={jackpotKing:{sourceReadable:readiness.jackpotKingOfficialMonitor?.sourceReadable??null,potEUR:readiness.jackpotKingOfficialMonitor?.latest?.networkPotEUR??null},ageOfGods:{sourceReadable:readiness.ageOfGodsOfficialMonitor?.sourceReadable??null,rawNetworkCounter:readiness.ageOfGodsOfficialMonitor?.latest?.rawNetworkCounter??null,currencyTrusted:readiness.ageOfGodsOfficialMonitor?.latest?.currencyTrusted===true},sharedPlayUZUNetworks:{networksCorroboratedLatest:readiness.sharedProgressiveNetworkObserver?.summary?.networksCorroboratedThisObservation??0,latestObservedAt:readiness.sharedProgressiveNetworkObserver?.observations?.at(-1)?.observedAt??null}};
+const monitorSummary={jackpotKing:{sourceReadable:readiness.jackpotKingOfficialMonitor?.sourceReadable??null,potEUR:readiness.jackpotKingOfficialMonitor?.latest?.networkPotEUR??null},jackpotKingHazard:{validFutureObservations:readiness.jackpotKingHazardProspectiveV1?.progress?.validObservations??0,hardResets:readiness.jackpotKingHazardProspectiveV1?.progress?.hardResets??0},ageOfGods:{sourceReadable:readiness.ageOfGodsOfficialMonitor?.sourceReadable??null,rawNetworkCounter:readiness.ageOfGodsOfficialMonitor?.latest?.rawNetworkCounter??null,currencyTrusted:readiness.ageOfGodsOfficialMonitor?.latest?.currencyTrusted===true},sharedPlayUZUNetworks:{networksCorroboratedLatest:readiness.sharedProgressiveNetworkObserver?.summary?.networksCorroboratedThisObservation??0,latestObservedAt:readiness.sharedProgressiveNetworkObserver?.observations?.at(-1)?.observedAt??null}};
 if(!newlyClosed.length){console.log(JSON.stringify({refreshedReadiness:true,promotionRefresh:false,reason:'NO_NEW_FIXED_BOUNDARY',transitionFamilyV1:readiness.transitionFamilyV1,progressiveNetworks:monitorSummary,current},null,2));process.exit(0)}
 
 runScript('loterias-ai/casino/lightning/research/economic-promotion-gate-v1.mjs');
@@ -62,3 +63,4 @@ console.log(JSON.stringify({refreshedReadiness:true,promotionRefresh:true,newlyC
 // One-shot operational pulse marker 2026-08-19T09:50Z; no cadence or scientific rule changed.
 // One-shot operational pulse marker 2026-08-19T11:28Z after scheduler delay; no cadence or scientific rule changed.
 // One-shot operational pulse marker 2026-08-19T11:59Z near lag8 fixed boundary; no cadence or scientific rule changed.
+// Validation pulse: preserve future-only Jackpot King hazard state and verify new canonical observer.
