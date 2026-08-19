@@ -1,0 +1,74 @@
+{
+  "version": "jackpot-king-spain-near-cap-research-v1",
+  "createdAt": "2026-08-19T15:53:00Z",
+  "scope": "Spain-facing Jackpot King near-cap research; no wagering authorization",
+  "verifiedSpanishOperatorEvidence": {
+    "operator": "Botemania Spain",
+    "licensedSpain": true,
+    "referenceGame": "King Kong Cash: Jackpot King",
+    "source": "https://www.botemania.es/juegos/slots-online/king-kong-cash-jackpot-king",
+    "anyStakeEligible": true,
+    "jackpotChanceProportionalToTotalBet": true,
+    "jackpotChanceIncreasesWithJackpotValue": true,
+    "progressiveContributionPct": 0.38,
+    "reserveContributionPct": 0.11,
+    "royalAndRegalMustBeWonBy": true,
+    "numericSpainMbwbPublishedOnPublicPage": false,
+    "numericSpainMbwbSaidToBeInPaytable": true
+  },
+  "providerEvidence": {
+    "provider": "Blueprint Gaming",
+    "source": "https://fileservice.blueprintgaming.com/?affiliate=&customer=Betfair_Sky&fileType=help&gameEngineID=eyeofhorusjkhigh&language=EN&profile=jackpotkingdeluxe3",
+    "jackpotChanceIncreasesWithJackpotValue": true,
+    "royalAndRegalMustBeWonBy": true,
+    "resetsToReserve": true,
+    "anyStakeEligible": true
+  },
+  "crossMarketReferenceOnly": {
+    "status": "NOT_VALID_FOR_SPAIN_UNTIL_CONFIGURATION_MATCHED",
+    "royalMbwbGBP": 3500,
+    "regalMbwbGBP": 35000,
+    "reason": "UK-facing publications report these values, but operator/currency configuration may differ in Spain."
+  },
+  "economicScreen": {
+    "referenceHouseEdgePctPoints": 4.5,
+    "fullMeterContributionPct": 0.38,
+    "uniformHiddenTriggerHypothesisProviderConfirmed": false,
+    "derivation": "Under a uniform hidden-trigger hypothesis, with current pot P, cap C, house-edge h and target-pot meter allocation r, optimistic jackpot EV per EUR is approximately r*P/(C-P). Break-even requires P/C >= h/(h+r).",
+    "optimisticIfAll038GoesToTargetPot": {
+      "targetPotAllocationPct": 0.38,
+      "minimumFractionOfCapForBreakEven": 0.9221311475409837,
+      "minimumPercentOfCapForBreakEven": 92.21311475409837
+    },
+    "ifHalfOf038GoesToTargetPot": {
+      "targetPotAllocationPct": 0.19,
+      "minimumFractionOfCapForBreakEven": 0.9594882729211087,
+      "minimumPercentOfCapForBreakEven": 95.94882729211087
+    },
+    "if038SplitEquallyAcrossThreePots": {
+      "targetPotAllocationPct": 0.12666666666666665,
+      "minimumFractionOfCapForBreakEven": 0.9726224783861671,
+      "minimumPercentOfCapForBreakEven": 97.26224783861671
+    },
+    "interpretation": "The useful search zone is near the MBWB cap. Even under the most optimistic allocation assumption, a pot below about 92.2% of cap cannot clear a 4.5-point house-edge in this simplified model. With a three-way split, the optimistic threshold moves to about 97.3% of cap. These are research screens, not proven provider odds."
+  },
+  "stakeImplication": {
+    "ifProbabilityIsExactlyLinearInStake": "Increasing stake increases absolute jackpot probability proportionally but does not improve jackpot EV per EUR. Minimum stake is therefore preferable for bankroll preservation while testing a fixed pot state, subject to exact operator rules.",
+    "notYetVerifiedAcrossOperators": true
+  },
+  "nextEvidenceRequired": [
+    "Exact Spain Royal/Regal MBWB values from the in-game paytable or another operator-authoritative source",
+    "Exact allocation of the progressive contribution among Royal, Regal and Jackpot King",
+    "Provider-specific jackpot hazard/trigger law, or enough clean future-only reset observations to estimate it",
+    "Independent replication showing conservative total-EV lower bound above 100%"
+  ],
+  "guards": {
+    "noCrossMarketThresholdSubstitution": true,
+    "noUniformHazardAssumedAsFact": true,
+    "noDoubleCountingProgressiveRtp": true,
+    "noOptionalStopping": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
