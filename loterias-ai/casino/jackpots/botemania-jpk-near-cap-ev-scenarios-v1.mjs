@@ -9,7 +9,7 @@ const caps={ROYAL:{seed:500,cap:3500},REGAL:{seed:5000,cap:35000}};
 const shares=flow.aggregate?.allocationShares||{};
 const active={ROYAL:0.0232*(shares.ROYAL??0.2),REGAL:0.0232*(shares.REGAL??0.2),JACKPOT_KING:0.0232*(shares.JACKPOT_KING??0.6)};
 const reserve={ROYAL:0.0068*(shares.ROYAL??0.2),REGAL:0.0068*(shares.REGAL??0.2),JACKPOT_KING:0.0068*(shares.JACKPOT_KING??0.6)};
-const alphaGrid=[0.5,0.75,1,1.25,1.5,2,3];
+const alphaGrid=[0.25,0.5,0.75,1,1.25,1.5,2,3,4,5,7.5,10];
 const clamp=q=>Math.max(0.0001,Math.min(.9998,q));
 const currentQ={
   ROYAL:clamp((flow.latest.capScreen.ROYAL.currentEUR-caps.ROYAL.seed)/(caps.ROYAL.cap-caps.ROYAL.seed)),
@@ -64,8 +64,8 @@ for(const [kingName,kingBaseline] of Object.entries(kingBaselines))for(const alp
 const conservativeAll=currentScenarios.filter(x=>x.kingBaselineScenario==='ZERO_CONSERVATIVE');
 const structuralAll=currentScenarios.filter(x=>x.kingBaselineScenario==='ACTIVE_PLUS_RESERVE_STRUCTURAL');
 const out={
- version:'botemania-jpk-near-cap-ev-scenarios-v1.1',generatedAt:new Date().toISOString(),operator:'botemania-es',purpose:'SENSITIVITY_SCREEN_ONLY_NOT_A_WAGER_RECOMMENDATION',
- inputs:{baseRtp:BASE_RTP,activeContributionShares:active,reserveShares:reserve,capHypothesisEUR:{ROYAL:3500,REGAL:35000},seedHypothesisEUR:{ROYAL:500,REGAL:5000},capHypothesisVerifiedInBotemania:false,alphaGrid},
+ version:'botemania-jpk-near-cap-ev-scenarios-v1.2',generatedAt:new Date().toISOString(),operator:'botemania-es',purpose:'SENSITIVITY_SCREEN_ONLY_NOT_A_WAGER_RECOMMENDATION',
+ inputs:{baseRtp:BASE_RTP,activeContributionShares:active,reserveShares:reserve,capHypothesisEUR:{ROYAL:3500,REGAL:35000},seedHypothesisEUR:{ROYAL:500,REGAL:5000},capHypothesisVerifiedInBotemania:false,alphaGrid,stressExtensionReason:'Cross-network winner controls suggest testing hazards more concentrated near MBWB; control data remains discovery-only.'},
  model:{family:'HIDDEN_DROP_THRESHOLD_BETA_ALPHA_1_ON_SEED_TO_CAP',conditionalHazard:'activeContribution/span * alpha*q^(alpha-1)/(1-q^alpha)',warning:'Blueprint exact server-side hazard is unknown. This family tests robustness only; crossings are not evidence of real positive EV.'},
  current:{observedAt:flow.latest.observedAt,potsEUR:flow.latest.potsEUR,normalizedSeedToCap:currentQ,scenarios:currentScenarios,allModeledRtpBelowOne:{ZERO_CONSERVATIVE:conservativeAll.every(x=>x.totalRtp<1),ACTIVE_PLUS_RESERVE_STRUCTURAL:structuralAll.every(x=>x.totalRtp<1)}},
  thresholdSensitivity:{
@@ -74,7 +74,7 @@ const out={
  },
  curves,
  decision:{currentPositiveEvProven:false,currentScreenPass:false,exactHazardKnown:false,exactSpainMbwbKnown:false,realMoneyAllowed:false,automaticBettingAllowed:false},
- guards:{forwardCrossingOnly:true,noSingleDistributionClaim:true,noCapHypothesisAsFact:true,noMainKingDoubleCount:true,noBetting:true,realMoneyAllowed:false}
+ guards:{forwardCrossingOnly:true,noSingleDistributionClaim:true,noCapHypothesisAsFact:true,noMainKingDoubleCount:true,crossNetworkControlsDiscoveryOnly:true,noBetting:true,realMoneyAllowed:false}
 };
 fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
 console.log(JSON.stringify({current:out.current,thresholdSensitivity:out.thresholdSensitivity,decision:out.decision},null,2));
