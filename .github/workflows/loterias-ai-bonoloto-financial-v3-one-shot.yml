@@ -17,12 +17,27 @@ jobs:
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: 24}
-      - run: node loterias-ai/scripts/bonoloto-financial-tournament-official-v3.mjs
-      - run: |
+      - name: Run tournament and preserve diagnostics
+        shell: bash
+        run: |
+          set +e
+          node loterias-ai/scripts/bonoloto-financial-tournament-official-v3.mjs > /tmp/bonoloto-v3.log 2>&1
+          CODE=$?
+          set -e
+          CODE="$CODE" node - <<'NODE'
+          const fs=require('fs');
+          const log=fs.existsSync('/tmp/bonoloto-v3.log')?fs.readFileSync('/tmp/bonoloto-v3.log','utf8'):'';
+          const out={version:'bonoloto-financial-v3-execution-diagnostic-v1',generatedAt:new Date().toISOString(),exitCode:Number(process.env.CODE),outputProduced:fs.existsSync('loterias-ai/data/backtests/bonoloto-financial-tournament-official-v3.json'),log:log.slice(-20000),guards:{diagnosticOnly:true,noBetting:true,realMoneyAllowed:false}};
+          fs.writeFileSync('loterias-ai/data/backtests/bonoloto-financial-v3-execution-diagnostic.json',JSON.stringify(out,null,2)+'\n');
+          NODE
+      - name: Persist result or failure evidence
+        shell: bash
+        run: |
           set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+users.noreply.github.com
-          git add loterias-ai/data/backtests/bonoloto-financial-tournament-official-v3.json
+          git add loterias-ai/data/backtests/bonoloto-financial-v3-execution-diagnostic.json
+          git add loterias-ai/data/backtests/bonoloto-financial-tournament-official-v3.json 2>/dev/null || true
           git diff --cached --quiet && exit 0
           git commit -m 'research(bonoloto): persist SELAE-only financial tournament v3'
           git pull --rebase origin main
