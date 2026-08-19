@@ -12,6 +12,7 @@ on:
       - 'loterias-ai/scripts/meta-pleno-v91-bonoloto-v58-ensemble-prospective-freeze.mjs'
       - 'loterias-ai/scripts/evaluate-bonoloto-2026-08-15-metapleno-v10.mjs'
       - 'loterias-ai/scripts/prospective-master-scoreboard.mjs'
+      - 'loterias-ai/scripts/build-completeness-index.mjs'
       - '.github/workflows/loterias-ai-bonoloto-official-rss-sync.yml'
 permissions:
   contents: write
@@ -21,48 +22,33 @@ concurrency:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: 22}
-      - name: Fetch and validate fresh official Bonoloto results
-        run: node loterias-ai/scripts/bonoloto-official-rss-sync.mjs
-      - name: Evaluate immutable 15 Aug prospective shadow if official result exists
-        run: node loterias-ai/scripts/evaluate-bonoloto-2026-08-15-metapleno-v10.mjs
-      - name: Evaluate v54 Budget8 prospective freeze against refreshed archive
-        run: node loterias-ai/scripts/meta-pleno-v54-bonoloto-budget8-prospective-freeze.mjs
-      - name: Evaluate v91 v58 ensemble Budget8 prospective freeze against refreshed archive
-        run: node loterias-ai/scripts/meta-pleno-v91-bonoloto-v58-ensemble-prospective-freeze.mjs
-      - name: Refresh prospective master scoreboard
-        run: node loterias-ai/scripts/prospective-master-scoreboard.mjs
-      - name: Persist official archive and prospective state safely
+      - name: Recompute official Bonoloto state from latest main and persist safely
+        shell: bash
         run: |
-          YEAR=$(date -u +%Y)
-          mkdir -p /tmp/bono-official /tmp/bono-shadow
-          cp loterias-ai/data/official/bonoloto-rss-sync-status.json /tmp/bono-official/status.json
-          cp loterias-ai/data/shadow/prospective-master-scoreboard.json /tmp/bono-shadow/master-scoreboard.json
-          if [ -f loterias-ai/data/archive/bonoloto/${YEAR}.json ]; then cp loterias-ai/data/archive/bonoloto/${YEAR}.json /tmp/bono-official/year.json; fi
-          cp loterias-ai/data/shadow/bonoloto-v54-budget8-freeze-status.json /tmp/bono-shadow/v54-status.json
-          cp loterias-ai/data/shadow/bonoloto-v91-v58-ensemble-freeze-status.json /tmp/bono-shadow/v91-status.json
-          if [ -f loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v54-budget8.json ]; then cp loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v54-budget8.json /tmp/bono-shadow/v54-freeze.json; fi
-          if [ -f loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v91-v58-ensemble-budget8.json ]; then cp loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v91-v58-ensemble-budget8.json /tmp/bono-shadow/v91-freeze.json; fi
-          if [ -f loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-v10-evaluation.json ]; then cp loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-v10-evaluation.json /tmp/bono-shadow/v10-eval.json; fi
+          set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          semantic_copy() {
-            src="$1"
-            dst="$2"
-            [ -f "$src" ] || return 0
-            if [ -f "$dst" ] && node - "$src" "$dst" <<'NODE'
+
+          semantic_restore_if_only_volatile() {
+            file="$1"
+            [ -f "$file" ] || return 0
+            if ! git cat-file -e "HEAD:$file" 2>/dev/null; then
+              return 0
+            fi
+            if node - "$file" <(git show "HEAD:$file") <<'NODE'
           const fs=require('fs');
           function clean(v){
             if(Array.isArray(v)) return v.map(clean);
             if(v && typeof v==='object'){
               const out={};
               for(const [k,val] of Object.entries(v)){
-                if(k==='generatedAt') continue;
+                if(k==='generatedAt' || k==='checkedAt' || k==='updatedAt') continue;
                 out[k]=clean(val);
               }
               return out;
@@ -74,26 +60,53 @@ jobs:
           process.exit(JSON.stringify(a)===JSON.stringify(b)?0:1);
           NODE
             then
-              return 0
+              git checkout HEAD -- "$file"
             fi
-            mkdir -p "$(dirname "$dst")"
-            cp "$src" "$dst"
-            git add "$dst"
           }
-          for i in 1 2 3 4 5; do
+
+          for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
-            semantic_copy /tmp/bono-official/status.json loterias-ai/data/official/bonoloto-rss-sync-status.json
-            semantic_copy /tmp/bono-shadow/master-scoreboard.json loterias-ai/data/shadow/prospective-master-scoreboard.json
-            if [ -f /tmp/bono-official/year.json ]; then semantic_copy /tmp/bono-official/year.json loterias-ai/data/archive/bonoloto/${YEAR}.json; fi
-            semantic_copy /tmp/bono-shadow/v54-status.json loterias-ai/data/shadow/bonoloto-v54-budget8-freeze-status.json
-            semantic_copy /tmp/bono-shadow/v91-status.json loterias-ai/data/shadow/bonoloto-v91-v58-ensemble-freeze-status.json
-            if [ -f /tmp/bono-shadow/v54-freeze.json ]; then semantic_copy /tmp/bono-shadow/v54-freeze.json loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v54-budget8.json; fi
-            if [ -f /tmp/bono-shadow/v91-freeze.json ]; then semantic_copy /tmp/bono-shadow/v91-freeze.json loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v91-v58-ensemble-budget8.json; fi
-            if [ -f /tmp/bono-shadow/v10-eval.json ]; then semantic_copy /tmp/bono-shadow/v10-eval.json loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-v10-evaluation.json; fi
-            git diff --cached --quiet && exit 0
-            git commit -m 'data(loterias-ai): sync official Bonoloto and refresh prospective evidence'
-            git push origin HEAD:main && exit 0
-            sleep $((i*3))
+            YEAR=$(date -u +%Y)
+
+            node loterias-ai/scripts/bonoloto-official-rss-sync.mjs
+            node loterias-ai/scripts/evaluate-bonoloto-2026-08-15-metapleno-v10.mjs
+            node loterias-ai/scripts/meta-pleno-v54-bonoloto-budget8-prospective-freeze.mjs
+            node loterias-ai/scripts/meta-pleno-v91-bonoloto-v58-ensemble-prospective-freeze.mjs
+            node loterias-ai/scripts/prospective-master-scoreboard.mjs
+            node loterias-ai/scripts/build-completeness-index.mjs
+
+            files=(
+              loterias-ai/data/official/bonoloto-rss-sync-status.json
+              loterias-ai/data/archive/bonoloto/${YEAR}.json
+              loterias-ai/data/archive/completeness-index.json
+              loterias-ai/data/shadow/prospective-master-scoreboard.json
+              loterias-ai/data/shadow/bonoloto-v54-budget8-freeze-status.json
+              loterias-ai/data/shadow/bonoloto-v91-v58-ensemble-freeze-status.json
+              loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v54-budget8.json
+              loterias-ai/data/shadow/bonoloto-2026-08-16-metapleno-v91-v58-ensemble-budget8.json
+              loterias-ai/data/shadow/bonoloto-2026-08-15-metapleno-v10-evaluation.json
+            )
+
+            for file in "${files[@]}"; do
+              [ -f "$file" ] || continue
+              semantic_restore_if_only_volatile "$file"
+            done
+
+            git add "${files[@]}" 2>/dev/null || true
+            if git diff --cached --quiet; then
+              echo 'No semantic Bonoloto/archive index changes'
+              exit 0
+            fi
+
+            git commit -m 'data(loterias-ai): sync official Bonoloto and refresh archive index'
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+
+            echo "main moved during Bonoloto sync; recomputing from latest main (attempt ${attempt}/5)"
+            sleep $((attempt * 3))
           done
+
+          echo 'Could not persist Bonoloto sync safely after 5 recomputations' >&2
           exit 1
