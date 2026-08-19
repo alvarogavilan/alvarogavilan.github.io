@@ -1,32 +1,53 @@
 {
-  "version": "botemania-jpk-live-gate-v1.1",
-  "generatedAt": "2026-08-19T17:56:15.916Z",
+  "version": "botemania-jpk-live-gate-v1.2",
+  "generatedAt": "2026-08-19T17:56:58.201Z",
   "operator": "botemania-es",
   "state": "BELOW_RESEARCH_BAND",
   "current": {
-    "observedAt": "2026-08-19T17:56:00.697Z",
+    "observedAt": "2026-08-19T17:56:45.622Z",
     "sourceFresh": true,
     "potsEUR": {
-      "JACKPOT_KING": 128313.81,
-      "REGAL": 15491.22,
-      "ROYAL": 1634.12
+      "JACKPOT_KING": 128312.7,
+      "REGAL": 15490.86,
+      "ROYAL": 1633.76
     },
     "normalizedSeedToCapHypothesis": {
-      "ROYAL": 0.37804,
-      "REGAL": 0.3497073333333333
+      "ROYAL": 0.37792,
+      "REGAL": 0.34969533333333336
+    },
+    "modelScreen": {
+      "pass": false,
+      "worstConservativeRtp": 0.933206,
+      "bestConservativeRtp": 0.944873
     }
   },
   "researchBand": {
     "hypothesisOnly": true,
-    "conservativeAllCurvesStartNormalized": 0.9079,
-    "thresholdPotsHypothesisEUR": {
-      "ROYAL": 3223.7,
-      "REGAL": 32237
+    "routes": {
+      "BOTH_HIGH": {
+        "thresholdNormalized": 0.9079,
+        "thresholdPotsHypothesisEUR": {
+          "ROYAL": 3223.7,
+          "REGAL": 32237
+        },
+        "active": false
+      },
+      "ROYAL_HIGH_WITH_REGAL_CURRENT": {
+        "thresholdNormalized": 0.9424,
+        "thresholdPotHypothesisEUR": 3327.2,
+        "active": false
+      },
+      "REGAL_HIGH_WITH_ROYAL_CURRENT": {
+        "thresholdNormalized": 0.9424,
+        "thresholdPotHypothesisEUR": 33272,
+        "active": false
+      }
     },
     "inBand": false
   },
   "evidence": {
     "exactSpainMbwbKnown": false,
+    "hazardFitReady": false,
     "exactHazardKnown": false,
     "cleanResets": 0,
     "minimumResetsForFit": 10,
@@ -46,6 +67,8 @@
   "guards": {
     "hypothesisNeverPromotes": true,
     "noCrossMarketCapAsFact": true,
+    "fitReadyNeverEqualsExactHazard": true,
+    "individualHighPotRoutesMonitored": true,
     "noBetting": true,
     "realMoneyAllowed": false,
     "automaticBettingAllowed": false
