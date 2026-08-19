@@ -6,11 +6,12 @@ const OUT='loterias-ai/casino/jackpots/evidence/jackpot-king-mbwb-inference-v1.j
 const SCREEN='loterias-ai/casino/jackpots/evidence/jackpot-king-spain-near-cap-research-v1.json';
 const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
 const median=a=>{if(!a.length)return null;const x=[...a].sort((m,n)=>m-n),i=Math.floor(x.length/2);return x.length%2?x[i]:(x[i-1]+x[i])/2};
+const finitePositive=v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))&&Number(v)>0;
 
 const ledger=read(LEDGER);
 const screen=read(SCREEN);
 const hz=ledger.jackpotKingHazardProspectiveV1||{};
-const resets=(hz.hardResets||[]).filter(r=>Number.isFinite(Number(r.fromEUR))&&Number.isFinite(Number(r.toEUR))&&Number(r.fromEUR)>Number(r.toEUR));
+const resets=(hz.hardResets||[]).filter(r=>finitePositive(r.fromEUR)&&finitePositive(r.toEUR)&&Number(r.fromEUR)>Number(r.toEUR));
 const n=resets.length;
 const pre=resets.map(r=>Number(r.fromEUR));
 const post=resets.map(r=>Number(r.toEUR));
@@ -35,16 +36,25 @@ if(n>0&&Number.isFinite(reserveMedian)&&maxObservedTrigger>reserveMedian){
   };
 }
 
-const latestPot=Number.isFinite(Number(ledger.jackpotKingOfficialMonitor?.latest?.networkPotEUR))?Number(ledger.jackpotKingOfficialMonitor.latest.networkPotEUR):null;
-const exactSpainRoyal=Number.isFinite(Number(screen?.verifiedSpainThresholds?.royalMbwbEUR))?Number(screen.verifiedSpainThresholds.royalMbwbEUR):null;
-const exactSpainRegal=Number.isFinite(Number(screen?.verifiedSpainThresholds?.regalMbwbEUR))?Number(screen.verifiedSpainThresholds.regalMbwbEUR):null;
+const monitor=ledger.jackpotKingOfficialMonitor||{};
+const latestLiveReadable=monitor.sourceReadable===true&&finitePositive(monitor?.latest?.networkPotEUR);
+const currentPot=latestLiveReadable?Number(monitor.latest.networkPotEUR):null;
+const validPast=(monitor.observations||[]).filter(o=>o?.corroborated===true&&finitePositive(o.networkPotEUR));
+const lastValid=validPast.at(-1)||null;
+const lastValidPot=lastValid?Number(lastValid.networkPotEUR):null;
+const lastValidObservedAt=lastValid?.observedAt??null;
+
+const vRoyal=screen?.verifiedSpainThresholds?.royalMbwbEUR;
+const vRegal=screen?.verifiedSpainThresholds?.regalMbwbEUR;
+const exactSpainRoyal=finitePositive(vRoyal)?Number(vRoyal):null;
+const exactSpainRegal=finitePositive(vRegal)?Number(vRegal):null;
 const ratios=screen?.economicScreen||{};
-const capStatus=(cap)=>{
-  if(!Number.isFinite(cap)||!Number.isFinite(latestPot))return null;
-  const frac=latestPot/cap;
+const capStatus=(cap,pot)=>{
+  if(!Number.isFinite(cap)||!Number.isFinite(pot)||cap<=0||pot<=0)return null;
+  const frac=pot/cap;
   return {
     capEUR:cap,
-    currentPotEUR:latestPot,
+    potEUR:pot,
     fractionOfCap:frac,
     percentOfCap:100*frac,
     optimisticAllMeterZone:frac>=Number(ratios?.optimisticIfAll038GoesToTargetPot?.minimumFractionOfCapForBreakEven||Infinity),
@@ -54,7 +64,7 @@ const capStatus=(cap)=>{
 };
 
 const out={
-  version:'jackpot-king-mbwb-inference-v1.1',
+  version:'jackpot-king-mbwb-inference-v1.2',
   generatedAt:new Date().toISOString(),
   sourceLedger:LEDGER,
   prospectiveFreezeVersion:hz.freezeVersion??null,
@@ -69,10 +79,24 @@ const out={
   },
   cleanResetEvents:resets,
   uniformHiddenTriggerResearch,
+  potReadability:{
+    currentSourceReadable:latestLiveReadable,
+    currentNetworkPotEUR:currentPot,
+    lastValidCorroboratedPotEUR:lastValidPot,
+    lastValidCorroboratedObservedAt:lastValidObservedAt,
+    stalePotNeverPresentedAsCurrent:true
+  },
   nearCapScreen:{
-    currentNetworkPotEUR:latestPot,
-    royal:capStatus(exactSpainRoyal),
-    regal:capStatus(exactSpainRegal),
+    current:{
+      royal:capStatus(exactSpainRoyal,currentPot),
+      regal:capStatus(exactSpainRegal,currentPot)
+    },
+    lastValidReference:{
+      observedAt:lastValidObservedAt,
+      royal:capStatus(exactSpainRoyal,lastValidPot),
+      regal:capStatus(exactSpainRegal,lastValidPot),
+      historicalReferenceOnly:true
+    },
     researchThresholdFractions:{
       optimisticAllMeter:Number(ratios?.optimisticIfAll038GoesToTargetPot?.minimumFractionOfCapForBreakEven||null),
       halfMeter:Number(ratios?.ifHalfOf038GoesToTargetPot?.minimumFractionOfCapForBreakEven||null),
@@ -96,6 +120,7 @@ const out={
     legacyResetLabelsExcluded:true,
     uniformModelNeverPromotesAlone:true,
     noCrossMarketThresholdSubstitution:true,
+    stalePotNeverPromotes:true,
     noOptionalStopping:true,
     automaticBettingAllowed:false,
     realMoneyAllowed:false,
@@ -106,10 +131,11 @@ ledger.jackpotKingMbwbInferenceV1={
   generatedAt:out.generatedAt,
   progress:out.progress,
   uniformHiddenTriggerResearch:out.uniformHiddenTriggerResearch,
+  potReadability:out.potReadability,
   nearCapScreen:out.nearCapScreen,
   decision:out.decision,
   guards:out.guards
 };
 fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
 fs.writeFileSync(LEDGER,JSON.stringify(ledger,null,2)+'\n');
-console.log(JSON.stringify({progress:out.progress,uniformHiddenTriggerResearch:out.uniformHiddenTriggerResearch,nearCapScreen:out.nearCapScreen,decision:out.decision},null,2));
+console.log(JSON.stringify({progress:out.progress,potReadability:out.potReadability,uniformHiddenTriggerResearch:out.uniformHiddenTriggerResearch,nearCapScreen:out.nearCapScreen,decision:out.decision},null,2));
