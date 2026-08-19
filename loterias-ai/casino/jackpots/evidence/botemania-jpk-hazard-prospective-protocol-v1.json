@@ -1,0 +1,87 @@
+{
+  "version": "botemania-jpk-hazard-prospective-protocol-v1",
+  "frozenAt": "2026-08-19T18:00:00+02:00",
+  "operator": "botemania-es",
+  "status": "FROZEN_BEFORE_FIRST_CLEAN_SPANISH_RESET",
+  "objective": "Estimate and independently validate the state-dependent Royal/Regal reset hazard without using future resets to choose the validated model or wagering threshold.",
+  "observationUnit": "One clean single-tier Royal or Regal reset window reconstructed from consecutive public Botemania jackpot observations, with the sibling tier and Jackpot King non-decreasing during the interval.",
+  "phasePlan": {
+    "discovery": {
+      "cleanResetWindows": 10,
+      "purpose": "Fit only the preregistered hazard-family candidates and choose the discovery champion by interval-censored likelihood with complexity penalty.",
+      "candidateFamilies": [
+        "UNIFORM_THRESHOLD_BETA_1_1",
+        "BETA_ALPHA_1_ONE_PARAMETER",
+        "BETA_1_BETA_ONE_PARAMETER"
+      ],
+      "poolingRule": "Royal and Regal may be pooled only after normalization to their own seed-to-MBWB scale and only if a tier-effect diagnostic does not reject common shape at the preregistered 0.05 level. Otherwise fit tiers separately and require enough observations per tier.",
+      "noEconomicPromotion": true
+    },
+    "modelFreeze": {
+      "trigger": "Exactly 10 clean discovery reset windows accumulated",
+      "action": "Freeze selected family, parameter estimates, MBWB assumptions/bounds, all entry thresholds, and code SHA before reading validation reset number 1.",
+      "retuningAfterFreeze": false
+    },
+    "validation": {
+      "cleanResetWindows": 10,
+      "purpose": "Evaluate the frozen discovery model only; no parameter changes.",
+      "primaryChecks": [
+        "interval_censored_log_score_vs_uniform_null",
+        "probability_integral_transform_calibration_with_interval_bounds",
+        "tier_consistency",
+        "predeclared_near_cap_survival_predictions"
+      ],
+      "passRule": "Frozen model must outperform the uniform null on cumulative interval-censored log score and show no material calibration failure. This is model validation, not proof of positive EV.",
+      "noEconomicPromotion": true
+    },
+    "economicReplication": {
+      "cleanResetWindows": 20,
+      "startsAfter": "successful_validation_and_second_freeze",
+      "purpose": "Test the fully frozen state-to-EV gate prospectively on later independent reset states. No threshold movement or optional stopping.",
+      "minimumRequirement": "20 additional clean reset windows after the economic freeze",
+      "realMoney": false
+    }
+  },
+  "mbwbHypothesis": {
+    "royalSeedEUR": 500,
+    "royalMbwbEUR": 3500,
+    "regalSeedEUR": 5000,
+    "regalMbwbEUR": 35000,
+    "status": "CROSS_NETWORK_DELUXE_REFERENCE_ONLY_NOT_VERIFIED_FOR_BOTEMANIA_SPAIN",
+    "automaticFalsification": [
+      "Any fresh Botemania Royal observation strictly above 3500 EUR falsifies the Royal MBWB hypothesis.",
+      "Any fresh Botemania Regal observation strictly above 35000 EUR falsifies the Regal MBWB hypothesis.",
+      "An official Spain-specific Blueprint/Botemania paytable with different values supersedes the hypothesis immediately.",
+      "A clean reconstructed reset whose interval cannot be reconciled with the assumed seed/MBWB configuration flags the hypothesis for rejection before any EV promotion."
+    ]
+  },
+  "dataIntegrity": {
+    "publicOperatorCounterOnly": true,
+    "fiveMinuteScheduledSampling": true,
+    "githubScheduleMayBeDelayed": true,
+    "operatorDisplayMayBeDelayed": true,
+    "intervalCensoringRequired": true,
+    "simultaneousSmallDownTicksAreNotResets": true,
+    "noFutureInformationForSelection": true,
+    "noOptionalStopping": true
+  },
+  "economicGate": {
+    "publishedFishinBaseRtpPct": 93.32,
+    "publishedFishinActiveProgressiveContributionPct": 2.32,
+    "publishedFishinReserveContributionPct": 0.68,
+    "currentPublishedRtpMayAlreadyEmbedAverageJackpotValue": "MUST_BE_HANDLED_WITHOUT_DOUBLE_COUNTING",
+    "positiveEvClaimAllowed": false,
+    "realMoneyAllowed": false,
+    "automaticBettingAllowed": false,
+    "separateHumanAuthorizationRequiredAfterAnyFutureGatePass": true
+  },
+  "guards": {
+    "frozenProtocol": true,
+    "discoverySeparatedFromValidation": true,
+    "validationSeparatedFromEconomicReplication": true,
+    "noCrossMarketThresholdAsSpainFact": true,
+    "noRetuningAfterOutcome": true,
+    "noBetting": true,
+    "realMoneyAllowed": false
+  }
+}
