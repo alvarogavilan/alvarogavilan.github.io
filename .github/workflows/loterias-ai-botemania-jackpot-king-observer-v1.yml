@@ -13,6 +13,7 @@ on:
       - 'loterias-ai/casino/jackpots/botemania-blueprint-ui-cap-scan-v1.mjs'
       - 'loterias-ai/casino/jackpots/botemania-jpk-near-cap-ev-scenarios-v1.mjs'
       - 'loterias-ai/casino/jackpots/botemania-canalbingo-crosscheck-v1.mjs'
+      - 'loterias-ai/casino/jackpots/botemania-jpk-live-gate-v1.mjs'
       - 'loterias-ai/casino/build-casino-dashboard-v1.mjs'
       - '.github/workflows/loterias-ai-botemania-jackpot-king-observer-v1.yml'
   schedule:
@@ -36,7 +37,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Capture Botemania Jackpot King state and calculate near-cap EV sensitivity
+      - name: Capture Botemania Jackpot King state and calculate strict live gate
         shell: bash
         run: |
           set -euo pipefail
@@ -53,6 +54,7 @@ jobs:
             node loterias-ai/casino/jackpots/botemania-jpk-flow-model-v1.mjs
             node loterias-ai/casino/jackpots/botemania-jpk-near-cap-ev-scenarios-v1.mjs
             node loterias-ai/casino/jackpots/botemania-canalbingo-crosscheck-v1.mjs
+            node loterias-ai/casino/jackpots/botemania-jpk-live-gate-v1.mjs
             node loterias-ai/casino/build-casino-dashboard-v1.mjs
             git add \
               loterias-ai/casino/jackpots/evidence/botemania-jackpot-client-map-v1.json \
@@ -63,9 +65,10 @@ jobs:
               loterias-ai/casino/jackpots/evidence/botemania-jpk-flow-model-v1.json \
               loterias-ai/casino/jackpots/evidence/botemania-jpk-near-cap-ev-scenarios-v1.json \
               loterias-ai/casino/jackpots/evidence/botemania-canalbingo-crosscheck-v1.json \
+              loterias-ai/casino/jackpots/evidence/botemania-jpk-live-gate-v1.json \
               loterias-ai/casino/evidence/casino-dashboard-v1.json
             if git diff --cached --quiet; then exit 0; fi
-            git commit -m 'data(casino): capture Botemania Jackpot King state and near-cap EV sensitivity'
+            git commit -m 'data(casino): capture Botemania Jackpot King state and strict live gate'
             if git push origin HEAD:main; then exit 0; fi
             sleep $((attempt*2))
           done
