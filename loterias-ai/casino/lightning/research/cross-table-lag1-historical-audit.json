@@ -1,0 +1,69 @@
+{
+  "version": "lightning-cross-table-lag1-historical-audit-v1",
+  "generatedAt": "2026-08-19T08:29:54.201Z",
+  "mode": "INDEPENDENT_CROSS_TABLE_HISTORICAL_AUDIT_ONLY",
+  "hypothesis": "winner_t equals winner_t-1",
+  "hypothesisOrigin": "Observed as best predictive selector in untouched XXXtreme post-selection audit; Lightning legacy rows were not used to select the hypothesis.",
+  "cutoff": "2026-08-18T10:50:00Z",
+  "rows": 2473,
+  "targets": 2472,
+  "source": "persisted Lightning public structured history",
+  "economics": {
+    "nonMultipliedProfitPayout": "29:1",
+    "baseGrossReturnX": 30,
+    "conservativeBreakEvenHitRate": 0.03333333333333333
+  },
+  "firstHalf": {
+    "n": 1236,
+    "hits": 34,
+    "hitRate": 0.02750809061488673,
+    "liftVsUniform": 1.017799352750809,
+    "pValue": 0.48232294931803976,
+    "baseBreakEvenHitRate": 0.03333333333333333,
+    "baseROI": -0.17475728155339806,
+    "observedMultiplierROI": -0.15857605177993528,
+    "largestSingleGrossReturnX": 50,
+    "roiWithoutLargestObservedReturn": -0.19838056680161945
+  },
+  "secondHalf": {
+    "n": 1236,
+    "hits": 42,
+    "hitRate": 0.03398058252427184,
+    "liftVsUniform": 1.2572815533980581,
+    "pValue": 0.08139567746240262,
+    "baseBreakEvenHitRate": 0.03333333333333333,
+    "baseROI": 0.019417475728155338,
+    "observedMultiplierROI": 0.18122977346278318,
+    "largestSingleGrossReturnX": 100,
+    "roiWithoutLargestObservedReturn": 0.10121457489878542
+  },
+  "full": {
+    "n": 2472,
+    "hits": 76,
+    "hitRate": 0.030744336569579287,
+    "liftVsUniform": 1.1375404530744335,
+    "pValue": 0.14111506160484,
+    "baseBreakEvenHitRate": 0.03333333333333333,
+    "baseROI": -0.07766990291262135,
+    "observedMultiplierROI": 0.011326860841423949,
+    "largestSingleGrossReturnX": 100,
+    "roiWithoutLargestObservedReturn": -0.028733306353702956
+  },
+  "summary": {
+    "bothHalvesAboveUniform": true,
+    "bothHalvesAboveEconomicBreakEven": false,
+    "fullAboveEconomicBreakEven": false,
+    "fullPBelow001": false,
+    "robustObservedMultiplierROIPositiveAfterRemovingLargest": false,
+    "crossTableHistoricalSignal": false
+  },
+  "guards": {
+    "doesNotReadCleanProspectiveLagFamilyInterim": true,
+    "doesNotReadTimingProspectiveInterim": true,
+    "historicalAuditCannotPromote": true,
+    "newUntouchedProspectiveSingleHypothesisRequired": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
