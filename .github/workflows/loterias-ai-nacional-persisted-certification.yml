@@ -1,0 +1,64 @@
+name: Loterias AI Nacional Persisted SELAE Certification
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '37 * * * *'
+  push:
+    paths:
+      - 'loterias-ai/scripts/certify-nacional-persisted-resultados2.mjs'
+      - '.github/workflows/loterias-ai-nacional-persisted-certification.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-nacional-persisted-certification
+  cancel-in-progress: true
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Certify already-persisted complete SELAE evidence on latest main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          report='loterias-ai/data/archive/_meta/nacional-persisted-resultados2-certification.json'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+
+            had_report=0
+            if git cat-file -e "HEAD:${report}" 2>/dev/null; then had_report=1; fi
+
+            node loterias-ai/scripts/certify-nacional-persisted-resultados2.mjs
+
+            # Once the report exists, a run with zero new certifications must be fail-quiet.
+            # Do not move main merely because generatedAt changed.
+            if [[ "$had_report" -eq 1 ]]; then
+              new_count="$(node -e "const r=require('./${report}'); process.stdout.write(String(r.newlyCertified||0))")"
+              if [[ "$new_count" == '0' ]]; then
+                git checkout HEAD -- "$report"
+              fi
+            fi
+
+            node loterias-ai/scripts/build-national-archive-index.mjs
+            node loterias-ai/scripts/build-completeness-index.mjs
+            node loterias-ai/scripts/audit-national-archive.mjs
+
+            git add loterias-ai/data/archive
+            if git diff --cached --quiet; then
+              echo 'NO_SEMANTIC_CHANGE'
+              exit 0
+            fi
+
+            git commit -m 'data(nacional): certify persisted complete SELAE resultados2 evidence'
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt * 2))
+          done
+          exit 1
