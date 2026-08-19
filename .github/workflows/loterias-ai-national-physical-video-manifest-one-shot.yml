@@ -1,0 +1,34 @@
+name: Loterias AI National Physical Video Manifest One Shot
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/national-physical/build-rtve-video-manifest-v1.mjs'
+      - '.github/workflows/loterias-ai-national-physical-video-manifest-one-shot.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node loterias-ai/national-physical/build-rtve-video-manifest-v1.mjs
+      - run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/national-physical/evidence/rtve-video-manifest-v1.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'data(national): persist official RTVE physical-video manifest'
+          git pull --rebase origin main
+          git push origin HEAD:main
