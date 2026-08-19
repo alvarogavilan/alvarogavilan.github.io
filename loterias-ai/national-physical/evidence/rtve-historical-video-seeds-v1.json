@@ -1,0 +1,24 @@
+{
+  "version": "rtve-historical-video-seeds-v1",
+  "createdAt": "2026-08-19T10:38:00Z",
+  "purpose": "Expand the official physical-draw video corpus with older RTVE/SELAE episodes and prioritize longer SELAE cuts for cadence measurement.",
+  "seeds": [
+    {"game":"bonoloto","date":"2026-07-15","url":"https://www.rtve.es/play/videos/loterias/bonoloto-15-07-2026/17158079/","durationSeconds":76,"sourceProgram":"Loterías","measurementPriority":"NORMAL"},
+    {"game":"bonoloto","date":"2026-06-10","url":"https://www.rtve.es/play/videos/loterias/bonoloto-10-06-2026/17110315/","durationSeconds":79,"sourceProgram":"Loterías","measurementPriority":"NORMAL"},
+    {"game":"bonoloto","date":"2026-05-27","url":"https://www.rtve.es/play/videos/loterias/bonoloto-27-05-2026/17089040/","durationSeconds":79,"sourceProgram":"Loterías","measurementPriority":"NORMAL"},
+    {"game":"bonoloto+euromillones","date":"2026-07-28","url":"https://www.rtve.es/play/videos/loterias/bonoloto-euromillones-28-07-2026/17172464/","durationSeconds":85,"sourceProgram":"Loterías","measurementPriority":"LOW_COMBINED_BROADCAST"},
+    {"game":"bonoloto","date":"2026-07-29","url":"https://www.rtve.es/play/videos/loterias/bonoloto-29-07-2026/17173845/","durationSeconds":80,"sourceProgram":"Loterías","measurementPriority":"NORMAL"},
+    {"game":"bonoloto","date":"2026-06-17","url":"https://www.rtve.es/play/videos/loterias/bonoloto-17-06-2026/17120533/","durationSeconds":79,"sourceProgram":"Loterías","measurementPriority":"NORMAL"},
+    {"game":"bonoloto","date":"2026-07-13","url":"https://www.rtve.es/play/videos/selae/sorteo-loteria-bonoloto-del-13-07-2026/17155252/","durationSeconds":227,"sourceProgram":"SELAE","measurementPriority":"P0_PHYSICAL_LONG_CUT"},
+    {"game":"bonoloto","date":"2026-07-16","url":"https://www.rtve.es/play/videos/selae/sorteo-loteria-bonoloto-del-16-07-2026/17159487/","durationSeconds":216,"sourceProgram":"SELAE","measurementPriority":"P0_PHYSICAL_LONG_CUT"},
+    {"game":"bonoloto","date":"2026-07-26","url":"https://www.rtve.es/play/videos/selae/sorteo-loteria-bonoloto-del-26-07-2026/17169732/","durationSeconds":214,"sourceProgram":"SELAE","measurementPriority":"P0_PHYSICAL_LONG_CUT"}
+  ],
+  "guards": {
+    "officialRTVEorSELAEOnly": true,
+    "seedDoesNotEqualMeasured": true,
+    "combinedBroadcastCannotBeAssignedToSingleGame": true,
+    "noOutcomeAssociationYet": true,
+    "noFutureLeakage": true,
+    "realMoneyAllowed": false
+  }
+}
