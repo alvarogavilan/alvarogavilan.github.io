@@ -1,0 +1,49 @@
+{
+  "version": "orient-story-deluxe-progressive-ev-protocol-v1",
+  "createdAt": "2026-08-19T10:05:00Z",
+  "operator": "playuzu-es",
+  "game": "Orient Story Deluxe",
+  "provider": "Amusnet",
+  "officialGameUrl": "https://www.playuzu.es/slots/orient-story-deluxe/",
+  "officialCashbackSources": [
+    "https://www.playuzu.es/especiales/",
+    "https://www.playuzu.es/terminos-y-condiciones/"
+  ],
+  "knownEconomics": {
+    "publishedBaseRtp": 0.972,
+    "progressiveJackpots": 4,
+    "uzuPlusCurrentPublishedRange": {"min":0.0006,"max":0.006},
+    "effectiveRtpBeforeCurrentPotStateRange": {"min":0.9726,"max":0.978},
+    "remainingGapTo100PctRangePoints": {"bestCase":2.2,"worstCase":2.74},
+    "exactGameSpecificUzuPlusKnown": false,
+    "exactProgressiveContributionKnown": false,
+    "exactJackpotTriggerProbabilityKnown": false,
+    "currentPotValuesKnown": false
+  },
+  "hypothesis": "If the game-specific UZUplus rate is near the upper end and the progressive jackpot state contributes sufficiently more than its long-run RTP allocation, there may exist a high-pot state where effective EV approaches or exceeds 100%. This must be solved from official rules/state, never inferred from streaks.",
+  "researchPlan": [
+    "Obtain exact UZUplus percentage shown for Orient Story Deluxe at observation time.",
+    "Verify provider/game rules, progressive trigger mechanics, qualifying stake and jackpot contribution.",
+    "Observe official current jackpot values without wagering where publicly available.",
+    "Estimate or derive state-dependent jackpot EV with confidence bounds.",
+    "Freeze threshold before any real-money consideration and validate prospectively."
+  ],
+  "gates": {
+    "exactCashbackKnown": false,
+    "exactProgressiveMechanicsKnown": false,
+    "currentPotStateKnown": false,
+    "positiveEvPointEstimate": false,
+    "positiveEvLowerBoundAboveOne": false,
+    "economicPromotionCandidate": false,
+    "realMoneyAllowed": false
+  },
+  "guards": {
+    "noSpinPatternClaims": true,
+    "noAssumedJackpotHazard": true,
+    "noAssumedMaxCashback": true,
+    "noBetting": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
