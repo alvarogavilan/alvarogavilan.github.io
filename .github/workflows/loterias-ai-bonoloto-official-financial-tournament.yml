@@ -1,10 +1,12 @@
 name: Loterias AI Bonoloto Official Financial Tournament
-# refreshed after official SELAE economics backfill
+# Exact broad methodology preserved; certified SELAE payout rows are normalized to the canonical economics schema before scoring.
 on:
   push:
     paths:
       - 'loterias-ai/scripts/official-number-game-financial-tournament.mjs'
+      - 'loterias-ai/scripts/normalize-bonoloto-certified-economics-schema-v1.mjs'
       - 'loterias-ai/data/archive/bonoloto/**'
+      - 'loterias-ai/data/archive/_meta/bonoloto-official-payouts-recent-v1.json'
       - '.github/workflows/loterias-ai-bonoloto-official-financial-tournament.yml'
   workflow_dispatch:
 permissions:
@@ -12,20 +14,29 @@ permissions:
 jobs:
   tournament:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: GAME=bonoloto node loterias-ai/scripts/official-number-game-financial-tournament.mjs
-      - name: Persist result safely
+      - name: Normalize certified economics and rerun unchanged broad tournament
+        shell: bash
         run: |
-          cp loterias-ai/data/backtests/bonoloto-official-financial-tournament.json /tmp/result.json
-          git fetch origin main
-          git reset --hard origin/main
-          cp /tmp/result.json loterias-ai/data/backtests/bonoloto-official-financial-tournament.json
+          set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add loterias-ai/data/backtests/bonoloto-official-financial-tournament.json
-          git commit -m 'data(loterias-ai): persist Bonoloto official financial tournament' || exit 0
-          git push origin HEAD:main
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            node loterias-ai/scripts/normalize-bonoloto-certified-economics-schema-v1.mjs
+            GAME=bonoloto node loterias-ai/scripts/official-number-game-financial-tournament.mjs
+            git add loterias-ai/data/archive/bonoloto loterias-ai/data/backtests/bonoloto-official-financial-tournament.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'data(loterias-ai): recompute Bonoloto broad official financial tournament'
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
