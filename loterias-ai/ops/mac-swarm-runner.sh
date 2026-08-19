@@ -11,6 +11,7 @@ CACHE="$STATE/evidence-cache"
 LOCK="$RUNTIME_ROOT/megalab-swarm.lock"
 LOG="$STATE/megalab-swarm.log"
 SWARM_REL="loterias-ai/research/megalab/v291-incremental-local.mjs"
+SCOUT_REL="loterias-ai/casino/lightning/research/external-roulette-discovery-scout.mjs"
 
 mkdir -p "$STATE" "$CACHE" "$RUNTIME_ROOT"
 if ! mkdir "$LOCK" 2>/dev/null; then
@@ -50,6 +51,16 @@ START=$(date +%s)
   MEGALAB_BATCH="$BATCH" "$NODE_BIN" "$SWARM_REL"
 ) >> "$LOG" 2>&1
 EXIT_CODE=$?
+
+SCOUT_EXIT=127
+if [ -f "$WORKSPACE/$SCOUT_REL" ]; then
+  (
+    cd "$WORKSPACE" || exit 1
+    "$NODE_BIN" "$SCOUT_REL"
+  ) >> "$LOG" 2>&1
+  SCOUT_EXIT=$?
+fi
+
 END=$(date +%s)
 DURATION=$((END-START))
 
@@ -57,7 +68,8 @@ if [ "$EXIT_CODE" -eq 0 ]; then
   for REL in \
     loterias-ai/data/research/metapleno-v290-megalab.json \
     loterias-ai/data/research/metapleno-global-negative-memory.json \
-    loterias-ai/data/research/metapleno-v291-local-swarm-state.json; do
+    loterias-ai/data/research/metapleno-v291-local-swarm-state.json \
+    loterias-ai/casino/lightning/evidence/external-roulette-discovery-scout.json; do
       if [ -f "$WORKSPACE/$REL" ]; then
         mkdir -p "$CACHE/$(dirname "$REL")"
         cp "$WORKSPACE/$REL" "$CACHE/$REL"
@@ -68,5 +80,5 @@ if [ "$EXIT_CODE" -eq 0 ]; then
   fi
 fi
 
-echo "[$(date '+%Y-%m-%d %H:%M:%S %z')] SWARM_DONE exit=$EXIT_CODE batch=$BATCH duration_seconds=$DURATION" >> "$LOG"
+echo "[$(date '+%Y-%m-%d %H:%M:%S %z')] SWARM_DONE exit=$EXIT_CODE scout_exit=$SCOUT_EXIT batch=$BATCH duration_seconds=$DURATION" >> "$LOG"
 exit "$EXIT_CODE"
