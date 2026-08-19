@@ -1,0 +1,54 @@
+{
+  "version": "national-physical-draw-observables-protocol-v1",
+  "createdAt": "2026-08-19T08:58:00Z",
+  "purpose": "Investigate whether observable physical draw dynamics contain reproducible out-of-sample information without contaminating existing numeric models.",
+  "officialSources": {
+    "primary": "https://www.loteriasyapuestas.es/es/sorteos-en-directo?lang=es",
+    "videoteca": "https://www.loteriasyapuestas.es/es/paginas-informativas/sorteos-de-rtve",
+    "archive": "https://www.rtve.es/loterias/"
+  },
+  "games": [
+    {"id":"bonoloto","specialist":"physical-bonoloto-v1","drawDays":"daily","ballCount":6},
+    {"id":"primitiva","specialist":"physical-primitiva-v1","drawDays":"Mon/Thu/Sat","ballCount":6},
+    {"id":"gordo-primitiva","specialist":"physical-gordo-v1","drawDays":"Sun","ballCount":5},
+    {"id":"loteria-nacional","specialist":"physical-nacional-v1","drawDays":"Thu/Sat","ballCount":null},
+    {"id":"euromillones","specialist":"physical-euromillones-v1","drawDays":"Tue/Fri","ballCount":5},
+    {"id":"lototurf","specialist":"physical-lototurf-v1","drawDays":"schedule-dependent","ballCount":6}
+  ],
+  "observables": [
+    "videoStartTimestamp",
+    "mixingStartTimestamp",
+    "firstExtractionTimestamp",
+    "eachExtractionTimestamp",
+    "interExtractionSeconds",
+    "totalDrawSeconds",
+    "appearanceOrder",
+    "ballNumber",
+    "machineOrDrumIdentityWhenVisible",
+    "machineChangeMarker",
+    "operatorOrPresenterChangeMarker",
+    "visibleRotationRegime",
+    "visibleBallVelocityProxy",
+    "cameraOrVideoDiscontinuityMarker"
+  ],
+  "measurementPolicy": {
+    "videoEvidenceSha256Required": true,
+    "officialSELAEOrRTVESourceRequired": true,
+    "automaticVideoMeasurementMayBeUsedForDiscovery": true,
+    "manualMeasurementRequiresSecondPassAudit": true,
+    "futureOutcomeInformationForbidden": true
+  },
+  "analysisPlan": {
+    "discovery": ["number-by-extraction-position association","inter-extraction-time association","velocity-regime association","machine-regime association","sequence transition association"],
+    "controls": ["within-draw permutation","date-matched permutation","machine-regime matched randomization"],
+    "promotion": "Any candidate must be frozen before future draws and evaluated on untouched official draws with multiplicity correction."
+  },
+  "guards": {
+    "noRetuningAfterProspectiveStart": true,
+    "physicalAndNumericModelsRemainSeparateUntilBothPass": true,
+    "realMoneyAllowed": false,
+    "automaticBettingAllowed": false,
+    "realStakeEUR": 0
+  },
+  "immutable": true
+}
