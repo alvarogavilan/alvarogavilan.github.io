@@ -1,13 +1,49 @@
 {
-  "generatedAt": "2026-08-19T09:04:06.144Z",
+  "generatedAt": "2026-08-19T10:05:47.650Z",
   "gameId": "loteria-nacional",
   "evidencePolicy": "Certification uses only already-persisted SELAE resultados2 evidence cross-checked against SELAE fechav3 at capture time, including an exact persisted official draw-id match. No missing field is inferred.",
   "totalNonSeasonal": 1421,
   "eligibleOfficialSchema": 969,
-  "alreadyCertified": 0,
-  "newlyCertified": 525,
+  "alreadyCertified": 525,
+  "newlyCertified": 0,
   "certifiedTotal": 525,
   "blockedNotCertified": 444,
+  "blockerDiagnostics": {
+    "reasonCounts": {
+      "normalizedUnits": 444,
+      "detailedOfficialResult": 246,
+      "exactDate": 246,
+      "officialEconomics": 246,
+      "officialSource": 246
+    },
+    "byYear": {
+      "2020": 20,
+      "2021": 53,
+      "2022": 43,
+      "2023": 89,
+      "2024": 82,
+      "2025": 92,
+      "2026": 65
+    },
+    "topFailureProfiles": [
+      {
+        "failedChecks": [
+          "detailedOfficialResult",
+          "exactDate",
+          "normalizedUnits",
+          "officialEconomics",
+          "officialSource"
+        ],
+        "count": 246
+      },
+      {
+        "failedChecks": [
+          "normalizedUnits"
+        ],
+        "count": 198
+      }
+    ]
+  },
   "blocked": [
     {
       "drawDate": "2020-08-06",
@@ -3658,18 +3694,7 @@
       ]
     }
   ],
-  "changedFiles": [
-    "2016.json",
-    "2017.json",
-    "2018.json",
-    "2019.json",
-    "2020.json",
-    "2021.json",
-    "2022.json",
-    "2023.json",
-    "2024.json",
-    "2025.json"
-  ],
+  "changedFiles": [],
   "qualityPass": true,
   "guards": {
     "noSecondaryPromotion": true,
