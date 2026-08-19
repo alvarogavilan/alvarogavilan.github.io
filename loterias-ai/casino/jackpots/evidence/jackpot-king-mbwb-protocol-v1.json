@@ -1,0 +1,53 @@
+{
+  "version": "jackpot-king-must-be-won-by-protocol-v1",
+  "createdAt": "2026-08-19T09:06:00Z",
+  "gameSystem": "Blueprint Gaming Jackpot King Deluxe",
+  "operatorScope": ["pokerstars-es"],
+  "officialProviderEvidence": [
+    "https://fileservice.blueprintgaming.com/?affiliate=&customer=Betfair_Sky&fileType=help&gameEngineID=eyeofhorusjkhigh&language=EN&profile=jackpotkingdeluxe3",
+    "https://fileservice.blueprintgaming.com/?affiliate=&customer=Betfair_Sky&fileType=help&gameEngineID=tedjk&language=EN&profile=jackpotkingdeluxe3"
+  ],
+  "verifiedMechanics": {
+    "bonusCanTriggerOnAnySpin": true,
+    "potSystemAvailableOnAnyStakeAccordingToProviderProfile": true,
+    "jackpotOnlyWonInsideWheelKing": true,
+    "potResetsToReserveAfterWin": true,
+    "jackpotWinProbabilityIncreasesWithJackpotValue": true,
+    "royalAndRegalGuaranteedByMustBeWonByValue": true,
+    "playerStakeContributesToJackpots": true
+  },
+  "economicResearchHypothesis": "Because provider rules explicitly state that jackpot win probability rises with jackpot value and Royal/Regal are guaranteed by a Must-Be-Won-By threshold, the jackpot component of expected value is state-dependent. Search for value zones only after PokerStars-specific pot identities, reserve values, MBWB thresholds and qualifying configuration are verified.",
+  "priorityQuestions": [
+    "Which visible PokerStars pot corresponds to Jackpot King vs Royal vs Regal?",
+    "What are the PokerStars Spain Reserve and Must-Be-Won-By values for Royal and Regal?",
+    "Does the PokerStars Spain configuration preserve provider generic any-stake eligibility?",
+    "What is the empirical hazard curve as each pot approaches its MBWB threshold?",
+    "What is the base-game RTP version used by PokerStars Spain for each connected title?",
+    "At what pot value, if any, does total expected return exceed 100% after all contributions and feature probabilities?"
+  ],
+  "measurementPlan": {
+    "officialOperatorPotSnapshotsOnly": true,
+    "detectResets": true,
+    "estimateGrowthPerHour": true,
+    "inferPotIdentityFromSynchronizedGames": true,
+    "estimateConditionalHazardByPotFractionToMBWB": true,
+    "separateRoyalRegalKing": true,
+    "minimumObservedResetsBeforeModel": 30,
+    "holdoutResets": 10
+  },
+  "promotionGate": {
+    "exactPokerStarsConfigurationRequired": true,
+    "exactMBWBThresholdRequired": true,
+    "officialRTPAndEligibilityRequired": true,
+    "positiveEVMustBeDemonstratedBeforeAnyStake": true,
+    "prospectiveHoldoutRequired": true,
+    "noOptionalStopping": true
+  },
+  "guards": {
+    "noSpinPlaced": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  },
+  "immutable": true
+}
