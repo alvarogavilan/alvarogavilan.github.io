@@ -5,7 +5,7 @@ const FREEZE='loterias-ai/casino/playuzu/evidence/progressive-network-priority-f
 const DISC='loterias-ai/casino/playuzu/evidence/shared-jackpot-networks-v1.json';
 const OUT='loterias-ai/casino/playuzu/evidence/progressive-network-priority-v1.json';
 const freeze=JSON.parse(fs.readFileSync(FREEZE,'utf8')),disc=JSON.parse(fs.readFileSync(DISC,'utf8'));
-if(freeze.version!=='progressive-network-priority-freeze-v1'||freeze.immutable!==true||freeze.guards?.selectionIndependentOfFutureNetworkBehavior!==true||freeze.guards?.realMoneyAllowed!==false)throw new Error('priority freeze drift');
+if(freeze.version!=='progressive-network-priority-freeze-v1'||freeze.guards?.immutable!==true||freeze.guards?.selectionIndependentOfFutureNetworkBehavior!==true||freeze.guards?.realMoneyAllowed!==false)throw new Error('priority freeze drift');
 if(disc.version!=='shared-jackpot-networks-v1'||disc.generatedAt!==freeze.discoverySnapshotGeneratedAt)throw new Error('discovery snapshot drift');
 const rows=(disc.sharedNetworks||[]).map(n=>{
  const titles=(n.titles||[]).filter(t=>Number.isFinite(Number(t.rtpMaxPct)));
