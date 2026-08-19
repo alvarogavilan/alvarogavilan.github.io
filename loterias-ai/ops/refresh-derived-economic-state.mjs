@@ -13,7 +13,8 @@ const scripts=[
   'loterias-ai/scripts/quinigol-replication-v4-finalize-30.mjs',
   'loterias-ai/scripts/quinigol-concentration-robustness-finalize-v1.mjs',
   'loterias-ai/casino/lightning/research/economic-readiness-ledger-v1.mjs',
-  'loterias-ai/casino/lightning/research/economic-promotion-gate-v1.mjs'
+  'loterias-ai/casino/lightning/research/economic-promotion-gate-v1.mjs',
+  'loterias-ai/ops/attach-cross-table-convergence-to-economic-readiness-v1.mjs'
 ];
 for(const script of scripts){
   const r=spawnSync(process.execPath,[script],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
