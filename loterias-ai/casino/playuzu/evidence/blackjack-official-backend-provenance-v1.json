@@ -1,0 +1,29 @@
+{
+  "version": "blackjack-official-backend-provenance-v1",
+  "createdAt": "2026-08-19T10:17:00Z",
+  "operator": "playuzu-es",
+  "officialPage": "https://www.playuzu.es/blackjack/",
+  "discoveredBackend": "https://games-api.netdnstrace1.com/v2/categories/blackjack-all",
+  "provenance": {
+    "backendUrlWasEmbeddedInOfficialPlayUZUHtmlBeforeFirstApiFetch": true,
+    "evidenceFile": "loterias-ai/casino/playuzu/evidence/blackjack-catalog-state-probe-v1.json",
+    "allowedPurpose": "Read the same public catalog data the official PlayUZU blackjack page requests in the browser.",
+    "thirdPartyDiscovery": false,
+    "backendAuthority": "FIRST_PARTY_PAGE_EMBEDDED_SERVICE_ENDPOINT"
+  },
+  "acceptance": {
+    "httpSuccessRequired": true,
+    "blackjackCategoryConsistencyRequired": true,
+    "gameIdentityFieldsRequired": true,
+    "anyRtpOrCashbackFieldMustBePreservedExactly": true,
+    "noFieldMayBeInferredIfMissing": true
+  },
+  "guards": {
+    "noAuthenticationBypass": true,
+    "noPrivateApiDiscovery": true,
+    "noBetting": true,
+    "noEconomicPromotionFromCatalogAlone": true,
+    "realMoneyAllowed": false
+  },
+  "immutable": true
+}
