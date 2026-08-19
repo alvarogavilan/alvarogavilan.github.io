@@ -13,7 +13,7 @@ const URLS=[
   {id:'gold-strike-bonanza-jpk',url:'https://www.pokerstars.es/casino/game/gold-strike-bonanza-jpk/1017/191/'}
 ];
 const freeze=JSON.parse(fs.readFileSync(HAZARD_FREEZE,'utf8'));
-if(freeze.version!=='jackpot-king-hazard-freeze-v1'||freeze.immutable!==true||freeze.guards?.futureOnly!==true||freeze.guards?.realMoneyAllowed!==false)throw new Error('Jackpot King hazard freeze drift');
+if(freeze.version!=='jackpot-king-hazard-freeze-v1'||freeze.guards?.immutable!==true||freeze.guards?.futureOnly!==true||freeze.guards?.realMoneyAllowed!==false)throw new Error('Jackpot King hazard freeze drift');
 const now=new Date().toISOString();
 const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'));}catch{return {};}};
 const ledger=read(OUT);
@@ -76,7 +76,7 @@ if(Date.parse(now)>startMs&&(!lastHazard||Date.parse(now)-Date.parse(lastHazard.
   const hoursSincePrevious=valid&&previous?(Date.parse(now)-Date.parse(previous.observedAt))/36e5:null;
   const growthEURPerHour=changeEUR!==null&&changeEUR>=0&&hoursSincePrevious>0?Number((changeEUR/hoursSincePrevious).toFixed(4)):null;
   const fullContributionStakeLowerBoundEUR=changeEUR!==null&&changeEUR>=0?Number((changeEUR/0.0038).toFixed(2)):null;
-  const row={observedAt:now,valid,canonicalPotEUR:valid?canonicalPot:null,canonicalPageId:'king-kong-cash-jpk',identityControlReadable:controlReadable,canonicalResponseSha256:canonical?.responseSha256??null,controlResponseSha256:control?.responseSha256??null,changeEUR,changeRatio,hardReset,smallDecreaseAnomaly:smallDecrease,growthEURPerHour,fullContributionStakeLowerBoundEUR,allocationAssumptionForLowerBound:'ONLY_IF_DISPLAYED_POT_RECEIVED_FULL_0.38_PERCENT; OTHERWISE TRUE NETWORK_STAKE_IS_HIGHER',currency:'EUR'};
+  const row={observedAt:now,valid,canonicalPotEUR:valid?canonicalPot:null,canonicalPageId:'king-kong-cash-jpk',identityControlReadable:controlReadable,canonicalResponseSha256:canonical?.responseSha256??null,controlResponseSha256:control?.responseSha256??null,changeEUR,changeRatio,hardReset,smallDecreaseAnomaly:smallDecrease,growthEURPerHour,fullContributionStakeLowerBoundEUR,allocationAssumptionForLowerBound:'ONLY_IF_DISPLAYED_POT_RECEIVED_FULL_0.38_PERCENT; OTHERWISE TRUE_NETWORK_STAKE_IS_HIGHER',currency:'EUR'};
   hazardObservations.push(row);hazardObservations=hazardObservations.slice(-1000);hazardUpdated=true;
   if(hardReset&&previous)hardResets.push({observedAt:now,fromEUR:Number(previous.canonicalPotEUR),toEUR:canonicalPot,dropEUR:Number((Number(previous.canonicalPotEUR)-canonicalPot).toFixed(2)),dropRatio:Number((-changeRatio).toFixed(6))});
   if(smallDecrease&&previous)anomalies.push({observedAt:now,fromEUR:Number(previous.canonicalPotEUR),toEUR:canonicalPot,changeEUR,classification:'SUB_10_PERCENT_DECLINE_NOT_RESET'});
