@@ -31,7 +31,8 @@ const rouletteGames=games.filter(g=>fieldsFor(g).includes('roulette')).sort((a,b
 const nearest=ev.blackjackResearch?.nearestToBreakEven||null;
 const shared=ready.progressiveNetworks?.sharedPlayUZUNetworks||null;
 const boteCurrent=bote.latest?.labeledPots||{};
-const boteExactThresholdKnown=Number.isFinite(Number(bote.thresholdResearch?.exactSpainRoyalMbwbEUR))||Number.isFinite(Number(bote.thresholdResearch?.exactSpainRegalMbwbEUR));
+const numericResolved=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x))&&Number(x)>0;
+const boteExactThresholdKnown=numericResolved(bote.thresholdResearch?.exactSpainRoyalMbwbEUR)||numericResolved(bote.thresholdResearch?.exactSpainRegalMbwbEUR);
 const botemaniaRadar={
   operator:bote.operator||'botemania-es',
   priorityGames:bote.priorityGames||["Fishin' Frenzy: Jackpot King","Fishin' Frenzy Megaways: Jackpot King"],
