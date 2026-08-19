@@ -7,6 +7,7 @@ on:
   push:
     paths:
       - 'loterias-ai/scripts/enrich-nacional-official-resultados2.mjs'
+      - 'loterias-ai/scripts/certify-nacional-persisted-resultados2.mjs'
       - '.github/workflows/loterias-ai-nacional-official-resultados2.yml'
 permissions:
   contents: write
@@ -33,12 +34,13 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             BATCH_LIMIT=400 node loterias-ai/scripts/enrich-nacional-official-resultados2.mjs
+            node loterias-ai/scripts/certify-nacional-persisted-resultados2.mjs
             node loterias-ai/scripts/build-national-archive-index.mjs
             node loterias-ai/scripts/build-completeness-index.mjs
             node loterias-ai/scripts/audit-national-archive.mjs
             git add loterias-ai/data/archive
             if git diff --cached --quiet; then exit 0; fi
-            git commit -m 'data(loterias-ai): persist full official Nacional extractions'
+            git commit -m 'data(loterias-ai): persist full official Nacional extractions and certifications'
             if git push origin HEAD:main; then exit 0; fi
             sleep $((attempt * 2))
           done
