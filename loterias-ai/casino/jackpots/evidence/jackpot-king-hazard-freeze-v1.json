@@ -1,0 +1,54 @@
+{
+  "version": "jackpot-king-hazard-freeze-v1",
+  "frozenAt": "2026-08-19T12:24:00Z",
+  "prospectiveStartsStrictlyAfter": "2026-08-19T12:17:08.674Z",
+  "operator": "pokerstars-es",
+  "game": "King Kong Cash JPK",
+  "canonicalPage": "https://www.pokerstars.es/casino/game/king-kong-cash-jpk/1017/100/",
+  "identityControlPage": "https://www.pokerstars.es/casino/game/ted-jpk/1017/59/",
+  "provider": "Blueprint Gaming",
+  "frozenEconomics": {
+    "publishedBaseRtpPct": 95.01,
+    "publishedJackpotAllocationPct": 0.38,
+    "publishedReserveAllocationPct": 0.11,
+    "allocationSource": "PokerStars Spain King Kong Cash JPK game page",
+    "providerRtpNotation": "95.01% High + JK %",
+    "providerRtpSource": "Blueprint Gaming King Kong Cash Jackpot King page",
+    "totalRtpInterpretationFrozen": "UNRESOLVED_DO_NOT_SUM_FOR_PROMOTION"
+  },
+  "observation": {
+    "canonicalPageOnlyForTimeSeries": true,
+    "minimumIntervalSeconds": 3600,
+    "identityControlMustRemainPokerStarsSpain": true,
+    "hardResetDefinition": "canonical displayed pot drop >= 10% versus immediately previous valid canonical observation",
+    "smallerDecreaseClassification": "SOURCE_TIMING_OR_DISPLAY_ANOMALY_NOT_RESET",
+    "minimumHardResetsBeforeHazardDiscovery": 10,
+    "minimumIndependentHardResetsBeforeAnyEconomicReplication": 20,
+    "noInterpolationAcrossMissingObservations": true
+  },
+  "derivedQuantitiesAllowed": {
+    "potGrowthEUR": true,
+    "potGrowthEURPerHour": true,
+    "fullContributionStakeLowerBound": "pot growth / 0.0038 only as a lower-bound/proxy because allocation across pots is unresolved",
+    "hardResetCount": true,
+    "hazardByPotState": "FORBIDDEN_UNTIL_MINIMUM_HARD_RESETS"
+  },
+  "forbidden": [
+    "using pre-freeze observations in hazard estimation",
+    "switching canonical source page based on future values",
+    "classifying sub-10% declines as jackpot resets",
+    "assuming displayed pot receives the full 0.38% contribution",
+    "assuming 95.01 + 0.38 + 0.11 is the playable total RTP",
+    "betting or autoplay"
+  ],
+  "guards": {
+    "futureOnly": true,
+    "noOptionalStopping": true,
+    "noEconomicPromotionFromPotSizeAlone": true,
+    "noBetting": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "immutable": true
+  }
+}
