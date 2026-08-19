@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+// Administrative refresh marker: broad Bonoloto official tournament was recomputed after canonical SELAE normalization.
 const root='loterias-ai/data/backtests';
 const defs=[
  {id:'primitiva',name:'La Primitiva',file:'primitiva-official-financial-validation.json'},
