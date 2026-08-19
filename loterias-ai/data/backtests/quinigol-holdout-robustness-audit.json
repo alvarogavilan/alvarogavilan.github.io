@@ -1,0 +1,98 @@
+{
+  "version": "quinigol-holdout-robustness-audit-v1",
+  "generatedAt": "2026-08-19T07:49:50.321Z",
+  "mode": "POST_HOC_FIXED_HOLDOUT_ROBUSTNESS_AUDIT",
+  "fixedStrategy": {
+    "window": 320,
+    "ticketsPerDraw": 2
+  },
+  "holdout": {
+    "draws": 207,
+    "stakeEUR": 414,
+    "returnEUR": 583.9299999999998,
+    "plEUR": 169.92999999999984,
+    "roi": 0.41045893719806725,
+    "profitableDraws": 23
+  },
+  "concentration": {
+    "largestSingleDrawReturnEUR": 452.4,
+    "largestSingleDrawDate": "2025-04-20",
+    "top1ShareOfReturn": 0.7747503981641637,
+    "top5ShareOfReturn": 0.8613703697360987,
+    "top10ShareOfReturn": 0.9129347695785452
+  },
+  "leaveOneOut": {
+    "minimumROI": -0.6807524271844664,
+    "medianROI": 0.41730582524271803,
+    "maximumROI": 0.41730582524271803,
+    "worstRemoval": {
+      "removedDate": "2025-04-20",
+      "removedReturnEUR": 452.4,
+      "roi": -0.6807524271844664
+    },
+    "positiveAfterEverySingleDrawRemoval": false
+  },
+  "chronologicalQuarterBlocks": [
+    {
+      "block": 1,
+      "firstDate": "2024-03-13",
+      "lastDate": "2024-10-20",
+      "draws": 51,
+      "stakeEUR": 102,
+      "returnEUR": 32.17999999999999,
+      "plEUR": -69.82000000000001,
+      "roi": -0.6845098039215687,
+      "profitableDraws": 6
+    },
+    {
+      "block": 2,
+      "firstDate": "2024-10-23",
+      "lastDate": "2025-05-18",
+      "draws": 52,
+      "stakeEUR": 104,
+      "returnEUR": 491.28000000000003,
+      "plEUR": 387.28000000000003,
+      "roi": 3.723846153846154,
+      "profitableDraws": 8
+    },
+    {
+      "block": 3,
+      "firstDate": "2025-05-25",
+      "lastDate": "2026-01-04",
+      "draws": 52,
+      "stakeEUR": 104,
+      "returnEUR": 29.14,
+      "plEUR": -74.86,
+      "roi": -0.7198076923076923,
+      "profitableDraws": 4
+    },
+    {
+      "block": 4,
+      "firstDate": "2026-01-11",
+      "lastDate": "2026-08-09",
+      "draws": 52,
+      "stakeEUR": 104,
+      "returnEUR": 31.330000000000002,
+      "plEUR": -72.67,
+      "roi": -0.69875,
+      "profitableDraws": 5
+    }
+  ],
+  "positiveQuarterBlocks": 1,
+  "descriptiveRobustness": {
+    "notSingleDrawDependent": false,
+    "atLeastTwoPositiveQuarterBlocks": false,
+    "returnNotMajorityFromOneDraw": false
+  },
+  "interpretation": "Descriptive robustness audit only. It cannot promote the model and does not replace the blinded prospective Shadow.",
+  "guards": {
+    "strategyNotRetuned": true,
+    "holdoutUnchanged": true,
+    "officialSELAEEconomicsOnly": true,
+    "postHocAudit": true,
+    "cannotPromoteByItself": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
