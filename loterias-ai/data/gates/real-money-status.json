@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-19T11:56:31.775Z",
+  "generatedAt": "2026-08-19T11:57:39.240Z",
   "policy": {
     "realMoneyRequires": "official economics + locked holdout + positive ROI + matched random baselines + sufficient sample + prospective shadow before allocation",
     "defaultAllocationEUR": 0
@@ -41,24 +41,56 @@
       "name": "Bonoloto",
       "status": "REJECTED",
       "realMoneyPass": false,
-      "officialEconomicDraws": 51,
-      "holdoutDraws": 16,
-      "holdoutStake": 8,
-      "holdoutReturn": 0,
-      "holdoutPL": -8,
-      "holdoutROI": -1,
+      "officialEconomicDraws": 480,
+      "holdoutDraws": 144,
+      "holdoutStake": 216,
+      "holdoutReturn": 74.08,
+      "holdoutPL": -141.92000000000002,
+      "holdoutROI": -0.6570370370370371,
       "selected": {
-        "strategy": "cooccurrence",
-        "tickets": 1,
-        "discoveryROI": -0.7714285714285715
+        "strategy": "balanced",
+        "tickets": 3,
+        "discoveryROI": 1.334543650793651
       },
       "baseline": {
         "runs": 100,
-        "averageROI": -0.8027500000000001,
-        "maxROI": 5.225
+        "averageROI": -0.8233865740740737,
+        "maxROI": -0.5437500000000001
       },
-      "source": "SELAE_ONLY_RESULTS_AND_PAYOUTS",
-      "reason": "Completed official financial gate did not pass"
+      "source": "SELAE official economics only",
+      "reason": "Broad official financial gate rejected; recent SELAE-only recertification after 17 canonical repairs also failed. Real stake remains 0.",
+      "recentOfficialRecertification": {
+        "version": "bonoloto-financial-tournament-official-v3",
+        "sourcePolicy": "SELAE_ONLY_RESULTS_AND_PAYOUTS",
+        "canonicalConflictsRepairedBeforeRecompute": 17,
+        "draws": 51,
+        "discoveryDraws": 35,
+        "holdoutDraws": 16,
+        "selected": {
+          "strategy": "cooccurrence",
+          "tickets": 1,
+          "discoveryROI": -0.7714285714285715
+        },
+        "holdout": {
+          "strategy": "cooccurrence",
+          "tickets": 1,
+          "draws": 16,
+          "stake": 8,
+          "return": 0,
+          "profitable": 0,
+          "pl": -8,
+          "roi": -1,
+          "profitableDrawRate": 0
+        },
+        "randomBaseline": {
+          "runs": 100,
+          "averageROI": -0.8027500000000001,
+          "maxROI": 5.225
+        },
+        "historicalGatePass": false,
+        "prospectivePromotionCandidate": false,
+        "realMoneyAllowed": false
+      }
     },
     {
       "id": "gordo-primitiva",
