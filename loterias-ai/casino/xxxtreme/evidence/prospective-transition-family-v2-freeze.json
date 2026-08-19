@@ -1,0 +1,42 @@
+{
+  "version": "xxxtreme-prospective-transition-family-v2-freeze",
+  "createdAt": "2026-08-19T08:12:00Z",
+  "activation": {
+    "requiresV1Fixed5000Complete": true,
+    "startsStrictlyAfterV1LastScoredRound": true,
+    "activationIndependentOfV1Outcome": true,
+    "replicateEntireEightSelectorFamily": true
+  },
+  "v1Freeze": "xxxtreme-prospective-transition-family-v1-freeze",
+  "candidateFamily": [
+    "previousWinner",
+    "twoBackWinner",
+    "wheelClockwiseOneFromPreviousWinner",
+    "wheelCounterClockwiseOneFromPreviousWinner",
+    "wheelOppositeFromPreviousWinner",
+    "markovModeFromPreviousWinnerLast50Transitions",
+    "markovModeFromPreviousWinnerLast200Transitions",
+    "markovModeFromPreviousWinnerAllPastTransitions"
+  ],
+  "postV1WarmupRounds": 200,
+  "fixedBoundaryRounds": 5000,
+  "uniformNullHitProbability": 0.02702702702702703,
+  "familyWiseAlpha": 0.01,
+  "perCandidateAlpha": 0.00125,
+  "confirmationRule": "The same selector must pass both frozen V1 and frozen V2. V2 evaluates all eight selectors regardless of V1 result.",
+  "economicInterpretationAllowed": false,
+  "disclosurePolicy": "Administrative progress only until V2 fixed 5000 completes.",
+  "guards": {
+    "preRegisteredBeforeV1Scoring": true,
+    "v1RoundsScoredAtFreeze": 0,
+    "postV1WarmupNotScored": true,
+    "noOutcomeDependentActivation": true,
+    "noRetuning": true,
+    "noOptionalStopping": true,
+    "postBoundaryCannotRescue": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  },
+  "immutable": true
+}
