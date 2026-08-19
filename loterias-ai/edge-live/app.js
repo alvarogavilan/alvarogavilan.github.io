@@ -1,29 +1,104 @@
-const ROOT='../';
-const SOURCES={gate:`${ROOT}casino/evidence/five-euro-real-pilot-gate-v1.json`,structure:`${ROOT}casino/jackpots/evidence/botemania-jpk-structural-evidence-synthesis-v1.json`,live:`${ROOT}casino/jackpots/evidence/botemania-jpk-live-gate-v1.json`,flow:`${ROOT}casino/jackpots/evidence/botemania-jpk-flow-model-v1.json`};
+const GAME_URL='https://www.botemania.es/juegos/slots-online/fishin-frenzy-jackpot-king';
 const BOT_GRAPHQL='https://www.botemania.es/es/graphql';
 const BOT_QUERY='query loadJackpots { blueprintJackpots { id amount } }';
+const SOURCES={
+  plan:'./evidence/edge-live-execution-plan-v1.json',
+  params:'./evidence/botemania-fishin-execution-parameters-v1.json',
+  live:'../casino/jackpots/evidence/botemania-jpk-live-gate-v1.json',
+  validation:'../casino/jackpots/evidence/botemania-jpk-allocation-validation-result-v1.json'
+};
 const $=id=>document.getElementById(id);
-const esc=x=>String(x??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const eur=x=>Number.isFinite(Number(x))?Number(x).toLocaleString('es-ES',{style:'currency',currency:'EUR'}):'—';
-const pct=x=>Number.isFinite(Number(x))?(Number(x)*100).toFixed(2)+'%':'—';
-const secAge=t=>{const ms=Date.now()-Date.parse(t||'');return Number.isFinite(ms)?Math.max(0,Math.floor(ms/1000)):null;};
-const age=t=>{const s=secAge(t);if(s==null)return '—';if(s<60)return `${s}s`;if(s<3600)return `${Math.floor(s/60)}m ${s%60}s`;return `${Math.floor(s/3600)}h ${Math.floor((s%3600)/60)}m`;};
+const eur=x=>Number.isFinite(Number(x))?Number(x).toLocaleString('es-ES',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2}):'—';
+const pct=x=>Number.isFinite(Number(x))?(Number(x)*100).toFixed(3)+'%':'—';
+const secAge=t=>{const n=Date.parse(t||'');return Number.isFinite(n)?Math.max(0,Math.floor((Date.now()-n)/1000)):null;};
+const time=t=>{const d=new Date(t);return Number.isFinite(d.getTime())?new Intl.DateTimeFormat('es-ES',{timeZone:'Europe/Madrid',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(d):'—';};
 const clock=()=>new Intl.DateTimeFormat('es-ES',{timeZone:'Europe/Madrid',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(new Date());
-const localTime=t=>{const d=new Date(t);return Number.isFinite(d.getTime())?new Intl.DateTimeFormat('es-ES',{timeZone:'Europe/Madrid',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(d):'—';};
-const duration=s=>{s=Math.max(0,Math.round(Number(s)||0));if(s<60)return `${s}s`;if(s<3600)return `${Math.floor(s/60)}m ${s%60}s`;if(s<86400)return `${Math.floor(s/3600)}h ${Math.floor((s%3600)/60)}m`;return `${Math.floor(s/86400)}d ${Math.floor((s%86400)/3600)}h`;};
-async function get(url){const r=await fetch(url+`?t=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(`${r.status} ${url}`);return r.json();}
-let currentGate=null,currentLive=null,currentStructure=null,currentFlow=null,lastObservedAt=null,lastFrameWasNew=false,directPots=null,directObservedAt=null,directAvailable=false;
-const fresh=t=>{const s=secAge(t);return Number.isFinite(s)&&s<=360;};
-const botLane=g=>(Array.isArray(g?.lanes)?g.lanes:[]).find(x=>x?.id==='botemania-jackpot-king')||null;
-function allowed(){const lane=botLane(currentGate),eligible=currentGate?.decision?.eligibleLanes||[];return fresh(currentGate?.generatedAt)&&fresh(currentLive?.current?.observedAt)&&lane?.eligible===true&&currentGate?.decision?.pilotAllowed===true&&eligible.includes('botemania-jackpot-king')&&Number(currentGate?.decision?.maxTotalStakeEUR)>0;}
-function visiblePots(){return directAvailable&&fresh(directObservedAt)?directPots:(currentLive?.current?.potsEUR||{});}
-function decisionUi(){const real=allowed(),gateOk=fresh(currentGate?.generatedAt),liveOk=fresh(currentLive?.current?.observedAt);$('hero').className='hero '+(real?'live':'blocked');$('heroTitle').textContent=real?'APUESTA':'NO APUESTES';$('heroText').textContent=real?'Fishin’ Frenzy: Jackpot King ha superado el gate económico con datos vigentes. Usa sólo el importe publicado.':(!gateOk||!liveOk)?'Dato científico desactualizado: bloqueo automático hasta una captura nueva.':'Fishin’ Frenzy: Jackpot King sigue vigilado, pero el gate económico aún no ha pasado.';$('stake').textContent=real?eur(currentGate.decision.maxTotalStakeEUR):'0,00 €';$('stakeHint').textContent=real?'Límite absoluto del piloto manual; no recargar ni perseguir pérdidas.':'Sin gate económico vigente, la cantidad correcta es cero.';if($('mirrorDecision')){$('mirrorDecision').className='badge '+(real?'ok':'bad');$('mirrorDecision').textContent=real?'APUESTA':'NO APUESTES';}if($('calcBadge')){$('calcBadge').className='badge '+(real?'ok':'bad');$('calcBadge').textContent=real?'APUESTA':'BLOQUEADO';}if($('calcDecision'))$('calcDecision').textContent=real?`${eur(currentGate.decision.maxTotalStakeEUR)} · APUESTA`:'0,00 € · NO APUESTES';}
-function renderGate(g){currentGate=g;const lane=botLane(g),e=lane?.evidence||{};$('opportunities').innerHTML=`<section class="card"><div class="row"><div><div class="name">Fishin’ Frenzy: Jackpot King</div><div class="meta">Botemania · candidato operativo nº1</div></div><span class="badge ${lane?.eligible?'ok':'bad'}">${lane?.eligible?'ELEGIBLE':'BLOQUEADO'}</span></div><div class="reason">Gate live: <b>${esc(e.liveGateState)}</b> · mejor RTP conservador: <b>${pct(e.bestConservativeRtp)}</b> · MBWB España exacto: <b>${e.exactSpainMbwbKnown?'sí':'no'}</b> · hazard exacto: <b>${e.exactHazardKnown?'sí':'no'}</b> · reparto de red validado: <b>${e.networkAllocationProspectivelyValidated?'sí':'no'}</b>.</div></section>`;decisionUi();}
-function renderMirror(live,flow){currentLive=live;currentFlow=flow;const observed=live?.current?.observedAt||null;lastFrameWasNew=Boolean(observed&&lastObservedAt&&observed!==lastObservedAt);if(observed)lastObservedAt=observed;const intervals=Array.isArray(flow?.intervals)?flow.intervals.slice(-10).reverse():[];$('liveFeed').innerHTML=intervals.map(i=>`<div class="feedrow"><span class="feedtime">${localTime(i.to)}</span><span class="feedmove">+${eur(i.activePotGrowthEUR)} · K ${pct(i?.allocationShares?.JACKPOT_KING)} / Rg ${pct(i?.allocationShares?.REGAL)} / Ry ${pct(i?.allocationShares?.ROYAL)}</span><span class="feedstate">${Math.round(Number(i.seconds||0))}s</span></div>`).join('')||'<div class="meta">Todavía no hay intervalos observados para reproducir.</div>';updateMirrorText();decisionUi();renderCalculator();}
-function updateMirrorText(){if(!currentLive)return;const pots=visiblePots();const observed=directAvailable&&fresh(directObservedAt)?directObservedAt:currentLive?.current?.observedAt;const channel=directAvailable&&fresh(directObservedAt)?'DIRECTO PÚBLICO':'EVIDENCIA CIENTÍFICA';$('mirrorReason').innerHTML=`Canal: <b>${channel}</b> · captura <b>${localTime(observed)}</b> · Jackpot King <b>${eur(pots.JACKPOT_KING)}</b> · Regal <b>${eur(pots.REGAL)}</b> · Royal <b>${eur(pots.ROYAL)}</b>. El canal directo sólo actualiza el espejo/calculadora; <b>nunca desbloquea por sí solo una apuesta</b>.`;}
-function renderBotemania(s,l){currentStructure=s;const p=s?.prospectiveNetworkEvidence?.progress||{},sh=s?.prospectiveNetworkEvidence?.weightedAllocationShares||{},pots=visiblePots(),c=s?.prospectiveNetworkEvidence?.checks||{};const struct=s?.prospectiveNetworkEvidence?.networkAllocationProspectivelyValidated===true,econ=s?.decision?.economicPromotionAllowed===true;$('botemania').innerHTML=`<div class="row"><div><div class="name">Fishin’ Frenzy: Jackpot King</div><div class="meta">Único juego operativo de EDGE LIVE</div></div><span class="badge ${econ?'ok':struct?'warn':'bad'}">${econ?'ECONÓMICO':struct?'ESTRUCTURA VALIDADA':'VALIDANDO'}</span></div><div class="grid"><div class="metric"><small>INTERVALOS LIMPIOS</small><b>${esc(p.cleanFutureIntervals)}/${esc(p.targetCleanIntervals)}</b></div><div class="metric"><small>CRECIMIENTO</small><b>${eur(p.cumulativeActiveGrowthEUR)}</b></div><div class="metric"><small>INFORMATIVOS</small><b>${esc(p.informativeIntervals)}/${esc(p.targetInformativeIntervals)}</b></div><div class="metric"><small>JACKPOT KING</small><b>${eur(pots.JACKPOT_KING)}</b></div><div class="metric"><small>ROYAL</small><b>${eur(pots.ROYAL)}</b></div><div class="metric"><small>REGAL</small><b>${eur(pots.REGAL)}</b></div></div><div class="reason">Reparto: <b>${pct(sh.JACKPOT_KING)}</b> / <b>${pct(sh.REGAL)}</b> / <b>${pct(sh.ROYAL)}</b>. Bandas ponderadas: <b>${c.weightedShareBands?'OK':'NO'}</b> · simetría: <b>${c.regalRoyalSymmetry?'OK':'NO'}</b> · bandas por intervalo: <b>${c.perIntervalBroadBand?'OK':'NO'}</b>. Estado económico: <b>${esc(l?.state)}</b>.</div>`;renderCalculator();}
-function renderCalculator(){if(!currentLive||!currentStructure)return;const p=currentStructure?.prospectiveNetworkEvidence?.progress||{};const done=Number(p.cleanFutureIntervals)||0,target=Number(p.targetCleanIntervals)||20,remaining=Math.max(0,target-done);const progress=Math.max(0,Math.min(100,100*done/target));const best=Number(currentLive?.current?.modelScreen?.bestConservativeRtp);const rtpPct=Number.isFinite(best)?best*100:null;const gap=rtpPct==null?null:Math.max(0,100-rtpPct);const pots=visiblePots();const royal=Number(pots?.ROYAL);const route=currentLive?.researchBand?.routes?.ROYAL_ONLY||{};const threshold=Number(route?.thresholdPotHypothesisEUR);const dist=Number.isFinite(royal)&&Number.isFinite(threshold)?Math.max(0,threshold-royal):null;const rate=Number(currentLive?.current?.recentDirectMeterGrowthPerHourEUR?.ROYAL);const sourceTime=directAvailable&&fresh(directObservedAt)?directObservedAt:currentLive?.current?.observedAt;const ageSec=secAge(sourceTime)||0;const baseEta=Number.isFinite(dist)&&rate>0?dist/rate*3600:null;const eta=baseEta==null?null:Math.max(0,baseEta-ageSec);$('protocolBar').style.width=`${progress.toFixed(1)}%`;$('calcIntervals').textContent=`${done}/${target} · ${progress.toFixed(0)}%`;$('calcRemaining').textContent=String(remaining);$('calcRtp').textContent=rtpPct==null?'—':`${rtpPct.toFixed(3)}%`;$('calcGap').textContent=gap==null?'—':`${gap.toFixed(3)} pp`;$('calcRoyal').textContent=eur(royal);$('calcBandDistance').textContent=dist==null?'—':eur(dist);$('calcEta').textContent=eta==null?'—':duration(eta);$('calcDataAge').textContent=age(sourceTime);const blockers=currentStructure?.decision?.blockers||[];$('calcReason').innerHTML=`Protocolo estructural: <b>${remaining===0?'completo':'faltan '+remaining+' intervalos'}</b>. Crecimiento e informatividad: <b>${currentStructure?.prospectiveNetworkEvidence?.checks?.enoughGrowth&&currentStructure?.prospectiveNetworkEvidence?.checks?.enoughInformative?'OK':'pendiente'}</b>. Bloqueos económicos actuales: <b>${esc(blockers.join(' · ')||'ninguno')}</b>. La distancia/ETA apunta sólo a la banda I+D Royal hipotética; <b>no es un punto de apuesta</b>.`;decisionUi();}
-async function directProbe(){try{const r=await fetch(BOT_GRAPHQL,{method:'POST',headers:{accept:'application/json','content-type':'application/json',venture:'botemania_es'},body:JSON.stringify({operationName:'loadJackpots',variables:{},query:BOT_QUERY}),cache:'no-store'});if(!r.ok)throw new Error(`HTTP ${r.status}`);const b=await r.json(),rows=Array.isArray(b?.data?.blueprintJackpots)?b.data.blueprintJackpots:[];const map={JACKPOTKING:'JACKPOT_KING',JACKPOTKING_REGAL:'REGAL',JACKPOTKING_ROYAL:'ROYAL'},pots={};for(const x of rows){const k=map[String(x?.id||'')],v=Number(x?.amount);if(k&&Number.isFinite(v)&&v>0)pots[k]=v;}if(Object.keys(pots).length<3)throw new Error('Incomplete counters');directPots=pots;directObservedAt=new Date().toISOString();directAvailable=true;lastFrameWasNew=true;updateMirrorText();renderCalculator();}catch(e){directAvailable=false;}}
-function tick(){if($('liveClock'))$('liveClock').textContent=clock();const sourceTime=directAvailable&&fresh(directObservedAt)?directObservedAt:currentLive?.current?.observedAt;const liveAge=sourceTime?secAge(sourceTime):null;if($('liveAge'))$('liveAge').textContent=liveAge==null?'—':`${liveAge}s`;if($('frameState'))$('frameState').textContent=directAvailable&&fresh(directObservedAt)?'DIRECTO':lastFrameWasNew?'NUEVO DATO':'MISMO DATO';if($('freshness'))$('freshness').textContent=`Gate ${age(currentGate?.generatedAt)} · espejo ${age(sourceTime)}`;updateMirrorText();renderCalculator();decisionUi();}
-async function refresh(){try{const [g,s,l,f]=await Promise.all([get(SOURCES.gate),get(SOURCES.structure),get(SOURCES.live),get(SOURCES.flow)]);renderGate(g);renderMirror(l,f);renderBotemania(s,l);tick();}catch(e){$('freshness').innerHTML='<span class="error">Error leyendo evidencia Botemania</span>';console.error(e)}}
-$('refreshBtn').addEventListener('click',refresh);refresh();directProbe();setInterval(refresh,5000);setInterval(directProbe,3000);setInterval(()=>{lastFrameWasNew=false;tick();},1000);
+const escapeHtml=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const blockerLabel={
+  STRUCTURAL_VALIDATION_NOT_PASSED:'La estructura prospectiva todavía no está validada.',
+  ECONOMIC_GATE_NOT_PASSED:'El estado económico actual no demuestra expectativa no negativa.',
+  EXACT_STAKE_PER_SPIN_NOT_VERIFIED:'Todavía no está verificada la apuesta total exacta por giro de la configuración española.',
+  TIMING_EDGE_NOT_VALIDATED:'No existe todavía una ventaja validada asociada a un minuto o segundo concreto.',
+  SOURCE_NOT_FRESH:'El dato científico no está suficientemente fresco.',
+  SIGNAL_EXPIRED:'La ventana de ejecución ya ha caducado.'
+};
+let state={plan:null,params:null,live:null,validation:null,directPots:null,directAt:null,directOk:false};
+
+async function json(url){const r=await fetch(`${url}?t=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(`${r.status} ${url}`);return r.json();}
+async function maybeJson(url){try{return await json(url);}catch{return null;}}
+function directFresh(){const a=secAge(state.directAt);return state.directOk&&a!=null&&a<=10;}
+function visiblePots(){return directFresh()?state.directPots:(state.live?.current?.potsEUR||{});}
+function planReady(){
+  const p=state.plan;if(!p||p.state!=='READY_TO_EXECUTE_MANUALLY'||p?.order?.action!=='PLAY')return false;
+  const until=Date.parse(p?.order?.validUntil||'');
+  return Number.isFinite(until)&&Date.now()<=until&&Number(p?.order?.stakePerSpinEUR)>0&&Number(p?.order?.maxSpins)>0;
+}
+function whyText(){
+  const blockers=Array.isArray(state.plan?.blockers)?state.plan.blockers:[];
+  if(planReady())return 'Todos los gates de ejecución están vigentes. Sigue exactamente la apuesta por giro, máximo de giros y caducidad indicados arriba.';
+  if(!blockers.length)return 'No hay una orden ejecutable vigente. EDGE LIVE se mantiene cerrado por seguridad.';
+  return blockers.map(b=>`• ${blockerLabel[b]||escapeHtml(b)}`).join('<br>');
+}
+function render(){
+  const p=state.plan||{},l=state.live||{},v=state.validation||{};
+  const ready=planReady();
+  const pots=visiblePots();
+  $('potKing').textContent=eur(pots.JACKPOT_KING);
+  $('potRegal').textContent=eur(pots.REGAL);
+  $('potRoyal').textContent=eur(pots.ROYAL);
+  $('gameCard').href=GAME_URL;$('inspectGame').href=GAME_URL;
+
+  $('orderCard').className='order'+(ready?' ready':'');
+  $('decision').textContent=ready?'JUGAR AHORA':'NO JUGAR';
+  $('signalState').textContent=ready?'SEÑAL VÁLIDA':'BLOQUEADO';
+  $('stakePerSpin').textContent=ready?eur(p.order.stakePerSpinEUR):'—';
+  $('maxSpins').textContent=ready?String(p.order.maxSpins):'0';
+  $('maxTotal').textContent=ready?eur(p.order.maxTotalStakeEUR):'0,00 €';
+  $('entryWindow').textContent=ready?`AHORA · hasta ${time(p.order.validUntil)}`:'NO JUGAR';
+  const remaining=ready?Math.max(0,Math.ceil((Date.parse(p.order.validUntil)-Date.now())/1000)):null;
+  $('expiry').textContent=ready?`${remaining}s`:'—';
+  $('instruction').textContent=ready
+    ? `Abre el juego real. Apuesta ${eur(p.order.stakePerSpinEUR)} por giro, máximo ${p.order.maxSpins} giros, y termina antes de ${time(p.order.validUntil)}.`
+    : 'No hay una instrucción económica completa y vigente. No realices ninguna jugada.';
+  const btn=$('playButton');btn.disabled=!ready;btn.textContent=ready?'ABRIR JUEGO Y EJECUTAR':'NO HAY SEÑAL PARA JUGAR';
+
+  const struct=v?.outcome==='PASSED_NETWORK_ALLOCATION';
+  $('structure').textContent=struct?'20/20 VALIDADO':'PENDIENTE';
+  $('structure').className=struct?'ok':'warn';
+  const econ=p?.evidence?.economicPass===true;
+  $('economy').textContent=econ?'VALIDADA':'BLOQUEADA';
+  $('economy').className=econ?'ok':'bad';
+  const age=secAge(l?.current?.observedAt);
+  $('freshness').textContent=age==null?'SIN DATO':`${age}s`;
+  $('freshness').className=age!=null&&age<=90?'ok':age!=null&&age<=360?'warn':'bad';
+  $('rtp').textContent=pct(l?.current?.modelScreen?.bestConservativeRtp);
+  $('observed').textContent=time(l?.current?.observedAt);
+  $('channel').textContent=directFresh()?'DIRECTO':'EVIDENCIA';
+  $('why').innerHTML=whyText();
+  $('liveDot').style.background=ready?'var(--green)':(age!=null&&age<=90?'var(--amber)':'var(--red)');
+}
+
+async function refreshScientific(){
+  const [plan,params,live,validation]=await Promise.all([
+    maybeJson(SOURCES.plan),maybeJson(SOURCES.params),maybeJson(SOURCES.live),maybeJson(SOURCES.validation)
+  ]);
+  state.plan=plan;state.params=params;state.live=live;state.validation=validation;render();
+}
+async function directProbe(){
+  try{
+    const r=await fetch(BOT_GRAPHQL,{method:'POST',headers:{accept:'application/json','content-type':'application/json',venture:'botemania_es'},body:JSON.stringify({operationName:'loadJackpots',variables:{},query:BOT_QUERY}),cache:'no-store'});
+    if(!r.ok)throw new Error(`HTTP ${r.status}`);
+    const b=await r.json(),rows=Array.isArray(b?.data?.blueprintJackpots)?b.data.blueprintJackpots:[];
+    const key={JACKPOTKING:'JACKPOT_KING',JACKPOTKING_REGAL:'REGAL',JACKPOTKING_ROYAL:'ROYAL'},pots={};
+    for(const x of rows){const k=key[String(x?.id||'')],n=Number(x?.amount);if(k&&Number.isFinite(n)&&n>0)pots[k]=n;}
+    if(Object.keys(pots).length!==3)throw new Error('Incomplete counters');
+    state.directPots=pots;state.directAt=new Date().toISOString();state.directOk=true;$('gameCard').classList.add('flash');setTimeout(()=>$('gameCard').classList.remove('flash'),520);render();
+  }catch{state.directOk=false;render();}
+}
+$('playButton').addEventListener('click',()=>{if(planReady())window.open(GAME_URL,'_blank','noopener');});
+setInterval(()=>{$('clock').textContent=clock();render();},1000);
+setInterval(refreshScientific,5000);
+setInterval(directProbe,3000);
+$('clock').textContent=clock();
+refreshScientific();
+directProbe();
