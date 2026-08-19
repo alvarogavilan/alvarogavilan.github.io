@@ -28,7 +28,6 @@ const currentScreenPass=ev.decision?.currentScreenPass===true;
 const currentRoyalOnlyScreenPass=ev.decision?.currentRoyalOnlyScreenPass===true;
 const currentRegalOnlyScreenPass=ev.decision?.currentRegalOnlyScreenPass===true;
 const exactMbwb=ev.decision?.exactSpainMbwbKnown===true || cap.decision?.exactSpainMbwbRecovered===true;
-// Having enough resets to START a fit is not the same as knowing the exact/validated hazard.
 const hazardFitReady=flow.hazard?.ready===true || Number(reset.summary?.cleanSingleTierCandidates||0)>=10;
 const exactHazard=ev.decision?.exactHazardKnown===true;
 const sourceFresh=obs.latest?.sourceReadable===true && Number(obs.latest?.graphql?.httpStatus)===200;
@@ -46,22 +45,32 @@ if(actionable) state='ACTIONABLE';
 
 const canalDecision=canal.decision||{};
 const potAt=(name,q)=>Number.isFinite(q)?Number((Number(seedHyp[name])+(Number(capHyp[name])-Number(seedHyp[name]))*q).toFixed(2)):null;
+const rate=flow.latest?.recentRatePerHourEUR||{};
+const etaHours=(current,target,r)=>Number.isFinite(Number(current))&&Number.isFinite(Number(target))&&Number(r)>0?Math.max(0,(Number(target)-Number(current))/Number(r)):null;
+const etaObj=(hours)=>Number.isFinite(hours)?{hours:+hours.toFixed(2),days:+(hours/24).toFixed(2)}:null;
+const jointRoyalTarget=potAt('ROYAL',jointBand),jointRegalTarget=potAt('REGAL',jointBand),royalOnlyTarget=potAt('ROYAL',royalSoloBand),regalOnlyTarget=potAt('REGAL',regalSoloBand);
+const etaJointRoyal=etaHours(pots.ROYAL,jointRoyalTarget,rate.ROYAL),etaJointRegal=etaHours(pots.REGAL,jointRegalTarget,rate.REGAL);
+const etaJoint=Number.isFinite(etaJointRoyal)&&Number.isFinite(etaJointRegal)?Math.max(etaJointRoyal,etaJointRegal):null;
+const etaRoyalOnly=etaHours(pots.ROYAL,royalOnlyTarget,rate.ROYAL),etaRegalOnly=etaHours(pots.REGAL,regalOnlyTarget,rate.REGAL);
 const out={
-  version:'botemania-jpk-live-gate-v1.3',generatedAt:new Date().toISOString(),operator:'botemania-es',
+  version:'botemania-jpk-live-gate-v1.4',generatedAt:new Date().toISOString(),operator:'botemania-es',
   state,
   current:{
     observedAt:obs.latest?.observedAt||null,
     sourceFresh,
     potsEUR:{JACKPOT_KING:Number(pots.JACKPOT_KING)||null,REGAL:Number(pots.REGAL)||null,ROYAL:Number(pots.ROYAL)||null},
+    recentDirectMeterGrowthPerHourEUR:{JACKPOT_KING:Number(rate.JACKPOT_KING)||null,REGAL:Number(rate.REGAL)||null,ROYAL:Number(rate.ROYAL)||null},
     normalizedSeedToCapHypothesis:{ROYAL:qRoyal,REGAL:qRegal},
     modelScreen:{pass:currentScreenPass,royalOnlyPass:currentRoyalOnlyScreenPass,regalOnlyPass:currentRegalOnlyScreenPass,worstConservativeRtp:ev.current?.worstConservativeRtp??null,bestConservativeRtp:ev.current?.bestConservativeRtp??null}
   },
   researchBand:{
     hypothesisOnly:!exactMbwb,
+    etaMethod:'LINEAR_RECENT_DIRECT_METER_GROWTH_NO_RESET_EXTRAPOLATION_ONLY',
+    etaWarning:'Not a prediction. Any reset, traffic change, sampling delay, or false MBWB hypothesis invalidates the ETA.',
     routes:{
-      BOTH_HIGH:{thresholdNormalized:Number.isFinite(jointBand)?jointBand:null,thresholdPotsHypothesisEUR:{ROYAL:potAt('ROYAL',jointBand),REGAL:potAt('REGAL',jointBand)},active:inJointBand,creditPolicy:'ROYAL_PLUS_REGAL_ONLY_KING_ZERO'},
-      ROYAL_ONLY:{thresholdNormalized:Number.isFinite(royalSoloBand)?royalSoloBand:null,thresholdPotHypothesisEUR:potAt('ROYAL',royalSoloBand),active:inRoyalSoloBand,creditPolicy:'ROYAL_ONLY_ZERO_CREDIT_TO_REGAL_AND_KING'},
-      REGAL_ONLY:{thresholdNormalized:Number.isFinite(regalSoloBand)?regalSoloBand:null,thresholdPotHypothesisEUR:potAt('REGAL',regalSoloBand),active:inRegalSoloBand,creditPolicy:'REGAL_ONLY_ZERO_CREDIT_TO_ROYAL_AND_KING'}
+      BOTH_HIGH:{thresholdNormalized:Number.isFinite(jointBand)?jointBand:null,thresholdPotsHypothesisEUR:{ROYAL:jointRoyalTarget,REGAL:jointRegalTarget},active:inJointBand,creditPolicy:'ROYAL_PLUS_REGAL_ONLY_KING_ZERO',etaNoReset:etaObj(etaJoint)},
+      ROYAL_ONLY:{thresholdNormalized:Number.isFinite(royalSoloBand)?royalSoloBand:null,thresholdPotHypothesisEUR:royalOnlyTarget,active:inRoyalSoloBand,creditPolicy:'ROYAL_ONLY_ZERO_CREDIT_TO_REGAL_AND_KING',etaNoReset:etaObj(etaRoyalOnly)},
+      REGAL_ONLY:{thresholdNormalized:Number.isFinite(regalSoloBand)?regalSoloBand:null,thresholdPotHypothesisEUR:regalOnlyTarget,active:inRegalSoloBand,creditPolicy:'REGAL_ONLY_ZERO_CREDIT_TO_ROYAL_AND_KING',etaNoReset:etaObj(etaRegalOnly)}
     },
     inBand:inResearchBand
   },
@@ -84,7 +93,7 @@ const out={
     automaticBettingAllowed:false,
     reason:actionable?'SEPARATE_REAL_MONEY_AUTHORIZATION_STILL_REQUIRED':!sourceFresh?'NO_FRESH_SOURCE':!inResearchBand?'BELOW_CONSERVATIVE_RESEARCH_BAND':!currentScreenPass?'IN_RESEARCH_BAND_BUT_NOT_ROBUST_MODEL_PASS':!exactMbwb?'EXACT_SPAIN_MBWB_NOT_VERIFIED':!exactHazard?(hazardFitReady?'HAZARD_FIT_READY_BUT_NOT_INDEPENDENTLY_VALIDATED':'HAZARD_NOT_VERIFIED'):'CURRENT_POSITIVE_EV_NOT_PROVEN'
   },
-  guards:{hypothesisNeverPromotes:true,noCrossMarketCapAsFact:true,fitReadyNeverEqualsExactHazard:true,individualHighPotRoutesGiveZeroOtherJackpotCredit:true,noBetting:true,realMoneyAllowed:false,automaticBettingAllowed:false}
+  guards:{hypothesisNeverPromotes:true,noCrossMarketCapAsFact:true,fitReadyNeverEqualsExactHazard:true,individualHighPotRoutesGiveZeroOtherJackpotCredit:true,etaNeverPromotesGate:true,noBetting:true,realMoneyAllowed:false,automaticBettingAllowed:false}
 };
 fs.mkdirSync('loterias-ai/casino/jackpots/evidence',{recursive:true});
 fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
