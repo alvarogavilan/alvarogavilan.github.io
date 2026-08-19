@@ -1,0 +1,177 @@
+{
+  "version": "bonoloto-paper-real-eur1-v1",
+  "createdAt": "2026-08-19T15:27:36.232Z",
+  "mode": "VIRTUAL_REAL_MONEY_SIMULATION",
+  "policy": {
+    "virtualBankrollStartEUR": 350,
+    "stakePerDrawEUR": 1,
+    "horizonDraws": 350,
+    "fixedHorizonNoOptionalStopping": true,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  },
+  "scientificQuestion": "Can a 1 EUR two-ticket compression of the frozen 8-number pool outperform a matched 2-of-28 control prospectively and produce economically meaningful returns?",
+  "settlements": [],
+  "pending": {
+    "frozenAt": "2026-08-19T15:27:36.254Z",
+    "dataCutoff": "2026-08-18",
+    "target": "NEXT_OFFICIAL_BONOLOTO_DRAW_AFTER_2026-08-18",
+    "fixedPoolEngine": {
+      "name": "MetaPleno-v54 continuation of v53 frozen spec",
+      "spec": {
+        "id": 386952,
+        "sw": 5,
+        "lw": 960,
+        "wS": 8,
+        "wL": -1,
+        "wGap": -3,
+        "wLast": -4,
+        "wPrev2": -1,
+        "wNum": -4,
+        "wParity": -1,
+        "wLow": -1,
+        "gapCap": 160,
+        "powerS": 1,
+        "powerL": 2,
+        "setSize": 8
+      }
+    },
+    "rankedPool": [
+      2,
+      8,
+      34,
+      28,
+      16,
+      18,
+      32,
+      10
+    ],
+    "rankScores": [
+      {
+        "n": 2,
+        "score": 1.364334520266
+      },
+      {
+        "n": 8,
+        "score": 0.877319634885
+      },
+      {
+        "n": 34,
+        "score": 0.736360455641
+      },
+      {
+        "n": 28,
+        "score": 0.26293046255
+      },
+      {
+        "n": 16,
+        "score": 0.198511882618
+      },
+      {
+        "n": 18,
+        "score": 0.020446229273
+      },
+      {
+        "n": 32,
+        "score": -0.064598413584
+      },
+      {
+        "n": 10,
+        "score": -0.27051055839
+      }
+    ],
+    "strategy": {
+      "name": "EUR1_TOPRANK_BALANCED_V1",
+      "tickets": [
+        [
+          2,
+          8,
+          16,
+          18,
+          28,
+          34
+        ],
+        [
+          2,
+          8,
+          10,
+          28,
+          32,
+          34
+        ]
+      ],
+      "virtualStakeEUR": 1,
+      "conditionalFull6CoverageIfPoolContainsTruth": 0.07142857142857142
+    },
+    "matchedControl": {
+      "name": "EUR1_DETERMINISTIC_RANDOM_2_OF_28",
+      "tickets": [
+        [
+          2,
+          8,
+          16,
+          18,
+          28,
+          34
+        ],
+        [
+          8,
+          10,
+          16,
+          18,
+          32,
+          34
+        ]
+      ],
+      "virtualStakeEUR": 1,
+      "conditionalFull6CoverageIfPoolContainsTruth": 0.07142857142857142
+    },
+    "guards": {
+      "preResultOnly": true,
+      "noRetuning": true,
+      "noOptionalStopping": true,
+      "performanceDoesNotChangeRule": true,
+      "realMoneyAllowed": false,
+      "realStakeEUR": 0
+    },
+    "sealSHA256": "ed33bbbeef3c2ef168003d2fa74717ffd9dbfb4232bf012f86d9ea4759aef4d2"
+  },
+  "skippedBacklogDraws": [],
+  "guards": {
+    "futureInformationForbidden": true,
+    "freezeBeforeResultRequired": true,
+    "retuningForbidden": true,
+    "controlFrozenSameTime": true,
+    "realMoneyAllowed": false
+  },
+  "updatedAt": "2026-08-19T15:27:36.254Z",
+  "summary": {
+    "horizonDraws": 350,
+    "remainingDraws": 350,
+    "strategy": {
+      "settledDraws": 0,
+      "stakeEUR": 0,
+      "returnEUR": 0,
+      "plEUR": 0,
+      "roi": null,
+      "full6": 0,
+      "category2_5plusC": 0,
+      "category3_5hits": 0,
+      "virtualBankrollEUR": 350
+    },
+    "control": {
+      "settledDraws": 0,
+      "stakeEUR": 0,
+      "returnEUR": 0,
+      "plEUR": 0,
+      "roi": null,
+      "full6": 0,
+      "category2_5plusC": 0,
+      "category3_5hits": 0,
+      "virtualBankrollEUR": 350
+    },
+    "disclosure": "PAPER ACCOUNTING AS IF REAL; no real-money authorization is implied.",
+    "realMoneyPass": false,
+    "realStakeEUR": 0
+  }
+}
