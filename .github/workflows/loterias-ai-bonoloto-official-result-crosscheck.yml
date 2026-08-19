@@ -7,6 +7,7 @@ on:
     paths:
       - 'loterias-ai/scripts/crosscheck-bonoloto-official-results.mjs'
       - 'loterias-ai/scripts/quarantine-bonoloto-official-conflicts.mjs'
+      - 'loterias-ai/scripts/resolve-bonoloto-official-conflicts-dual-route.mjs'
       - '.github/workflows/loterias-ai-bonoloto-official-result-crosscheck.yml'
 permissions:
   contents: write
@@ -33,6 +34,7 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             BATCH_LIMIT=120 node loterias-ai/scripts/crosscheck-bonoloto-official-results.mjs
+            BATCH_LIMIT=40 node loterias-ai/scripts/resolve-bonoloto-official-conflicts-dual-route.mjs
             node loterias-ai/scripts/quarantine-bonoloto-official-conflicts.mjs
             node loterias-ai/scripts/build-national-archive-index.mjs
             node loterias-ai/scripts/build-completeness-index.mjs
