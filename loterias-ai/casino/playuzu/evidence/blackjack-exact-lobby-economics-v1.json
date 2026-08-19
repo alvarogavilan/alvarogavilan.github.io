@@ -1,0 +1,96 @@
+{
+  "version": "blackjack-exact-lobby-economics-v1",
+  "generatedAt": "2026-08-19T10:23:00Z",
+  "operator": "playuzu-es",
+  "source": {
+    "officialPage": "https://www.playuzu.es/blackjack/",
+    "embeddedBackend": "https://games-api.netdnstrace1.com/v2/categories/blackjack-all?page=1&appName=PlayUZU.es",
+    "nuxtEvidence": "loterias-ai/casino/playuzu/evidence/blackjack-nuxt-decoded-v1.json",
+    "backendEvidence": "loterias-ai/casino/playuzu/evidence/blackjack-official-backend-probe-v1.json",
+    "twoIndependentOfficialRepresentationsAgree": true
+  },
+  "semanticStatus": {
+    "internalField": "ojo_plus_percent",
+    "mappingToCurrentSpainUZUplus": "PROBABLE_NOT_FULLY_CONFIRMED",
+    "support": [
+      "PlayUZU current public pages describe OJOplus/UZUplus as cashback returning part of each wager.",
+      "The official PlayUZU blackjack lobby exposes ojo_plus and ojo_plus_percent alongside RTP and bet fields.",
+      "The current generic UZUplus page publishes a 0.06%-0.60% range, while one blackjack internal field is 0.03; therefore exact current economic equivalence must remain fail-closed until reconciled."
+    ]
+  },
+  "games": [
+    {
+      "name": "Goal Goal Goal Blackjack",
+      "provider": "PlayTech",
+      "rtpPct": 99.66,
+      "breakEvenCashbackPctPoints": 0.34,
+      "internalPlusPercent": 0.20,
+      "conditionalEffectiveRtpPctIfFieldMapsOneToOne": 99.86,
+      "conditionalShortfallTo100PctPoints": 0.14,
+      "minBetEUR": 0.10,
+      "maxBetEUR": 1000,
+      "rank": 1,
+      "state": "NEAREST_TO_BREAK_EVEN_SEMANTICS_PENDING"
+    },
+    {
+      "name": "American Twenty One Blackjack",
+      "provider": "GVG",
+      "rtpPct": 99.57,
+      "breakEvenCashbackPctPoints": 0.43,
+      "internalPlusPercent": 0.06,
+      "conditionalEffectiveRtpPctIfFieldMapsOneToOne": 99.63,
+      "conditionalShortfallTo100PctPoints": 0.37,
+      "minBetEUR": 1,
+      "maxBetEUR": 1500,
+      "rank": 2,
+      "state": "BELOW_BREAK_EVEN_SEMANTICS_PENDING"
+    },
+    {
+      "name": "First Person Blackjack",
+      "provider": "Evolution OSS",
+      "rtpPct": 94.50,
+      "breakEvenCashbackPctPoints": 5.50,
+      "internalPlusPercent": 0.03,
+      "conditionalEffectiveRtpPctIfFieldMapsOneToOne": 94.53,
+      "conditionalShortfallTo100PctPoints": 5.47,
+      "minBetEUR": 0.50,
+      "maxBetEUR": 2500,
+      "rank": 3,
+      "state": "FAR_BELOW_BREAK_EVEN_SEMANTICS_PENDING"
+    }
+  ],
+  "strongestCurrentCandidate": {
+    "name": "Goal Goal Goal Blackjack",
+    "exactRtpPct": 99.66,
+    "cashbackThresholdPctPoints": 0.34,
+    "observedInternalPlusPercent": 0.20,
+    "verifiedPositiveEV": false,
+    "nextRequiredEvidence": [
+      "Confirm ojo_plus_percent maps one-to-one to current Spanish UZUplus percentage for the exact game.",
+      "Verify the published 99.66 RTP corresponds to the playable rule set and strategy available to the player, not only a theoretical configuration.",
+      "Verify UZUplus treatment of doubles/splits and any exclusions/caps.",
+      "Recheck all values at the same observation time before any future economic review."
+    ]
+  },
+  "gates": {
+    "exactCurrentLobbyGamesKnown": true,
+    "exactLobbyRtpKnown": true,
+    "internalRewardFieldKnown": true,
+    "rewardFieldSemanticMappingFullyConfirmed": false,
+    "exactRulesStrategyAudited": false,
+    "anyGamePointEstimateAbove100": false,
+    "positiveEvLowerBoundAboveOne": false,
+    "economicPromotionCandidate": false,
+    "realMoneyAllowed": false
+  },
+  "guards": {
+    "noAssumingInternalFieldIsCurrentCashback": true,
+    "noSideBets": true,
+    "noCardCounting": true,
+    "noMartingale": true,
+    "noBetting": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
