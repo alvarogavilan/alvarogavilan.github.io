@@ -30,6 +30,10 @@ function officialEvidence(r) {
   return false;
 }
 
+function evidenceBearing(r) {
+  return officialEvidence(r) || Boolean(r?.economics);
+}
+
 function keyOf(r) {
   return String(r?.drawId || r?.drawDate || r?.date || '');
 }
@@ -40,6 +44,7 @@ const report = {
   afterRoot,
   filesInspected: 0,
   missingRowsRestored: 0,
+  nonEvidenceMissingRowsNotRestored: 0,
   officialRowsProtected: 0,
   economicsRestored: 0,
   touchedFiles: [],
@@ -68,6 +73,10 @@ for (const rel of walk(beforeRoot, beforeRoot)) {
     if (!key) continue;
     const idx = afterByKey.get(key);
     if (idx == null) {
+      if (!evidenceBearing(oldRow)) {
+        report.nonEvidenceMissingRowsNotRestored++;
+        continue;
+      }
       after.records.push(oldRow);
       afterByKey.set(key, after.records.length - 1);
       report.missingRowsRestored++;
