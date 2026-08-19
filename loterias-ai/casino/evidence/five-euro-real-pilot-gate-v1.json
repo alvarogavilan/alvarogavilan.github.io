@@ -1,11 +1,11 @@
 {
-  "version": "five-euro-real-pilot-gate-v1",
-  "generatedAt": "2026-08-19T21:38:12.168Z",
-  "purpose": "Paper-only scientific promotion monitor. Casino experiments never authorize real-money stakes.",
+  "version": "five-euro-real-pilot-gate-v1.1",
+  "generatedAt": "2026-08-19T21:41:01.421Z",
+  "purpose": "Strict manual pilot gate. Never places bets automatically; allows at most one EUR5 manual pilot only after a lane passes its economic and scientific gates.",
   "humanAuthorization": {
     "maxTotalPilotStakeEUR": 0,
-    "oneBudgetOnly": false,
-    "manualPlacementOnly": false,
+    "oneBudgetOnly": true,
+    "manualPlacementOnly": true,
     "automaticBettingAllowed": false,
     "realMoneyAllowed": false,
     "noReload": true,
@@ -30,7 +30,7 @@
         "exactHazardKnown": false,
         "currentScreenPass": false,
         "networkAllocationProspectivelyValidated": false,
-        "bestConservativeRtp": 0.944978
+        "bestConservativeRtp": 0.94498
       }
     },
     {
@@ -66,17 +66,16 @@
     "pilotAllowed": false,
     "eligibleLanes": [],
     "maxTotalStakeEUR": 0,
-    "reason": "CASINO_EXPERIMENTS_ARE_PAPER_ONLY_REAL_MONEY_DISABLED"
+    "reason": "NO_LANE_HAS_A_SUPPORTED_NON_NEGATIVE_EXPECTATION_YET"
   },
   "guards": {
     "noAutomaticBetting": true,
-    "noRealMoney": true,
     "noMartingale": true,
     "noChasingLosses": true,
     "noBorrowing": true,
     "noRetuningAfterOutcome": true,
     "onePilotCannotValidateAnEdge": true,
-    "realMoneyRequiresHumanManualAction": false,
-    "realMoneyDisabledByPolicy": true
+    "realMoneyRequiresHumanManualAction": true,
+    "manualPilotHardCapEUR": 5
   }
 }
