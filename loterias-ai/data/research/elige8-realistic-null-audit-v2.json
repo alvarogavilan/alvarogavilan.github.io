@@ -1,0 +1,101 @@
+{
+  "version": "elige8-realistic-null-audit-v2",
+  "generatedAt": "2026-08-19T15:51:56.347Z",
+  "purpose": "Re-test the Elige8 minimum-stake historical signal against nulls that preserve real football outcome imbalance and within-draw result structure; supersedes uniform 1/3 exact-null as the primary significance check.",
+  "samples": {
+    "validation": {
+      "draws": 103,
+      "observedExact8": 1
+    },
+    "holdout": {
+      "draws": 103,
+      "observedExact8": 2
+    },
+    "validationPlusHoldout": {
+      "draws": 206,
+      "observedExact8": 3
+    }
+  },
+  "nulls": {
+    "holdoutCircular": {
+      "observed": 2,
+      "shifts": 103,
+      "extreme": 2,
+      "pValue": 0.019417475728155338,
+      "maxNullExact8": 2,
+      "meanNullExact8": 0.0784313725490196,
+      "distributionCounts": {
+        "0": 95,
+        "1": 6,
+        "2": 2
+      }
+    },
+    "postFreezeCircular": {
+      "observed": 3,
+      "shifts": 206,
+      "extreme": 1,
+      "pValue": 0.0048543689320388345,
+      "maxNullExact8": 2,
+      "meanNullExact8": 0.35121951219512193,
+      "distributionCounts": {
+        "0": 139,
+        "1": 60,
+        "2": 6,
+        "3": 1
+      }
+    },
+    "holdoutPermutation": {
+      "observed": 2,
+      "runs": 20000,
+      "extreme": 72,
+      "empiricalPUpper": 0.003649817509124544,
+      "maxNullExact8": 3,
+      "meanNullExact8": 0.09825,
+      "distributionCounts": {
+        "0": 18110,
+        "1": 1818,
+        "2": 69,
+        "3": 3
+      }
+    },
+    "postFreezePermutation": {
+      "observed": 3,
+      "runs": 20000,
+      "extreme": 75,
+      "empiricalPUpper": 0.003799810009499525,
+      "maxNullExact8": 4,
+      "meanNullExact8": 0.3562,
+      "distributionCounts": {
+        "0": 13818,
+        "1": 5316,
+        "2": 791,
+        "3": 74,
+        "4": 1
+      }
+    },
+    "globalCausalFavoriteBaseline": {
+      "holdout": {
+        "exact8": 0,
+        "meanHits": 3.825242718446602
+      },
+      "validationPlusHoldout": {
+        "exact8": 1,
+        "meanHits": 3.7281553398058254
+      }
+    }
+  },
+  "guards": {
+    "predictionsRecomputedFromStrictlyPriorQuinielaRows": true,
+    "targetOutcomeNeverUsedForPrediction": true,
+    "realOutcomeVectorsPreservedInCircularAndPermutationNulls": true,
+    "noRetuning": true,
+    "realMoney": false
+  },
+  "decision": {
+    "primaryNull": "POST_FREEZE_PERMUTATION",
+    "signalSurvivesOnePercent": true,
+    "signalSurvivesBonferroni11": false,
+    "realMoneyPass": false,
+    "interpretation": "PROMISING_SIGNAL_SURVIVES_REALISTIC_NULL_BUT_NOT_11_GAME_CORRECTION"
+  }
+}
