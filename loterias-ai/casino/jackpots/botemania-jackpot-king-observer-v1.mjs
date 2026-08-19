@@ -31,26 +31,62 @@ function extract(html){
   const txt=html.replace(/&nbsp;|&#160;/g,' ').replace(/&euro;|&#8364;/gi,'€').replace(/\\u20ac/gi,'€');
   const out=[];
   const patterns=[/(\d{1,3}(?:\.\d{3})+(?:,\d{2})?|\d{3,}(?:,\d{2})?)\s*€/g,/€\s*(\d{1,3}(?:,\d{3})+(?:\.\d{2})?|\d{3,}(?:\.\d{2})?)/g];
-  for(const re of patterns){
-    for(const m of txt.matchAll(re)){
-      const value=parseNumber(m[1]);
-      if(!Number.isFinite(value)||value<500||value>10000000) continue;
-      const i=m.index||0, context=txt.slice(Math.max(0,i-180),Math.min(txt.length,i+180)).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
-      out.push({valueEUR:value,label:inferLabel(context),context:context.slice(0,360)});
-    }
+  for(const re of patterns) for(const m of txt.matchAll(re)){
+    const value=parseNumber(m[1]);
+    if(!Number.isFinite(value)||value<500||value>10000000) continue;
+    const i=m.index||0, context=txt.slice(Math.max(0,i-180),Math.min(txt.length,i+180)).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+    out.push({valueEUR:value,label:inferLabel(context),context:context.slice(0,360)});
   }
   const seen=new Set();
   return out.filter(x=>{const k=`${x.valueEUR}|${x.label||''}`;if(seen.has(k))return false;seen.add(k);return true;});
 }
+function scripts(html,base){
+  const out=[];
+  for(const m of html.matchAll(/<script[^>]+src=["']([^"']+)["']/gi)){
+    try{const u=new URL(m[1],base).href;if(!out.includes(u))out.push(u);}catch{}
+  }
+  return out;
+}
+function candidates(text,base){
+  const raw=[];
+  for(const re of [/https?:\\?\/\\?\/[^"'<>\s]+/gi,/["'](\/[^"']*(?:jackpot|graphql|api)[^"']*)["']/gi]){
+    for(const m of text.matchAll(re)) raw.push((m[1]||m[0]).replace(/\\\//g,'/'));
+  }
+  const out=[];
+  for(const x of raw){
+    if(!/(jackpot|progressive|meter|graphql|\/api\/|jackpots)/i.test(x))continue;
+    try{const u=new URL(x,base);if(['http:','https:'].includes(u.protocol)&&!out.includes(u.href))out.push(u.href);}catch{}
+  }
+  return out.slice(0,100);
+}
 
-const pages=[];
+const pages=[],htmlById=new Map();
 for(const src of URLS){
   try{
-    const r=await fetch(src.url,{redirect:'follow',headers:{accept:'text/html','user-agent':'loterias-ai-botemania-jpk-observer/1.0','cache-control':'no-cache, no-store, max-age=0'}});
-    const html=await r.text();
+    const r=await fetch(src.url,{redirect:'follow',headers:{accept:'text/html','user-agent':'loterias-ai-botemania-jpk-observer/1.1','cache-control':'no-cache, no-store, max-age=0'}});
+    const html=await r.text(); htmlById.set(src.id,html);
     const finalHost=new URL(r.url).hostname;
-    pages.push({id:src.id,url:src.url,priority:!!src.priority,httpStatus:r.status,finalUrl:r.url,officialSpainHost:finalHost==='www.botemania.es'||finalHost==='botemania.es',sha256:crypto.createHash('sha256').update(html).digest('hex'),amounts:extract(html)});
+    pages.push({id:src.id,url:src.url,priority:!!src.priority,httpStatus:r.status,finalUrl:r.url,officialSpainHost:finalHost==='www.botemania.es'||finalHost==='botemania.es',sha256:crypto.createHash('sha256').update(html).digest('hex'),amounts:extract(html),scriptCount:scripts(html,r.url).length});
   }catch(e){pages.push({id:src.id,url:src.url,priority:!!src.priority,error:String(e?.message||e),officialSpainHost:false,amounts:[]});}
+}
+
+let discovery=prev.discovery||null;
+if(!discovery||(!discovery.candidateEndpoints?.length&&Number(prev.progress?.observations||0)<3)){
+  const page=pages.find(x=>x.id==='fishin-frenzy-jpk'&&x.officialSpainHost&&x.httpStatus===200);
+  const html=htmlById.get('fishin-frenzy-jpk')||'';
+  const scriptUrls=scripts(html,page?.finalUrl||URLS[0].url).slice(0,16);
+  const endpoints=new Set(candidates(html,page?.finalUrl||URLS[0].url));
+  const inspected=[];
+  for(const url of scriptUrls){
+    try{
+      const r=await fetch(url,{headers:{'user-agent':'loterias-ai-botemania-jpk-discovery/1.1','cache-control':'no-cache'}});
+      const text=await r.text();
+      if(text.length>5000000){inspected.push({url,status:r.status,bytes:text.length,skippedDeepScan:true});continue;}
+      const c=candidates(text,url); for(const x of c)endpoints.add(x);
+      inspected.push({url,status:r.status,bytes:text.length,candidates:c.slice(0,20)});
+    }catch(e){inspected.push({url,error:String(e?.message||e)});}
+  }
+  discovery={generatedAt:now,pageScriptSources:scriptUrls,inspectedScripts:inspected,candidateEndpoints:[...endpoints].slice(0,120),status:endpoints.size?'CANDIDATES_FOUND_NEED_VALIDATION':'NO_PUBLIC_COUNTER_ENDPOINT_FOUND_YET'};
 }
 
 const buckets=new Map();
@@ -61,13 +97,10 @@ for(const p of pages.filter(x=>x.officialSpainHost&&x.httpStatus===200)) for(con
 }
 const shared=[...buckets.values()].map(x=>({label:x.label,valueEUR:x.valueEUR,pageCount:x.pages.size,pages:[...x.pages],contexts:x.contexts})).filter(x=>x.pageCount>=2).sort((a,b)=>b.pageCount-a.pageCount||b.valueEUR-a.valueEUR);
 const labeled={};
-for(const label of ['ROYAL','REGAL','JACKPOT_KING']){
-  const x=shared.find(v=>v.label===label); if(x) labeled[label]=x.valueEUR;
-}
+for(const label of ['ROYAL','REGAL','JACKPOT_KING']){const x=shared.find(v=>v.label===label);if(x)labeled[label]=x.valueEUR;}
 const priorityPages=pages.filter(x=>x.priority);
 const sourceReadable=priorityPages.some(x=>x.officialSpainHost&&x.httpStatus===200);
 const observation={observedAt:now,sourceReadable,pages,sharedAmounts:shared.slice(0,20),labeledPots:labeled};
-
 const prior=(prev.observations||[]).at(-1)||null;
 const resets=[];
 for(const label of ['ROYAL','REGAL','JACKPOT_KING']){
@@ -77,13 +110,13 @@ for(const label of ['ROYAL','REGAL','JACKPOT_KING']){
 const observations=[...(prev.observations||[]),observation].slice(-2016);
 const allResets=[...(prev.resets||[]),...resets].slice(-200);
 const out={
-  version:'botemania-jackpot-king-observer-v1',generatedAt:now,operator:'botemania-es',operatorOfficial:true,mode:'OBSERVATION_ONLY_NO_WAGERING',
+  version:'botemania-jackpot-king-observer-v1.1',generatedAt:now,operator:'botemania-es',operatorOfficial:true,mode:'OBSERVATION_ONLY_NO_WAGERING',
   priorityGames:["Fishin' Frenzy: Jackpot King","Fishin' Frenzy Megaways: Jackpot King"],
   verifiedOperatorEconomics:{fishinFrenzy:{baseRtpPct:93.32,progressiveContributionPct:2.32,reserveContributionPct:0.68,anyStakeEligible:true,winChanceProportionalToStake:true,winChanceIncreasesWithPot:true,royalRegalMbwbExists:true}},
-  latest:observation,observations,resets:allResets,progress:{observations:observations.length,cleanLabeledResets:allResets.filter(x=>x.cleanLabelMatched).length,labeledCurrentPots:Object.keys(labeled).length},
+  discovery,latest:observation,observations,resets:allResets,progress:{observations:observations.length,cleanLabeledResets:allResets.filter(x=>x.cleanLabelMatched).length,labeledCurrentPots:Object.keys(labeled).length,candidateEndpoints:Number(discovery?.candidateEndpoints?.length||0)},
   thresholdResearch:{exactSpainRoyalMbwbEUR:null,exactSpainRegalMbwbEUR:null,crossMarketReferenceOnly:{royal:3500,regal:35000,mayNotEqualSpain:true},minimumCleanResetsBeforeHazardFit:10,minimumCleanResetsBeforeEconomicReplication:20},
   guards:{botemaniaOfficialPagesOnly:true,priorityRtpBlockSpecific:true,genericCopiedContributionTextNotTrustedWhenRtpBlockConflicts:true,noCrossMarketThresholdSubstitution:true,noBetting:true,automaticBettingAllowed:false,realMoneyAllowed:false,realStakeEUR:0}
 };
 fs.mkdirSync('loterias-ai/casino/jackpots/evidence',{recursive:true});
 fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
-console.log(JSON.stringify({sourceReadable,sharedAmounts:shared.slice(0,8),labeledPots:labeled,resetsThisRun:resets,progress:out.progress,realMoneyAllowed:false},null,2));
+console.log(JSON.stringify({sourceReadable,discovery:{status:discovery?.status,candidateEndpoints:discovery?.candidateEndpoints?.slice(0,20)},sharedAmounts:shared.slice(0,8),labeledPots:labeled,resetsThisRun:resets,progress:out.progress,realMoneyAllowed:false},null,2));
