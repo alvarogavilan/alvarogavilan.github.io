@@ -1,0 +1,29 @@
+name: Loterias AI RTVE Media Probe One Shot
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/national-physical/probe-rtve-media-v1.mjs'
+      - '.github/workflows/loterias-ai-rtve-media-probe-one-shot.yml'
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - run: node loterias-ai/national-physical/probe-rtve-media-v1.mjs
+      - run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+users.noreply.github.com
+          git add loterias-ai/national-physical/evidence/rtve-media-probe-v1.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'data(national): persist official RTVE media probe'
+          git pull --rebase origin main
+          git push origin HEAD:main
