@@ -1,15 +1,15 @@
 {
-  "version": "lightning-prospective-past-lucky-family-clean-v2-status-v1",
-  "generatedAt": "2026-08-19T08:05:34.202Z",
-  "freezeVersion": "lightning-prospective-past-lucky-family-clean-v2-freeze-v1",
+  "version": "lightning-prospective-transition-family-v1-status",
+  "generatedAt": "2026-08-19T08:05:34.280Z",
+  "freezeVersion": "lightning-prospective-transition-family-v1-freeze",
   "sourceSegment": "authoritative-v2",
-  "prospectiveStartsAt": "2026-08-18T22:50:00Z",
+  "prospectiveStartsAt": "2026-08-19T08:00:00Z",
   "progress": {
     "totalCleanRows": 1562,
     "fixedBoundaryRounds": 5000,
-    "roundsUsed": 681,
-    "roundsRemaining": 4319,
-    "firstEligibleAt": "2026-08-18T22:50:03.948Z",
+    "roundsUsed": 7,
+    "roundsRemaining": 4993,
+    "firstEligibleAt": "2026-08-19T08:00:31.755Z",
     "lastEligibleAt": "2026-08-19T08:05:25.256Z",
     "postBoundaryRowsIgnored": 0
   },
@@ -23,21 +23,20 @@
   "final": null,
   "gates": {
     "fixedBoundaryComplete": false,
-    "anyStatisticalAndEconomicPass": false,
-    "independentReplicationStillRequired": true,
+    "scientificPromotionCandidate": false,
     "automaticBettingAllowed": false,
     "realMoneyAllowed": false
   },
   "guards": {
     "pastInformationOnly": true,
+    "currentRoundWinnerForbiddenForSelection": true,
     "currentRoundLuckySelectionForbidden": true,
-    "allFourSelectorsFrozenBeforeProspectiveStart": true,
     "first5000Only": true,
     "noRetuning": true,
     "noOptionalStopping": true,
     "bonferroniFamilyWiseAlpha": 0.01,
-    "perCandidateAlpha": 0.0025,
-    "postBoundaryCannotRescue": true,
+    "perCandidateAlpha": 0.00125,
+    "luckyMultiplierUpliftExcludedFromPromotion": true,
     "realMoneyAllowed": false,
     "realStakeEUR": 0
   }
