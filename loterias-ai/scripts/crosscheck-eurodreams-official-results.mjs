@@ -69,19 +69,22 @@ for(const [i,target] of targets.slice(0,LIMIT).entries()){
     const official=parseOfficial(row);
     const mainValid=official.main.length===6&&new Set(official.main).size===6&&official.main.every(n=>n>=1&&n<=40);
     const dreamValid=Number.isInteger(official.dream)&&official.dream>=1&&official.dream<=5;
-    const storedMain=sorted(r.result?.main),storedDream=Number(r.result?.dream);
+    const storedMain=sorted(r.result?.main);
+    const storedDreamRaw=r.result?.dream;
+    const storedDream=storedDreamRaw==null?null:Number(storedDreamRaw);
+    const storedDreamValid=Number.isInteger(storedDream)&&storedDream>=1&&storedDream<=5;
     const fields={
       main:mainValid&&storedMain.length===6&&same(official.main,storedMain),
-      dream:dreamValid&&Number.isInteger(storedDream)&&storedDream===official.dream
+      dream:dreamValid&&storedDreamValid&&storedDream===official.dream
     };
-    const mismatch=(mainValid&&storedMain.length===6&&!fields.main)||(dreamValid&&Number.isInteger(storedDream)&&!fields.dream);
+    const mismatch=(mainValid&&storedMain.length===6&&!fields.main)||(dreamValid&&storedDreamValid&&!fields.dream);
     if(mismatch){
-      const conflict={date:r.drawDate,reason:'OFFICIAL_6PLUS_DREAM_COMPONENT_MISMATCH',stored:{main:storedMain,dream:Number.isInteger(storedDream)?storedDream:null},official:{main:official.main,dream:official.dream,raw:official.raw},url};
+      const conflict={date:r.drawDate,reason:'OFFICIAL_6PLUS_DREAM_COMPONENT_MISMATCH',stored:{main:storedMain,dream:storedDreamValid?storedDream:null},official:{main:official.main,dream:official.dream,raw:official.raw},url};
       conflictMap.set(r.drawDate,conflict);newConflicts.push(conflict);continue;
     }
-    const complete=mainValid&&dreamValid&&fields.main&&fields.dream;
+    const complete=mainValid&&dreamValid&&storedMain.length===6&&storedDreamValid&&fields.main&&fields.dream;
     if(!complete){
-      failures.push({date:r.drawDate,reason:'INCOMPLETE_OFFICIAL_6PLUS_DREAM',officialMainCount:official.main.length,officialDream:official.dream,url});
+      failures.push({date:r.drawDate,reason:'INCOMPLETE_OFFICIAL_6PLUS_DREAM',officialMainCount:official.main.length,officialDream:official.dream,storedMainCount:storedMain.length,storedDream:storedDreamValid?storedDream:null,url});
       continue;
     }
     const prev=r.verification&&typeof r.verification==='object'?r.verification:{};
