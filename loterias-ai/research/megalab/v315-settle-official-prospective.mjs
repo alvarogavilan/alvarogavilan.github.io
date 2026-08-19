@@ -42,7 +42,8 @@ for(const file of sealFiles){
   if(fs.existsSync(settlementPath)){alreadySettled++;continue}
   const record=byDate.get(target);
   if(!record){awaitingResult++;continue}
-  const officialOK=record.economics?.validation?.officialSELAE===true&&record.economics?.source?.provider==='SELAE';
+  const cross=record.verification?.officialCrossCheck;
+  const officialOK=cross?.provider==='SELAE'&&cross?.exactDate===true&&cross?.complete===true&&cross?.fields?.main===true&&cross?.fields?.complementary===true&&cross?.fields?.reintegro===true;
   if(!officialOK){awaitingOfficial++;continue}
 
   assert(seal.targetGame==='primitiva','unexpected target game in seal');
@@ -61,7 +62,7 @@ for(const file of sealFiles){
     const h=hits(line.numbers,winning);
     if(h>=5)extremeEvents.push({slot:line.slot,configId:line.config?.id,hits:h,sealedNumbers:line.numbers});
   }
-  const officialResult={drawDate:target,main:winning,complementary:record.result?.complementary??null,reintegro:record.result?.reintegro??null,officialDrawId:record.official?.drawId??null,officialDrawNumber:record.official?.drawNumber??null,officialProvider:'SELAE',officialCapturedAt:record.economics?.source?.capturedAt??null};
+  const officialResult={drawDate:target,main:winning,complementary:record.result?.complementary??null,reintegro:record.result?.reintegro??null,officialDrawId:cross.officialDrawId??null,officialProvider:'SELAE',officialCapturedAt:cross.checkedAt??null,officialSourceUrl:cross.sourceUrl??null};
   const out={
     version:'v315-prospective-settlement-v1',
     family:'CROSS_GAME_TRANSFER_AUDIT',
@@ -71,7 +72,7 @@ for(const file of sealFiles){
     seal:{path:sealPath,sealHash:seal.sealHash,sealedAt:seal.sealedAt},
     officialResult,
     officialResultHash:sha256(canonical(officialResult)),
-    custody:{sealHashVerified:true,protocolHashVerified:true,officialSELAECrossCheckRequired:true,officialSELAECrossCheckPassed:true,sealedBeforeResult:seal.guards.targetResultPresentAtSeal===false,settlementRecomputedPrediction:false},
+    custody:{sealHashVerified:true,protocolHashVerified:true,officialSELAECrossCheckRequired:true,officialSELAECrossCheckPassed:true,officialResultComponentsRequired:['main','complementary','reintegro'],economicsDoesNotImplyResultValidation:true,sealedBeforeResult:seal.guards.targetResultPresentAtSeal===false,settlementRecomputedPrediction:false},
     disclosure:{candidatePerformanceHidden:true,candidateRankingPublished:false,reason:'Fixed v315 protocol forbids interim candidate ranking before 200 eligible prospective target draws.'},
     extremeAudit:{triggered:extremeEvents.length>0,threshold:'5/6 or 6/6',events:extremeEvents,doesNotChangeBoundaryOrConfigs:true},
     guards:{retuningPerformed:false,optionalStoppingAllowed:false,post200RescueAllowed:false,realMoneyPass:false,realStakeEUR:0}
