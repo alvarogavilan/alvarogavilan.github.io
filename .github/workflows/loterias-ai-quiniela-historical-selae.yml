@@ -1,0 +1,72 @@
+name: Loterias AI Quiniela Historical SELAE Cross-check
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '13 * * * *'
+  push:
+    paths:
+      - 'loterias-ai/scripts/crosscheck-quiniela-historical-selae.mjs'
+      - '.github/workflows/loterias-ai-quiniela-historical-selae.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-quiniela-historical-selae
+  cancel-in-progress: true
+
+jobs:
+  crosscheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Recompute historical official cross-check on latest main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+
+            BATCH_LIMIT=120 node loterias-ai/scripts/crosscheck-quiniela-historical-selae.mjs
+            node loterias-ai/scripts/build-national-archive-index.mjs
+            node loterias-ai/scripts/build-completeness-index.mjs
+            node loterias-ai/scripts/audit-national-archive.mjs
+            node loterias-ai/scripts/build-archive-coverage-priorities.mjs
+
+            node --input-type=module <<'NODE'
+            import fs from 'node:fs';
+            const p='loterias-ai/data/archive/_meta/quiniela-historical-selae-crosscheck.json';
+            const r=JSON.parse(fs.readFileSync(p,'utf8'));
+            if((r.failures||[]).some(x=>x.reason==='OFFICIAL_RESULT_MISMATCH_QUARANTINED')) {
+              console.error('Official Quiniela mismatches were quarantined; refusing silent promotion.');
+            }
+            const priorities=JSON.parse(fs.readFileSync('loterias-ai/data/archive/_meta/archive-coverage-priorities.json','utf8'));
+            if(priorities.auditQualityPass!==true) throw new Error('Archive audit quality gate is not green after Quiniela historical cross-check');
+            NODE
+
+            git add loterias-ai/data/archive/quiniela loterias-ai/data/archive/_meta/quiniela-historical-selae-crosscheck.json loterias-ai/data/archive/manifest.json loterias-ai/data/archive/_meta
+            if git diff --cached --quiet; then
+              echo 'No semantic Quiniela historical SELAE change.'
+              exit 0
+            fi
+            git commit -m 'data(quiniela): cross-check historical archive against SELAE'
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "main moved during Quiniela historical cross-check attempt ${attempt}; recomputing"
+            sleep $((attempt * 2))
+          done
+
+          echo 'Unable to persist Quiniela historical cross-check after five recomputations.' >&2
+          exit 1
