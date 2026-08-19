@@ -1,0 +1,42 @@
+name: Loterias AI Botemania Current All Games Screen V1
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/jackpots/botemania-jpk-current-all-games-ev-screen-v1.mjs'
+      - '.github/workflows/loterias-ai-botemania-current-all-games-screen-v1.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-botemania-current-all-games-screen-v1
+  cancel-in-progress: true
+
+jobs:
+  screen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Screen every parsed Botemania Jackpot King title at current state
+        run: node loterias-ai/casino/jackpots/botemania-jpk-current-all-games-ev-screen-v1.mjs
+      - name: Persist screen
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE=loterias-ai/casino/jackpots/evidence/botemania-jpk-current-all-games-ev-screen-v1.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "$FILE"
+          git diff --cached --quiet && exit 0
+          git commit -m 'research(casino): persist current Botemania all-games EV screen'
+          git pull --rebase origin main
+          git push origin HEAD:main
