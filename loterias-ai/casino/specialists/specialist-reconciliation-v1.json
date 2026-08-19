@@ -1,0 +1,36 @@
+{
+  "version": "specialist-reconciliation-v1",
+  "generatedAt": "2026-08-19T10:02:00Z",
+  "truthModel": {
+    "validatedRuntimeSpecialists": 4,
+    "pokerstarsOfficialSeedsAwaitingRuntimeVerification": 8,
+    "legacyNoisyCatalogCandidates": 311,
+    "legacyNoisyCatalogCountsAsSpecialists": false
+  },
+  "validatedRuntime": {
+    "source": "official-game-specialists-v1.json (version official-game-specialists-v2)",
+    "count": 4,
+    "operators": {"playuzu-es":4,"pokerstars-es":0}
+  },
+  "pokerstarsSeeds": {
+    "source": "pokerstars-seeded-official-games-v1.json",
+    "count": 8,
+    "runtimeValidationResult": "GEO_REDIRECT_BLOCKED_OR_GENERIC_EXIT_PAGE",
+    "runtimeHttp200": 8,
+    "runtimeValidated": 0,
+    "policy": "Keep as known official-page seeds/research targets, but do not count as runtime-validated specialists until the official game page is verifiable from the execution environment."
+  },
+  "legacyCatalog": {
+    "sourceCommit": "6c44083cfa06a03d18087b10cbb792fb81531125",
+    "count": 311,
+    "state": "REJECTED_AS_NOISY_CATALOG_EXTRACTION",
+    "reason": "Naive page-text extraction included non-games and generic product/navigation text."
+  },
+  "guards": {
+    "noInflatedEmployeeCount": true,
+    "individualOfficialEvidencePreferred": true,
+    "thirdPartyCatalogsForbidden": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false
+  }
+}
