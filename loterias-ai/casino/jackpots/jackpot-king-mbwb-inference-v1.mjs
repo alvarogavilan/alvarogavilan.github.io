@@ -3,10 +3,12 @@ import fs from 'node:fs';
 
 const LEDGER='loterias-ai/casino/lightning/evidence/economic-readiness-ledger-v1.json';
 const OUT='loterias-ai/casino/jackpots/evidence/jackpot-king-mbwb-inference-v1.json';
+const SCREEN='loterias-ai/casino/jackpots/evidence/jackpot-king-spain-near-cap-research-v1.json';
 const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
 const median=a=>{if(!a.length)return null;const x=[...a].sort((m,n)=>m-n),i=Math.floor(x.length/2);return x.length%2?x[i]:(x[i-1]+x[i])/2};
 
 const ledger=read(LEDGER);
+const screen=read(SCREEN);
 const hz=ledger.jackpotKingHazardProspectiveV1||{};
 const resets=(hz.hardResets||[]).filter(r=>Number.isFinite(Number(r.fromEUR))&&Number.isFinite(Number(r.toEUR))&&Number(r.fromEUR)>Number(r.toEUR));
 const n=resets.length;
@@ -33,8 +35,26 @@ if(n>0&&Number.isFinite(reserveMedian)&&maxObservedTrigger>reserveMedian){
   };
 }
 
+const latestPot=Number.isFinite(Number(ledger.jackpotKingOfficialMonitor?.latest?.networkPotEUR))?Number(ledger.jackpotKingOfficialMonitor.latest.networkPotEUR):null;
+const exactSpainRoyal=Number.isFinite(Number(screen?.verifiedSpainThresholds?.royalMbwbEUR))?Number(screen.verifiedSpainThresholds.royalMbwbEUR):null;
+const exactSpainRegal=Number.isFinite(Number(screen?.verifiedSpainThresholds?.regalMbwbEUR))?Number(screen.verifiedSpainThresholds.regalMbwbEUR):null;
+const ratios=screen?.economicScreen||{};
+const capStatus=(cap)=>{
+  if(!Number.isFinite(cap)||!Number.isFinite(latestPot))return null;
+  const frac=latestPot/cap;
+  return {
+    capEUR:cap,
+    currentPotEUR:latestPot,
+    fractionOfCap:frac,
+    percentOfCap:100*frac,
+    optimisticAllMeterZone:frac>=Number(ratios?.optimisticIfAll038GoesToTargetPot?.minimumFractionOfCapForBreakEven||Infinity),
+    halfMeterZone:frac>=Number(ratios?.ifHalfOf038GoesToTargetPot?.minimumFractionOfCapForBreakEven||Infinity),
+    equalThreeWayZone:frac>=Number(ratios?.if038SplitEquallyAcrossThreePots?.minimumFractionOfCapForBreakEven||Infinity)
+  };
+};
+
 const out={
-  version:'jackpot-king-mbwb-inference-v1',
+  version:'jackpot-king-mbwb-inference-v1.1',
   generatedAt:new Date().toISOString(),
   sourceLedger:LEDGER,
   prospectiveFreezeVersion:hz.freezeVersion??null,
@@ -49,27 +69,47 @@ const out={
   },
   cleanResetEvents:resets,
   uniformHiddenTriggerResearch,
+  nearCapScreen:{
+    currentNetworkPotEUR:latestPot,
+    royal:capStatus(exactSpainRoyal),
+    regal:capStatus(exactSpainRegal),
+    researchThresholdFractions:{
+      optimisticAllMeter:Number(ratios?.optimisticIfAll038GoesToTargetPot?.minimumFractionOfCapForBreakEven||null),
+      halfMeter:Number(ratios?.ifHalfOf038GoesToTargetPot?.minimumFractionOfCapForBreakEven||null),
+      equalThreeWay:Number(ratios?.if038SplitEquallyAcrossThreePots?.minimumFractionOfCapForBreakEven||null)
+    }
+  },
   modelAgnostic:{
-    exactSpainRoyalMbwbEUR:null,
-    exactSpainRegalMbwbEUR:null,
+    exactSpainRoyalMbwbEUR:exactSpainRoyal,
+    exactSpainRegalMbwbEUR:exactSpainRegal,
     exactHazardLawKnown:false,
     currentPotToExactWinProbabilityConvertible:false
   },
   decision:{
-    nearCapEntryThresholdKnown:false,
+    nearCapEntryThresholdKnown:Boolean(exactSpainRoyal||exactSpainRegal)&&n>=10,
     positiveEVKnown:false,
     realMoneyAllowed:false,
-    reason:n<10?'INSUFFICIENT_CLEAN_FUTURE_RESETS':'HAZARD_FORM_NOT_PROVIDER_CONFIRMED'
+    reason:!(exactSpainRoyal||exactSpainRegal)?'EXACT_SPAIN_MBWB_NOT_YET_RESOLVED':n<10?'INSUFFICIENT_CLEAN_FUTURE_RESETS':'HAZARD_FORM_NOT_PROVIDER_CONFIRMED'
   },
   guards:{
     futureOnlyEvidence:true,
     legacyResetLabelsExcluded:true,
     uniformModelNeverPromotesAlone:true,
+    noCrossMarketThresholdSubstitution:true,
     noOptionalStopping:true,
     automaticBettingAllowed:false,
     realMoneyAllowed:false,
     realStakeEUR:0
   }
 };
+ledger.jackpotKingMbwbInferenceV1={
+  generatedAt:out.generatedAt,
+  progress:out.progress,
+  uniformHiddenTriggerResearch:out.uniformHiddenTriggerResearch,
+  nearCapScreen:out.nearCapScreen,
+  decision:out.decision,
+  guards:out.guards
+};
 fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
-console.log(JSON.stringify({progress:out.progress,uniformHiddenTriggerResearch:out.uniformHiddenTriggerResearch,decision:out.decision},null,2));
+fs.writeFileSync(LEDGER,JSON.stringify(ledger,null,2)+'\n');
+console.log(JSON.stringify({progress:out.progress,uniformHiddenTriggerResearch:out.uniformHiddenTriggerResearch,nearCapScreen:out.nearCapScreen,decision:out.decision},null,2));
