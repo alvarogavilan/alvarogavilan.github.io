@@ -5,6 +5,7 @@ on:
     - cron: '25 7 * * 1,5'
   push:
     paths:
+      - 'loterias-ai/scripts/quarantine-quiniela-structural-anomalies.mjs'
       - 'loterias-ai/scripts/enrich-quiniela-elige8-official.mjs'
       - 'loterias-ai/scripts/quiniela-official-financial-tournament.mjs'
       - 'loterias-ai/scripts/elige8-official-financial-tournament.mjs'
@@ -35,6 +36,7 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
 
+            node loterias-ai/scripts/quarantine-quiniela-structural-anomalies.mjs
             for i in 1 2; do
               BATCH_LIMIT=500 node loterias-ai/scripts/enrich-quiniela-elige8-official.mjs
               sleep 2
@@ -54,6 +56,7 @@ jobs:
               'loterias-ai/data/archive/_meta/archive-audit.json',
               'loterias-ai/data/archive/_meta/archive-coverage-priorities.json',
               'loterias-ai/data/archive/_meta/quiniela-elige8-official-enrichment.json',
+              'loterias-ai/data/archive/_meta/quiniela-structural-quarantine.json',
               'loterias-ai/data/archive/completeness-index.json',
               'loterias-ai/data/archive/manifest.json',
               'loterias-ai/data/backtests/elige8-official-financial-tournament.json',
