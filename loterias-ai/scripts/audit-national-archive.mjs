@@ -1,19 +1,20 @@
 import fs from 'node:fs';
 import path from 'node:path';
 const root='loterias-ai/data/archive';
-const expected={bonoloto:{recentEconomics:true},primitiva:{recentEconomics:true},euromillones:{recentEconomics:true},'gordo-primitiva':{recentEconomics:true},eurodreams:{recentEconomics:true},'loteria-nacional':{recentEconomics:false}};
+const expected={bonoloto:{recentEconomics:true},primitiva:{recentEconomics:true},euromillones:{recentEconomics:true},'gordo-primitiva':{recentEconomics:true},eurodreams:{recentEconomics:true},'loteria-nacional':{recentEconomics:false},quiniela:{recentEconomics:true},elige8:{recentEconomics:false},quinigol:{recentEconomics:true},lototurf:{recentEconomics:true},'quintuple-plus':{recentEconomics:true}};
 const hasEconomics=r=>Boolean((r.economics?.payouts&&Object.keys(r.economics.payouts).length)||(Array.isArray(r.economics?.categories)&&r.economics.categories.length));
 const hasOfficialEconomics=r=>Boolean(
   (Array.isArray(r.economics?.categories)&&r.economics.categories.length)&&(
     r.economics?.validation?.officialSELAE===true||
     r.economics?.officialSource?.provider==='SELAE'||
+    r.economics?.source?.provider==='SELAE'||
     r.result?.officialPrizeSchema?.provider==='SELAE'
   )
 );
 const tuple=a=>Array.isArray(a)?[...a].map(Number).sort((x,y)=>x-y).join(','):'';
 const conflictDate=c=>String(c?.drawDate??c?.date??'');
 const allowedResolutionStatuses=new Set(['RESOLVED_SOURCE_DATE_SHIFT','RESOLVED_OFFICIAL_CORRECTION','RESOLVED_CANONICAL_CONFIRMED']);
-const report={generatedAt:new Date().toISOString(),schemaVersion:4,games:{},totals:{duplicateDates:0,invalidDates:0,parseErrors:0,totalOfficialConflicts:0,resolvedOfficialConflicts:0,openOfficialConflicts:0,missingEconomicsOnRecentStoredDraws:0,officialEconomicsRecords:0},qualityGate:{pass:false,reasons:[]}};
+const report={generatedAt:new Date().toISOString(),schemaVersion:5,games:{},totals:{duplicateDates:0,invalidDates:0,parseErrors:0,totalOfficialConflicts:0,resolvedOfficialConflicts:0,openOfficialConflicts:0,missingEconomicsOnRecentStoredDraws:0,officialEconomicsRecords:0},qualityGate:{pass:false,reasons:[]}};
 for(const game of Object.keys(expected)){
  const dir=path.join(root,game);if(!fs.existsSync(dir))continue;
  const files=fs.readdirSync(dir).filter(f=>/^\d{4}\.json$/.test(f)).sort(),rows=[],parseErrors=[];
