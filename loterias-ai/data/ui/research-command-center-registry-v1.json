@@ -1,0 +1,94 @@
+{
+  "version": "research-command-center-registry-v1",
+  "generatedAt": "2026-08-19T09:34:00.000Z",
+  "purpose": "Permanent app registry for every active Loterias AI research lane. Live UI reads the referenced source artifacts directly.",
+  "appRoute": "/loterias-ai/centro/",
+  "policy": {
+    "progressIsNotEvidence": true,
+    "hiddenProspectivePerformanceMustRemainHidden": true,
+    "officialCasinoOperators": ["pokerstars-es", "playuzu-es"],
+    "nationalOutcomeSources": ["SELAE", "RTVE"],
+    "realMoneyDefault": false,
+    "authorizedStakeEUR": 0
+  },
+  "sections": [
+    {
+      "id": "lightning",
+      "label": "Lightning Roulette",
+      "statusSource": "../../casino/lightning/evidence/economic-readiness-ledger-v1.json",
+      "promotionSource": "../../casino/lightning/evidence/economic-promotion-gate-v1.json",
+      "lanes": ["timing-v3", "timing-v4", "lag8-v2", "lag8-v3", "physical-rng-v2", "number-selection-v2", "lag-family-v1", "past-lucky-v1", "transition-family-v1"]
+    },
+    {
+      "id": "xxxtreme",
+      "label": "XXXtreme Lightning Roulette",
+      "statusSource": "../../casino/xxxtreme/evidence/prospective-transition-family-v1-status.json",
+      "economicsSource": "../../casino/xxxtreme/evidence/economic-source-contract-v1.json",
+      "notes": "Same physical-table result can be reused across operators only when table/stream identity is demonstrated. Economic rules remain game-specific."
+    },
+    {
+      "id": "casiopea",
+      "label": "Casiopea Roulette · Playtech",
+      "protocolSource": "../../casino/casiopea/evidence/official-dual-venue-protocol-v1.json",
+      "operators": ["pokerstars-es", "playuzu-es"],
+      "status": "PREREGISTERED_OFFICIAL_DUAL_VENUE"
+    },
+    {
+      "id": "jackpot-king",
+      "label": "Jackpot King / MBWB",
+      "protocolSource": "../../casino/jackpots/evidence/jackpot-king-mbwb-protocol-v1.json",
+      "evStatusSource": "../../casino/jackpots/evidence/jackpot-king-state-dependent-ev-status-v1.json",
+      "operator": "pokerstars-es",
+      "status": "STATE_DEPENDENT_EV_RESEARCH_PRIORITY"
+    },
+    {
+      "id": "casino-specialists",
+      "label": "Per-game casino specialists",
+      "registrySource": "../../casino/specialists/official-game-specialists-v1.json",
+      "prioritySource": "../../casino/specialists/economic-priority-queue-v1.json",
+      "minimumOneSpecialistPerCataloguedGame": true,
+      "spinSpeedPolicy": "covariate_not_assumed_edge"
+    },
+    {
+      "id": "national-economic",
+      "label": "Spanish national games economic gates",
+      "statusSource": "../gates/real-money-status.json",
+      "games": ["primitiva", "bonoloto", "gordo-primitiva", "euromillones", "eurodreams", "loteria-nacional", "quiniela", "elige8", "quinigol", "lototurf", "quintuple-plus"]
+    },
+    {
+      "id": "national-physical",
+      "label": "Physical draw observables",
+      "protocolSource": "../../national-physical/evidence/physical-draw-observables-protocol-v1.json",
+      "videoManifestSource": "../../national-physical/evidence/rtve-video-manifest-v1.json",
+      "features": ["inter-ball timing", "draw duration", "extraction order", "mixing duration", "machine/drum changes", "relative visible speed", "regime changes"]
+    },
+    {
+      "id": "strategy-foundry",
+      "label": "Mass retrospective strategy foundry",
+      "statusSource": "../research/strategy-foundry-status.json"
+    },
+    {
+      "id": "quinigol-shadow",
+      "label": "Quinigol blinded falsification shadow",
+      "ledgerSource": "../shadow/quinigol-ledger.json",
+      "finalSource": "../shadow/quinigol-prospective-final-30.json"
+    },
+    {
+      "id": "primitiva-prospective",
+      "label": "Primitiva prospective lanes",
+      "sources": ["../research/primitiva-frequency4-prospective-status.json", "../research/metapleno-v315-prospective-status.json"]
+    }
+  ],
+  "ui": {
+    "todayShortcut": true,
+    "centerPage": true,
+    "autoRefreshSeconds": 60,
+    "showAdministrativeProgress": true,
+    "showHiddenInterimPerformance": false
+  },
+  "guards": {
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
