@@ -8,6 +8,7 @@ on:
       - 'loterias-ai/scripts/enrich-quiniela-elige8-official.mjs'
       - 'loterias-ai/scripts/quiniela-official-financial-tournament.mjs'
       - 'loterias-ai/scripts/elige8-official-financial-tournament.mjs'
+      - 'loterias-ai/scripts/audit-national-archive.mjs'
       - '.github/workflows/loterias-ai-quiniela-elige8-official.yml'
 permissions:
   contents: write
@@ -17,46 +18,80 @@ concurrency:
 jobs:
   enrich:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Enrich bounded official batches
+      - name: Recompute official enrichment on latest main and persist safely
         shell: bash
         run: |
-          for i in 1 2; do
-            BATCH_LIMIT=500 node loterias-ai/scripts/enrich-quiniela-elige8-official.mjs
-            sleep 2
-          done
-      - name: Persist safely and evaluate corrected final gates
-        shell: bash
-        run: |
-          mkdir -p /tmp/q8
-          cp -r loterias-ai/data/archive/quiniela /tmp/q8/
-          cp -r loterias-ai/data/archive/elige8 /tmp/q8/
-          cp loterias-ai/data/archive/_meta/quiniela-elige8-official-enrichment.json /tmp/q8/summary.json
-          git fetch origin main
-          git reset --hard origin/main
-          rm -rf loterias-ai/data/archive/quiniela loterias-ai/data/archive/elige8
-          cp -r /tmp/q8/quiniela loterias-ai/data/archive/
-          cp -r /tmp/q8/elige8 loterias-ai/data/archive/
-          cp /tmp/q8/summary.json loterias-ai/data/archive/_meta/quiniela-elige8-official-enrichment.json
-          node loterias-ai/scripts/quiniela-official-financial-tournament.mjs
-          node loterias-ai/scripts/elige8-official-financial-tournament.mjs
-          node loterias-ai/scripts/build-national-archive-index.mjs
-          node loterias-ai/scripts/build-completeness-index.mjs
-          node loterias-ai/scripts/audit-national-archive.mjs
-          node loterias-ai/scripts/build-real-money-status.mjs
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';import {execFileSync} from 'node:child_process';
-          const files=['loterias-ai/data/archive/_meta/archive-audit.json','loterias-ai/data/archive/_meta/quiniela-elige8-official-enrichment.json','loterias-ai/data/archive/completeness-index.json','loterias-ai/data/archive/manifest.json','loterias-ai/data/backtests/elige8-official-financial-tournament.json','loterias-ai/data/backtests/quiniela-official-financial-tournament.json','loterias-ai/data/gates/real-money-status.json'];
-          const stable=x=>{const y=structuredClone(x);delete y.generatedAt;return y};
-          for(const file of files){if(!fs.existsSync(file))continue;let previousText;try{previousText=execFileSync('git',['show',`HEAD:${file}`],{encoding:'utf8'})}catch{continue}try{const previous=JSON.parse(previousText),current=JSON.parse(fs.readFileSync(file,'utf8'));if(JSON.stringify(stable(previous))===JSON.stringify(stable(current)))fs.writeFileSync(file,previousText.endsWith('\n')?previousText:`${previousText}\n`)}catch{}}
-          NODE
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add loterias-ai/data/archive loterias-ai/data/backtests/quiniela-official-financial-tournament.json loterias-ai/data/backtests/elige8-official-financial-tournament.json loterias-ai/data/gates
-          git commit -m 'data(loterias-ai): update and evaluate official Quiniela and Elige8 archive' || exit 0
-          git push origin HEAD:main
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+
+            for i in 1 2; do
+              BATCH_LIMIT=500 node loterias-ai/scripts/enrich-quiniela-elige8-official.mjs
+              sleep 2
+            done
+            node loterias-ai/scripts/quiniela-official-financial-tournament.mjs
+            node loterias-ai/scripts/elige8-official-financial-tournament.mjs
+            node loterias-ai/scripts/build-national-archive-index.mjs
+            node loterias-ai/scripts/build-completeness-index.mjs
+            node loterias-ai/scripts/audit-national-archive.mjs
+            node loterias-ai/scripts/build-archive-coverage-priorities.mjs
+            node loterias-ai/scripts/build-real-money-status.mjs
+
+            node --input-type=module <<'NODE'
+            import fs from 'node:fs';
+            import {execFileSync} from 'node:child_process';
+            const files=[
+              'loterias-ai/data/archive/_meta/archive-audit.json',
+              'loterias-ai/data/archive/_meta/archive-coverage-priorities.json',
+              'loterias-ai/data/archive/_meta/quiniela-elige8-official-enrichment.json',
+              'loterias-ai/data/archive/completeness-index.json',
+              'loterias-ai/data/archive/manifest.json',
+              'loterias-ai/data/backtests/elige8-official-financial-tournament.json',
+              'loterias-ai/data/backtests/quiniela-official-financial-tournament.json',
+              'loterias-ai/data/gates/real-money-status.json'
+            ];
+            const stripVolatile=x=>{
+              if(Array.isArray(x))return x.map(stripVolatile);
+              if(!x||typeof x!=='object')return x;
+              const y={};
+              for(const [k,v] of Object.entries(x)){
+                if(['generatedAt','capturedAt','checkedAt','updatedAt'].includes(k))continue;
+                y[k]=stripVolatile(v);
+              }
+              return y;
+            };
+            for(const file of files){
+              if(!fs.existsSync(file))continue;
+              let previousText;
+              try{previousText=execFileSync('git',['show',`HEAD:${file}`],{encoding:'utf8'})}catch{continue}
+              try{
+                const previous=JSON.parse(previousText),current=JSON.parse(fs.readFileSync(file,'utf8'));
+                if(JSON.stringify(stripVolatile(previous))===JSON.stringify(stripVolatile(current)))
+                  fs.writeFileSync(file,previousText.endsWith('\n')?previousText:`${previousText}\n`);
+              }catch{}
+            }
+            NODE
+
+            git add loterias-ai/data/archive loterias-ai/data/backtests/quiniela-official-financial-tournament.json loterias-ai/data/backtests/elige8-official-financial-tournament.json loterias-ai/data/gates
+            if git diff --cached --quiet; then
+              echo 'No semantic archive change.'
+              exit 0
+            fi
+            git commit -m 'data(loterias-ai): update and evaluate official Quiniela and Elige8 archive'
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "main moved during attempt ${attempt}; recomputing from latest main"
+          done
+          echo 'Unable to persist after five recomputations.' >&2
+          exit 1
