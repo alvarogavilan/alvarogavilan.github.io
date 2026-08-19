@@ -1,0 +1,52 @@
+{
+  "version": "botemania-jpk-allocation-validation-result-v1.1",
+  "frozen": true,
+  "frozenAt": "2026-08-19T22:07:14.116Z",
+  "protocolFrozenAt": "2026-08-19T20:40:00+02:00",
+  "operator": "botemania-es",
+  "outcome": "PASSED_NETWORK_ALLOCATION",
+  "boundaryRule": "FIRST_CHRONOLOGICAL_BOUNDARY_SATISFYING_ALL_PREREGISTERED_MINIMUM_COUNTS_NO_OPTIONAL_STOPPING",
+  "boundarySnapshot": {
+    "firstFrom": "2026-08-19T18:43:44.602Z",
+    "lastTo": "2026-08-19T22:02:54.735Z",
+    "cleanFutureIntervals": 20,
+    "cumulativeActiveGrowthEUR": 85.7,
+    "informativeIntervals": 15,
+    "weightedAllocationShares": {
+      "JACKPOT_KING": 0.603384,
+      "REGAL": 0.19825,
+      "ROYAL": 0.198366
+    },
+    "weightedRegalRoyalDifference": 0.000117,
+    "informativeIntervalsInsideBroadBand": 15,
+    "informativeIntervalsInsideBroadBandFraction": 1,
+    "checks": {
+      "enoughIntervals": true,
+      "enoughGrowth": true,
+      "enoughInformative": true,
+      "weightedShareBands": true,
+      "regalRoyalSymmetry": true,
+      "perIntervalBroadBand": true
+    }
+  },
+  "interpretation": {
+    "proves": "Future clean network meter increments satisfy the preregistered network-level approximately 60/20/20 allocation criteria at the first completion boundary.",
+    "doesNotProve": [
+      "Exact Fishin Frenzy per-title contribution split",
+      "Exact Spain Royal/Regal MBWB",
+      "Exact jackpot hazard",
+      "Positive EV",
+      "Authorization to wager"
+    ]
+  },
+  "guards": {
+    "firstCompletionBoundary": true,
+    "postBoundaryIntervalsExcludedFromDecision": true,
+    "immutableSnapshot": true,
+    "noRetuning": true,
+    "noOptionalStopping": true,
+    "economicPromotionByThisResultAlone": false,
+    "realMoneyAllowed": false,
+    "automaticBettingAllowed": false
+  }
+}
