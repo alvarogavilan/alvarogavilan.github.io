@@ -1,0 +1,43 @@
+name: Loterias AI Edge Live Fast Watch V1
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: loterias-ai-edge-live-fast-watch-v1
+  cancel-in-progress: true
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Watch Botemania meters every 15 seconds and alert exact execution transitions
+        env:
+          EDGE_LIVE_TELEGRAM_BOT_TOKEN: ${{ secrets.EDGE_LIVE_TELEGRAM_BOT_TOKEN }}
+          EDGE_LIVE_TELEGRAM_CHAT_ID: ${{ secrets.EDGE_LIVE_TELEGRAM_CHAT_ID }}
+          EDGE_LIVE_URL: https://alvarogavilan.github.io/loterias-ai/edge-live/
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 18); do
+            echo "EDGE LIVE fast sample $i/18 at $(date -u +%FT%TZ)"
+            node loterias-ai/edge-live/botemania-fast-meter-sample-v1.mjs
+            node loterias-ai/casino/jackpots/botemania-jpk-flow-model-v1.mjs
+            node loterias-ai/casino/jackpots/botemania-jpk-near-cap-ev-scenarios-v1.mjs
+            node loterias-ai/casino/jackpots/botemania-jpk-live-gate-v1.mjs
+            node loterias-ai/casino/five-euro-real-pilot-gate-v1.mjs
+            node loterias-ai/edge-live/botemania-public-stake-probe-v1.mjs
+            node loterias-ai/edge-live/edge-live-execution-plan-v1.mjs
+            node loterias-ai/edge-live/telegram-edge-alert-v1.mjs
+            if [ "$i" -lt 18 ]; then sleep 15; fi
+          done
