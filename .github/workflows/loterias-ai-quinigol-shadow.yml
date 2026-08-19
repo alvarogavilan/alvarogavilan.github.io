@@ -1,5 +1,5 @@
 # Cost control: Quinigol shadow advances when the official archive changes; no timer required.
-# One-time hash-migration validation trigger; no recurring schedule added.
+# V3, untouched V4 replication and concentration robustness advance in the same official-data cycle.
 name: Loterias AI Quinigol Prospective Shadow
 on:
   workflow_dispatch:
@@ -7,8 +7,13 @@ on:
     paths:
       - 'loterias-ai/scripts/quinigol-prospective-shadow.mjs'
       - 'loterias-ai/scripts/quinigol-prospective-finalize-30.mjs'
+      - 'loterias-ai/scripts/quinigol-replication-v4.mjs'
+      - 'loterias-ai/scripts/quinigol-replication-v4-finalize-30.mjs'
+      - 'loterias-ai/scripts/quinigol-concentration-robustness-finalize-v1.mjs'
       - 'loterias-ai/data/archive/quinigol/**'
       - 'loterias-ai/data/policies/quinigol-shadow-policy.json'
+      - 'loterias-ai/data/policies/quinigol-replication-v4-freeze.json'
+      - 'loterias-ai/data/policies/quinigol-concentration-robustness-freeze-v1.json'
       - '.github/workflows/loterias-ai-quinigol-shadow.yml'
 permissions:
   contents: write
@@ -22,8 +27,16 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: {node-version: 22}
-      - run: node loterias-ai/scripts/quinigol-prospective-shadow.mjs
-      - run: node loterias-ai/scripts/quinigol-prospective-finalize-30.mjs
+      - name: Advance blinded V3
+        run: |
+          node loterias-ai/scripts/quinigol-prospective-shadow.mjs
+          node loterias-ai/scripts/quinigol-prospective-finalize-30.mjs
+      - name: Advance untouched V4 replication
+        run: |
+          node loterias-ai/scripts/quinigol-replication-v4.mjs
+          node loterias-ai/scripts/quinigol-replication-v4-finalize-30.mjs
+      - name: Adjudicate preregistered concentration robustness
+        run: node loterias-ai/scripts/quinigol-concentration-robustness-finalize-v1.mjs
       - run: node loterias-ai/casino/lightning/research/economic-readiness-ledger-v1.mjs
       - run: node loterias-ai/casino/lightning/research/economic-promotion-gate-v1.mjs
       - name: Validate blinded/final safety
@@ -34,29 +47,41 @@ jobs:
           if(l.guards?.first30Only!==true||l.guards?.noOptionalStopping!==true||l.guards?.post30CannotRescue!==true||l.guards?.realMoneyAllowed!==false)throw new Error('Quinigol ledger guard regression');
           if((l.summary?.observedJornadas||0)<30&&(l.summary?.simulatedROI!==null||l.summary?.profitableJornadas!==null||l.disclosure?.interimROIHidden!==true))throw new Error('Quinigol interim blindness regression');
           const p='loterias-ai/data/shadow/quinigol-prospective-final-30.json';
-          if(fs.existsSync(p)){const f=JSON.parse(fs.readFileSync(p,'utf8'));if(f.fixedBoundary?.jornadas!==30||f.fixedBoundary?.post30CanRescue!==false||f.guards?.noRetuning!==true||f.guards?.noOptionalStopping!==true||f.guards?.realMoneyAllowed!==false||f.gates?.realMoneyPass!==false)throw new Error('Quinigol final guard regression')}
+          if(fs.existsSync(p)){const f=JSON.parse(fs.readFileSync(p,'utf8'));if(f.fixedBoundary?.jornadas!==30||f.fixedBoundary?.post30CanRescue!==false||f.guards?.noRetuning!==true||f.guards?.noOptionalStopping!==true||f.guards?.realMoneyAllowed!==false||f.gates?.realMoneyPass!==false)throw new Error('Quinigol V3 final guard regression')}
+          const v4l=JSON.parse(fs.readFileSync('loterias-ai/data/shadow/quinigol-replication-v4-ledger.json','utf8'));
+          if(v4l.guards?.preRegisteredBeforeV3Outcome!==true||v4l.guards?.activationIndependentOfV3Outcome!==true||v4l.guards?.noRetuning!==true||v4l.guards?.noOptionalStopping!==true||v4l.guards?.realMoneyAllowed!==false)throw new Error('Quinigol V4 custody regression');
+          const v4p='loterias-ai/data/shadow/quinigol-replication-v4-final-30.json';
+          if(fs.existsSync(v4p)){const f=JSON.parse(fs.readFileSync(v4p,'utf8'));if(f.fixedBoundary?.jornadas!==30||f.guards?.noRetuning!==true||f.guards?.noOptionalStopping!==true||f.guards?.realMoneyAllowed!==false||f.gates?.realMoneyPass!==false)throw new Error('Quinigol V4 final guard regression')}
+          const robust=JSON.parse(fs.readFileSync('loterias-ai/data/shadow/quinigol-concentration-robustness-status-v1.json','utf8'));
+          if(robust.guards?.baseFailureCanBeRescued!==false||robust.guards?.interimPerformanceRead!==false||robust.guards?.noOptionalStopping!==true||robust.guards?.realMoneyAllowed!==false)throw new Error('Quinigol concentration robustness regression');
           const r=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/economic-readiness-ledger-v1.json','utf8'));if(r.realMoneyAllowed!==false||r.promotionPolicy?.hiddenPerformanceMustRemainHidden!==true)throw new Error('economic readiness guard regression');
           const g=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/economic-promotion-gate-v1.json','utf8'));if(g.policy?.onlyFixedBoundaryFinalsMayPromote!==true||g.policy?.hiddenInterimPerformanceNeverRead!==true||g.policy?.realMoneyAllowed!==false)throw new Error('economic promotion gate regression');
           NODE
-      - name: Persist blinded ledger, fixed final and economic radar safely
+      - name: Persist V3 V4 robustness and economic radar safely
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p /tmp/quinigol-shadow
-          cp loterias-ai/data/shadow/quinigol-ledger.json /tmp/quinigol-shadow/quinigol-ledger.json
-          cp loterias-ai/casino/lightning/evidence/economic-readiness-ledger-v1.json /tmp/quinigol-shadow/economic-readiness-ledger-v1.json
-          cp loterias-ai/casino/lightning/evidence/economic-promotion-gate-v1.json /tmp/quinigol-shadow/economic-promotion-gate-v1.json
-          if [ -f loterias-ai/data/shadow/quinigol-prospective-final-30.json ]; then cp loterias-ai/data/shadow/quinigol-prospective-final-30.json /tmp/quinigol-shadow/quinigol-prospective-final-30.json; fi
+          for f in \
+            loterias-ai/data/shadow/quinigol-ledger.json \
+            loterias-ai/data/shadow/quinigol-replication-v4-ledger.json \
+            loterias-ai/data/shadow/quinigol-concentration-robustness-status-v1.json \
+            loterias-ai/casino/lightning/evidence/economic-readiness-ledger-v1.json \
+            loterias-ai/casino/lightning/evidence/economic-promotion-gate-v1.json; do cp "$f" /tmp/quinigol-shadow/; done
+          for f in loterias-ai/data/shadow/quinigol-prospective-final-30.json loterias-ai/data/shadow/quinigol-replication-v4-final-30.json; do [ ! -f "$f" ] || cp "$f" /tmp/quinigol-shadow/; done
           git fetch origin main
           git reset --hard origin/main
           mkdir -p loterias-ai/data/shadow loterias-ai/casino/lightning/evidence
           cp /tmp/quinigol-shadow/quinigol-ledger.json loterias-ai/data/shadow/quinigol-ledger.json
+          cp /tmp/quinigol-shadow/quinigol-replication-v4-ledger.json loterias-ai/data/shadow/quinigol-replication-v4-ledger.json
+          cp /tmp/quinigol-shadow/quinigol-concentration-robustness-status-v1.json loterias-ai/data/shadow/quinigol-concentration-robustness-status-v1.json
           cp /tmp/quinigol-shadow/economic-readiness-ledger-v1.json loterias-ai/casino/lightning/evidence/economic-readiness-ledger-v1.json
           cp /tmp/quinigol-shadow/economic-promotion-gate-v1.json loterias-ai/casino/lightning/evidence/economic-promotion-gate-v1.json
-          if [ -f /tmp/quinigol-shadow/quinigol-prospective-final-30.json ]; then cp /tmp/quinigol-shadow/quinigol-prospective-final-30.json loterias-ai/data/shadow/quinigol-prospective-final-30.json; fi
+          [ ! -f /tmp/quinigol-shadow/quinigol-prospective-final-30.json ] || cp /tmp/quinigol-shadow/quinigol-prospective-final-30.json loterias-ai/data/shadow/quinigol-prospective-final-30.json
+          [ ! -f /tmp/quinigol-shadow/quinigol-replication-v4-final-30.json ] || cp /tmp/quinigol-shadow/quinigol-replication-v4-final-30.json loterias-ai/data/shadow/quinigol-replication-v4-final-30.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add loterias-ai/data/shadow/quinigol-ledger.json loterias-ai/data/shadow/quinigol-prospective-final-30.json loterias-ai/casino/lightning/evidence/economic-readiness-ledger-v1.json loterias-ai/casino/lightning/evidence/economic-promotion-gate-v1.json 2>/dev/null || true
+          git add loterias-ai/data/shadow/quinigol-ledger.json loterias-ai/data/shadow/quinigol-replication-v4-ledger.json loterias-ai/data/shadow/quinigol-concentration-robustness-status-v1.json loterias-ai/data/shadow/quinigol-prospective-final-30.json loterias-ai/data/shadow/quinigol-replication-v4-final-30.json loterias-ai/casino/lightning/evidence/economic-readiness-ledger-v1.json loterias-ai/casino/lightning/evidence/economic-promotion-gate-v1.json 2>/dev/null || true
           git diff --cached --quiet && exit 0
-          git commit -m 'data(loterias-ai): advance blinded Quinigol and economic radar'
+          git commit -m 'data(loterias-ai): advance blinded Quinigol V3 V4 robustness and economic radar'
           git push origin HEAD:main
