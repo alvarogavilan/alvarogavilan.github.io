@@ -1,0 +1,47 @@
+name: Loterias AI Botemania Jackpot King Observer V1
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/jackpots/botemania-jackpot-king-observer-v1.mjs'
+      - '.github/workflows/loterias-ai-botemania-jackpot-king-observer-v1.yml'
+  schedule:
+    - cron: '*/5 * * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-botemania-jackpot-king-observer-v1
+  cancel-in-progress: true
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Capture Botemania Jackpot King public state
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            node loterias-ai/casino/jackpots/botemania-jackpot-king-observer-v1.mjs
+            git add loterias-ai/casino/jackpots/evidence/botemania-jackpot-king-observer-v1.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'data(casino): capture Botemania Jackpot King state'
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
