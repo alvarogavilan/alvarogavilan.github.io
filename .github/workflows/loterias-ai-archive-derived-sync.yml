@@ -2,6 +2,16 @@ name: Loterias AI Archive Derived Sync
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows:
+      - 'Loterias AI Primitiva Official Result Crosscheck'
+      - 'Loterias AI Euromillones Official 5plus2 Crosscheck'
+      - 'Loterias AI Gordo Official Result Crosscheck'
+      - 'Loterias AI Bonoloto Official SELAE RSS Sync'
+      - 'Loterias AI Quiniela Elige8 Official'
+      - 'Loterias AI Nacional Persisted SELAE Certification'
+    types: [completed]
+    branches: [main]
   push:
     branches: [main]
     paths:
