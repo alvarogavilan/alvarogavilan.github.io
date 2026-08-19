@@ -1,0 +1,43 @@
+name: Loterias AI Bonoloto Official Result Cross-check
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '52 * * * *'
+  push:
+    paths:
+      - 'loterias-ai/scripts/crosscheck-bonoloto-official-results.mjs'
+      - '.github/workflows/loterias-ai-bonoloto-official-result-crosscheck.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-bonoloto-official-result-crosscheck
+  cancel-in-progress: true
+jobs:
+  crosscheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Cross-check unvalidated Bonoloto results against SELAE
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            BATCH_LIMIT=120 node loterias-ai/scripts/crosscheck-bonoloto-official-results.mjs
+            node loterias-ai/scripts/build-national-archive-index.mjs
+            node loterias-ai/scripts/build-completeness-index.mjs
+            git add loterias-ai/data/archive
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'data(bonoloto): persist official SELAE 6+C+R cross-checks'
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt * 2))
+          done
+          exit 1
