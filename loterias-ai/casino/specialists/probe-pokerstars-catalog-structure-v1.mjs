@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+const URL='https://www.pokerstars.es/all-games-list/';
+const r=await fetch(URL,{headers:{accept:'text/html','user-agent':'loterias-ai-catalog-structure-probe/1.0'}});const html=await r.text();if(!r.ok)throw new Error(`HTTP ${r.status}`);
+const needles=['Live Lightning Roulette','Live XXXtreme Ruleta Relampago En Vivo','Manolo El del Bombo','King Kong Cash','Eye of Horus','Aviator'];
+const contexts=[];for(const needle of needles){let from=0,n=0;while(n<3){const i=html.toLowerCase().indexOf(needle.toLowerCase(),from);if(i<0)break;contexts.push({needle,index:i,context:html.slice(Math.max(0,i-500),Math.min(html.length,i+800))});from=i+needle.length;n++;}}
+const attrs={dataGame:[...html.matchAll(/data-[a-z0-9_-]*(?:game|title|name)[a-z0-9_-]*=["']([^"']{2,160})["']/gi)].slice(0,200).map(m=>m[0]),jsonNames:[...html.matchAll(/"(?:gameName|displayName|title|name)"\s*:\s*"([^"]{2,120})"/gi)].slice(0,300).map(m=>m[0]),gameUrls:[...html.matchAll(/https?:\\?\/\\?\/[^"']*pokerstars\.es\\?\/casino\\?\/game\\?\/[^"']+/gi)].slice(0,100).map(m=>m[0])};
+const out={version:'pokerstars-catalog-structure-probe-v1',generatedAt:new Date().toISOString(),url:URL,httpStatus:r.status,pageSha256:crypto.createHash('sha256').update(html).digest('hex'),htmlBytes:Buffer.byteLength(html),contexts,attrs,guards:{officialPokerStarsOnly:true,noGameClaimsFromProbe:true,realMoneyAllowed:false}};fs.mkdirSync('loterias-ai/casino/specialists/evidence',{recursive:true});fs.writeFileSync('loterias-ai/casino/specialists/evidence/pokerstars-catalog-structure-probe-v1.json',JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify({htmlBytes:out.htmlBytes,contexts:contexts.map(x=>x.needle),dataGameCount:attrs.dataGame.length,jsonNameCount:attrs.jsonNames.length,gameUrlCount:attrs.gameUrls.length},null,2));
