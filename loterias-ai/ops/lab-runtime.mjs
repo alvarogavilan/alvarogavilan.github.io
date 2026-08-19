@@ -99,7 +99,12 @@ if (executed > 0) {
     'loterias-ai/data/shadow/quinigol-ledger.json',
     'loterias-ai/data/shadow/quinigol-prospective-final-30.json',
     'loterias-ai/casino/lightning/evidence/economic-readiness-ledger-v1.json',
-    'loterias-ai/casino/lightning/evidence/economic-promotion-gate-v1.json'
+    'loterias-ai/casino/lightning/evidence/economic-promotion-gate-v1.json',
+    'loterias-ai/casino/xxxtreme/data/casinoorg-xxxtremelightningroulette-segment-v1.jsonl',
+    'loterias-ai/casino/xxxtreme/evidence/authoritative-segment-v1-status.json',
+    'loterias-ai/casino/xxxtreme/evidence/prospective-transition-family-v1-status.json',
+    'loterias-ai/casino/xxxtreme/evidence/prospective-selected-family-v1-status.json',
+    'loterias-ai/casino/xxxtreme/evidence/prospective-selected-family-v2-status.json'
   ] });
   derivedEconomicState = derivedOk ? 'SUCCESS' : 'FAILED_NONCRITICAL'; events.push({ id: 'derived-economic-state', status: derivedEconomicState, copiedOutputs: copied });
   fs.appendFileSync(path.join(logsDir, 'derived-economic-state.log'), `\n[${new Date().toISOString()}] status=${derivedEconomicState} exit=${derived.status}\n${derived.stdout || ''}${derived.stderr || ''}\n`);
