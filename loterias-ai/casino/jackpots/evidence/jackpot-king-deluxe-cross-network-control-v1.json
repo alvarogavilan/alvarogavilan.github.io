@@ -1,8 +1,8 @@
 {
-  "version": "jackpot-king-deluxe-cross-network-control-v1",
-  "generatedAt": "2026-08-19T17:31:00Z",
+  "version": "jackpot-king-deluxe-cross-network-control-v1.1",
+  "generatedAt": "2026-08-19T17:33:00Z",
   "purpose": "DISCOVERY_CONTROL_ONLY_NOT_SPAIN_VALIDATION",
-  "network": "Betfair UK Jackpot King Deluxe public indexed snapshots",
+  "network": "Betfair UK Jackpot King Deluxe public indexed snapshots plus published PlayOJO winner records",
   "knownControlParameters": {
     "royalSeedGBP": 500,
     "royalMbwbGBP": 3500,
@@ -72,10 +72,23 @@
       "source": "https://www.playojo.com/blog/highest-paying-games-december-25/"
     }
   ],
+  "betaAlphaOneDiscoveryFit": {
+    "family": "Beta(alpha,1) hidden threshold on normalized seed-to-MBWB progress",
+    "inputTier": "REGAL",
+    "nPublishedWins": 2,
+    "mleAlpha": 3.584342,
+    "exact95PctIntervalApprox": {
+      "lower": 0.43408,
+      "upper": 9.985338
+    },
+    "derivation": "For q_i~Beta(alpha,1), -ln(q_i) is Exponential(rate alpha); alpha_MLE=n/sum(-ln q_i), with chi-square interval from 2*alpha*sum(-ln q_i).",
+    "interpretation": "The sample is far too small to identify the hazard. It only motivates stress-testing the Botemania sensitivity family through alpha approximately 10 rather than stopping at alpha 3."
+  },
   "conclusion": {
     "crossNetworkAllocationReplication": true,
     "royalResetObserved": true,
     "winnerSampleTooSmallForHazardFit": true,
+    "stressGridToAlpha10DataMotivated": true,
     "supportsSharedDeluxeMechanicsPrior": true,
     "provesBotemaniaSpainMbwb": false,
     "provesBotemaniaSpainHazard": false,
