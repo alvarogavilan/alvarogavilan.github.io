@@ -2,11 +2,18 @@ name: Loterias AI Edge Live Fast Watch V1
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/edge-live/botemania-fast-meter-sample-v1.mjs'
+      - 'loterias-ai/edge-live/telegram-edge-alert-v1.mjs'
+      - 'loterias-ai/edge-live/edge-live-execution-plan-v1.mjs'
+      - '.github/workflows/loterias-ai-edge-live-fast-watch-v1.yml'
   schedule:
     - cron: '*/5 * * * *'
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: loterias-ai-edge-live-fast-watch-v1
@@ -18,6 +25,8 @@ jobs:
     timeout-minutes: 6
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -41,3 +50,23 @@ jobs:
             node loterias-ai/edge-live/telegram-edge-alert-v1.mjs
             if [ "$i" -lt 18 ]; then sleep 15; fi
           done
+      - name: Persist only Telegram transition state
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f loterias-ai/edge-live/telegram-alert-state.json ]; then exit 0; fi
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git reset --hard HEAD
+          git checkout HEAD -- loterias-ai/edge-live/telegram-alert-state.json 2>/dev/null || true
+          # Restore state produced by the watcher if checkout removed an untracked file.
+          # The alert script creates/updates it only on an actual transition.
+          if [ ! -f loterias-ai/edge-live/telegram-alert-state.json ]; then exit 0; fi
+          git add loterias-ai/edge-live/telegram-alert-state.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'data(edge-live): persist fast Telegram transition state'
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
