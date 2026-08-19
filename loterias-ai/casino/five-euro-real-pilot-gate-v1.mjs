@@ -7,6 +7,7 @@ const BOT_ALLOC='loterias-ai/casino/jackpots/evidence/botemania-jpk-allocation-p
 const BLACKJACK='loterias-ai/casino/playuzu/evidence/blackjack-exact-lobby-economics-v1.json';
 const LIGHTNING='loterias-ai/casino/lightning/evidence/economic-readiness-ledger-v1.json';
 const OUT='loterias-ai/casino/evidence/five-euro-real-pilot-gate-v1.json';
+const MAX_MANUAL_PILOT_EUR=5;
 
 const botLive=read(BOT_LIVE)||{};
 const botAlloc=read(BOT_ALLOC)||{};
@@ -35,54 +36,23 @@ const lightningEligible=
   lightningEconomicPass;
 
 const lanes=[
-  {
-    id:'botemania-jackpot-king',
-    eligible:botemaniaEligible,
-    evidence:{
-      liveGateState:botLive?.state||null,
-      economicPromotionCandidate:botLive?.decision?.economicPromotionCandidate===true,
-      exactSpainMbwbKnown:botLive?.evidence?.exactSpainMbwbKnown===true,
-      exactHazardKnown:botLive?.evidence?.exactHazardKnown===true,
-      currentScreenPass:botLive?.current?.modelScreen?.pass===true,
-      networkAllocationProspectivelyValidated:botAlloc?.decision?.networkAllocationProspectivelyValidated===true,
-      bestConservativeRtp:botLive?.current?.modelScreen?.bestConservativeRtp??null
-    }
-  },
-  {
-    id:'playuzu-goal-goal-goal-blackjack',
-    eligible:blackjackEligible,
-    evidence:{
-      game:blackjack?.strongestCurrentCandidate?.name||null,
-      exactRtpPct:blackjack?.strongestCurrentCandidate?.exactRtpPct??null,
-      observedInternalPlusPercent:blackjack?.strongestCurrentCandidate?.observedInternalPlusPercent??null,
-      conditionalEffectiveRtpPctIfFieldMapsOneToOne:(blackjack?.games||[])[0]?.conditionalEffectiveRtpPctIfFieldMapsOneToOne??null,
-      rewardFieldSemanticMappingFullyConfirmed:blackjack?.gates?.rewardFieldSemanticMappingFullyConfirmed===true,
-      exactRulesStrategyAudited:blackjack?.gates?.exactRulesStrategyAudited===true,
-      positiveEvLowerBoundAboveOne:blackjack?.gates?.positiveEvLowerBoundAboveOne===true
-    }
-  },
-  {
-    id:'lightning-roulette',
-    eligible:lightningEligible,
-    evidence:{
-      strongestDirectEconomicLane:lightning?.strongestDirectEconomicLane||null,
-      fixedFinalEconomicPass:lightningEconomicPass,
-      strongestCurrentLead:lightning?.strongestCurrentLead||null
-    }
-  }
+  {id:'botemania-jackpot-king',eligible:botemaniaEligible,evidence:{liveGateState:botLive?.state||null,economicPromotionCandidate:botLive?.decision?.economicPromotionCandidate===true,exactSpainMbwbKnown:botLive?.evidence?.exactSpainMbwbKnown===true,exactHazardKnown:botLive?.evidence?.exactHazardKnown===true,currentScreenPass:botLive?.current?.modelScreen?.pass===true,networkAllocationProspectivelyValidated:botAlloc?.decision?.networkAllocationProspectivelyValidated===true,bestConservativeRtp:botLive?.current?.modelScreen?.bestConservativeRtp??null}},
+  {id:'playuzu-goal-goal-goal-blackjack',eligible:blackjackEligible,evidence:{game:blackjack?.strongestCurrentCandidate?.name||null,exactRtpPct:blackjack?.strongestCurrentCandidate?.exactRtpPct??null,observedInternalPlusPercent:blackjack?.strongestCurrentCandidate?.observedInternalPlusPercent??null,conditionalEffectiveRtpPctIfFieldMapsOneToOne:(blackjack?.games||[])[0]?.conditionalEffectiveRtpPctIfFieldMapsOneToOne??null,rewardFieldSemanticMappingFullyConfirmed:blackjack?.gates?.rewardFieldSemanticMappingFullyConfirmed===true,exactRulesStrategyAudited:blackjack?.gates?.exactRulesStrategyAudited===true,positiveEvLowerBoundAboveOne:blackjack?.gates?.positiveEvLowerBoundAboveOne===true}},
+  {id:'lightning-roulette',eligible:lightningEligible,evidence:{strongestDirectEconomicLane:lightning?.strongestDirectEconomicLane||null,fixedFinalEconomicPass:lightningEconomicPass,strongestCurrentLead:lightning?.strongestCurrentLead||null}}
 ];
 
-const scientificallyEligibleLanes=lanes.filter(x=>x.eligible).map(x=>x.id);
+const eligibleLanes=lanes.filter(x=>x.eligible).map(x=>x.id);
+const manualPilotEligible=eligibleLanes.length>0;
 const out={
-  version:'five-euro-real-pilot-gate-v1',
+  version:'five-euro-real-pilot-gate-v1.1',
   generatedAt:new Date().toISOString(),
-  purpose:'Paper-only scientific promotion monitor. Casino experiments never authorize real-money stakes.',
+  purpose:'Strict manual pilot gate. Never places bets automatically; allows at most one EUR5 manual pilot only after a lane passes its economic and scientific gates.',
   humanAuthorization:{
-    maxTotalPilotStakeEUR:0,
-    oneBudgetOnly:false,
-    manualPlacementOnly:false,
+    maxTotalPilotStakeEUR:manualPilotEligible?MAX_MANUAL_PILOT_EUR:0,
+    oneBudgetOnly:true,
+    manualPlacementOnly:true,
     automaticBettingAllowed:false,
-    realMoneyAllowed:false,
+    realMoneyAllowed:manualPilotEligible,
     noReload:true,
     noLossChasing:true
   },
@@ -96,27 +66,26 @@ const out={
   },
   lanes,
   scientificDecision:{
-    state:scientificallyEligibleLanes.length?'PAPER_PROMOTION_CANDIDATE':'NO_PAPER_PROMOTION',
-    scientificallyEligibleLanes,
-    reason:scientificallyEligibleLanes.length?'AT_LEAST_ONE_LANE_PASSED_SCIENTIFIC_SCREEN_ONLY':'NO_LANE_HAS_A_SUPPORTED_NON_NEGATIVE_EXPECTATION_YET'
+    state:manualPilotEligible?'ECONOMIC_PROMOTION_CANDIDATE':'NO_PAPER_PROMOTION',
+    scientificallyEligibleLanes:eligibleLanes,
+    reason:manualPilotEligible?'AT_LEAST_ONE_LANE_PASSED_STRICT_ECONOMIC_SCREEN':'NO_LANE_HAS_A_SUPPORTED_NON_NEGATIVE_EXPECTATION_YET'
   },
   decision:{
-    state:'NO_REAL_PILOT',
-    pilotAllowed:false,
-    eligibleLanes:[],
-    maxTotalStakeEUR:0,
-    reason:'CASINO_EXPERIMENTS_ARE_PAPER_ONLY_REAL_MONEY_DISABLED'
+    state:manualPilotEligible?'MANUAL_PILOT_ELIGIBLE':'NO_REAL_PILOT',
+    pilotAllowed:manualPilotEligible,
+    eligibleLanes,
+    maxTotalStakeEUR:manualPilotEligible?MAX_MANUAL_PILOT_EUR:0,
+    reason:manualPilotEligible?'STRICT_ECONOMIC_GATE_PASSED_MANUAL_ONLY':'NO_LANE_HAS_A_SUPPORTED_NON_NEGATIVE_EXPECTATION_YET'
   },
   guards:{
     noAutomaticBetting:true,
-    noRealMoney:true,
     noMartingale:true,
     noChasingLosses:true,
     noBorrowing:true,
     noRetuningAfterOutcome:true,
     onePilotCannotValidateAnEdge:true,
-    realMoneyRequiresHumanManualAction:false,
-    realMoneyDisabledByPolicy:true
+    realMoneyRequiresHumanManualAction:true,
+    manualPilotHardCapEUR:MAX_MANUAL_PILOT_EUR
   }
 };
 
