@@ -1,0 +1,75 @@
+{
+  "version": "botemania-jpk-structural-evidence-synthesis-v1",
+  "generatedAt": "2026-08-19T21:25:00.000Z",
+  "operator": "botemania-es",
+  "primaryGame": "fishin-frenzy-jackpot-king",
+  "structuralState": "ACCUMULATING_PROSPECTIVE_NETWORK_EVIDENCE",
+  "prospectiveNetworkEvidence": {
+    "protocolFrozenAt": "2026-08-19T20:40:00+02:00",
+    "state": "ACCUMULATING_FUTURE_INTERVALS",
+    "progress": {
+      "cleanFutureIntervals": 11,
+      "targetCleanIntervals": 20,
+      "cumulativeActiveGrowthEUR": 57.15,
+      "targetCumulativeActiveGrowthEUR": 50,
+      "informativeIntervals": 10,
+      "targetInformativeIntervals": 10
+    },
+    "weightedAllocationShares": {
+      "JACKPOT_KING": 0.6035,
+      "REGAL": 0.19825,
+      "ROYAL": 0.19825
+    },
+    "checks": {
+      "enoughIntervals": false,
+      "enoughGrowth": true,
+      "enoughInformative": true,
+      "weightedShareBands": true,
+      "regalRoyalSymmetry": true,
+      "perIntervalBroadBand": true
+    },
+    "networkAllocationProspectivelyValidated": false
+  },
+  "gameSpecificEvidence": {
+    "contributionEconomicsInternallyConsistent": true,
+    "baseRtpPct": 93.32,
+    "activeContributionPct": 2.32,
+    "reserveContributionPct": 0.68,
+    "perTitleContributionSplitProven": false
+  },
+  "economicStateEvidence": {
+    "exactSpainMbwbKnown": false,
+    "exactHazardKnown": false,
+    "currentConservativeScreenPass": false,
+    "liveGateState": "BELOW_RESEARCH_BAND",
+    "bestConservativeRtp": 0.944956
+  },
+  "decision": {
+    "structuralPromotionAllowed": false,
+    "economicPromotionAllowed": false,
+    "realMoneyAllowed": false,
+    "automaticBettingAllowed": false,
+    "blockers": [
+      "NETWORK_ALLOCATION_NOT_YET_PROSPECTIVELY_VALIDATED",
+      "PER_TITLE_CONTRIBUTION_SPLIT_NOT_PROVEN",
+      "EXACT_SPAIN_MBWB_UNKNOWN",
+      "EXACT_HAZARD_UNKNOWN",
+      "CURRENT_CONSERVATIVE_SCREEN_NOT_PASSING"
+    ]
+  },
+  "interpretation": {
+    "ifNetworkPasses": "A pass validates the frozen network-level 60/20/20-style allocation structure only. It does not prove Fishin Frenzy inherits that split exactly.",
+    "noDoubleCounting": "Published RTP/contribution components must never be added twice when moving from structural evidence to economic EV modelling.",
+    "noLifeChangingClaim": "Structural validation is a scientific milestone, not proof of profit or a guaranteed wagering advantage."
+  },
+  "guards": {
+    "futureOnly": true,
+    "noRetuning": true,
+    "networkLevelDoesNotImplyPerTitle": true,
+    "noMbwbFromCrossMarketAsSpainFact": true,
+    "noHazardAssumptionAsFact": true,
+    "noScreenPassAsProof": true,
+    "noBetting": true,
+    "realMoneyAllowed": false
+  }
+}
