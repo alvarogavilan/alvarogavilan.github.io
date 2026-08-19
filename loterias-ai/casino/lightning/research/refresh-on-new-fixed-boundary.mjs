@@ -18,9 +18,9 @@ let readiness=read(readinessPath)||{};
 for(const key of ['jackpotKingOfficialMonitor','ageOfGodsOfficialMonitor'])if(priorReadiness[key])readiness[key]=priorReadiness[key];
 fs.writeFileSync(readinessPath,JSON.stringify(readiness,null,2)+'\n');
 
-// Official PokerStars jackpot monitors are observation-only and optional: failure must never affect Lightning custody.
+// Jackpot monitors are observation-only and optional: failure must never affect Lightning custody.
 runOptional('loterias-ai/casino/jackpots/pokerstars-jackpot-king-observer.mjs');
-runOptional('loterias-ai/casino/jackpots/pokerstars-age-of-gods-observer.mjs');
+runOptional('loterias-ai/casino/playuzu/playuzu-age-of-gods-observer.mjs');
 readiness=read(readinessPath)||readiness;
 readiness.transitionFamilyV1={
   status:transition?.final?'FIXED_FINAL_AVAILABLE':'BLINDED_ACCUMULATING',
@@ -29,7 +29,7 @@ readiness.transitionFamilyV1={
 };
 readiness.progressiveNetworks={
   jackpotKing:{sourceReadable:readiness.jackpotKingOfficialMonitor?.sourceReadable??false,latestPotEUR:readiness.jackpotKingOfficialMonitor?.latest?.networkPotEUR??null,observations:readiness.jackpotKingOfficialMonitor?.observationCountTotal??0,resets:readiness.jackpotKingOfficialMonitor?.resetCountTotal??0,stateDependentMechanicVerified:true,positiveEVClaimAllowed:false},
-  ageOfGods:{sourceReadable:readiness.ageOfGodsOfficialMonitor?.sourceReadable??false,latestPotEUR:readiness.ageOfGodsOfficialMonitor?.latest?.networkPotEUR??null,observations:readiness.ageOfGodsOfficialMonitor?.observationCountTotal??0,resets:readiness.ageOfGodsOfficialMonitor?.resetCountTotal??0,referenceRtp:0.9614,positiveEVClaimAllowed:false}
+  ageOfGods:{sourceReadable:readiness.ageOfGodsOfficialMonitor?.sourceReadable??false,rawNetworkCounter:readiness.ageOfGodsOfficialMonitor?.latest?.rawNetworkCounter??null,currencyTrusted:readiness.ageOfGodsOfficialMonitor?.latest?.currencyTrusted===true,observations:readiness.ageOfGodsOfficialMonitor?.observationCountTotal??0,resets:readiness.ageOfGodsOfficialMonitor?.resetCountTotal??0,positiveEVClaimAllowed:false}
 };
 readiness.transitionFamilyV1UpdatedAt=new Date().toISOString();
 fs.writeFileSync(readinessPath,JSON.stringify(readiness,null,2)+'\n');
@@ -48,7 +48,7 @@ const current={
   'physical-rng-v2':Boolean(physical?.final)&&Number(physical?.progress?.roundsUsedForV2)===Number(physical?.progress?.fixedBoundaryRounds)
 };
 const newlyClosed=Object.entries(current).filter(([id,done])=>done&&prior.get(id)!==true).map(([id])=>id);
-const monitorSummary={jackpotKing:{sourceReadable:readiness.jackpotKingOfficialMonitor?.sourceReadable??null,potEUR:readiness.jackpotKingOfficialMonitor?.latest?.networkPotEUR??null},ageOfGods:{sourceReadable:readiness.ageOfGodsOfficialMonitor?.sourceReadable??null,potEUR:readiness.ageOfGodsOfficialMonitor?.latest?.networkPotEUR??null}};
+const monitorSummary={jackpotKing:{sourceReadable:readiness.jackpotKingOfficialMonitor?.sourceReadable??null,potEUR:readiness.jackpotKingOfficialMonitor?.latest?.networkPotEUR??null},ageOfGods:{sourceReadable:readiness.ageOfGodsOfficialMonitor?.sourceReadable??null,rawNetworkCounter:readiness.ageOfGodsOfficialMonitor?.latest?.rawNetworkCounter??null,currencyTrusted:readiness.ageOfGodsOfficialMonitor?.latest?.currencyTrusted===true}};
 if(!newlyClosed.length){console.log(JSON.stringify({refreshedReadiness:true,promotionRefresh:false,reason:'NO_NEW_FIXED_BOUNDARY',transitionFamilyV1:readiness.transitionFamilyV1,progressiveNetworks:monitorSummary,current},null,2));process.exit(0)}
 
 runScript('loterias-ai/casino/lightning/research/economic-promotion-gate-v1.mjs');
