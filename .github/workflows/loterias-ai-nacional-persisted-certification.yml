@@ -33,18 +33,38 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
 
-            had_report=0
-            if git cat-file -e "HEAD:${report}" 2>/dev/null; then had_report=1; fi
+            old_report=''
+            if git cat-file -e "HEAD:${report}" 2>/dev/null; then
+              old_report="$(mktemp)"
+              git show "HEAD:${report}" > "$old_report"
+            fi
 
             node loterias-ai/scripts/certify-nacional-persisted-resultados2.mjs
 
-            # Once the report exists, a run with zero new certifications must be fail-quiet.
-            # Do not move main merely because generatedAt changed.
-            if [[ "$had_report" -eq 1 ]]; then
-              new_count="$(node -e "const r=require('./${report}'); process.stdout.write(String(r.newlyCertified||0))")"
-              if [[ "$new_count" == '0' ]]; then
+            # Fail-quiet only when the report is scientifically identical.
+            # Do not discard real changes in blocker diagnostics merely because
+            # no additional draw was certified during this run.
+            if [[ -n "$old_report" && -f "$report" ]]; then
+              if node - "$old_report" "$report" <<'NODE'
+          const fs = require('fs');
+          const [beforePath, afterPath] = process.argv.slice(2);
+          const stable = value => {
+            if (Array.isArray(value)) return value.map(stable);
+            if (value && typeof value === 'object') {
+              return Object.fromEntries(Object.entries(value)
+                .filter(([key]) => key !== 'generatedAt')
+                .map(([key, child]) => [key, stable(child)]));
+            }
+            return value;
+          };
+          const before = stable(JSON.parse(fs.readFileSync(beforePath, 'utf8')));
+          const after = stable(JSON.parse(fs.readFileSync(afterPath, 'utf8')));
+          process.exit(JSON.stringify(before) === JSON.stringify(after) ? 0 : 1);
+          NODE
+              then
                 git checkout HEAD -- "$report"
               fi
+              rm -f "$old_report"
             fi
 
             node loterias-ai/scripts/build-national-archive-index.mjs
