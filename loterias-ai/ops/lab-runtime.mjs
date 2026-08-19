@@ -76,7 +76,7 @@ try { const sync = copySourceWorkspace(sourceHead, state); workspaceRefreshed = 
 catch (error) { writeJsonAtomic(statusPath, { generatedAt: new Date().toISOString(), health: 'error', sourceHead, error: 'WORKSPACE_SYNC_FAILED', detail: String(error?.stack || error) }); process.exit(1); }
 
 const now = Date.now(), maxTasks = Math.max(1, Number(config.maxTasksPerTick || 1));
-const tasks = config.tasks.filter((task) => task && task.enabled !== false && task.id && task.run).sort((a, b) => Number(a.priority || 100) - Number(b, 10));
+const tasks = config.tasks.filter((task) => task && task.enabled !== false && task.id && task.run).sort((a, b) => Number(a.priority || 100) - Number(b.priority || 100));
 let executed = 0; const events = [];
 for (const task of tasks) {
   if (executed >= maxTasks) break;
