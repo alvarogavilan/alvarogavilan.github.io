@@ -54,9 +54,15 @@ const lanes=[
 ].sort((a,b)=>b.progress.percent-a.progress.percent);
 
 const closestBlindBoundary=lanes.filter(x=>String(x.status).startsWith('BLINDED_')).sort((a,b)=>b.progress.percent-a.progress.percent)[0]||null;
+const fixedFinalPasses=lanes.filter(x=>x.status==='FIXED_FINAL_PASS');
+const strongestCurrentLead=fixedFinalPasses[0]?.id||'NO_VALIDATED_CURRENT_LEAD_YET';
+const selectedLead=lanes.find(x=>x.id===strongestCurrentLead)||null;
+if(selectedLead&&/REJECTED/.test(String(selectedLead.status)))throw new Error(`scientific lead integrity failure: rejected lane ${selectedLead.id} cannot be strongestCurrentLead`);
+
 const payload={
   version:'economic-readiness-ledger-v1',generatedAt:new Date().toISOString(),mission:'Identify reproducible positive expected value without future-information leakage or optional stopping.',
-  strongestCurrentLead:'clean-timing-v3',
+  strongestCurrentLead,
+  strongestLeadPolicy:'FIXED_FINAL_PASS_ONLY',
   strongestDirectEconomicLane:'NO_VALIDATED_DIRECT_ECONOMIC_EDGE_YET',
   strongestTraditionalEconomicLead:qFragile?'NO_ROBUST_TRADITIONAL_EDGE_YET':'quinigol-shadow-v3',
   closestBlindBoundary,
