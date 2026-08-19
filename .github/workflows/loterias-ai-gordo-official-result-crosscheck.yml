@@ -1,0 +1,64 @@
+name: Loterias AI Gordo Official Result Crosscheck
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '47 */6 * * *'
+  push:
+    paths:
+      - 'loterias-ai/scripts/crosscheck-gordo-official-results.mjs'
+      - 'loterias-ai/scripts/build-national-archive-index.mjs'
+      - 'loterias-ai/scripts/build-archive-coverage-priorities.mjs'
+      - '.github/workflows/loterias-ai-gordo-official-result-crosscheck.yml'
+
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-gordo-official-result-crosscheck
+  cancel-in-progress: true
+
+jobs:
+  crosscheck:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Cross-check Gordo main plus key against SELAE
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          restore_if_volatile_only() {
+            file="$1"; [ -f "$file" ] || return 0; git cat-file -e "HEAD:$file" 2>/dev/null || return 0
+            if node - "$file" <(git show "HEAD:$file") <<'NODE'
+          const fs=require('fs');function clean(v){if(Array.isArray(v))return v.map(clean);if(v&&typeof v==='object'){const o={};for(const[k,x]of Object.entries(v)){if(['generatedAt','checkedAt','manifestGeneratedAt','auditGeneratedAt'].includes(k))continue;o[k]=clean(x)}return o}return v}const a=clean(JSON.parse(fs.readFileSync(process.argv[2],'utf8'))),b=clean(JSON.parse(fs.readFileSync(process.argv[3],'utf8')));process.exit(JSON.stringify(a)===JSON.stringify(b)?0:1)
+          NODE
+            then git checkout HEAD -- "$file"; fi
+          }
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            BATCH_LIMIT=180 node loterias-ai/scripts/crosscheck-gordo-official-results.mjs
+            node loterias-ai/scripts/build-national-archive-index.mjs
+            node loterias-ai/scripts/build-archive-coverage-priorities.mjs
+            restore_if_volatile_only loterias-ai/data/archive/_meta/gordo-primitiva-official-result-crosscheck.json
+            restore_if_volatile_only loterias-ai/data/archive/_meta/gordo-primitiva-official-result-conflicts.json
+            restore_if_volatile_only loterias-ai/data/archive/manifest.json
+            restore_if_volatile_only loterias-ai/data/archive/_meta/archive-coverage-priorities.json
+            git add loterias-ai/data/archive/gordo-primitiva \
+                    loterias-ai/data/archive/_meta/gordo-primitiva-official-result-crosscheck.json \
+                    loterias-ai/data/archive/_meta/gordo-primitiva-official-result-conflicts.json \
+                    loterias-ai/data/archive/manifest.json \
+                    loterias-ai/data/archive/_meta/archive-coverage-priorities.json
+            if git diff --cached --quiet; then echo 'No semantic Gordo result-validation changes'; exit 0; fi
+            git commit -m 'data(gordo): persist official SELAE main-plus-key cross-checks'
+            if git push origin HEAD:main; then exit 0; fi
+            echo "main moved during Gordo cross-check; recomputing from latest main (attempt ${attempt}/5)"
+            sleep $((attempt * 3))
+          done
+          echo 'Could not persist Gordo cross-check safely after 5 recomputations' >&2
+          exit 1
