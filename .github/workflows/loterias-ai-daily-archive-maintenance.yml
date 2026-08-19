@@ -13,6 +13,7 @@ on:
       - 'loterias-ai/scripts/import-nacional-year.mjs'
       - 'loterias-ai/scripts/enrich-national-archive-economics.mjs'
       - 'loterias-ai/scripts/enrich-eurodreams-full-economics.mjs'
+      - 'loterias-ai/scripts/preserve-archive-evidence.mjs'
       - 'loterias-ai/scripts/build-special-draw-indexes.mjs'
       - 'loterias-ai/scripts/build-national-archive-index.mjs'
       - 'loterias-ai/scripts/build-completeness-index.mjs'
@@ -35,39 +36,46 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Refresh persistent numerical histories
-        run: |
-          node loterias-ai/scripts/import-bonoloto-full-history.mjs
-          node loterias-ai/scripts/import-core-full-history.mjs
-      - name: Refresh current-year Nacional core and a few full details
+      - name: Recompute archive from latest main and persist safely
         shell: bash
         run: |
-          YEAR="$(date -u +%Y)" DETAIL_LIMIT=3 node loterias-ai/scripts/import-nacional-year.mjs
-      - name: Persist available fixed-jackpot economics
-        run: node loterias-ai/scripts/enrich-national-archive-economics.mjs
-      - name: Progress EuroDreams economics without blocking maintenance
-        shell: bash
-        run: |
-          BATCH_LIMIT=10 node loterias-ai/scripts/enrich-eurodreams-full-economics.mjs || echo 'EuroDreams source temporarily incomplete; archive remains valid'
-      - name: Rebuild seasonal reference indexes
-        run: node loterias-ai/scripts/build-special-draw-indexes.mjs
-      - name: Rebuild archive manifest and completeness
-        run: |
-          node loterias-ai/scripts/build-national-archive-index.mjs
-          node loterias-ai/scripts/build-completeness-index.mjs
-      - name: Audit archive integrity and recent economics coverage
-        run: node loterias-ai/scripts/audit-national-archive.mjs
-      - name: Persist archive changes
-        shell: bash
-        run: |
+          set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add loterias-ai/data/archive
-          if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'data(loterias-ai): daily national archive refresh'
+
           for attempt in 1 2 3 4 5; do
-            git pull --rebase origin main && git push origin HEAD:main && exit 0
-            git rebase --abort || true
+            git fetch origin main
+            git reset --hard origin/main
+            rm -rf /tmp/loterias-ai-archive-before
+            cp -a loterias-ai/data/archive /tmp/loterias-ai-archive-before
+
+            node loterias-ai/scripts/import-bonoloto-full-history.mjs
+            node loterias-ai/scripts/import-core-full-history.mjs
+            YEAR="$(date -u +%Y)" DETAIL_LIMIT=3 node loterias-ai/scripts/import-nacional-year.mjs
+            node loterias-ai/scripts/enrich-national-archive-economics.mjs
+            BATCH_LIMIT=10 node loterias-ai/scripts/enrich-eurodreams-full-economics.mjs || echo 'EuroDreams source temporarily incomplete; preserving prior verified evidence'
+
+            ARCHIVE_BEFORE=/tmp/loterias-ai-archive-before node loterias-ai/scripts/preserve-archive-evidence.mjs
+
+            node loterias-ai/scripts/build-special-draw-indexes.mjs
+            node loterias-ai/scripts/build-national-archive-index.mjs
+            node loterias-ai/scripts/build-completeness-index.mjs
+            node loterias-ai/scripts/audit-national-archive.mjs
+
+            git add loterias-ai/data/archive
+            if git diff --cached --quiet; then
+              echo 'No semantic archive changes'
+              exit 0
+            fi
+
+            git commit -m 'data(loterias-ai): daily national archive refresh'
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+
+            echo "main moved during archive maintenance; recomputing from latest main (attempt ${attempt}/5)"
             sleep $((attempt * 3))
           done
+
+          echo 'Could not persist archive safely after 5 recomputations' >&2
           exit 1
