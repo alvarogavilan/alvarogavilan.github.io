@@ -13,6 +13,7 @@ const OUT=`${ROOT}/economic-readiness-ledger-v1.json`;
 
 const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'));}catch{return null;}};
 const timing=read(`${ROOT}/timing-replication-v3-status.json`)||{};
+const timingV4=read(`${ROOT}/timing-replication-v4-status.json`)||{};
 const physical=read(`${ROOT}/physical-rng-prospective-v2-status.json`)||{};
 const selector=read(`${ROOT}/economic-number-selection-prospective-status-v2.json`)||{};
 const lag8=read(`${ROOT}/prospective-lag8-clean-v2-status-v1.json`)||{};
@@ -25,7 +26,8 @@ const pct=(used,total)=>total>0?Number((100*Number(used||0)/Number(total)).toFix
 const lane=(id,label,used,total,status,extra={})=>({id,label,status,progress:{used:Number(used||0),boundary:Number(total||0),percent:pct(used,total),remaining:Math.max(0,Number(total||0)-Number(used||0))},...extra});
 
 const lanes=[
-  lane('clean-timing-v3','Lightning timing replication — clean V2',timing?.progress?.closedEpisodes,timing?.progress?.fixedBoundaryClosedEpisodes,'BLINDED_ACCUMULATING',{disclosure:timing?.disclosure?.policy||null,outcomePerformanceVisible:timing?.disclosure?.performanceHidden!==true,realMoneyAllowed:false}),
+  lane('clean-timing-v3','Lightning timing replication — clean V2',timing?.progress?.closedEpisodes,timing?.progress?.fixedBoundaryClosedEpisodes,timing?.final?'FIXED_FINAL_AVAILABLE':'BLINDED_ACCUMULATING',{disclosure:timing?.disclosure?.policy||null,outcomePerformanceVisible:timing?.disclosure?.performanceHidden!==true,realMoneyAllowed:false}),
+  lane('clean-timing-v4','Lightning timing independent replication V4 — preregistered',timingV4?.progress?.closedEpisodes,timingV4?.progress?.fixedBoundaryClosedEpisodes,timingV4?.state||'WAITING_FOR_V3_FIXED_BOUNDARY',{disclosure:timingV4?.disclosure?.policy||'ADMINISTRATIVE_COUNTS_ONLY',outcomePerformanceVisible:timingV4?.disclosure?.performanceHidden===false,preRegisteredBeforeV3Final:true,activationIndependentOfV3Outcome:true,realMoneyAllowed:false}),
   lane('physical-rng-v2','Lightning physical RNG prospective — clean V2',physical?.progress?.roundsUsedForV2,physical?.progress?.fixedBoundaryRounds,'BLINDED_ACCUMULATING',{disclosure:physical?.disclosure?.policy||null,outcomePerformanceVisible:physical?.disclosure?.observedStatisticsHidden!==true,realMoneyAllowed:false}),
   lane('number-selection-v2','Lightning economic number selection — clean V2 Phase A',selector?.progress?.eligibleFutureRounds,selector?.progress?.phaseARoundsRequired,'BLINDED_ACCUMULATING',{disclosure:selector?.disclosure?.reason||null,outcomePerformanceVisible:selector?.disclosure?.candidatePerformanceHidden!==true,frozenCandidates:Number(selector?.frozenFamily?.totalCandidates||0),realMoneyAllowed:false}),
   lane('clean-lag8-economic-v1','Lightning lag-8 conservative economic replication',lag8?.progress?.comparisonsUsed,lag8?.progress?.fixedBoundaryComparisons,'BLINDED_ACCUMULATING',{disclosure:lag8?.disclosure?.policy||null,outcomePerformanceVisible:lag8?.disclosure?.performanceHidden!==true,conservativeEconomicModel:true,luckyMultiplierUpliftExcluded:true,realMoneyAllowed:false}),
@@ -41,6 +43,7 @@ const payload={
  strongestCurrentLead:lanes[0]?.id||null,
  strongestTraditionalEconomicLead:'quinigol-shadow-v3',
  closestBlindBoundary:lanes[0]||null,
+ timingReplicationPlan:{v3Status:timing?.final?'FIXED_FINAL_AVAILABLE':'BLINDED_ACCUMULATING',v4PreRegistered:true,v4Status:timingV4?.state||'WAITING_FOR_V3_FIXED_BOUNDARY',v4ActivationIndependentOfV3Outcome:true},
  lanes,
  legacyDirectional:{lane:'economic-multiplier-window-prospective-v1',status:legacyTiming?.status||null,closedEpisodes:Number(legacyTiming?.closedEpisodes||0),successRate:legacyTiming?.successRate??null,frozenNullPrimary:legacyTiming?.frozenNull?.primary??null,relativeLiftVsPrimary:legacyTiming?.relativeLiftVsPrimary??null,promotable:false,reason:'Legacy directional evidence only; clean V2 replication is the promotion lane.'},
  traditionalLottery:{trackedProspectiveArtifacts:Number(master?.counts?.total||0),evaluated:Number(master?.counts?.evaluated||0),realMoneyPasses:Number(master?.counts?.realMoneyPass||0),quinigol:{observedJornadas:Number(q?.summary?.observedJornadas||0),fixedBoundary:Number(q?.summary?.requiredNewJornadas||30),pendingPredictions:Number(q?.summary?.sealedPendingPredictions||0),historicalHoldoutROI:qHist?.holdout?.roi??null,historicalHoldoutDraws:Number(qHist?.holdout?.draws||0),historicalFullGatePassed:qHist?.realMoneyPass===true,prospectivePromotionCandidate:qFinal?.gates?.economicPromotionCandidate===true},primitivaFrequency4:{status:'HISTORICALLY_REJECTED_FALSIFICATION_ONLY',sealedTargets:Number(pf4?.progress?.sealedTargets||0),fixedBoundary:Number(pf4?.progress?.fixedBoundaryDraws||50)},status:qFinal?.gates?.economicPromotionCandidate===true?'PROMOTION_CANDIDATE_PRESENT':'NO_VALIDATED_ECONOMIC_EDGE_YET'},
