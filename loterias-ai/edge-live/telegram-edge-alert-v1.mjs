@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 
 const PLAN='loterias-ai/edge-live/evidence/edge-live-execution-plan-v1.json';
 const STATE='loterias-ai/edge-live/telegram-alert-state.json';
@@ -12,16 +13,33 @@ const prior=fs.existsSync(STATE)?JSON.parse(fs.readFileSync(STATE,'utf8')):{};
 
 function writeDiag(extra={}){
   const out={
-    version:'edge-live-telegram-diagnostic-v2',
+    version:'edge-live-telegram-diagnostic-v3-encrypted-channel-memory',
     generatedAt:new Date().toISOString(),
     tokenPresent:Boolean(token),
     configuredChatIdPresent:Boolean(configuredChatId),
+    encryptedChannelMemoryPresent:Boolean(prior?.encryptedChannel),
     planState:plan?.state||null,
     planGeneratedAt:plan?.generatedAt||null,
     ...extra
   };
   fs.writeFileSync(DIAG,JSON.stringify(out,null,2)+'\n');
   return out;
+}
+
+function keyFromToken(){return crypto.createHash('sha256').update(token).digest();}
+function encryptChannelId(chatId){
+  const iv=crypto.randomBytes(12);
+  const cipher=crypto.createCipheriv('aes-256-gcm',keyFromToken(),iv);
+  const ciphertext=Buffer.concat([cipher.update(String(chatId),'utf8'),cipher.final()]);
+  return {alg:'aes-256-gcm',iv:iv.toString('base64'),tag:cipher.getAuthTag().toString('base64'),ciphertext:ciphertext.toString('base64')};
+}
+function decryptChannelId(box){
+  try{
+    if(!box||box.alg!=='aes-256-gcm')return null;
+    const decipher=crypto.createDecipheriv('aes-256-gcm',keyFromToken(),Buffer.from(box.iv,'base64'));
+    decipher.setAuthTag(Buffer.from(box.tag,'base64'));
+    return Buffer.concat([decipher.update(Buffer.from(box.ciphertext,'base64')),decipher.final()]).toString('utf8');
+  }catch{return null;}
 }
 
 function addChannel(channels,chat,source){
@@ -32,6 +50,8 @@ function addChannel(channels,chat,source){
 
 async function discoverChannelId(){
   if(configuredChatId) return {id:String(configuredChatId),source:'CONFIGURED_SECRET'};
+  const remembered=decryptChannelId(prior?.encryptedChannel);
+  if(remembered) return {id:remembered,source:'ENCRYPTED_CHANNEL_MEMORY'};
   const allowed=['channel_post','edited_channel_post','my_chat_member','message'];
   const r=await fetch(`https://api.telegram.org/bot${token}/getUpdates?limit=100&allowed_updates=${encodeURIComponent(JSON.stringify(allowed))}`);
   if(!r.ok) throw new Error(`Telegram getUpdates HTTP ${r.status}`);
@@ -43,13 +63,27 @@ async function discoverChannelId(){
     addChannel(channels,u?.my_chat_member?.chat,'MY_CHAT_MEMBER');
     const origin=u?.message?.forward_origin;
     if(origin?.type==='channel')addChannel(channels,origin?.chat,'FORWARDED_CHANNEL_POST');
-    const fwdChat=u?.message?.forward_from_chat;
-    addChannel(channels,fwdChat,'FORWARDED_CHANNEL_POST_LEGACY');
+    addChannel(channels,u?.message?.forward_from_chat,'FORWARDED_CHANNEL_POST_LEGACY');
   }
   const named=[...channels].reverse().find(c=>/edge\s*live|botemania/i.test(c.title));
   if(named)return named;
   if(channels.length===1)return channels[0];
   return null;
+}
+
+function persistState({ready=false,executionSignature=null,stake=0,spins=0,total=0,validUntil=null,chatId}){
+  fs.writeFileSync(STATE,JSON.stringify({
+    version:'edge-live-telegram-alert-state-v7-encrypted-channel-memory',
+    updatedAt:new Date().toISOString(),
+    encryptedChannel:encryptChannelId(chatId),
+    lastReady:ready,
+    lastExecutionSignature:executionSignature,
+    lastPlanGeneratedAt:plan?.generatedAt||null,
+    lastValidUntil:ready?validUntil:null,
+    lastStakePerSpinEUR:stake,
+    lastMaxSpins:spins,
+    lastMaxTotalStakeEUR:total
+  },null,2)+'\n');
 }
 
 try{
@@ -92,6 +126,7 @@ try{
     : prior.lastReady===true || firstConfiguredAlert;
 
   if(!shouldSend){
+    persistState({ready,executionSignature,stake,spins,total,validUntil:plan?.order?.validUntil,chatId});
     const d=writeDiag({channelDiscovered:true,discoverySource:discovered.source,ready,sendAttempted:false,sendOk:true,reason:'NO_EXECUTION_STATE_TRANSITION'});
     console.log(JSON.stringify(d));
     process.exit(0);
@@ -105,23 +140,12 @@ try{
   }
 
   const r=await fetch(`https://api.telegram.org/bot${token}/sendMessage`,{
-    method:'POST',
-    headers:{'content-type':'application/json'},
+    method:'POST',headers:{'content-type':'application/json'},
     body:JSON.stringify({chat_id:chatId,text:message,disable_web_page_preview:false})
   });
   if(!r.ok)throw new Error(`Telegram sendMessage HTTP ${r.status}`);
 
-  fs.writeFileSync(STATE,JSON.stringify({
-    version:'edge-live-telegram-alert-state-v6-private-id-not-persisted',
-    updatedAt:new Date().toISOString(),
-    lastReady:ready,
-    lastExecutionSignature:executionSignature,
-    lastPlanGeneratedAt:plan?.generatedAt||null,
-    lastValidUntil:ready?plan?.order?.validUntil:null,
-    lastStakePerSpinEUR:stake,
-    lastMaxSpins:spins,
-    lastMaxTotalStakeEUR:total
-  },null,2)+'\n');
+  persistState({ready,executionSignature,stake,spins,total,validUntil:plan?.order?.validUntil,chatId});
   const d=writeDiag({channelDiscovered:true,discoverySource:discovered.source,ready,sendAttempted:true,sendOk:true,reason:'SEND_OK',remainingSeconds});
   console.log(JSON.stringify(d));
 }catch(e){
