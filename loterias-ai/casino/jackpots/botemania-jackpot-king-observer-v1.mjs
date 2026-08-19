@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import crypto from 'node:crypto';
 
 const OUT='loterias-ai/casino/jackpots/evidence/botemania-jackpot-king-observer-v1.json';
-const GRAPHQL='https://www.botemania.es/es/graphql';
+const GRAPHQL='https://www.botemania.es/graphql';
 const REFERER='https://www.botemania.es/juegos/slots-online/fishin-frenzy-jackpot-king';
 const URLS=[
   {id:'fishin-frenzy-jpk',url:REFERER,priority:true},
