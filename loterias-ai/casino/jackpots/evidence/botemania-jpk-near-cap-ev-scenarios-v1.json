@@ -1,19 +1,19 @@
 {
-  "version": "botemania-jpk-near-cap-ev-scenarios-v1.1",
-  "generatedAt": "2026-08-19T17:27:08.200Z",
+  "version": "botemania-jpk-near-cap-ev-scenarios-v1.2",
+  "generatedAt": "2026-08-19T17:33:01.329Z",
   "operator": "botemania-es",
   "purpose": "SENSITIVITY_SCREEN_ONLY_NOT_A_WAGER_RECOMMENDATION",
   "inputs": {
     "baseRtp": 0.9332,
     "activeContributionShares": {
-      "ROYAL": 0.0046078448,
-      "REGAL": 0.0046078448,
-      "JACKPOT_KING": 0.013984287199999997
+      "ROYAL": 0.004602903199999999,
+      "REGAL": 0.004602903199999999,
+      "JACKPOT_KING": 0.0139941936
     },
     "reserveShares": {
-      "ROYAL": 0.0013505752,
-      "REGAL": 0.0013505752,
-      "JACKPOT_KING": 0.0040988427999999995
+      "ROYAL": 0.0013491267999999998,
+      "REGAL": 0.0013491267999999998,
+      "JACKPOT_KING": 0.0041017464
     },
     "capHypothesisEUR": {
       "ROYAL": 3500,
@@ -25,14 +25,20 @@
     },
     "capHypothesisVerifiedInBotemania": false,
     "alphaGrid": [
+      0.25,
       0.5,
       0.75,
       1,
       1.25,
       1.5,
       2,
-      3
-    ]
+      3,
+      4,
+      5,
+      7.5,
+      10
+    ],
+    "stressExtensionReason": "Cross-network winner controls suggest testing hazards more concentrated near MBWB; control data remains discovery-only."
   },
   "model": {
     "family": "HIDDEN_DROP_THRESHOLD_BETA_ALPHA_1_ON_SEED_TO_CAP",
@@ -40,114 +46,184 @@
     "warning": "Blueprint exact server-side hazard is unknown. This family tests robustness only; crossings are not evidence of real positive EV."
   },
   "current": {
-    "observedAt": "2026-08-19T17:27:03.004Z",
+    "observedAt": "2026-08-19T17:32:54.058Z",
     "potsEUR": {
-      "JACKPOT_KING": 128295.57,
-      "REGAL": 15485.23,
-      "ROYAL": 1628.13
+      "JACKPOT_KING": 128296.04,
+      "REGAL": 15485.38,
+      "ROYAL": 1628.28
     },
     "normalizedSeedToCap": {
-      "ROYAL": 0.3760433333333334,
-      "REGAL": 0.34950766666666666
+      "ROYAL": 0.37609333333333334,
+      "REGAL": 0.34951266666666664
     },
     "scenarios": [
       {
+        "alpha": 0.25,
+        "kingBaselineScenario": "ZERO_CONSERVATIVE",
+        "totalRtp": 0.94485,
+        "royalEv": 0.005996,
+        "regalEv": 0.005654
+      },
+      {
         "alpha": 0.5,
         "kingBaselineScenario": "ZERO_CONSERVATIVE",
-        "totalRtp": 0.943392,
-        "royalEv": 0.005272,
-        "regalEv": 0.004921
+        "totalRtp": 0.943382,
+        "royalEv": 0.005267,
+        "regalEv": 0.004915
       },
       {
         "alpha": 0.75,
         "kingBaselineScenario": "ZERO_CONSERVATIVE",
-        "totalRtp": 0.942061,
-        "royalEv": 0.004608,
-        "regalEv": 0.004253
+        "totalRtp": 0.942052,
+        "royalEv": 0.004603,
+        "regalEv": 0.004249
       },
       {
         "alpha": 1,
         "kingBaselineScenario": "ZERO_CONSERVATIVE",
-        "totalRtp": 0.940864,
-        "royalEv": 0.004008,
-        "regalEv": 0.003656
+        "totalRtp": 0.940857,
+        "royalEv": 0.004004,
+        "regalEv": 0.003653
       },
       {
         "alpha": 1.25,
         "kingBaselineScenario": "ZERO_CONSERVATIVE",
-        "totalRtp": 0.939796,
-        "royalEv": 0.00347,
-        "regalEv": 0.003126
+        "totalRtp": 0.939789,
+        "royalEv": 0.003466,
+        "regalEv": 0.003123
       },
       {
         "alpha": 1.5,
         "kingBaselineScenario": "ZERO_CONSERVATIVE",
-        "totalRtp": 0.938848,
-        "royalEv": 0.00299,
-        "regalEv": 0.002658
+        "totalRtp": 0.938843,
+        "royalEv": 0.002987,
+        "regalEv": 0.002656
       },
       {
         "alpha": 2,
         "kingBaselineScenario": "ZERO_CONSERVATIVE",
-        "totalRtp": 0.937284,
-        "royalEv": 0.002191,
-        "regalEv": 0.001894
+        "totalRtp": 0.937281,
+        "royalEv": 0.002189,
+        "regalEv": 0.001892
       },
       {
         "alpha": 3,
         "kingBaselineScenario": "ZERO_CONSERVATIVE",
-        "totalRtp": 0.935231,
+        "totalRtp": 0.935229,
         "royalEv": 0.00112,
         "regalEv": 0.00091
+      },
+      {
+        "alpha": 4,
+        "kingBaselineScenario": "ZERO_CONSERVATIVE",
+        "totalRtp": 0.934154,
+        "royalEv": 0.000542,
+        "regalEv": 0.000412
+      },
+      {
+        "alpha": 5,
+        "kingBaselineScenario": "ZERO_CONSERVATIVE",
+        "totalRtp": 0.93363,
+        "royalEv": 0.000252,
+        "regalEv": 0.000178
+      },
+      {
+        "alpha": 7.5,
+        "kingBaselineScenario": "ZERO_CONSERVATIVE",
+        "totalRtp": 0.933252,
+        "royalEv": 0.000033,
+        "regalEv": 0.000019
+      },
+      {
+        "alpha": 10,
+        "kingBaselineScenario": "ZERO_CONSERVATIVE",
+        "totalRtp": 0.933206,
+        "royalEv": 0.000004,
+        "regalEv": 0.000002
+      },
+      {
+        "alpha": 0.25,
+        "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
+        "totalRtp": 0.962946,
+        "royalEv": 0.005996,
+        "regalEv": 0.005654
       },
       {
         "alpha": 0.5,
         "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
-        "totalRtp": 0.961475,
-        "royalEv": 0.005272,
-        "regalEv": 0.004921
+        "totalRtp": 0.961478,
+        "royalEv": 0.005267,
+        "regalEv": 0.004915
       },
       {
         "alpha": 0.75,
         "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
-        "totalRtp": 0.960144,
-        "royalEv": 0.004608,
-        "regalEv": 0.004253
+        "totalRtp": 0.960148,
+        "royalEv": 0.004603,
+        "regalEv": 0.004249
       },
       {
         "alpha": 1,
         "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
-        "totalRtp": 0.958947,
-        "royalEv": 0.004008,
-        "regalEv": 0.003656
+        "totalRtp": 0.958953,
+        "royalEv": 0.004004,
+        "regalEv": 0.003653
       },
       {
         "alpha": 1.25,
         "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
-        "totalRtp": 0.957879,
-        "royalEv": 0.00347,
-        "regalEv": 0.003126
+        "totalRtp": 0.957885,
+        "royalEv": 0.003466,
+        "regalEv": 0.003123
       },
       {
         "alpha": 1.5,
         "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
-        "totalRtp": 0.956931,
-        "royalEv": 0.00299,
-        "regalEv": 0.002658
+        "totalRtp": 0.956939,
+        "royalEv": 0.002987,
+        "regalEv": 0.002656
       },
       {
         "alpha": 2,
         "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
-        "totalRtp": 0.955368,
-        "royalEv": 0.002191,
-        "regalEv": 0.001894
+        "totalRtp": 0.955377,
+        "royalEv": 0.002189,
+        "regalEv": 0.001892
       },
       {
         "alpha": 3,
         "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
-        "totalRtp": 0.953314,
+        "totalRtp": 0.953325,
         "royalEv": 0.00112,
         "regalEv": 0.00091
+      },
+      {
+        "alpha": 4,
+        "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
+        "totalRtp": 0.95225,
+        "royalEv": 0.000542,
+        "regalEv": 0.000412
+      },
+      {
+        "alpha": 5,
+        "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
+        "totalRtp": 0.951726,
+        "royalEv": 0.000252,
+        "regalEv": 0.000178
+      },
+      {
+        "alpha": 7.5,
+        "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
+        "totalRtp": 0.951348,
+        "royalEv": 0.000033,
+        "regalEv": 0.000019
+      },
+      {
+        "alpha": 10,
+        "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
+        "totalRtp": 0.951302,
+        "royalEv": 0.000004,
+        "regalEv": 0.000002
       }
     ],
     "allModeledRtpBelowOne": {
@@ -158,48 +234,64 @@
   "thresholdSensitivity": {
     "ZERO_CONSERVATIVE": {
       "bothSameProgressForward": {
-        "min": 0.8535,
-        "max": 0.875
+        "min": 0.8509,
+        "max": 0.9078
       },
       "royalForwardWithRegalCurrent": {
-        "min": 0.9175,
-        "max": 0.929
+        "min": 0.9158,
+        "max": 0.9424
       },
       "regalForwardWithRoyalCurrent": {
-        "min": 0.9171,
-        "max": 0.9288
+        "min": 0.9154,
+        "max": 0.9424
       }
     },
     "ACTIVE_PLUS_RESERVE_STRUCTURAL": {
       "bothSameProgressForward": {
-        "min": 0.8056,
-        "max": 0.8413
+        "min": 0.8009,
+        "max": 0.889
       },
       "royalForwardWithRegalCurrent": {
-        "min": 0.8859,
-        "max": 0.9066
+        "min": 0.8824,
+        "max": 0.9279
       },
       "regalForwardWithRoyalCurrent": {
-        "min": 0.885,
-        "max": 0.9062
+        "min": 0.8815,
+        "max": 0.9279
       }
     }
   },
   "curves": [
     {
+      "alpha": 0.25,
+      "kingBaselineScenario": "ZERO_CONSERVATIVE",
+      "kingBaselineRtp": 0,
+      "thresholdsNormalizedSeedToCap": {
+        "bothSameProgressForward": 0.8509,
+        "royalForwardWithRegalCurrent": 0.9158,
+        "regalForwardWithRoyalCurrent": 0.9154
+      },
+      "thresholdPotsEUR": {
+        "bothRoyal": 3052.7,
+        "bothRegal": 30527,
+        "royalForwardWithRegalCurrent": 3247.4,
+        "regalForwardWithRoyalCurrent": 32462
+      }
+    },
+    {
       "alpha": 0.5,
       "kingBaselineScenario": "ZERO_CONSERVATIVE",
       "kingBaselineRtp": 0,
       "thresholdsNormalizedSeedToCap": {
-        "bothSameProgressForward": 0.8535,
-        "royalForwardWithRegalCurrent": 0.9175,
-        "regalForwardWithRoyalCurrent": 0.9171
+        "bothSameProgressForward": 0.8537,
+        "royalForwardWithRegalCurrent": 0.9176,
+        "regalForwardWithRoyalCurrent": 0.9172
       },
       "thresholdPotsEUR": {
-        "bothRoyal": 3060.5,
-        "bothRegal": 30605,
-        "royalForwardWithRegalCurrent": 3252.5,
-        "regalForwardWithRoyalCurrent": 32513
+        "bothRoyal": 3061.1,
+        "bothRegal": 30611,
+        "royalForwardWithRegalCurrent": 3252.8,
+        "regalForwardWithRoyalCurrent": 32516
       }
     },
     {
@@ -207,15 +299,15 @@
       "kingBaselineScenario": "ZERO_CONSERVATIVE",
       "kingBaselineRtp": 0,
       "thresholdsNormalizedSeedToCap": {
-        "bothSameProgressForward": 0.8561,
-        "royalForwardWithRegalCurrent": 0.9192,
-        "regalForwardWithRoyalCurrent": 0.9188
+        "bothSameProgressForward": 0.8563,
+        "royalForwardWithRegalCurrent": 0.9193,
+        "regalForwardWithRoyalCurrent": 0.9189
       },
       "thresholdPotsEUR": {
-        "bothRoyal": 3068.3,
-        "bothRegal": 30683,
-        "royalForwardWithRegalCurrent": 3257.6,
-        "regalForwardWithRoyalCurrent": 32564
+        "bothRoyal": 3068.9,
+        "bothRegal": 30689,
+        "royalForwardWithRegalCurrent": 3257.9,
+        "regalForwardWithRoyalCurrent": 32567
       }
     },
     {
@@ -223,15 +315,15 @@
       "kingBaselineScenario": "ZERO_CONSERVATIVE",
       "kingBaselineRtp": 0,
       "thresholdsNormalizedSeedToCap": {
-        "bothSameProgressForward": 0.8586,
-        "royalForwardWithRegalCurrent": 0.9207,
-        "regalForwardWithRoyalCurrent": 0.9203
+        "bothSameProgressForward": 0.8587,
+        "royalForwardWithRegalCurrent": 0.9208,
+        "regalForwardWithRoyalCurrent": 0.9204
       },
       "thresholdPotsEUR": {
-        "bothRoyal": 3075.8,
-        "bothRegal": 30758,
-        "royalForwardWithRegalCurrent": 3262.1,
-        "regalForwardWithRoyalCurrent": 32609
+        "bothRoyal": 3076.1,
+        "bothRegal": 30761,
+        "royalForwardWithRegalCurrent": 3262.4,
+        "regalForwardWithRoyalCurrent": 32612
       }
     },
     {
@@ -239,15 +331,15 @@
       "kingBaselineScenario": "ZERO_CONSERVATIVE",
       "kingBaselineRtp": 0,
       "thresholdsNormalizedSeedToCap": {
-        "bothSameProgressForward": 0.861,
-        "royalForwardWithRegalCurrent": 0.9221,
-        "regalForwardWithRoyalCurrent": 0.9217
+        "bothSameProgressForward": 0.8611,
+        "royalForwardWithRegalCurrent": 0.9222,
+        "regalForwardWithRoyalCurrent": 0.9218
       },
       "thresholdPotsEUR": {
-        "bothRoyal": 3083,
-        "bothRegal": 30830,
-        "royalForwardWithRegalCurrent": 3266.3,
-        "regalForwardWithRoyalCurrent": 32651
+        "bothRoyal": 3083.3,
+        "bothRegal": 30833,
+        "royalForwardWithRegalCurrent": 3266.6,
+        "regalForwardWithRoyalCurrent": 32654
       }
     },
     {
@@ -255,14 +347,14 @@
       "kingBaselineScenario": "ZERO_CONSERVATIVE",
       "kingBaselineRtp": 0,
       "thresholdsNormalizedSeedToCap": {
-        "bothSameProgressForward": 0.8633,
-        "royalForwardWithRegalCurrent": 0.9233,
+        "bothSameProgressForward": 0.8634,
+        "royalForwardWithRegalCurrent": 0.9234,
         "regalForwardWithRoyalCurrent": 0.923
       },
       "thresholdPotsEUR": {
-        "bothRoyal": 3089.9,
-        "bothRegal": 30899,
-        "royalForwardWithRegalCurrent": 3269.9,
+        "bothRoyal": 3090.2,
+        "bothRegal": 30902,
+        "royalForwardWithRegalCurrent": 3270.2,
         "regalForwardWithRoyalCurrent": 32690
       }
     },
@@ -271,15 +363,15 @@
       "kingBaselineScenario": "ZERO_CONSERVATIVE",
       "kingBaselineRtp": 0,
       "thresholdsNormalizedSeedToCap": {
-        "bothSameProgressForward": 0.8675,
-        "royalForwardWithRegalCurrent": 0.9255,
-        "regalForwardWithRoyalCurrent": 0.9252
+        "bothSameProgressForward": 0.8676,
+        "royalForwardWithRegalCurrent": 0.9256,
+        "regalForwardWithRoyalCurrent": 0.9253
       },
       "thresholdPotsEUR": {
-        "bothRoyal": 3102.5,
-        "bothRegal": 31025,
-        "royalForwardWithRegalCurrent": 3276.5,
-        "regalForwardWithRoyalCurrent": 32756
+        "bothRoyal": 3102.8,
+        "bothRegal": 31028,
+        "royalForwardWithRegalCurrent": 3276.8,
+        "regalForwardWithRoyalCurrent": 32759
       }
     },
     {
@@ -287,127 +379,271 @@
       "kingBaselineScenario": "ZERO_CONSERVATIVE",
       "kingBaselineRtp": 0,
       "thresholdsNormalizedSeedToCap": {
-        "bothSameProgressForward": 0.875,
-        "royalForwardWithRegalCurrent": 0.929,
-        "regalForwardWithRoyalCurrent": 0.9288
+        "bothSameProgressForward": 0.8752,
+        "royalForwardWithRegalCurrent": 0.9291,
+        "regalForwardWithRoyalCurrent": 0.9289
       },
       "thresholdPotsEUR": {
-        "bothRoyal": 3125,
-        "bothRegal": 31250,
-        "royalForwardWithRegalCurrent": 3287,
-        "regalForwardWithRoyalCurrent": 32864
+        "bothRoyal": 3125.6,
+        "bothRegal": 31256,
+        "royalForwardWithRegalCurrent": 3287.3,
+        "regalForwardWithRoyalCurrent": 32867
+      }
+    },
+    {
+      "alpha": 4,
+      "kingBaselineScenario": "ZERO_CONSERVATIVE",
+      "kingBaselineRtp": 0,
+      "thresholdsNormalizedSeedToCap": {
+        "bothSameProgressForward": 0.8816,
+        "royalForwardWithRegalCurrent": 0.9318,
+        "regalForwardWithRoyalCurrent": 0.9317
+      },
+      "thresholdPotsEUR": {
+        "bothRoyal": 3144.8,
+        "bothRegal": 31448,
+        "royalForwardWithRegalCurrent": 3295.4,
+        "regalForwardWithRoyalCurrent": 32951
+      }
+    },
+    {
+      "alpha": 5,
+      "kingBaselineScenario": "ZERO_CONSERVATIVE",
+      "kingBaselineRtp": 0,
+      "thresholdsNormalizedSeedToCap": {
+        "bothSameProgressForward": 0.8873,
+        "royalForwardWithRegalCurrent": 0.934,
+        "regalForwardWithRoyalCurrent": 0.934
+      },
+      "thresholdPotsEUR": {
+        "bothRoyal": 3161.9,
+        "bothRegal": 31619,
+        "royalForwardWithRegalCurrent": 3302,
+        "regalForwardWithRoyalCurrent": 33020
+      }
+    },
+    {
+      "alpha": 7.5,
+      "kingBaselineScenario": "ZERO_CONSERVATIVE",
+      "kingBaselineRtp": 0,
+      "thresholdsNormalizedSeedToCap": {
+        "bothSameProgressForward": 0.8989,
+        "royalForwardWithRegalCurrent": 0.9386,
+        "regalForwardWithRoyalCurrent": 0.9386
+      },
+      "thresholdPotsEUR": {
+        "bothRoyal": 3196.7,
+        "bothRegal": 31967,
+        "royalForwardWithRegalCurrent": 3315.8,
+        "regalForwardWithRoyalCurrent": 33158
+      }
+    },
+    {
+      "alpha": 10,
+      "kingBaselineScenario": "ZERO_CONSERVATIVE",
+      "kingBaselineRtp": 0,
+      "thresholdsNormalizedSeedToCap": {
+        "bothSameProgressForward": 0.9078,
+        "royalForwardWithRegalCurrent": 0.9424,
+        "regalForwardWithRoyalCurrent": 0.9424
+      },
+      "thresholdPotsEUR": {
+        "bothRoyal": 3223.4,
+        "bothRegal": 32234,
+        "royalForwardWithRegalCurrent": 3327.2,
+        "regalForwardWithRoyalCurrent": 33272
+      }
+    },
+    {
+      "alpha": 0.25,
+      "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
+      "kingBaselineRtp": 0.018095939999999998,
+      "thresholdsNormalizedSeedToCap": {
+        "bothSameProgressForward": 0.8009,
+        "royalForwardWithRegalCurrent": 0.8824,
+        "regalForwardWithRoyalCurrent": 0.8815
+      },
+      "thresholdPotsEUR": {
+        "bothRoyal": 2902.7,
+        "bothRegal": 29027,
+        "royalForwardWithRegalCurrent": 3147.2,
+        "regalForwardWithRoyalCurrent": 31445
       }
     },
     {
       "alpha": 0.5,
       "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
-      "kingBaselineRtp": 0.018083129999999996,
+      "kingBaselineRtp": 0.018095939999999998,
       "thresholdsNormalizedSeedToCap": {
-        "bothSameProgressForward": 0.8056,
-        "royalForwardWithRegalCurrent": 0.8859,
-        "regalForwardWithRoyalCurrent": 0.885
+        "bothSameProgressForward": 0.8058,
+        "royalForwardWithRegalCurrent": 0.886,
+        "regalForwardWithRoyalCurrent": 0.8851
       },
       "thresholdPotsEUR": {
-        "bothRoyal": 2916.8,
-        "bothRegal": 29168,
-        "royalForwardWithRegalCurrent": 3157.7,
-        "regalForwardWithRoyalCurrent": 31550
+        "bothRoyal": 2917.4,
+        "bothRegal": 29174,
+        "royalForwardWithRegalCurrent": 3158,
+        "regalForwardWithRoyalCurrent": 31553
       }
     },
     {
       "alpha": 0.75,
       "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
-      "kingBaselineRtp": 0.018083129999999996,
+      "kingBaselineRtp": 0.018095939999999998,
       "thresholdsNormalizedSeedToCap": {
-        "bothSameProgressForward": 0.8102,
-        "royalForwardWithRegalCurrent": 0.889,
-        "regalForwardWithRoyalCurrent": 0.8882
+        "bothSameProgressForward": 0.8103,
+        "royalForwardWithRegalCurrent": 0.8891,
+        "regalForwardWithRoyalCurrent": 0.8883
       },
       "thresholdPotsEUR": {
-        "bothRoyal": 2930.6,
-        "bothRegal": 29306,
-        "royalForwardWithRegalCurrent": 3167,
-        "regalForwardWithRoyalCurrent": 31646
+        "bothRoyal": 2930.9,
+        "bothRegal": 29309,
+        "royalForwardWithRegalCurrent": 3167.3,
+        "regalForwardWithRoyalCurrent": 31649
       }
     },
     {
       "alpha": 1,
       "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
-      "kingBaselineRtp": 0.018083129999999996,
+      "kingBaselineRtp": 0.018095939999999998,
       "thresholdsNormalizedSeedToCap": {
-        "bothSameProgressForward": 0.8145,
-        "royalForwardWithRegalCurrent": 0.8918,
-        "regalForwardWithRoyalCurrent": 0.891
+        "bothSameProgressForward": 0.8146,
+        "royalForwardWithRegalCurrent": 0.8919,
+        "regalForwardWithRoyalCurrent": 0.8911
       },
       "thresholdPotsEUR": {
-        "bothRoyal": 2943.5,
-        "bothRegal": 29435,
-        "royalForwardWithRegalCurrent": 3175.4,
-        "regalForwardWithRoyalCurrent": 31730
+        "bothRoyal": 2943.8,
+        "bothRegal": 29438,
+        "royalForwardWithRegalCurrent": 3175.7,
+        "regalForwardWithRoyalCurrent": 31733
       }
     },
     {
       "alpha": 1.25,
       "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
-      "kingBaselineRtp": 0.018083129999999996,
+      "kingBaselineRtp": 0.018095939999999998,
       "thresholdsNormalizedSeedToCap": {
-        "bothSameProgressForward": 0.8185,
-        "royalForwardWithRegalCurrent": 0.8943,
-        "regalForwardWithRoyalCurrent": 0.8936
+        "bothSameProgressForward": 0.8186,
+        "royalForwardWithRegalCurrent": 0.8944,
+        "regalForwardWithRoyalCurrent": 0.8937
       },
       "thresholdPotsEUR": {
-        "bothRoyal": 2955.5,
-        "bothRegal": 29555,
-        "royalForwardWithRegalCurrent": 3182.9,
-        "regalForwardWithRoyalCurrent": 31808
+        "bothRoyal": 2955.8,
+        "bothRegal": 29558,
+        "royalForwardWithRegalCurrent": 3183.2,
+        "regalForwardWithRoyalCurrent": 31811
       }
     },
     {
       "alpha": 1.5,
       "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
-      "kingBaselineRtp": 0.018083129999999996,
+      "kingBaselineRtp": 0.018095939999999998,
       "thresholdsNormalizedSeedToCap": {
-        "bothSameProgressForward": 0.8223,
-        "royalForwardWithRegalCurrent": 0.8966,
-        "regalForwardWithRoyalCurrent": 0.8959
+        "bothSameProgressForward": 0.8224,
+        "royalForwardWithRegalCurrent": 0.8967,
+        "regalForwardWithRoyalCurrent": 0.896
       },
       "thresholdPotsEUR": {
-        "bothRoyal": 2966.9,
-        "bothRegal": 29669,
-        "royalForwardWithRegalCurrent": 3189.8,
-        "regalForwardWithRoyalCurrent": 31877
+        "bothRoyal": 2967.2,
+        "bothRegal": 29672,
+        "royalForwardWithRegalCurrent": 3190.1,
+        "regalForwardWithRoyalCurrent": 31880
       }
     },
     {
       "alpha": 2,
       "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
-      "kingBaselineRtp": 0.018083129999999996,
+      "kingBaselineRtp": 0.018095939999999998,
       "thresholdsNormalizedSeedToCap": {
-        "bothSameProgressForward": 0.8293,
-        "royalForwardWithRegalCurrent": 0.9005,
-        "regalForwardWithRoyalCurrent": 0.9
+        "bothSameProgressForward": 0.8294,
+        "royalForwardWithRegalCurrent": 0.9006,
+        "regalForwardWithRoyalCurrent": 0.9001
       },
       "thresholdPotsEUR": {
-        "bothRoyal": 2987.9,
-        "bothRegal": 29879,
-        "royalForwardWithRegalCurrent": 3201.5,
-        "regalForwardWithRoyalCurrent": 32000
+        "bothRoyal": 2988.2,
+        "bothRegal": 29882,
+        "royalForwardWithRegalCurrent": 3201.8,
+        "regalForwardWithRoyalCurrent": 32003
       }
     },
     {
       "alpha": 3,
       "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
-      "kingBaselineRtp": 0.018083129999999996,
+      "kingBaselineRtp": 0.018095939999999998,
       "thresholdsNormalizedSeedToCap": {
         "bothSameProgressForward": 0.8413,
         "royalForwardWithRegalCurrent": 0.9066,
-        "regalForwardWithRoyalCurrent": 0.9062
+        "regalForwardWithRoyalCurrent": 0.9063
       },
       "thresholdPotsEUR": {
         "bothRoyal": 3023.9,
         "bothRegal": 30239,
         "royalForwardWithRegalCurrent": 3219.8,
-        "regalForwardWithRoyalCurrent": 32186
+        "regalForwardWithRoyalCurrent": 32189
+      }
+    },
+    {
+      "alpha": 4,
+      "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
+      "kingBaselineRtp": 0.018095939999999998,
+      "thresholdsNormalizedSeedToCap": {
+        "bothSameProgressForward": 0.8513,
+        "royalForwardWithRegalCurrent": 0.9112,
+        "regalForwardWithRoyalCurrent": 0.911
+      },
+      "thresholdPotsEUR": {
+        "bothRoyal": 3053.9,
+        "bothRegal": 30539,
+        "royalForwardWithRegalCurrent": 3233.6,
+        "regalForwardWithRoyalCurrent": 32330
+      }
+    },
+    {
+      "alpha": 5,
+      "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
+      "kingBaselineRtp": 0.018095939999999998,
+      "thresholdsNormalizedSeedToCap": {
+        "bothSameProgressForward": 0.8598,
+        "royalForwardWithRegalCurrent": 0.9149,
+        "regalForwardWithRoyalCurrent": 0.9148
+      },
+      "thresholdPotsEUR": {
+        "bothRoyal": 3079.4,
+        "bothRegal": 30794,
+        "royalForwardWithRegalCurrent": 3244.7,
+        "regalForwardWithRoyalCurrent": 32444
+      }
+    },
+    {
+      "alpha": 7.5,
+      "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
+      "kingBaselineRtp": 0.018095939999999998,
+      "thresholdsNormalizedSeedToCap": {
+        "bothSameProgressForward": 0.8766,
+        "royalForwardWithRegalCurrent": 0.9221,
+        "regalForwardWithRoyalCurrent": 0.9221
+      },
+      "thresholdPotsEUR": {
+        "bothRoyal": 3129.8,
+        "bothRegal": 31298,
+        "royalForwardWithRegalCurrent": 3266.3,
+        "regalForwardWithRoyalCurrent": 32663
+      }
+    },
+    {
+      "alpha": 10,
+      "kingBaselineScenario": "ACTIVE_PLUS_RESERVE_STRUCTURAL",
+      "kingBaselineRtp": 0.018095939999999998,
+      "thresholdsNormalizedSeedToCap": {
+        "bothSameProgressForward": 0.889,
+        "royalForwardWithRegalCurrent": 0.9279,
+        "regalForwardWithRoyalCurrent": 0.9279
+      },
+      "thresholdPotsEUR": {
+        "bothRoyal": 3167,
+        "bothRegal": 31670,
+        "royalForwardWithRegalCurrent": 3283.7,
+        "regalForwardWithRoyalCurrent": 32837
       }
     }
   ],
@@ -424,6 +660,7 @@
     "noSingleDistributionClaim": true,
     "noCapHypothesisAsFact": true,
     "noMainKingDoubleCount": true,
+    "crossNetworkControlsDiscoveryOnly": true,
     "noBetting": true,
     "realMoneyAllowed": false
   }
