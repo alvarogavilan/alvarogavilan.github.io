@@ -4,7 +4,7 @@ import crypto from 'node:crypto';
 
 const PAGE='https://www.botemania.es/juegos/slots-online/fishin-frenzy-jackpot-king';
 const OUT='loterias-ai/casino/jackpots/evidence/botemania-jackpot-client-map-v1.json';
-const headers={accept:'text/html,application/javascript,*/*','user-agent':'loterias-ai-botemania-public-client-map/1.4','cache-control':'no-cache, no-store, max-age=0'};
+const headers={accept:'text/html,application/javascript,*/*','user-agent':'loterias-ai-botemania-public-client-map/1.5','cache-control':'no-cache, no-store, max-age=0'};
 const pageRes=await fetch(PAGE,{redirect:'follow',headers});
 const html=await pageRes.text();
 const scriptUrls=[];
@@ -18,7 +18,7 @@ if(runtimeUrl){const r=await fetch(runtimeUrl,{headers});runtime=await r.text();
 if(clientUrl){const r=await fetch(clientUrl,{headers});client=await r.text();}
 const context=(text,needle,radius=1600,max=10)=>{
   const out=[];let from=0;
-  while(true){const i=text.indexOf(needle,from);if(i<0)break;out.push(text.slice(Math.max(0,i-radius),Math.min(text.length,i+needle.length+radius)).replace(/\s+/g,' '));from=i+needle.length;if(out.length>=max)break;}
+  while(true){const i=text.toLowerCase().indexOf(String(needle).toLowerCase(),from);if(i<0)break;out.push(text.slice(Math.max(0,i-radius),Math.min(text.length,i+String(needle).length+radius)).replace(/\s+/g,' '));from=i+String(needle).length;if(out.length>=max)break;}
   return out;
 };
 const idValues=new Map();
@@ -80,12 +80,27 @@ const injectedAssignments=[];
 for(const re of [/window\.__[A-Z0-9_]+__\s*=\s*[^;]{0,1500};/g,/"__[A-Z0-9_]+__"\s*:\s*[^,}]{0,1000}/g])for(const m of html.matchAll(re)){
   let v=m[0].replace(/\s+/g,' ');v=v.replace(/(token|authorization|cookie)[^,;}]{0,400}/gi,'$1:[REDACTED]');if(!injectedAssignments.includes(v))injectedAssignments.push(v);if(injectedAssignments.length>=80)break;
 }
+
+// Recover only public venture-name hints already embedded in the website bundle.
+// This avoids guessing/brute-forcing headers for sister brands such as Canal Bingo.
+const ventureDictionaryHints={};
+for(const needle of ['canal','bingoCommetDId','ventureDictionary','botemania_es','monopolycasino_es','bingo']){
+  ventureDictionaryHints[needle]=context(client,needle,2600,20);
+}
+const ventureStringCandidates=[];
+for(const m of client.matchAll(/["']([A-Za-z0-9_-]{2,50})["']/g)){
+  const v=m[1];
+  if(!/(canal|bingo|botemania|monopolycasino)/i.test(v))continue;
+  if(!ventureStringCandidates.includes(v))ventureStringCandidates.push(v);
+  if(ventureStringCandidates.length>=120)break;
+}
+
 const out={
-  version:'botemania-jackpot-client-map-v1.4',generatedAt:new Date().toISOString(),page:PAGE,pageStatus:pageRes.status,pageFinalUrl:pageRes.url,
+  version:'botemania-jackpot-client-map-v1.5',generatedAt:new Date().toISOString(),page:PAGE,pageStatus:pageRes.status,pageFinalUrl:pageRes.url,
   runtimeUrl,runtimeBytes:runtime.length,clientUrl,clientBytes:client.length,scriptUrls,chunkNames,numericHints,resolvedChunks,
-  graphqlClientContexts,gameLaunchContexts,clientHeaderHints,pageConfigContexts,injectedAssignments,
+  graphqlClientContexts,gameLaunchContexts,clientHeaderHints,pageConfigContexts,injectedAssignments,ventureDictionaryHints,ventureStringCandidates,
   blueprintContexts:context(runtime,'BlueprintJackpots',2500).slice(0,3),headlessContexts:context(runtime,'HeadlessJackpots',2500).slice(0,3),
-  guards:{publicClientAssetsOnly:true,noAuthenticationBypass:true,noPrivateApiCredentials:true,noGraphqlIntrospection:true,sensitiveAssignmentValuesRedacted:true,noBetting:true,realMoneyAllowed:false}
+  guards:{publicClientAssetsOnly:true,noAuthenticationBypass:true,noPrivateApiCredentials:true,noGraphqlIntrospection:true,sensitiveAssignmentValuesRedacted:true,noHeaderBruteforce:true,noBetting:true,realMoneyAllowed:false}
 };
 fs.mkdirSync('loterias-ai/casino/jackpots/evidence',{recursive:true});fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
-console.log(JSON.stringify({runtimeUrl,clientUrl,pageConfigContexts,injectedAssignments,gameLaunchContextCounts:Object.fromEntries(Object.entries(gameLaunchContexts).map(([k,v])=>[k,v.length])),resolvedChunks:resolvedChunks.map(x=>({id:x.id,name:x.name,status:x.status,queries:x.querySignatures,endpoints:x.endpointCandidates}))},null,2));
+console.log(JSON.stringify({runtimeUrl,clientUrl,ventureStringCandidates,pageConfigContexts,injectedAssignments,gameLaunchContextCounts:Object.fromEntries(Object.entries(gameLaunchContexts).map(([k,v])=>[k,v.length])),resolvedChunks:resolvedChunks.map(x=>({id:x.id,name:x.name,status:x.status,queries:x.querySignatures,endpoints:x.endpointCandidates}))},null,2));
