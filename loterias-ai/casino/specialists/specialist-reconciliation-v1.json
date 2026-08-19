@@ -1,34 +1,34 @@
 {
-  "version": "specialist-reconciliation-v1",
-  "generatedAt": "2026-08-19T10:02:00Z",
+  "version": "specialist-reconciliation-v2",
+  "generatedAt": "2026-08-19T10:31:30Z",
   "truthModel": {
-    "validatedRuntimeSpecialists": 4,
+    "validatedPlayUZUSpecialists": 552,
     "pokerstarsOfficialSeedsAwaitingRuntimeVerification": 8,
     "legacyNoisyCatalogCandidates": 311,
     "legacyNoisyCatalogCountsAsSpecialists": false
   },
-  "validatedRuntime": {
-    "source": "official-game-specialists-v1.json (version official-game-specialists-v2)",
-    "count": 4,
-    "operators": {"playuzu-es":4,"pokerstars-es":0}
+  "validatedPlayUZU": {
+    "source": "loterias-ai/casino/playuzu/evidence/validated-game-specialists-v1.json",
+    "count": 552,
+    "byClass": {"RNG_GAME":371,"JACKPOT":142,"BLACKJACK":3,"ROULETTE":18,"CRASH":18},
+    "validation": "Games decoded from official PlayUZU category pages and only backend category paths embedded by those official pages, using exact observed appName PlayUZU.es."
   },
   "pokerstarsSeeds": {
     "source": "pokerstars-seeded-official-games-v1.json",
     "count": 8,
     "runtimeValidationResult": "GEO_REDIRECT_BLOCKED_OR_GENERIC_EXIT_PAGE",
-    "runtimeHttp200": 8,
     "runtimeValidated": 0,
-    "policy": "Keep as known official-page seeds/research targets, but do not count as runtime-validated specialists until the official game page is verifiable from the execution environment."
+    "policy": "Keep as known official-page research targets; do not mix into the 552 PlayUZU validated count."
   },
   "legacyCatalog": {
     "sourceCommit": "6c44083cfa06a03d18087b10cbb792fb81531125",
     "count": 311,
     "state": "REJECTED_AS_NOISY_CATALOG_EXTRACTION",
-    "reason": "Naive page-text extraction included non-games and generic product/navigation text."
+    "reason": "Naive page-text extraction included non-games and generic navigation text. It is superseded by the structured PlayUZU catalog."
   },
   "guards": {
     "noInflatedEmployeeCount": true,
-    "individualOfficialEvidencePreferred": true,
+    "structuredOfficialCatalogRequired": true,
     "thirdPartyCatalogsForbidden": true,
     "automaticBettingAllowed": false,
     "realMoneyAllowed": false
