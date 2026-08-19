@@ -18,6 +18,15 @@ const hasDetailedOfficialResult = result => {
   return ['fiveDigits', 'fourDigits', 'threeDigits', 'twoDigits', 'reintegros']
     .some(key => Array.isArray(d[key]) && d[key].length > 0);
 };
+const hasExplicitPersistedNormalization = row => {
+  const schema = row.result?.officialPrizeSchema;
+  const detail = row.result?.detailedExtractions;
+  return schema?.rawPrizeUnit === 'euro_cents' &&
+    schema?.normalizedPrizeUnit === 'EUR' &&
+    schema?.numberNormalization === 'five_digit_zero_padded' &&
+    detail?.rawPrizeUnit === 'euro_cents' &&
+    detail?.normalizedPrizeUnit === 'EUR';
+};
 
 let totalNonSeasonal = 0;
 let eligibleOfficialSchema = 0;
@@ -49,6 +58,8 @@ for (const file of fs.readdirSync(dir).filter(f => /^\d{4}\.json$/.test(f)).sort
 
     const schemaDrawId = String(schema?.drawId ?? '').trim();
     const persistedOfficialDrawId = String(row.official?.drawId ?? '').trim();
+    const legacyValidationFlags = schema?.normalizedPrizeUnit === 'EUR' && validation?.prizeUnitValidated === true && validation?.numberNormalizationValidated === true;
+    const explicitPersistedNormalization = hasExplicitPersistedNormalization(row);
     const checks = {
       schemaDrawIdPresent: Boolean(schemaDrawId),
       persistedOfficialDrawIdPresent: Boolean(persistedOfficialDrawId),
@@ -59,7 +70,7 @@ for (const file of fs.readdirSync(dir).filter(f => /^\d{4}\.json$/.test(f)).sort
       detailedOfficialResult: hasDetailedOfficialResult(row.result),
       firstPrize: n5(row.result?.firstPrize) !== '' && n5(row.result?.firstPrize) === n5(schema?.exactPrizes?.first?.number),
       secondPrize: n5(row.result?.secondPrize) !== '' && n5(row.result?.secondPrize) === n5(schema?.exactPrizes?.second?.number),
-      normalizedUnits: schema?.normalizedPrizeUnit === 'EUR' && validation?.prizeUnitValidated === true && validation?.numberNormalizationValidated === true
+      normalizedUnits: legacyValidationFlags || explicitPersistedNormalization
     };
     const complete = Object.values(checks).every(Boolean);
     if (!complete) {
@@ -80,7 +91,8 @@ for (const file of fs.readdirSync(dir).filter(f => /^\d{4}\.json$/.test(f)).sort
         'official-first-prize-cross-check',
         'official-second-prize-cross-check',
         'official-detailed-prize-schema',
-        'official-economics-schema'
+        'official-economics-schema',
+        explicitPersistedNormalization ? 'explicit-persisted-unit-and-number-normalization' : 'validated-unit-and-number-normalization-flags'
       ],
       officialCrossCheck: {
         provider: 'SELAE',
@@ -94,10 +106,14 @@ for (const file of fs.readdirSync(dir).filter(f => /^\d{4}\.json$/.test(f)).sort
           firstPrize: true,
           secondPrize: true,
           detailedPrizeSchema: true,
-          economics: true
+          economics: true,
+          units: true,
+          numberNormalization: true
         },
         complete: true,
-        evidenceMode: 'PERSISTED_OFFICIAL_SELAE_RESULTADOS2_CROSSCHECKED_AT_CAPTURE',
+        evidenceMode: explicitPersistedNormalization
+          ? 'PERSISTED_OFFICIAL_SELAE_RESULTADOS2_WITH_EXPLICIT_NORMALIZATION_EVIDENCE'
+          : 'PERSISTED_OFFICIAL_SELAE_RESULTADOS2_CROSSCHECKED_AT_CAPTURE',
         officialResult: {
           firstPrize: n5(schema.exactPrizes.first.number),
           secondPrize: n5(schema.exactPrizes.second.number)
@@ -138,7 +154,7 @@ const blockerDiagnostics = {
 const report = {
   generatedAt: new Date().toISOString(),
   gameId: 'loteria-nacional',
-  evidencePolicy: 'Certification uses only already-persisted SELAE resultados2 evidence cross-checked against SELAE fechav3 at capture time, including an exact persisted official draw-id match. No missing field is inferred.',
+  evidencePolicy: 'Certification uses only already-persisted SELAE resultados2 evidence cross-checked against SELAE fechav3 at capture time, including exact persisted draw-id match and explicit persisted unit/number normalization evidence. No missing field is inferred.',
   totalNonSeasonal,
   eligibleOfficialSchema,
   alreadyCertified,
@@ -157,6 +173,7 @@ const report = {
     firstAndSecondRequired: true,
     detailedOfficialResultRequired: true,
     officialEconomicsRequired: true,
+    explicitPersistedNormalizationRequiredWhenLegacyFlagsMissing: true,
     noOverwriteOnMismatch: true,
     incompleteEvidenceRemainsUnvalidated: true
   }
