@@ -1,0 +1,90 @@
+{
+  "version": "jackpot-king-deluxe-cross-network-control-v1",
+  "generatedAt": "2026-08-19T17:31:00Z",
+  "purpose": "DISCOVERY_CONTROL_ONLY_NOT_SPAIN_VALIDATION",
+  "network": "Betfair UK Jackpot King Deluxe public indexed snapshots",
+  "knownControlParameters": {
+    "royalSeedGBP": 500,
+    "royalMbwbGBP": 3500,
+    "regalSeedGBP": 5000,
+    "regalMbwbGBP": 35000,
+    "status": "PUBLISHED_BY_CONTROL_OPERATOR_AND_MULTIPLE_BLUEPRINT_DELUXE_SOURCES"
+  },
+  "snapshots": [
+    {
+      "jackpotKingGBP": 4741101.76,
+      "regalGBP": 13570.24,
+      "royalGBP": 1699.01,
+      "source": "https://www.betfair.com/betting/football/elite-friendlies/union-berlin-v-olympiakos/e-34595654"
+    },
+    {
+      "jackpotKingGBP": 4744291.74,
+      "regalGBP": 14618.36,
+      "royalGBP": 845.28,
+      "source": "https://www.betfair.com/betting/football/brazilian-serie-d/maranhao-v-tuna-luso-pa/e-34572435"
+    },
+    {
+      "jackpotKingGBP": 4745331.29,
+      "regalGBP": 14959.97,
+      "royalGBP": 1186.89,
+      "source": "https://www.betfair.com/betting/football/welsh-matches/baglan-dragons-v-newport-city/e-34629961"
+    }
+  ],
+  "cleanGrowthReplication": {
+    "fromJackpotKingGBP": 4744291.74,
+    "toJackpotKingGBP": 4745331.29,
+    "deltasGBP": {
+      "JACKPOT_KING": 1039.55,
+      "REGAL": 341.61,
+      "ROYAL": 341.61
+    },
+    "allocationShares": {
+      "JACKPOT_KING": 0.603418,
+      "REGAL": 0.198291,
+      "ROYAL": 0.198291
+    },
+    "interpretation": "Independent control reproduces the approximately 60/20/20 active-pot allocation discovered on Botemania."
+  },
+  "royalResetWindow": {
+    "beforeRoyalGBP": 1699.01,
+    "afterRoyalGBP": 845.28,
+    "matchedRegalGrowthGBP": 1048.12,
+    "resetDetected": true,
+    "singleResetAccountingHypothesis": {
+      "assumedRoyalSeedGBP": 500,
+      "inferredAwardGBP": 2401.85,
+      "normalizedSeedToMbwb": 0.63395,
+      "formula": "beforeRoyal + matchedRegalGrowth - (afterRoyal - seed)",
+      "warning": "This inferred award is valid only if exactly one Royal reset occurred between the two indexed snapshots and Royal/Regal received equal active contributions throughout the interval. It is a discovery-control estimate, not a verified winner record."
+    }
+  },
+  "publishedWinnerControls": [
+    {
+      "tier": "REGAL",
+      "awardGBP": 29194.13,
+      "normalizedSeedToMbwb": 0.806471,
+      "source": "https://www.playojo.com/blog/latest-jackpot-winners-nov25/"
+    },
+    {
+      "tier": "REGAL",
+      "awardGBP": 26291.38,
+      "normalizedSeedToMbwb": 0.709713,
+      "source": "https://www.playojo.com/blog/highest-paying-games-december-25/"
+    }
+  ],
+  "conclusion": {
+    "crossNetworkAllocationReplication": true,
+    "royalResetObserved": true,
+    "winnerSampleTooSmallForHazardFit": true,
+    "supportsSharedDeluxeMechanicsPrior": true,
+    "provesBotemaniaSpainMbwb": false,
+    "provesBotemaniaSpainHazard": false,
+    "realMoneyAllowed": false
+  },
+  "guards": {
+    "discoveryOnly": true,
+    "noCrossMarketPromotion": true,
+    "noBetting": true,
+    "realMoneyAllowed": false
+  }
+}
