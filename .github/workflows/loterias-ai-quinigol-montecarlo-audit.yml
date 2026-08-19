@@ -1,0 +1,43 @@
+name: Loterias AI Quinigol Fixed Holdout Monte Carlo Audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/scripts/quinigol-holdout-montecarlo-audit.mjs'
+      - '.github/workflows/loterias-ai-quinigol-montecarlo-audit.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-quinigol-montecarlo-audit
+  cancel-in-progress: true
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Run 50k matched-random fixed-holdout audit
+        env:
+          MC_RUNS: '50000'
+        run: node loterias-ai/scripts/quinigol-holdout-montecarlo-audit.mjs
+      - name: Verify fail-closed interpretation
+        run: node -e "const x=require('./loterias-ai/data/backtests/quinigol-holdout-montecarlo-audit.json');if(x.gates?.realMoneyPass!==false||x.guards?.postHocTestSpecification!==true||x.guards?.cannotPromoteByItself!==true||x.guards?.realMoneyAllowed!==false)process.exit(1)"
+      - name: Persist audit safely
+        run: |
+          cp loterias-ai/data/backtests/quinigol-holdout-montecarlo-audit.json /tmp/quinigol-mc.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/quinigol-mc.json loterias-ai/data/backtests/quinigol-holdout-montecarlo-audit.json
+            git add loterias-ai/data/backtests/quinigol-holdout-montecarlo-audit.json
+            git commit -m 'data(quinigol): persist fixed-holdout Monte Carlo audit' || exit 0
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
