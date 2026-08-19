@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+
+const PAGE='https://www.botemania.es/juegos/slots-online/fishin-frenzy-jackpot-king';
+const OUT='loterias-ai/casino/jackpots/evidence/botemania-game-launch-client-map-v1.json';
+const headers={'user-agent':'loterias-ai-botemania-game-launch-map/1.0',accept:'text/html,application/javascript,*/*','cache-control':'no-cache'};
+const pr=await fetch(PAGE,{headers,redirect:'follow'});const html=await pr.text();
+const scriptUrls=[];
+for(const m of html.matchAll(/<script[^>]+src=["']([^"']+)["']/gi)){try{const u=new URL(m[1],pr.url).href;if(!scriptUrls.includes(u))scriptUrls.push(u)}catch{}}
+const targets=scriptUrls.filter(u=>/(GameHero|CallToAction|PostPage|client\.|RedirectModal)/i.test(u));
+const needles=['launch','playGame','gameLaunch','gameUrl','launchUrl','realPlay','funPlay','demo','providerId','gameId','session','token','iframe','openGame','playUrl','casinoGame','/game','/play'];
+function contexts(text,needle){const out=[];let from=0,low=text.toLowerCase(),n=needle.toLowerCase();while(out.length<12){const i=low.indexOf(n,from);if(i<0)break;let c=text.slice(Math.max(0,i-1000),Math.min(text.length,i+n.length+1800)).replace(/\s+/g,' ');c=c.replace(/(authorization|token|cookie)\s*[:=]\s*["'][^"']+["']/gi,'$1:[REDACTED]');out.push(c);from=i+n.length;}return out;}
+function urls(text,base){const out=[];for(const re of [/https?:\\?\/\\?\/[^"'<>\s]+/gi,/["'](\/[^"']{1,300})["']/gi])for(const m of text.matchAll(re)){const raw=(m[1]||m[0]).replace(/\\\//g,'/');if(!/(game|play|launch|casino|session|demo|graphql|api)/i.test(raw))continue;try{const u=new URL(raw,base).href;if(!out.includes(u))out.push(u)}catch{}}return out.slice(0,150)}
+function queries(text){const out=[];for(const re of [/\b(?:query|mutation)\s+[A-Za-z_][A-Za-z0-9_]*/g,/operationName["']?\s*[:=]\s*["']([A-Za-z_][A-Za-z0-9_]*)["']/g])for(const m of text.matchAll(re)){const x=m[1]||m[0];if(!out.includes(x))out.push(x)}return out.slice(0,100)}
+const files=[];
+for(const u of targets){try{const r=await fetch(u,{headers});const text=await r.text();const cs={};for(const n of needles){const x=contexts(text,n);if(x.length)cs[n]=x}files.push({url:u,httpStatus:r.status,bytes:text.length,sha256:crypto.createHash('sha256').update(text).digest('hex'),urlCandidates:urls(text,u),querySignatures:queries(text),contexts:cs})}catch(e){files.push({url:u,error:String(e?.message||e)})}}
+const allUrls=[...new Set(files.flatMap(f=>f.urlCandidates||[]))];const allQueries=[...new Set(files.flatMap(f=>f.querySignatures||[]))];
+const candidates=[];for(const f of files)for(const [needle,cs] of Object.entries(f.contexts||{}))for(const c of cs){if(/launch|playgame|gameurl|realplay|funplay|demo|iframe|session/i.test(c))candidates.push({file:f.url,needle,context:c})}
+const out={version:'botemania-game-launch-client-map-v1',generatedAt:new Date().toISOString(),page:PAGE,pageStatus:pr.status,targets,files,allUrlCandidates:allUrls,allQuerySignatures:allQueries,launchContexts:candidates.slice(0,120),decision:{publicDemoLaunchCandidateFound:allUrls.some(u=>/demo|fun|play/i.test(u))||candidates.some(x=>/demo|funplay/i.test(x.context)),exactSpainPaytableRecovered:false,realMoneyAllowed:false},guards:{publicStaticAssetsOnly:true,noAuthentication:true,noCookies:true,noPrivateTokens:true,noLaunchInvocation:true,noBetting:true,realMoneyAllowed:false}};
+fs.mkdirSync('loterias-ai/casino/jackpots/evidence',{recursive:true});fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify({targets,allUrlCandidates:allUrls,allQuerySignatures:allQueries,launchContextCount:out.launchContexts.length,decision:out.decision},null,2));
