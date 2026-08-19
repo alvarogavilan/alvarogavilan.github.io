@@ -1,0 +1,32 @@
+{
+  "version": "playuzu-age-of-gods-monitor-freeze-v1",
+  "createdAt": "2026-08-19T11:36:00Z",
+  "operator": "playuzu-es",
+  "sourcePage": "https://www.playuzu.es/jackpots/",
+  "backend": "https://games-api.netdnstrace1.com/v2/categories/jackpot",
+  "appName": "PlayUZU.es",
+  "monitor": {
+    "page": 4,
+    "minimumDistinctAgeTitles": 2,
+    "expectedTitlesAtFreeze": [
+      "Age of the Gods Wheels of Olympus",
+      "Age of the Gods Ruler of the Dead"
+    ],
+    "minimumIntervalSeconds": 3600,
+    "sharedPositiveRawValueRequired": true,
+    "currencyIsNotTrusted": true,
+    "rawCounterOnly": true,
+    "fallbackScanForbiddenInRoutineMonitor": true
+  },
+  "rationale": "A frozen diagnostic found two distinct AOTG titles on page 4 sharing the same positive jackpot counter. Across consecutive probes the same raw number was labelled with different currencies, so monetary denomination is not scientifically trustworthy from this runner. The routine monitor therefore tracks only the shared raw network counter and fails closed if page geometry changes.",
+  "guards": {
+    "observationOnly": true,
+    "noCurrencyConversion": true,
+    "noEconomicPromotionFromRawCounter": true,
+    "noBetting": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  },
+  "immutable": true
+}
