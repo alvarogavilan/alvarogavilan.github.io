@@ -2,7 +2,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 const root='loterias-ai/data/archive';
 const expected={bonoloto:{recentEconomics:true},primitiva:{recentEconomics:true},euromillones:{recentEconomics:true},'gordo-primitiva':{recentEconomics:true},eurodreams:{recentEconomics:true},'loteria-nacional':{recentEconomics:false}};
-const hasEconomics=r=>Boolean((r.economics?.payouts&&Object.keys(r.economics.payouts).length)||(Array.isArray(r.economics?.categories)&&r.economics.categories.length&&r.economics?.validation?.officialSELAE));
+const hasEconomics=r=>Boolean((r.economics?.payouts&&Object.keys(r.economics.payouts).length)||(Array.isArray(r.economics?.categories)&&r.economics.categories.length));
+const hasOfficialEconomics=r=>Boolean(
+  (Array.isArray(r.economics?.categories)&&r.economics.categories.length)&&(
+    r.economics?.validation?.officialSELAE===true||
+    r.economics?.officialSource?.provider==='SELAE'||
+    r.result?.officialPrizeSchema?.provider==='SELAE'
+  )
+);
 const tuple=a=>Array.isArray(a)?[...a].map(Number).sort((x,y)=>x-y).join(','):'';
 const conflictDate=c=>String(c?.drawDate??c?.date??'');
 const allowedResolutionStatuses=new Set(['RESOLVED_SOURCE_DATE_SHIFT','RESOLVED_OFFICIAL_CORRECTION','RESOLVED_CANONICAL_CONFIRMED']);
@@ -17,7 +24,7 @@ for(const game of Object.keys(expected)){
  rows.sort((a,b)=>String(a.drawDate).localeCompare(String(b.drawDate)));
  const seen=new Set(),dupes=[];let invalid=0;
  for(const r of rows){if(!/^\d{4}-\d{2}-\d{2}$/.test(String(r.drawDate)))invalid++;if(seen.has(r.drawDate))dupes.push(r.drawDate);seen.add(r.drawDate)}
- const recent=rows.slice(-60),missingEconomics=expected[game].recentEconomics?recent.filter(r=>!hasEconomics(r)).map(r=>r.drawDate):[],economicsRows=rows.filter(hasEconomics),officialRows=rows.filter(r=>Array.isArray(r.economics?.categories)&&r.economics.categories.length&&r.economics?.validation?.officialSELAE);
+ const recent=rows.slice(-60),missingEconomics=expected[game].recentEconomics?recent.filter(r=>!hasEconomics(r)).map(r=>r.drawDate):[],economicsRows=rows.filter(hasEconomics),officialRows=rows.filter(hasOfficialEconomics);
  const metaPath=path.join(root,'_meta',`${game}-official-economics.json`);let meta=null;
  if(fs.existsSync(metaPath))try{meta=JSON.parse(fs.readFileSync(metaPath,'utf8'))}catch(e){parseErrors.push({file:path.basename(metaPath),error:String(e?.message||e)})}
  const officialEconomicRecords=Number(meta?.officialEconomics??officialRows.length)||0,officialCoverage=meta?.coverage??(rows.length?officialEconomicRecords/rows.length:0);
