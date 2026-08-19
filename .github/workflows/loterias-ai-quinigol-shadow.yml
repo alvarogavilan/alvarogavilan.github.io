@@ -10,6 +10,8 @@ on:
       - 'loterias-ai/scripts/quinigol-replication-v4.mjs'
       - 'loterias-ai/scripts/quinigol-replication-v4-finalize-30.mjs'
       - 'loterias-ai/scripts/quinigol-concentration-robustness-finalize-v1.mjs'
+      - 'loterias-ai/ops/attach-cross-table-convergence-to-economic-readiness-v1.mjs'
+      - 'loterias-ai/ops/attach-cross-table-convergence-to-promotion-gate-v1.mjs'
       - 'loterias-ai/data/archive/quinigol/**'
       - 'loterias-ai/data/policies/quinigol-shadow-policy.json'
       - 'loterias-ai/data/policies/quinigol-replication-v4-freeze.json'
@@ -37,8 +39,12 @@ jobs:
           node loterias-ai/scripts/quinigol-replication-v4-finalize-30.mjs
       - name: Adjudicate preregistered concentration robustness
         run: node loterias-ai/scripts/quinigol-concentration-robustness-finalize-v1.mjs
-      - run: node loterias-ai/casino/lightning/research/economic-readiness-ledger-v1.mjs
-      - run: node loterias-ai/casino/lightning/research/economic-promotion-gate-v1.mjs
+      - name: Rebuild economic radar and preserve cross-table custody
+        run: |
+          node loterias-ai/casino/lightning/research/economic-readiness-ledger-v1.mjs
+          node loterias-ai/casino/lightning/research/economic-promotion-gate-v1.mjs
+          node loterias-ai/ops/attach-cross-table-convergence-to-promotion-gate-v1.mjs
+          node loterias-ai/ops/attach-cross-table-convergence-to-economic-readiness-v1.mjs
       - name: Validate blinded/final safety
         run: |
           node - <<'NODE'
@@ -54,8 +60,10 @@ jobs:
           if(fs.existsSync(v4p)){const f=JSON.parse(fs.readFileSync(v4p,'utf8'));if(f.fixedBoundary?.jornadas!==30||f.guards?.noRetuning!==true||f.guards?.noOptionalStopping!==true||f.guards?.realMoneyAllowed!==false||f.gates?.realMoneyPass!==false)throw new Error('Quinigol V4 final guard regression')}
           const robust=JSON.parse(fs.readFileSync('loterias-ai/data/shadow/quinigol-concentration-robustness-status-v1.json','utf8'));
           if(robust.guards?.baseFailureCanBeRescued!==false||robust.guards?.interimPerformanceRead!==false||robust.guards?.noOptionalStopping!==true||robust.guards?.realMoneyAllowed!==false)throw new Error('Quinigol concentration robustness regression');
-          const r=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/economic-readiness-ledger-v1.json','utf8'));if(r.realMoneyAllowed!==false||r.promotionPolicy?.hiddenPerformanceMustRemainHidden!==true)throw new Error('economic readiness guard regression');
-          const g=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/economic-promotion-gate-v1.json','utf8'));if(g.policy?.onlyFixedBoundaryFinalsMayPromote!==true||g.policy?.hiddenInterimPerformanceNeverRead!==true||g.policy?.realMoneyAllowed!==false)throw new Error('economic promotion gate regression');
+          const r=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/economic-readiness-ledger-v1.json','utf8'));
+          if(r.realMoneyAllowed!==false||r.promotionPolicy?.hiddenPerformanceMustRemainHidden!==true||r.crossTableConvergence?.claimPolicy?.requiresIndependentPassInBothTables!==true||r.crossTableConvergence?.realMoneyAllowed!==false)throw new Error('economic readiness/cross-table guard regression');
+          const g=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/economic-promotion-gate-v1.json','utf8'));
+          if(g.policy?.onlyFixedBoundaryFinalsMayPromote!==true||g.policy?.hiddenInterimPerformanceNeverRead!==true||g.policy?.realMoneyAllowed!==false||g.policy?.crossTableReplicationAloneCannotAuthorizeRealMoney!==true||g.crossTableLag1Replication?.realMoneyAllowed!==false)throw new Error('economic promotion/cross-table gate regression');
           NODE
       - name: Persist V3 V4 robustness and economic radar safely
         shell: bash
