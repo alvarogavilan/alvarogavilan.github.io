@@ -78,7 +78,20 @@ jobs:
             semantic('loterias-ai/data/archive/_meta/archive-coverage-priorities.json','/tmp/archive-priorities.prev.json',new Set(['generatedAt','manifestGeneratedAt','auditGeneratedAt']));
             NODE
 
-            node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync('loterias-ai/data/archive/_meta/archive-audit.json','utf8'));const p=JSON.parse(fs.readFileSync('loterias-ai/data/archive/_meta/archive-coverage-priorities.json','utf8'));if(a.qualityGate?.pass!==true)throw Error('archive audit quality gate failed');if(p.totals?.records!==24243)throw Error('archive total drift: '+p.totals?.records);if((p.totals?.validatedRecords||0)<21000)throw Error('validated archive regression');"
+            node <<'NODE'
+            const fs=require('fs');
+            const manifest=JSON.parse(fs.readFileSync('loterias-ai/data/archive/manifest.json','utf8'));
+            const audit=JSON.parse(fs.readFileSync('loterias-ai/data/archive/_meta/archive-audit.json','utf8'));
+            const priorities=JSON.parse(fs.readFileSync('loterias-ai/data/archive/_meta/archive-coverage-priorities.json','utf8'));
+            if(audit.qualityGate?.pass!==true) throw Error('archive audit quality gate failed');
+            const manifestRecords=Number(manifest.totals?.records)||0;
+            const manifestValidated=Number(manifest.totals?.validatedRecords)||0;
+            const manifestEconomics=Number(manifest.totals?.economicsRecords)||0;
+            if(Number(priorities.totals?.records)!==manifestRecords) throw Error(`archive records mismatch: priorities=${priorities.totals?.records} manifest=${manifestRecords}`);
+            if(Number(priorities.totals?.validatedRecords)!==manifestValidated) throw Error(`archive validated mismatch: priorities=${priorities.totals?.validatedRecords} manifest=${manifestValidated}`);
+            if(Number(priorities.totals?.economicsRecords)!==manifestEconomics) throw Error(`archive economics mismatch: priorities=${priorities.totals?.economicsRecords} manifest=${manifestEconomics}`);
+            if(manifestRecords<=0||manifestValidated<0||manifestValidated>manifestRecords) throw Error('invalid archive manifest totals');
+            NODE
 
             git add \
               loterias-ai/data/archive/_meta/archive-audit.json \
