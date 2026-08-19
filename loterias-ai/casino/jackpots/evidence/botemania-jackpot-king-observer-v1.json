@@ -1,6 +1,6 @@
 {
-  "version": "botemania-jackpot-king-observer-v1.2",
-  "generatedAt": "2026-08-19T16:27:49.889Z",
+  "version": "botemania-jackpot-king-observer-v1.3",
+  "generatedAt": "2026-08-19T16:30:56.535Z",
   "operator": "botemania-es",
   "operatorOfficial": true,
   "mode": "OBSERVATION_ONLY_NO_WAGERING",
@@ -20,7 +20,7 @@
     }
   },
   "discovery": {
-    "generatedAt": "2026-08-19T16:27:49.889Z",
+    "generatedAt": "2026-08-19T16:30:56.535Z",
     "pageScriptSources": [
       "https://www.botemania.es/es/runtime.88e5d9042d77e378fcb1.js",
       "https://www.botemania.es/es/client.6ceb4c121205f4b30b65.js",
@@ -401,11 +401,24 @@
         "context": "||(r.add(i),a.push(e))):a.push(e)}),n(n({},e),{definitions:a})}function ne(e){var n,t,i=ee(e);if(!R.has(i)){var e=new z(e,{experimentalFragmentVariables:L,allowLegacyFragmentVariables:L}).parseDocument();if(!e||\"Document\"!==e.kind)throw new Error(\"Not a valid GraphQL document.\");R.set(i,(e=te(e),(n=new Set(e.definitions)).forEach(function(t){t.loc&&delete t.loc,Object.keys(t).forEach(function(e){e=t[e];e&&\"object\"==typeof e&&n.add(e)})}),(t=e.loc)&&(delete t.startToken,delete t.endToken),e))}return R.get(i)}function w(n){for(var e=[],t=1;t<arguments.length;t++)e[t-1]=arguments[t];var i=(n=\"string\"==typeof n?[n]:n)[0];return e.forEach(function(e,t){e&&\"Document\"===e.kind?i+=e.loc.source.body:i+=e,i+=n[t+1]}),ne(i)}function ie(){R.clear(),C.clear()}function re(){Z=!1}func"
       }
     ],
+    "publicBlueprintGraphqlQuery": "query loadJackpots { blueprintJackpots { id amount } }",
     "status": "CANDIDATES_FOUND_NEED_QUERY_RECONSTRUCTION"
   },
   "latest": {
-    "observedAt": "2026-08-19T16:27:49.889Z",
+    "observedAt": "2026-08-19T16:30:56.535Z",
     "sourceReadable": true,
+    "graphql": {
+      "endpoint": "https://www.botemania.es/es/graphql",
+      "operationName": "loadJackpots",
+      "httpStatus": 200,
+      "ok": false,
+      "responseSha256": "cd69f5a65f94f76dc43b572a6f81bc459c8a38bfe4d44ae5e601e49254fbad84",
+      "contentType": "application/json; charset=utf-8",
+      "rows": [],
+      "error": [
+        "Cannot read properties of undefined (reading 'map')"
+      ]
+    },
     "pages": [
       {
         "id": "fishin-frenzy-jpk",
@@ -414,7 +427,7 @@
         "httpStatus": 200,
         "finalUrl": "https://www.botemania.es/juegos/slots-online/fishin-frenzy-jackpot-king",
         "officialSpainHost": true,
-        "sha256": "841d9ca5fcb46c3de411ebec5cce097e8e87094f6b0e03eae73f5c80af383d54",
+        "sha256": "3fb3e5947a50b4aece0c33cefcf2a719ef55954481bec775d05ff32c9384da57",
         "amounts": [],
         "scriptCount": 25
       },
@@ -425,7 +438,7 @@
         "httpStatus": 200,
         "finalUrl": "https://www.botemania.es/juegos/slots-online/fishin-frenzy-megaways-jackpot-king",
         "officialSpainHost": true,
-        "sha256": "dbe5e5dd38d70329b34881ec9c0fc91e308b10ff48950f34d9a9d768a5867799",
+        "sha256": "bf401ce85eb19080158a42c20b33c811a29f8d944f4e77d7162718acd6272ce2",
         "amounts": [],
         "scriptCount": 25
       },
@@ -436,7 +449,7 @@
         "httpStatus": 200,
         "finalUrl": "https://www.botemania.es/juegos/slots-online/eye-of-horus-jackpot-king",
         "officialSpainHost": true,
-        "sha256": "ee3e35dbed56a74950dcb85b02dc265ae6efe1c677737b21f334b1a18ff53681",
+        "sha256": "c5346d3f5521221bb960e50f4d3b94b89d76ea144a88b570a90297b6d0d75c7b",
         "amounts": [],
         "scriptCount": 25
       },
@@ -447,7 +460,7 @@
         "httpStatus": 200,
         "finalUrl": "https://www.botemania.es/juegos/slots-online/the-goonies-return-jackpot-king",
         "officialSpainHost": true,
-        "sha256": "edd69d36b7cf7a3cc7ab7a05259b70facf7beeed454df9200cffcde2063757ab",
+        "sha256": "6564a2562301d6b70c943b86a22d7daaaaf222687e5006e82cd7b00f25c837c3",
         "amounts": [],
         "scriptCount": 25
       },
@@ -458,13 +471,14 @@
         "httpStatus": 200,
         "finalUrl": "https://www.botemania.es/juegos/slots-online",
         "officialSpainHost": true,
-        "sha256": "ef6fae5879c5f81f920e7461e6262fd0597090743a672faf1f35466932c94550",
+        "sha256": "65372f6386c08bbbee71326cdaf749cf995d0ffd3dc335ff05fcf5235fa93902",
         "amounts": [],
         "scriptCount": 31
       }
     ],
     "sharedAmounts": [],
-    "labeledPots": {}
+    "labeledPots": {},
+    "counterSource": "STATIC_HTML_FALLBACK"
   },
   "observations": [
     {
@@ -902,16 +916,93 @@
       ],
       "sharedAmounts": [],
       "labeledPots": {}
+    },
+    {
+      "observedAt": "2026-08-19T16:30:56.535Z",
+      "sourceReadable": true,
+      "graphql": {
+        "endpoint": "https://www.botemania.es/es/graphql",
+        "operationName": "loadJackpots",
+        "httpStatus": 200,
+        "ok": false,
+        "responseSha256": "cd69f5a65f94f76dc43b572a6f81bc459c8a38bfe4d44ae5e601e49254fbad84",
+        "contentType": "application/json; charset=utf-8",
+        "rows": [],
+        "error": [
+          "Cannot read properties of undefined (reading 'map')"
+        ]
+      },
+      "pages": [
+        {
+          "id": "fishin-frenzy-jpk",
+          "url": "https://www.botemania.es/juegos/slots-online/fishin-frenzy-jackpot-king",
+          "priority": true,
+          "httpStatus": 200,
+          "finalUrl": "https://www.botemania.es/juegos/slots-online/fishin-frenzy-jackpot-king",
+          "officialSpainHost": true,
+          "sha256": "3fb3e5947a50b4aece0c33cefcf2a719ef55954481bec775d05ff32c9384da57",
+          "amounts": [],
+          "scriptCount": 25
+        },
+        {
+          "id": "fishin-frenzy-megaways-jpk",
+          "url": "https://www.botemania.es/juegos/slots-online/fishin-frenzy-megaways-jackpot-king",
+          "priority": true,
+          "httpStatus": 200,
+          "finalUrl": "https://www.botemania.es/juegos/slots-online/fishin-frenzy-megaways-jackpot-king",
+          "officialSpainHost": true,
+          "sha256": "bf401ce85eb19080158a42c20b33c811a29f8d944f4e77d7162718acd6272ce2",
+          "amounts": [],
+          "scriptCount": 25
+        },
+        {
+          "id": "eye-of-horus-jpk",
+          "url": "https://www.botemania.es/juegos/slots-online/eye-of-horus-jackpot-king",
+          "priority": false,
+          "httpStatus": 200,
+          "finalUrl": "https://www.botemania.es/juegos/slots-online/eye-of-horus-jackpot-king",
+          "officialSpainHost": true,
+          "sha256": "c5346d3f5521221bb960e50f4d3b94b89d76ea144a88b570a90297b6d0d75c7b",
+          "amounts": [],
+          "scriptCount": 25
+        },
+        {
+          "id": "goonies-return-jpk",
+          "url": "https://www.botemania.es/juegos/slots-online/the-goonies-return-jackpot-king",
+          "priority": false,
+          "httpStatus": 200,
+          "finalUrl": "https://www.botemania.es/juegos/slots-online/the-goonies-return-jackpot-king",
+          "officialSpainHost": true,
+          "sha256": "6564a2562301d6b70c943b86a22d7daaaaf222687e5006e82cd7b00f25c837c3",
+          "amounts": [],
+          "scriptCount": 25
+        },
+        {
+          "id": "slots-hub",
+          "url": "https://www.botemania.es/juegos/slots-online",
+          "priority": false,
+          "httpStatus": 200,
+          "finalUrl": "https://www.botemania.es/juegos/slots-online",
+          "officialSpainHost": true,
+          "sha256": "65372f6386c08bbbee71326cdaf749cf995d0ffd3dc335ff05fcf5235fa93902",
+          "amounts": [],
+          "scriptCount": 31
+        }
+      ],
+      "sharedAmounts": [],
+      "labeledPots": {},
+      "counterSource": "STATIC_HTML_FALLBACK"
     }
   ],
   "resets": [],
   "progress": {
-    "observations": 7,
+    "observations": 8,
     "cleanLabeledResets": 0,
     "labeledCurrentPots": 0,
     "candidateEndpoints": 16,
     "querySignatures": 10,
-    "jackpotKeywordContexts": 28
+    "jackpotKeywordContexts": 28,
+    "publicGraphqlCaptureActive": false
   },
   "thresholdResearch": {
     "exactSpainRoyalMbwbEUR": null,
@@ -927,7 +1018,10 @@
   "guards": {
     "botemaniaOfficialPagesOnly": true,
     "publicClientCodeOnly": true,
+    "publicGraphqlQueryMirrorsWebsiteClient": true,
     "noAuthenticationBypass": true,
+    "noPrivateCredentials": true,
+    "noGraphqlIntrospection": true,
     "priorityRtpBlockSpecific": true,
     "genericCopiedContributionTextNotTrustedWhenRtpBlockConflicts": true,
     "noCrossMarketThresholdSubstitution": true,
