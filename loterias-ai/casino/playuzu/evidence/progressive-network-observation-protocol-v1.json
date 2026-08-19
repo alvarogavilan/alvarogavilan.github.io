@@ -1,0 +1,62 @@
+{
+  "version": "progressive-network-observation-protocol-v1",
+  "frozenAt": "2026-08-19T12:07:00Z",
+  "scope": "PlayUZU Spain progressive network candidates discovered from official structured jackpot data",
+  "purpose": "Measure state evolution and resets without converting jackpot size alone into an economic claim.",
+  "candidateEligibility": {
+    "structuralDiscoveryOnly": true,
+    "qualifyingEvidence": [
+      "same exact raw jackpot counter observed on at least two distinct validated titles in one official snapshot",
+      "or explicit operator/provider documentation identifying a shared progressive network"
+    ],
+    "futureGrowthOrResetBehaviorCannotBeUsedToChooseCandidates": true,
+    "currencyLocalizationNotRequiredForRawStateObservation": true,
+    "currencyLocalizationRequiredForMonetaryEV": true
+  },
+  "observation": {
+    "minimumDistinctTitlesPerSnapshot": 2,
+    "counterMustMatchExactlyWithinSnapshot": true,
+    "recommendedCadence": "HOURLY_OR_LOWER_FREQUENCY",
+    "minimumObservationCountBeforeStateSummary": 168,
+    "record": [
+      "observedAt",
+      "rawNetworkCounter",
+      "distinctTitles",
+      "reportedCurrencies",
+      "source hashes",
+      "deltaRaw",
+      "possibleReset"
+    ],
+    "noInterpolationAcrossMissingSnapshots": true,
+    "resetDefinition": "rawNetworkCounter lower than immediately prior valid observation",
+    "noOptionalStopping": true
+  },
+  "economicGate": {
+    "counterSizeAloneCanNeverPass": true,
+    "requiredBeforeAnyPositiveEVCalculation": [
+      "exact eligible bet/stake rule",
+      "exact or independently estimable progressive contribution per eligible stake",
+      "exact or independently estimable jackpot trigger probability or equivalent payout incidence",
+      "currency/localization mapping if counter is monetary",
+      "base-game RTP for the exact configuration",
+      "proof that jackpot eligibility is included in the modeled stake"
+    ],
+    "requiredBeforePromotion": [
+      "frozen formula before evaluation sample",
+      "out-of-sample prospective evaluation",
+      "matched NULL/control where applicable",
+      "independent replication",
+      "positive conservative expected value after all known costs"
+    ]
+  },
+  "guards": {
+    "discoveryIsNotValidation": true,
+    "progressIsNotEvidence": true,
+    "noRetuningAfterOutcomes": true,
+    "noOptionalStopping": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "immutable": true
+  }
+}
