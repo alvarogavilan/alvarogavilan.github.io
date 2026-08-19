@@ -12,7 +12,7 @@ const prior=fs.existsSync(STATE)?JSON.parse(fs.readFileSync(STATE,'utf8')):{};
 
 function writeDiag(extra={}){
   const out={
-    version:'edge-live-telegram-diagnostic-v1',
+    version:'edge-live-telegram-diagnostic-v2',
     generatedAt:new Date().toISOString(),
     tokenPresent:Boolean(token),
     configuredChatIdPresent:Boolean(configuredChatId),
@@ -24,24 +24,31 @@ function writeDiag(extra={}){
   return out;
 }
 
+function addChannel(channels,chat,source){
+  if(chat?.type!=='channel'||!chat?.id)return;
+  const x={id:String(chat.id),title:String(chat.title||''),source};
+  if(!channels.some(c=>c.id===x.id))channels.push(x);
+}
+
 async function discoverChannelId(){
-  if(configuredChatId) return String(configuredChatId);
-  const r=await fetch(`https://api.telegram.org/bot${token}/getUpdates?limit=100&allowed_updates=${encodeURIComponent(JSON.stringify(['channel_post','edited_channel_post']))}`);
+  if(configuredChatId) return {id:String(configuredChatId),source:'CONFIGURED_SECRET'};
+  const allowed=['channel_post','edited_channel_post','my_chat_member','message'];
+  const r=await fetch(`https://api.telegram.org/bot${token}/getUpdates?limit=100&allowed_updates=${encodeURIComponent(JSON.stringify(allowed))}`);
   if(!r.ok) throw new Error(`Telegram getUpdates HTTP ${r.status}`);
   const body=await r.json();
   const rows=Array.isArray(body?.result)?body.result:[];
   const channels=[];
   for(const u of rows){
-    const msg=u?.channel_post||u?.edited_channel_post;
-    const chat=msg?.chat;
-    if(chat?.type==='channel'&&chat?.id){
-      const x={id:String(chat.id),title:String(chat.title||'')};
-      if(!channels.some(c=>c.id===x.id))channels.push(x);
-    }
+    addChannel(channels,(u?.channel_post||u?.edited_channel_post)?.chat,'CHANNEL_POST');
+    addChannel(channels,u?.my_chat_member?.chat,'MY_CHAT_MEMBER');
+    const origin=u?.message?.forward_origin;
+    if(origin?.type==='channel')addChannel(channels,origin?.chat,'FORWARDED_CHANNEL_POST');
+    const fwdChat=u?.message?.forward_from_chat;
+    addChannel(channels,fwdChat,'FORWARDED_CHANNEL_POST_LEGACY');
   }
-  const named=[...channels].reverse().find(c=>/edge\s*live/i.test(c.title));
-  if(named)return named.id;
-  if(channels.length===1)return channels[0].id;
+  const named=[...channels].reverse().find(c=>/edge\s*live|botemania/i.test(c.title));
+  if(named)return named;
+  if(channels.length===1)return channels[0];
   return null;
 }
 
@@ -52,9 +59,10 @@ try{
     process.exit(0);
   }
 
-  const chatId=await discoverChannelId();
+  const discovered=await discoverChannelId();
+  const chatId=discovered?.id||null;
   if(!chatId){
-    const d=writeDiag({channelDiscovered:false,sendAttempted:false,sendOk:false,reason:'PRIVATE_CHANNEL_NOT_DISCOVERED_YET'});
+    const d=writeDiag({channelDiscovered:false,discoverySource:null,sendAttempted:false,sendOk:false,reason:'PRIVATE_CHANNEL_NOT_DISCOVERED_YET'});
     console.log(JSON.stringify(d));
     process.exit(0);
   }
@@ -84,7 +92,7 @@ try{
     : prior.lastReady===true || firstConfiguredAlert;
 
   if(!shouldSend){
-    const d=writeDiag({channelDiscovered:true,ready,sendAttempted:false,sendOk:true,reason:'NO_EXECUTION_STATE_TRANSITION'});
+    const d=writeDiag({channelDiscovered:true,discoverySource:discovered.source,ready,sendAttempted:false,sendOk:true,reason:'NO_EXECUTION_STATE_TRANSITION'});
     console.log(JSON.stringify(d));
     process.exit(0);
   }
@@ -114,11 +122,11 @@ try{
     lastMaxSpins:spins,
     lastMaxTotalStakeEUR:total
   },null,2)+'\n');
-  const d=writeDiag({channelDiscovered:true,ready,sendAttempted:true,sendOk:true,reason:'SEND_OK',remainingSeconds});
+  const d=writeDiag({channelDiscovered:true,discoverySource:discovered.source,ready,sendAttempted:true,sendOk:true,reason:'SEND_OK',remainingSeconds});
   console.log(JSON.stringify(d));
 }catch(e){
   const safe=String(e?.message||e).replaceAll(token,'[REDACTED]');
-  const d=writeDiag({channelDiscovered:null,sendAttempted:null,sendOk:false,reason:'TELEGRAM_ALERT_ERROR',error:safe.slice(0,180)});
+  const d=writeDiag({channelDiscovered:null,discoverySource:null,sendAttempted:null,sendOk:false,reason:'TELEGRAM_ALERT_ERROR',error:safe.slice(0,180)});
   console.error(JSON.stringify(d));
   process.exitCode=1;
 }
