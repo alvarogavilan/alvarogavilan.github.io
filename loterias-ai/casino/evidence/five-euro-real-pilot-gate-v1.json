@@ -1,7 +1,9 @@
 {
-  "version": "five-euro-real-pilot-gate-v1.1",
+  "version": "five-euro-real-pilot-gate-v1.2-botemania-only",
   "generatedAt": "2026-08-19T21:56:52.353Z",
-  "purpose": "Strict manual pilot gate. Never places bets automatically; allows at most one EUR5 manual pilot only after a lane passes its economic and scientific gates.",
+  "purpose": "Botemania-only strict manual pilot gate for Fishin Frenzy: Jackpot King. No promotions, no other operators, no automatic betting.",
+  "operatorScope": ["botemania-es"],
+  "excludedScopes": ["playuzu-es", "lightning-roulette", "promotions", "bonuses", "cashback"],
   "humanAuthorization": {
     "maxTotalPilotStakeEUR": 0,
     "oneBudgetOnly": true,
@@ -13,60 +15,43 @@
   },
   "eligibilityPolicy": {
     "requireAtLeastReasonablySupportedNonNegativeExpectation": true,
-    "requireLaneSpecificScientificPromotion": true,
-    "requireNoKnownSemanticOrModelBlocker": true,
+    "requireBotemaniaOnly": true,
+    "requireEconomicPromotionCandidate": true,
+    "requireExactSpainMbwb": true,
+    "requireExactHazard": true,
+    "requireCurrentConservativeScreenPass": true,
+    "requireProspectiveNetworkAllocationValidation": true,
     "progressAloneNeverQualifies": true,
-    "hypothesisAloneNeverQualifies": true,
-    "promotionalRandomRewardsNotCountedWithoutQuantifiedEV": true
+    "hypothesisAloneNeverQualifies": true
   },
-  "lanes": [
-    {
-      "id": "botemania-jackpot-king",
-      "eligible": false,
-      "evidence": {
-        "liveGateState": "BELOW_RESEARCH_BAND",
-        "economicPromotionCandidate": false,
-        "exactSpainMbwbKnown": false,
-        "exactHazardKnown": false,
-        "currentScreenPass": false,
-        "networkAllocationProspectivelyValidated": false,
-        "bestConservativeRtp": 0.94498
-      }
-    },
-    {
-      "id": "playuzu-goal-goal-goal-blackjack",
-      "eligible": false,
-      "evidence": {
-        "game": "Goal Goal Goal Blackjack",
-        "exactRtpPct": 99.66,
-        "observedInternalPlusPercent": 0.2,
-        "conditionalEffectiveRtpPctIfFieldMapsOneToOne": 99.86,
-        "rewardFieldSemanticMappingFullyConfirmed": false,
-        "exactRulesStrategyAudited": false,
-        "positiveEvLowerBoundAboveOne": false
-      }
-    },
-    {
-      "id": "lightning-roulette",
-      "eligible": false,
-      "evidence": {
-        "strongestDirectEconomicLane": "NO_VALIDATED_DIRECT_ECONOMIC_EDGE_YET",
-        "fixedFinalEconomicPass": false,
-        "strongestCurrentLead": "NO_VALIDATED_CURRENT_LEAD_YET"
-      }
+  "lanes": [{
+    "id": "botemania-jackpot-king",
+    "game": "Fishin' Frenzy: Jackpot King",
+    "operator": "botemania-es",
+    "eligible": false,
+    "evidence": {
+      "liveGateState": "BELOW_RESEARCH_BAND",
+      "economicPromotionCandidate": false,
+      "exactSpainMbwbKnown": false,
+      "exactHazardKnown": false,
+      "currentScreenPass": false,
+      "networkAllocationProspectivelyValidated": false,
+      "bestConservativeRtp": 0.94498,
+      "observedAt": "2026-08-19T21:56:51.883Z",
+      "sourceFresh": true
     }
-  ],
+  }],
   "scientificDecision": {
     "state": "NO_PAPER_PROMOTION",
     "scientificallyEligibleLanes": [],
-    "reason": "NO_LANE_HAS_A_SUPPORTED_NON_NEGATIVE_EXPECTATION_YET"
+    "reason": "BOTEMANIA_STRICT_ECONOMIC_SCREEN_NOT_PASSED"
   },
   "decision": {
     "state": "NO_REAL_PILOT",
     "pilotAllowed": false,
     "eligibleLanes": [],
     "maxTotalStakeEUR": 0,
-    "reason": "NO_LANE_HAS_A_SUPPORTED_NON_NEGATIVE_EXPECTATION_YET"
+    "reason": "BOTEMANIA_STRICT_ECONOMIC_GATE_NOT_PASSED"
   },
   "guards": {
     "noAutomaticBetting": true,
@@ -76,6 +61,8 @@
     "noRetuningAfterOutcome": true,
     "onePilotCannotValidateAnEdge": true,
     "realMoneyRequiresHumanManualAction": true,
-    "manualPilotHardCapEUR": 5
+    "manualPilotHardCapEUR": 5,
+    "otherOperatorsCannotPromote": true,
+    "promotionsCannotPromote": true
   }
 }
