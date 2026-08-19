@@ -1,6 +1,6 @@
 {
-  "version": "edge-live-execution-plan-v1.2-exact-stake-probe",
-  "generatedAt": "2026-08-19T23:01:08.687Z",
+  "version": "edge-live-execution-plan-v1.3-two-minute-operator-lead",
+  "generatedAt": "2026-08-19T23:10:56.850Z",
   "operator": "botemania-es",
   "game": {
     "id": "fishin-frenzy-jackpot-king",
@@ -14,11 +14,15 @@
     "maxSpins": 0,
     "maxTotalStakeEUR": 0,
     "entryMode": "WAIT",
+    "operatorAccessLeadSeconds": 120,
+    "safetyBufferSeconds": 60,
     "validFrom": null,
     "validUntil": null,
     "exactClockMinuteRequired": false,
-    "timingBasis": "STATE_TRIGGERED_FRESHNESS_WINDOW",
-    "maxSignalAgeSeconds": 90
+    "timingBasis": "STATE_TRIGGERED_WITH_OPERATOR_ACCESS_LEAD",
+    "maxSignalAgeSeconds": 180,
+    "requiresFinalGreenRecheckBeforeFirstSpin": true,
+    "preparationEtaSeconds": null
   },
   "evidence": {
     "structurePass": true,
@@ -27,15 +31,18 @@
     "exactStakeValueEUR": null,
     "exactStakeSource": null,
     "publicStakeProbeRecovered": false,
+    "exactSpainMbwbKnown": false,
+    "exactHazardKnown": false,
     "sourceFresh": true,
     "withinFreshExecutionWindow": true,
-    "observedAt": "2026-08-19T23:00:33.289Z",
-    "signalAgeSeconds": 35,
-    "bestConservativeRtp": 0.945017,
+    "observedAt": "2026-08-19T23:10:40.465Z",
+    "signalAgeSeconds": 16,
+    "nearestResearchEtaSeconds": 1017288,
+    "bestConservativeRtp": 0.945018,
     "potsEUR": {
-      "JACKPOT_KING": 128401.63,
-      "REGAL": 15520.08,
-      "ROYAL": 1662.98
+      "JACKPOT_KING": 128402.93,
+      "REGAL": 15520.5,
+      "ROYAL": 1663.4
     },
     "networkAllocationProspectivelyValidated": true
   },
@@ -43,7 +50,7 @@
     "ECONOMIC_GATE_NOT_PASSED",
     "EXACT_STAKE_PER_SPIN_NOT_VERIFIED"
   ],
-  "interpretation": "No execution order is published while the economic gate or exact stake remains unresolved, or while the state is stale. No special lucky minute is assumed.",
+  "interpretation": "RED means do not play. No execution order is published while any strict prerequisite remains unresolved.",
   "guards": {
     "noAutomaticBetting": true,
     "noInventedStake": true,
@@ -54,6 +61,8 @@
     "noMartingale": true,
     "noLossChasing": true,
     "staleSignalFailsClosed": true,
-    "manualExecutionOnly": true
+    "manualExecutionOnly": true,
+    "prepareNeverAuthorizesBet": true,
+    "finalGreenRecheckMandatory": true
   }
 }
