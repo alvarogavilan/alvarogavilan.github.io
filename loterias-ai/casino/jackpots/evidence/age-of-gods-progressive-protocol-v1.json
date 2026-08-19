@@ -1,0 +1,56 @@
+{
+  "version": "age-of-gods-progressive-protocol-v1",
+  "createdAt": "2026-08-19T09:29:00Z",
+  "network": "Playtech Age of the Gods",
+  "operatorScope": ["pokerstars-es"],
+  "officialPokerStarsEvidence": [
+    "https://www.pokerstars.es/casino/how-to-play/slots/age-of-the-gods/",
+    "https://www.pokerstars.es/casino/game/age-of-the-gods-god-of-storms/1006/103/",
+    "https://www.pokerstars.es/casino/news/las-tragaperras-con-jackpot-mas-exclusivas-de-pokerstars-casino-para-que-te-diviertas-a-lo-grande/"
+  ],
+  "verifiedMechanics": {
+    "provider": "Playtech",
+    "progressiveLevels": ["Power", "Extra Power", "Super Power", "Ultimate Power"],
+    "allPotsGrow": true,
+    "jackpotFeatureCanTriggerRandomlyOnAnyBaseSpin": true,
+    "jackpotPrizeSelectionOccursAfterTrigger": true,
+    "higherStakeMayChangeJackpotTriggerProbabilityAccordingToPokerStarsEditorial": true
+  },
+  "referenceConfiguration": {
+    "game": "Age of the Gods: God of Storms",
+    "publishedRtp": 0.9614,
+    "rtpSourceRole": "POKERSTARS_OFFICIAL_EDITORIAL_REFERENCE",
+    "exactProgressiveContributionIncludedInPublishedRtp": null
+  },
+  "economicHypothesis": "A growing progressive payout creates state-dependent jackpot value. Determine whether any officially observable network state and permitted stake produces a prospectively supported total-EV lower bound above 1.0.",
+  "priorityQuestions": [
+    "Which displayed PokerStars amount corresponds to Ultimate versus total/network display?",
+    "What are the exact trigger odds by stake in the PokerStars Spain configuration?",
+    "What are the conditional probabilities of Power, Extra Power, Super Power and Ultimate Power once the feature triggers?",
+    "What portion of published RTP is the average jackpot contribution?",
+    "What are seed/reset values for each progressive level?",
+    "Does a sufficiently large Ultimate pot ever raise total EV above 100% at any allowed stake?"
+  ],
+  "measurementPlan": {
+    "officialPokerStarsSnapshotsOnly": true,
+    "corroborateNetworkPotAcrossAtLeastTwoOfficialGamePages": true,
+    "detectResets": true,
+    "estimateGrowthPerHour": true,
+    "observeAtLeast30ResetsOrAwardsBeforeEmpiricalHazardModel": true,
+    "reserveUntouchedHoldoutEvents": 10
+  },
+  "promotionGate": {
+    "exactStakeDependentOddsOrProspectiveHazardRequired": true,
+    "exactRtpAccountingRequired": true,
+    "noDoubleCountingProgressiveRtp": true,
+    "positiveEvLowerConfidenceBoundAboveOneRequired": true,
+    "prospectiveHoldoutRequired": true
+  },
+  "guards": {
+    "noSpinPlaced": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  },
+  "immutable": true
+}
