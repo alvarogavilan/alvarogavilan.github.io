@@ -46,11 +46,12 @@ const games=manifestGames.map(([gameId,g])=>{
 
 const payload={
   generatedAt:new Date().toISOString(),
-  schemaVersion:2,
+  schemaVersion:3,
   principle:'Prioritize missing authoritative validation/provenance; never infer validation from economics alone.',
   manifestGeneratedAt:manifest.generatedAt,
   auditGeneratedAt:audit.generatedAt||null,
   auditQualityPass:audit.qualityGate?.pass===true,
+  auditQualityReasons:Array.isArray(audit.qualityGate?.reasons)?audit.qualityGate.reasons:[],
   auditSynchronized:true,
   totals:{
     records:Number(manifest?.totals?.records)||0,
@@ -63,4 +64,4 @@ const payload={
 };
 fs.mkdirSync('loterias-ai/data/archive/_meta',{recursive:true});
 fs.writeFileSync('loterias-ai/data/archive/_meta/archive-coverage-priorities.json',JSON.stringify(payload,null,2)+'\n');
-console.log(JSON.stringify({auditQualityPass:payload.auditQualityPass,totals:payload.totals,top:games.slice(0,6).map(x=>({gameId:x.gameId,validationGap:x.validationGap,officialEconomicsGap:x.officialEconomicsGap,score:x.priorityScore}))},null,2));
+console.log(JSON.stringify({auditQualityPass:payload.auditQualityPass,auditQualityReasons:payload.auditQualityReasons,totals:payload.totals,top:games.slice(0,6).map(x=>({gameId:x.gameId,validationGap:x.validationGap,officialEconomicsGap:x.officialEconomicsGap,score:x.priorityScore}))},null,2));
