@@ -1,0 +1,36 @@
+{
+  "version": "xxxtreme-authoritative-segment-v1-freeze",
+  "createdAt": "2026-08-19T08:02:00Z",
+  "prospectiveStartsAt": "2026-08-19T08:20:00Z",
+  "study": "XXXtreme Lightning Roulette",
+  "source": {
+    "id": "casinoorg-evolution-public-api-xxxtreme",
+    "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/xxxtremelightningroulette",
+    "role": "PRIMARY_STRUCTURED_PUBLIC",
+    "requiresCredential": false
+  },
+  "segmentPolicy": {
+    "strictlyPostBarrier": true,
+    "deduplicateByRoundId": true,
+    "exactPreviousRoundOverlapRequiredAfterFirstCapture": true,
+    "maximumBridgeSeconds": 300,
+    "paginatedRecoverySameSourceOnly": true,
+    "noCrossStreamImputation": true,
+    "neverMergeWithLightningRouletteDataset": true
+  },
+  "crossStreamPolicy": {
+    "referenceStream": "Lightning Roulette authoritative-v2",
+    "roundIdOverlapAllowed": false,
+    "sameGameAssumptionForbidden": true,
+    "independentProspectiveConclusions": true
+  },
+  "guards": {
+    "probeDataTrainingEligible": false,
+    "preBarrierDataTrainingEligibleForProspective": false,
+    "futureInformationAllowed": false,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  },
+  "immutable": true
+}
