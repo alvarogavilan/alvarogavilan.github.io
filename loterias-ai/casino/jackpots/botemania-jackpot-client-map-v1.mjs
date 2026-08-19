@@ -4,7 +4,7 @@ import crypto from 'node:crypto';
 
 const PAGE='https://www.botemania.es/juegos/slots-online/fishin-frenzy-jackpot-king';
 const OUT='loterias-ai/casino/jackpots/evidence/botemania-jackpot-client-map-v1.json';
-const headers={accept:'text/html,application/javascript,*/*','user-agent':'loterias-ai-botemania-public-client-map/1.2','cache-control':'no-cache, no-store, max-age=0'};
+const headers={accept:'text/html,application/javascript,*/*','user-agent':'loterias-ai-botemania-public-client-map/1.3','cache-control':'no-cache, no-store, max-age=0'};
 const pageRes=await fetch(PAGE,{redirect:'follow',headers});
 const html=await pageRes.text();
 const scriptUrls=[];
@@ -59,20 +59,25 @@ for(const c of relevant){
     resolvedChunks.push({...c,status:r.status,bytes:text.length,sha256:crypto.createHash('sha256').update(text).digest('hex'),querySignatures:querySignatures(text),endpointCandidates:endpointCandidates(text,c.url),fieldHints:fieldHints(text),jackpotContexts:[...context(text,'jackpot',900),...context(text,'Jackpot',900)].slice(0,20)});
   }catch(e){resolvedChunks.push({...c,error:String(e?.message||e)});}
 }
-const graphContextNeedles=['/graphql','ApolloClient','HttpLink','createHttpLink','credentials','setContext','venture','botemania_es'];
-const graphqlClientContexts={};
-for(const needle of graphContextNeedles)graphqlClientContexts[needle]=context(client,needle,1800,6);
+const graphContextNeedles=['/graphql','ApolloClient','HttpLink','createHttpLink','credentials','setContext','venture','botemania_es','apiUrl','window.__API__'];
+const graphqlClientContexts={};for(const needle of graphContextNeedles)graphqlClientContexts[needle]=context(client,needle,1800,6);
 const clientHeaderHints=[];
 for(const re of [/(?:headers|header)\s*[:=]\s*\{[^}]{0,1200}\}/gi,/["']x-[a-z0-9-]+["']/gi,/["'](?:venture|site|locale|language|country|brand)["']\s*:/gi]){
   for(const m of client.matchAll(re)){const v=m[0].replace(/\s+/g,' ');if(!clientHeaderHints.includes(v))clientHeaderHints.push(v);if(clientHeaderHints.length>=80)break;}
   if(clientHeaderHints.length>=80)break;
 }
+const pageConfigContexts={};
+for(const needle of ['window.__API__','__API__','window.__ENV__','__ENV__','window.__VENTURE__','__VENTURE__','botemania_es'])pageConfigContexts[needle]=context(html,needle,1200,8);
+const injectedAssignments=[];
+for(const re of [/window\.__[A-Z0-9_]+__\s*=\s*[^;]{0,1500};/g,/"__[A-Z0-9_]+__"\s*:\s*[^,}]{0,1000}/g])for(const m of html.matchAll(re)){
+  let v=m[0].replace(/\s+/g,' ');v=v.replace(/(token|authorization|cookie)[^,;}]{0,400}/gi,'$1:[REDACTED]');if(!injectedAssignments.includes(v))injectedAssignments.push(v);if(injectedAssignments.length>=80)break;
+}
 const out={
-  version:'botemania-jackpot-client-map-v1.2',generatedAt:new Date().toISOString(),page:PAGE,pageStatus:pageRes.status,pageFinalUrl:pageRes.url,
+  version:'botemania-jackpot-client-map-v1.3',generatedAt:new Date().toISOString(),page:PAGE,pageStatus:pageRes.status,pageFinalUrl:pageRes.url,
   runtimeUrl,runtimeBytes:runtime.length,clientUrl,clientBytes:client.length,scriptUrls,chunkNames,numericHints,resolvedChunks,
-  graphqlClientContexts,clientHeaderHints,
+  graphqlClientContexts,clientHeaderHints,pageConfigContexts,injectedAssignments,
   blueprintContexts:context(runtime,'BlueprintJackpots',2500).slice(0,3),headlessContexts:context(runtime,'HeadlessJackpots',2500).slice(0,3),
-  guards:{publicClientAssetsOnly:true,noAuthenticationBypass:true,noPrivateApiCredentials:true,noGraphqlIntrospection:true,noBetting:true,realMoneyAllowed:false}
+  guards:{publicClientAssetsOnly:true,noAuthenticationBypass:true,noPrivateApiCredentials:true,noGraphqlIntrospection:true,sensitiveAssignmentValuesRedacted:true,noBetting:true,realMoneyAllowed:false}
 };
 fs.mkdirSync('loterias-ai/casino/jackpots/evidence',{recursive:true});fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
-console.log(JSON.stringify({runtimeUrl,clientUrl,relevant,resolvedChunks:resolvedChunks.map(x=>({id:x.id,name:x.name,status:x.status,bytes:x.bytes,queries:x.querySignatures,endpoints:x.endpointCandidates,fields:x.fieldHints})),graphqlClientContexts:Object.fromEntries(Object.entries(graphqlClientContexts).map(([k,v])=>[k,v.slice(0,2)])),clientHeaderHints},null,2));
+console.log(JSON.stringify({runtimeUrl,clientUrl,pageConfigContexts,injectedAssignments,resolvedChunks:resolvedChunks.map(x=>({id:x.id,name:x.name,status:x.status,queries:x.querySignatures,endpoints:x.endpointCandidates}))},null,2));
