@@ -1,0 +1,116 @@
+{
+  "version": "casino-economic-priority-audit-v2",
+  "generatedAt": "2026-08-19T15:52:00Z",
+  "sourceArtifacts": [
+    "loterias-ai/casino/evidence/mechanism-edge-screen-v1.json",
+    "loterias-ai/casino/evidence/casino-dashboard-v1.json",
+    "loterias-ai/casino/jackpots/evidence/jackpot-king-state-dependent-ev-status-v1.json",
+    "loterias-ai/casino/jackpots/evidence/jackpot-king-hazard-freeze-v1.json",
+    "loterias-ai/casino/jackpots/evidence/age-of-gods-progressive-protocol-v1.json"
+  ],
+  "scope": {
+    "gamesScreened": 552,
+    "screeningPurpose": "Prioritize only mechanisms with a plausible measurable path to total EV above 100%; do not burn bankroll testing static RNG games indiscriminately."
+  },
+  "screen": {
+    "alreadyAtOrAbove100": 0,
+    "conditionalAtOrAbove100": 0,
+    "nearBreakEvenConditional": 2,
+    "mechanismCounts": {
+      "HIGH_RTP_RULESET_OR_REWARD": 3,
+      "ROULETTE_STATE_OR_PHYSICAL_ONLY": 18,
+      "CRASH_NULL_OR_STATE_ONLY": 18,
+      "STATE_DEPENDENT_PROGRESSIVE": 142,
+      "STATIC_RNG_NO_EDGE_PATH_IDENTIFIED": 331,
+      "HYBRID_GAME_NO_EDGE_PATH_IDENTIFIED": 40
+    }
+  },
+  "priorityLanes": [
+    {
+      "rank": 1,
+      "lane": "STATE_DEPENDENT_PROGRESSIVE",
+      "population": 142,
+      "why": "A growing jackpot can change incremental expected value; this is the largest casino family with a genuine state-dependent economic mechanism.",
+      "closestCatalogExample": {
+        "game": "Orient Story Deluxe",
+        "provider": "EGT",
+        "publishedRtpPct": 97.2,
+        "baseGapTo100PctPoints": 2.8,
+        "conditionalGapPctPoints": 2.74
+      },
+      "networkEvidence": {
+        "playuzuNetworksCorroborated": 8,
+        "playuzuMinimumObservationsBeforeStateSummary": 168,
+        "jackpotKingObservations": 22,
+        "jackpotKingHardResetsObserved": 2,
+        "jackpotKingHardResetsRequiredForHazardDiscovery": 10,
+        "ageOfGodsObservations": 11,
+        "ageOfGodsResets": 0
+      },
+      "currentDecision": "KEEP_CAPTURING_STATE_NO_WAGERING",
+      "positiveEvClaimAllowed": false
+    },
+    {
+      "rank": 2,
+      "lane": "HIGH_RTP_RULESET_OR_VERIFIED_REWARD",
+      "population": 3,
+      "why": "Smallest base house edge; only a small separately verified reward is needed to cross break-even.",
+      "leader": {
+        "game": "Goal Goal Goal Blackjack",
+        "provider": "PlayTech",
+        "publishedRtpPct": 99.66,
+        "conditionalCombinedPctIfRewardSemanticsAreOneToOne": 99.86,
+        "conditionalGapTo100PctPoints": 0.14,
+        "rewardSemanticsConfirmed": false
+      },
+      "currentDecision": "VERIFY_REWARD_SEMANTICS_BEFORE_ANY_ECONOMIC_TEST",
+      "positiveEvClaimAllowed": false
+    },
+    {
+      "rank": 3,
+      "lane": "ROULETTE_STATE_OR_PHYSICAL",
+      "population": 18,
+      "why": "Only worth pursuing where a physical/table state produces replicated out-of-sample bias; ordinary roulette RTP alone remains below 100%.",
+      "closestCatalogExample": {
+        "game": "Ruleta Automatica",
+        "publishedRtpPct": 98.75,
+        "conditionalGapTo100PctPoints": 1.22
+      },
+      "currentDecision": "CONTINUE_BLINDED_TABLE_SPECIFIC_REPLICATION_ONLY",
+      "positiveEvClaimAllowed": false
+    },
+    {
+      "rank": 4,
+      "lane": "CRASH_STATE_OR_NULL",
+      "population": 18,
+      "why": "Current catalog RTP is too far below 100% without a separately demonstrated state mechanism.",
+      "closestCatalogExample": {
+        "game": "4 Cash Planes: Multiplayer",
+        "publishedRtpPct": 97.28,
+        "conditionalGapTo100PctPoints": 2.69
+      },
+      "currentDecision": "NULL_FIRST_NO_BANKROLL_TEST",
+      "positiveEvClaimAllowed": false
+    }
+  ],
+  "deprioritized": {
+    "staticRngGames": 331,
+    "hybridNoEdgePath": 40,
+    "reason": "No identified state/reward mechanism capable of closing the published house edge. Playing these merely to search for lucky streaks would be scientifically invalid and economically wasteful."
+  },
+  "jackpotInterpretation": {
+    "important": "A large displayed pot is not itself positive EV. The incremental jackpot value must exceed the base RTP gap after avoiding double-counting jackpot contribution already embedded in published RTP.",
+    "jackpotKing": {
+      "globalReferenceRtpPct": 95.5,
+      "incrementalPctPointsNeededAboveReference": 4.5,
+      "exactMustBeWonByKnown": false,
+      "hazardEstimated": false
+    }
+  },
+  "decision": {
+    "validatedPositiveEdge": false,
+    "realMoneyPass": false,
+    "automaticBetting": false,
+    "bestCurrentCasinoResearchBet": "PROGRESSIVE_STATE_MEASUREMENT_NOT_MONEY_WAGER"
+  }
+}
