@@ -1,0 +1,47 @@
+{
+  "version": "standard-roulette-independent-streams-v1-freeze",
+  "createdAt": "2026-08-19T08:38:30Z",
+  "prospectiveStartsAt": "2026-08-19T08:50:00Z",
+  "streams": [
+    {
+      "id": "immersive",
+      "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/immersiveroulette",
+      "resultPath": "data.result.outcome.number"
+    },
+    {
+      "id": "auto",
+      "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/autoroulette",
+      "resultPath": "data.result.outcome.number"
+    }
+  ],
+  "roulette": {
+    "numbers": 37,
+    "uniformNullHitProbability": 0.02702702702702703,
+    "straightUpProfitPayout": "35:1",
+    "baseGrossReturnX": 36,
+    "baseEconomicBreakEvenHitRate": 0.027777777777777776
+  },
+  "initialProspectiveFamily": {
+    "candidates": ["lag1", "lag2", "wheelPlus1", "wheelMinus1"],
+    "fixedBoundaryRoundsPerStream": 5000,
+    "familyWiseAlpha": 0.01,
+    "perCandidateAlpha": 0.0025,
+    "disclosure": "Administrative counts only until each stream reaches its fixed boundary."
+  },
+  "crossStreamPolicy": {
+    "datasetsMustRemainSeparate": true,
+    "roundIdsMustNotBeMerged": true,
+    "aCandidateMustPassIndependentlyPerStreamForCrossTableReplication": true,
+    "combinedPValueFishingForbidden": true
+  },
+  "guards": {
+    "strictlyPostBarrier": true,
+    "preBarrierRowsForbidden": true,
+    "noRetuning": true,
+    "noOptionalStopping": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  },
+  "immutable": true
+}
