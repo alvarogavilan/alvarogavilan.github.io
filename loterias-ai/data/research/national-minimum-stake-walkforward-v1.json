@@ -1,0 +1,974 @@
+{
+  "version": "national-minimum-stake-walkforward-v1",
+  "generatedAt": "2026-08-19T15:39:39.616Z",
+  "purpose": "Evaluate one minimum-unit virtual ticket per historical draw using only earlier information, with discovery-only candidate selection and untouched validation/holdout.",
+  "scope": {
+    "activeGames": [
+      "bonoloto",
+      "primitiva",
+      "euromillones",
+      "gordo",
+      "eurodreams",
+      "loteria-nacional",
+      "quiniela",
+      "elige8",
+      "quinigol",
+      "lototurf",
+      "quintuple-plus"
+    ],
+    "seasonalDeferred": [
+      "navidad",
+      "nino"
+    ],
+    "historicalRecords": {
+      "bonoloto": 9359,
+      "primitiva": 4175,
+      "euromillones": 1972,
+      "gordo": 1114,
+      "eurodreams": 291,
+      "loteria-nacional": 1428,
+      "quiniela": 2349,
+      "elige8": 456,
+      "quinigol": 726,
+      "lototurf": 1154,
+      "quintuple-plus": 1143
+    }
+  },
+  "methodology": {
+    "candidateFamily": {
+      "modes": [
+        "hot",
+        "cold",
+        "overdue",
+        "hybrid"
+      ],
+      "windows": [
+        10,
+        25,
+        50,
+        100,
+        200
+      ]
+    },
+    "split": "50% discovery / 25% validation / 25% holdout after causal warmup",
+    "economicPolicy": "Use archived per-draw ticketCost and published payouts. If a hypothetical ticket is sole top-category winner where archived prize is 0, archived jackpot is used only as a flagged counterfactual approximation.",
+    "control": "Deterministic matched random minimum-unit ticket per draw.",
+    "limitations": [
+      "Historical walk-forward is stronger than in-sample fitting but is not a live prospective result.",
+      "Loteria Nacional return is conservative: exact first/second and reintegro only; other extraction prizes are not credited.",
+      "Quintuple Plus lacks horse identities/odds in archive; only starting-position history is testable here.",
+      "Football models use only prior archived team outcomes and are deliberately simple baselines."
+    ]
+  },
+  "results": [
+    {
+      "gameId": "bonoloto",
+      "family": "numeric",
+      "status": "RETROSPECTIVE_CAUSAL_WALK_FORWARD",
+      "fixedCandidate": {
+        "mode": "overdue",
+        "window": 50
+      },
+      "split": {
+        "discovery": 4578,
+        "validation": 2289,
+        "holdout": 2289,
+        "firstHoldoutDate": "2019-10-11",
+        "lastHoldoutDate": "2026-08-18"
+      },
+      "minimumObservedUnitStakeEUR": 0.5,
+      "medianHoldoutUnitStakeEUR": 0.5,
+      "discovery": {
+        "draws": 4578,
+        "stakeEUR": 2289,
+        "returnEUR": 273.03,
+        "plEUR": -2015.97,
+        "roi": -0.8807208387942334,
+        "topHits": 0,
+        "prizeDraws": 111,
+        "meanPrimaryHits": 0.7214941022280472,
+        "bestPrimaryHits": 4
+      },
+      "validation": {
+        "draws": 2289,
+        "stakeEUR": 1144.5,
+        "returnEUR": 335.78999999999996,
+        "plEUR": -808.71,
+        "roi": -0.706605504587156,
+        "topHits": 0,
+        "prizeDraws": 283,
+        "meanPrimaryHits": 0.7147225862822193,
+        "bestPrimaryHits": 4
+      },
+      "holdout": {
+        "draws": 2289,
+        "stakeEUR": 1144.5,
+        "returnEUR": 419.48999999999995,
+        "plEUR": -725.01,
+        "roi": -0.6334731323722149,
+        "topHits": 0,
+        "prizeDraws": 292,
+        "meanPrimaryHits": 0.7505460899956313,
+        "bestPrimaryHits": 4
+      },
+      "matchedControlHoldout": {
+        "draws": 2289,
+        "stakeEUR": 1144.5,
+        "returnEUR": 266.5,
+        "plEUR": -878,
+        "roi": -0.7671472258628222,
+        "topHits": 0,
+        "prizeDraws": 259,
+        "meanPrimaryHits": 0.7365661861074705,
+        "bestPrimaryHits": 3
+      },
+      "holdoutVsControl": {
+        "roiDelta": 0.13367409349060733,
+        "meanPrimaryHitsDelta": 0.013979903888160838,
+        "topHitDelta": 0
+      },
+      "guards": {
+        "eachPredictionUsesOnlyEarlierRows": true,
+        "candidateSelectedOnDiscoveryOnly": true,
+        "validationAndHoldoutNotUsedForCandidateChoice": true,
+        "realMoney": false
+      }
+    },
+    {
+      "gameId": "primitiva",
+      "family": "numeric",
+      "status": "RETROSPECTIVE_CAUSAL_WALK_FORWARD",
+      "fixedCandidate": {
+        "mode": "hybrid",
+        "window": 50
+      },
+      "split": {
+        "discovery": 1987,
+        "validation": 994,
+        "holdout": 994,
+        "firstHoldoutDate": "2018-12-22",
+        "lastHoldoutDate": "2026-08-17"
+      },
+      "minimumObservedUnitStakeEUR": 1,
+      "medianHoldoutUnitStakeEUR": 1,
+      "discovery": {
+        "draws": 1987,
+        "stakeEUR": 1987,
+        "returnEUR": 29.29,
+        "plEUR": -1957.71,
+        "roi": -0.9852591847005536,
+        "topHits": 0,
+        "prizeDraws": 4,
+        "meanPrimaryHits": 0.7216909914443885,
+        "bestPrimaryHits": 4
+      },
+      "validation": {
+        "draws": 994,
+        "stakeEUR": 994,
+        "returnEUR": 200,
+        "plEUR": -794,
+        "roi": -0.7987927565392354,
+        "topHits": 0,
+        "prizeDraws": 115,
+        "meanPrimaryHits": 0.7303822937625755,
+        "bestPrimaryHits": 3
+      },
+      "holdout": {
+        "draws": 994,
+        "stakeEUR": 994,
+        "returnEUR": 296.43,
+        "plEUR": -697.5699999999999,
+        "roi": -0.7017806841046277,
+        "topHits": 0,
+        "prizeDraws": 110,
+        "meanPrimaryHits": 0.7746478873239436,
+        "bestPrimaryHits": 4
+      },
+      "matchedControlHoldout": {
+        "draws": 994,
+        "stakeEUR": 994,
+        "returnEUR": 256.05,
+        "plEUR": -737.95,
+        "roi": -0.7424044265593561,
+        "topHits": 0,
+        "prizeDraws": 94,
+        "meanPrimaryHits": 0.6941649899396378,
+        "bestPrimaryHits": 4
+      },
+      "holdoutVsControl": {
+        "roiDelta": 0.04062374245472844,
+        "meanPrimaryHitsDelta": 0.08048289738430581,
+        "topHitDelta": 0
+      },
+      "guards": {
+        "eachPredictionUsesOnlyEarlierRows": true,
+        "candidateSelectedOnDiscoveryOnly": true,
+        "validationAndHoldoutNotUsedForCandidateChoice": true,
+        "realMoney": false
+      }
+    },
+    {
+      "gameId": "euromillones",
+      "family": "numeric",
+      "status": "RETROSPECTIVE_CAUSAL_WALK_FORWARD",
+      "fixedCandidate": {
+        "mode": "hybrid",
+        "window": 25
+      },
+      "split": {
+        "discovery": 887,
+        "validation": 443,
+        "holdout": 444,
+        "firstHoldoutDate": "2022-05-17",
+        "lastHoldoutDate": "2026-08-18"
+      },
+      "minimumObservedUnitStakeEUR": 2.5,
+      "medianHoldoutUnitStakeEUR": 2.5,
+      "discovery": {
+        "draws": 887,
+        "stakeEUR": 2217.5,
+        "returnEUR": 419.1100000000001,
+        "plEUR": -1798.3899999999999,
+        "roi": -0.810998872604284,
+        "topHits": 0,
+        "prizeDraws": 69,
+        "meanPrimaryHits": 0.5107102593010147,
+        "bestPrimaryHits": 3
+      },
+      "validation": {
+        "draws": 443,
+        "stakeEUR": 1107.5,
+        "returnEUR": 139.87,
+        "plEUR": -967.63,
+        "roi": -0.873706546275395,
+        "topHits": 0,
+        "prizeDraws": 26,
+        "meanPrimaryHits": 0.5191873589164786,
+        "bestPrimaryHits": 3
+      },
+      "holdout": {
+        "draws": 444,
+        "stakeEUR": 1110,
+        "returnEUR": 191.90999999999997,
+        "plEUR": -918.09,
+        "roi": -0.8271081081081082,
+        "topHits": 0,
+        "prizeDraws": 37,
+        "meanPrimaryHits": 0.5608108108108109,
+        "bestPrimaryHits": 2
+      },
+      "matchedControlHoldout": {
+        "draws": 444,
+        "stakeEUR": 1110,
+        "returnEUR": 132.50999999999996,
+        "plEUR": -977.49,
+        "roi": -0.8806216216216216,
+        "topHits": 0,
+        "prizeDraws": 28,
+        "meanPrimaryHits": 0.4752252252252252,
+        "bestPrimaryHits": 2
+      },
+      "holdoutVsControl": {
+        "roiDelta": 0.05351351351351341,
+        "meanPrimaryHitsDelta": 0.08558558558558566,
+        "topHitDelta": 0
+      },
+      "guards": {
+        "eachPredictionUsesOnlyEarlierRows": true,
+        "candidateSelectedOnDiscoveryOnly": true,
+        "validationAndHoldoutNotUsedForCandidateChoice": true,
+        "realMoney": false
+      }
+    },
+    {
+      "gameId": "gordo",
+      "family": "numeric",
+      "status": "RETROSPECTIVE_CAUSAL_WALK_FORWARD",
+      "fixedCandidate": {
+        "mode": "hot",
+        "window": 10
+      },
+      "split": {
+        "discovery": 501,
+        "validation": 251,
+        "holdout": 251,
+        "firstHoldoutDate": "2021-10-31",
+        "lastHoldoutDate": "2026-08-16"
+      },
+      "minimumObservedUnitStakeEUR": 1.5,
+      "medianHoldoutUnitStakeEUR": 1.5,
+      "discovery": {
+        "draws": 501,
+        "stakeEUR": 751.5,
+        "returnEUR": 0,
+        "plEUR": -751.5,
+        "roi": -1,
+        "topHits": 0,
+        "prizeDraws": 0,
+        "meanPrimaryHits": 0.49101796407185627,
+        "bestPrimaryHits": 4
+      },
+      "validation": {
+        "draws": 251,
+        "stakeEUR": 376.5,
+        "returnEUR": 0,
+        "plEUR": -376.5,
+        "roi": -1,
+        "topHits": 0,
+        "prizeDraws": 0,
+        "meanPrimaryHits": 0.5338645418326693,
+        "bestPrimaryHits": 3
+      },
+      "holdout": {
+        "draws": 251,
+        "stakeEUR": 376.5,
+        "returnEUR": 9,
+        "plEUR": -367.5,
+        "roi": -0.9760956175298805,
+        "topHits": 0,
+        "prizeDraws": 4,
+        "meanPrimaryHits": 0.5139442231075697,
+        "bestPrimaryHits": 3
+      },
+      "matchedControlHoldout": {
+        "draws": 251,
+        "stakeEUR": 376.5,
+        "returnEUR": 56.12,
+        "plEUR": -320.38,
+        "roi": -0.8509428950863214,
+        "topHits": 0,
+        "prizeDraws": 13,
+        "meanPrimaryHits": 0.5099601593625498,
+        "bestPrimaryHits": 3
+      },
+      "holdoutVsControl": {
+        "roiDelta": -0.12515272244355913,
+        "meanPrimaryHitsDelta": 0.003984063745019917,
+        "topHitDelta": 0
+      },
+      "guards": {
+        "eachPredictionUsesOnlyEarlierRows": true,
+        "candidateSelectedOnDiscoveryOnly": true,
+        "validationAndHoldoutNotUsedForCandidateChoice": true,
+        "realMoney": false
+      }
+    },
+    {
+      "gameId": "eurodreams",
+      "family": "numeric",
+      "status": "RETROSPECTIVE_CAUSAL_WALK_FORWARD",
+      "fixedCandidate": {
+        "mode": "cold",
+        "window": 200
+      },
+      "split": {
+        "discovery": 130,
+        "validation": 65,
+        "holdout": 66,
+        "firstHoldoutDate": "2026-01-01",
+        "lastHoldoutDate": "2026-08-17"
+      },
+      "minimumObservedUnitStakeEUR": 2.5,
+      "medianHoldoutUnitStakeEUR": 2.5,
+      "discovery": {
+        "draws": 130,
+        "stakeEUR": 325,
+        "returnEUR": 629.91,
+        "plEUR": 304.90999999999997,
+        "roi": 0.9381846153846154,
+        "topHits": 0,
+        "prizeDraws": 30,
+        "meanPrimaryHits": 0.9769230769230769,
+        "bestPrimaryHits": 3
+      },
+      "validation": {
+        "draws": 65,
+        "stakeEUR": 162.5,
+        "returnEUR": 1089.0900000000001,
+        "plEUR": 926.5900000000001,
+        "roi": 5.7020923076923085,
+        "topHits": 0,
+        "prizeDraws": 17,
+        "meanPrimaryHits": 0.9692307692307692,
+        "bestPrimaryHits": 3
+      },
+      "holdout": {
+        "draws": 66,
+        "stakeEUR": 165,
+        "returnEUR": 691.86,
+        "plEUR": 526.86,
+        "roi": 3.193090909090909,
+        "topHits": 0,
+        "prizeDraws": 4,
+        "meanPrimaryHits": 0.8636363636363636,
+        "bestPrimaryHits": 3
+      },
+      "matchedControlHoldout": {
+        "draws": 66,
+        "stakeEUR": 165,
+        "returnEUR": 22.5,
+        "plEUR": -142.5,
+        "roi": -0.8636363636363636,
+        "topHits": 0,
+        "prizeDraws": 9,
+        "meanPrimaryHits": 0.9848484848484849,
+        "bestPrimaryHits": 4
+      },
+      "holdoutVsControl": {
+        "roiDelta": 4.056727272727272,
+        "meanPrimaryHitsDelta": -0.12121212121212122,
+        "topHitDelta": 0
+      },
+      "guards": {
+        "eachPredictionUsesOnlyEarlierRows": true,
+        "candidateSelectedOnDiscoveryOnly": true,
+        "validationAndHoldoutNotUsedForCandidateChoice": true,
+        "realMoney": false
+      }
+    },
+    {
+      "gameId": "loteria-nacional",
+      "family": "number5",
+      "status": "RETROSPECTIVE_CAUSAL_WALK_FORWARD",
+      "fixedCandidate": {
+        "mode": "cold",
+        "window": 25
+      },
+      "split": {
+        "discovery": 484,
+        "validation": 242,
+        "holdout": 243,
+        "firstHoldoutDate": "2024-04-04",
+        "lastHoldoutDate": "2026-08-15"
+      },
+      "minimumObservedUnitStakeEUR": 3,
+      "medianHoldoutUnitStakeEUR": 3,
+      "discovery": {
+        "draws": 484,
+        "stakeEUR": 2672,
+        "returnEUR": 851,
+        "plEUR": -1821,
+        "roi": -0.6815119760479043,
+        "topHits": 0,
+        "prizeDraws": 158,
+        "meanPrimaryHits": 0,
+        "bestPrimaryHits": 0
+      },
+      "validation": {
+        "draws": 242,
+        "stakeEUR": 1401,
+        "returnEUR": 397,
+        "plEUR": -1004,
+        "roi": -0.7166309778729478,
+        "topHits": 0,
+        "prizeDraws": 67,
+        "meanPrimaryHits": 0,
+        "bestPrimaryHits": 0
+      },
+      "holdout": {
+        "draws": 243,
+        "stakeEUR": 1415,
+        "returnEUR": 509,
+        "plEUR": -906,
+        "roi": -0.6402826855123676,
+        "topHits": 0,
+        "prizeDraws": 81,
+        "meanPrimaryHits": 0,
+        "bestPrimaryHits": 0
+      },
+      "matchedControlHoldout": {
+        "draws": 243,
+        "stakeEUR": 1415,
+        "returnEUR": 422,
+        "plEUR": -993,
+        "roi": -0.7017667844522968,
+        "topHits": 0,
+        "prizeDraws": 73,
+        "meanPrimaryHits": 0,
+        "bestPrimaryHits": 0
+      },
+      "holdoutVsControl": {
+        "roiDelta": 0.06148409893992923,
+        "meanPrimaryHitsDelta": 0,
+        "topHitDelta": 0
+      },
+      "guards": {
+        "eachPredictionUsesOnlyEarlierRows": true,
+        "candidateSelectedOnDiscoveryOnly": true,
+        "validationAndHoldoutNotUsedForCandidateChoice": true,
+        "realMoney": false
+      }
+    },
+    {
+      "gameId": "quiniela",
+      "family": "football",
+      "status": "RETROSPECTIVE_CAUSAL_WALK_FORWARD",
+      "fixedCandidate": {
+        "mode": "fixed-causal-team-or-frequency",
+        "window": null
+      },
+      "split": {
+        "discovery": 843,
+        "validation": 422,
+        "holdout": 422,
+        "firstHoldoutDate": "2020-09-30",
+        "lastHoldoutDate": "2026-08-09"
+      },
+      "minimumObservedUnitStakeEUR": 0.75,
+      "medianHoldoutUnitStakeEUR": 0.75,
+      "discovery": {
+        "draws": 843,
+        "stakeEUR": 632.25,
+        "returnEUR": 16.58,
+        "plEUR": -615.67,
+        "roi": -0.9737761961249506,
+        "topHits": 0,
+        "prizeDraws": 5,
+        "meanPrimaryHits": 6.576512455516014,
+        "bestPrimaryHits": 12
+      },
+      "validation": {
+        "draws": 422,
+        "stakeEUR": 316.5,
+        "returnEUR": 62.050000000000004,
+        "plEUR": -254.45,
+        "roi": -0.8039494470774091,
+        "topHits": 0,
+        "prizeDraws": 12,
+        "meanPrimaryHits": 6.568720379146919,
+        "bestPrimaryHits": 12
+      },
+      "holdout": {
+        "draws": 422,
+        "stakeEUR": 316.5,
+        "returnEUR": 278.77000000000004,
+        "plEUR": -37.72999999999996,
+        "roi": -0.11921011058451803,
+        "topHits": 0,
+        "prizeDraws": 17,
+        "meanPrimaryHits": 6.729857819905213,
+        "bestPrimaryHits": 12
+      },
+      "matchedControlHoldout": {
+        "draws": 422,
+        "stakeEUR": 316.5,
+        "returnEUR": 13.280000000000001,
+        "plEUR": -303.22,
+        "roi": -0.958041074249605,
+        "topHits": 0,
+        "prizeDraws": 2,
+        "meanPrimaryHits": 4.575829383886256,
+        "bestPrimaryHits": 11
+      },
+      "holdoutVsControl": {
+        "roiDelta": 0.838830963665087,
+        "meanPrimaryHitsDelta": 2.154028436018957,
+        "topHitDelta": 0
+      },
+      "guards": {
+        "eachPredictionUsesOnlyEarlierRows": true,
+        "candidateSelectedOnDiscoveryOnly": true,
+        "validationAndHoldoutNotUsedForCandidateChoice": true,
+        "realMoney": false
+      }
+    },
+    {
+      "gameId": "elige8",
+      "family": "football8",
+      "status": "RETROSPECTIVE_CAUSAL_WALK_FORWARD",
+      "fixedCandidate": {
+        "mode": "fixed-causal-team-or-frequency",
+        "window": null
+      },
+      "split": {
+        "discovery": 205,
+        "validation": 103,
+        "holdout": 103,
+        "firstHoldoutDate": "2025-03-16",
+        "lastHoldoutDate": "2026-08-09"
+      },
+      "minimumObservedUnitStakeEUR": 0.5,
+      "medianHoldoutUnitStakeEUR": 0.5,
+      "discovery": {
+        "draws": 205,
+        "stakeEUR": 102.5,
+        "returnEUR": 2.89,
+        "plEUR": -99.61,
+        "roi": -0.9718048780487805,
+        "topHits": 1,
+        "prizeDraws": 1,
+        "meanPrimaryHits": 4.2439024390243905,
+        "bestPrimaryHits": 8
+      },
+      "validation": {
+        "draws": 103,
+        "stakeEUR": 51.5,
+        "returnEUR": 12.12,
+        "plEUR": -39.38,
+        "roi": -0.7646601941747573,
+        "topHits": 1,
+        "prizeDraws": 1,
+        "meanPrimaryHits": 4.223300970873787,
+        "bestPrimaryHits": 8
+      },
+      "holdout": {
+        "draws": 103,
+        "stakeEUR": 51.5,
+        "returnEUR": 176.41,
+        "plEUR": 124.91,
+        "roi": 2.4254368932038832,
+        "topHits": 2,
+        "prizeDraws": 2,
+        "meanPrimaryHits": 4.252427184466019,
+        "bestPrimaryHits": 8
+      },
+      "matchedControlHoldout": {
+        "draws": 103,
+        "stakeEUR": 51.5,
+        "returnEUR": 0,
+        "plEUR": -51.5,
+        "roi": -1,
+        "topHits": 0,
+        "prizeDraws": 0,
+        "meanPrimaryHits": 2.9029126213592233,
+        "bestPrimaryHits": 6
+      },
+      "holdoutVsControl": {
+        "roiDelta": 3.4254368932038832,
+        "meanPrimaryHitsDelta": 1.349514563106796,
+        "topHitDelta": 2
+      },
+      "guards": {
+        "eachPredictionUsesOnlyEarlierRows": true,
+        "candidateSelectedOnDiscoveryOnly": true,
+        "validationAndHoldoutNotUsedForCandidateChoice": true,
+        "realMoney": false
+      }
+    },
+    {
+      "gameId": "quinigol",
+      "family": "football-score",
+      "status": "RETROSPECTIVE_CAUSAL_WALK_FORWARD",
+      "fixedCandidate": {
+        "mode": "fixed-causal-team-or-frequency",
+        "window": null
+      },
+      "split": {
+        "discovery": 308,
+        "validation": 154,
+        "holdout": 155,
+        "firstHoldoutDate": "2024-10-27",
+        "lastHoldoutDate": "2026-08-09"
+      },
+      "minimumObservedUnitStakeEUR": 1,
+      "medianHoldoutUnitStakeEUR": 1,
+      "discovery": {
+        "draws": 308,
+        "stakeEUR": 308,
+        "returnEUR": 63.60999999999999,
+        "plEUR": -244.39000000000001,
+        "roi": -0.793474025974026,
+        "topHits": 0,
+        "prizeDraws": 29,
+        "meanPrimaryHits": 0.5746753246753247,
+        "bestPrimaryHits": 3
+      },
+      "validation": {
+        "draws": 154,
+        "stakeEUR": 154,
+        "returnEUR": 56.84,
+        "plEUR": -97.16,
+        "roi": -0.6309090909090909,
+        "topHits": 0,
+        "prizeDraws": 18,
+        "meanPrimaryHits": 0.6623376623376623,
+        "bestPrimaryHits": 3
+      },
+      "holdout": {
+        "draws": 155,
+        "stakeEUR": 155,
+        "returnEUR": 44.11,
+        "plEUR": -110.89,
+        "roi": -0.7154193548387097,
+        "topHits": 0,
+        "prizeDraws": 20,
+        "meanPrimaryHits": 0.6129032258064516,
+        "bestPrimaryHits": 3
+      },
+      "matchedControlHoldout": {
+        "draws": 155,
+        "stakeEUR": 155,
+        "returnEUR": 31.759999999999998,
+        "plEUR": -123.24000000000001,
+        "roi": -0.7950967741935484,
+        "topHits": 0,
+        "prizeDraws": 8,
+        "meanPrimaryHits": 0.44516129032258067,
+        "bestPrimaryHits": 3
+      },
+      "holdoutVsControl": {
+        "roiDelta": 0.07967741935483874,
+        "meanPrimaryHitsDelta": 0.16774193548387095,
+        "topHitDelta": 0
+      },
+      "guards": {
+        "eachPredictionUsesOnlyEarlierRows": true,
+        "candidateSelectedOnDiscoveryOnly": true,
+        "validationAndHoldoutNotUsedForCandidateChoice": true,
+        "realMoney": false
+      }
+    },
+    {
+      "gameId": "lototurf",
+      "family": "lototurf",
+      "status": "RETROSPECTIVE_CAUSAL_WALK_FORWARD",
+      "fixedCandidate": {
+        "mode": "hybrid",
+        "window": 50
+      },
+      "split": {
+        "discovery": 518,
+        "validation": 259,
+        "holdout": 260,
+        "firstHoldoutDate": "2023-05-21",
+        "lastHoldoutDate": "2026-08-12"
+      },
+      "minimumObservedUnitStakeEUR": 1,
+      "medianHoldoutUnitStakeEUR": 1,
+      "discovery": {
+        "draws": 518,
+        "stakeEUR": 518,
+        "returnEUR": 86.32,
+        "plEUR": -431.68,
+        "roi": -0.8333590733590733,
+        "topHits": 0,
+        "prizeDraws": 72,
+        "meanPrimaryHits": 1.1003861003861004,
+        "bestPrimaryHits": 4
+      },
+      "validation": {
+        "draws": 259,
+        "stakeEUR": 259,
+        "returnEUR": 29.880000000000003,
+        "plEUR": -229.12,
+        "roi": -0.8846332046332046,
+        "topHits": 0,
+        "prizeDraws": 17,
+        "meanPrimaryHits": 1.135135135135135,
+        "bestPrimaryHits": 3
+      },
+      "holdout": {
+        "draws": 260,
+        "stakeEUR": 260,
+        "returnEUR": 19,
+        "plEUR": -241,
+        "roi": -0.926923076923077,
+        "topHits": 0,
+        "prizeDraws": 19,
+        "meanPrimaryHits": 1.0538461538461539,
+        "bestPrimaryHits": 3
+      },
+      "matchedControlHoldout": {
+        "draws": 260,
+        "stakeEUR": 260,
+        "returnEUR": 47.59,
+        "plEUR": -212.41,
+        "roi": -0.8169615384615385,
+        "topHits": 0,
+        "prizeDraws": 25,
+        "meanPrimaryHits": 1.1730769230769231,
+        "bestPrimaryHits": 4
+      },
+      "holdoutVsControl": {
+        "roiDelta": -0.10996153846153844,
+        "meanPrimaryHitsDelta": -0.11923076923076925,
+        "topHitDelta": 0
+      },
+      "guards": {
+        "eachPredictionUsesOnlyEarlierRows": true,
+        "candidateSelectedOnDiscoveryOnly": true,
+        "validationAndHoldoutNotUsedForCandidateChoice": true,
+        "realMoney": false
+      }
+    },
+    {
+      "gameId": "quintuple-plus",
+      "family": "quintuple",
+      "status": "RETROSPECTIVE_CAUSAL_WALK_FORWARD",
+      "fixedCandidate": {
+        "mode": "hot",
+        "window": 100
+      },
+      "split": {
+        "discovery": 514,
+        "validation": 257,
+        "holdout": 258,
+        "firstHoldoutDate": "2023-05-21",
+        "lastHoldoutDate": "2026-08-12"
+      },
+      "minimumObservedUnitStakeEUR": 1,
+      "medianHoldoutUnitStakeEUR": 1,
+      "discovery": {
+        "draws": 514,
+        "stakeEUR": 514,
+        "returnEUR": 42.21,
+        "plEUR": -471.79,
+        "roi": -0.9178793774319066,
+        "topHits": 0,
+        "prizeDraws": 3,
+        "meanPrimaryHits": 0.9007782101167315,
+        "bestPrimaryHits": 4
+      },
+      "validation": {
+        "draws": 257,
+        "stakeEUR": 257,
+        "returnEUR": 3.21,
+        "plEUR": -253.79,
+        "roi": -0.9875097276264592,
+        "topHits": 0,
+        "prizeDraws": 1,
+        "meanPrimaryHits": 0.8249027237354085,
+        "bestPrimaryHits": 4
+      },
+      "holdout": {
+        "draws": 258,
+        "stakeEUR": 258,
+        "returnEUR": 53.58,
+        "plEUR": -204.42000000000002,
+        "roi": -0.7923255813953488,
+        "topHits": 0,
+        "prizeDraws": 2,
+        "meanPrimaryHits": 0.7829457364341085,
+        "bestPrimaryHits": 4
+      },
+      "matchedControlHoldout": {
+        "draws": 258,
+        "stakeEUR": 258,
+        "returnEUR": 0,
+        "plEUR": -258,
+        "roi": -1,
+        "topHits": 0,
+        "prizeDraws": 0,
+        "meanPrimaryHits": 0.2751937984496124,
+        "bestPrimaryHits": 2
+      },
+      "holdoutVsControl": {
+        "roiDelta": 0.2076744186046512,
+        "meanPrimaryHitsDelta": 0.5077519379844961,
+        "topHitDelta": 0
+      },
+      "guards": {
+        "eachPredictionUsesOnlyEarlierRows": true,
+        "candidateSelectedOnDiscoveryOnly": true,
+        "validationAndHoldoutNotUsedForCandidateChoice": true,
+        "realMoney": false
+      }
+    }
+  ],
+  "rankingByHoldoutROI": [
+    {
+      "gameId": "eurodreams",
+      "roi": 3.193090909090909,
+      "stakeEUR": 165,
+      "returnEUR": 691.86,
+      "topHits": 0,
+      "controlROI": -0.8636363636363636,
+      "roiDelta": 4.056727272727272
+    },
+    {
+      "gameId": "elige8",
+      "roi": 2.4254368932038832,
+      "stakeEUR": 51.5,
+      "returnEUR": 176.41,
+      "topHits": 2,
+      "controlROI": -1,
+      "roiDelta": 3.4254368932038832
+    },
+    {
+      "gameId": "quiniela",
+      "roi": -0.11921011058451803,
+      "stakeEUR": 316.5,
+      "returnEUR": 278.77000000000004,
+      "topHits": 0,
+      "controlROI": -0.958041074249605,
+      "roiDelta": 0.838830963665087
+    },
+    {
+      "gameId": "bonoloto",
+      "roi": -0.6334731323722149,
+      "stakeEUR": 1144.5,
+      "returnEUR": 419.48999999999995,
+      "topHits": 0,
+      "controlROI": -0.7671472258628222,
+      "roiDelta": 0.13367409349060733
+    },
+    {
+      "gameId": "loteria-nacional",
+      "roi": -0.6402826855123676,
+      "stakeEUR": 1415,
+      "returnEUR": 509,
+      "topHits": 0,
+      "controlROI": -0.7017667844522968,
+      "roiDelta": 0.06148409893992923
+    },
+    {
+      "gameId": "primitiva",
+      "roi": -0.7017806841046277,
+      "stakeEUR": 994,
+      "returnEUR": 296.43,
+      "topHits": 0,
+      "controlROI": -0.7424044265593561,
+      "roiDelta": 0.04062374245472844
+    },
+    {
+      "gameId": "quinigol",
+      "roi": -0.7154193548387097,
+      "stakeEUR": 155,
+      "returnEUR": 44.11,
+      "topHits": 0,
+      "controlROI": -0.7950967741935484,
+      "roiDelta": 0.07967741935483874
+    },
+    {
+      "gameId": "quintuple-plus",
+      "roi": -0.7923255813953488,
+      "stakeEUR": 258,
+      "returnEUR": 53.58,
+      "topHits": 0,
+      "controlROI": -1,
+      "roiDelta": 0.2076744186046512
+    },
+    {
+      "gameId": "euromillones",
+      "roi": -0.8271081081081082,
+      "stakeEUR": 1110,
+      "returnEUR": 191.90999999999997,
+      "topHits": 0,
+      "controlROI": -0.8806216216216216,
+      "roiDelta": 0.05351351351351341
+    },
+    {
+      "gameId": "lototurf",
+      "roi": -0.926923076923077,
+      "stakeEUR": 260,
+      "returnEUR": 19,
+      "topHits": 0,
+      "controlROI": -0.8169615384615385,
+      "roiDelta": -0.10996153846153844
+    },
+    {
+      "gameId": "gordo",
+      "roi": -0.9760956175298805,
+      "stakeEUR": 376.5,
+      "returnEUR": 9,
+      "topHits": 0,
+      "controlROI": -0.8509428950863214,
+      "roiDelta": -0.12515272244355913
+    }
+  ],
+  "decision": {
+    "realMoneyPass": false,
+    "automaticBetting": false,
+    "claim": "NO_LIVE_EDGE_CLAIM_FROM_RETROSPECTIVE_WALK_FORWARD"
+  }
+}
