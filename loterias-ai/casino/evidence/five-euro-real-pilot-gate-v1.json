@@ -1,12 +1,13 @@
 {
   "version": "five-euro-real-pilot-gate-v1",
-  "generatedAt": "2026-08-19T21:05:47.655Z",
-  "purpose": "Human-authorized maximum-5-EUR real-money pilot gate. Never upgrades a research signal into an economic edge.",
+  "generatedAt": "2026-08-19T21:09:32.470Z",
+  "purpose": "Paper-only scientific promotion monitor. Casino experiments never authorize real-money stakes.",
   "humanAuthorization": {
-    "maxTotalPilotStakeEUR": 5,
-    "oneBudgetOnly": true,
-    "manualPlacementOnly": true,
+    "maxTotalPilotStakeEUR": 0,
+    "oneBudgetOnly": false,
+    "manualPlacementOnly": false,
     "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
     "noReload": true,
     "noLossChasing": true
   },
@@ -29,7 +30,7 @@
         "exactHazardKnown": false,
         "currentScreenPass": false,
         "networkAllocationProspectivelyValidated": false,
-        "bestConservativeRtp": 0.944957
+        "bestConservativeRtp": 0.944956
       }
     },
     {
@@ -55,20 +56,27 @@
       }
     }
   ],
+  "scientificDecision": {
+    "state": "NO_PAPER_PROMOTION",
+    "scientificallyEligibleLanes": [],
+    "reason": "NO_LANE_HAS_A_SUPPORTED_NON_NEGATIVE_EXPECTATION_YET"
+  },
   "decision": {
     "state": "NO_REAL_PILOT",
     "pilotAllowed": false,
     "eligibleLanes": [],
     "maxTotalStakeEUR": 0,
-    "reason": "NO_LANE_HAS_A_SUPPORTED_NON_NEGATIVE_EXPECTATION_YET"
+    "reason": "CASINO_EXPERIMENTS_ARE_PAPER_ONLY_REAL_MONEY_DISABLED"
   },
   "guards": {
     "noAutomaticBetting": true,
+    "noRealMoney": true,
     "noMartingale": true,
     "noChasingLosses": true,
     "noBorrowing": true,
     "noRetuningAfterOutcome": true,
     "onePilotCannotValidateAnEdge": true,
-    "realMoneyRequiresHumanManualAction": true
+    "realMoneyRequiresHumanManualAction": false,
+    "realMoneyDisabledByPolicy": true
   }
 }
