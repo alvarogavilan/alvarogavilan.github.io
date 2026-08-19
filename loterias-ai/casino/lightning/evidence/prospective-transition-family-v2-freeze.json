@@ -1,0 +1,42 @@
+{
+  "version": "lightning-prospective-transition-family-v2-freeze",
+  "createdAt": "2026-08-19T08:00:00Z",
+  "activation": {
+    "requiresV1Fixed5000Complete": true,
+    "anchor": "strictly after V1 last eligible target round",
+    "activationIndependentOfV1Outcome": true,
+    "replicateEntireEightSelectorFamily": true
+  },
+  "v1Freeze": "lightning-prospective-transition-family-v1-freeze",
+  "candidateFamily": [
+    "previousWinner",
+    "twoBackWinner",
+    "wheelClockwiseOneFromPreviousWinner",
+    "wheelCounterClockwiseOneFromPreviousWinner",
+    "wheelOppositeFromPreviousWinner",
+    "markovModeFromPreviousWinnerLast50Transitions",
+    "markovModeFromPreviousWinnerLast200Transitions",
+    "markovModeFromPreviousWinnerAllPastTransitions"
+  ],
+  "fixedBoundaryRounds": 5000,
+  "nullHitProbability": 0.02702702702702703,
+  "nonMultipliedGrossReturnX": 30,
+  "economicBreakEvenHitRate": 0.03333333333333333,
+  "familyWiseAlpha": 0.01,
+  "perCandidateAlpha": 0.00125,
+  "confirmationRule": "A selector is independently confirmed only if the same selector passes the full frozen V1 gate and the full frozen V2 gate. V2 runs regardless of V1 pass/fail and evaluates all eight selectors.",
+  "disclosurePolicy": "Administrative progress only before V2 reaches 5000; hits, rates, ROI, rankings and p-values remain hidden.",
+  "guards": {
+    "preRegisteredBeforeAnyV1EligibleRound": true,
+    "v1RoundsUsedAtFreeze": 0,
+    "sameAlgorithmsAsV1": true,
+    "noOutcomeDependentActivation": true,
+    "noRetuning": true,
+    "noOptionalStopping": true,
+    "postBoundaryCannotRescue": true,
+    "currentRoundLuckySelectionForbidden": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
