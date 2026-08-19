@@ -9,6 +9,7 @@ on:
       - 'loterias-ai/casino/jackpots/botemania-jackpot-client-map-v1.mjs'
       - 'loterias-ai/casino/jackpots/botemania-blueprint-cap-field-probe-v1.mjs'
       - 'loterias-ai/casino/jackpots/botemania-fishin-metadata-probe-v1.mjs'
+      - 'loterias-ai/casino/jackpots/botemania-jpk-flow-model-v1.mjs'
       - 'loterias-ai/casino/build-casino-dashboard-v1.mjs'
       - '.github/workflows/loterias-ai-botemania-jackpot-king-observer-v1.yml'
   schedule:
@@ -32,7 +33,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Capture Botemania Jackpot King public state, metadata, cap probes and refresh dashboard
+      - name: Capture Botemania Jackpot King public state, metadata, cap probes, network flow and refresh dashboard
         shell: bash
         run: |
           set -euo pipefail
@@ -45,15 +46,17 @@ jobs:
             node loterias-ai/casino/jackpots/botemania-jackpot-king-observer-v1.mjs
             node loterias-ai/casino/jackpots/botemania-blueprint-cap-field-probe-v1.mjs
             node loterias-ai/casino/jackpots/botemania-fishin-metadata-probe-v1.mjs
+            node loterias-ai/casino/jackpots/botemania-jpk-flow-model-v1.mjs
             node loterias-ai/casino/build-casino-dashboard-v1.mjs
             git add \
               loterias-ai/casino/jackpots/evidence/botemania-jackpot-client-map-v1.json \
               loterias-ai/casino/jackpots/evidence/botemania-jackpot-king-observer-v1.json \
               loterias-ai/casino/jackpots/evidence/botemania-blueprint-cap-field-probe-v1.json \
               loterias-ai/casino/jackpots/evidence/botemania-fishin-metadata-probe-v1.json \
+              loterias-ai/casino/jackpots/evidence/botemania-jpk-flow-model-v1.json \
               loterias-ai/casino/evidence/casino-dashboard-v1.json
             if git diff --cached --quiet; then exit 0; fi
-            git commit -m 'data(casino): capture Botemania Jackpot King state metadata and cap probes'
+            git commit -m 'data(casino): capture Botemania Jackpot King state metadata caps and flow'
             if git push origin HEAD:main; then exit 0; fi
             sleep $((attempt*2))
           done
