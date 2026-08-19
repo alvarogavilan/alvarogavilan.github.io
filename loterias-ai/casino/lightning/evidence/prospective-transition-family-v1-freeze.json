@@ -1,0 +1,43 @@
+{
+  "version": "lightning-prospective-transition-family-v1-freeze",
+  "createdAt": "2026-08-19T07:44:00Z",
+  "prospectiveStartsAt": "2026-08-19T08:00:00Z",
+  "sourceSegment": "authoritative-v2",
+  "predictorInformationRule": "Only winners from completed prior rounds may be used. Current-round winner, Lucky Numbers and multipliers are forbidden for selection.",
+  "candidateFamily": [
+    "previousWinner",
+    "twoBackWinner",
+    "wheelClockwiseOneFromPreviousWinner",
+    "wheelCounterClockwiseOneFromPreviousWinner",
+    "wheelOppositeFromPreviousWinner",
+    "markovModeFromPreviousWinnerLast50Transitions",
+    "markovModeFromPreviousWinnerLast200Transitions",
+    "markovModeFromPreviousWinnerAllPastTransitions"
+  ],
+  "rouletteWheelOrder": [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26],
+  "markovTieBreak": "ascending roulette number",
+  "markovNoTransitionFallback": "previousWinner",
+  "fixedBoundaryRounds": 5000,
+  "nullHitProbability": 0.02702702702702703,
+  "nonMultipliedGrossReturnX": 30,
+  "economicBreakEvenHitRate": 0.03333333333333333,
+  "familyWiseAlpha": 0.01,
+  "perCandidateAlpha": 0.00125,
+  "multiplicity": "Bonferroni across eight frozen selectors.",
+  "promotionRequires": [
+    "first 5000 eligible future target rounds only",
+    "one-sided binomial p below 0.00125",
+    "observed hit rate above 1/30 conservative economic break-even",
+    "Wilson 95% lower bound above 1/30",
+    "positive conservative ROI assuming gross return 30x only",
+    "no Lucky multiplier uplift counted toward promotion",
+    "no retuning and no optional stopping",
+    "new untouched replication before any real-money authorization"
+  ],
+  "disclosurePolicy": "Administrative progress only before 5000 rounds; candidate hits, rates, ROI, rankings and p-values remain hidden.",
+  "immutable": true,
+  "claimAllowed": false,
+  "automaticBettingAllowed": false,
+  "realMoneyAllowed": false,
+  "realStakeEUR": 0
+}
