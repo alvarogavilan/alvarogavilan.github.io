@@ -2,6 +2,8 @@
 import { spawnSync } from 'node:child_process';
 
 const scripts=[
+  'loterias-ai/casino/xxxtreme/collect-authoritative-segment-v1.mjs',
+  'loterias-ai/casino/xxxtreme/research/prospective-transition-family-v1.mjs',
   'loterias-ai/casino/lightning/research/timing-replication-v4.mjs',
   'loterias-ai/casino/lightning/research/lightning-prospective-frozen-lag8-clean-v3.mjs',
   'loterias-ai/casino/lightning/research/lightning-prospective-transition-family-v1.mjs',
