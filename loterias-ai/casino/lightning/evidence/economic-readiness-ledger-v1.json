@@ -1,6 +1,6 @@
 {
   "version": "economic-readiness-ledger-v1",
-  "generatedAt": "2026-08-18T23:20:00Z",
+  "generatedAt": "2026-08-19T07:51:05.608Z",
   "mission": "Identify reproducible positive expected value without future-information leakage or optional stopping.",
   "strongestCurrentLead": "clean-timing-v3",
   "strongestTraditionalEconomicLead": "quinigol-shadow-v3",
@@ -9,13 +9,27 @@
     "label": "Lightning timing replication — clean V2",
     "status": "BLINDED_ACCUMULATING",
     "progress": {
-      "used": 93,
+      "used": 155,
       "boundary": 200,
-      "percent": 46.5,
-      "remaining": 107
+      "percent": 77.5,
+      "remaining": 45
     },
+    "disclosure": "ADMINISTRATIVE_COUNTS_ONLY",
     "outcomePerformanceVisible": false,
     "realMoneyAllowed": false
+  },
+  "timingReplicationPlan": {
+    "v3Status": "BLINDED_ACCUMULATING",
+    "v4PreRegistered": true,
+    "v4Status": "WAITING_FOR_V3_FIXED_BOUNDARY",
+    "v4ActivationIndependentOfV3Outcome": true
+  },
+  "lag8ReplicationPlan": {
+    "v2Status": "BLINDED_ACCUMULATING",
+    "v3PreRegistered": true,
+    "v3Status": "WAITING_FOR_LAG8_V2_FIXED_BOUNDARY",
+    "v3ActivationIndependentOfV2Outcome": true,
+    "postBoundarySampleOnly": true
   },
   "lanes": [
     {
@@ -23,13 +37,29 @@
       "label": "Lightning timing replication — clean V2",
       "status": "BLINDED_ACCUMULATING",
       "progress": {
-        "used": 93,
+        "used": 155,
         "boundary": 200,
-        "percent": 46.5,
-        "remaining": 107
+        "percent": 77.5,
+        "remaining": 45
       },
       "disclosure": "ADMINISTRATIVE_COUNTS_ONLY",
       "outcomePerformanceVisible": false,
+      "realMoneyAllowed": false
+    },
+    {
+      "id": "clean-lag8-economic-v1",
+      "label": "Lightning lag-8 conservative economic replication V2",
+      "status": "BLINDED_ACCUMULATING",
+      "progress": {
+        "used": 681,
+        "boundary": 1000,
+        "percent": 68.1,
+        "remaining": 319
+      },
+      "disclosure": "ADMINISTRATIVE_PROGRESS_ONLY",
+      "outcomePerformanceVisible": false,
+      "conservativeEconomicModel": true,
+      "luckyMultiplierUpliftExcluded": true,
       "realMoneyAllowed": false
     },
     {
@@ -37,10 +67,10 @@
       "label": "Lightning physical RNG prospective — clean V2",
       "status": "BLINDED_ACCUMULATING",
       "progress": {
-        "used": 905,
+        "used": 1544,
         "boundary": 5000,
-        "percent": 18.1,
-        "remaining": 4095
+        "percent": 30.88,
+        "remaining": 3456
       },
       "disclosure": "ADMINISTRATIVE_PROGRESS_ONLY",
       "outcomePerformanceVisible": false,
@@ -51,10 +81,10 @@
       "label": "Lightning economic number selection — clean V2 Phase A",
       "status": "BLINDED_ACCUMULATING",
       "progress": {
-        "used": 705,
+        "used": 1344,
         "boundary": 5000,
-        "percent": 14.1,
-        "remaining": 4295
+        "percent": 26.88,
+        "remaining": 3656
       },
       "disclosure": "ADMINISTRATIVE_COUNTS_ONLY_NO_MODEL_RANKING",
       "outcomePerformanceVisible": false,
@@ -62,19 +92,70 @@
       "realMoneyAllowed": false
     },
     {
-      "id": "clean-lag8-economic-v1",
-      "label": "Lightning lag-8 conservative economic replication",
+      "id": "clean-lag-family-v1",
+      "label": "Lightning lag family 1–20 — clean V2",
       "status": "BLINDED_ACCUMULATING",
       "progress": {
-        "used": 42,
-        "boundary": 1000,
-        "percent": 4.2,
-        "remaining": 958
+        "used": 674,
+        "boundary": 5000,
+        "percent": 13.48,
+        "remaining": 4326
       },
       "disclosure": "ADMINISTRATIVE_PROGRESS_ONLY",
       "outcomePerformanceVisible": false,
-      "conservativeEconomicModel": true,
-      "luckyMultiplierUpliftExcluded": true,
+      "frozenCandidates": 20,
+      "familyWiseAlpha": 0.01,
+      "perCandidateAlpha": 0.0005,
+      "realMoneyAllowed": false
+    },
+    {
+      "id": "clean-past-lucky-family-v1",
+      "label": "Lightning past-Lucky selectors — clean V2",
+      "status": "BLINDED_ACCUMULATING",
+      "progress": {
+        "used": 663,
+        "boundary": 5000,
+        "percent": 13.26,
+        "remaining": 4337
+      },
+      "disclosure": "ADMINISTRATIVE_PROGRESS_ONLY",
+      "outcomePerformanceVisible": false,
+      "frozenCandidates": 4,
+      "pastInformationOnly": true,
+      "currentRoundLuckySelectionForbidden": true,
+      "realMoneyAllowed": false
+    },
+    {
+      "id": "clean-timing-v4",
+      "label": "Lightning timing independent replication V4 — preregistered",
+      "status": "WAITING_FOR_V3_FIXED_BOUNDARY",
+      "progress": {
+        "used": 0,
+        "boundary": 200,
+        "percent": 0,
+        "remaining": 200
+      },
+      "disclosure": "ADMINISTRATIVE_COUNTS_ONLY",
+      "outcomePerformanceVisible": false,
+      "preRegisteredBeforeV3Final": true,
+      "activationIndependentOfV3Outcome": true,
+      "realMoneyAllowed": false
+    },
+    {
+      "id": "clean-lag8-economic-v3",
+      "label": "Lightning lag-8 independent economic replication V3 — preregistered",
+      "status": "WAITING_FOR_LAG8_V2_FIXED_BOUNDARY",
+      "progress": {
+        "used": 0,
+        "boundary": 1000,
+        "percent": 0,
+        "remaining": 1000
+      },
+      "disclosure": "ADMINISTRATIVE_PROGRESS_ONLY",
+      "outcomePerformanceVisible": false,
+      "preRegisteredBeforeV2Final": true,
+      "activationIndependentOfV2Outcome": true,
+      "postBoundarySampleOnly": true,
       "realMoneyAllowed": false
     },
     {
@@ -91,50 +172,14 @@
       "performanceHidden": true,
       "historicalContext": {
         "holdoutDraws": 207,
-        "holdoutStakeEUR": 414,
-        "holdoutReturnEUR": 583.93,
-        "holdoutPL": 169.93,
         "holdoutROI": 0.4104589371980678,
+        "holdoutPL": 169.93000000000006,
         "randomAverageROI": -0.3033166666666666,
-        "randomMaxROI": 30.09316425120773,
         "beatAll100Random": false,
         "fullHistoricalGatePassed": false,
         "contextOnly": true
       },
-      "realMoneyAllowed": false
-    },
-    {
-      "id": "clean-lag-family-v1",
-      "label": "Lightning lag family 1–20 — clean V2",
-      "status": "BLINDED_ACCUMULATING",
-      "progress": {
-        "used": 35,
-        "boundary": 5000,
-        "percent": 0.7,
-        "remaining": 4965
-      },
-      "disclosure": "ADMINISTRATIVE_PROGRESS_ONLY",
-      "outcomePerformanceVisible": false,
-      "frozenCandidates": 20,
-      "familyWiseAlpha": 0.01,
-      "perCandidateAlpha": 0.0005,
-      "realMoneyAllowed": false
-    },
-    {
-      "id": "clean-past-lucky-family-v1",
-      "label": "Lightning past-Lucky selectors — clean V2",
-      "status": "BLINDED_ACCUMULATING",
-      "progress": {
-        "used": 24,
-        "boundary": 5000,
-        "percent": 0.48,
-        "remaining": 4976
-      },
-      "disclosure": "ADMINISTRATIVE_PROGRESS_ONLY",
-      "outcomePerformanceVisible": false,
-      "frozenCandidates": 4,
-      "pastInformationOnly": true,
-      "currentRoundLuckySelectionForbidden": true,
+      "fixedFinalEconomicPromotionCandidate": false,
       "realMoneyAllowed": false
     },
     {
@@ -154,6 +199,7 @@
         "holdoutROI": -0.8503098106712564,
         "randomAverageROI": -0.7245745912220307
       },
+      "fixedFinalEconomicPromotionCandidate": false,
       "realMoneyAllowed": false
     },
     {
@@ -183,13 +229,15 @@
     "reason": "Legacy directional evidence only; clean V2 replication is the promotion lane."
   },
   "traditionalLottery": {
+    "trackedProspectiveArtifacts": 50,
+    "evaluated": 4,
     "realMoneyPasses": 0,
     "quinigol": {
       "observedJornadas": 0,
       "fixedBoundary": 30,
       "pendingPredictions": 1,
-      "historicalHoldoutDraws": 207,
       "historicalHoldoutROI": 0.4104589371980678,
+      "historicalHoldoutDraws": 207,
       "historicalFullGatePassed": false,
       "prospectivePromotionCandidate": false
     },
@@ -224,5 +272,5 @@
     "pastInformationOnly": true,
     "realMoneyAllowed": false
   },
-  "transitionFamilyV1UpdatedAt": "2026-08-19T07:48:29.345Z"
+  "transitionFamilyV1UpdatedAt": "2026-08-19T07:51:05.614Z"
 }
