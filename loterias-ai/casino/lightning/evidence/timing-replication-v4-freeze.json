@@ -1,0 +1,36 @@
+{
+  "version": "timing-replication-v4-freeze-v1",
+  "sourceSegment": "authoritative-v2",
+  "activation": {
+    "condition": "V3_FIXED_200_COMPLETE",
+    "anchorField": "timing-replication-v3-status.final.finalBoundaryClosedAt",
+    "firstEligibleTimestamp": "STRICTLY_AFTER_V3_FINAL_BOUNDARY_CLOSED_AT",
+    "initialState": "WAIT_FOR_FIRST_POST_BOUNDARY_LIGHTNING_EVENT_BEFORE_GAP_TRACKING",
+    "usesPreBoundaryState": false
+  },
+  "protocol": {
+    "rule": "gap >= 8 completed rounds; event within next 7 chronological rounds",
+    "episodesNonOverlapping": true,
+    "fixedClosedEpisodes": 200,
+    "noInterimPerformanceRead": true,
+    "first200Only": true,
+    "noRetuning": true,
+    "noOptionalStopping": true,
+    "postBoundaryCannotRescue": true,
+    "primaryNull": 0.384823,
+    "secondaryNull": 0.376573,
+    "alpha": 0.01
+  },
+  "purpose": "Independent continuation preregistered before V3 final disclosure. It runs regardless of whether V3 passes or fails, so the V3 outcome cannot determine V4 activation or parameters.",
+  "custody": {
+    "preRegisteredBeforeV3Final": true,
+    "gitCommitTimestampIsAuthoritative": true,
+    "parametersCopiedWithoutChangeFromTimingV3": true,
+    "outcomeDependentDesignChangesAllowed": false
+  },
+  "guards": {
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
