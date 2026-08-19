@@ -1,0 +1,28 @@
+name: Loterias AI XXXtreme Select Prospective Family
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/xxxtreme/discovery/select-prospective-family-v1.mjs'
+      - '.github/workflows/loterias-ai-xxxtreme-select-prospective-family.yml'
+permissions:
+  contents: write
+jobs:
+  select:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Select only from pre-cutoff discovery rows and freeze future family
+        run: node loterias-ai/casino/xxxtreme/discovery/select-prospective-family-v1.mjs
+      - name: Persist selection and freeze before prospective start
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/casino/xxxtreme/discovery/selected-family-v1.json loterias-ai/casino/xxxtreme/evidence/prospective-selected-family-v1-freeze.json
+          git commit -m 'research(xxxtreme): freeze discovery-selected family before future validation' || exit 0
+          git push
