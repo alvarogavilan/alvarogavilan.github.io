@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - 'loterias-ai/casino/jackpots/botemania-jackpot-king-observer-v1.mjs'
+      - 'loterias-ai/casino/build-casino-dashboard-v1.mjs'
       - '.github/workflows/loterias-ai-botemania-jackpot-king-observer-v1.yml'
   schedule:
     - cron: '*/5 * * * *'
@@ -28,7 +29,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Capture Botemania Jackpot King public state
+      - name: Capture Botemania Jackpot King public state and refresh dashboard
         shell: bash
         run: |
           set -euo pipefail
@@ -38,7 +39,10 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             node loterias-ai/casino/jackpots/botemania-jackpot-king-observer-v1.mjs
-            git add loterias-ai/casino/jackpots/evidence/botemania-jackpot-king-observer-v1.json
+            node loterias-ai/casino/build-casino-dashboard-v1.mjs
+            git add \
+              loterias-ai/casino/jackpots/evidence/botemania-jackpot-king-observer-v1.json \
+              loterias-ai/casino/evidence/casino-dashboard-v1.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'data(casino): capture Botemania Jackpot King state'
             if git push origin HEAD:main; then exit 0; fi
