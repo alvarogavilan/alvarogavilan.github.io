@@ -6,7 +6,7 @@ const root='loterias-ai/data/archive';
 const games=fs.readdirSync(root,{withFileTypes:true}).filter(d=>d.isDirectory()&&!d.name.startsWith('_')).map(d=>d.name).filter(name=>fs.readdirSync(path.join(root,name)).some(f=>/^\d{4}\.json$/.test(f))).sort();
 const partitions=[];
 const gameSummary={};
-const hasEconomics=r=>{const e=r?.economics;if(!e)return false;if(e.payouts&&Object.keys(e.payouts).length)return true;if(e.spain&&Object.keys(e.spain).length)return true;if(e.headlineFirstPrizePerDecimo!=null)return true;if(e.revenue!=null||e.jackpot!=null)return true;return false;};
+const hasEconomics=r=>{const e=r?.economics;if(!e)return false;if(e.payouts&&Object.keys(e.payouts).length)return true;if(e.spain&&Object.keys(e.spain).length)return true;if(e.headlineFirstPrizePerDecimo!=null)return true;if(e.revenue!=null||e.jackpot!=null)return true;if(Array.isArray(e.categories)&&e.categories.some(c=>c&&((c.prize!=null&&Number.isFinite(Number(c.prize)))||(c.winners!=null&&Number.isFinite(Number(c.winners))))))return true;return false;};
 const normalizeStatus=v=>String(v??'').trim().toLowerCase().replace(/\s+/g,'_');
 const negative=/(^|[_-])(invalid|failed|fail|pending|unverified|unvalidated|unknown|error|conflict)([_-]|$)/;
 const positive=/(^|[_-])(valid|validated|pass|passed|verified|official)([_-]|$)/;
