@@ -23,6 +23,8 @@ runOptional('loterias-ai/casino/jackpots/pokerstars-jackpot-king-observer.mjs');
 runOptional('loterias-ai/casino/playuzu/playuzu-age-of-gods-observer.mjs');
 runOptional('loterias-ai/casino/playuzu/playuzu-progressive-networks-observer-v1.mjs');
 readiness=read(readinessPath)||readiness;
+const hazard=readiness.jackpotKingHazardProspectiveV1;
+if(hazard&&(hazard.freezeVersion!=='jackpot-king-hazard-freeze-v1'||hazard.guards?.futureOnly!==true||hazard.guards?.canonicalPageFixed!==true||hazard.guards?.identityControlRequired!==true||hazard.guards?.sub10PercentDeclinesNeverCountAsReset!==true||hazard.guards?.noOptionalStopping!==true||hazard.guards?.realMoneyAllowed!==false))throw new Error('Jackpot King hazard custody drift');
 readiness.transitionFamilyV1={
   status:transition?.final?'FIXED_FINAL_AVAILABLE':'BLINDED_ACCUMULATING',
   progress:{used:Number(transition?.progress?.roundsUsed||0),boundary:Number(transition?.progress?.fixedBoundaryRounds||5000),remaining:Number(transition?.progress?.roundsRemaining||5000),percent:Number(transition?.progress?.fixedBoundaryRounds)>0?Number((100*Number(transition?.progress?.roundsUsed||0)/Number(transition?.progress?.fixedBoundaryRounds)).toFixed(2)):0},
@@ -65,3 +67,4 @@ console.log(JSON.stringify({refreshedReadiness:true,promotionRefresh:true,newlyC
 // One-shot operational pulse marker 2026-08-19T11:59Z near lag8 fixed boundary; no cadence or scientific rule changed.
 // Validation pulse: preserve future-only Jackpot King hazard state and verify new canonical observer.
 // One-shot operational pulse marker 2026-08-19T12:28Z near lag8/timing fixed boundaries; no cadence or scientific rule changed.
+// Jackpot King hazard observer fix validation pulse 2026-08-19T12:31Z; no scientific rule or cadence changed.
