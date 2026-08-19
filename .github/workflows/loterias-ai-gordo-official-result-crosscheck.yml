@@ -6,6 +6,7 @@ on:
     - cron: '47 * * * *'
   push:
     paths:
+      - 'loterias-ai/scripts/repair-gordo-2005-11-26-dual-official.mjs'
       - 'loterias-ai/scripts/crosscheck-gordo-official-results.mjs'
       - 'loterias-ai/scripts/build-national-archive-index.mjs'
       - 'loterias-ai/scripts/build-archive-coverage-priorities.mjs'
@@ -26,7 +27,7 @@ jobs:
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: 22}
-      - name: Cross-check Gordo main plus key against SELAE
+      - name: Resolve guarded historical key conflict and cross-check Gordo
         shell: bash
         run: |
           set -euo pipefail
@@ -42,6 +43,7 @@ jobs:
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
+            node loterias-ai/scripts/repair-gordo-2005-11-26-dual-official.mjs
             BATCH_LIMIT=180 node loterias-ai/scripts/crosscheck-gordo-official-results.mjs
             node loterias-ai/scripts/build-national-archive-index.mjs
             node loterias-ai/scripts/build-archive-coverage-priorities.mjs
@@ -55,7 +57,7 @@ jobs:
                     loterias-ai/data/archive/manifest.json \
                     loterias-ai/data/archive/_meta/archive-coverage-priorities.json
             if git diff --cached --quiet; then echo 'No semantic Gordo result-validation changes'; exit 0; fi
-            git commit -m 'data(gordo): persist official SELAE main-plus-key cross-checks'
+            git commit -m 'data(gordo): resolve 2005 key conflict and persist official cross-checks'
             if git push origin HEAD:main; then exit 0; fi
             echo "main moved during Gordo cross-check; recomputing from latest main (attempt ${attempt}/5)"
             sleep $((attempt * 3))
