@@ -1,0 +1,53 @@
+{
+  "version": "quinigol-concentration-robustness-freeze-v1",
+  "gameId": "quinigol",
+  "purpose": "Add a non-relaxing robustness requirement that directly attacks the historical single-prize concentration failure before any V3 prospective outcome is observed.",
+  "scope": {
+    "appliesTo": [
+      "quinigol prospective v3 fixed 30 jornadas",
+      "quinigol independent replication v4 fixed 30 jornadas"
+    ],
+    "changesPredictionModel": false,
+    "changesTickets": false,
+    "changesBaseProspectiveGate": false,
+    "canRescueBaseFailure": false,
+    "canOnlyMakePromotionHarder": true
+  },
+  "preOutcomeCustody": {
+    "v3ObservedJornadasAtFreeze": 0,
+    "v3SealedPendingPredictionsAtFreeze": 1,
+    "v4ObservedJornadasAtFreeze": 0,
+    "gitCommitTimestampIsAuthoritative": true,
+    "noOutcomeUsedToChooseTheseRules": true
+  },
+  "historicalFailureBeingTargeted": {
+    "top1ShareOfReturn": 0.7747503981641637,
+    "leaveBestDrawOutROI": -0.6807524271844664,
+    "interpretation": "Historical holdout economics were positive but dominated by one return; this addendum requires future profitability to be distributed rather than jackpot-like."
+  },
+  "fixedRobustnessGates": {
+    "maximumTop1ShareOfTotalReturn": 0.5,
+    "leaveEverySingleJornadaOutROIPositive": true,
+    "minimumPositiveTenJornadaBlocks": 2,
+    "tenJornadaBlocksEvaluated": 3,
+    "baseProspectiveEconomicGateMustAlsoPass": true,
+    "v3AndV4MustEachPassTheirOwnBaseAndRobustnessGatesForIndependentConfirmation": true
+  },
+  "decisionSemantics": {
+    "baseGatePassRobustnessFail": "ECONOMIC_SIGNAL_CONCENTRATED_NOT_ROBUST",
+    "baseGateFail": "NO_ECONOMIC_PROMOTION",
+    "baseAndRobustnessPassV3Only": "AWAIT_UNTOUCHED_V4_REPLICATION",
+    "baseAndRobustnessPassV3AndV4": "INDEPENDENT_ROBUST_ECONOMIC_CONFIRMATION_CANDIDATE_REQUIRES_EXPLICIT_REVIEW",
+    "automaticRealMoneyAuthorization": false
+  },
+  "guards": {
+    "first30Only": true,
+    "noRetuning": true,
+    "noOptionalStopping": true,
+    "post30CannotRescue": true,
+    "interimPerformanceMustRemainHidden": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
