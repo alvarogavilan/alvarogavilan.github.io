@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+const PAGE='https://www.playuzu.es/blackjack/';
+const OUT='loterias-ai/casino/playuzu/evidence/uzuplus-frontend-semantics-v1.json';
+const r=await fetch(PAGE,{headers:{accept:'text/html','user-agent':'loterias-ai-uzuplus-semantics/1.0','cache-control':'no-cache, no-store'}});
+const html=await r.text();
+const rawSrc=[...html.matchAll(/<script[^>]+src=["']([^"']+)["']/gi)].map(m=>m[1]);
+const scripts=[...new Set(rawSrc.map(s=>{try{return new URL(s,PAGE).href}catch{return null}}).filter(Boolean))].filter(u=>{try{const h=new URL(u).hostname;return h.endsWith('playuzu.es')||h.endsWith('image-tech-storage.com')||h.endsWith('image-tech-storage.com')}catch{return false}}).slice(0,40);
+const rows=[];
+for(const url of scripts){try{const q=await fetch(url,{headers:{accept:'application/javascript,text/javascript,*/*','user-agent':'loterias-ai-uzuplus-semantics/1.0','referer':PAGE}});const text=await q.text();const terms={ojoPlusPercent:/ojo_plus_percent/i.test(text),ojoPlus:/ojo_plus/i.test(text),uzuplus:/uzuplus/i.test(text),ojoplus:/ojoplus/i.test(text),cashback:/cashback/i.test(text)};if(Object.values(terms).some(Boolean)){const contexts=[];for(const rx of [/ojo_plus_percent/ig,/ojo_plus/ig,/uzuplus/ig,/ojoplus/ig,/cashback/ig])for(const m of text.matchAll(rx)){contexts.push({term:m[0],context:text.slice(Math.max(0,m.index-280),Math.min(text.length,m.index+420))});if(contexts.length>=30)break}rows.push({url,httpStatus:q.status,sha256:crypto.createHash('sha256').update(text).digest('hex'),terms,contexts:contexts.slice(0,30)});}}catch(e){rows.push({url,error:String(e?.message||e),terms:{}})}}
+const sameAssetExplicitLink=rows.some(x=>x.terms?.ojoPlusPercent&&(x.terms?.uzuplus||x.terms?.ojoplus||x.terms?.cashback));
+const payload={version:'uzuplus-frontend-semantics-v1',generatedAt:new Date().toISOString(),officialPage:PAGE,sourcePageHttpStatus:r.status,sourcePageSha256:crypto.createHash('sha256').update(html).digest('hex'),summary:{scriptsDiscovered:scripts.length,relevantScripts:rows.filter(x=>Object.values(x.terms||{}).some(Boolean)).length,sameAssetExplicitLink},results:rows,interpretation:{semanticMappingConfirmedByFrontend:sameAssetExplicitLink,ifFalse:'Do not infer that ojo_plus_percent is the current UZUplus cashback percentage from naming alone.'},guards:{officialFrontendAssetsOnly:true,noLoginBypass:true,noPrivateEndpoints:true,noBetting:true,noEconomicPromotionFromProbe:true,realMoneyAllowed:false}};
+fs.writeFileSync(OUT,JSON.stringify(payload,null,2)+'\n');console.log(JSON.stringify(payload.summary,null,2));
