@@ -14,6 +14,7 @@ const scripts=[
   'loterias-ai/scripts/quinigol-concentration-robustness-finalize-v1.mjs',
   'loterias-ai/casino/lightning/research/economic-readiness-ledger-v1.mjs',
   'loterias-ai/casino/lightning/research/economic-promotion-gate-v1.mjs',
+  'loterias-ai/ops/attach-cross-table-convergence-to-promotion-gate-v1.mjs',
   'loterias-ai/ops/attach-cross-table-convergence-to-economic-readiness-v1.mjs'
 ];
 for(const script of scripts){
