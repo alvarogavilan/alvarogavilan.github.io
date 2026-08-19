@@ -1,0 +1,62 @@
+{
+  "version": "casino-cross-table-lag1-blind-convergence-freeze-v1",
+  "protocolDeclaredAt": "2026-08-19T08:30:16Z",
+  "purpose": "Judge the same lag-1 mechanism across independently frozen future Lightning and XXXtreme streams without using interim candidate performance.",
+  "hypothesis": "The next winning number repeats the immediately previous winning number more often than the uniform 1/37 null.",
+  "custody": {
+    "lightningFreezeVersion": "lightning-prospective-lag-family-clean-v2-freeze-v1",
+    "lightningProspectiveStartsAt": "2026-08-18T22:41:00Z",
+    "lightningLag": 1,
+    "xxxtremeFreezeVersion": "xxxtreme-prospective-selected-family-v1-freeze",
+    "xxxtremeProspectiveStartsAt": "2026-08-19T08:30:00Z",
+    "xxxtremeLag1CandidateId": "80b77d7070534a34",
+    "xxxtremeCandidateFrozenRank": 5,
+    "declaredAfterXxxtremeStartBoundaryButBeforeAnyPostStartCandidatePerformanceWasDisclosedOrInspected": true
+  },
+  "fixedSamples": {
+    "lightningComparisons": 5000,
+    "xxxtremeWarmupRounds": 100,
+    "xxxtremeScoredRounds": 3000
+  },
+  "perTableRules": {
+    "uniformNullHitProbability": 0.02702702702702703,
+    "lightning": {
+      "familyWiseAlpha": 0.01,
+      "familySize": 20,
+      "perCandidateAlpha": 0.0005,
+      "baseGrossReturnX": 30,
+      "baseEconomicBreakEvenHitRate": 0.03333333333333333,
+      "statisticalPass": "one-sided binomial p < 0.0005",
+      "economicPass": "observed hit rate > 1/30 AND Wilson 95% lower bound > 1/30"
+    },
+    "xxxtreme": {
+      "familyWiseAlpha": 0.01,
+      "familySize": 8,
+      "perCandidateAlpha": 0.00125,
+      "baseGrossReturnX": 20,
+      "baseEconomicBreakEvenHitRate": 0.05,
+      "statisticalPass": "one-sided binomial p < 0.00125",
+      "economicPass": "observed hit rate > 1/20 AND Wilson 95% lower bound > 1/20"
+    }
+  },
+  "jointClaims": {
+    "mechanismReplicationRequires": "lag-1 passes its pre-existing multiplicity-corrected statistical gate independently in BOTH tables",
+    "lightningEconomicCandidateRequires": "mechanismReplication plus Lightning's pre-existing statistical-and-economic promotionCandidate gate",
+    "dualTableEconomicCandidateRequires": "mechanismReplication plus each table independently clears its own base payout break-even and Wilson lower-bound gate",
+    "noCombinedPValueFishing": true,
+    "noInterimPerformancePeeking": true,
+    "noRetuning": true,
+    "noOptionalStopping": true
+  },
+  "interpretation": {
+    "historicalXxxtremeAuditIsContextOnly": true,
+    "prospectiveFinalsAreRequiredForAnyConfirmatoryClaim": true,
+    "independentFurtherReplicationRequiredBeforeRealMoney": true
+  },
+  "safety": {
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  },
+  "immutable": true
+}
