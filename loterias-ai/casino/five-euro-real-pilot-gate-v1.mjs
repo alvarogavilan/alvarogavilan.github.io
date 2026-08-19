@@ -72,17 +72,17 @@ const lanes=[
   }
 ];
 
-const eligibleLanes=lanes.filter(x=>x.eligible).map(x=>x.id);
-const pilotAllowed=eligibleLanes.length>0;
+const scientificallyEligibleLanes=lanes.filter(x=>x.eligible).map(x=>x.id);
 const out={
   version:'five-euro-real-pilot-gate-v1',
   generatedAt:new Date().toISOString(),
-  purpose:'Human-authorized maximum-5-EUR real-money pilot gate. Never upgrades a research signal into an economic edge.',
+  purpose:'Paper-only scientific promotion monitor. Casino experiments never authorize real-money stakes.',
   humanAuthorization:{
-    maxTotalPilotStakeEUR:5,
-    oneBudgetOnly:true,
-    manualPlacementOnly:true,
+    maxTotalPilotStakeEUR:0,
+    oneBudgetOnly:false,
+    manualPlacementOnly:false,
     automaticBettingAllowed:false,
+    realMoneyAllowed:false,
     noReload:true,
     noLossChasing:true
   },
@@ -95,21 +95,28 @@ const out={
     promotionalRandomRewardsNotCountedWithoutQuantifiedEV:true
   },
   lanes,
+  scientificDecision:{
+    state:scientificallyEligibleLanes.length?'PAPER_PROMOTION_CANDIDATE':'NO_PAPER_PROMOTION',
+    scientificallyEligibleLanes,
+    reason:scientificallyEligibleLanes.length?'AT_LEAST_ONE_LANE_PASSED_SCIENTIFIC_SCREEN_ONLY':'NO_LANE_HAS_A_SUPPORTED_NON_NEGATIVE_EXPECTATION_YET'
+  },
   decision:{
-    state:pilotAllowed?'PILOT_5_EUR_ELIGIBLE':'NO_REAL_PILOT',
-    pilotAllowed,
-    eligibleLanes,
-    maxTotalStakeEUR:pilotAllowed?5:0,
-    reason:pilotAllowed?'AT_LEAST_ONE_LANE_PASSED_STRICT_PILOT_GATE':'NO_LANE_HAS_A_SUPPORTED_NON_NEGATIVE_EXPECTATION_YET'
+    state:'NO_REAL_PILOT',
+    pilotAllowed:false,
+    eligibleLanes:[],
+    maxTotalStakeEUR:0,
+    reason:'CASINO_EXPERIMENTS_ARE_PAPER_ONLY_REAL_MONEY_DISABLED'
   },
   guards:{
     noAutomaticBetting:true,
+    noRealMoney:true,
     noMartingale:true,
     noChasingLosses:true,
     noBorrowing:true,
     noRetuningAfterOutcome:true,
     onePilotCannotValidateAnEdge:true,
-    realMoneyRequiresHumanManualAction:true
+    realMoneyRequiresHumanManualAction:false,
+    realMoneyDisabledByPolicy:true
   }
 };
 
