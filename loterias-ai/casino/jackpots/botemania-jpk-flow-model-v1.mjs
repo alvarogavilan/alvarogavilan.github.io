@@ -3,9 +3,11 @@ import fs from 'node:fs';
 
 const OBS='loterias-ai/casino/jackpots/evidence/botemania-jackpot-king-observer-v1.json';
 const OUT='loterias-ai/casino/jackpots/evidence/botemania-jpk-flow-model-v1.json';
-const ACTIVE_CONTRIB=0.0232;
-const RESERVE_CONTRIB=0.0068;
-// Cross-market/euro evidence only until Botemania paytable is directly recovered.
+// These rates are verified for the selected Fishin' Frenzy JPK configuration only.
+// Other games feeding the shared Botemania Jackpot King network publish different rates,
+// so observed aggregate pot growth MUST NOT be divided by 2.32% and called total network stake.
+const FISHIN_ACTIVE_CONTRIB=0.0232;
+const FISHIN_RESERVE_CONTRIB=0.0068;
 const HYPOTHESIS_CAPS={ROYAL:3500,REGAL:35000};
 const HYPOTHESIS_SEEDS={ROYAL:500,REGAL:5000};
 const j=JSON.parse(fs.readFileSync(OBS,'utf8'));
@@ -21,13 +23,20 @@ for(let i=1;i<obs.length;i++){
   const delta=y-x; if(delta<0){clean=false;break;} d[k]=delta; sum+=delta;
  }
  if(!clean||sum<=0) continue;
- const impliedStake=sum/ACTIVE_CONTRIB;
- intervals.push({from:a.observedAt,to:b.observedAt,seconds:dt,deltasEUR:Object.fromEntries(Object.entries(d).map(([k,v])=>[k,+v.toFixed(4)])),activePotGrowthEUR:+sum.toFixed(4),impliedNetworkStakeEUR:+impliedStake.toFixed(2),impliedStakePerMinuteEUR:+(impliedStake/(dt/60)).toFixed(2),impliedHiddenReserveGrowthEUR:+(impliedStake*RESERVE_CONTRIB).toFixed(4),allocationShares:Object.fromEntries(Object.entries(d).map(([k,v])=>[k,+(v/sum).toFixed(6)]))});
+ const fishinEquivalentStake=sum/FISHIN_ACTIVE_CONTRIB;
+ intervals.push({
+   from:a.observedAt,to:b.observedAt,seconds:dt,
+   deltasEUR:Object.fromEntries(Object.entries(d).map(([k,v])=>[k,+v.toFixed(4)])),
+   activePotGrowthEUR:+sum.toFixed(4),
+   fishinFrenzyStakeEquivalentEUR:+fishinEquivalentStake.toFixed(2),
+   fishinFrenzyStakeEquivalentPerMinuteEUR:+(fishinEquivalentStake/(dt/60)).toFixed(2),
+   fishinEquivalentReserveGrowthEUR:+(fishinEquivalentStake*FISHIN_RESERVE_CONTRIB).toFixed(4),
+   allocationShares:Object.fromEntries(Object.entries(d).map(([k,v])=>[k,+(v/sum).toFixed(6)]))
+ });
 }
-function weightedMean(field){let n=0,d=0;for(const x of intervals){const w=x.seconds;n+=x[field]*w;d+=w;}return d?n/d:null;}
 const totalGrowth=intervals.reduce((s,x)=>s+x.activePotGrowthEUR,0);
 const totals={JACKPOT_KING:0,REGAL:0,ROYAL:0};for(const x of intervals)for(const k of Object.keys(totals))totals[k]+=x.deltasEUR[k];
-const totalStake=totalGrowth/ACTIVE_CONTRIB;
+const fishinEquivalentTotal=totalGrowth/FISHIN_ACTIVE_CONTRIB;
 const allocationShares=Object.fromEntries(Object.entries(totals).map(([k,v])=>[k,totalGrowth?+(v/totalGrowth).toFixed(6):null]));
 const latest=obs.at(-1)||null;
 const current=latest?.labeledPots||{};
@@ -42,6 +51,24 @@ for(const k of ['ROYAL','REGAL']){
 }
 const resets=(j.resets||[]).filter(r=>r.cleanLabelMatched);
 const hazardReady=resets.length>=10;
-const out={version:'botemania-jpk-flow-model-v1',generatedAt:new Date().toISOString(),source:OBS,operator:'botemania-es',method:'INFER_NETWORK_STAKE_FROM_OBSERVED_ACTIVE_POT_GROWTH',verifiedInputs:{activePotContributionPct:2.32,reserveContributionPct:0.68,stakeProportionalEligibility:true},observationsUsed:obs.length,cleanGrowthIntervals:intervals.length,intervals,aggregate:{activePotGrowthEUR:+totalGrowth.toFixed(4),impliedNetworkStakeEUR:Number.isFinite(totalStake)?+totalStake.toFixed(2):null,meanImpliedStakePerMinuteEUR:weightedMean('impliedStakePerMinuteEUR')!=null?+weightedMean('impliedStakePerMinuteEUR').toFixed(2):null,allocationShares},latest:{observedAt:latest?.observedAt||null,potsEUR:current,recentRatePerHourEUR:ratePerHour,capScreen},hazard:{cleanResets:resets.length,minimumResetsForFit:10,ready:hazardReady,status:hazardReady?'READY_FOR_STATE_DEPENDENT_HAZARD_FIT':'ACCUMULATING_CLEAN_RESETS',note:'Once clean resets exist, fit reset probability per inferred network wager as a function of pot state. No hidden server formula is assumed.'},decision:{exactSpainMbwbKnown:false,capHypothesisOnly:true,positiveEvProven:false,realMoneyAllowed:false,automaticBettingAllowed:false},guards:{noUniformHiddenThresholdAssumption:true,noCrossMarketCapUsedAsFact:true,noBetting:true,realMoneyAllowed:false}};
+const out={
+ version:'botemania-jpk-flow-model-v1.1',generatedAt:new Date().toISOString(),source:OBS,operator:'botemania-es',
+ method:'MEASURE_SHARED_POT_GROWTH_AND_ALLOCATION;_FISHIN_RATE_USED_ONLY_FOR_FISHIN_EQUIVALENT_NOT_NETWORK_STAKE',
+ verifiedInputs:{fishinFrenzyActivePotContributionPct:2.32,fishinFrenzyReserveContributionPct:0.68,stakeProportionalEligibility:true,mixedNetworkContributionRates:true},
+ observationsUsed:obs.length,cleanGrowthIntervals:intervals.length,intervals,
+ aggregate:{
+   activePotGrowthEUR:+totalGrowth.toFixed(4),
+   allocationShares,
+   fishinFrenzyStakeEquivalentEUR:Number.isFinite(fishinEquivalentTotal)?+fishinEquivalentTotal.toFixed(2):null,
+   networkStakeEUR:null,
+   networkStakeIdentifiableFromPotGrowthAlone:false,
+   note:'Shared network contains JPK titles with different published contribution rates. Fishin-equivalent stake is a normalization only, not observed or inferred total network wagering.'
+ },
+ latest:{observedAt:latest?.observedAt||null,potsEUR:current,recentRatePerHourEUR:ratePerHour,capScreen},
+ hazard:{cleanResets:resets.length,minimumResetsForFit:10,ready:hazardReady,status:hazardReady?'READY_FOR_STATE_DEPENDENT_RESET_FIT':'ACCUMULATING_CLEAN_RESETS',note:'Fit reset occurrence against directly observed pot-state/time and contribution-flow proxies. Do not label aggregate network stake unless game-mix contribution rates become identifiable.'},
+ decision:{exactSpainMbwbKnown:false,capHypothesisOnly:true,positiveEvProven:false,realMoneyAllowed:false,automaticBettingAllowed:false},
+ corrections:{priorImpliedNetworkStakeFieldWithdrawn:true,reason:'MIXED_GAME_CONTRIBUTION_RATES_IN_SHARED_NETWORK'},
+ guards:{noUniformHiddenThresholdAssumption:true,noCrossMarketCapUsedAsFact:true,noMixedRateNetworkStakeInference:true,noBetting:true,realMoneyAllowed:false}
+};
 fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
-console.log(JSON.stringify({observationsUsed:out.observationsUsed,cleanGrowthIntervals:out.cleanGrowthIntervals,aggregate:out.aggregate,latest:out.latest,hazard:out.hazard,decision:out.decision},null,2));
+console.log(JSON.stringify({observationsUsed:out.observationsUsed,cleanGrowthIntervals:out.cleanGrowthIntervals,aggregate:out.aggregate,latest:out.latest,hazard:out.hazard,decision:out.decision,corrections:out.corrections},null,2));
