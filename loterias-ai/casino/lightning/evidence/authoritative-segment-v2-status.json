@@ -1,24 +1,26 @@
 {
   "version": "authoritative-segment-v2-status",
-  "generatedAt": "2026-08-19T09:50:29.707Z",
+  "generatedAt": "2026-08-19T09:54:50.589Z",
   "freezeVersion": "authoritative-segment-v2-freeze",
+  "continuityAddendumVersion": "authoritative-segment-v2-continuity-addendum-v1",
   "prospectiveStartsAt": "2026-08-18T10:50:00Z",
   "source": {
     "endpoint": "https://api-cs.casino.org/svc-evolution-game-events/api/lightningroulette",
     "httpStatus": 200,
     "received": 30,
     "eligibleInRecoveredUnion": 30,
-    "responseSha256": "277103c21d18ef2c273b21b7f4fd7f9057f9a17c235a53988030ee0cf08e1f8a",
+    "responseSha256": "dd0e2be52471804c883a1667945ce70fdc34ac75900b2418efd3459164013655",
     "pagesFetched": 1,
     "overlapPage": 0,
-    "headMovedDuringRecovery": false
+    "headMovedDuringRecovery": false,
+    "allFetchedRowsStructurallyValid": true
   },
   "progress": {
-    "rows": 1658,
-    "persistedThisRun": 0,
+    "rows": 1674,
+    "persistedThisRun": 16,
     "firstAt": "2026-08-18T10:50:45.038Z",
-    "lastAt": "2026-08-19T09:25:25.790Z",
-    "latestRoundId": "6a857687ca06f88dd40abfef"
+    "lastAt": "2026-08-19T09:54:17.823Z",
+    "latestRoundId": "6a857d4a5fc8adc9045c1496"
   },
   "continuity": {
     "previousRoundId": "6a857687ca06f88dd40abfef",
@@ -26,21 +28,28 @@
     "sourceWindowContainsPreviousRound": true,
     "previousRoundSemanticMatch": true,
     "firstFreshAt": "2026-08-19T09:32:55.797Z",
-    "lastFreshAt": "2026-08-19T09:50:11.312Z",
+    "lastFreshAt": "2026-08-19T09:54:17.823Z",
     "bridgeSeconds": 450.007,
     "maximumBridgeSeconds": 300,
     "bridgeTimeSafe": false,
     "recoveredMaxGapSeconds": 536.981,
     "recoveredContinuitySafe": false,
-    "bridgeSafe": false,
-    "maxObservedInterRoundSeconds": 150.002
+    "firstFreshImmediatelyFollowsPrevious": true,
+    "recoveredTailCountMatches": true,
+    "authoritativeAdjacencySafe": true,
+    "continuityAcceptedBy": "AUTHORITATIVE_EVENT_ADJACENCY",
+    "bridgeSafe": true,
+    "maxObservedInterRoundSeconds": 536.981
   },
-  "state": "SEGMENT_V2_QUARANTINED_CONTINUITY_FAILURE",
+  "state": "SEGMENT_V2_ACCUMULATING_CLEAN_ADJACENCY_RECOVERED",
   "guards": {
     "strictlyPostBarrier": true,
     "exactPreviousRoundOverlapRequiredAfterFirstCapture": true,
     "previousRoundSemanticMatchRequired": true,
     "paginatedRecoveryAllowedOnlySameAuthoritativeSource": true,
+    "wallClockLimitRemainsDiagnostic": true,
+    "authoritativeAdjacencyOverrideRequiresStableHead": true,
+    "authoritativeAdjacencyOverrideRequiresStructurallyValidRows": true,
     "oldAmbiguousGapImported": false,
     "alternateSourceUsed": false,
     "automaticBettingAllowed": false,
