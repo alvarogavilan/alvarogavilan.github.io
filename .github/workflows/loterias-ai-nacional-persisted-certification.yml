@@ -88,7 +88,10 @@ jobs:
 
             node loterias-ai/scripts/build-national-archive-index.mjs
             node loterias-ai/scripts/build-completeness-index.mjs
+            set +e
             node loterias-ai/scripts/audit-national-archive.mjs
+            audit_rc=$?
+            set -e
 
             # Derived indexes must not move main when only volatile timestamps change.
             # Any scientific change (counts, blockers, gates, dates, provenance) remains staged.
@@ -100,11 +103,21 @@ jobs:
             git add loterias-ai/data/archive
             if git diff --cached --quiet; then
               echo 'NO_SEMANTIC_CHANGE'
+              if [ "$audit_rc" -ne 0 ]; then
+                echo 'Archive QA remains fail-closed; no valid certification change was blocked.' >&2
+                exit "$audit_rc"
+              fi
               exit 0
             fi
 
             git commit -m 'data(nacional): certify persisted complete SELAE resultados2 evidence'
-            if git push origin HEAD:main; then exit 0; fi
+            if git push origin HEAD:main; then
+              if [ "$audit_rc" -ne 0 ]; then
+                echo 'Persisted valid Nacional evidence and current archive QA diagnostics; failing run because global archive quality gate is closed.' >&2
+                exit "$audit_rc"
+              fi
+              exit 0
+            fi
             sleep $((attempt * 2))
           done
           exit 1
