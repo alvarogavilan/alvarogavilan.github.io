@@ -1,0 +1,68 @@
+name: Loterias AI Lightning Audit Sync
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ['Loterias AI Lightning Clean Segment V2']
+    types: [completed]
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/lightning/audit-corpus.mjs'
+      - 'loterias-ai/casino/lightning/corpus-readiness.mjs'
+      - '.github/workflows/loterias-ai-lightning-audit-sync.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-lightning-audit-sync
+  cancel-in-progress: true
+
+jobs:
+  sync-audit:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Recompute strict audit and readiness from latest main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+
+            node loterias-ai/casino/lightning/corpus-readiness.mjs
+
+            node -e "const fs=require('fs');const s=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/authoritative-segment-v2-status.json','utf8'));const a=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/corpus-audit.json','utf8'));const r=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/corpus-readiness.json','utf8'));if(a.qualityPass!==true||r.qualityPass!==true)throw Error('Lightning corpus quality gate failed');if(a.continuity?.activeSegment!=='authoritative-v2'||r.continuity?.activeSegment!=='authoritative-v2')throw Error('active segment drift');if(a.continuity?.activeSegmentRounds!==s.progress?.rows||r.continuity?.activeSegmentRounds!==s.progress?.rows)throw Error('audit/readiness lag active segment status');if(a.continuity?.crossSegmentTrainingAllowed!==false||r.continuity?.crossSegmentTrainingAllowed!==false)throw Error('cross-segment training regression');if(a.realMoney!==false||r.realMoney!==false)throw Error('real-money invariant broken');if(a.authenticationBypassAttempted!==false||r.authenticationBypassAttempted!==false)throw Error('authentication bypass invariant broken')"
+
+            git add \
+              loterias-ai/casino/lightning/evidence/corpus-audit.json \
+              loterias-ai/casino/lightning/evidence/corpus-readiness.json
+
+            if git diff --cached --quiet; then
+              echo 'Lightning audit/readiness already synchronized.'
+              exit 0
+            fi
+
+            git commit -m 'qa(lightning): sync strict audit with active segment v2'
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+
+            echo "main moved during audit persistence; recomputing attempt $attempt/5"
+            sleep $((attempt * 2))
+          done
+
+          echo 'Unable to persist Lightning audit/readiness after five recomputations.' >&2
+          exit 1
