@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'loterias-ai/casino/build-casino-dashboard-v1.mjs'
+      - 'loterias-ai/casino/build-casino-catalog-ui-v1.mjs'
       - 'loterias-ai/casino/playuzu/evidence/validated-game-catalog-v1.json'
       - 'loterias-ai/casino/playuzu/evidence/validated-game-specialists-v1.json'
       - 'loterias-ai/casino/playuzu/evidence/conditional-break-even-audit-v1.json'
@@ -23,7 +24,7 @@ jobs:
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: 24}
-      - name: Build compact Casino UI feed
+      - name: Build compact Casino UI feeds
         shell: bash
         run: |
           set -euo pipefail
@@ -33,9 +34,12 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             node loterias-ai/casino/build-casino-dashboard-v1.mjs
-            git add loterias-ai/casino/evidence/casino-dashboard-v1.json
+            node loterias-ai/casino/build-casino-catalog-ui-v1.mjs
+            git add \
+              loterias-ai/casino/evidence/casino-dashboard-v1.json \
+              loterias-ai/casino/evidence/casino-catalog-ui-v1.json
             if git diff --cached --quiet; then exit 0; fi
-            git commit -m 'data(casino): refresh categorized dashboard feed'
+            git commit -m 'data(casino): refresh categorized dashboard and catalog feeds'
             if git push origin HEAD:main; then exit 0; fi
             sleep $((attempt*2))
           done
