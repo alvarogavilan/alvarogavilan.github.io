@@ -1,0 +1,45 @@
+{
+  "version": "lightning-prospective-lag8-clean-v3-freeze-v1",
+  "sourceSegment": "authoritative-v2",
+  "activation": {
+    "condition": "LAG8_V2_FIXED_1000_COMPLETE",
+    "anchorField": "prospective-lag8-clean-v2-status-v1.progress.lastEligibleAt",
+    "firstSourceRow": "STRICTLY_AFTER_V2_FINAL_COMPARISON_TIMESTAMP",
+    "warmupRowsAfterAnchor": 8,
+    "usesPreBoundaryRowsForPrediction": false,
+    "activationIndependentOfV2Outcome": true
+  },
+  "lag": 8,
+  "baselineProbability": 0.02702702702702703,
+  "fixedBoundaryComparisons": 1000,
+  "alpha": 0.01,
+  "economicModel": {
+    "wager": "one straight-up unit on the number observed exactly 8 chronological rounds earlier within the independent post-anchor sample",
+    "nonMultipliedStraightUpProfitToOne": 29,
+    "nonMultipliedStraightUpTotalReturn": 30,
+    "conservativeBreakEvenHitRate": 0.03333333333333333,
+    "luckyMultiplierUpliftIncluded": false
+  },
+  "protocol": {
+    "first1000Only": true,
+    "performanceBlindBeforeBoundary": true,
+    "noInterimRates": true,
+    "noInterimPValues": true,
+    "noRetuning": true,
+    "noOptionalStopping": true,
+    "postBoundaryCannotRescue": true
+  },
+  "custody": {
+    "preRegisteredBeforeV2Final": true,
+    "gitCommitTimestampIsAuthoritative": true,
+    "sameLagAndEconomicsAsV2": true,
+    "outcomeDependentDesignChangesAllowed": false
+  },
+  "guards": {
+    "immutable": true,
+    "claimAllowed": false,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
