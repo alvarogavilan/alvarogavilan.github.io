@@ -1,0 +1,36 @@
+{
+  "version": "progressive-network-priority-freeze-v1",
+  "frozenAt": "2026-08-19T12:08:00Z",
+  "discoverySnapshot": "loterias-ai/casino/playuzu/evidence/shared-jackpot-networks-v1.json",
+  "discoverySnapshotGeneratedAt": "2026-08-19T12:06:22.358Z",
+  "parentProtocol": "loterias-ai/casino/playuzu/evidence/progressive-network-observation-protocol-v1.json",
+  "eligibility": {
+    "minimumDistinctTitles": 2,
+    "requiresFiniteBaseRtpOnAtLeastOneTitle": true,
+    "sharedExactRawCounterInDiscoverySnapshotRequired": true
+  },
+  "rankingRule": [
+    "maximum rtpMaxPct among titles in the network, descending",
+    "distinctTitles, descending",
+    "networkId, lexicographic ascending"
+  ],
+  "selectedCount": 3,
+  "forbiddenForSelection": [
+    "future counter growth",
+    "future reset frequency",
+    "future payout observations",
+    "reported currency magnitude",
+    "raw counter magnitude"
+  ],
+  "purpose": "Prioritize three structurally valid progressive networks for observation using only static base-game economics known in the discovery snapshot, before future network-state behavior is observed.",
+  "guards": {
+    "selectionIndependentOfFutureNetworkBehavior": true,
+    "counterSizeCannotAffectPriority": true,
+    "noEconomicPromotionFromPriority": true,
+    "noBetting": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "immutable": true
+  }
+}
