@@ -4,7 +4,7 @@ import crypto from 'node:crypto';
 
 const PAGE='https://www.botemania.es/juegos/slots-online/fishin-frenzy-jackpot-king';
 const OUT='loterias-ai/casino/jackpots/evidence/botemania-jackpot-client-map-v1.json';
-const headers={accept:'text/html,application/javascript,*/*','user-agent':'loterias-ai-botemania-public-client-map/1.3','cache-control':'no-cache, no-store, max-age=0'};
+const headers={accept:'text/html,application/javascript,*/*','user-agent':'loterias-ai-botemania-public-client-map/1.4','cache-control':'no-cache, no-store, max-age=0'};
 const pageRes=await fetch(PAGE,{redirect:'follow',headers});
 const html=await pageRes.text();
 const scriptUrls=[];
@@ -61,6 +61,14 @@ for(const c of relevant){
 }
 const graphContextNeedles=['/graphql','ApolloClient','HttpLink','createHttpLink','credentials','setContext','venture','botemania_es','apiUrl','window.__API__'];
 const graphqlClientContexts={};for(const needle of graphContextNeedles)graphqlClientContexts[needle]=context(client,needle,1800,6);
+const gameLaunchContexts={
+  loadPageOrGame:context(client,'query loadPageOrGame',7000,4),
+  GameFragment:context(client,'fragment GameFragment',7000,4),
+  gameEngine:context(client,'gameEngine',3500,8),
+  gameId:context(client,'gameId',3500,8),
+  launchUrl:context(client,'launchUrl',3500,8),
+  provider:context(client,'provider',3500,8)
+};
 const clientHeaderHints=[];
 for(const re of [/(?:headers|header)\s*[:=]\s*\{[^}]{0,1200}\}/gi,/["']x-[a-z0-9-]+["']/gi,/["'](?:venture|site|locale|language|country|brand)["']\s*:/gi]){
   for(const m of client.matchAll(re)){const v=m[0].replace(/\s+/g,' ');if(!clientHeaderHints.includes(v))clientHeaderHints.push(v);if(clientHeaderHints.length>=80)break;}
@@ -73,11 +81,11 @@ for(const re of [/window\.__[A-Z0-9_]+__\s*=\s*[^;]{0,1500};/g,/"__[A-Z0-9_]+__"
   let v=m[0].replace(/\s+/g,' ');v=v.replace(/(token|authorization|cookie)[^,;}]{0,400}/gi,'$1:[REDACTED]');if(!injectedAssignments.includes(v))injectedAssignments.push(v);if(injectedAssignments.length>=80)break;
 }
 const out={
-  version:'botemania-jackpot-client-map-v1.3',generatedAt:new Date().toISOString(),page:PAGE,pageStatus:pageRes.status,pageFinalUrl:pageRes.url,
+  version:'botemania-jackpot-client-map-v1.4',generatedAt:new Date().toISOString(),page:PAGE,pageStatus:pageRes.status,pageFinalUrl:pageRes.url,
   runtimeUrl,runtimeBytes:runtime.length,clientUrl,clientBytes:client.length,scriptUrls,chunkNames,numericHints,resolvedChunks,
-  graphqlClientContexts,clientHeaderHints,pageConfigContexts,injectedAssignments,
+  graphqlClientContexts,gameLaunchContexts,clientHeaderHints,pageConfigContexts,injectedAssignments,
   blueprintContexts:context(runtime,'BlueprintJackpots',2500).slice(0,3),headlessContexts:context(runtime,'HeadlessJackpots',2500).slice(0,3),
   guards:{publicClientAssetsOnly:true,noAuthenticationBypass:true,noPrivateApiCredentials:true,noGraphqlIntrospection:true,sensitiveAssignmentValuesRedacted:true,noBetting:true,realMoneyAllowed:false}
 };
 fs.mkdirSync('loterias-ai/casino/jackpots/evidence',{recursive:true});fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
-console.log(JSON.stringify({runtimeUrl,clientUrl,pageConfigContexts,injectedAssignments,resolvedChunks:resolvedChunks.map(x=>({id:x.id,name:x.name,status:x.status,queries:x.querySignatures,endpoints:x.endpointCandidates}))},null,2));
+console.log(JSON.stringify({runtimeUrl,clientUrl,pageConfigContexts,injectedAssignments,gameLaunchContextCounts:Object.fromEntries(Object.entries(gameLaunchContexts).map(([k,v])=>[k,v.length])),resolvedChunks:resolvedChunks.map(x=>({id:x.id,name:x.name,status:x.status,queries:x.querySignatures,endpoints:x.endpointCandidates}))},null,2));
