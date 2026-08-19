@@ -1,0 +1,91 @@
+name: Loterias AI Archive Derived Sync
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/scripts/audit-national-archive.mjs'
+      - 'loterias-ai/scripts/build-archive-coverage-priorities.mjs'
+      - '.github/workflows/loterias-ai-archive-derived-sync.yml'
+  schedule:
+    - cron: '42 * * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-archive-derived-sync
+  cancel-in-progress: true
+
+jobs:
+  derived-sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Recompute archive audit and coverage priorities from latest main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+
+            cp loterias-ai/data/archive/_meta/archive-audit.json /tmp/archive-audit.prev.json 2>/dev/null || true
+            cp loterias-ai/data/archive/_meta/archive-coverage-priorities.json /tmp/archive-priorities.prev.json 2>/dev/null || true
+
+            node loterias-ai/scripts/audit-national-archive.mjs
+            node loterias-ai/scripts/build-archive-coverage-priorities.mjs
+
+            node <<'NODE'
+            const fs=require('fs');
+            function semantic(file, previous, volatileKeys){
+              if(!fs.existsSync(file)||!fs.existsSync(previous)) return;
+              const strip=(value)=>{
+                if(Array.isArray(value)) return value.map(strip);
+                if(value&&typeof value==='object'){
+                  const out={};
+                  for(const [k,v] of Object.entries(value)) if(!volatileKeys.has(k)) out[k]=strip(v);
+                  return out;
+                }
+                return value;
+              };
+              const now=strip(JSON.parse(fs.readFileSync(file,'utf8')));
+              const old=strip(JSON.parse(fs.readFileSync(previous,'utf8')));
+              if(JSON.stringify(now)===JSON.stringify(old)) fs.copyFileSync(previous,file);
+            }
+            semantic('loterias-ai/data/archive/_meta/archive-audit.json','/tmp/archive-audit.prev.json',new Set(['generatedAt']));
+            semantic('loterias-ai/data/archive/_meta/archive-coverage-priorities.json','/tmp/archive-priorities.prev.json',new Set(['generatedAt','manifestGeneratedAt','auditGeneratedAt']));
+            NODE
+
+            node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync('loterias-ai/data/archive/_meta/archive-audit.json','utf8'));const p=JSON.parse(fs.readFileSync('loterias-ai/data/archive/_meta/archive-coverage-priorities.json','utf8'));if(a.qualityGate?.pass!==true)throw Error('archive audit quality gate failed');if(p.totals?.records!==24243)throw Error('archive total drift: '+p.totals?.records);if((p.totals?.validatedRecords||0)<21000)throw Error('validated archive regression');"
+
+            git add \
+              loterias-ai/data/archive/_meta/archive-audit.json \
+              loterias-ai/data/archive/_meta/archive-coverage-priorities.json
+
+            if git diff --cached --quiet; then
+              echo 'Archive derived QA already synchronized.'
+              exit 0
+            fi
+
+            git commit -m 'qa(archive): synchronize audit and coverage priorities'
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+
+            echo "main moved during archive QA persistence; recomputing attempt $attempt/5"
+            sleep $((attempt * 2))
+          done
+
+          echo 'Unable to persist archive derived QA after five recomputations.' >&2
+          exit 1
