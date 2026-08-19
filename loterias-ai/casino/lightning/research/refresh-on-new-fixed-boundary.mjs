@@ -58,3 +58,4 @@ if(refreshed.policy?.onlyFixedBoundaryFinalsMayPromote!==true||refreshed.policy?
 console.log(JSON.stringify({refreshedReadiness:true,promotionRefresh:true,newlyClosed,transitionFamilyV1:readiness.transitionFamilyV1,progressiveNetworks:monitorSummary,state:refreshed.state,realMoneyAllowed:refreshed.policy?.realMoneyAllowed},null,2));
 
 // One-shot operational pulse marker 2026-08-19T09:50Z; no cadence or scientific rule changed.
+// One-shot operational pulse marker 2026-08-19T11:28Z after scheduler delay; no cadence or scientific rule changed.
