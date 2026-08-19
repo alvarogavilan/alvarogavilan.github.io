@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 
-// Triggerable public sampler: same Botemania GraphQL counters, no protocol retuning. Burst 2.
+// Triggerable public sampler: same Botemania GraphQL counters, no protocol retuning. Burst 3.
 const OUT='loterias-ai/casino/jackpots/evidence/botemania-jackpot-king-observer-v1.json';
 const GRAPHQL='https://www.botemania.es/es/graphql';
 const REFERER='https://www.botemania.es/juegos/slots-online/fishin-frenzy-jackpot-king';
