@@ -114,6 +114,27 @@ for (const file of fs.readdirSync(dir).filter(f => /^\d{4}\.json$/.test(f)).sort
   }
 }
 
+const blockedReasonCounts = {};
+const blockedByYear = {};
+const blockedProfiles = {};
+for (const item of blocked) {
+  for (const reason of item.failedChecks) {
+    blockedReasonCounts[reason] = (blockedReasonCounts[reason] || 0) + 1;
+  }
+  const year = String(item.drawDate || '').slice(0, 4) || 'unknown';
+  blockedByYear[year] = (blockedByYear[year] || 0) + 1;
+  const profile = [...item.failedChecks].sort().join('+') || 'unknown';
+  blockedProfiles[profile] = (blockedProfiles[profile] || 0) + 1;
+}
+const blockerDiagnostics = {
+  reasonCounts: Object.fromEntries(Object.entries(blockedReasonCounts).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))),
+  byYear: Object.fromEntries(Object.entries(blockedByYear).sort(([a], [b]) => a.localeCompare(b))),
+  topFailureProfiles: Object.entries(blockedProfiles)
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 20)
+    .map(([failedChecks, count]) => ({ failedChecks: failedChecks.split('+'), count }))
+};
+
 const report = {
   generatedAt: new Date().toISOString(),
   gameId: 'loteria-nacional',
@@ -124,6 +145,7 @@ const report = {
   newlyCertified,
   certifiedTotal: alreadyCertified + newlyCertified,
   blockedNotCertified: blocked.length,
+  blockerDiagnostics,
   blocked,
   changedFiles: [...changedFiles],
   qualityPass: true,
