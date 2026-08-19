@@ -15,6 +15,12 @@ const normDate=v=>String(v||'').slice(0,10);
 const sorted=a=>(a||[]).map(Number).filter(Number.isFinite).sort((x,y)=>x-y);
 const same=(a,b)=>a.length===b.length&&a.every((v,i)=>v===b[i]);
 const storedInt=v=>v===null||v===undefined||v===''?null:Number(v);
+const stable=value=>{
+  if(Array.isArray(value)) return value.map(stable);
+  if(value&&typeof value==='object') return Object.fromEntries(Object.entries(value).filter(([k])=>k!=='generatedAt').map(([k,v])=>[k,stable(v)]));
+  return value;
+};
+const sameSemantic=(a,b)=>JSON.stringify(stable(a))===JSON.stringify(stable(b));
 
 async function getOfficial(drawDate){
   const url=`https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=${drawDate.replaceAll('-','')}`;
@@ -53,7 +59,10 @@ for(const file of fs.readdirSync(DIR).filter(x=>/^\d{4}\.json$/.test(x)).sort().
   docs.set(file,{p,doc});
   for(const record of doc.records||[]){
     if(!record?.drawDate)continue;
-    if(record.verification?.officialCrossCheck?.provider==='SELAE'&&record.verification?.officialCrossCheck?.complete===true)continue;
+    const verification=record.verification||{};
+    const cross=verification.officialCrossCheck||{};
+    if(cross.provider==='SELAE'&&cross.complete===true)continue;
+    if(['OFFICIAL_SELAE_PARTIAL','OFFICIAL_SELAE_NOT_FOUND','OFFICIAL_CONFLICT_QUARANTINED'].includes(verification.status))continue;
     targets.push({file,record});
   }
 }
@@ -71,7 +80,14 @@ for(const [index,target] of targets.slice(0,LIMIT).entries()){
   attempted++;
   try{
     const {url,row,reason}=await getOfficial(r.drawDate);
-    if(!row){empty++;failures.push({date:r.drawDate,reason:reason||'NO_OFFICIAL_ROW',url});continue;}
+    if(!row){
+      empty++;
+      r.trainingEligible=false;
+      r.verification={...(r.verification||{}),status:'OFFICIAL_SELAE_NOT_FOUND',officialCrossCheck:{provider:'SELAE',sourceUrl:url,exactDate:true,status:'NOT_FOUND',reason:reason||'NO_OFFICIAL_ROW',fields:{main:false,complementary:false,reintegro:false},complete:false}};
+      touched.add(target.file);
+      failures.push({date:r.drawDate,reason:reason||'NO_OFFICIAL_ROW',url});
+      continue;
+    }
     const parsed=parseCombination(row.combinacion);
     const storedMain=sorted(r.result?.main);
     const storedComplementary=storedInt(r.result?.complementary);
@@ -100,6 +116,9 @@ for(const [index,target] of targets.slice(0,LIMIT).entries()){
       };
       newConflicts.push(conflict);
       conflictMap.set(r.drawDate,conflict);
+      r.trainingEligible=false;
+      r.verification={...(r.verification||{}),status:'OFFICIAL_CONFLICT_QUARANTINED',officialCrossCheck:{provider:'SELAE',sourceUrl:url,officialDrawId:row.id_sorteo||null,exactDate:true,status:'MISMATCH',fields,complete:false,officialResult:{main:parsed.main,complementary:parsed.complementary,reintegro:parsed.reintegro}}};
+      touched.add(target.file);
       continue;
     }
 
@@ -112,13 +131,14 @@ for(const [index,target] of targets.slice(0,LIMIT).entries()){
     if(fields.reintegro)addCheck('official-reintegro-cross-check');
     r.verification={
       ...previousVerification,
-      ...(complete?{status:'OFFICIAL_SELAE_VALIDATED'}:{}),
+      status:complete?'OFFICIAL_SELAE_VALIDATED':'OFFICIAL_SELAE_PARTIAL',
       checks,
       officialCrossCheck:{
-        provider:'SELAE',sourceUrl:url,checkedAt:now,officialDrawId:row.id_sorteo||null,exactDate:true,fields,complete,
+        provider:'SELAE',sourceUrl:url,checkedAt:now,officialDrawId:row.id_sorteo||null,exactDate:true,status:complete?'MATCH':'PARTIAL_OFFICIAL_RESULT',fields,complete,
         officialResult:{main:parsed.main,complementary:parsed.complementary,reintegro:parsed.reintegro}
       }
     };
+    r.trainingEligible=complete;
     touched.add(target.file);
     if(complete){validated++;conflictMap.delete(r.drawDate);}else partial++;
   }catch(error){
@@ -133,20 +153,42 @@ for(const file of touched){
   fs.writeFileSync(p,JSON.stringify(doc,null,2)+'\n');
 }
 
-let total=0,officiallyValidated=0,componentCrossChecked=0;
+let total=0,officiallyValidated=0,componentCrossChecked=0,partialTotal=0,notFoundTotal=0,conflictTotal=0,unprocessedTotal=0;
 for(const {doc} of docs.values())for(const r of doc.records||[]){
   total++;
-  if(r.verification?.officialCrossCheck?.provider==='SELAE')componentCrossChecked++;
-  if(r.verification?.officialCrossCheck?.provider==='SELAE'&&r.verification?.officialCrossCheck?.complete===true&&r.verification?.status==='OFFICIAL_SELAE_VALIDATED')officiallyValidated++;
+  const verification=r.verification||{};
+  const cross=verification.officialCrossCheck||{};
+  if(cross.provider==='SELAE')componentCrossChecked++;
+  if(cross.provider==='SELAE'&&cross.complete===true&&verification.status==='OFFICIAL_SELAE_VALIDATED')officiallyValidated++;
+  else if(verification.status==='OFFICIAL_SELAE_PARTIAL')partialTotal++;
+  else if(verification.status==='OFFICIAL_SELAE_NOT_FOUND')notFoundTotal++;
+  else if(verification.status==='OFFICIAL_CONFLICT_QUARANTINED')conflictTotal++;
+  else unprocessedTotal++;
 }
 const conflictDoc={generatedAt:now,gameId:'primitiva',policy:'QUARANTINE_DO_NOT_OVERWRITE_ARCHIVE_RESULT',conflicts:[...conflictMap.values()].sort((a,b)=>a.date.localeCompare(b.date))};
-fs.writeFileSync(CONFLICTS,JSON.stringify(conflictDoc,null,2)+'\n');
+const previousConflicts=fs.existsSync(CONFLICTS)?JSON.parse(fs.readFileSync(CONFLICTS,'utf8')):null;
+if(!previousConflicts||!sameSemantic(previousConflicts,conflictDoc))fs.writeFileSync(CONFLICTS,JSON.stringify(conflictDoc,null,2)+'\n');
+
 const out={
   generatedAt:now,gameId:'primitiva',source:'SELAE /servicios/fechav3 game_id=LAPR',attempted,validated,partial,empty,failed,
-  newConflicts:newConflicts.length,openConflicts:conflictDoc.conflicts.length,totalRecords:total,componentCrossChecked,officiallyValidated,
-  remaining:Math.max(0,targets.length-validated),qualityPass:conflictDoc.conflicts.length===0,
-  guards:{economicsDoesNotImplyResultValidation:true,exactDrawDateRequired:true,allResultComponentsRequiredForFullValidation:true,conflictsQuarantined:true,overwriteOnConflict:false},
+  newConflicts:newConflicts.length,openConflicts:conflictMap.size,totalRecords:total,componentCrossChecked,officiallyValidated,
+  remaining:unprocessedTotal,
+  cumulative:{partialOfficialResults:partialTotal,officialNotFound:notFoundTotal,officialConflicts:conflictTotal,unprocessed:unprocessedTotal},
+  qualityPass:conflictMap.size===0,
+  guards:{
+    economicsDoesNotImplyResultValidation:true,
+    exactDrawDateRequired:true,
+    allResultComponentsRequiredForFullValidation:true,
+    partialOfficialRowsFailClosedAndDoNotBlockOlderScan:true,
+    officialNotFoundRowsFailClosedAndDoNotBlockOlderScan:true,
+    conflictsQuarantined:true,
+    conflictsDoNotBlockOlderScan:true,
+    fetchFailuresRemainRetryable:true,
+    overwriteOnConflict:false
+  },
   failures
 };
-fs.writeFileSync(STATUS,JSON.stringify(out,null,2)+'\n');
-console.log(JSON.stringify({...out,failures:failures.length},null,2));
+const previousStatus=fs.existsSync(STATUS)?JSON.parse(fs.readFileSync(STATUS,'utf8')):null;
+if(!previousStatus||!sameSemantic(previousStatus,out))fs.writeFileSync(STATUS,JSON.stringify(out,null,2)+'\n');
+else console.log('NO_SEMANTIC_STATUS_CHANGE');
+console.log(JSON.stringify({...out,failures:failures.length,touchedFiles:[...touched].sort()},null,2));
