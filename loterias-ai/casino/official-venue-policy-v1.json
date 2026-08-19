@@ -1,43 +1,23 @@
 {
-  "version": "official-venue-policy-v1",
+  "version": "official-venue-policy-v1.1",
   "effectiveAt": "2026-08-19T08:43:00Z",
+  "updatedAt": "2026-08-19T08:55:00Z",
   "purpose": "Restrict casino research deployment and economic promotion to games officially available at PokerStars Spain or PlayUZU Spain, and require deployment-grade evidence from an allowed operator or official game provider before any monetary claim.",
   "allowedOperators": [
-    {
-      "id": "pokerstars-es",
-      "host": "pokerstars.es",
-      "country": "ES",
-      "status": "ALLOWED"
-    },
-    {
-      "id": "playuzu-es",
-      "host": "playuzu.es",
-      "country": "ES",
-      "status": "ALLOWED"
-    }
+    {"id":"pokerstars-es","host":"pokerstars.es","country":"ES","status":"ALLOWED"},
+    {"id":"playuzu-es","host":"playuzu.es","country":"ES","status":"ALLOWED"}
   ],
   "confirmedGames": [
-    {
-      "game": "Lightning Roulette",
-      "operators": ["pokerstars-es", "playuzu-es"],
-      "deploymentEligible": true
-    },
-    {
-      "game": "XXXtreme Lightning Roulette",
-      "operators": ["pokerstars-es"],
-      "deploymentEligible": true
-    },
-    {
-      "game": "Immersive Roulette",
-      "operators": ["pokerstars-es"],
-      "deploymentEligible": true
-    },
-    {
-      "game": "Auto/Slingshot Roulette",
-      "operators": ["pokerstars-es"],
-      "deploymentEligible": true
-    }
+    {"game":"Lightning Roulette","operators":["pokerstars-es","playuzu-es"],"deploymentEligible":true},
+    {"game":"Casiopea Roulette","provider":"Playtech","operators":["pokerstars-es","playuzu-es"],"deploymentEligible":true,"priority":"DUAL_OPERATOR_PRIORITY"},
+    {"game":"XXXtreme Lightning Roulette","operators":["pokerstars-es"],"deploymentEligible":true},
+    {"game":"Immersive Roulette","operators":["pokerstars-es"],"deploymentEligible":true},
+    {"game":"Auto/Slingshot Roulette","operators":["pokerstars-es"],"deploymentEligible":true}
   ],
+  "dualOperatorPriority": {
+    "games": ["Lightning Roulette","Casiopea Roulette"],
+    "reason": "Confirmed on both allowed Spanish operators; prefer these for deployment-grade replication whenever official observations are available."
+  },
   "blockedUntilOfficiallyConfirmed": [
     "Gold Vault Roulette",
     "any other casino table not explicitly confirmed on pokerstars.es or playuzu.es"
@@ -49,7 +29,8 @@
     "thirdPartyOutcomeFeedMayBeUsedForBlindedResearchShadow": true,
     "thirdPartyOutcomeFeedMayPromoteEconomicClaimByItself": false,
     "deploymentGradeOutcomeEvidenceMustComeFromAllowedOperatorOrOfficialProvider": true,
-    "officialVenueReplicationRequiredBeforeAnyRealMoneyReview": true
+    "officialVenueReplicationRequiredBeforeAnyRealMoneyReview": true,
+    "dualOperatorReplicationPreferred": true
   },
   "currentPublicOutcomeFeedClassification": {
     "host": "api-cs.casino.org",
@@ -57,10 +38,6 @@
     "operatorOfficial": false,
     "promotionEligibleByItself": false
   },
-  "safety": {
-    "automaticBettingAllowed": false,
-    "realMoneyAllowed": false,
-    "authorizedStakeEUR": 0
-  },
+  "safety": {"automaticBettingAllowed":false,"realMoneyAllowed":false,"authorizedStakeEUR":0},
   "immutablePolicyIntent": true
 }
