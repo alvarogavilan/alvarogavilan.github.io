@@ -7,6 +7,7 @@ const scripts=[
   'loterias-ai/casino/lightning/research/timing-replication-v4.mjs',
   'loterias-ai/casino/lightning/research/lightning-prospective-frozen-lag8-clean-v3.mjs',
   'loterias-ai/casino/lightning/research/lightning-prospective-transition-family-v1.mjs',
+  'loterias-ai/casino/cross-table/lag1-blind-convergence-v1.mjs',
   'loterias-ai/ops/quinigol-prospective-local.mjs',
   'loterias-ai/scripts/quinigol-replication-v4.mjs',
   'loterias-ai/scripts/quinigol-replication-v4-finalize-30.mjs',
