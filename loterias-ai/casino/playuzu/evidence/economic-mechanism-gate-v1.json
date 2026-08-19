@@ -1,0 +1,59 @@
+{
+  "version": "playuzu-economic-mechanism-gate-v1",
+  "generatedAt": "2026-08-19T11:27:00Z",
+  "operator": "playuzu-es",
+  "sourceCatalog": "loterias-ai/casino/playuzu/evidence/validated-game-catalog-v1.json",
+  "sourceConditionalAudit": "loterias-ai/casino/playuzu/evidence/conditional-break-even-audit-v1.json",
+  "summary": {
+    "validatedGames": 552,
+    "directRtpPlusInternalRewardCandidatesAtOrAbove100": 0,
+    "bestConditionalGame": "Goal Goal Goal Blackjack",
+    "bestBaseRtpPct": 99.66,
+    "bestInternalRewardFieldPct": 0.20,
+    "bestConditionalCombinedPct": 99.86,
+    "minimumAdditionalPctPointsStillNeeded": 0.14,
+    "directShortcutState": "REJECTED_AS_POSITIVE_EV_MECHANISM"
+  },
+  "mechanisms": [
+    {
+      "id": "base-rtp-plus-internal-reward-field",
+      "state": "REJECTED_AS_POSITIVE_EV_MECHANISM",
+      "reason": "Across all 552 validated games, even the deliberately optimistic arithmetic RTP + internal reward field never reaches 100%; maximum is 99.86%. The reward field semantics are also not confirmed as current Spanish UZUplus.",
+      "economicPromotionAllowed": false
+    },
+    {
+      "id": "state-dependent-progressive-jackpots",
+      "state": "OPEN_RESEARCH",
+      "reason": "Progressive pot state can change expected value, but exact contribution/hazard/trigger rules and current pot state are required per network/game.",
+      "priority": "HIGH",
+      "economicPromotionAllowed": false
+    },
+    {
+      "id": "official-contractual-external-benefits",
+      "state": "OPEN_RESEARCH",
+      "reason": "A verified external cashback/promotion/benefit could add value beyond the base RTP, but only explicit current Spanish terms may be used.",
+      "priority": "HIGH",
+      "economicPromotionAllowed": false
+    },
+    {
+      "id": "hot-cold-state-information",
+      "state": "PREREGISTERED_WAITING_STRUCTURED_STATE",
+      "reason": "PlayUZU states the feature reflects recent payouts and is not predictive; only a frozen prospective test can determine whether the public state contains reproducible forward information.",
+      "priority": "MEDIUM",
+      "economicPromotionAllowed": false
+    }
+  ],
+  "nextResearchPriority": [
+    "Resolve exact official progressive economics for the highest-RTP jackpot games, starting with Orient Story Deluxe and state-dependent Playtech networks.",
+    "Continue blinded Lightning Timing V3 and lag-8 V2 to their fixed boundaries without interim disclosure.",
+    "Keep all reward-field semantics separate from verified contractual cashback until explicitly mapped by current Spanish official evidence."
+  ],
+  "guards": {
+    "noFutureInformation": true,
+    "noPatternAssumption": true,
+    "noEconomicPromotionFromUnconfirmedRewardField": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
