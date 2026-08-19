@@ -1,26 +1,116 @@
 {
   "version": "economic-promotion-gate-v1",
-  "generatedAt": "2026-08-18T23:25:00Z",
+  "generatedAt": "2026-08-19T12:35:27.284Z",
   "mode": "PAPER_ONLY",
   "state": "NO_PROMOTION_SIGNAL_YET",
   "directEconomicCandidates": [],
   "scientificSignals": [],
   "componentSignals": [],
+  "venueGate": {
+    "policyVersion": "official-venue-policy-v1.1",
+    "allowedOperators": [
+      "pokerstars.es",
+      "playuzu.es"
+    ],
+    "officialVenueEvidenceRequired": true,
+    "currentOutcomeFeedHost": "api-cs.casino.org",
+    "currentOutcomeFeedRole": "AUXILIARY_RESEARCH_ONLY",
+    "currentOutcomeFeedPromotionEligible": false,
+    "officialVenueReplicationRequired": true
+  },
+  "timingReplication": {
+    "v3Complete": false,
+    "v3Pass": false,
+    "v4PreRegistered": true,
+    "v4Complete": false,
+    "v4Pass": false,
+    "independentConfirmation": false,
+    "directEconomicClaimAllowed": false
+  },
+  "lag8Replication": {
+    "v2Complete": true,
+    "v2Pass": false,
+    "v3PreRegistered": true,
+    "v3Complete": false,
+    "v3Pass": false,
+    "independentEconomicConfirmation": false,
+    "officialVenueReplicationRequired": true,
+    "realMoneyAllowed": false
+  },
+  "transitionReplication": {
+    "v1Complete": false,
+    "v1Pass": false,
+    "independentReplicationRequired": true,
+    "officialVenueReplicationRequired": true,
+    "realMoneyAllowed": false
+  },
   "combinedTimingNumber": {
     "componentsReady": false,
     "promotableDirectly": false,
+    "independentTimingReplicationAvailable": false,
     "reason": "One or both required component gates have not passed their fixed boundaries."
   },
   "boundaries": [
-    {"id":"clean-timing-v3","complete":false,"pass":false},
-    {"id":"quinigol-shadow-v3","complete":false,"pass":false},
-    {"id":"primitiva-frequency4-v1","complete":false,"pass":false},
-    {"id":"clean-lag8-economic-v1","complete":false,"pass":false},
-    {"id":"clean-lag-family-v1","complete":false,"pass":false},
-    {"id":"clean-past-lucky-family-v1","complete":false,"pass":false},
-    {"id":"number-selection-v2","complete":false,"pass":false},
-    {"id":"physical-rng-v2","complete":false,"pass":false},
-    {"id":"primitiva-v315","complete":false,"pass":false}
+    {
+      "id": "clean-timing-v3",
+      "complete": false,
+      "pass": false
+    },
+    {
+      "id": "clean-timing-v4",
+      "complete": false,
+      "pass": false
+    },
+    {
+      "id": "quinigol-shadow-v3",
+      "complete": false,
+      "pass": false
+    },
+    {
+      "id": "primitiva-frequency4-v1",
+      "complete": false,
+      "pass": false
+    },
+    {
+      "id": "clean-lag8-economic-v1",
+      "complete": true,
+      "pass": false
+    },
+    {
+      "id": "clean-lag8-economic-v3",
+      "complete": false,
+      "pass": false
+    },
+    {
+      "id": "clean-lag-family-v1",
+      "complete": false,
+      "pass": false
+    },
+    {
+      "id": "clean-past-lucky-family-v1",
+      "complete": false,
+      "pass": false
+    },
+    {
+      "id": "clean-transition-family-v1",
+      "complete": false,
+      "pass": false
+    },
+    {
+      "id": "number-selection-v2",
+      "complete": false,
+      "pass": false
+    },
+    {
+      "id": "physical-rng-v2",
+      "complete": false,
+      "pass": false
+    },
+    {
+      "id": "primitiva-v315",
+      "complete": false,
+      "pass": false
+    }
   ],
   "policy": {
     "progressIsNotEvidence": true,
@@ -28,6 +118,12 @@
     "directEconomicRequiresPositiveConservativeROI": true,
     "hiddenInterimPerformanceNeverRead": true,
     "independentReplicationRequired": true,
+    "officialVenueEvidenceRequiredForPromotion": true,
+    "allowedCasinoOperators": [
+      "pokerstars.es",
+      "playuzu.es"
+    ],
+    "thirdPartyFeedCannotPromoteByItself": true,
     "automaticBettingAllowed": false,
     "realMoneyAllowed": false,
     "authorizedStakeEUR": 0
