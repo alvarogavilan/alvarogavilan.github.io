@@ -1,0 +1,52 @@
+{
+  "version": "hot-or-cold-prospective-protocol-v1",
+  "createdAt": "2026-08-19T10:10:00Z",
+  "operator": "playuzu-es",
+  "officialSource": "https://www.playuzu.es/especiales/hot-or-cold/",
+  "feature": "PlayUZU Hot or Cold",
+  "officialMechanic": {
+    "showsGamesPayingMoreAndLessRecently": true,
+    "showsLastHighestRewardTiming": true,
+    "refreshCadenceMinutes": 5,
+    "operatorExplicitlySaysNotIndicatorOfFutureResults": true
+  },
+  "scientificQuestion": "Does the published current HOT/COLD state contain reproducible information about the same game's subsequent state or subsequent observable payout metrics beyond persistence expected from overlapping windows?",
+  "hypothesesFrozenBeforeDetailedSnapshots": [
+    {"id":"HOT_PERSISTENCE","prediction":"HOT games are more likely than matched controls to remain relatively high-paying at the next independent observation."},
+    {"id":"HOT_MEAN_REVERSION","prediction":"HOT games are more likely than matched controls to move toward/below baseline at the next independent observation."},
+    {"id":"COLD_PERSISTENCE","prediction":"COLD games are more likely than matched controls to remain relatively low-paying."},
+    {"id":"COLD_MEAN_REVERSION","prediction":"COLD games are more likely than matched controls to recover toward/above baseline."}
+  ],
+  "sampling": {
+    "minimumSnapshotSpacingMinutes": 5,
+    "preferredSnapshotSpacingMinutes": 10,
+    "discoverySnapshots": 100,
+    "lockedValidationSnapshots": 200,
+    "prospectiveReplicationSnapshots": 500,
+    "sameGameMatchedComparisonRequired": true,
+    "overlapAdjusted": true
+  },
+  "statistics": {
+    "familyWiseAlpha": 0.01,
+    "multipleTestingCorrection": "Holm/Bonferroni fail-closed",
+    "directionMustBeFrozenBeforeReplication": true,
+    "economicPromotionFromStateAlone": false
+  },
+  "economics": {
+    "requiresExactGameRtp": true,
+    "requiresExactGameUzuPlus": true,
+    "requiresStakeAndPayoutDefinition": true,
+    "noBettingDuringInformationStudy": true
+  },
+  "guards": {
+    "doNotAssumeHotIsGood": true,
+    "doNotAssumeColdIsDue": true,
+    "operatorDisclaimerPreserved": true,
+    "noMartingale": true,
+    "noRealMoney": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  },
+  "immutable": true
+}
