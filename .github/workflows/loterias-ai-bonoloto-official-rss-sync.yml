@@ -12,7 +12,9 @@ on:
       - 'loterias-ai/scripts/meta-pleno-v91-bonoloto-v58-ensemble-prospective-freeze.mjs'
       - 'loterias-ai/scripts/evaluate-bonoloto-2026-08-15-metapleno-v10.mjs'
       - 'loterias-ai/scripts/prospective-master-scoreboard.mjs'
+      - 'loterias-ai/scripts/build-national-archive-index.mjs'
       - 'loterias-ai/scripts/build-completeness-index.mjs'
+      - 'loterias-ai/scripts/build-archive-coverage-priorities.mjs'
       - '.github/workflows/loterias-ai-bonoloto-official-rss-sync.yml'
 permissions:
   contents: write
@@ -38,9 +40,7 @@ jobs:
           semantic_restore_if_only_volatile() {
             file="$1"
             [ -f "$file" ] || return 0
-            if ! git cat-file -e "HEAD:$file" 2>/dev/null; then
-              return 0
-            fi
+            if ! git cat-file -e "HEAD:$file" 2>/dev/null; then return 0; fi
             if node - "$file" <(git show "HEAD:$file") <<'NODE'
           const fs=require('fs');
           function clean(v){
@@ -48,7 +48,7 @@ jobs:
             if(v && typeof v==='object'){
               const out={};
               for(const [k,val] of Object.entries(v)){
-                if(k==='generatedAt' || k==='checkedAt' || k==='updatedAt') continue;
+                if(['generatedAt','checkedAt','updatedAt','manifestGeneratedAt','auditGeneratedAt'].includes(k)) continue;
                 out[k]=clean(val);
               }
               return out;
@@ -59,9 +59,7 @@ jobs:
           const b=clean(JSON.parse(fs.readFileSync(process.argv[3],'utf8')));
           process.exit(JSON.stringify(a)===JSON.stringify(b)?0:1);
           NODE
-            then
-              git checkout HEAD -- "$file"
-            fi
+            then git checkout HEAD -- "$file"; fi
           }
 
           for attempt in 1 2 3 4 5; do
@@ -74,12 +72,16 @@ jobs:
             node loterias-ai/scripts/meta-pleno-v54-bonoloto-budget8-prospective-freeze.mjs
             node loterias-ai/scripts/meta-pleno-v91-bonoloto-v58-ensemble-prospective-freeze.mjs
             node loterias-ai/scripts/prospective-master-scoreboard.mjs
+            node loterias-ai/scripts/build-national-archive-index.mjs
             node loterias-ai/scripts/build-completeness-index.mjs
+            node loterias-ai/scripts/build-archive-coverage-priorities.mjs
 
             files=(
               loterias-ai/data/official/bonoloto-rss-sync-status.json
               loterias-ai/data/archive/bonoloto/${YEAR}.json
+              loterias-ai/data/archive/manifest.json
               loterias-ai/data/archive/completeness-index.json
+              loterias-ai/data/archive/_meta/archive-coverage-priorities.json
               loterias-ai/data/shadow/prospective-master-scoreboard.json
               loterias-ai/data/shadow/bonoloto-v54-budget8-freeze-status.json
               loterias-ai/data/shadow/bonoloto-v91-v58-ensemble-freeze-status.json
@@ -94,19 +96,11 @@ jobs:
               git add "$file"
             done
 
-            if git diff --cached --quiet; then
-              echo 'No semantic Bonoloto/archive index changes'
-              exit 0
-            fi
-
-            git commit -m 'data(loterias-ai): sync official Bonoloto and refresh archive index'
-            if git push origin HEAD:main; then
-              exit 0
-            fi
-
+            if git diff --cached --quiet; then echo 'No semantic Bonoloto/archive index changes'; exit 0; fi
+            git commit -m 'data(loterias-ai): sync official Bonoloto and refresh archive indexes'
+            if git push origin HEAD:main; then exit 0; fi
             echo "main moved during Bonoloto sync; recomputing from latest main (attempt ${attempt}/5)"
             sleep $((attempt * 3))
           done
-
           echo 'Could not persist Bonoloto sync safely after 5 recomputations' >&2
           exit 1
