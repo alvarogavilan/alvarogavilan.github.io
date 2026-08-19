@@ -5,20 +5,23 @@ const OUT='loterias-ai/casino/jackpots/evidence/jackpot-king-state-dependent-ev-
 const protocol='loterias-ai/casino/jackpots/evidence/jackpot-king-mbwb-protocol-v1.json';
 const p=JSON.parse(fs.readFileSync(protocol,'utf8'));
 
-// PokerStars Spain official published example: King Kong Cash JPK RTP 95.01%,
-// with 0.38% allocated to jackpot and 0.11% to reserve. This is an operator-page
-// configuration input, not a universal Blueprint constant.
+// PokerStars Spain official King Kong Cash JPK material publishes 95.01% for the
+// game component and 0.38% jackpot + 0.11% reserve contribution. PokerStars also
+// describes the global RTP including the jackpot contribution as 95.50%. Keep both
+// layers explicit so the state-dependent uplift is never double-counted.
 const cfg={
   game:'King Kong Cash JPK',
   operator:'pokerstars-es',
-  publishedRtp:0.9501,
+  publishedGameRtp:0.9501,
   publishedJackpotContribution:0.0038,
   publishedReserveContribution:0.0011,
-  source:'https://www.pokerstars.es/casino/game/king-kong-cash-jpk/1017/100/'
+  publishedGlobalReferenceRtp:0.9550,
+  sources:[
+    'https://www.pokerstars.es/casino/game/king-kong-cash-jpk/1017/100/',
+    'https://www.pokerstars.es/casino/news/las-tragaperras-con-jackpot-mas-exclusivas-de-pokerstars-casino-para-que-te-diviertas-a-lo-grande/'
+  ]
 };
 
-// No EV claim is allowed until the exact PokerStars pot identities, current values,
-// MBWB values and conditional hazard are known/estimated prospectively.
 const unknown={
   royalReserveEUR:null,
   royalMbwbEUR:null,
@@ -31,19 +34,21 @@ const unknown={
   pokerstarsConfigurationMatchToProviderGenericProfile:false
 };
 
-const requiredIncrementOverPublishedRtp=1-cfg.publishedRtp;
+const requiredIncrementOverGlobalReference=1-cfg.publishedGlobalReferenceRtp;
 const status={
-  version:'jackpot-king-state-dependent-ev-status-v1',
+  version:'jackpot-king-state-dependent-ev-status-v1.1',
   generatedAt:new Date().toISOString(),
   mode:'MODEL_SCAFFOLD_NO_WAGERING',
   protocolVersion:p.version,
   configuration:cfg,
   accounting:{
-    publishedHouseEdgeAtReferenceRtp:requiredIncrementOverPublishedRtp,
-    percentagePointsNeededToReach100Rtp:Number((100*requiredIncrementOverPublishedRtp).toFixed(2)),
+    globalReferenceHouseEdge:requiredIncrementOverGlobalReference,
+    percentagePointsIncrementNeededAboveGlobalReferenceToReach100Rtp:Number((100*requiredIncrementOverGlobalReference).toFixed(2)),
+    gameRtpPct:Number((100*cfg.publishedGameRtp).toFixed(2)),
     jackpotContributionPct:Number((100*cfg.publishedJackpotContribution).toFixed(2)),
     reserveContributionPct:Number((100*cfg.publishedReserveContribution).toFixed(2)),
-    warning:'Published RTP may already embed an average jackpot component. Do not add contributions mechanically; state-dependent incremental EV must be estimated relative to the exact PokerStars configuration.'
+    globalReferenceRtpPct:Number((100*cfg.publishedGlobalReferenceRtp).toFixed(2)),
+    warning:'Use the 95.50% global reference to avoid double-counting the average progressive contribution. A current-pot edge would require state-dependent jackpot value/hazard to add more than the reference progressive value by enough to clear the remaining 4.50 percentage points.'
   },
   providerMechanics:{
     jackpotProbabilityIncreasesWithPotValue:true,
@@ -53,9 +58,9 @@ const status={
   },
   unknown,
   evaluationFormula:{
-    conceptual:'EV_total(pot_state) = EV_nonjackpot + sum_i P_i(pot_state)*Payout_i(pot_state). Positive-EV review requires a prospectively estimated lower confidence bound above 1.0.',
+    conceptual:'EV_total(pot_state) = EV_nonjackpot + sum_i P_i(pot_state)*Payout_i(pot_state). Compare the state-dependent progressive term with the average progressive value already embedded in the 95.50% global reference. Positive-EV review requires a prospectively estimated lower confidence bound above 1.0.',
     directThresholdCannotYetBeSolved:true,
-    reason:'Exact MBWB values and conditional hazard curve for the PokerStars Spain configuration are not yet known.'
+    reason:'Exact PokerStars Royal/Regal MBWB values and the conditional hazard curve are not yet known.'
   },
   gates:{
     exactMbwbKnown:false,
@@ -67,6 +72,7 @@ const status={
     realMoneyAllowed:false
   },
   guards:{
+    noDoubleCountingProgressiveContribution:true,
     noInterpolationOfUnknownMbwb:true,
     noAssumedHazardShape:true,
     noSpinPlaced:true,
