@@ -1,0 +1,56 @@
+{
+  "version": "casiopea-official-dual-venue-protocol-v1",
+  "createdAt": "2026-08-19T08:56:00Z",
+  "game": "Casiopea Roulette",
+  "provider": "Playtech",
+  "purpose": "Test frozen winner-sequence hypotheses using only deployment-grade observations from PokerStars Spain and PlayUZU Spain.",
+  "allowedOperators": [
+    {"id":"pokerstars-es","host":"pokerstars.es","officialGame":"Live Casiopea Ruleta"},
+    {"id":"playuzu-es","host":"playuzu.es","officialGame":"Ruleta Casiopea en Vivo"}
+  ],
+  "activation": {
+    "startsWithFirstOfficialObservationCapturedAfterThisProtocolCommit": true,
+    "preProtocolObservationsMayBeUsedForDiscoveryOnly": true,
+    "preProtocolObservationsMayNotScoreProspective": true
+  },
+  "rouletteEconomics": {
+    "wheel":"EUROPEAN_SINGLE_ZERO",
+    "numbers":37,
+    "uniformNullHitProbability":0.02702702702702703,
+    "straightUpProfitPayout":"35:1",
+    "grossReturnX":36,
+    "baseBreakEvenHitRate":0.027777777777777776
+  },
+  "frozenHypotheses": [
+    {"id":"lag1","prediction":"next winner equals immediately previous winner"},
+    {"id":"lag2","prediction":"next winner equals winner two rounds earlier"},
+    {"id":"wheel-plus1","prediction":"next winner is clockwise physical-wheel neighbor of previous winner"},
+    {"id":"wheel-minus1","prediction":"next winner is counter-clockwise physical-wheel neighbor of previous winner"}
+  ],
+  "perOperatorProspective": {
+    "warmupOfficialRounds": 50,
+    "scoredOfficialRounds": 2000,
+    "familyWiseAlpha": 0.01,
+    "perCandidateAlpha": 0.0025,
+    "performanceHiddenUntilBoundary": true,
+    "noOptionalStopping": true,
+    "noRetuning": true
+  },
+  "crossOperatorConfirmation": {
+    "sameCandidateMustPassIndependentlyAtPokerStarsAndPlayUZU": true,
+    "combinedPValueFishingForbidden": true,
+    "baseEconomicPassRequiresHitRateAbove": 0.027777777777777776,
+    "baseEconomicPassRequiresWilson95LowerAbove": 0.027777777777777776,
+    "separateUntouchedReplicationStillRequiredBeforeRealMoneyReview": true
+  },
+  "evidenceRequirements": {
+    "allowedEvidenceKinds": ["OFFICIAL_OPERATOR_UI_HISTORY","OFFICIAL_OPERATOR_UI_RESULTS_COLUMN","OFFICIAL_OPERATOR_EXPORT"],
+    "operatorHostRequired": true,
+    "roundOrderOrTimestampRequired": true,
+    "winnerRequired": true,
+    "evidenceSha256Required": true,
+    "thirdPartyOutcomeFeedForbiddenForScoring": true
+  },
+  "safety": {"automaticBettingAllowed":false,"realMoneyAllowed":false,"authorizedStakeEUR":0},
+  "immutable": true
+}
