@@ -64,3 +64,4 @@ console.log(JSON.stringify({refreshedReadiness:true,promotionRefresh:true,newlyC
 // One-shot operational pulse marker 2026-08-19T11:28Z after scheduler delay; no cadence or scientific rule changed.
 // One-shot operational pulse marker 2026-08-19T11:59Z near lag8 fixed boundary; no cadence or scientific rule changed.
 // Validation pulse: preserve future-only Jackpot King hazard state and verify new canonical observer.
+// One-shot operational pulse marker 2026-08-19T12:28Z near lag8/timing fixed boundaries; no cadence or scientific rule changed.
