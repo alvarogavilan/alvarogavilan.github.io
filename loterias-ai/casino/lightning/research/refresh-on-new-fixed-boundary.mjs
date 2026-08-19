@@ -11,6 +11,7 @@ const prior=new Map((gate.boundaries||[]).map(x=>[x.id,x.complete===true]));
 const timing=read(`${E}/timing-replication-v3-status.json`);
 const timingV4=read(`${E}/timing-replication-v4-status.json`);
 const lag8=read(`${E}/prospective-lag8-clean-v2-status-v1.json`);
+const lag8V3=read(`${E}/prospective-lag8-clean-v3-status-v1.json`);
 const lagFamily=read(`${E}/prospective-lag-family-clean-v2-status-v1.json`);
 const pastLucky=read(`${E}/prospective-past-lucky-family-clean-v2-status-v1.json`);
 const numberSel=read(`${E}/economic-number-selection-prospective-status-v2.json`);
@@ -20,6 +21,7 @@ const current={
   'clean-timing-v3':Boolean(timing?.final)&&Number(timing?.progress?.closedEpisodes)===Number(timing?.progress?.fixedBoundaryClosedEpisodes),
   'clean-timing-v4':Boolean(timingV4?.final)&&Number(timingV4?.progress?.closedEpisodes)===Number(timingV4?.progress?.fixedBoundaryClosedEpisodes),
   'clean-lag8-economic-v1':Boolean(lag8?.final)&&Number(lag8?.progress?.comparisonsUsed)===Number(lag8?.progress?.fixedBoundaryComparisons),
+  'clean-lag8-economic-v3':Boolean(lag8V3?.final)&&Number(lag8V3?.progress?.comparisonsUsed)===Number(lag8V3?.progress?.fixedBoundaryComparisons),
   'clean-lag-family-v1':Boolean(lagFamily?.final)&&Number(lagFamily?.progress?.comparisonsUsed)===Number(lagFamily?.progress?.fixedBoundaryComparisons),
   'clean-past-lucky-family-v1':Boolean(pastLucky?.final)&&Number(pastLucky?.progress?.roundsUsed)===Number(pastLucky?.progress?.fixedBoundaryRounds),
   'number-selection-v2':numberSel?.gates?.fixedFinalComplete===true,
