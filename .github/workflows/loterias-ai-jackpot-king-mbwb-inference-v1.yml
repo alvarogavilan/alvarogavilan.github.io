@@ -1,0 +1,50 @@
+name: Loterias AI Jackpot King MBWB Inference V1
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/jackpots/jackpot-king-mbwb-inference-v1.mjs'
+      - 'loterias-ai/casino/jackpots/evidence/jackpot-king-spain-near-cap-research-v1.json'
+      - '.github/workflows/loterias-ai-jackpot-king-mbwb-inference-v1.yml'
+  schedule:
+    - cron: '7 * * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-jackpot-king-mbwb-inference-v1
+  cancel-in-progress: true
+
+jobs:
+  infer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Recompute future-only MBWB inference and near-cap screen
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            node loterias-ai/casino/jackpots/jackpot-king-mbwb-inference-v1.mjs
+            git add \
+              loterias-ai/casino/jackpots/evidence/jackpot-king-mbwb-inference-v1.json \
+              loterias-ai/casino/lightning/evidence/economic-readiness-ledger-v1.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'research(casino): refresh Jackpot King MBWB near-cap inference'
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
