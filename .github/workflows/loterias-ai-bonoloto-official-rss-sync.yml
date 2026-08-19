@@ -91,9 +91,9 @@ jobs:
             for file in "${files[@]}"; do
               [ -f "$file" ] || continue
               semantic_restore_if_only_volatile "$file"
+              git add "$file"
             done
 
-            git add "${files[@]}" 2>/dev/null || true
             if git diff --cached --quiet; then
               echo 'No semantic Bonoloto/archive index changes'
               exit 0
