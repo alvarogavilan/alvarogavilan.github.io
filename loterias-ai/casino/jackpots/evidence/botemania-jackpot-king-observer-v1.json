@@ -1,6 +1,6 @@
 {
-  "version": "botemania-jackpot-king-observer-v1.3",
-  "generatedAt": "2026-08-19T16:37:11.856Z",
+  "version": "botemania-jackpot-king-observer-v1.4",
+  "generatedAt": "2026-08-19T16:39:07.562Z",
   "operator": "botemania-es",
   "operatorOfficial": true,
   "mode": "OBSERVATION_ONLY_NO_WAGERING",
@@ -20,7 +20,7 @@
     }
   },
   "discovery": {
-    "generatedAt": "2026-08-19T16:37:11.856Z",
+    "generatedAt": "2026-08-19T16:39:07.562Z",
     "pageScriptSources": [
       "https://www.botemania.es/es/runtime.88e5d9042d77e378fcb1.js",
       "https://www.botemania.es/es/client.6ceb4c121205f4b30b65.js",
@@ -402,22 +402,38 @@
       }
     ],
     "publicBlueprintGraphqlQuery": "query loadJackpots { blueprintJackpots { id amount } }",
-    "status": "CANDIDATES_FOUND_NEED_QUERY_RECONSTRUCTION"
+    "publicClientVentureHeader": "botemania_es",
+    "status": "PUBLIC_GRAPHQL_COUNTER_CAPTURE_ACTIVE"
   },
   "latest": {
-    "observedAt": "2026-08-19T16:37:11.856Z",
+    "observedAt": "2026-08-19T16:39:07.562Z",
     "sourceReadable": true,
     "graphql": {
-      "endpoint": "https://www.botemania.es/graphql",
+      "endpoint": "https://www.botemania.es/es/graphql",
       "operationName": "loadJackpots",
-      "httpStatus": 404,
-      "ok": false,
-      "responseSha256": "316d7245ea5c87eb17e9390c9c5cbcabf87945ce1d35040655eb609a74d005d7",
-      "contentType": "text/html",
-      "rows": [],
-      "error": [
-        "HTTP_404"
-      ]
+      "ventureHeader": "botemania_es",
+      "httpStatus": 200,
+      "ok": true,
+      "responseSha256": "b2400ffead5b0a65849f433d3876339862af463028470b126ecc2578b7712864",
+      "contentType": "application/json; charset=utf-8",
+      "rows": [
+        {
+          "id": "JACKPOTKING",
+          "label": "JACKPOT_KING",
+          "amountEUR": 128287.74
+        },
+        {
+          "id": "JACKPOTKING_REGAL",
+          "label": "REGAL",
+          "amountEUR": 15482.65
+        },
+        {
+          "id": "JACKPOTKING_ROYAL",
+          "label": "ROYAL",
+          "amountEUR": 1625.55
+        }
+      ],
+      "error": null
     },
     "pages": [
       {
@@ -427,7 +443,7 @@
         "httpStatus": 200,
         "finalUrl": "https://www.botemania.es/juegos/slots-online/fishin-frenzy-jackpot-king",
         "officialSpainHost": true,
-        "sha256": "137bab10f9c5adfadb1f072ca14b8ddbeefa38b4d5769a91a3a0cbb94becc881",
+        "sha256": "3d16e196b9625f5e1fda5d4f6898cd4396444c3ec649894c1466d7c65e730697",
         "amounts": [],
         "scriptCount": 25
       },
@@ -438,7 +454,7 @@
         "httpStatus": 200,
         "finalUrl": "https://www.botemania.es/juegos/slots-online/fishin-frenzy-megaways-jackpot-king",
         "officialSpainHost": true,
-        "sha256": "ecc2b5d526ab1007b3ab4df9bfc6ac43f8e0190a63f3aa7c31dd54be92dc28d9",
+        "sha256": "5f40fe6552c312478baea022eca9dc3ce19782703ad48c415c562a1cbd99377e",
         "amounts": [],
         "scriptCount": 25
       },
@@ -449,7 +465,7 @@
         "httpStatus": 200,
         "finalUrl": "https://www.botemania.es/juegos/slots-online/eye-of-horus-jackpot-king",
         "officialSpainHost": true,
-        "sha256": "95b7deeda4de6c284b366b332f2df987717516c77d6c070147ced3dc6dec08d9",
+        "sha256": "b1945f5802bb489bb80a0fcdc38a592b7f5e9c15be9c6cafeb1dfdd672f4609f",
         "amounts": [],
         "scriptCount": 25
       },
@@ -460,7 +476,7 @@
         "httpStatus": 200,
         "finalUrl": "https://www.botemania.es/juegos/slots-online/the-goonies-return-jackpot-king",
         "officialSpainHost": true,
-        "sha256": "901fbdac53ed66fe0ba04d51434da3be30970f734df8ba43be1612f9768c60b4",
+        "sha256": "399d42bb7c2c88ac2451a543634f00cb0391326105a0199ff647b165268b8a02",
         "amounts": [],
         "scriptCount": 25
       },
@@ -471,14 +487,18 @@
         "httpStatus": 200,
         "finalUrl": "https://www.botemania.es/juegos/slots-online",
         "officialSpainHost": true,
-        "sha256": "e552244d1197b5570000d40b585edc8445ba2d0638c96c518abc61e85793b0f9",
+        "sha256": "cfefef1bd90eb8eb27d2cb12eadf3635454df10695df37382aa9b8083db69612",
         "amounts": [],
         "scriptCount": 31
       }
     ],
     "sharedAmounts": [],
-    "labeledPots": {},
-    "counterSource": "STATIC_HTML_FALLBACK"
+    "labeledPots": {
+      "JACKPOT_KING": 128287.74,
+      "REGAL": 15482.65,
+      "ROYAL": 1625.55
+    },
+    "counterSource": "BOTEMANIA_PUBLIC_GRAPHQL"
   },
   "observations": [
     {
@@ -1220,17 +1240,112 @@
       "sharedAmounts": [],
       "labeledPots": {},
       "counterSource": "STATIC_HTML_FALLBACK"
+    },
+    {
+      "observedAt": "2026-08-19T16:39:07.562Z",
+      "sourceReadable": true,
+      "graphql": {
+        "endpoint": "https://www.botemania.es/es/graphql",
+        "operationName": "loadJackpots",
+        "ventureHeader": "botemania_es",
+        "httpStatus": 200,
+        "ok": true,
+        "responseSha256": "b2400ffead5b0a65849f433d3876339862af463028470b126ecc2578b7712864",
+        "contentType": "application/json; charset=utf-8",
+        "rows": [
+          {
+            "id": "JACKPOTKING",
+            "label": "JACKPOT_KING",
+            "amountEUR": 128287.74
+          },
+          {
+            "id": "JACKPOTKING_REGAL",
+            "label": "REGAL",
+            "amountEUR": 15482.65
+          },
+          {
+            "id": "JACKPOTKING_ROYAL",
+            "label": "ROYAL",
+            "amountEUR": 1625.55
+          }
+        ],
+        "error": null
+      },
+      "pages": [
+        {
+          "id": "fishin-frenzy-jpk",
+          "url": "https://www.botemania.es/juegos/slots-online/fishin-frenzy-jackpot-king",
+          "priority": true,
+          "httpStatus": 200,
+          "finalUrl": "https://www.botemania.es/juegos/slots-online/fishin-frenzy-jackpot-king",
+          "officialSpainHost": true,
+          "sha256": "3d16e196b9625f5e1fda5d4f6898cd4396444c3ec649894c1466d7c65e730697",
+          "amounts": [],
+          "scriptCount": 25
+        },
+        {
+          "id": "fishin-frenzy-megaways-jpk",
+          "url": "https://www.botemania.es/juegos/slots-online/fishin-frenzy-megaways-jackpot-king",
+          "priority": true,
+          "httpStatus": 200,
+          "finalUrl": "https://www.botemania.es/juegos/slots-online/fishin-frenzy-megaways-jackpot-king",
+          "officialSpainHost": true,
+          "sha256": "5f40fe6552c312478baea022eca9dc3ce19782703ad48c415c562a1cbd99377e",
+          "amounts": [],
+          "scriptCount": 25
+        },
+        {
+          "id": "eye-of-horus-jpk",
+          "url": "https://www.botemania.es/juegos/slots-online/eye-of-horus-jackpot-king",
+          "priority": false,
+          "httpStatus": 200,
+          "finalUrl": "https://www.botemania.es/juegos/slots-online/eye-of-horus-jackpot-king",
+          "officialSpainHost": true,
+          "sha256": "b1945f5802bb489bb80a0fcdc38a592b7f5e9c15be9c6cafeb1dfdd672f4609f",
+          "amounts": [],
+          "scriptCount": 25
+        },
+        {
+          "id": "goonies-return-jpk",
+          "url": "https://www.botemania.es/juegos/slots-online/the-goonies-return-jackpot-king",
+          "priority": false,
+          "httpStatus": 200,
+          "finalUrl": "https://www.botemania.es/juegos/slots-online/the-goonies-return-jackpot-king",
+          "officialSpainHost": true,
+          "sha256": "399d42bb7c2c88ac2451a543634f00cb0391326105a0199ff647b165268b8a02",
+          "amounts": [],
+          "scriptCount": 25
+        },
+        {
+          "id": "slots-hub",
+          "url": "https://www.botemania.es/juegos/slots-online",
+          "priority": false,
+          "httpStatus": 200,
+          "finalUrl": "https://www.botemania.es/juegos/slots-online",
+          "officialSpainHost": true,
+          "sha256": "cfefef1bd90eb8eb27d2cb12eadf3635454df10695df37382aa9b8083db69612",
+          "amounts": [],
+          "scriptCount": 31
+        }
+      ],
+      "sharedAmounts": [],
+      "labeledPots": {
+        "JACKPOT_KING": 128287.74,
+        "REGAL": 15482.65,
+        "ROYAL": 1625.55
+      },
+      "counterSource": "BOTEMANIA_PUBLIC_GRAPHQL"
     }
   ],
   "resets": [],
   "progress": {
-    "observations": 11,
+    "observations": 12,
     "cleanLabeledResets": 0,
-    "labeledCurrentPots": 0,
+    "labeledCurrentPots": 3,
     "candidateEndpoints": 16,
     "querySignatures": 10,
     "jackpotKeywordContexts": 28,
-    "publicGraphqlCaptureActive": false
+    "publicGraphqlCaptureActive": true
   },
   "thresholdResearch": {
     "exactSpainRoyalMbwbEUR": null,
@@ -1247,6 +1362,7 @@
     "botemaniaOfficialPagesOnly": true,
     "publicClientCodeOnly": true,
     "publicGraphqlQueryMirrorsWebsiteClient": true,
+    "publicGraphqlVentureHeaderMirrorsWebsiteClient": true,
     "noAuthenticationBypass": true,
     "noPrivateCredentials": true,
     "noGraphqlIntrospection": true,
