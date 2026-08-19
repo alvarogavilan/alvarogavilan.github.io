@@ -63,18 +63,21 @@ for(const [kingName,kingBaseline] of Object.entries(kingBaselines))for(const alp
 }
 const conservativeAll=currentScenarios.filter(x=>x.kingBaselineScenario==='ZERO_CONSERVATIVE');
 const structuralAll=currentScenarios.filter(x=>x.kingBaselineScenario==='ACTIVE_PLUS_RESERVE_STRUCTURAL');
+const robustConservativeScreenPass=conservativeAll.length===alphaGrid.length&&conservativeAll.every(x=>x.totalRtp>=1);
+const worstConservativeRtp=conservativeAll.length?Math.min(...conservativeAll.map(x=>x.totalRtp)):null;
+const bestConservativeRtp=conservativeAll.length?Math.max(...conservativeAll.map(x=>x.totalRtp)):null;
 const out={
- version:'botemania-jpk-near-cap-ev-scenarios-v1.2',generatedAt:new Date().toISOString(),operator:'botemania-es',purpose:'SENSITIVITY_SCREEN_ONLY_NOT_A_WAGER_RECOMMENDATION',
+ version:'botemania-jpk-near-cap-ev-scenarios-v1.3',generatedAt:new Date().toISOString(),operator:'botemania-es',purpose:'SENSITIVITY_SCREEN_ONLY_NOT_A_WAGER_RECOMMENDATION',
  inputs:{baseRtp:BASE_RTP,activeContributionShares:active,reserveShares:reserve,capHypothesisEUR:{ROYAL:3500,REGAL:35000},seedHypothesisEUR:{ROYAL:500,REGAL:5000},capHypothesisVerifiedInBotemania:false,alphaGrid,stressExtensionReason:'Cross-network winner controls suggest testing hazards more concentrated near MBWB; control data remains discovery-only.'},
- model:{family:'HIDDEN_DROP_THRESHOLD_BETA_ALPHA_1_ON_SEED_TO_CAP',conditionalHazard:'activeContribution/span * alpha*q^(alpha-1)/(1-q^alpha)',warning:'Blueprint exact server-side hazard is unknown. This family tests robustness only; crossings are not evidence of real positive EV.'},
- current:{observedAt:flow.latest.observedAt,potsEUR:flow.latest.potsEUR,normalizedSeedToCap:currentQ,scenarios:currentScenarios,allModeledRtpBelowOne:{ZERO_CONSERVATIVE:conservativeAll.every(x=>x.totalRtp<1),ACTIVE_PLUS_RESERVE_STRUCTURAL:structuralAll.every(x=>x.totalRtp<1)}},
+ model:{family:'HIDDEN_DROP_THRESHOLD_BETA_ALPHA_1_ON_SEED_TO_CAP',conditionalHazard:'activeContribution/span * alpha*q^(alpha-1)/(1-q^alpha)',warning:'Blueprint exact server-side hazard is unknown. This family tests robustness only; crossings are not evidence of real positive EV.',selectedGameContributionSplitAssumption:'Fishin Frenzy 2.32% active contribution is assumed to inherit the repeatedly observed approximately 60/20/20 Royal-Regal-King meter allocation. This is a research assumption, not provider-published per-tier split.'},
+ current:{observedAt:flow.latest.observedAt,potsEUR:flow.latest.potsEUR,normalizedSeedToCap:currentQ,scenarios:currentScenarios,allModeledRtpBelowOne:{ZERO_CONSERVATIVE:conservativeAll.every(x=>x.totalRtp<1),ACTIVE_PLUS_RESERVE_STRUCTURAL:structuralAll.every(x=>x.totalRtp<1)},robustConservativeScreenPass,worstConservativeRtp:worstConservativeRtp==null?null:+worstConservativeRtp.toFixed(6),bestConservativeRtp:bestConservativeRtp==null?null:+bestConservativeRtp.toFixed(6)},
  thresholdSensitivity:{
   ZERO_CONSERVATIVE:{bothSameProgressForward:rangeFor('ZERO_CONSERVATIVE','bothSameProgressForward'),royalForwardWithRegalCurrent:rangeFor('ZERO_CONSERVATIVE','royalForwardWithRegalCurrent'),regalForwardWithRoyalCurrent:rangeFor('ZERO_CONSERVATIVE','regalForwardWithRoyalCurrent')},
   ACTIVE_PLUS_RESERVE_STRUCTURAL:{bothSameProgressForward:rangeFor('ACTIVE_PLUS_RESERVE_STRUCTURAL','bothSameProgressForward'),royalForwardWithRegalCurrent:rangeFor('ACTIVE_PLUS_RESERVE_STRUCTURAL','royalForwardWithRegalCurrent'),regalForwardWithRoyalCurrent:rangeFor('ACTIVE_PLUS_RESERVE_STRUCTURAL','regalForwardWithRoyalCurrent')}
  },
  curves,
- decision:{currentPositiveEvProven:false,currentScreenPass:false,exactHazardKnown:false,exactSpainMbwbKnown:false,realMoneyAllowed:false,automaticBettingAllowed:false},
- guards:{forwardCrossingOnly:true,noSingleDistributionClaim:true,noCapHypothesisAsFact:true,noMainKingDoubleCount:true,crossNetworkControlsDiscoveryOnly:true,noBetting:true,realMoneyAllowed:false}
+ decision:{currentPositiveEvProven:false,currentScreenPass:robustConservativeScreenPass,screenMeaning:'All ZERO_CONSERVATIVE alpha-grid scenarios are >=100% at the actual current Royal/Regal state under the unverified Spain cap and hazard-family assumptions.',exactHazardKnown:false,exactSpainMbwbKnown:false,realMoneyAllowed:false,automaticBettingAllowed:false},
+ guards:{forwardCrossingOnly:true,noSingleDistributionClaim:true,noCapHypothesisAsFact:true,noMainKingDoubleCount:true,crossNetworkControlsDiscoveryOnly:true,noScreenPassAsProof:true,noBetting:true,realMoneyAllowed:false}
 };
 fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
 console.log(JSON.stringify({current:out.current,thresholdSensitivity:out.thresholdSensitivity,decision:out.decision},null,2));
