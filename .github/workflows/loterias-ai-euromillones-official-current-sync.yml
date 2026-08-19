@@ -1,0 +1,64 @@
+name: Loterias AI Euromillones Official Current Sync
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '22 * * * *'
+  push:
+    paths:
+      - 'loterias-ai/scripts/sync-euromillones-official-current.mjs'
+      - 'loterias-ai/scripts/build-national-archive-index.mjs'
+      - 'loterias-ai/scripts/build-archive-coverage-priorities.mjs'
+      - '.github/workflows/loterias-ai-euromillones-official-current-sync.yml'
+
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-euromillones-official-current-sync
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Sync missing current Euromillones draws from SELAE
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          restore_if_volatile_only() {
+            file="$1"; [ -f "$file" ] || return 0; git cat-file -e "HEAD:$file" 2>/dev/null || return 0
+            if node - "$file" <(git show "HEAD:$file") <<'NODE'
+          const fs=require('fs');function clean(v){if(Array.isArray(v))return v.map(clean);if(v&&typeof v==='object'){const o={};for(const[k,x]of Object.entries(v)){if(['generatedAt','checkedAt','manifestGeneratedAt','auditGeneratedAt'].includes(k))continue;o[k]=clean(x)}return o}return v}const a=clean(JSON.parse(fs.readFileSync(process.argv[2],'utf8'))),b=clean(JSON.parse(fs.readFileSync(process.argv[3],'utf8')));process.exit(JSON.stringify(a)===JSON.stringify(b)?0:1)
+          NODE
+            then git checkout HEAD -- "$file"; fi
+          }
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            MAX_LOOKBACK_DAYS=14 node loterias-ai/scripts/sync-euromillones-official-current.mjs
+            node loterias-ai/scripts/build-national-archive-index.mjs
+            node loterias-ai/scripts/build-archive-coverage-priorities.mjs
+            restore_if_volatile_only loterias-ai/data/archive/_meta/euromillones-official-current-sync.json
+            restore_if_volatile_only loterias-ai/data/archive/_meta/euromillones-official-current-conflicts.json
+            restore_if_volatile_only loterias-ai/data/archive/manifest.json
+            restore_if_volatile_only loterias-ai/data/archive/_meta/archive-coverage-priorities.json
+            git add loterias-ai/data/archive/euromillones \
+                    loterias-ai/data/archive/_meta/euromillones-official-current-sync.json \
+                    loterias-ai/data/archive/_meta/euromillones-official-current-conflicts.json \
+                    loterias-ai/data/archive/manifest.json \
+                    loterias-ai/data/archive/_meta/archive-coverage-priorities.json
+            if git diff --cached --quiet; then echo 'No semantic Euromillones current-sync changes'; exit 0; fi
+            git commit -m 'data(euromillones): sync current official SELAE 5+2 draws'
+            if git push origin HEAD:main; then exit 0; fi
+            echo "main moved during Euromillones current sync; recomputing from latest main (attempt ${attempt}/5)"
+            sleep $((attempt * 3))
+          done
+          echo 'Could not persist Euromillones current sync safely after 5 recomputations' >&2
+          exit 1
