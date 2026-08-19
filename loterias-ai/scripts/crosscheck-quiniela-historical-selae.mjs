@@ -2,11 +2,18 @@ import fs from 'node:fs';
 
 const qdir='loterias-ai/data/archive/quiniela';
 const meta='loterias-ai/data/archive/_meta';
+const reportPath=`${meta}/quiniela-historical-selae-crosscheck.json`;
 const limit=Math.max(1,Number(process.env.BATCH_LIMIT||120));
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const signs=a=>(a||[]).map(x=>String(x??'').trim().toUpperCase()).filter(Boolean);
 const storedMain=a=>{let x=signs(a);if(x.length>=15&&!['1','X','2'].includes(x[0]))x=x.slice(1);return x.slice(0,14)};
 const num=x=>{const n=Number(String(x??'').replace(/\./g,'').replace(',','.'));return Number.isFinite(n)?n:null};
+const stable=value=>{
+  if(Array.isArray(value)) return value.map(stable);
+  if(value&&typeof value==='object') return Object.fromEntries(Object.entries(value).filter(([k])=>k!=='generatedAt').map(([k,v])=>[k,stable(v)]));
+  return value;
+};
+const sameSemantic=(a,b)=>JSON.stringify(stable(a))===JSON.stringify(stable(b));
 
 async function getOfficial(date){
   const url=`https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAQU&fecha_sorteo=${date.replaceAll('-','')}`;
@@ -25,13 +32,18 @@ async function getOfficial(date){
 
 const docs=new Map();
 const targets=[];
+let alreadyComplete=0,alreadyNotFound=0,alreadyConflict=0;
 for(const file of fs.readdirSync(qdir).filter(x=>/^\d{4}\.json$/.test(x)).sort()){
   const path=`${qdir}/${file}`;
   const doc=JSON.parse(fs.readFileSync(path,'utf8'));
   docs.set(file,{path,doc});
   for(const row of doc.records||[]){
     if(!row.drawDate||row.drawDate>='2020-01-01')continue;
-    if(row.verification?.officialCrossCheck?.provider==='SELAE'&&row.verification?.officialCrossCheck?.complete===true)continue;
+    const verification=row.verification||{};
+    const cross=verification.officialCrossCheck||{};
+    if(cross.provider==='SELAE'&&cross.complete===true){alreadyComplete++;continue}
+    if(verification.status==='OFFICIAL_SELAE_NOT_FOUND'&&cross.provider==='SELAE'&&cross.status==='NOT_FOUND'){alreadyNotFound++;continue}
+    if(verification.status==='OFFICIAL_CONFLICT_QUARANTINED'){alreadyConflict++;continue}
     targets.push({file,row});
   }
 }
@@ -39,11 +51,18 @@ targets.sort((a,b)=>b.row.drawDate.localeCompare(a.row.drawDate));
 
 let verified=0,empty=0,mismatch=0;
 const failures=[];
-for(const [i,{row}] of targets.slice(0,limit).entries()){
+const changedFiles=new Set();
+for(const [i,{file,row}] of targets.slice(0,limit).entries()){
   try{
     const {url,json}=await getOfficial(row.drawDate);
     const official=Array.isArray(json)?json[0]:null;
-    if(!official){empty++;continue}
+    if(!official){
+      empty++;
+      row.trainingEligible=false;
+      row.verification={...(row.verification||{}),status:'OFFICIAL_SELAE_NOT_FOUND',officialCrossCheck:{provider:'SELAE',exactDate:true,complete:false,status:'NOT_FOUND',url,fields:{outcomes:false}}};
+      changedFiles.add(file);
+      continue;
+    }
     const partidos=(official.partidos||[]).map((p,index)=>({position:index+1,home:String(p.local||'').trim(),away:String(p.visitante||'').trim(),sign:String(p.signo||'').trim().toUpperCase(),score:String(p.marcador||'').replace(/\s+/g,'')}));
     if(partidos.length!==15){failures.push({drawDate:row.drawDate,reason:'party-count',count:partidos.length});continue}
     const officialMain=partidos.slice(0,14).map(p=>p.sign);
@@ -52,7 +71,8 @@ for(const [i,{row}] of targets.slice(0,limit).entries()){
       mismatch++;
       failures.push({drawDate:row.drawDate,reason:'OFFICIAL_RESULT_MISMATCH_QUARANTINED',stored,official:officialMain,trainingEligible:false});
       row.trainingEligible=false;
-      row.verification={...(row.verification||{}),status:'OFFICIAL_CONFLICT_QUARANTINED',officialCrossCheck:{provider:'SELAE',exactDate:true,complete:false,url,fields:{outcomes:false}}};
+      row.verification={...(row.verification||{}),status:'OFFICIAL_CONFLICT_QUARANTINED',officialCrossCheck:{provider:'SELAE',exactDate:true,complete:false,status:'MISMATCH',url,fields:{outcomes:false}}};
+      changedFiles.add(file);
       continue;
     }
     const previousSource=row.source;
@@ -62,15 +82,55 @@ for(const [i,{row}] of targets.slice(0,limit).entries()){
     row.result={outcomes:partidos.map(p=>p.sign),matches:partidos};
     row.economics={currency:'EUR',ticketCost:.75,stakes:num(official.apuestas),revenue:num(official.recaudacion),jackpot:num(official.premio_bote),prizePool:num(official.premios),rolloverFund:num(official.fondo_bote),categories:(official.escrutinio||[]).map(x=>({category:Number(x.categoria),label:String(x.tipo||'').trim(),winners:num(x.ganadores),prize:num(x.premio)})),source:{provider:'SELAE',url,capturedAt:new Date().toISOString()},validation:{status:'OFFICIAL_PARSED',officialSELAE:true}};
     row.source={provider:'SELAE',tier:'official',url,validation:'official-fechav3-historical',archivePreviousSource:previousSource};
-    row.verification={status:'OFFICIAL_SELAE_VALIDATED',officialCrossCheck:{provider:'SELAE',exactDate:true,complete:true,url,fields:{outcomes:true,drawId:Boolean(official.id_sorteo)}}};
+    row.verification={status:'OFFICIAL_SELAE_VALIDATED',officialCrossCheck:{provider:'SELAE',exactDate:true,complete:true,status:'MATCH',url,fields:{outcomes:true,drawId:Boolean(official.id_sorteo)}}};
     row.trainingEligible=true;
+    changedFiles.add(file);
     verified++;
   }catch(e){failures.push({drawDate:row.drawDate,reason:String(e)})}
   if(i%20===19)await sleep(250);
 }
 
-for(const {path,doc} of docs.values())fs.writeFileSync(path,JSON.stringify(doc,null,2)+'\n');
+for(const file of changedFiles){
+  const {path,doc}=docs.get(file);
+  fs.writeFileSync(path,JSON.stringify(doc,null,2)+'\n');
+}
 fs.mkdirSync(meta,{recursive:true});
-const report={generatedAt:new Date().toISOString(),gameId:'quiniela',scope:'dated-canonical-pre-2020',attempted:Math.min(limit,targets.length),verified,empty,mismatch,failures,remainingTargets:Math.max(0,targets.length-Math.min(limit,targets.length)),guards:{exactDate:true,exactStored14VsOfficial14:true,pleno15TakenOnlyAfterMainMatch:true,mismatchesQuarantined:true,noInference:true,realMoney:false}};
-fs.writeFileSync(`${meta}/quiniela-historical-selae-crosscheck.json`,JSON.stringify(report,null,2)+'\n');
-console.log(JSON.stringify({...report,failures:failures.length},null,2));
+
+let completeNow=0,notFoundNow=0,conflictNow=0,unprocessedNow=0;
+for(const {doc} of docs.values()) for(const row of doc.records||[]){
+  if(!row.drawDate||row.drawDate>='2020-01-01')continue;
+  const verification=row.verification||{};
+  const cross=verification.officialCrossCheck||{};
+  if(cross.provider==='SELAE'&&cross.complete===true) completeNow++;
+  else if(verification.status==='OFFICIAL_SELAE_NOT_FOUND'&&cross.status==='NOT_FOUND') notFoundNow++;
+  else if(verification.status==='OFFICIAL_CONFLICT_QUARANTINED') conflictNow++;
+  else unprocessedNow++;
+}
+
+const report={
+  generatedAt:new Date().toISOString(),
+  gameId:'quiniela',
+  scope:'dated-canonical-pre-2020',
+  attempted:Math.min(limit,targets.length),
+  verified,
+  empty,
+  mismatch,
+  failures,
+  remainingTargets:unprocessedNow,
+  cumulative:{officiallyVerified:completeNow,officialNotFound:notFoundNow,officialConflicts:conflictNow,unprocessed:unprocessedNow},
+  guards:{
+    exactDate:true,
+    exactStored14VsOfficial14:true,
+    pleno15TakenOnlyAfterMainMatch:true,
+    mismatchesQuarantined:true,
+    official404MarkedFailClosedAndSkippedByThisPrimaryRoute:true,
+    terminalBlockersDoNotPreventOlderDatesFromBeingScanned:true,
+    fetchFailuresRemainRetryable:true,
+    noInference:true,
+    realMoney:false
+  }
+};
+const previous=fs.existsSync(reportPath)?JSON.parse(fs.readFileSync(reportPath,'utf8')):null;
+if(!previous||!sameSemantic(previous,report)) fs.writeFileSync(reportPath,JSON.stringify(report,null,2)+'\n');
+else console.log('NO_SEMANTIC_REPORT_CHANGE');
+console.log(JSON.stringify({...report,failures:failures.length,changedFiles:[...changedFiles].sort()},null,2));
