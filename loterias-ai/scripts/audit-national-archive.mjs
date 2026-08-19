@@ -14,17 +14,30 @@ const hasOfficialEconomics=r=>Boolean(
 const tuple=a=>Array.isArray(a)?[...a].map(Number).sort((x,y)=>x-y).join(','):'';
 const conflictDate=c=>String(c?.drawDate??c?.date??'');
 const allowedResolutionStatuses=new Set(['RESOLVED_SOURCE_DATE_SHIFT','RESOLVED_OFFICIAL_CORRECTION','RESOLVED_CANONICAL_CONFIRMED']);
-const report={generatedAt:new Date().toISOString(),schemaVersion:5,games:{},totals:{duplicateDates:0,invalidDates:0,parseErrors:0,totalOfficialConflicts:0,resolvedOfficialConflicts:0,openOfficialConflicts:0,missingEconomicsOnRecentStoredDraws:0,officialEconomicsRecords:0},qualityGate:{pass:false,reasons:[]}};
+const recordRef=x=>({file:x.file,index:x.index,drawDate:x.record?.drawDate??null,drawId:x.record?.drawId??null,drawNumber:x.record?.drawNumber??null});
+const report={generatedAt:new Date().toISOString(),schemaVersion:6,games:{},totals:{duplicateDates:0,invalidDates:0,parseErrors:0,totalOfficialConflicts:0,resolvedOfficialConflicts:0,openOfficialConflicts:0,missingEconomicsOnRecentStoredDraws:0,officialEconomicsRecords:0},qualityGate:{pass:false,reasons:[]}};
 for(const game of Object.keys(expected)){
  const dir=path.join(root,game);if(!fs.existsSync(dir))continue;
- const files=fs.readdirSync(dir).filter(f=>/^\d{4}\.json$/.test(f)).sort(),rows=[],parseErrors=[];
+ const files=fs.readdirSync(dir).filter(f=>/^\d{4}\.json$/.test(f)).sort(),rowEntries=[],parseErrors=[];
  for(const f of files){
-  try{const j=JSON.parse(fs.readFileSync(path.join(dir,f),'utf8'));if(!Array.isArray(j.records))throw new Error('records-not-array');rows.push(...j.records)}
+  try{
+   const j=JSON.parse(fs.readFileSync(path.join(dir,f),'utf8'));
+   if(!Array.isArray(j.records))throw new Error('records-not-array');
+   j.records.forEach((record,index)=>rowEntries.push({record,file:f,index}));
+  }
   catch(e){parseErrors.push({file:f,error:String(e?.message||e)})}
  }
- rows.sort((a,b)=>String(a.drawDate).localeCompare(String(b.drawDate)));
- const seen=new Set(),dupes=[];let invalid=0;
- for(const r of rows){if(!/^\d{4}-\d{2}-\d{2}$/.test(String(r.drawDate)))invalid++;if(seen.has(r.drawDate))dupes.push(r.drawDate);seen.add(r.drawDate)}
+ rowEntries.sort((a,b)=>String(a.record?.drawDate).localeCompare(String(b.record?.drawDate)));
+ const rows=rowEntries.map(x=>x.record),seen=new Map(),dupes=[],duplicateDateRecords=[],invalidDateRecords=[];
+ for(const entry of rowEntries){
+  const drawDate=String(entry.record?.drawDate??'');
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(drawDate))invalidDateRecords.push(recordRef(entry));
+  if(seen.has(drawDate)){
+   dupes.push(drawDate);
+   duplicateDateRecords.push({drawDate,first:recordRef(seen.get(drawDate)),duplicate:recordRef(entry)});
+  }else seen.set(drawDate,entry);
+ }
+ const invalid=invalidDateRecords.length;
  const recent=rows.slice(-60),missingEconomics=expected[game].recentEconomics?recent.filter(r=>!hasEconomics(r)).map(r=>r.drawDate):[],economicsRows=rows.filter(hasEconomics),officialRows=rows.filter(hasOfficialEconomics);
  const metaPath=path.join(root,'_meta',`${game}-official-economics.json`);let meta=null;
  if(fs.existsSync(metaPath))try{meta=JSON.parse(fs.readFileSync(metaPath,'utf8'))}catch(e){parseErrors.push({file:path.basename(metaPath),error:String(e?.message||e)})}
@@ -46,7 +59,7 @@ for(const game of Object.keys(expected)){
  }
  const openConflicts=conflicts.filter((_,i)=>!used.has(i)).length,totalConflicts=conflicts.length,resolvedConflicts=used.size;
  const health=dupes.length||invalid||parseErrors.length||openConflicts?'FAIL':missingEconomics.length?'PARTIAL_ECONOMICS':'PASS';
- report.games[game]={records:rows.length,earliest:rows[0]?.drawDate||null,latest:rows.at(-1)?.drawDate||null,economicsRecords:economicsRows.length,officialEconomicsRecords:officialEconomicRecords,officialEconomicsCoverage:officialCoverage,officialEconomicsStatus:meta?.status??(officialCoverage===1?'COMPLETE':officialCoverage>0?'PARTIAL':null),totalOfficialConflicts:totalConflicts,resolvedOfficialConflicts:resolvedConflicts,openOfficialConflicts:openConflicts,resolvedConflicts:resolved,latestEconomics:economicsRows.at(-1)?.drawDate||null,duplicateDates:dupes,invalidDates:invalid,parseErrors,missingEconomicsOnLast60:missingEconomics,health};
+ report.games[game]={records:rows.length,earliest:rows[0]?.drawDate||null,latest:rows.at(-1)?.drawDate||null,economicsRecords:economicsRows.length,officialEconomicsRecords:officialEconomicRecords,officialEconomicsCoverage:officialCoverage,officialEconomicsStatus:meta?.status??(officialCoverage===1?'COMPLETE':officialCoverage>0?'PARTIAL':null),totalOfficialConflicts:totalConflicts,resolvedOfficialConflicts:resolvedConflicts,openOfficialConflicts:openConflicts,resolvedConflicts:resolved,latestEconomics:economicsRows.at(-1)?.drawDate||null,duplicateDates:dupes,duplicateDateRecords,invalidDates:invalid,invalidDateRecords,parseErrors,missingEconomicsOnLast60:missingEconomics,health};
  report.totals.duplicateDates+=dupes.length;report.totals.invalidDates+=invalid;report.totals.parseErrors+=parseErrors.length;report.totals.totalOfficialConflicts+=totalConflicts;report.totals.resolvedOfficialConflicts+=resolvedConflicts;report.totals.openOfficialConflicts+=openConflicts;report.totals.missingEconomicsOnRecentStoredDraws+=missingEconomics.length;report.totals.officialEconomicsRecords+=officialEconomicRecords;
 }
 if(report.totals.duplicateDates)report.qualityGate.reasons.push(`duplicate-dates:${report.totals.duplicateDates}`);
