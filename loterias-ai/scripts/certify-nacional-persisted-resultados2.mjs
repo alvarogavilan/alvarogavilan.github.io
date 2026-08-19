@@ -30,9 +30,11 @@ for (const file of fs.readdirSync(dir).filter(f => /^\d{4}\.json$/.test(f)).sort
   const filePath = path.join(dir, file);
   const doc = JSON.parse(fs.readFileSync(filePath, 'utf8'));
   let changed = false;
+
   for (const row of doc.records || []) {
     if (row.drawType === 'CHRISTMAS' || row.drawType === 'EL_NINO') continue;
     totalNonSeasonal++;
+
     const schema = row.result?.officialPrizeSchema;
     const econ = row.economics;
     const validation = econ?.validation;
@@ -45,8 +47,12 @@ for (const file of fs.readdirSync(dir).filter(f => /^\d{4}\.json$/.test(f)).sort
       continue;
     }
 
+    const schemaDrawId = String(schema?.drawId ?? '').trim();
+    const persistedOfficialDrawId = String(row.official?.drawId ?? '').trim();
     const checks = {
-      schemaDrawIdPresent: Boolean(String(schema?.drawId ?? '').trim()),
+      schemaDrawIdPresent: Boolean(schemaDrawId),
+      persistedOfficialDrawIdPresent: Boolean(persistedOfficialDrawId),
+      exactOfficialDrawId: Boolean(schemaDrawId) && schemaDrawId === persistedOfficialDrawId,
       officialEconomics: validation?.officialSELAE === true && validation?.status === 'OFFICIAL_COMPLETE_RESULTADOS2_SCHEMA',
       officialSource: officialSource?.provider === 'SELAE' && Boolean(officialSource?.fechav3) && Boolean(officialSource?.resultados2),
       exactDate: String(officialSource?.fechav3 || '').includes(`fecha_sorteo=${dateCompact(row.drawDate)}`),
@@ -57,7 +63,10 @@ for (const file of fs.readdirSync(dir).filter(f => /^\d{4}\.json$/.test(f)).sort
     };
     const complete = Object.values(checks).every(Boolean);
     if (!complete) {
-      blocked.push({ drawDate: row.drawDate, failedChecks: Object.entries(checks).filter(([, ok]) => !ok).map(([name]) => name) });
+      blocked.push({
+        drawDate: row.drawDate,
+        failedChecks: Object.entries(checks).filter(([, ok]) => !ok).map(([name]) => name)
+      });
       continue;
     }
 
@@ -67,6 +76,7 @@ for (const file of fs.readdirSync(dir).filter(f => /^\d{4}\.json$/.test(f)).sort
       checks: [
         'persisted-fechav3-exact-date',
         'persisted-resultados2-draw-id',
+        'persisted-official-draw-id-match',
         'official-first-prize-cross-check',
         'official-second-prize-cross-check',
         'official-detailed-prize-schema',
@@ -77,9 +87,10 @@ for (const file of fs.readdirSync(dir).filter(f => /^\d{4}\.json$/.test(f)).sort
         sourceUrl: officialSource.resultados2,
         secondaryOfficialSourceUrl: officialSource.fechav3,
         checkedAt: schema.capturedAt ?? officialSource.capturedAt ?? null,
-        officialDrawId: String(schema.drawId),
+        officialDrawId: schemaDrawId,
         exactDate: true,
         fields: {
+          drawId: true,
           firstPrize: true,
           secondPrize: true,
           detailedPrizeSchema: true,
@@ -96,6 +107,7 @@ for (const file of fs.readdirSync(dir).filter(f => /^\d{4}\.json$/.test(f)).sort
     newlyCertified++;
     changed = true;
   }
+
   if (changed) {
     fs.writeFileSync(filePath, JSON.stringify(doc, null, 2) + '\n');
     changedFiles.add(file);
@@ -105,7 +117,7 @@ for (const file of fs.readdirSync(dir).filter(f => /^\d{4}\.json$/.test(f)).sort
 const report = {
   generatedAt: new Date().toISOString(),
   gameId: 'loteria-nacional',
-  evidencePolicy: 'Certification uses only already-persisted SELAE resultados2 evidence that was cross-checked against SELAE fechav3 at capture time. No missing field is inferred.',
+  evidencePolicy: 'Certification uses only already-persisted SELAE resultados2 evidence cross-checked against SELAE fechav3 at capture time, including an exact persisted official draw-id match. No missing field is inferred.',
   totalNonSeasonal,
   eligibleOfficialSchema,
   alreadyCertified,
@@ -119,6 +131,7 @@ const report = {
     noSecondaryPromotion: true,
     noEconomicsOnlyValidation: true,
     exactDateRequired: true,
+    exactOfficialDrawIdRequired: true,
     firstAndSecondRequired: true,
     detailedOfficialResultRequired: true,
     officialEconomicsRequired: true,
@@ -126,5 +139,9 @@ const report = {
     incompleteEvidenceRemainsUnvalidated: true
   }
 };
-fs.writeFileSync(path.join(metaDir, 'nacional-persisted-resultados2-certification.json'), JSON.stringify(report, null, 2) + '\n');
+
+fs.writeFileSync(
+  path.join(metaDir, 'nacional-persisted-resultados2-certification.json'),
+  JSON.stringify(report, null, 2) + '\n'
+);
 console.log(JSON.stringify({ ...report, blocked: blocked.length }, null, 2));
