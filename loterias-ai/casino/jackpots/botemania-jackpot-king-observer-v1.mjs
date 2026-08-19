@@ -3,8 +3,10 @@ import fs from 'node:fs';
 import crypto from 'node:crypto';
 
 const OUT='loterias-ai/casino/jackpots/evidence/botemania-jackpot-king-observer-v1.json';
+const GRAPHQL='https://www.botemania.es/es/graphql';
+const REFERER='https://www.botemania.es/juegos/slots-online/fishin-frenzy-jackpot-king';
 const URLS=[
-  {id:'fishin-frenzy-jpk',url:'https://www.botemania.es/juegos/slots-online/fishin-frenzy-jackpot-king',priority:true},
+  {id:'fishin-frenzy-jpk',url:REFERER,priority:true},
   {id:'fishin-frenzy-megaways-jpk',url:'https://www.botemania.es/juegos/slots-online/fishin-frenzy-megaways-jackpot-king',priority:true},
   {id:'eye-of-horus-jpk',url:'https://www.botemania.es/juegos/slots-online/eye-of-horus-jackpot-king'},
   {id:'goonies-return-jpk',url:'https://www.botemania.es/juegos/slots-online/the-goonies-return-jackpot-king'},
@@ -78,16 +80,31 @@ function querySignatures(text){
   }
   return out;
 }
+const validPot=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x))&&Number(x)>0;
+const mapId=id=>({JACKPOTKING_ROYAL:'ROYAL',JACKPOTKING:'JACKPOT_KING',JACKPOTKING_REGAL:'REGAL'})[String(id)]||null;
 
 const pages=[],htmlById=new Map();
 for(const src of URLS){
   try{
-    const r=await fetch(src.url,{redirect:'follow',headers:{accept:'text/html','user-agent':'loterias-ai-botemania-jpk-observer/1.2','cache-control':'no-cache, no-store, max-age=0'}});
+    const r=await fetch(src.url,{redirect:'follow',headers:{accept:'text/html','user-agent':'loterias-ai-botemania-jpk-observer/1.3','cache-control':'no-cache, no-store, max-age=0'}});
     const html=await r.text(); htmlById.set(src.id,html);
     const finalHost=new URL(r.url).hostname;
     pages.push({id:src.id,url:src.url,priority:!!src.priority,httpStatus:r.status,finalUrl:r.url,officialSpainHost:finalHost==='www.botemania.es'||finalHost==='botemania.es',sha256:crypto.createHash('sha256').update(html).digest('hex'),amounts:extract(html),scriptCount:scripts(html,r.url).length});
   }catch(e){pages.push({id:src.id,url:src.url,priority:!!src.priority,error:String(e?.message||e),officialSpainHost:false,amounts:[]});}
 }
+
+const publicQuery='query loadJackpots { blueprintJackpots { id amount } }';
+let graphql={endpoint:GRAPHQL,operationName:'loadJackpots',httpStatus:null,ok:false,responseSha256:null,contentType:null,rows:[],error:null};
+try{
+  const r=await fetch(GRAPHQL,{method:'POST',redirect:'follow',headers:{accept:'application/json','content-type':'application/json','user-agent':'loterias-ai-botemania-jpk-observer/1.3',referer:REFERER,origin:'https://www.botemania.es','cache-control':'no-cache, no-store, max-age=0'},body:JSON.stringify({operationName:'loadJackpots',variables:{},query:publicQuery})});
+  const text=await r.text();
+  graphql.httpStatus=r.status;graphql.contentType=r.headers.get('content-type');graphql.responseSha256=crypto.createHash('sha256').update(text).digest('hex');
+  let body=null;try{body=JSON.parse(text);}catch{}
+  const rows=Array.isArray(body?.data?.blueprintJackpots)?body.data.blueprintJackpots:[];
+  graphql.rows=rows.map(x=>({id:String(x?.id||''),label:mapId(x?.id),amountEUR:validPot(x?.amount)?Number(x.amount):null})).filter(x=>x.label&&validPot(x.amountEUR));
+  graphql.ok=r.ok&&graphql.rows.length>0;
+  if(!graphql.ok)graphql.error=body?.errors?.map(x=>String(x?.message||'GraphQL error')).slice(0,5)||(!r.ok?[`HTTP_${r.status}`]:'NO_BLUEPRINT_ROWS');
+}catch(e){graphql.error=[String(e?.message||e)];}
 
 const page=pages.find(x=>x.id==='fishin-frenzy-jpk'&&x.officialSpainHost&&x.httpStatus===200);
 const html=htmlById.get('fishin-frenzy-jpk')||'';
@@ -96,7 +113,7 @@ const endpoints=new Set(candidates(html,page?.finalUrl||URLS[0].url));
 const inspected=[];const allSignatures=[];const jackpotContexts=[];
 for(const url of scriptUrls){
   try{
-    const r=await fetch(url,{headers:{'user-agent':'loterias-ai-botemania-jpk-discovery/1.2','cache-control':'no-cache'}});
+    const r=await fetch(url,{headers:{'user-agent':'loterias-ai-botemania-jpk-discovery/1.3','cache-control':'no-cache'}});
     const text=await r.text();
     if(text.length>5000000){inspected.push({url,status:r.status,bytes:text.length,skippedDeepScan:true});continue;}
     const c=candidates(text,url);for(const x of c)endpoints.add(x);
@@ -106,7 +123,7 @@ for(const url of scriptUrls){
     inspected.push({url,status:r.status,bytes:text.length,candidates:c.slice(0,20),querySignatures:sig.slice(0,30),keywordContextCount:ctx.length});
   }catch(e){inspected.push({url,error:String(e?.message||e)});}
 }
-const discovery={generatedAt:now,pageScriptSources:scriptUrls,inspectedScripts:inspected,candidateEndpoints:[...endpoints].slice(0,120),querySignatures:allSignatures.slice(0,80),jackpotKeywordContexts:jackpotContexts.slice(0,40),status:endpoints.size?'CANDIDATES_FOUND_NEED_QUERY_RECONSTRUCTION':'NO_PUBLIC_COUNTER_ENDPOINT_FOUND_YET'};
+const discovery={generatedAt:now,pageScriptSources:scriptUrls,inspectedScripts:inspected,candidateEndpoints:[...endpoints].slice(0,120),querySignatures:allSignatures.slice(0,80),jackpotKeywordContexts:jackpotContexts.slice(0,40),publicBlueprintGraphqlQuery:publicQuery,status:graphql.ok?'PUBLIC_GRAPHQL_COUNTER_CAPTURE_ACTIVE':endpoints.size?'CANDIDATES_FOUND_NEED_QUERY_RECONSTRUCTION':'NO_PUBLIC_COUNTER_ENDPOINT_FOUND_YET'};
 
 const buckets=new Map();
 for(const p of pages.filter(x=>x.officialSpainHost&&x.httpStatus===200)) for(const a of p.amounts){
@@ -115,22 +132,25 @@ for(const p of pages.filter(x=>x.officialSpainHost&&x.httpStatus===200)) for(con
   b.pages.add(p.id);if(b.contexts.length<3)b.contexts.push({page:p.id,context:a.context});buckets.set(k,b);
 }
 const shared=[...buckets.values()].map(x=>({label:x.label,valueEUR:x.valueEUR,pageCount:x.pages.size,pages:[...x.pages],contexts:x.contexts})).filter(x=>x.pageCount>=2).sort((a,b)=>b.pageCount-a.pageCount||b.valueEUR-a.valueEUR);
-const labeled={};for(const label of ['ROYAL','REGAL','JACKPOT_KING']){const x=shared.find(v=>v.label===label);if(x)labeled[label]=x.valueEUR;}
+const labeled={};
+if(graphql.ok){for(const x of graphql.rows)labeled[x.label]=Number(x.amountEUR);}
+else for(const label of ['ROYAL','REGAL','JACKPOT_KING']){const x=shared.find(v=>v.label===label);if(x)labeled[label]=x.valueEUR;}
+
 const sourceReadable=pages.filter(x=>x.priority).some(x=>x.officialSpainHost&&x.httpStatus===200);
-const observation={observedAt:now,sourceReadable,pages,sharedAmounts:shared.slice(0,20),labeledPots:labeled};
+const observation={observedAt:now,sourceReadable,graphql,pages,sharedAmounts:shared.slice(0,20),labeledPots:labeled,counterSource:graphql.ok?'BOTEMANIA_PUBLIC_GRAPHQL':'STATIC_HTML_FALLBACK'};
 const prior=(prev.observations||[]).at(-1)||null,resets=[];
 for(const label of ['ROYAL','REGAL','JACKPOT_KING']){
-  const from=Number(prior?.labeledPots?.[label]),to=Number(labeled[label]);
-  if(Number.isFinite(from)&&Number.isFinite(to)&&from>0&&to/from<=0.90)resets.push({observedAt:now,label,fromEUR:from,toEUR:to,dropRatio:Number((1-to/from).toFixed(6)),cleanLabelMatched:true});
+  const from=prior?.labeledPots?.[label],to=labeled[label];
+  if(validPot(from)&&validPot(to)&&Number(from)>Number(to)&&Number(to)/Number(from)<=0.90)resets.push({observedAt:now,label,fromEUR:Number(from),toEUR:Number(to),dropRatio:Number((1-Number(to)/Number(from)).toFixed(6)),cleanLabelMatched:true,source:graphql.ok?'BOTEMANIA_PUBLIC_GRAPHQL':'STATIC_HTML_FALLBACK'});
 }
 const observations=[...(prev.observations||[]),observation].slice(-2016),allResets=[...(prev.resets||[]),...resets].slice(-200);
 const out={
-  version:'botemania-jackpot-king-observer-v1.2',generatedAt:now,operator:'botemania-es',operatorOfficial:true,mode:'OBSERVATION_ONLY_NO_WAGERING',
+  version:'botemania-jackpot-king-observer-v1.3',generatedAt:now,operator:'botemania-es',operatorOfficial:true,mode:'OBSERVATION_ONLY_NO_WAGERING',
   priorityGames:["Fishin' Frenzy: Jackpot King","Fishin' Frenzy Megaways: Jackpot King"],
   verifiedOperatorEconomics:{fishinFrenzy:{baseRtpPct:93.32,progressiveContributionPct:2.32,reserveContributionPct:0.68,anyStakeEligible:true,winChanceProportionalToStake:true,winChanceIncreasesWithPot:true,royalRegalMbwbExists:true}},
-  discovery,latest:observation,observations,resets:allResets,progress:{observations:observations.length,cleanLabeledResets:allResets.filter(x=>x.cleanLabelMatched).length,labeledCurrentPots:Object.keys(labeled).length,candidateEndpoints:discovery.candidateEndpoints.length,querySignatures:discovery.querySignatures.length,jackpotKeywordContexts:discovery.jackpotKeywordContexts.length},
+  discovery,latest:observation,observations,resets:allResets,progress:{observations:observations.length,cleanLabeledResets:allResets.filter(x=>x.cleanLabelMatched).length,labeledCurrentPots:Object.keys(labeled).length,candidateEndpoints:discovery.candidateEndpoints.length,querySignatures:discovery.querySignatures.length,jackpotKeywordContexts:discovery.jackpotKeywordContexts.length,publicGraphqlCaptureActive:graphql.ok},
   thresholdResearch:{exactSpainRoyalMbwbEUR:null,exactSpainRegalMbwbEUR:null,crossMarketReferenceOnly:{royal:3500,regal:35000,mayNotEqualSpain:true},minimumCleanResetsBeforeHazardFit:10,minimumCleanResetsBeforeEconomicReplication:20},
-  guards:{botemaniaOfficialPagesOnly:true,publicClientCodeOnly:true,noAuthenticationBypass:true,priorityRtpBlockSpecific:true,genericCopiedContributionTextNotTrustedWhenRtpBlockConflicts:true,noCrossMarketThresholdSubstitution:true,noBetting:true,automaticBettingAllowed:false,realMoneyAllowed:false,realStakeEUR:0}
+  guards:{botemaniaOfficialPagesOnly:true,publicClientCodeOnly:true,publicGraphqlQueryMirrorsWebsiteClient:true,noAuthenticationBypass:true,noPrivateCredentials:true,noGraphqlIntrospection:true,priorityRtpBlockSpecific:true,genericCopiedContributionTextNotTrustedWhenRtpBlockConflicts:true,noCrossMarketThresholdSubstitution:true,noBetting:true,automaticBettingAllowed:false,realMoneyAllowed:false,realStakeEUR:0}
 };
 fs.mkdirSync('loterias-ai/casino/jackpots/evidence',{recursive:true});fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
-console.log(JSON.stringify({sourceReadable,discovery:{status:discovery.status,candidateEndpoints:discovery.candidateEndpoints.slice(0,20),querySignatures:discovery.querySignatures,jackpotKeywordContexts:discovery.jackpotKeywordContexts.slice(0,8)},labeledPots:labeled,resetsThisRun:resets,progress:out.progress,realMoneyAllowed:false},null,2));
+console.log(JSON.stringify({sourceReadable,graphql:{httpStatus:graphql.httpStatus,ok:graphql.ok,rows:graphql.rows,error:graphql.error},labeledPots:labeled,resetsThisRun:resets,progress:out.progress,realMoneyAllowed:false},null,2));
