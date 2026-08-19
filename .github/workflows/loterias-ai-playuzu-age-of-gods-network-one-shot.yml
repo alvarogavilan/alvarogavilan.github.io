@@ -1,0 +1,29 @@
+name: Loterias AI PlayUZU Age of Gods Network One Shot
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/playuzu/probe-age-of-gods-network-v1.mjs'
+      - '.github/workflows/loterias-ai-playuzu-age-of-gods-network-one-shot.yml'
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - run: node loterias-ai/casino/playuzu/probe-age-of-gods-network-v1.mjs
+      - run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+users.noreply.github.com
+          git add loterias-ai/casino/playuzu/evidence/age-of-gods-network-probe-v1.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'research(playuzu): persist Age of Gods network probe'
+          git pull --rebase origin main
+          git push origin HEAD:main
