@@ -1,0 +1,54 @@
+{
+  "version": "playuzu-ev-research-status-v1",
+  "generatedAt": "2026-08-19T10:25:00Z",
+  "operator": "playuzu-es",
+  "mode": "OBSERVATIONAL_RESEARCH_ONLY",
+  "state": "NO_VERIFIED_POSITIVE_EXPECTATION",
+  "blackjackResearch": {
+    "exactLobbyGames": 3,
+    "nearestToBreakEven": {
+      "game": "Goal Goal Goal Blackjack",
+      "provider": "PlayTech",
+      "lobbyRtpPct": 99.66,
+      "distanceFrom100PctPointsBeforeRewards": 0.34,
+      "internalRewardFieldPct": 0.20,
+      "internalRewardSemanticStatus": "PROBABLE_NOT_FULLY_CONFIRMED",
+      "conditionalCombinedReturnPctIfOneToOneMappingWereConfirmed": 99.86,
+      "conditionalDistanceFrom100PctPoints": 0.14
+    },
+    "otherGames": [
+      {"game":"American Twenty One Blackjack","rtpPct":99.57,"internalRewardFieldPct":0.06,"conditionalCombinedReturnPct":99.63},
+      {"game":"First Person Blackjack","rtpPct":94.50,"internalRewardFieldPct":0.03,"conditionalCombinedReturnPct":94.53}
+    ],
+    "sourceEvidence": [
+      "blackjack-exact-lobby-economics-v1.json",
+      "blackjack-official-backend-probe-v1.json",
+      "blackjack-nuxt-decoded-v1.json"
+    ],
+    "unresolved": [
+      "Map internal ojo_plus_percent field to the current Spanish UZUplus economic definition.",
+      "Verify exact playable rule set behind each published RTP.",
+      "Verify treatment of doubles, splits and exclusions before any economic interpretation."
+    ]
+  },
+  "orientStoryResearch": {
+    "publishedBaseRtpPct": 97.20,
+    "progressiveJackpots": 4,
+    "exactGameRewardRateKnown": false,
+    "exactProgressiveStateKnown": false
+  },
+  "hotOrColdResearch": {
+    "officialRefreshMinutes": 5,
+    "protocolFrozen": true,
+    "publicPerGameStatesCaptured": false,
+    "operatorDisclaimerPreserved": true
+  },
+  "guards": {
+    "observationalOnly": true,
+    "noWagerInstruction": true,
+    "noAutomaticBetting": true,
+    "noGenericRewardRateAppliedToSpecificGame": true,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
