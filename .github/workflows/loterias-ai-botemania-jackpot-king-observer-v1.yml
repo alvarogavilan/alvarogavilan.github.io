@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - 'loterias-ai/casino/jackpots/botemania-jackpot-king-observer-v1.mjs'
+      - 'loterias-ai/casino/jackpots/botemania-jackpot-client-map-v1.mjs'
       - 'loterias-ai/casino/build-casino-dashboard-v1.mjs'
       - '.github/workflows/loterias-ai-botemania-jackpot-king-observer-v1.yml'
   schedule:
@@ -38,9 +39,11 @@ jobs:
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
+            node loterias-ai/casino/jackpots/botemania-jackpot-client-map-v1.mjs
             node loterias-ai/casino/jackpots/botemania-jackpot-king-observer-v1.mjs
             node loterias-ai/casino/build-casino-dashboard-v1.mjs
             git add \
+              loterias-ai/casino/jackpots/evidence/botemania-jackpot-client-map-v1.json \
               loterias-ai/casino/jackpots/evidence/botemania-jackpot-king-observer-v1.json \
               loterias-ai/casino/evidence/casino-dashboard-v1.json
             if git diff --cached --quiet; then exit 0; fi
