@@ -1,0 +1,48 @@
+name: Loterias AI v291 One-Shot Incremental Scientist Swarm
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/loterias-ai-v291-one-shot-swarm.yml'
+permissions:
+  contents: write
+concurrency:
+  group: loterias-ai-v291-one-shot-swarm
+  cancel-in-progress: true
+jobs:
+  swarm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Run one incremental batch of 1024 virtual scientists
+        env:
+          MEGALAB_BATCH: '1024'
+          MEGALAB_TIMEOUT_MS: '1200000'
+        run: node loterias-ai/research/megalab/v291-incremental-local.mjs
+      - name: Enforce discovery-only cumulative multiplicity policy
+        run: |
+          node -e "const x=require('./loterias-ai/data/research/metapleno-v291-local-swarm-state.json');if(x.lastResult?.scientificPromotionCandidate!==false||x.lastResult?.realMoneyPass!==false||x.multiplicityPolicy?.engineAuditSignalIsDiscoveryOnly!==true||x.multiplicityPolicy?.prospectivePreregistrationRequiredForEverySwarmCandidate!==true||x.guards?.realMoneyAllowed!==false)process.exit(1)"
+      - name: Persist only swarm memory and state
+        run: |
+          cp loterias-ai/data/research/metapleno-v290-megalab.json /tmp/megalab.json
+          cp loterias-ai/data/research/metapleno-global-negative-memory.json /tmp/negative-memory.json
+          cp loterias-ai/data/research/metapleno-v291-local-swarm-state.json /tmp/swarm-state.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp /tmp/megalab.json loterias-ai/data/research/metapleno-v290-megalab.json
+            cp /tmp/negative-memory.json loterias-ai/data/research/metapleno-global-negative-memory.json
+            cp /tmp/swarm-state.json loterias-ai/data/research/metapleno-v291-local-swarm-state.json
+            git add loterias-ai/data/research/metapleno-v290-megalab.json loterias-ai/data/research/metapleno-global-negative-memory.json loterias-ai/data/research/metapleno-v291-local-swarm-state.json
+            git commit -m 'data(megalab): persist one-shot v291 scientist batch' || exit 0
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
