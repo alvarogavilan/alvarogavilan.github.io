@@ -1,0 +1,45 @@
+{
+  "version": "standard-roulette-official-venue-addendum-v1",
+  "createdAt": "2026-08-19T08:45:00Z",
+  "appliesToFreeze": "standard-roulette-independent-streams-v1-freeze",
+  "policyVersion": "official-venue-policy-v1",
+  "streams": [
+    {
+      "id": "immersive",
+      "officialGameName": "Immersive Roulette",
+      "officialOperator": "pokerstars.es",
+      "officialAvailabilityConfirmed": true,
+      "officialStraightUpProfitPayout": "35:1",
+      "currentCollectorSourceRole": "AUXILIARY_RESEARCH_ONLY",
+      "currentCollectorPromotionEligible": false,
+      "officialVenueReplicationRequired": true
+    },
+    {
+      "id": "auto",
+      "officialGameName": "Auto/Slingshot Roulette",
+      "officialOperator": "pokerstars.es",
+      "officialAvailabilityConfirmed": true,
+      "officialStraightUpProfitPayout": "35:1",
+      "currentCollectorSourceRole": "AUXILIARY_RESEARCH_ONLY",
+      "currentCollectorPromotionEligible": false,
+      "officialVenueReplicationRequired": true
+    }
+  ],
+  "excluded": [
+    {
+      "game": "Gold Vault Roulette",
+      "reason": "Not confirmed on pokerstars.es or playuzu.es under the active venue allowlist."
+    }
+  ],
+  "operationalRule": {
+    "scheduleOnMainCaptureCycle": false,
+    "manualAuxiliaryResearchOnly": true,
+    "doNotPromoteFromAuxiliaryFeed": true,
+    "officialVenueOrOfficialProviderOutcomeEvidenceRequiredBeforePromotion": true
+  },
+  "safety": {
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "authorizedStakeEUR": 0
+  }
+}
