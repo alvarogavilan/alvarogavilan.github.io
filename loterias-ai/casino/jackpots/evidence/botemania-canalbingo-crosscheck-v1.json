@@ -1,30 +1,44 @@
 {
-  "version": "botemania-canalbingo-crosscheck-v1",
-  "generatedAt": "2026-08-19T17:20:51.382Z",
+  "version": "botemania-canalbingo-crosscheck-v1.1",
+  "generatedAt": "2026-08-19T17:22:35.611Z",
   "endpoint": "https://www.botemania.es/es/graphql",
-  "scope": "BOUNDED_PUBLIC_VENTURE_CROSSCHECK_NO_AUTH_NO_MUTATION",
+  "scope": "BOUNDED_PUBLIC_SPANISH_VENTURE_CROSSCHECK_NO_AUTH_NO_MUTATION",
   "venturesTried": [
-    "canalbingo_es",
-    "canalbingo",
-    "canal_bingo_es"
+    {
+      "id": "canalbingo_es",
+      "kind": "CANAL_BINGO_CANDIDATE"
+    },
+    {
+      "id": "canalbingo",
+      "kind": "CANAL_BINGO_CANDIDATE"
+    },
+    {
+      "id": "canal_bingo_es",
+      "kind": "CANAL_BINGO_CANDIDATE"
+    },
+    {
+      "id": "monopolycasino_es",
+      "kind": "KNOWN_SPANISH_VENTURE"
+    }
   ],
   "botemaniaReference": [
     {
       "id": "JACKPOTKING",
-      "amount": 128294.74
+      "amount": 128295.13
     },
     {
       "id": "JACKPOTKING_REGAL",
-      "amount": 15484.96
+      "amount": 15485.08
     },
     {
       "id": "JACKPOTKING_ROYAL",
-      "amount": 1627.86
+      "amount": 1627.98
     }
   ],
   "probes": [
     {
       "venture": "canalbingo_es",
+      "kind": "CANAL_BINGO_CANDIDATE",
       "jackpots": {
         "httpStatus": 200,
         "rows": null,
@@ -41,10 +55,12 @@
         ],
         "responseSha256": "e26e930e64363b7bdb0a64f54620ec9419d8360f749830adc6284908f42122ba"
       },
+      "normalizedRows": [],
       "sameAsBotemania": false
     },
     {
       "venture": "canalbingo",
+      "kind": "CANAL_BINGO_CANDIDATE",
       "jackpots": {
         "httpStatus": 200,
         "rows": null,
@@ -61,10 +77,12 @@
         ],
         "responseSha256": "c7d5752085920cd6ff885a443e96bbe72d5b21648c47691ca490d4b344aa95af"
       },
+      "normalizedRows": [],
       "sameAsBotemania": false
     },
     {
       "venture": "canal_bingo_es",
+      "kind": "CANAL_BINGO_CANDIDATE",
       "jackpots": {
         "httpStatus": 200,
         "rows": null,
@@ -81,13 +99,45 @@
         ],
         "responseSha256": "4206892d8aa721b008db5f82119dffa27014e46da821c0041330c92c5082fa04"
       },
+      "normalizedRows": [],
+      "sameAsBotemania": false
+    },
+    {
+      "venture": "monopolycasino_es",
+      "kind": "KNOWN_SPANISH_VENTURE",
+      "jackpots": {
+        "httpStatus": 200,
+        "rows": [],
+        "errors": [],
+        "responseSha256": "a42150cc6a5e062c58fc82da8a19ca14ce0b39f3842a6576d0e521e5c5a2800d"
+      },
+      "game": {
+        "httpStatus": 200,
+        "data": {
+          "id": "fishin-frenzy-jackpot-king",
+          "title": "Fishin' Frenzy: Jackpot King",
+          "providerId": "blueprint",
+          "jackpot": {
+            "id": null,
+            "amount": null
+          },
+          "numericMentions": [],
+          "howToPlaySha256": "9ecd649d30d819c7b47f55def67774e847c63c623dad9c330de66f7108ce4de6"
+        },
+        "errors": [],
+        "responseSha256": "1dbaf1992871e59fba7487fa7db09e1c8de81e32d9b2f40d4b61334fb9be4938"
+      },
+      "normalizedRows": [],
       "sameAsBotemania": false
     }
   ],
   "decision": {
     "canalBingoVentureResolved": false,
-    "resolvedVenture": null,
-    "sharedPotCorroborated": false,
+    "resolvedCanalBingoVenture": null,
+    "canalBingoSharedPotCorroborated": false,
+    "monopolyCasinoVentureResolved": false,
+    "monopolyCasinoSameAsBotemania": false,
+    "monopolyCasinoIndependentSpanishNetwork": false,
     "exactSpainMbwbRecovered": false,
     "realMoneyAllowed": false
   },
