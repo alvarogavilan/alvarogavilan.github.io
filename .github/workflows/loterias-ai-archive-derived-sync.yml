@@ -95,6 +95,22 @@ jobs:
             if(Number(priorities.totals?.economicsRecords)!==manifestEconomics) throw Error(`archive economics mismatch: priorities=${priorities.totals?.economicsRecords} manifest=${manifestEconomics}`);
             if(manifestRecords<=0||manifestValidated<0||manifestValidated>manifestRecords) throw Error('invalid archive manifest totals');
             if(!audit.qualityGate || typeof audit.qualityGate.pass!=='boolean') throw Error('archive audit missing explicit quality gate');
+            const manifestGames=Object.entries(manifest.games||{});
+            const missingAuditGames=[];
+            const recordMismatches=[];
+            for(const [gameId, game] of manifestGames){
+              const audited=audit.games?.[gameId];
+              if(!audited){
+                missingAuditGames.push(gameId);
+                continue;
+              }
+              if(Number(audited.records)!==Number(game.records)){
+                recordMismatches.push(`${gameId}:${audited.records}!=${game.records}`);
+              }
+            }
+            if(missingAuditGames.length) throw Error(`archive audit missing manifest games: ${missingAuditGames.join(',')}`);
+            if(recordMismatches.length) throw Error(`archive audit record mismatches: ${recordMismatches.join(',')}`);
+            if(Object.keys(audit.games||{}).length!==manifestGames.length) throw Error(`archive audit game-count mismatch: audit=${Object.keys(audit.games||{}).length} manifest=${manifestGames.length}`);
             NODE
 
             git add \
