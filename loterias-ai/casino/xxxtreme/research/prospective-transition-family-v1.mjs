@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// Operational post-barrier pulse marker; frozen scientific rules below are unchanged.
 import fs from 'node:fs';
 import { spawnSync } from 'node:child_process';
 
