@@ -1,24 +1,26 @@
 {
-  "version": "botemania-jpk-live-gate-v1.2",
-  "generatedAt": "2026-08-19T17:56:58.201Z",
+  "version": "botemania-jpk-live-gate-v1.3",
+  "generatedAt": "2026-08-19T18:03:47.423Z",
   "operator": "botemania-es",
   "state": "BELOW_RESEARCH_BAND",
   "current": {
-    "observedAt": "2026-08-19T17:56:45.622Z",
+    "observedAt": "2026-08-19T18:03:29.919Z",
     "sourceFresh": true,
     "potsEUR": {
-      "JACKPOT_KING": 128312.7,
-      "REGAL": 15490.86,
-      "ROYAL": 1633.76
+      "JACKPOT_KING": 128316.02,
+      "REGAL": 15491.95,
+      "ROYAL": 1634.85
     },
     "normalizedSeedToCapHypothesis": {
-      "ROYAL": 0.37792,
-      "REGAL": 0.34969533333333336
+      "ROYAL": 0.3782833333333333,
+      "REGAL": 0.3497316666666667
     },
     "modelScreen": {
       "pass": false,
+      "royalOnlyPass": false,
+      "regalOnlyPass": false,
       "worstConservativeRtp": 0.933206,
-      "bestConservativeRtp": 0.944873
+      "bestConservativeRtp": 0.944878
     }
   },
   "researchBand": {
@@ -30,17 +32,20 @@
           "ROYAL": 3223.7,
           "REGAL": 32237
         },
-        "active": false
+        "active": false,
+        "creditPolicy": "ROYAL_PLUS_REGAL_ONLY_KING_ZERO"
       },
-      "ROYAL_HIGH_WITH_REGAL_CURRENT": {
+      "ROYAL_ONLY": {
         "thresholdNormalized": 0.9424,
         "thresholdPotHypothesisEUR": 3327.2,
-        "active": false
+        "active": false,
+        "creditPolicy": "ROYAL_ONLY_ZERO_CREDIT_TO_REGAL_AND_KING"
       },
-      "REGAL_HIGH_WITH_ROYAL_CURRENT": {
+      "REGAL_ONLY": {
         "thresholdNormalized": 0.9424,
         "thresholdPotHypothesisEUR": 33272,
-        "active": false
+        "active": false,
+        "creditPolicy": "REGAL_ONLY_ZERO_CREDIT_TO_ROYAL_AND_KING"
       }
     },
     "inBand": false
@@ -68,7 +73,7 @@
     "hypothesisNeverPromotes": true,
     "noCrossMarketCapAsFact": true,
     "fitReadyNeverEqualsExactHazard": true,
-    "individualHighPotRoutesMonitored": true,
+    "individualHighPotRoutesGiveZeroOtherJackpotCredit": true,
     "noBetting": true,
     "realMoneyAllowed": false,
     "automaticBettingAllowed": false
