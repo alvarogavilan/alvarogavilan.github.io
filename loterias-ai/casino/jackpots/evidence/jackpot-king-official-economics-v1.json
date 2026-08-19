@@ -1,7 +1,7 @@
 {
-  "version": "jackpot-king-official-economics-v1.1",
+  "version": "jackpot-king-official-economics-v1.2",
   "createdAt": "2026-08-19T12:30:00Z",
-  "updatedAt": "2026-08-19T12:33:00Z",
+  "updatedAt": "2026-08-19T12:35:00Z",
   "scope": "King Kong Cash Jackpot King / Jackpot King Deluxe network mechanics relevant to PokerStars Spain",
   "officialSources": [
     {
@@ -38,12 +38,13 @@
     },
     {
       "provider": "Blueprint Gaming help service",
-      "url": "https://fileservice.blueprintgaming.com/?customer=PADDYPOWERBETFAIR&fileType=help&gameEngineID=tedjk&language=EN&profile=jackpotkingdeluxe3",
+      "url": "https://fileservice.blueprintgaming.com/?affiliate=&customer=Betfair_Sky&fileType=help&gameEngineID=thegooniesjk&language=EN&profile=jackpotkingdeluxe3",
       "facts": {
         "jackpotsFundedByPlayerStakeContributionsExceptInitialOperatorSeeds": true,
         "jackpotChanceIncreasesWithJackpotValue": true,
         "royalAndRegalGuaranteedByMustBeWonByValue": true,
-        "wonJackpotResetsToReserveAmount": true
+        "wonJackpotResetsToReserveAmount": true,
+        "systemAvailableAtAnyStake": true
       }
     }
   ],
@@ -51,12 +52,22 @@
     "baseRtpPctForKingKongHighVariant": 95.01,
     "publishedJackpotAllocationPct": 0.38,
     "publishedReserveAllocationPct": 0.11,
+    "publishedAverageJackpotPlusReserveComponentPctPoints": 0.49,
     "publishedGlobalRtpIncludingJackpotContributionPct": 95.50,
     "longRunGapToBreakEvenPctPoints": 4.50,
+    "stateSpecificJackpotComponentNeededForBreakEvenPctPoints": 4.99,
+    "requiredMultipleOfPublishedAverageJackpotPlusReserveComponent": 10.1836734694,
     "arithmeticConsistency95_01Plus0_38Plus0_11Equals95_50": true,
     "stateDependentJackpotProbability": true,
     "stakeFundedProgressive": true,
     "mustBeWonByExistsForRoyalAndRegal": true
+  },
+  "breakEvenHurdleFrozenBeforeHazardEvidence": {
+    "formula": "95.01 base RTP + state-specific Jackpot King component >= 100.00",
+    "minimumStateSpecificJackpotComponentPctPoints": 4.99,
+    "publishedAverageJackpotPlusReserveComponentPctPoints": 0.49,
+    "minimumMultipleVersusPublishedAverageComponent": 10.1836734694,
+    "interpretation": "A future state is economically interesting only if independently estimated Jackpot King value exceeds this hurdle after uncertainty. Pot size or a mere reset is not sufficient."
   },
   "unresolved": {
     "exactRoyalMustBeWonByEUR": null,
@@ -69,12 +80,13 @@
     "totalRtpAtCurrentObservedPot": null
   },
   "scientificInterpretation": {
-    "importantAdvance": "PokerStars now supplies both the exact 0.38% jackpot allocation / 0.11% reserve allocation and an official 95.50% global RTP including jackpot contribution. The long-run average game therefore remains 4.50 percentage points below break-even; any positive-EV state would need a rigorously demonstrated state-dependent jackpot uplift greater than that gap.",
+    "importantAdvance": "PokerStars supplies a 95.50% global RTP including jackpot contribution, while Blueprint confirms state-dependent jackpot probability and MBWB Royal/Regal pots. The break-even hurdle is now frozen before hazard evidence: the jackpot component would need to rise from its 0.49 percentage-point long-run average to at least 4.99 percentage points, approximately 10.18x the average component, for the 95.01% base game to reach 100%.",
     "positiveEVKnown": false,
-    "reasonNoPositiveEVClaim": "Must-be-won-by thresholds, pot identity, allocation split and jackpot hazard function remain unresolved. Current pot size alone cannot establish a state-dependent uplift above the 4.50 percentage-point long-run deficit."
+    "reasonNoPositiveEVClaim": "The numeric MBWB thresholds and the jackpot hazard function remain unpublished/unresolved. No current pot can be assigned a state-specific RTP without future-only hazard evidence."
   },
   "guards": {
     "officialSourcesOnly": true,
+    "breakEvenHurdleFrozenBeforeValidHazardEvidence": true,
     "globalRtp95_50MayBeUsedAsLongRunAverageOnly": true,
     "currentPotRtpMustNotBeDerivedWithoutHazard": true,
     "noEconomicPromotionFromPotSizeAlone": true,
