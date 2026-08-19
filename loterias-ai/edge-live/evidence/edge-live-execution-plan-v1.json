@@ -1,6 +1,6 @@
 {
-  "version": "edge-live-execution-plan-v1",
-  "generatedAt": "2026-08-19T22:20:53.207Z",
+  "version": "edge-live-execution-plan-v1.1-state-window",
+  "generatedAt": "2026-08-19T22:24:58.948Z",
   "operator": "botemania-es",
   "game": {
     "id": "fishin-frenzy-jackpot-king",
@@ -17,34 +17,35 @@
     "validFrom": null,
     "validUntil": null,
     "exactClockMinuteRequired": false,
-    "timingBasis": "NO_VALIDATED_MINUTE_OR_SECOND_EDGE"
+    "timingBasis": "STATE_TRIGGERED_FRESHNESS_WINDOW",
+    "maxSignalAgeSeconds": 90
   },
   "evidence": {
     "structurePass": true,
     "economicPass": false,
     "exactStakeKnown": false,
-    "timingEdgeValidated": false,
     "sourceFresh": true,
-    "observedAt": "2026-08-19T22:20:38.691Z",
-    "signalAgeSeconds": 14,
+    "withinFreshExecutionWindow": true,
+    "observedAt": "2026-08-19T22:24:43.364Z",
+    "signalAgeSeconds": 15,
     "bestConservativeRtp": 0.944996,
     "potsEUR": {
-      "JACKPOT_KING": 128389.5,
-      "REGAL": 15516.09,
-      "ROYAL": 1658.99
+      "JACKPOT_KING": 128389.81,
+      "REGAL": 15516.19,
+      "ROYAL": 1659.09
     },
     "networkAllocationProspectivelyValidated": true
   },
   "blockers": [
     "ECONOMIC_GATE_NOT_PASSED",
-    "EXACT_STAKE_PER_SPIN_NOT_VERIFIED",
-    "TIMING_EDGE_NOT_VALIDATED"
+    "EXACT_STAKE_PER_SPIN_NOT_VERIFIED"
   ],
-  "interpretation": "No exact wager amount or clock time is published because one or more execution gates are unresolved. Precision must not be fabricated.",
+  "interpretation": "No execution order is published while the economic gate or exact stake remains unresolved, or while the state is stale. No special lucky minute is assumed.",
   "guards": {
     "noAutomaticBetting": true,
     "noInventedStake": true,
     "noInventedMinute": true,
+    "noClockPatternAssumption": true,
     "noMartingale": true,
     "noLossChasing": true,
     "staleSignalFailsClosed": true,
