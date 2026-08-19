@@ -9,6 +9,7 @@ on:
       - 'loterias-ai/scripts/crosscheck-bonoloto-official-results.mjs'
       - 'loterias-ai/scripts/quarantine-bonoloto-official-conflicts.mjs'
       - 'loterias-ai/scripts/resolve-bonoloto-official-conflicts-dual-route.mjs'
+      - 'loterias-ai/scripts/bonoloto-paper-real-eur1-v1.mjs'
       - '.github/workflows/loterias-ai-bonoloto-official-result-crosscheck.yml'
 permissions:
   contents: write
@@ -39,9 +40,10 @@ jobs:
             node loterias-ai/scripts/quarantine-bonoloto-official-conflicts.mjs
             node loterias-ai/scripts/build-national-archive-index.mjs
             node loterias-ai/scripts/build-completeness-index.mjs
-            git add loterias-ai/data/archive
+            node loterias-ai/scripts/bonoloto-paper-real-eur1-v1.mjs
+            git add loterias-ai/data/archive loterias-ai/data/shadow/bonoloto-paper-real-eur1-v1.json
             if git diff --cached --quiet; then exit 0; fi
-            git commit -m 'data(bonoloto): persist official SELAE 6+C+R cross-checks'
+            git commit -m 'data(bonoloto): persist official cross-check and EUR1 paper bankroll'
             if git push origin HEAD:main; then exit 0; fi
             sleep $((attempt * 2))
           done
