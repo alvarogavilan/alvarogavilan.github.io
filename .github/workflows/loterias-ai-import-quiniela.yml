@@ -4,35 +4,57 @@ on:
   push:
     paths:
       - 'loterias-ai/scripts/import-quiniela-history.mjs'
+      - 'loterias-ai/scripts/preserve-archive-evidence.mjs'
       - '.github/workflows/loterias-ai-import-quiniela.yml'
 permissions:
   contents: write
+concurrency:
+  group: loterias-ai-import-quiniela
+  cancel-in-progress: true
 jobs:
   import:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node loterias-ai/scripts/import-quiniela-history.mjs
-      - run: node loterias-ai/scripts/build-national-archive-index.mjs
-      - run: node loterias-ai/scripts/audit-national-archive.mjs
-      - name: Persist safely
+      - name: Recompute secondary history from latest main without degrading official evidence
         shell: bash
         run: |
-          mkdir -p /tmp/quiniela
-          cp -r loterias-ai/data/archive/quiniela /tmp/quiniela/
-          cp loterias-ai/data/archive/_meta/quiniela-import.json /tmp/quiniela-summary.json
-          git fetch origin main
-          git reset --hard origin/main
-          rm -rf loterias-ai/data/archive/quiniela
-          cp -r /tmp/quiniela/quiniela loterias-ai/data/archive/
-          cp /tmp/quiniela-summary.json loterias-ai/data/archive/_meta/quiniela-import.json
-          node loterias-ai/scripts/build-national-archive-index.mjs
-          node loterias-ai/scripts/audit-national-archive.mjs
+          set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add loterias-ai/data/archive
-          git commit -m 'data(loterias-ai): persist Quiniela history' || exit 0
-          git push origin HEAD:main
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            rm -rf /tmp/quiniela-before
+            mkdir -p /tmp/quiniela-before
+            cp -a loterias-ai/data/archive/quiniela /tmp/quiniela-before/quiniela
+
+            node loterias-ai/scripts/import-quiniela-history.mjs
+            ARCHIVE_BEFORE=/tmp/quiniela-before ARCHIVE_AFTER=loterias-ai/data/archive node loterias-ai/scripts/preserve-archive-evidence.mjs
+            node loterias-ai/scripts/quarantine-quiniela-structural-anomalies.mjs
+            node loterias-ai/scripts/build-national-archive-index.mjs
+            node loterias-ai/scripts/build-completeness-index.mjs
+            node loterias-ai/scripts/audit-national-archive.mjs
+            node loterias-ai/scripts/build-archive-coverage-priorities.mjs
+
+            git add loterias-ai/data/archive
+            if git diff --cached --quiet; then
+              echo 'No semantic Quiniela history change.'
+              exit 0
+            fi
+            git commit -m 'data(loterias-ai): persist Quiniela history safely'
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "main moved during Quiniela import attempt ${attempt}; recomputing from latest main"
+            sleep $((attempt * 2))
+          done
+          echo 'Unable to persist Quiniela history safely after five recomputations.' >&2
+          exit 1
