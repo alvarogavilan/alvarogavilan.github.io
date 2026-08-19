@@ -59,3 +59,4 @@ console.log(JSON.stringify({refreshedReadiness:true,promotionRefresh:true,newlyC
 
 // One-shot operational pulse marker 2026-08-19T09:50Z; no cadence or scientific rule changed.
 // One-shot operational pulse marker 2026-08-19T11:28Z after scheduler delay; no cadence or scientific rule changed.
+// One-shot operational pulse marker 2026-08-19T11:59Z near lag8 fixed boundary; no cadence or scientific rule changed.
