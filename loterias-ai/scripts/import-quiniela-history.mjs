@@ -27,7 +27,31 @@ for(let y=1972;y<=2025;y++){
 }
 const dedup=[];const seen=new Set();for(const r of all){const key=`${r.season}|${r.jornada}|${r.drawDate||''}|${r.outcomes.join(',')}`;if(seen.has(key))continue;seen.add(key);dedup.push(r)}
 if(dedup.length<1000)throw new Error(`Quiniela parsed too few rows: ${dedup.length}`);
-const badDates=dedup.filter(r=>r.drawDate&&(Number(r.drawDate.slice(0,4))<r.seasonStart||Number(r.drawDate.slice(0,4))>r.seasonStart+1));if(badDates.length)throw new Error(`Quiniela has ${badDates.length} out-of-season dates`);
+
+const undated=dedup.filter(r=>!r.drawDate);
+const dated=dedup.filter(r=>r.drawDate);
+const byDate=new Map();for(const r of dated){if(!byDate.has(r.drawDate))byDate.set(r.drawDate,[]);byDate.get(r.drawDate).push(r)}
+const ambiguousGroups=[...byDate.entries()].filter(([,rows])=>rows.length>1);
+const ambiguousRows=new Set(ambiguousGroups.flatMap(([,rows])=>rows));
+const canonical=dated.filter(r=>!ambiguousRows.has(r));
+if(canonical.length<1000)throw new Error(`Quiniela canonical parsed too few rows after fail-closed quarantine: ${canonical.length}`);
+const badDates=canonical.filter(r=>Number(r.drawDate.slice(0,4))<r.seasonStart||Number(r.drawDate.slice(0,4))>r.seasonStart+1);if(badDates.length)throw new Error(`Quiniela has ${badDates.length} out-of-season dates`);
+
 const dir='loterias-ai/data/archive/quiniela';fs.mkdirSync(dir,{recursive:true});
-for(const y of [...new Set(dedup.map(r=>r.seasonStart))]){const records=dedup.filter(r=>r.seasonStart===y).map((r,i)=>({drawId:`quiniela-${r.season}-${r.jornada??i+1}`,gameId:'quiniela',drawDate:r.drawDate,season:r.season,jornada:r.jornada,result:{outcomes:r.outcomes},source:r.source}));fs.writeFileSync(`${dir}/${y}.json`,JSON.stringify({gameId:'quiniela',seasonStart:y,verificationLevel:'SECONDARY_STRUCTURAL',records},null,2)+'\n')}
-const dated=dedup.filter(r=>r.drawDate).sort((a,b)=>a.drawDate.localeCompare(b.drawDate));const summary={generatedAt:new Date().toISOString(),gameId:'quiniela',records:dedup.length,seasons:new Set(dedup.map(r=>r.season)).size,earliestSeason:dedup[0]?.season,latestSeason:dedup.at(-1)?.season,earliestDate:dated[0]?.drawDate||null,latestDate:dated.at(-1)?.drawDate||null,undated:dedup.length-dated.length,failed};fs.mkdirSync('loterias-ai/data/archive/_meta',{recursive:true});fs.writeFileSync('loterias-ai/data/archive/_meta/quiniela-import.json',JSON.stringify(summary,null,2)+'\n');console.log(JSON.stringify({...summary,failed:failed.length},null,2));
+for(const y of [...new Set(canonical.map(r=>r.seasonStart))]){
+  const records=canonical.filter(r=>r.seasonStart===y).map((r,i)=>({drawId:`quiniela-${r.season}-${r.jornada??i+1}`,gameId:'quiniela',drawDate:r.drawDate,season:r.season,jornada:r.jornada,result:{outcomes:r.outcomes},source:r.source}));
+  fs.writeFileSync(`${dir}/${y}.json`,JSON.stringify({gameId:'quiniela',seasonStart:y,verificationLevel:'SECONDARY_STRUCTURAL',records},null,2)+'\n')
+}
+const quarantine={
+  generatedAt:new Date().toISOString(),
+  gameId:'quiniela',
+  policy:'Secondary rows without a verifiable draw date or with ambiguous duplicate dates are excluded from the canonical archive. No date/result is inferred.',
+  undated:undated.map(row=>({reason:'UNVERIFIABLE_DRAW_DATE',trainingEligible:false,row})),
+  ambiguousDates:ambiguousGroups.map(([drawDate,rows])=>({drawDate,reason:'AMBIGUOUS_DUPLICATE_DATE_FROM_SECONDARY_SOURCE',trainingEligible:false,rows})),
+  guards:{noInference:true,noAmbiguousSecondaryPromotion:true}
+};
+fs.mkdirSync('loterias-ai/data/archive/_meta',{recursive:true});
+fs.writeFileSync('loterias-ai/data/archive/_meta/quiniela-import-quarantine.json',JSON.stringify(quarantine,null,2)+'\n');
+const sorted=[...canonical].sort((a,b)=>a.drawDate.localeCompare(b.drawDate));
+const summary={generatedAt:new Date().toISOString(),gameId:'quiniela',sourceParsedRecords:dedup.length,records:canonical.length,seasons:new Set(canonical.map(r=>r.season)).size,earliestSeason:canonical[0]?.season,latestSeason:canonical.at(-1)?.season,earliestDate:sorted[0]?.drawDate||null,latestDate:sorted.at(-1)?.drawDate||null,quarantinedUndated:undated.length,quarantinedAmbiguousDateGroups:ambiguousGroups.length,quarantinedAmbiguousRows:ambiguousRows.size,failed};
+fs.writeFileSync('loterias-ai/data/archive/_meta/quiniela-import.json',JSON.stringify(summary,null,2)+'\n');console.log(JSON.stringify({...summary,failed:failed.length},null,2));
