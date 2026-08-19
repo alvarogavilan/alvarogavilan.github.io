@@ -14,7 +14,14 @@ function sha256(v){return crypto.createHash('sha256').update(v).digest('hex')}
 function canonical(o){if(Array.isArray(o))return `[${o.map(canonical).join(',')}]`;if(o&&typeof o==='object')return `{${Object.keys(o).sort().map(k=>JSON.stringify(k)+':'+canonical(o[k])).join(',')}}`;return JSON.stringify(o)}
 function mulberry32(a){return()=>{let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
 function sampleTicket(r){const a=Array.from({length:49},(_,i)=>i+1),o=[];while(o.length<6)o.push(a.splice(Math.floor(r()*a.length),1)[0]);return o.sort((x,y)=>x-y)}
-function prize(ticket,row){const win=row.result.main.map(Number),hits=ticket.filter(n=>win.includes(n)).length,p=row.economics.payouts;if(hits===6)return Number(p.six)||0;if(hits===5){const missing=win.find(n=>!ticket.includes(n));return Number(missing===Number(row.result.complementary)?p.fiveC:p.five)||0}if(hits===4)return Number(p.four)||0;if(hits===3)return Number(p.three)||0;return 0}
+function prize(ticket,row){const win=row.result.main.map(Number),hits=ticket.filter(n=>win.includes(n)).length,p=row.economics.payouts;if(hits===6)return Number(p.six)||0;if(hits===5)return Number(ticket.includes(Number(row.result.complementary))?p.fiveC:p.five)||0;if(hits===4)return Number(p.four)||0;if(hits===3)return Number(p.three)||0;return 0}
+function assertPrizeScoringRegression(){
+  const row={result:{main:[1,2,3,4,5,6],complementary:7},economics:{payouts:{six:600000,fiveC:10000,five:1000,four:50,three:8}}};
+  assert(prize([1,2,3,4,5,7],row)===10000,'5+complementario regression: expected fiveC');
+  assert(prize([1,2,3,4,5,8],row)===1000,'5-hit regression: expected five');
+  assert(prize([1,2,3,4,5,6],row)===600000,'6-hit regression: expected six');
+}
+assertPrizeScoringRegression();
 assert(freeze.version==='primitiva-frequency4-prospective-freeze-v1'&&freeze.fixedBoundaryDraws===50&&freeze.economics?.matchedRandomReplicates===10000&&freeze.economics?.familyAlpha===0.01&&freeze.guards?.realMoneyAllowed===false,'freeze drift');
 
 const files=fs.existsSync(SEALS)?fs.readdirSync(SEALS).filter(x=>/^primitiva-frequency4-\d{4}-\d{2}-\d{2}\.json$/.test(x)).sort():[];
