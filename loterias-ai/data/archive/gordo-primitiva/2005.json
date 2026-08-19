@@ -5600,16 +5600,54 @@
           47,
           49
         ],
-        "key": 7
+        "key": 9
       },
       "source": {
         "provider": "Lotoideas CSV",
         "tier": "secondary-history",
-        "validation": "pending-official-cross-check",
+        "validation": "official-dual-route-corrected",
         "archivePreviousSource": {
           "provider": "Lotoideas CSV",
           "tier": "secondary-history",
           "validation": "pending-official-cross-check"
+        },
+        "correctionAudit": {
+          "correctedAt": "2026-08-19T14:09:51.223Z",
+          "previous": {
+            "result": {
+              "main": [
+                3,
+                8,
+                30,
+                47,
+                49
+              ],
+              "key": 7
+            },
+            "source": {
+              "provider": "Lotoideas CSV",
+              "tier": "secondary-history",
+              "validation": "pending-official-cross-check",
+              "archivePreviousSource": {
+                "provider": "Lotoideas CSV",
+                "tier": "secondary-history",
+                "validation": "pending-official-cross-check"
+              }
+            }
+          },
+          "reason": "stored key 7 contradicted by SELAE and BOE; both official routes return key 9",
+          "officialSources": [
+            {
+              "provider": "SELAE",
+              "url": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=ELGR&fecha_sorteo=20051126",
+              "officialDrawId": "562805001"
+            },
+            {
+              "provider": "BOE",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2005-19961",
+              "reference": "BOE-A-2005-19961"
+            }
+          ]
         }
       },
       "economics": {
@@ -5689,7 +5727,53 @@
       "official": {
         "drawId": "562805001",
         "drawNumber": null
-      }
+      },
+      "verification": {
+        "status": "OFFICIAL_SELAE_VALIDATED",
+        "checks": [
+          "official-fechav3-exact-date",
+          "official-main-cross-check",
+          "official-key-cross-check",
+          "official-boe-key-confirmation"
+        ],
+        "officialCrossCheck": {
+          "provider": "SELAE",
+          "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=ELGR&fecha_sorteo=20051126",
+          "officialDrawId": "562805001",
+          "checkedAt": "2026-08-19T14:09:51.223Z",
+          "exactDate": true,
+          "fields": {
+            "main": true,
+            "key": true
+          },
+          "complete": true,
+          "officialResult": {
+            "main": [
+              3,
+              8,
+              30,
+              47,
+              49
+            ],
+            "key": 9
+          }
+        },
+        "secondaryOfficialAuthority": {
+          "provider": "BOE",
+          "reference": "BOE-A-2005-19961",
+          "sourceUrl": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2005-19961",
+          "main": [
+            3,
+            8,
+            30,
+            47,
+            49
+          ],
+          "key": 9,
+          "complete": true
+        }
+      },
+      "trainingEligible": true
     },
     {
       "drawId": "gordo-primitiva-2005-12-03",
