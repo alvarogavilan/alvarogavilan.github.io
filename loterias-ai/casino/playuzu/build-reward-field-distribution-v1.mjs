@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+const IN='loterias-ai/casino/playuzu/evidence/validated-game-catalog-v1.json';
+const OUT='loterias-ai/casino/playuzu/evidence/internal-reward-field-distribution-v1.json';
+const d=JSON.parse(fs.readFileSync(IN,'utf8')),games=d.games||[];
+const vals=games.map(g=>Number(g.internalRewardFieldPct)).filter(Number.isFinite);
+const buckets={};for(const v of vals){const k=v.toFixed(4);buckets[k]=(buckets[k]||0)+1;}
+const byCategory={};for(const g of games){const c=g.category||'UNKNOWN',v=Number(g.internalRewardFieldPct);if(!Number.isFinite(v))continue;byCategory[c]??={};const k=v.toFixed(4);byCategory[c][k]=(byCategory[c][k]||0)+1;}
+const payload={version:'internal-reward-field-distribution-v1',generatedAt:new Date().toISOString(),sourceCatalog:IN,summary:{games:games.length,withField:vals.length,min:vals.length?Math.min(...vals):null,max:vals.length?Math.max(...vals):null,distinctValues:Object.keys(buckets).length},distribution:Object.entries(buckets).sort((a,b)=>Number(a[0])-Number(b[0])).map(([value,count])=>({value:Number(value),count})),byCategory,comparisonToPublishedUZUplusRange:{publishedMinPctPoints:0.06,publishedMaxPctPoints:0.60,valuesBelowPublishedMin:Object.entries(buckets).filter(([k])=>Number(k)<0.06).map(([value,count])=>({value:Number(value),count})),valuesInsidePublishedRange:Object.entries(buckets).filter(([k])=>Number(k)>=0.06&&Number(k)<=0.60).map(([value,count])=>({value:Number(value),count})),valuesAbovePublishedMax:Object.entries(buckets).filter(([k])=>Number(k)>0.60).map(([value,count])=>({value:Number(value),count}))},interpretation:{semanticMappingConfirmed:false,reason:'Distribution can support or contradict scale plausibility but cannot by itself prove the field is current Spanish UZUplus cashback.'},guards:{researchOnly:true,noEconomicAdditionToRtp:true,noBetting:true,realMoneyAllowed:false}};
+fs.writeFileSync(OUT,JSON.stringify(payload,null,2)+'\n');console.log(JSON.stringify({summary:payload.summary,distribution:payload.distribution,comparison:payload.comparisonToPublishedUZUplusRange},null,2));
