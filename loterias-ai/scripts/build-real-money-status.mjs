@@ -6,7 +6,7 @@ const defs=[
  {id:'gordo-primitiva',name:'El Gordo de la Primitiva',file:'gordo-primitiva-official-financial-tournament.json'},
  {id:'euromillones',name:'Euromillones',file:'euromillones-official-financial-tournament.json'},
  {id:'eurodreams',name:'EuroDreams',file:'eurodreams-official-financial-tournament.json'},
- {id:'loteria-nacional',name:'Lotería Nacional',file:'loteria-nacional-official-financial-tournament.json'},
+ {id:'loteria-nacional',name:'Lotería Nacional',file:'loteria-nacional-schema-financial-tournament.json'},
  {id:'quiniela',name:'La Quiniela',file:'quiniela-official-financial-tournament.json'},
  {id:'elige8',name:'Elige8',file:'elige8-official-financial-tournament.json'},
  {id:'quinigol',name:'Quinigol',file:'quinigol-official-financial-tournament.json'},
