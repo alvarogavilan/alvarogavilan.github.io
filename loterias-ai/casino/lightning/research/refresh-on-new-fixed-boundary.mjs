@@ -1,10 +1,38 @@
 #!/usr/bin/env node
-// Operational one-shot capture pulse requested 2026-08-19; scientific logic unchanged.
 import fs from 'node:fs';
 import { spawnSync } from 'node:child_process';
 
 const E='loterias-ai/casino/lightning/evidence';
 const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'));}catch{return null;}};
+
+// Advance the preregistered transition-family lane inside the already-paid capture cycle.
+// Before its fixed boundary, only administrative progress is copied into the persisted readiness ledger.
+const transitionRun=spawnSync(process.execPath,['loterias-ai/casino/lightning/research/lightning-prospective-transition-family-v1.mjs'],{encoding:'utf8',stdio:['ignore','pipe','pipe']});
+if(transitionRun.status!==0){
+  process.stderr.write(transitionRun.stdout||'');
+  process.stderr.write(transitionRun.stderr||'transition family refresh failed\n');
+  process.exit(transitionRun.status||1);
+}
+const transition=read(`${E}/prospective-transition-family-v1-status.json`)||{};
+const readinessPath=`${E}/economic-readiness-ledger-v1.json`;
+const readiness=read(readinessPath)||{};
+readiness.transitionFamilyV1={
+  status:transition?.final?'FIXED_FINAL_AVAILABLE':'BLINDED_ACCUMULATING',
+  progress:{
+    used:Number(transition?.progress?.roundsUsed||0),
+    boundary:Number(transition?.progress?.fixedBoundaryRounds||5000),
+    remaining:Number(transition?.progress?.roundsRemaining||5000),
+    percent:Number(transition?.progress?.fixedBoundaryRounds)>0?Number((100*Number(transition?.progress?.roundsUsed||0)/Number(transition?.progress?.fixedBoundaryRounds)).toFixed(2)):0
+  },
+  frozenCandidates:8,
+  familyWiseAlpha:0.01,
+  perCandidateAlpha:0.00125,
+  performanceHidden:transition?.disclosure?.candidatePerformanceHidden!==false,
+  pastInformationOnly:true,
+  realMoneyAllowed:false
+};
+readiness.transitionFamilyV1UpdatedAt=new Date().toISOString();
+fs.writeFileSync(readinessPath,JSON.stringify(readiness,null,2)+'\n');
 
 const gate=read(`${E}/economic-promotion-gate-v1.json`)||{};
 const prior=new Map((gate.boundaries||[]).map(x=>[x.id,x.complete===true]));
@@ -31,7 +59,7 @@ const current={
 
 const newlyClosed=Object.entries(current).filter(([id,done])=>done&&prior.get(id)!==true).map(([id])=>id);
 if(!newlyClosed.length){
-  console.log(JSON.stringify({refreshed:false,reason:'NO_NEW_FIXED_BOUNDARY',current,prior:Object.fromEntries(prior)},null,2));
+  console.log(JSON.stringify({refreshed:false,reason:'NO_NEW_FIXED_BOUNDARY',transitionFamilyV1:readiness.transitionFamilyV1,current,prior:Object.fromEntries(prior)},null,2));
   process.exit(0);
 }
 
@@ -46,6 +74,12 @@ for(const script of [
   }
 }
 
+// Re-attach administrative transition progress because the base readiness builder is intentionally generic.
+const rebuiltReadiness=read(readinessPath)||{};
+rebuiltReadiness.transitionFamilyV1=readiness.transitionFamilyV1;
+rebuiltReadiness.transitionFamilyV1UpdatedAt=readiness.transitionFamilyV1UpdatedAt;
+fs.writeFileSync(readinessPath,JSON.stringify(rebuiltReadiness,null,2)+'\n');
+
 const refreshed=read(`${E}/economic-promotion-gate-v1.json`)||{};
 for(const id of newlyClosed){
   const row=(refreshed.boundaries||[]).find(x=>x.id===id);
@@ -53,4 +87,4 @@ for(const id of newlyClosed){
 }
 if(refreshed.policy?.onlyFixedBoundaryFinalsMayPromote!==true||refreshed.policy?.hiddenInterimPerformanceNeverRead!==true||refreshed.policy?.realMoneyAllowed!==false)throw new Error('promotion safety drift after boundary refresh');
 
-console.log(JSON.stringify({refreshed:true,newlyClosed,state:refreshed.state,realMoneyAllowed:refreshed.policy?.realMoneyAllowed},null,2));
+console.log(JSON.stringify({refreshed:true,newlyClosed,transitionFamilyV1:readiness.transitionFamilyV1,state:refreshed.state,realMoneyAllowed:refreshed.policy?.realMoneyAllowed},null,2));
