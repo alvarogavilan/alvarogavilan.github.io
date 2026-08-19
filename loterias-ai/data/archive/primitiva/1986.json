@@ -79,25 +79,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860102",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-164004001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               16,
@@ -109,10 +110,52 @@
             ],
             "complementary": 39,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-01-09",
@@ -191,25 +234,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860109",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-163304001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               2,
@@ -221,10 +265,52 @@
             ],
             "complementary": 41,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-01-16",
@@ -303,25 +389,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860116",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-162604001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               2,
@@ -333,10 +420,52 @@
             ],
             "complementary": 44,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-01-23",
@@ -415,25 +544,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860123",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-161904001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               9,
@@ -445,10 +575,52 @@
             ],
             "complementary": 2,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-01-30",
@@ -527,25 +699,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860130",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-161204001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               20,
@@ -557,10 +730,52 @@
             ],
             "complementary": 17,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-02-06",
@@ -639,25 +854,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860206",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-160504001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               13,
@@ -669,10 +885,52 @@
             ],
             "complementary": 30,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-02-13",
@@ -751,25 +1009,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860213",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-159804001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               5,
@@ -781,10 +1040,52 @@
             ],
             "complementary": 11,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-02-20",
@@ -863,25 +1164,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860220",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-159104001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               15,
@@ -893,10 +1195,52 @@
             ],
             "complementary": 48,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-02-27",
@@ -975,25 +1319,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860227",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-158404001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               3,
@@ -1005,10 +1350,52 @@
             ],
             "complementary": 27,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-03-06",
@@ -1087,25 +1474,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860306",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-157704001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               4,
@@ -1117,10 +1505,52 @@
             ],
             "complementary": 6,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-03-13",
@@ -1199,25 +1629,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860313",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-157004001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               1,
@@ -1229,10 +1660,52 @@
             ],
             "complementary": 32,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-03-20",
@@ -1311,25 +1784,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860320",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-156304001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               11,
@@ -1341,10 +1815,52 @@
             ],
             "complementary": 14,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-03-27",
@@ -1423,25 +1939,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860327",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-155604001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               11,
@@ -1453,10 +1970,52 @@
             ],
             "complementary": 4,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-04-03",
@@ -1535,25 +2094,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860403",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-154904001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               1,
@@ -1565,10 +2125,52 @@
             ],
             "complementary": 48,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-04-10",
@@ -1647,25 +2249,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860410",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-154204001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               6,
@@ -1677,10 +2280,52 @@
             ],
             "complementary": 30,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-04-17",
@@ -1759,25 +2404,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860417",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-153504001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               6,
@@ -1789,10 +2435,52 @@
             ],
             "complementary": 47,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-04-24",
@@ -1871,25 +2559,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860424",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-152804001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               11,
@@ -1901,10 +2590,52 @@
             ],
             "complementary": 27,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-05-01",
@@ -1983,25 +2714,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860501",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-152104001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               1,
@@ -2013,10 +2745,52 @@
             ],
             "complementary": 29,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-05-08",
@@ -2095,25 +2869,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860508",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-151404001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               2,
@@ -2125,10 +2900,52 @@
             ],
             "complementary": 18,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-05-15",
@@ -2207,25 +3024,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860515",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-150704001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               5,
@@ -2237,10 +3055,52 @@
             ],
             "complementary": 3,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-05-22",
@@ -2319,25 +3179,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860522",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-150004001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               2,
@@ -2349,10 +3210,52 @@
             ],
             "complementary": 14,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-05-29",
@@ -2431,25 +3334,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860529",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-149304001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               1,
@@ -2461,10 +3365,52 @@
             ],
             "complementary": 20,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-06-05",
@@ -2543,25 +3489,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860605",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-148604001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               2,
@@ -2573,10 +3520,52 @@
             ],
             "complementary": 39,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-06-12",
@@ -2655,25 +3644,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860612",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-147904001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               1,
@@ -2685,10 +3675,52 @@
             ],
             "complementary": 26,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-06-19",
@@ -2767,25 +3799,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860619",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-147204001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               1,
@@ -2797,10 +3830,52 @@
             ],
             "complementary": 12,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-06-26",
@@ -2879,25 +3954,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860626",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-146504001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               9,
@@ -2909,10 +3985,52 @@
             ],
             "complementary": 47,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-07-03",
@@ -2991,25 +4109,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860703",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-145804001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               8,
@@ -3021,10 +4140,52 @@
             ],
             "complementary": 39,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-07-10",
@@ -3103,25 +4264,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860710",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-145104001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               1,
@@ -3133,10 +4295,52 @@
             ],
             "complementary": 23,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-07-17",
@@ -3215,25 +4419,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860717",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-144404001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               16,
@@ -3245,10 +4450,52 @@
             ],
             "complementary": 28,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-07-24",
@@ -3327,25 +4574,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860724",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-143704001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               3,
@@ -3357,10 +4605,52 @@
             ],
             "complementary": 26,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-07-31",
@@ -3439,25 +4729,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860731",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-143004001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               12,
@@ -3469,10 +4760,52 @@
             ],
             "complementary": 18,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-08-07",
@@ -3551,25 +4884,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860807",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-142304001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               3,
@@ -3581,10 +4915,52 @@
             ],
             "complementary": 48,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-08-14",
@@ -3663,25 +5039,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860814",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-141604001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               30,
@@ -3693,10 +5070,52 @@
             ],
             "complementary": 11,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-08-21",
@@ -3775,25 +5194,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860821",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-140904001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               15,
@@ -3805,10 +5225,52 @@
             ],
             "complementary": 8,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-08-28",
@@ -3887,25 +5349,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860828",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-140204001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               3,
@@ -3917,10 +5380,52 @@
             ],
             "complementary": 8,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-09-04",
@@ -3999,25 +5504,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860904",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-139504001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               4,
@@ -4029,10 +5535,52 @@
             ],
             "complementary": 12,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-09-11",
@@ -4111,25 +5659,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860911",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-138804001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               2,
@@ -4141,10 +5690,52 @@
             ],
             "complementary": 34,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-09-18",
@@ -4223,25 +5814,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860918",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-138104001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               15,
@@ -4253,10 +5845,52 @@
             ],
             "complementary": 46,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-09-25",
@@ -4335,25 +5969,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19860925",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-137404001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               8,
@@ -4365,10 +6000,52 @@
             ],
             "complementary": 29,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-10-02",
@@ -4447,25 +6124,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19861002",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-136704001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               2,
@@ -4477,10 +6155,52 @@
             ],
             "complementary": 23,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-10-09",
@@ -4559,25 +6279,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19861009",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-136004001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               7,
@@ -4589,10 +6310,52 @@
             ],
             "complementary": 31,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-10-16",
@@ -4671,25 +6434,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19861016",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-135304001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               16,
@@ -4701,10 +6465,52 @@
             ],
             "complementary": 6,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-10-23",
@@ -4783,25 +6589,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19861023",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-134604001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               2,
@@ -4813,10 +6620,52 @@
             ],
             "complementary": 42,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-10-30",
@@ -4895,25 +6744,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19861030",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-133904001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               1,
@@ -4925,10 +6775,52 @@
             ],
             "complementary": 11,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-11-06",
@@ -5007,25 +6899,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19861106",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-133204001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               17,
@@ -5037,10 +6930,52 @@
             ],
             "complementary": 27,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-11-13",
@@ -5119,25 +7054,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19861113",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-132504001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               1,
@@ -5149,10 +7085,52 @@
             ],
             "complementary": 18,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-11-20",
@@ -5231,25 +7209,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19861120",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-131804001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               3,
@@ -5261,10 +7240,52 @@
             ],
             "complementary": 26,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-11-27",
@@ -5343,25 +7364,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19861127",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-131104001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               4,
@@ -5373,10 +7395,52 @@
             ],
             "complementary": 31,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-12-04",
@@ -5455,25 +7519,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19861204",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-130404001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               2,
@@ -5485,10 +7550,52 @@
             ],
             "complementary": 11,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-12-11",
@@ -5567,25 +7674,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19861211",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-129704001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               5,
@@ -5597,10 +7705,52 @@
             ],
             "complementary": 18,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     },
     {
       "drawId": "primitiva-1986-12-18",
@@ -5679,25 +7829,26 @@
         }
       },
       "verification": {
-        "status": "OFFICIAL_SELAE_PARTIAL",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "official-fechav3-exact-date",
           "official-main-cross-check",
-          "official-complementary-cross-check"
+          "official-complementary-cross-check",
+          "historical-component-schema-pre-reintegro",
+          "boe-era-boundary-verified"
         ],
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=19861218",
-          "checkedAt": "2026-08-19T22:32:06.984Z",
+          "checkedAt": "2026-08-19T23:06:03.972Z",
           "officialDrawId": "-129004001",
           "exactDate": true,
-          "status": "PARTIAL_OFFICIAL_RESULT",
+          "status": "MATCH_HISTORICAL_COMPONENT_SCHEMA",
           "fields": {
             "main": true,
-            "complementary": true,
-            "reintegro": false
+            "complementary": true
           },
-          "complete": false,
+          "complete": true,
           "officialResult": {
             "main": [
               10,
@@ -5709,10 +7860,52 @@
             ],
             "complementary": 15,
             "reintegro": null
+          },
+          "completenessBasis": "HISTORICAL_RULES_IN_FORCE"
+        },
+        "componentSchema": {
+          "era": "PRE_REINTEGRO",
+          "appliesBefore": "1991-06-20",
+          "requiredComponents": [
+            "main",
+            "complementary"
+          ],
+          "reintegroApplicable": false,
+          "legalEvidence": {
+            "lastPreReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-15603",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-15603",
+              "draws": [
+                "1991-06-13",
+                "1991-06-15"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary"
+              ]
+            },
+            "firstReintegroOfficialResolution": {
+              "ref": "BOE-A-1991-16395",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-16395",
+              "draws": [
+                "1991-06-20",
+                "1991-06-22"
+              ],
+              "publishedComponents": [
+                "main",
+                "complementary",
+                "reintegro"
+              ]
+            },
+            "implementingRule": {
+              "ref": "BOE-A-1991-13414",
+              "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-1991-13414"
+            }
           }
         }
       },
-      "trainingEligible": false
+      "trainingEligible": true,
+      "reintegroTrainingEligible": false
     }
   ]
 }
