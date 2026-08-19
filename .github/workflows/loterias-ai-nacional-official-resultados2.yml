@@ -7,6 +7,7 @@ on:
   push:
     paths:
       - 'loterias-ai/scripts/enrich-nacional-official-resultados2.mjs'
+      - 'loterias-ai/scripts/repair-nacional-normalization-evidence.mjs'
       - 'loterias-ai/scripts/certify-nacional-persisted-resultados2.mjs'
       - '.github/workflows/loterias-ai-nacional-official-resultados2.yml'
 permissions:
@@ -34,6 +35,7 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             BATCH_LIMIT=400 node loterias-ai/scripts/enrich-nacional-official-resultados2.mjs
+            BATCH_LIMIT=220 node loterias-ai/scripts/repair-nacional-normalization-evidence.mjs
             node loterias-ai/scripts/certify-nacional-persisted-resultados2.mjs
             node loterias-ai/scripts/build-national-archive-index.mjs
             node loterias-ai/scripts/build-completeness-index.mjs
