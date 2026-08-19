@@ -42,7 +42,7 @@ jobs:
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
-            BATCH_LIMIT=120 node loterias-ai/scripts/crosscheck-eurodreams-official-results.mjs
+            BATCH_LIMIT=180 node loterias-ai/scripts/crosscheck-eurodreams-official-results.mjs
             node loterias-ai/scripts/build-national-archive-index.mjs
             node loterias-ai/scripts/build-archive-coverage-priorities.mjs
             restore_if_volatile_only loterias-ai/data/archive/_meta/eurodreams-official-result-crosscheck.json
