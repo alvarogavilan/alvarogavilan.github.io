@@ -1,0 +1,50 @@
+{
+  "version": "botemania-jpk-allocation-prospective-protocol-v1",
+  "frozenAt": "2026-08-19T20:40:00+02:00",
+  "operator": "botemania-es",
+  "status": "FROZEN_BEFORE_VALIDATION_INTERVALS",
+  "objective": "Prospectively validate whether observed Jackpot King network meter growth is consistent with a stable approximately 60/20/20 allocation across Jackpot King, Regal and Royal without using future intervals to choose tolerances.",
+  "observationUnit": "One clean positive-growth interval emitted by botemania-jpk-flow-model-v1 after frozenAt, with no reset classification and positive growth in all three labeled pots.",
+  "targetShares": {
+    "JACKPOT_KING": 0.60,
+    "REGAL": 0.20,
+    "ROYAL": 0.20
+  },
+  "validation": {
+    "minimumCleanIntervals": 20,
+    "minimumCumulativeActiveGrowthEUR": 50,
+    "weightedShareBands": {
+      "JACKPOT_KING": [0.59, 0.61],
+      "REGAL": [0.195, 0.205],
+      "ROYAL": [0.195, 0.205]
+    },
+    "maximumWeightedRegalRoyalDifference": 0.001,
+    "informativeIntervalMinimumGrowthEUR": 0.30,
+    "minimumInformativeIntervals": 10,
+    "minimumInformativeIntervalsInsideBroadBandFraction": 0.80,
+    "broadPerIntervalBands": {
+      "JACKPOT_KING": [0.56, 0.64],
+      "REGAL": [0.18, 0.22],
+      "ROYAL": [0.18, 0.22]
+    },
+    "retuningAfterFreeze": false
+  },
+  "interpretation": {
+    "passMeaning": "Independent future meter increments support a stable network-level allocation close to 60/20/20.",
+    "doesNotProve": [
+      "Exact per-title contribution split before funds enter the shared network",
+      "Exact Royal or Regal MBWB",
+      "Exact state-dependent jackpot hazard",
+      "Positive expected value",
+      "Authorization to wager"
+    ]
+  },
+  "guards": {
+    "futureIntervalsOnly": true,
+    "noRetuning": true,
+    "networkAllocationNotPerTitleFact": true,
+    "noEconomicPromotionByThisProtocolAlone": true,
+    "realMoneyAllowed": false,
+    "automaticBettingAllowed": false
+  }
+}
