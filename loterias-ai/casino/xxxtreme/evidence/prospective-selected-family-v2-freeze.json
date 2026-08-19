@@ -1,0 +1,43 @@
+{
+  "version": "xxxtreme-prospective-selected-family-v2-freeze",
+  "createdAt": "2026-08-19T08:14:00Z",
+  "v1Freeze": "xxxtreme-prospective-selected-family-v1-freeze",
+  "activation": {
+    "requiresV1Fixed3000Complete": true,
+    "startsStrictlyAfterV1LastScoredRound": true,
+    "activationIndependentOfV1Outcome": true,
+    "replicateEntireFrozenEightCandidateSet": true
+  },
+  "selectedCandidates": [
+    {"id":"111dcef482753bb8","spec":{"type":"wheelOffset","offset":18}},
+    {"id":"a22d21c6b0245138","spec":{"type":"wheelOffset","offset":4}},
+    {"id":"bee146544f89e4fc","spec":{"type":"wheelOffset","offset":16}},
+    {"id":"7c63d8cdda288752","spec":{"type":"wheelOffset","offset":-5}},
+    {"id":"80b77d7070534a34","spec":{"type":"lag","k":1}},
+    {"id":"89b124accf1a5ab5","spec":{"type":"wheelOffset","offset":0}},
+    {"id":"494a7e79f7826412","spec":{"type":"frequencyHot","window":10}},
+    {"id":"d91de8d84624474a","spec":{"type":"wheelOffset","offset":12}}
+  ],
+  "postV1WarmupRounds": 100,
+  "fixedBoundaryRounds": 3000,
+  "uniformNullHitProbability": 0.02702702702702703,
+  "familyWiseAlpha": 0.01,
+  "perCandidateAlpha": 0.00125,
+  "confirmationRule": "The same frozen candidate id must pass both V1 and V2. V2 evaluates all eight candidates regardless of V1 result.",
+  "economicInterpretationAllowed": false,
+  "disclosurePolicy": "Administrative progress only before V2 reaches 3000 scored rounds.",
+  "guards": {
+    "preRegisteredBeforeV1Scoring": true,
+    "v1RoundsScoredAtFreeze": 0,
+    "sameCandidatesAsV1": true,
+    "noOutcomeDependentActivation": true,
+    "postV1WarmupNotScored": true,
+    "noRetuning": true,
+    "noOptionalStopping": true,
+    "postBoundaryCannotRescue": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  },
+  "immutable": true
+}
