@@ -21,29 +21,76 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: {node-version: 22}
-      - name: Enrich large batches
+      - name: Recompute and persist on latest main without coverage regression
+        shell: bash
         run: |
-          BATCH_LIMIT=400 node loterias-ai/scripts/enrich-nacional-detailed-crosschecked.mjs
-          BATCH_LIMIT=400 node loterias-ai/scripts/enrich-nacional-detailed-crosschecked.mjs
-          node loterias-ai/scripts/nacional-research-tournament.mjs
-      - name: Persist safely
-        run: |
-          mkdir -p /tmp/nacional-cross
-          cp -r loterias-ai/data/archive/loteria-nacional /tmp/nacional-cross/
-          cp loterias-ai/data/archive/_meta/nacional-detailed-crosschecked.json /tmp/nacional-cross/summary.json
-          cp loterias-ai/data/backtests/nacional-research-tournament.json /tmp/nacional-cross/research.json
-          git fetch origin main
-          git reset --hard origin/main
-          rm -rf loterias-ai/data/archive/loteria-nacional
-          cp -r /tmp/nacional-cross/loteria-nacional loterias-ai/data/archive/
-          cp /tmp/nacional-cross/summary.json loterias-ai/data/archive/_meta/nacional-detailed-crosschecked.json
-          mkdir -p loterias-ai/data/backtests
-          cp /tmp/nacional-cross/research.json loterias-ai/data/backtests/nacional-research-tournament.json
-          node loterias-ai/scripts/build-national-archive-index.mjs
-          node loterias-ai/scripts/build-completeness-index.mjs
-          node loterias-ai/scripts/audit-national-archive.mjs
+          set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add loterias-ai/data/archive loterias-ai/data/backtests/nacional-research-tournament.json
-          git commit -m 'data(loterias-ai): persist Nacional detailed research evaluation' || exit 0
-          git push origin HEAD:main
+
+          coverage_snapshot() {
+            node <<'NODE'
+          const fs=require('fs'),dir='loterias-ai/data/archive/loteria-nacional';
+          const rows=[];
+          for(const f of fs.readdirSync(dir).filter(x=>/^\d{4}\.json$/.test(x))) {
+            const d=JSON.parse(fs.readFileSync(`${dir}/${f}`,'utf8'));
+            rows.push(...(d.records||[]));
+          }
+          const hasEco=r=>!!r.economics;
+          const official=r=>String(r.economics?.officialSource?.provider||'').toUpperCase()==='SELAE';
+          const eco=rows.filter(hasEco).map(r=>r.drawDate).filter(Boolean).sort();
+          const off=rows.filter(official).map(r=>r.drawDate).filter(Boolean).sort();
+          process.stdout.write(JSON.stringify({records:rows.length,economicsRecords:eco.length,officialEconomicsRecords:off.length,economicsDrawDates:eco,officialEconomicsDrawDates:off}));
+          NODE
+          }
+
+          for attempt in 1 2 3 4 5; do
+            echo "Nacional detailed crosscheck attempt $attempt"
+            git fetch origin main
+            git reset --hard origin/main
+
+            BEFORE="$(coverage_snapshot)"
+            printf '%s' "$BEFORE" > /tmp/nacional-before.json
+
+            BATCH_LIMIT=400 node loterias-ai/scripts/enrich-nacional-detailed-crosschecked.mjs
+            BATCH_LIMIT=400 node loterias-ai/scripts/enrich-nacional-detailed-crosschecked.mjs
+            node loterias-ai/scripts/nacional-research-tournament.mjs
+            node loterias-ai/scripts/build-national-archive-index.mjs
+            node loterias-ai/scripts/build-completeness-index.mjs
+            node loterias-ai/scripts/audit-national-archive.mjs
+
+            AFTER="$(coverage_snapshot)"
+            printf '%s' "$AFTER" > /tmp/nacional-after.json
+
+            node <<'NODE'
+          const fs=require('fs');
+          const before=JSON.parse(fs.readFileSync('/tmp/nacional-before.json','utf8'));
+          const after=JSON.parse(fs.readFileSync('/tmp/nacional-after.json','utf8'));
+          const bEco=new Set(before.economicsDrawDates),aEco=new Set(after.economicsDrawDates);
+          const bOff=new Set(before.officialEconomicsDrawDates),aOff=new Set(after.officialEconomicsDrawDates);
+          const lostEconomicsDrawDates=[...bEco].filter(x=>!aEco.has(x)).sort();
+          const lostOfficialEconomicsDrawDates=[...bOff].filter(x=>!aOff.has(x)).sort();
+          const pass=after.economicsRecords>=before.economicsRecords&&after.officialEconomicsRecords>=before.officialEconomicsRecords&&!lostEconomicsDrawDates.length&&!lostOfficialEconomicsDrawDates.length;
+          const audit={generatedAt:new Date().toISOString(),gameId:'loteria-nacional',before:{records:before.records,economicsRecords:before.economicsRecords,officialEconomicsRecords:before.officialEconomicsRecords},after:{records:after.records,economicsRecords:after.economicsRecords,officialEconomicsRecords:after.officialEconomicsRecords},lostEconomicsDrawDates,lostOfficialEconomicsDrawDates,qualityGate:{pass,monotonicEconomicsRequired:true,monotonicOfficialEconomicsRequired:true}};
+          fs.writeFileSync('loterias-ai/data/archive/_meta/nacional-coverage-monotonicity.json',JSON.stringify(audit,null,2)+'\n');
+          if(!pass){console.error(JSON.stringify(audit,null,2));process.exit(42)}
+          console.log(JSON.stringify(audit,null,2));
+          NODE
+
+            git add loterias-ai/data/archive loterias-ai/data/backtests/nacional-research-tournament.json
+            if git diff --cached --quiet; then
+              echo 'NO_SEMANTIC_CHANGE'
+              exit 0
+            fi
+            git commit -m 'data(loterias-ai): persist Nacional detailed research evaluation'
+            git fetch origin main
+            if [ "$(git rev-parse origin/main)" != "$(git rev-parse HEAD^)" ]; then
+              echo 'main moved during Nacional recomputation; retrying from latest main'
+              continue
+            fi
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+          done
+          echo 'Unable to persist Nacional detailed crosscheck safely after 5 attempts' >&2
+          exit 1
