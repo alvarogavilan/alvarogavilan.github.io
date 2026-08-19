@@ -5,15 +5,22 @@ import { spawnSync } from 'node:child_process';
 const E='loterias-ai/casino/lightning/evidence';
 const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'));}catch{return null;}};
 const runScript=script=>{const r=spawnSync(process.execPath,[script],{encoding:'utf8',stdio:['ignore','pipe','pipe']});if(r.status!==0){process.stderr.write(r.stdout||'');process.stderr.write(r.stderr||`refresh failed: ${script}\n`);process.exit(r.status||1)}};
+const runOptional=script=>{const r=spawnSync(process.execPath,[script],{encoding:'utf8',stdio:['ignore','pipe','pipe']});if(r.status!==0){process.stderr.write(r.stdout||'');process.stderr.write(r.stderr||`optional refresh failed: ${script}\n`);return false}return true;};
 
 // Advance the preregistered transition-family lane inside the already-paid capture cycle.
 runScript('loterias-ai/casino/lightning/research/lightning-prospective-transition-family-v1.mjs');
 const transition=read(`${E}/prospective-transition-family-v1-status.json`)||{};
 
-// Refresh the administrative readiness view on every capture. This does not evaluate hidden performance.
-runScript('loterias-ai/casino/lightning/research/economic-readiness-ledger-v1.mjs');
+// Refresh the administrative readiness view on every capture. Preserve official-operator monitoring history
+// across the ledger rebuild, then append one fresh PokerStars-only Jackpot King observation.
 const readinessPath=`${E}/economic-readiness-ledger-v1.json`;
-const readiness=read(readinessPath)||{};
+const priorReadiness=read(readinessPath)||{};
+runScript('loterias-ai/casino/lightning/research/economic-readiness-ledger-v1.mjs');
+let readiness=read(readinessPath)||{};
+if(priorReadiness.jackpotKingOfficialMonitor)readiness.jackpotKingOfficialMonitor=priorReadiness.jackpotKingOfficialMonitor;
+fs.writeFileSync(readinessPath,JSON.stringify(readiness,null,2)+'\n');
+runOptional('loterias-ai/casino/jackpots/pokerstars-jackpot-king-observer.mjs');
+readiness=read(readinessPath)||readiness;
 readiness.transitionFamilyV1={
   status:transition?.final?'FIXED_FINAL_AVAILABLE':'BLINDED_ACCUMULATING',
   progress:{
@@ -53,13 +60,13 @@ const current={
   'physical-rng-v2':Boolean(physical?.final)&&Number(physical?.progress?.roundsUsedForV2)===Number(physical?.progress?.fixedBoundaryRounds)
 };
 const newlyClosed=Object.entries(current).filter(([id,done])=>done&&prior.get(id)!==true).map(([id])=>id);
-if(!newlyClosed.length){console.log(JSON.stringify({refreshedReadiness:true,promotionRefresh:false,reason:'NO_NEW_FIXED_BOUNDARY',transitionFamilyV1:readiness.transitionFamilyV1,current},null,2));process.exit(0)}
+if(!newlyClosed.length){console.log(JSON.stringify({refreshedReadiness:true,promotionRefresh:false,reason:'NO_NEW_FIXED_BOUNDARY',transitionFamilyV1:readiness.transitionFamilyV1,jackpotKingOfficialMonitor:{sourceReadable:readiness.jackpotKingOfficialMonitor?.sourceReadable??null,latest:readiness.jackpotKingOfficialMonitor?.latest??null},current},null,2));process.exit(0)}
 
 // Promotion logic still runs only when a fixed boundary has actually closed.
 runScript('loterias-ai/casino/lightning/research/economic-promotion-gate-v1.mjs');
 const refreshed=read(`${E}/economic-promotion-gate-v1.json`)||{};
 for(const id of newlyClosed){const row=(refreshed.boundaries||[]).find(x=>x.id===id);if(row?.complete!==true)throw new Error(`boundary ${id} closed in source but not reflected in promotion gate`)}
 if(refreshed.policy?.onlyFixedBoundaryFinalsMayPromote!==true||refreshed.policy?.hiddenInterimPerformanceNeverRead!==true||refreshed.policy?.realMoneyAllowed!==false)throw new Error('promotion safety drift after boundary refresh');
-console.log(JSON.stringify({refreshedReadiness:true,promotionRefresh:true,newlyClosed,transitionFamilyV1:readiness.transitionFamilyV1,state:refreshed.state,realMoneyAllowed:refreshed.policy?.realMoneyAllowed},null,2));
+console.log(JSON.stringify({refreshedReadiness:true,promotionRefresh:true,newlyClosed,transitionFamilyV1:readiness.transitionFamilyV1,jackpotKingOfficialMonitor:{sourceReadable:readiness.jackpotKingOfficialMonitor?.sourceReadable??null,latest:readiness.jackpotKingOfficialMonitor?.latest??null},state:refreshed.state,realMoneyAllowed:refreshed.policy?.realMoneyAllowed},null,2));
 
 // Operational no-op marker: one-shot capture pulse requested 2026-08-19T08:31Z; scientific protocol unchanged.
