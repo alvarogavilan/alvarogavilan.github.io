@@ -29,30 +29,19 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           report='loterias-ai/data/archive/_meta/nacional-persisted-resultados2-certification.json'
-          for attempt in 1 2 3 4 5; do
-            git fetch origin main
-            git reset --hard origin/main
+          manifest='loterias-ai/data/archive/manifest.json'
+          completeness='loterias-ai/data/archive/completeness-index.json'
+          audit='loterias-ai/data/archive/_meta/archive-audit.json'
 
-            old_report=''
-            if git cat-file -e "HEAD:${report}" 2>/dev/null; then
-              old_report="$(mktemp)"
-              git show "HEAD:${report}" > "$old_report"
-            fi
-
-            node loterias-ai/scripts/certify-nacional-persisted-resultados2.mjs
-
-            # Fail-quiet only when the report is scientifically identical.
-            # Do not discard real changes in blocker diagnostics merely because
-            # no additional draw was certified during this run.
-            if [[ -n "$old_report" && -f "$report" ]]; then
-              if node - "$old_report" "$report" <<'NODE'
+          semantic_same() {
+            node - "$1" "$2" <<'NODE'
           const fs = require('fs');
           const [beforePath, afterPath] = process.argv.slice(2);
           const stable = value => {
             if (Array.isArray(value)) return value.map(stable);
             if (value && typeof value === 'object') {
               return Object.fromEntries(Object.entries(value)
-                .filter(([key]) => key !== 'generatedAt')
+                .filter(([key]) => key !== 'generatedAt' && key !== 'auditGeneratedAt')
                 .map(([key, child]) => [key, stable(child)]));
             }
             return value;
@@ -61,15 +50,52 @@ jobs:
           const after = stable(JSON.parse(fs.readFileSync(afterPath, 'utf8')));
           process.exit(JSON.stringify(before) === JSON.stringify(after) ? 0 : 1);
           NODE
-              then
-                git checkout HEAD -- "$report"
-              fi
-              rm -f "$old_report"
+          }
+
+          snapshot_if_present() {
+            local path="$1"
+            local out="$2"
+            if git cat-file -e "HEAD:${path}" 2>/dev/null; then
+              git show "HEAD:${path}" > "$out"
+              return 0
             fi
+            return 1
+          }
+
+          restore_if_semantic_same() {
+            local before="$1"
+            local current="$2"
+            if [[ -f "$before" && -f "$current" ]] && semantic_same "$before" "$current"; then
+              git checkout HEAD -- "$current"
+            fi
+          }
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+
+            old_report="$(mktemp)"
+            old_manifest="$(mktemp)"
+            old_completeness="$(mktemp)"
+            old_audit="$(mktemp)"
+            snapshot_if_present "$report" "$old_report" || :
+            snapshot_if_present "$manifest" "$old_manifest" || :
+            snapshot_if_present "$completeness" "$old_completeness" || :
+            snapshot_if_present "$audit" "$old_audit" || :
+
+            node loterias-ai/scripts/certify-nacional-persisted-resultados2.mjs
+            restore_if_semantic_same "$old_report" "$report"
 
             node loterias-ai/scripts/build-national-archive-index.mjs
             node loterias-ai/scripts/build-completeness-index.mjs
             node loterias-ai/scripts/audit-national-archive.mjs
+
+            # Derived indexes must not move main when only volatile timestamps change.
+            # Any scientific change (counts, blockers, gates, dates, provenance) remains staged.
+            restore_if_semantic_same "$old_manifest" "$manifest"
+            restore_if_semantic_same "$old_completeness" "$completeness"
+            restore_if_semantic_same "$old_audit" "$audit"
+            rm -f "$old_report" "$old_manifest" "$old_completeness" "$old_audit"
 
             git add loterias-ai/data/archive
             if git diff --cached --quiet; then
