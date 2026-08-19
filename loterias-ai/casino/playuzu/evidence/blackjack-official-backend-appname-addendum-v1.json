@@ -1,0 +1,20 @@
+{
+  "version": "blackjack-official-backend-appname-addendum-v1",
+  "createdAt": "2026-08-19T10:21:00Z",
+  "sourceEvidence": "loterias-ai/casino/playuzu/evidence/blackjack-catalog-state-probe-v1.json",
+  "parameter": {
+    "name": "appName",
+    "value": "PlayUZU.es",
+    "observedInOfficialPlayUZUHtmlBeforeRetry": true
+  },
+  "backend": "https://games-api.netdnstrace1.com/v2/categories/blackjack-all",
+  "reason": "Initial embedded-backend request returned HTTP 422 with top-level field appName. The official PlayUZU page itself exposes appName=PlayUZU.es in its linked responsible-gaming/configuration data; retry is restricted to that exact observed value.",
+  "guards": {
+    "noTenantGuessing": true,
+    "noAuthenticationBypass": true,
+    "noLogin": true,
+    "noBetting": true,
+    "realMoneyAllowed": false
+  },
+  "immutable": true
+}
