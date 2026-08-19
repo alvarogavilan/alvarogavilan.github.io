@@ -1,0 +1,38 @@
+name: Loterias AI Official Game Specialist Factory One Shot
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/specialists/official-catalog-specialist-factory-v1.mjs'
+      - '.github/workflows/loterias-ai-official-game-specialist-factory-one-shot.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build-specialists:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Build one specialist per officially catalogued game
+        run: |
+          set -euo pipefail
+          node loterias-ai/casino/specialists/official-catalog-specialist-factory-v1.mjs
+      - name: Persist registry safely
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/casino/specialists/official-game-specialists-v1.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'research(casino): persist official per-game specialist registry'
+          git pull --rebase origin main
+          git push origin HEAD:main
