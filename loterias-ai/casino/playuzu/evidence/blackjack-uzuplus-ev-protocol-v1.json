@@ -1,0 +1,66 @@
+{
+  "version": "blackjack-uzuplus-ev-protocol-v1",
+  "createdAt": "2026-08-19T10:08:00Z",
+  "operator": "playuzu-es",
+  "purpose": "Determine whether any PlayUZU blackjack configuration has positive contractual long-run EV after exact UZUplus cashback, without prediction, card counting, bonuses or future information.",
+  "officialEvidence": {
+    "blackjackApproximateRtpUnderBasicStrategy": 0.995,
+    "blackjackRtpIsRuleDependent": true,
+    "uzuPlusPublishedRange": {"min":0.0006,"max":0.006},
+    "uzuPlusPaidRegardlessOfWinLoss": true,
+    "uzuPlusConvertibleToRealMoney": true,
+    "exactPercentageIsGameSpecificAndMayChange": true,
+    "sources": [
+      "https://www.playuzu.es/especiales/blog/como-ganar-en-el-casino/",
+      "https://www.playuzu.es/especiales/blog/blackjack/estrategia-basica-blackjack/",
+      "https://www.playuzu.es/especiales/",
+      "https://www.playuzu.es/terminos-y-condiciones/"
+    ]
+  },
+  "thresholdMath": {
+    "illustrativeOnlyUntilExactTableVerified": true,
+    "atApproximateRtp995CashbackNeededForBreakEven": 0.005,
+    "atPublishedMaximumCashback006IllustrativeEffectiveRtp": 1.001,
+    "illustrativeMarginAbove100PctPoints": 0.1,
+    "rule": "effectiveEV = exact_table_RTP_under_exact_basic_strategy + exact_game_UZUplus - any nonincluded costs/commissions. PASS only if a conservative verified lower bound is strictly > 1.0."
+  },
+  "requiredPerTableAudit": [
+    "Exact table/game identity and provider on PlayUZU.",
+    "Exact current RTP from the game's own rules, not the generic 99.5% editorial approximation.",
+    "Exact UZUplus percentage displayed for that exact game at the same observation time.",
+    "Deck count, dealer S17/H17, blackjack payout, double rules, split/resplit rules, surrender and any side-bet/commission rules.",
+    "Basic-strategy EV computed for those exact rules; side bets excluded.",
+    "Confirm how UZUplus treats doubles/splits and whether cashback applies to all real-money amounts wagered.",
+    "Confirm no promotion exclusions, caps or terms reduce the effective cashback.",
+    "Recheck RTP and UZUplus immediately before any future economic review because both can change."
+  ],
+  "decisionStates": {
+    "below100": "REJECT",
+    "equal100": "NO_EDGE",
+    "above100PointEstimateButInputsNotContractuallyVerified": "RESEARCH_ONLY",
+    "verifiedLowerBoundAbove100": "POSITIVE_EV_CANDIDATE_REQUIRES_HUMAN_REVIEW"
+  },
+  "gates": {
+    "exactPlayuzuBlackjackIdentified": false,
+    "exactTableRtpVerified": false,
+    "exactGameUzuPlusVerified": false,
+    "exactRulesStrategyComputed": false,
+    "cashbackTreatmentOfDoubleSplitVerified": false,
+    "effectiveEvAboveOne": false,
+    "effectiveEvLowerBoundAboveOne": false,
+    "economicPromotionCandidate": false,
+    "realMoneyAllowed": false
+  },
+  "guards": {
+    "noCardCounting": true,
+    "noHiddenInformation": true,
+    "noMartingale": true,
+    "noPatternPrediction": true,
+    "noBonusDoubleCounting": true,
+    "noAssumingMaximumCashback": true,
+    "noBetting": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
