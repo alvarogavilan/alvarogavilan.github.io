@@ -40,9 +40,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Refresh non-live execution metadata once
-        run: node loterias-ai/edge-live/botemania-fishin-public-stake-probe-v1.mjs
-      - name: Watch all Botemania jackpot networks every 15 seconds and alert exact execution transitions
+
+      - name: Refresh slow research models once before fast lane
+        shell: bash
+        run: |
+          set -euo pipefail
+          node loterias-ai/edge-live/botemania-fishin-public-stake-probe-v1.mjs
+          node loterias-ai/casino/jackpots/botemania-headless-jackpots-public-probe-v1.mjs
+          node loterias-ai/casino/jackpots/botemania-generic-fast-reset-ledger-v1.mjs
+          node loterias-ai/casino/jackpots/botemania-jpk-flow-model-v1.mjs
+          node loterias-ai/casino/jackpots/botemania-jpk-near-cap-ev-scenarios-v1.mjs
+          node loterias-ai/casino/jackpots/botemania-jpk-reset-reconstructor-v1.mjs
+          node loterias-ai/casino/jackpots/botemania-jpk-live-gate-v1.mjs
+          node loterias-ai/casino/jackpots/botemania-irish-riches-jpk-current-screen-v1.mjs
+          node loterias-ai/casino/five-euro-real-pilot-gate-v1.mjs
+          node loterias-ai/edge-live/edge-live-execution-plan-v1.mjs
+
+      - name: Watch live economic lanes every 15 seconds
         env:
           EDGE_LIVE_TELEGRAM_BOT_TOKEN: ${{ secrets.EDGE_LIVE_TELEGRAM_BOT_TOKEN }}
           EDGE_LIVE_TELEGRAM_CHAT_ID: ${{ secrets.EDGE_LIVE_TELEGRAM_CHAT_ID }}
@@ -50,26 +64,26 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for i in $(seq 1 18); do
-            echo "EDGE LIVE all-network fast sample $i/18 at $(date -u +%FT%TZ)"
+          for i in $(seq 1 16); do
+            echo "EDGE LIVE economic fast sample $i/16 at $(date -u +%FT%TZ)"
             node loterias-ai/edge-live/botemania-all-network-fast-meter-sample-v1.mjs
             node loterias-ai/edge-live/botemania-fast-meter-sample-v1.mjs
-            node loterias-ai/casino/jackpots/botemania-headless-jackpots-public-probe-v1.mjs
-            node loterias-ai/casino/jackpots/botemania-generic-fast-reset-ledger-v1.mjs
             node loterias-ai/edge-live/progressive-score-research-v1.mjs
-            node loterias-ai/casino/jackpots/botemania-jpk-flow-model-v1.mjs
-            node loterias-ai/casino/jackpots/botemania-jpk-near-cap-ev-scenarios-v1.mjs
-            node loterias-ai/casino/jackpots/botemania-jpk-reset-reconstructor-v1.mjs
-            node loterias-ai/casino/jackpots/botemania-jpk-live-gate-v1.mjs
-            node loterias-ai/casino/jackpots/botemania-irish-riches-jpk-current-screen-v1.mjs
-            node loterias-ai/casino/five-euro-real-pilot-gate-v1.mjs
-            node loterias-ai/edge-live/edge-live-execution-plan-v1.mjs
             node loterias-ai/edge-live/edge-live-multi-execution-plan-v1.mjs
             cp loterias-ai/edge-live/evidence/edge-live-multi-execution-plan-v1.json loterias-ai/edge-live/evidence/edge-live-execution-plan-v1.json
             node loterias-ai/casino/botemania-global-economic-gate-v1.mjs
             node loterias-ai/edge-live/telegram-edge-alert-v1.mjs
-            if [ "$i" -lt 18 ]; then sleep 15; fi
+            if [ "$i" -lt 16 ]; then sleep 15; fi
           done
+
+      - name: Refresh archival reset ledger once after fast lane
+        shell: bash
+        run: |
+          set -euo pipefail
+          node loterias-ai/casino/jackpots/botemania-headless-jackpots-public-probe-v1.mjs
+          node loterias-ai/casino/jackpots/botemania-generic-fast-reset-ledger-v1.mjs
+          node loterias-ai/edge-live/progressive-score-research-v1.mjs
+
       - name: Persist compact fast-watch state and current execution plan
         shell: bash
         run: |
