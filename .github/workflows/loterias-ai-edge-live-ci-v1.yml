@@ -1,0 +1,30 @@
+name: Loterias AI Edge Live CI V1
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'loterias-ai/edge-live/**'
+      - '.github/workflows/loterias-ai-edge-live-fast-watch-v1.yml'
+      - '.github/workflows/loterias-ai-edge-live-ci-v1.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  syntax-and-registry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Validate EDGE Live JavaScript syntax
+        run: |
+          node --check loterias-ai/edge-live/botemania-all-network-fast-meter-sample-v1.mjs
+          node --check loterias-ai/edge-live/edge-live-multi-execution-plan-v1.mjs
+          node --check loterias-ai/edge-live/edge-live-execution-plan-v1.mjs
+          node --check loterias-ai/edge-live/telegram-edge-alert-v1.mjs
+      - name: Validate structural opportunity registry
+        run: node -e "JSON.parse(require('node:fs').readFileSync('loterias-ai/edge-live/opportunity-registry-v1.json','utf8')); console.log('registry ok')"
