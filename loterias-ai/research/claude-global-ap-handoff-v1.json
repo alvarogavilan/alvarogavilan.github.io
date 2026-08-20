@@ -1,6 +1,6 @@
 {
   "status": "NO_PLAY",
-  "generatedAt": "2026-08-20T20:05:00Z",
+  "generatedAt": "2026-08-20T20:35:00Z",
   "documentedWinnersStudied": [
     { "name": "Jerry & Marge Selbee", "mechanism": "ROLL_DOWN_LOTTERY", "detailIn": "PR #169 (branch claude/issue-168-alvarogavilan-60xksw, not yet merged): loterias-ai/universidad/advantage-play-case-studies-v1.json" },
     { "name": "Stefan Mandel", "mechanism": "FULL_COMBINATORIAL_COVERAGE", "detailIn": "PR #169: advantage-play-case-studies-v1.json" },
@@ -24,7 +24,7 @@
     { "mechanism": "MUST_HIT_BY_PROGRESSIVE_SLOTS", "classification": "TRANSFERIBLE_WITH_DATA", "reason": "Same math as Botemania Jackpot King Royal/Regal, already in active audit (issue #168); blocked only on exact numeric MBWB/stake ladder, not on mechanism transfer." },
     { "mechanism": "MUST_DROP_WITHIN", "classification": "TRANSFERIBLE_WITH_DATA", "reason": "Confirmed to exist as a live UI component (MustDropWithinContainer/CountdownContainer) in Botemania's DoubleJackpots bundle; blocked on numeric config AND on the award-mechanism question (network-random vs per-player countdown) - see currentBlockers." },
     { "mechanism": "PROGRESSIVE_PAYTABLE_THRESHOLD_VIDEO_POKER", "classification": "TRANSFERIBLE_WITH_DATA", "reason": "Mathematically the cleanest mechanism of all studied; not yet audited against any live Spanish operator paytable/jackpot feed this pass." },
-    { "mechanism": "ROLL_DOWN_LOTTERY", "classification": "NO_EDGE", "reason": "No Spanish lottery (Primitiva/Bonoloto/Euromillones) identified with an announced roll-down-to-lower-tiers rule; not yet exhaustively audited against SELAE's official regulation text." },
+    { "mechanism": "ROLL_DOWN_LOTTERY", "classification": "TRANSFERIBLE_WITH_DATA", "reason": "UPDATED this pass: Euromillones DOES have a cap-reached forced redistribution to category 2, matching Selbee's mechanism family - see nearThresholdCandidates. Not yet primary-source-confirmed, not currently active (jackpot is not near the cap), and no live jackpot-vs-cap monitoring exists yet - hence still not an active candidate, but no longer NO_EDGE." },
     { "mechanism": "FULL_COMBINATORIAL_COVERAGE", "classification": "OBSOLETE", "reason": "Modern Spanish/European lottery combinatorial spaces are orders of magnitude too large for full coverage to be economical at any realistic jackpot." },
     { "mechanism": "PHYSICAL_WHEEL_BIAS", "classification": "PHYSICAL_ONLY", "reason": "No RNG-roulette equivalent exists; only conditionally relevant to live-dealer roulette with a persistently identifiable physical wheel, which has not been demonstrated for any operator accessible from Spain." },
     { "mechanism": "TABLE_PROCEDURE_EXPLOITATION", "classification": "PHYSICAL_ONLY", "reason": "Requires a human dealer with a procedural flaw; standardized live-dealer software (automatic shufflers, fixed camera coverage) makes this near-inapplicable online." }
@@ -61,7 +61,20 @@
     { "operator": "PokerStars Casino España", "status": "NOT_YET_AUDITED_THIS_PASS" }
   ],
   "exactPositiveEvCandidates": [],
-  "nearThresholdCandidates": [],
+  "nearThresholdCandidates": [
+    {
+      "candidate": "Euromillones cap-reached forced redistribution to category 2 (5 numbers + 1 star)",
+      "mechanism": "ROLL_DOWN_LOTTERY",
+      "status": "MECHANISM_CONFIRMED_NOT_CURRENTLY_ACTIVE",
+      "detail": "WebSearch (cross-checked across multiple independent Spanish lottery-info sites, NOT yet a primary SELAE source citation): when Euromillones' category-1 jackpot hits its published cap (widely reported as 250M EUR) and goes unwon for up to 4 consecutive draws, category-1 funds are forcibly redirected into category 2 from the 5th such draw. This is the same mechanism family as Jerry & Marge Selbee's Cash WinFall (see universidad/advantage-play-case-studies-v1.json, PR #169), and directly answers that file's 'PENDIENTE_DE_VERIFICAR' question about a Spanish roll-down analogue.",
+      "engine": "loterias-ai/casino/jackpots/lottery-rolldown-ev-engine-v1.mjs (new, tested) - rolldownEvPerTicket() computes the pari-mutuel EV boost per ticket once given the redistributed fund, official category-2 odds, and expected ticket sales; refuses a CANDIDATE_PLAY verdict when the expected winner count is too low to trust the point estimate.",
+      "blockedOn": [
+        "Primary-source confirmation from SELAE's own regulation text, not just third-party lottery sites",
+        "Current category-1 jackpot value vs the 250M cap (this session cannot fetch it - network sandboxed; euromillones.es and SELAE are not on the allowlist)",
+        "Whether the jackpot is currently anywhere near the cap at all - historically this is a RARE event (Euromillones has hit its cap only a handful of times ever), so this is a MONITOR-FOR-THE-CONDITION target, not an active candidate today"
+      ]
+    }
+  ],
   "rejectedCandidates": [
     { "candidate": "Lightning Roulette / RNG-driven multiplier roulette (loterias-ai/casino/lightning/)", "reason": "RNG multipliers are not a physical wheel-bias mechanism; prior prospective attempts already failed per repo history and were not rescued, per explicit instruction not to resurrect failed prospectives." },
     { "candidate": "Red Tiger jackpot feed for Botemania via venture alias guessing", "reason": "botemania-redtiger-venture-probe-v1.json: all 4 tested venture aliases (botemania_es/botemania/BOTEMANIA/BOTEMANIA_ES) returned HTTP 200 with 0 jackpot rows - wrong venture identifier, not evidence of absence of Red Tiger jackpots at Botemania." }
@@ -78,13 +91,15 @@
     "loterias-ai/tests/must-drop-ev-engine-v1.test.mjs (new): unit tests with hand-verified numeric expectations for every exported function, including the refusal-to-fabricate path.",
     "loterias-ai/casino/jackpots/botemania-double-jackpots-mustdrop-extractor-v2.mjs (new): widens v1's 7-needle scan to 18 needles plus a needle-independent numeric-object-literal scan of the settings bundle.",
     ".github/workflows/loterias-ai-botemania-double-jackpots-mustdrop-v2.yml (new): runs the v2 extractor every 2 hours with unrestricted egress and commits fresh evidence directly (matching this repo's existing convention for read-only research cycles).",
-    ".github/workflows/loterias-ai-ci.yml (modified): added the new must-drop EV engine test to the CI gate."
+    "loterias-ai/casino/jackpots/lottery-rolldown-ev-engine-v1.mjs (new): pari-mutuel EV engine for the Selbee/Cash-WinFall roll-down mechanism family, applied to the newly-identified Euromillones cap-reached forced redistribution to category 2; refuses CANDIDATE_PLAY when the expected-winner count is too low to trust the point estimate.",
+    "loterias-ai/tests/lottery-rolldown-ev-engine-v1.test.mjs (new): unit tests including the low-sample-warning refusal path.",
+    ".github/workflows/loterias-ai-ci.yml (modified): added both new EV engine tests to the CI gate."
   ],
   "nextHighestValueActions": [
     "Wait for/trigger the new loterias-ai-botemania-double-jackpots-mustdrop-v2.yml run and review objectLiteralCandidates for a real numeric mustDropWithin config.",
     "Try additional Red Tiger venture identifier candidates beyond the 4 already tested (check Botemania's own public game-launch client map for any Red Tiger-branded game's launch parameters, which often embed the real venture/customer string).",
     "Probe PlayUZU's 142 isJackpot=true EGT titles individually for their real jackpot tier feed (Minor/Major/Grand current values, seed, and any published must-hit-by range) - PlayUZU's games-api.netdnstrace1.com backend is already known-reachable from prior work (validated-game-catalog-v1.json), so this is a concrete, well-scoped next probe, not a fresh discovery problem.",
     "Misión 2 (progressive video poker) is CLOSED at PlayUZU (0 titles, confirmed this pass) - redirect video-poker search to Botemania's own catalog and PokerStars Casino España instead of re-checking PlayUZU.",
-    "Audit SELAE's official Euromillones/Primitiva/Bonoloto regulations for any roll-down-to-lower-tier or bote-máximo-con-reparto-forzado clause (Selbee-equivalent search, not yet done)."
+    "Get a primary-source (SELAE regulation text) citation for the Euromillones cap-rolldown mechanism now in nearThresholdCandidates, and set up a periodic check of the current category-1 jackpot value vs the 250M cap via the scheduled-workflow path (this session's own network cannot reach euromillones.es/SELAE)."
   ]
 }
