@@ -34,7 +34,7 @@ const blockerLabel={
   CURRENT_STATE_BELOW_BREAK_EVEN:'El estado actual está por debajo del punto de equilibrio.',
   EXECUTION_STRATEGY_NOT_VERIFIED:'La estrategia exacta de ejecución todavía no está validada.'
 };
-let state={plan:null,params:null,assets:null,metadata:null,live:null,validation:null,directByKey:{},directPots:null,directAt:null,directOk:false,directRows:0};
+let state={plan:null,params:null,assets:null,metadata:null,live:null,validation:null,directByKey:{},directPots:null,directAt:null,directOk:false,directRows:0,directCanonicalRows:0,directAmbiguousKeys:0};
 
 async function json(url){const r=await fetch(`${url}?t=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(`${r.status} ${url}`);return r.json();}
 async function maybeJson(url){try{return await json(url);}catch{return null;}}
@@ -117,7 +117,7 @@ function render(){
   $('freshness').textContent=age==null?'SIN DATO':`${age}s`;$('freshness').className=age!=null&&age<=freshLimit?'ok':age!=null&&age<=freshLimit*2?'warn':'bad';
   $('rtp').textContent=lane?.id==='botemania-jackpot-king'?pct(l?.current?.modelScreen?.bestConservativeRtp):'—';
   $('observed').textContent=time(selectedDirectRow()?state.directAt:observedAt);
-  $('channel').textContent=directFresh()?`DIRECTO · ${state.directRows} IDs`:`EVIDENCIA · ${Number(p?.coverage?.liveFeedRows||0)} IDs`;
+  $('channel').textContent=directFresh()?`DIRECTO · ${state.directCanonicalRows} IDs válidos${state.directAmbiguousKeys?` · ${state.directAmbiguousKeys} ambiguos`:''}`:`EVIDENCIA · ${Number(p?.coverage?.liveFeedRows||0)} IDs`;
   $('why').innerHTML=whyText();$('liveDot').style.background=ready?'var(--green)':prepare?'var(--amber)':'var(--red)';
 }
 async function refreshScientific(){
@@ -131,11 +131,14 @@ async function directProbe(){
     const b=await r.json(),rows=[];
     const add=(network,items)=>{for(const x of Array.isArray(items)?items:[]){const id=String(x?.id??''),amountEUR=Number(x?.amount);if(id&&Number.isFinite(amountEUR))rows.push({network,id,amountEUR});}};
     add('generic',b?.data?.jackpots);add('redTiger',b?.data?.redTigerJackpots);add('blueprint',b?.data?.blueprintJackpots);
-    const counts=new Map();for(const x of rows){const k=`${x.network}:${x.id}`;counts.set(k,(counts.get(k)||0)+1)}
-    state.directByKey=Object.fromEntries(rows.filter(x=>counts.get(`${x.network}:${x.id}`)===1).map(x=>[`${x.network}:${x.id}`,x]));
+    const grouped=new Map();
+    for(const x of rows){const k=`${x.network}:${x.id}`;if(!grouped.has(k))grouped.set(k,[]);grouped.get(k).push(x);}
+    const directByKey={},ambiguous=[];
+    for(const [key,group] of grouped){const amounts=[...new Set(group.map(x=>Number(x.amountEUR).toFixed(6)))];if(amounts.length===1)directByKey[key]=group[0];else ambiguous.push(key);}
+    state.directByKey=directByKey;
     const key={JACKPOTKING:'JACKPOT_KING',JACKPOTKING_REGAL:'REGAL',JACKPOTKING_ROYAL:'ROYAL'},pots={};
     for(const x of rows.filter(x=>x.network==='blueprint')){const k=key[String(x.id)],n=Number(x.amountEUR);if(k&&Number.isFinite(n)&&n>0)pots[k]=n;}
-    state.directPots=Object.keys(pots).length===3?pots:null;state.directAt=new Date().toISOString();state.directOk=rows.length>0;state.directRows=rows.length;
+    state.directPots=Object.keys(pots).length===3?pots:null;state.directAt=new Date().toISOString();state.directOk=rows.length>0;state.directRows=rows.length;state.directCanonicalRows=Object.keys(directByKey).length;state.directAmbiguousKeys=ambiguous.length;
     $('gameCard').classList.add('flash');setTimeout(()=>$('gameCard').classList.remove('flash'),520);render();
   }catch{state.directOk=false;render();}
 }
