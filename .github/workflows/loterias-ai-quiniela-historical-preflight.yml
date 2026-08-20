@@ -18,8 +18,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: loterias-ai-quiniela-historical-preflight
-  cancel-in-progress: true
+  group: loterias-ai-quiniela-historical-preflight-${{ github.event_name }}
+  cancel-in-progress: false
 
 jobs:
   preflight:
