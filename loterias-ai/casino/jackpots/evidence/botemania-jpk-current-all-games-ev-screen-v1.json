@@ -1,6 +1,6 @@
 {
-  "version": "botemania-jpk-current-all-games-ev-screen-v1.2-exact-mbwb-monotonic-hazard",
-  "generatedAt": "2026-08-20T06:54:08.345Z",
+  "version": "botemania-jpk-current-all-games-ev-screen-v1.3-specific-rtp-semantics",
+  "generatedAt": "2026-08-20T07:03:11.101Z",
   "operator": "botemania-es",
   "observedAt": "2026-08-20T06:48:55.020Z",
   "potsEUR": {
@@ -43,11 +43,13 @@
     "hazardDirectionEvidenceFile": "loterias-ai/casino/jackpots/evidence/botemania-fishin-ingame-help-hazard-v1.json",
     "hazardDirectionConstraint": "NONDECREASING_WITH_JACKPOT_VALUE_VERIFIED_IN_GAME",
     "exactHazardKnown": false,
-    "warning": "Royal/Regal MBWB and monotonic jackpot-win probability direction are verified in Botemania Spain UI. Seed and exact hazard magnitude/form remain unverified; a screen result cannot authorize wagering."
+    "rtpSemanticPolicy": "TITLE_SPECIFIC_RTP_COMPONENTS_OVERRIDE_CONFLICTING_GENERIC_MECHANICS_TEXT_WHEN_EXPLICIT",
+    "warning": "Royal/Regal MBWB and monotonic jackpot-win probability direction are verified in Botemania Spain UI. Title-specific RTP sections are used when explicit. Seed and exact hazard magnitude/form remain unverified; a screen result cannot authorize wagering."
   },
   "summary": {
     "gamesScanned": 20,
-    "screenableGames": 8,
+    "screenableGames": 10,
+    "semanticConflictsResolvedBySpecificRtpSection": 2,
     "robustAtOrAbove100Count": 0,
     "bestCurrentResearchCandidate": {
       "slug": "mega-bars-fortune-wheel-jackpot-king",
@@ -66,6 +68,12 @@
       "baseRtpPct": 95.5,
       "activeContributionPct": 0.38,
       "reserveContributionPct": 0.11,
+      "semantics": {
+        "genericMechanicsConflict": false,
+        "titleSpecificRtpComponentsPresent": true,
+        "genericConflictResolvedByTitleSpecificRtpSection": false,
+        "policy": "RTP_SECTION_SPECIFIC_COMPONENTS_OVERRIDE_GENERIC_MECHANICS_TEXT; CONFLICT_REQUIRES_EXPLICIT_REVIEW_BEFORE_ANY ECONOMIC PROMOTION"
+      },
       "networkAllocationApplied": {
         "JACKPOT_KING": 0.603484,
         "REGAL": 0.198239,
@@ -137,12 +145,101 @@
       ]
     },
     {
+      "slug": "eye-of-horus-jackpot-king",
+      "title": "Eye of Horus: Jackpot King ",
+      "screenable": true,
+      "baseRtpPct": 95.46,
+      "activeContributionPct": 0.38,
+      "reserveContributionPct": 0.11,
+      "semantics": {
+        "genericMechanicsConflict": true,
+        "titleSpecificRtpComponentsPresent": true,
+        "genericConflictResolvedByTitleSpecificRtpSection": true,
+        "policy": "RTP_SECTION_SPECIFIC_COMPONENTS_OVERRIDE_GENERIC_MECHANICS_TEXT; CONFLICT_REQUIRES_EXPLICIT_REVIEW_BEFORE_ANY ECONOMIC PROMOTION"
+      },
+      "networkAllocationApplied": {
+        "JACKPOT_KING": 0.603484,
+        "REGAL": 0.198239,
+        "ROYAL": 0.198277
+      },
+      "currentZeroKingSensitivity": {
+        "worstRtp": 0.9546,
+        "bestRtp": 0.955594,
+        "worstRtpPct": 95.46,
+        "bestRtpPct": 95.5594,
+        "robustAtOrAbove100": false,
+        "allBelow100": true
+      },
+      "scenarios": [
+        {
+          "alpha": 1,
+          "totalRtp": 0.955594,
+          "royalEv": 0.000533,
+          "regalEv": 0.000462
+        },
+        {
+          "alpha": 1.25,
+          "totalRtp": 0.955434,
+          "royalEv": 0.000451,
+          "regalEv": 0.000383
+        },
+        {
+          "alpha": 1.5,
+          "totalRtp": 0.955296,
+          "royalEv": 0.00038,
+          "regalEv": 0.000315
+        },
+        {
+          "alpha": 2,
+          "totalRtp": 0.955075,
+          "royalEv": 0.000266,
+          "regalEv": 0.00021
+        },
+        {
+          "alpha": 3,
+          "totalRtp": 0.954809,
+          "royalEv": 0.000122,
+          "regalEv": 0.000086
+        },
+        {
+          "alpha": 4,
+          "totalRtp": 0.954686,
+          "royalEv": 0.000053,
+          "regalEv": 0.000033
+        },
+        {
+          "alpha": 5,
+          "totalRtp": 0.954634,
+          "royalEv": 0.000022,
+          "regalEv": 0.000012
+        },
+        {
+          "alpha": 7.5,
+          "totalRtp": 0.954603,
+          "royalEv": 0.000002,
+          "regalEv": 0.000001
+        },
+        {
+          "alpha": 10,
+          "totalRtp": 0.9546,
+          "royalEv": 0,
+          "regalEv": 0
+        }
+      ]
+    },
+    {
       "slug": "king-kong-cash-go-bananas-jackpot-king",
       "title": "King Kong Cash Go Bananas: Jackpot King ",
       "screenable": true,
       "baseRtpPct": 95,
       "activeContributionPct": 0.38,
       "reserveContributionPct": 0.11,
+      "semantics": {
+        "genericMechanicsConflict": false,
+        "titleSpecificRtpComponentsPresent": true,
+        "genericConflictResolvedByTitleSpecificRtpSection": false,
+        "policy": "RTP_SECTION_SPECIFIC_COMPONENTS_OVERRIDE_GENERIC_MECHANICS_TEXT; CONFLICT_REQUIRES_EXPLICIT_REVIEW_BEFORE_ANY ECONOMIC PROMOTION"
+      },
       "networkAllocationApplied": {
         "JACKPOT_KING": 0.603484,
         "REGAL": 0.198239,
@@ -220,6 +317,12 @@
       "baseRtpPct": 94.51,
       "activeContributionPct": 0.38,
       "reserveContributionPct": 0.11,
+      "semantics": {
+        "genericMechanicsConflict": false,
+        "titleSpecificRtpComponentsPresent": true,
+        "genericConflictResolvedByTitleSpecificRtpSection": false,
+        "policy": "RTP_SECTION_SPECIFIC_COMPONENTS_OVERRIDE_GENERIC_MECHANICS_TEXT; CONFLICT_REQUIRES_EXPLICIT_REVIEW_BEFORE_ANY ECONOMIC PROMOTION"
+      },
       "networkAllocationApplied": {
         "JACKPOT_KING": 0.603484,
         "REGAL": 0.198239,
@@ -297,6 +400,12 @@
       "baseRtpPct": 94.5,
       "activeContributionPct": 0.38,
       "reserveContributionPct": 0.11,
+      "semantics": {
+        "genericMechanicsConflict": false,
+        "titleSpecificRtpComponentsPresent": true,
+        "genericConflictResolvedByTitleSpecificRtpSection": false,
+        "policy": "RTP_SECTION_SPECIFIC_COMPONENTS_OVERRIDE_GENERIC_MECHANICS_TEXT; CONFLICT_REQUIRES_EXPLICIT_REVIEW_BEFORE_ANY ECONOMIC PROMOTION"
+      },
       "networkAllocationApplied": {
         "JACKPOT_KING": 0.603484,
         "REGAL": 0.198239,
@@ -374,6 +483,12 @@
       "baseRtpPct": 93.32,
       "activeContributionPct": 2.32,
       "reserveContributionPct": 0.68,
+      "semantics": {
+        "genericMechanicsConflict": false,
+        "titleSpecificRtpComponentsPresent": true,
+        "genericConflictResolvedByTitleSpecificRtpSection": false,
+        "policy": "RTP_SECTION_SPECIFIC_COMPONENTS_OVERRIDE_GENERIC_MECHANICS_TEXT; CONFLICT_REQUIRES_EXPLICIT_REVIEW_BEFORE_ANY ECONOMIC PROMOTION"
+      },
       "networkAllocationApplied": {
         "JACKPOT_KING": 0.603484,
         "REGAL": 0.198239,
@@ -451,6 +566,12 @@
       "baseRtpPct": 93.32,
       "activeContributionPct": 2.32,
       "reserveContributionPct": 0.68,
+      "semantics": {
+        "genericMechanicsConflict": false,
+        "titleSpecificRtpComponentsPresent": true,
+        "genericConflictResolvedByTitleSpecificRtpSection": false,
+        "policy": "RTP_SECTION_SPECIFIC_COMPONENTS_OVERRIDE_GENERIC_MECHANICS_TEXT; CONFLICT_REQUIRES_EXPLICIT_REVIEW_BEFORE_ANY ECONOMIC PROMOTION"
+      },
       "networkAllocationApplied": {
         "JACKPOT_KING": 0.603484,
         "REGAL": 0.198239,
@@ -528,6 +649,12 @@
       "baseRtpPct": 93.02,
       "activeContributionPct": 2.32,
       "reserveContributionPct": 0.68,
+      "semantics": {
+        "genericMechanicsConflict": false,
+        "titleSpecificRtpComponentsPresent": true,
+        "genericConflictResolvedByTitleSpecificRtpSection": false,
+        "policy": "RTP_SECTION_SPECIFIC_COMPONENTS_OVERRIDE_GENERIC_MECHANICS_TEXT; CONFLICT_REQUIRES_EXPLICIT_REVIEW_BEFORE_ANY ECONOMIC PROMOTION"
+      },
       "networkAllocationApplied": {
         "JACKPOT_KING": 0.603484,
         "REGAL": 0.198239,
@@ -599,12 +726,101 @@
       ]
     },
     {
+      "slug": "the-goonies-return-jackpot-king",
+      "title": "The Goonies Return: Jackpot King ",
+      "screenable": true,
+      "baseRtpPct": 93.06,
+      "activeContributionPct": 0.38,
+      "reserveContributionPct": 0.11,
+      "semantics": {
+        "genericMechanicsConflict": true,
+        "titleSpecificRtpComponentsPresent": true,
+        "genericConflictResolvedByTitleSpecificRtpSection": true,
+        "policy": "RTP_SECTION_SPECIFIC_COMPONENTS_OVERRIDE_GENERIC_MECHANICS_TEXT; CONFLICT_REQUIRES_EXPLICIT_REVIEW_BEFORE_ANY ECONOMIC PROMOTION"
+      },
+      "networkAllocationApplied": {
+        "JACKPOT_KING": 0.603484,
+        "REGAL": 0.198239,
+        "ROYAL": 0.198277
+      },
+      "currentZeroKingSensitivity": {
+        "worstRtp": 0.9306,
+        "bestRtp": 0.931594,
+        "worstRtpPct": 93.06,
+        "bestRtpPct": 93.1594,
+        "robustAtOrAbove100": false,
+        "allBelow100": true
+      },
+      "scenarios": [
+        {
+          "alpha": 1,
+          "totalRtp": 0.931594,
+          "royalEv": 0.000533,
+          "regalEv": 0.000462
+        },
+        {
+          "alpha": 1.25,
+          "totalRtp": 0.931434,
+          "royalEv": 0.000451,
+          "regalEv": 0.000383
+        },
+        {
+          "alpha": 1.5,
+          "totalRtp": 0.931296,
+          "royalEv": 0.00038,
+          "regalEv": 0.000315
+        },
+        {
+          "alpha": 2,
+          "totalRtp": 0.931075,
+          "royalEv": 0.000266,
+          "regalEv": 0.00021
+        },
+        {
+          "alpha": 3,
+          "totalRtp": 0.930809,
+          "royalEv": 0.000122,
+          "regalEv": 0.000086
+        },
+        {
+          "alpha": 4,
+          "totalRtp": 0.930686,
+          "royalEv": 0.000053,
+          "regalEv": 0.000033
+        },
+        {
+          "alpha": 5,
+          "totalRtp": 0.930634,
+          "royalEv": 0.000022,
+          "regalEv": 0.000012
+        },
+        {
+          "alpha": 7.5,
+          "totalRtp": 0.930603,
+          "royalEv": 0.000002,
+          "regalEv": 0.000001
+        },
+        {
+          "alpha": 10,
+          "totalRtp": 0.9306,
+          "royalEv": 0,
+          "regalEv": 0
+        }
+      ]
+    },
+    {
       "slug": "king-kong-cash-jackpot-king",
       "title": "King Kong Cash: Jackpot King ",
       "screenable": true,
       "baseRtpPct": 93,
       "activeContributionPct": 0.38,
       "reserveContributionPct": 0.11,
+      "semantics": {
+        "genericMechanicsConflict": false,
+        "titleSpecificRtpComponentsPresent": true,
+        "genericConflictResolvedByTitleSpecificRtpSection": false,
+        "policy": "RTP_SECTION_SPECIFIC_COMPONENTS_OVERRIDE_GENERIC_MECHANICS_TEXT; CONFLICT_REQUIRES_EXPLICIT_REVIEW_BEFORE_ANY ECONOMIC PROMOTION"
+      },
       "networkAllocationApplied": {
         "JACKPOT_KING": 0.603484,
         "REGAL": 0.198239,
@@ -688,6 +904,7 @@
     "noMainKingCredit": true,
     "exactMbwbOnlyUsedWhenOperatorUiEvidencePresent": true,
     "qualitativeHazardNeverEqualsExactHazard": true,
+    "titleSpecificRtpMustBeExplicitToResolveGenericConflict": true,
     "seedHypothesisNeverAsFact": true,
     "noHazardMagnitudeHypothesisAsFact": true,
     "noBetting": true,
