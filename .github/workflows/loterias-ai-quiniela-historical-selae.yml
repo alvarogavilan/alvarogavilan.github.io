@@ -3,7 +3,7 @@ name: Loterias AI Quiniela Historical SELAE Cross-check
 on:
   workflow_dispatch:
   schedule:
-    - cron: '13,43 * * * *'
+    - cron: '8,23,38,53 * * * *'
   push:
     paths:
       - 'loterias-ai/scripts/crosscheck-quiniela-historical-selae.mjs'
@@ -13,9 +13,9 @@ permissions:
   contents: write
 
 concurrency:
-  # Keep long scheduled production batches serialized, but do not let a queued
-  # cron run block a tiny push/manual smoke checkpoint. Each trigger class gets
-  # its own queue while preserving cancel-in-progress:false inside that class.
+  # Keep scheduled micro-batches serialized, but do not let a queued cron run
+  # block a push/manual smoke checkpoint. Each trigger class gets its own queue
+  # while preserving cancel-in-progress:false inside that class.
   group: loterias-ai-quiniela-historical-selae-${{ github.event_name }}
   cancel-in-progress: false
 
@@ -37,14 +37,11 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
-          # Code/config changes need a small durable smoke checkpoint so a bad
-          # runtime or API assumption becomes visible quickly. Scheduled runs keep
-          # the larger production batch once the path is known to persist safely.
-          if [ "${{ github.event_name }}" = 'schedule' ]; then
-            batch_limit=40
-          else
-            batch_limit=8
-          fi
+          # The first durable checkpoint proved that a four-row strict batch can
+          # complete and persist. Use small eight-row production checkpoints at a
+          # higher cadence so SELAE/network latency cannot strand a large batch.
+          # Scientific gates remain identical; only checkpoint granularity changes.
+          batch_limit=8
           echo "Quiniela historical SELAE batch_limit=${batch_limit} event=${{ github.event_name }}"
 
           for attempt in 1 2 3 4 5; do
