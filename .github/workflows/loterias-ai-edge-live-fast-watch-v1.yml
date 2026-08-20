@@ -10,6 +10,9 @@ on:
       - 'loterias-ai/edge-live/telegram-edge-alert-v1.mjs'
       - 'loterias-ai/edge-live/edge-live-execution-plan-v1.mjs'
       - 'loterias-ai/casino/jackpots/botemania-jpk-reset-reconstructor-v1.mjs'
+      - 'loterias-ai/casino/jackpots/botemania-headless-jackpots-public-probe-v1.mjs'
+      - 'loterias-ai/casino/jackpots/botemania-generic-fast-reset-ledger-v1.mjs'
+      - 'loterias-ai/casino/jackpots/botemania-irish-riches-jpk-current-screen-v1.mjs'
       - '.github/workflows/loterias-ai-edge-live-fast-watch-v1.yml'
   schedule:
     - cron: '*/5 * * * *'
@@ -26,7 +29,7 @@ concurrency:
 jobs:
   watch:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,10 +50,13 @@ jobs:
           for i in $(seq 1 18); do
             echo "EDGE LIVE fast sample $i/18 at $(date -u +%FT%TZ)"
             node loterias-ai/edge-live/botemania-fast-meter-sample-v1.mjs
+            node loterias-ai/casino/jackpots/botemania-headless-jackpots-public-probe-v1.mjs
+            node loterias-ai/casino/jackpots/botemania-generic-fast-reset-ledger-v1.mjs
             node loterias-ai/casino/jackpots/botemania-jpk-flow-model-v1.mjs
             node loterias-ai/casino/jackpots/botemania-jpk-near-cap-ev-scenarios-v1.mjs
             node loterias-ai/casino/jackpots/botemania-jpk-reset-reconstructor-v1.mjs
             node loterias-ai/casino/jackpots/botemania-jpk-live-gate-v1.mjs
+            node loterias-ai/casino/jackpots/botemania-irish-riches-jpk-current-screen-v1.mjs
             node loterias-ai/casino/five-euro-real-pilot-gate-v1.mjs
             node loterias-ai/edge-live/edge-live-execution-plan-v1.mjs
             node loterias-ai/edge-live/telegram-edge-alert-v1.mjs
@@ -61,10 +67,11 @@ jobs:
         run: |
           set -euo pipefail
           STATE=loterias-ai/edge-live/telegram-alert-state.json
-          LEDGER=loterias-ai/casino/jackpots/evidence/botemania-jpk-fast-reset-ledger-v1.json
+          JPK_LEDGER=loterias-ai/casino/jackpots/evidence/botemania-jpk-fast-reset-ledger-v1.json
+          GENERIC_LEDGER=loterias-ai/casino/jackpots/evidence/botemania-generic-fast-reset-ledger-v1.json
           mkdir -p /tmp/edge-live-fast
           copied=0
-          for f in "$STATE" "$LEDGER"; do
+          for f in "$STATE" "$JPK_LEDGER" "$GENERIC_LEDGER"; do
             if [ -f "$f" ]; then cp "$f" "/tmp/edge-live-fast/$(basename "$f")"; copied=1; fi
           done
           if [ "$copied" -eq 0 ]; then exit 0; fi
@@ -74,10 +81,11 @@ jobs:
           git reset --hard origin/main
           mkdir -p loterias-ai/edge-live loterias-ai/casino/jackpots/evidence
           [ ! -f /tmp/edge-live-fast/telegram-alert-state.json ] || cp /tmp/edge-live-fast/telegram-alert-state.json "$STATE"
-          [ ! -f /tmp/edge-live-fast/botemania-jpk-fast-reset-ledger-v1.json ] || cp /tmp/edge-live-fast/botemania-jpk-fast-reset-ledger-v1.json "$LEDGER"
-          git add -- "$STATE" "$LEDGER" 2>/dev/null || true
+          [ ! -f /tmp/edge-live-fast/botemania-jpk-fast-reset-ledger-v1.json ] || cp /tmp/edge-live-fast/botemania-jpk-fast-reset-ledger-v1.json "$JPK_LEDGER"
+          [ ! -f /tmp/edge-live-fast/botemania-generic-fast-reset-ledger-v1.json ] || cp /tmp/edge-live-fast/botemania-generic-fast-reset-ledger-v1.json "$GENERIC_LEDGER"
+          git add -- "$STATE" "$JPK_LEDGER" "$GENERIC_LEDGER" 2>/dev/null || true
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'data(edge-live): persist compact fast reset and Telegram state'
+          git commit -m 'data(edge-live): persist compact multi-network reset and Telegram state'
           for attempt in 1 2 3; do
             if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
             sleep $((attempt*2))
