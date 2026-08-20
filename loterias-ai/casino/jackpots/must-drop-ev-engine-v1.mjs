@@ -1,50 +1,54 @@
-// Reusable must-drop / must-hit-by EV engine. Generalizes the hazard-shape
-// math already proven in botemania-irish-riches-jpk-current-screen-v1.mjs
-// (q/F/f/h power-law hazard sensitivity grid) so it can be applied to ANY
-// must-drop tier - monetary-cap (Jackpot King Royal/Regal style) or
-// wall-clock-deadline (Botemania "Double Jackpots - Must Drop Within..."
-// style) - without re-deriving or duplicating the formula per game.
+// Reusable must-drop / must-hit-by EV engine.
+//
+// The research model assumes a power-law CDF F(q)=q^alpha for the latent drop
+// point over a normalized interval q in [0,1]. The important implementation
+// detail is that wager EV must use the EXACT conditional probability over the
+// next finite meter/time interval, not the infinitesimal approximation
+// hazard(q)*dq. The latter can materially over/under-state EV near a cap or
+// deadline, exactly where an AP gate is most sensitive.
 
 export function clampUnit(q) {
   return Math.max(1e-5, Math.min(0.9998, q));
 }
 
-// q = normalized position between a start point (seed / window start) and an
-// end point (cap / window end) that MUST be reached before the guarantee fires.
 export function positionFraction({ current, start, end }) {
   if (![current, start, end].every(Number.isFinite) || end <= start) return null;
   return clampUnit((current - start) / (end - start));
 }
 
-// Power-law hazard shape family F(q) = q^alpha. alpha=1 is the UNIFORM
-// (maximum-entropy / no extra assumption) case; alpha>1 concentrates more of
-// the drop probability near the end (q->1); alpha<1 concentrates it near the
-// start. This IS the "no asumas uniforme sin demostrarlo" requirement made
-// operational: report a range across a grid, never a single value.
 export function hazardShape(q, alpha) {
-  const F = q ** alpha;
-  const f = alpha * q ** (alpha - 1);
+  if (!Number.isFinite(q) || !Number.isFinite(alpha) || alpha <= 0) return null;
+  const qq = Math.max(0, Math.min(1, q));
+  const F = qq ** alpha;
+  const f = alpha * Math.max(1e-15, qq) ** (alpha - 1);
   return { F, f, hazard: f / Math.max(1e-15, 1 - F) };
 }
 
-// EV contribution of the must-drop guarantee for ONE bet, expressed per unit
-// of that bet's own stake. meterPerBet = how much THIS bet moves the tracked
-// quantity (pot EUR, or elapsed time) toward the endpoint per unit staked;
-// distanceToEnd = (end - start) in the same units. This mirrors the proven
-// Irish Riches formula: h = (meterPerBet/distanceToEnd) * hazard(q,alpha).
+// Exact conditional probability that the latent drop point lies in (q1,q2],
+// conditional on survival through q1, under F(q)=q^alpha.
+export function conditionalDropProbability({ q1, q2, alpha }) {
+  if (![q1, q2, alpha].every(Number.isFinite) || alpha <= 0) return null;
+  const a = Math.max(0, Math.min(1, q1));
+  const b = Math.max(a, Math.min(1, q2));
+  const F1 = a ** alpha;
+  const F2 = b ** alpha;
+  const survival = 1 - F1;
+  if (survival <= 0) return 1;
+  return Math.max(0, Math.min(1, (F2 - F1) / survival));
+}
+
+// EV contribution for one unit of stake when meterPerBet is the amount by
+// which one unit of stake advances the tracked meter. This is exact within the
+// assumed F(q) model for a finite meter increment.
 export function evPerBet({ q, alpha, meterPerBet, distanceToEnd, awardValue }) {
-  if (!Number.isFinite(q) || !Number.isFinite(meterPerBet) || !Number.isFinite(distanceToEnd) || distanceToEnd <= 0) return null;
-  const { hazard } = hazardShape(q, alpha);
-  const h = (meterPerBet / distanceToEnd) * hazard;
-  return awardValue * h;
+  if (![q, alpha, meterPerBet, distanceToEnd, awardValue].every(Number.isFinite) || alpha <= 0 || meterPerBet < 0 || distanceToEnd <= 0 || awardValue < 0) return null;
+  const dq = meterPerBet / distanceToEnd;
+  const pDrop = conditionalDropProbability({ q1: q, q2: q + dq, alpha });
+  return pDrop == null ? null : awardValue * pDrop;
 }
 
 const DEFAULT_ALPHA_GRID = [1, 1.25, 1.5, 2, 3, 4, 5, 7.5, 10];
 
-// Monetary-cap must-drop scenario grid. Direct generalization of
-// botemania-irish-riches-jpk-current-screen-v1.mjs's per-tier loop so other
-// Blueprint-style (or any vendor's) "must be won before EUR X" jackpots can
-// reuse the exact same math instead of re-deriving it per game.
 export function monetaryCapScenarioGrid({
   baseRtp,
   potEUR,
@@ -55,8 +59,11 @@ export function monetaryCapScenarioGrid({
   publishedExtraPct = 1,
   alphaGrid = DEFAULT_ALPHA_GRID,
 }) {
-  if (!Number.isFinite(baseRtp) || !Number.isFinite(potEUR) || !Number.isFinite(cap) || !Number.isFinite(networkShare)) {
+  if (!Number.isFinite(baseRtp) || !Number.isFinite(potEUR) || !Number.isFinite(cap) || !Number.isFinite(networkShare) || networkShare < 0) {
     return { blocked: true, reason: 'MISSING_REQUIRED_NUMERIC_INPUT', scenarios: [] };
+  }
+  if (!Array.isArray(seedScenarios) || !Array.isArray(activeFractionsOfPublishedPct) || !Array.isArray(alphaGrid)) {
+    return { blocked: true, reason: 'MISSING_SCENARIO_GRID', scenarios: [] };
   }
   const scenarios = [];
   for (const seed of seedScenarios) {
@@ -66,7 +73,7 @@ export function monetaryCapScenarioGrid({
       const meterPerBet = activeContributionPct * networkShare;
       for (const alpha of alphaGrid) {
         const jackpotEv = q == null ? null : evPerBet({ q, alpha, meterPerBet, distanceToEnd: cap - seed.value, awardValue: potEUR });
-        const totalRtp = baseRtp + (jackpotEv || 0);
+        const totalRtp = jackpotEv == null ? null : baseRtp + jackpotEv;
         scenarios.push({
           seedScenario: seed.name,
           seedValue: seed.value,
@@ -74,9 +81,9 @@ export function monetaryCapScenarioGrid({
           activeContributionPct: +(activeContributionPct * 100).toFixed(4),
           alpha,
           q,
-          jackpotEv: jackpotEv == null ? null : +jackpotEv.toFixed(6),
-          totalRtp: +totalRtp.toFixed(6),
-          totalRtpPct: +(totalRtp * 100).toFixed(4),
+          jackpotEv: jackpotEv == null ? null : +jackpotEv.toFixed(9),
+          totalRtp: totalRtp == null ? null : +totalRtp.toFixed(9),
+          totalRtpPct: totalRtp == null ? null : +(totalRtp * 100).toFixed(6),
         });
       }
     }
@@ -84,36 +91,29 @@ export function monetaryCapScenarioGrid({
   const vals = scenarios.map((x) => x.totalRtp).filter(Number.isFinite);
   const worst = vals.length ? Math.min(...vals) : null;
   const best = vals.length ? Math.max(...vals) : null;
-  const passCount = scenarios.filter((x) => x.totalRtp >= 1).length;
+  const evaluable = scenarios.filter((x) => Number.isFinite(x.totalRtp));
+  const passCount = evaluable.filter((x) => x.totalRtp >= 1).length;
   return {
     blocked: false,
     scenarioCount: scenarios.length,
+    evaluableScenarioCount: evaluable.length,
     passCount,
-    allScenariosAbove100: scenarios.length > 0 && passCount === scenarios.length,
+    allScenariosAbove100: evaluable.length > 0 && passCount === evaluable.length,
     worstRtp: worst,
     bestRtp: best,
     scenarios,
   };
 }
 
-// Wall-clock must-drop-within-window scenario grid. Same q/F/f/h hazard
-// SHAPE math as the monetary-cap case (well-founded, reused as-is), but the
-// conversion from "hazard density over the window" into "MY probability of
-// being the specific spin that receives the award" is a SEPARATE, currently
-// UNVALIDATED step for any given game: it depends on whether the operator
-// awards the drop (a) to a uniformly-random currently-active network spin,
-// or (b) via a per-player/session-scoped countdown. Botemania's "Double
-// Jackpots - Must Drop Within" component has not yet been reverse engineered
-// enough to know which applies (see botemania-double-jackpots-mustdrop-extractor).
-// This function therefore ALWAYS reports awardMechanismKnown:false unless the
-// caller explicitly supplies a validated awardMechanism, and refuses to
-// collapse the hazard grid into a single EV/PLAY-NOW verdict without one -
-// exactly the "no fabricar apuesta" requirement made structural.
+// Wall-clock must-drop-within model. The CDF model supplies the exact
+// conditional probability that a drop occurs during the next spin-duration
+// interval. Converting that drop event into "MY spin wins" still requires a
+// separately validated award mechanism; otherwise this function fails closed.
 export function timedDeadlineHazardGrid({
   elapsedSeconds,
   windowTotalSeconds,
   alphaGrid = DEFAULT_ALPHA_GRID,
-  awardMechanism = null, // { type: 'NETWORK_RANDOM_ACTIVE_SPIN', concurrentActivePlayers } | { type: 'PER_PLAYER_SESSION_COUNTDOWN' } | null
+  awardMechanism = null,
   mySecondsPerSpin = null,
   potEUR = null,
   myStakePerSpin = null,
@@ -121,26 +121,32 @@ export function timedDeadlineHazardGrid({
 }) {
   const q = positionFraction({ current: elapsedSeconds, start: 0, end: windowTotalSeconds });
   if (q == null) return { blocked: true, reason: 'MISSING_OR_INVALID_TIME_WINDOW', hazardByAlpha: [] };
+
   const hazardByAlpha = alphaGrid.map((alpha) => {
-    const { hazard } = hazardShape(q, alpha);
-    const hazardPerSecond = hazard / windowTotalSeconds;
-    return { alpha, q, hazardPerSecond };
+    const shape = hazardShape(q, alpha);
+    const hazardPerSecond = shape == null ? null : shape.hazard / windowTotalSeconds;
+    const q2 = Number.isFinite(mySecondsPerSpin) ? Math.min(1, q + mySecondsPerSpin / windowTotalSeconds) : null;
+    const pDropDuringSpin = q2 == null ? null : conditionalDropProbability({ q1: q, q2, alpha });
+    return { alpha, q, hazardPerSecond, pDropDuringSpin };
   });
+
   const awardMechanismKnown = awardMechanism != null && ['NETWORK_RANDOM_ACTIVE_SPIN', 'PER_PLAYER_SESSION_COUNTDOWN'].includes(awardMechanism.type);
   let evByAlpha = null;
-  if (awardMechanismKnown && Number.isFinite(mySecondsPerSpin) && Number.isFinite(potEUR) && Number.isFinite(myStakePerSpin) && Number.isFinite(baseRtp)) {
-    evByAlpha = hazardByAlpha.map(({ alpha, hazardPerSecond }) => {
-      let pMySpinWins = hazardPerSecond * mySecondsPerSpin;
+  if (awardMechanismKnown && Number.isFinite(mySecondsPerSpin) && mySecondsPerSpin > 0 && Number.isFinite(potEUR) && potEUR >= 0 && Number.isFinite(myStakePerSpin) && myStakePerSpin > 0 && Number.isFinite(baseRtp)) {
+    evByAlpha = hazardByAlpha.map(({ alpha, pDropDuringSpin }) => {
+      let pMySpinWins = pDropDuringSpin;
       if (awardMechanism.type === 'NETWORK_RANDOM_ACTIVE_SPIN') {
         const n = Number(awardMechanism.concurrentActivePlayers);
         if (!Number.isFinite(n) || n < 1) return { alpha, blocked: true, reason: 'MISSING_CONCURRENT_ACTIVE_PLAYERS' };
-        pMySpinWins = pMySpinWins / n;
+        pMySpinWins = pDropDuringSpin / n;
       }
+      pMySpinWins = Math.max(0, Math.min(1, pMySpinWins));
       const jackpotEvPerBet = (pMySpinWins * potEUR) / myStakePerSpin;
       const totalRtp = baseRtp + jackpotEvPerBet;
-      return { alpha, pMySpinWins, jackpotEvPerBet: +jackpotEvPerBet.toFixed(6), totalRtp: +totalRtp.toFixed(6), totalRtpPct: +(totalRtp * 100).toFixed(4) };
+      return { alpha, pMySpinWins, jackpotEvPerBet: +jackpotEvPerBet.toFixed(9), totalRtp: +totalRtp.toFixed(9), totalRtpPct: +(totalRtp * 100).toFixed(6) };
     });
   }
+
   return {
     blocked: false,
     q,
@@ -156,22 +162,15 @@ export function timedDeadlineHazardGrid({
   };
 }
 
-// Given a target RTP (e.g. 1.0 for breakeven), inverts timedDeadlineHazardGrid
-// under the NETWORK_RANDOM_ACTIVE_SPIN mechanism to answer a strictly weaker,
-// falsifiable question: "how many concurrently active players would there
-// have to be, at most, for this bet to already be +EV right now?" This avoids
-// guessing the real (unobservable) concurrency and instead gives a testable
-// upper bound the user (or a future probe) can check against.
 export function impliedMaxConcurrentPlayersForBreakeven({ elapsedSeconds, windowTotalSeconds, alpha, mySecondsPerSpin, potEUR, myStakePerSpin, baseRtp, targetRtp = 1 }) {
   const q = positionFraction({ current: elapsedSeconds, start: 0, end: windowTotalSeconds });
-  if (q == null || ![mySecondsPerSpin, potEUR, myStakePerSpin, baseRtp].every(Number.isFinite)) return null;
-  const { hazard } = hazardShape(q, alpha);
-  const hazardPerSecond = hazard / windowTotalSeconds;
+  if (q == null || ![alpha, mySecondsPerSpin, potEUR, myStakePerSpin, baseRtp, targetRtp].every(Number.isFinite) || mySecondsPerSpin <= 0 || myStakePerSpin <= 0) return null;
+  const q2 = Math.min(1, q + mySecondsPerSpin / windowTotalSeconds);
+  const pMySpinWinsUnshared = conditionalDropProbability({ q1: q, q2, alpha });
   const neededJackpotEvPerBet = targetRtp - baseRtp;
   if (neededJackpotEvPerBet <= 0) return { maxConcurrentPlayers: Infinity, alreadyAboveTargetWithoutJackpot: true };
   const pMySpinWinsNeeded = (neededJackpotEvPerBet * myStakePerSpin) / potEUR;
-  const pMySpinWinsUnshared = hazardPerSecond * mySecondsPerSpin;
-  if (pMySpinWinsUnshared <= 0) return { maxConcurrentPlayers: 0 };
+  if (!Number.isFinite(pMySpinWinsNeeded) || pMySpinWinsNeeded <= 0 || pMySpinWinsUnshared <= 0) return { maxConcurrentPlayers: 0, pMySpinWinsUnshared, pMySpinWinsNeeded };
   const maxConcurrentPlayers = pMySpinWinsUnshared / pMySpinWinsNeeded;
   return { maxConcurrentPlayers, pMySpinWinsUnshared, pMySpinWinsNeeded };
 }
