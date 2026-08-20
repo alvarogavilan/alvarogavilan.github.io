@@ -4,7 +4,7 @@ import crypto from 'node:crypto';
 
 const OUT = 'loterias-ai/casino/jackpots/evidence/botemania-double-jackpots-global-mustdropwithin-scan-v1.json';
 const ORIGIN = 'https://www.botemania.es';
-const UA = 'loterias-ai-doublejackpots-global-mustdropwithin-scan/1.1';
+const UA = 'loterias-ai-doublejackpots-global-mustdropwithin-scan/1.2';
 const headers = { accept: 'text/html,application/javascript,*/*', 'user-agent': UA, 'cache-control': 'no-cache' };
 
 async function fetchText(url, accept) {
@@ -94,8 +94,17 @@ for (const t of targets) {
 const coveragePct = +(100 * fetchedSuccessfully / targets.length).toFixed(3);
 const scanComplete = fetchedSuccessfully === targets.length;
 
+// A textual reference is not evidence that the chunk PRODUCES/enriches the
+// field. The known hits are UI/rendering modules which read jackpot.mustDropWithin
+// and build the countdown. Keep the source claim suppressed until a producer,
+// mapper, API payload or explicit assignment is independently demonstrated.
+const renderOrConsumerReferences = hitChunks.filter((h) =>
+  /(?:MustDropWithin|DoubleJackpots|Jackpots|styles)/i.test(h.name)
+);
+const unclassifiedReferences = hitChunks.filter((h) => !renderOrConsumerReferences.includes(h));
+
 const out = {
-  version: 'botemania-double-jackpots-global-mustdropwithin-scan-v1.1-coverage-safe',
+  version: 'botemania-double-jackpots-global-mustdropwithin-scan-v1.2-reference-vs-source-safe',
   generatedAt: new Date().toISOString(),
   operator: 'botemania-es',
   runtime: {
@@ -114,15 +123,27 @@ const out = {
   fetchFailures: fetchFailures.slice(0, 100),
   hitChunkCount: hitChunks.length,
   hitChunks,
+  hitClassification: {
+    renderOrConsumerReferenceCount: renderOrConsumerReferences.length,
+    renderOrConsumerReferenceChunks: renderOrConsumerReferences.map((h) => h.name),
+    unclassifiedReferenceCount: unclassifiedReferences.length,
+    unclassifiedReferenceChunks: unclassifiedReferences.map((h) => h.name),
+  },
   decision: {
-    newSourceOfMustDropWithinFound: hitChunks.length > 0,
+    mustDropWithinReferencesFound: hitChunks.length > 0,
+    // Backward-compatible field retained, but deliberately conservative:
+    // references alone must never be promoted to a new economic data source.
+    newSourceOfMustDropWithinFound: false,
+    sourceClaimSuppressedPendingProducerProof: true,
     exactEnrichmentModuleIdentified: false,
     negativeResultInterpretableAsCompleteScan: scanComplete && hitChunks.length === 0,
+    scanCoverageComplete: scanComplete,
     requiresLiveJackpotRows: true,
     realMoneyAllowed: false,
   },
   guards: {
     incompleteCoverageCannotBeTreatedAsNegativeEvidence: true,
+    referenceDoesNotEqualSource: true,
     publicStaticBundlesOnly: true,
     sameOperatorHostOnly: true,
     noGraphqlIntrospection: true,
@@ -144,5 +165,6 @@ console.log(JSON.stringify({
   fetchCoveragePct: out.fetchCoveragePct,
   hitChunkCount: out.hitChunkCount,
   hitChunkNames: hitChunks.map((h) => h.name),
+  hitClassification: out.hitClassification,
   decision: out.decision,
 }, null, 2));
