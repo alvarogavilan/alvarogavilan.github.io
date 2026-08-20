@@ -1,0 +1,50 @@
+{
+  "version": "botemania-headless-jackpots-public-probe-v1",
+  "generatedAt": "2026-08-20T07:47:52.756Z",
+  "operator": "botemania-es",
+  "source": {
+    "endpoint": "https://www.botemania.es/es/graphql",
+    "operationName": "loadJackpots",
+    "querySha256": "d4612d8a8cc5f1b7504618cfff74f9a5ff926b804717f2dbf8ba9ee8461cb96f",
+    "querySource": "EXACT_PUBLIC_HEADLESSJACKPOTS_BUNDLE_QUERY"
+  },
+  "response": {
+    "httpStatus": 400,
+    "ok": false,
+    "contentType": "application/json; charset=utf-8",
+    "bytes": 209,
+    "errors": [
+      "Cannot query field \"name\" on type \"JackpotType\".",
+      "Cannot query field \"originalAmount\" on type \"JackpotType\"."
+    ],
+    "error": null,
+    "genericRows": 0,
+    "redTigerRows": 0,
+    "blueprintRows": 0
+  },
+  "jackpots": {
+    "generic": [],
+    "redTiger": [],
+    "blueprint": []
+  },
+  "derived": {
+    "genericRowsWithOriginalAmount": 0,
+    "originalAmountCandidates": []
+  },
+  "decision": {
+    "publicGenericJackpotFeedReadable": false,
+    "originalAmountsRecovered": false,
+    "blueprintFeedReadable": false,
+    "redTigerFeedReadable": false,
+    "realMoneyAllowed": false
+  },
+  "guards": {
+    "exactRecoveredQueryOnly": true,
+    "noGraphqlIntrospection": true,
+    "noMutation": true,
+    "noAuthentication": true,
+    "noCookies": true,
+    "noBetting": true,
+    "realMoneyAllowed": false
+  }
+}
