@@ -39,9 +39,10 @@ jobs:
             git reset --hard origin/main
 
             # Phase 1: compute and persist the canonical Quiniela evidence first.
-            # This ensures VALIDATED/PARTIAL/NOT_FOUND/CONFLICT evidence cannot be
-            # lost merely because a later global QA rebuild is slow or fails closed.
-            BATCH_LIMIT=80 node loterias-ai/scripts/crosscheck-quiniela-historical-selae.mjs
+            # Keep each checkpoint deliberately bounded: two runs/hour still provide
+            # useful throughput, while a smaller batch is much more likely to leave
+            # durable VALIDATED/PARTIAL/NOT_FOUND/CONFLICT evidence before any later QA.
+            BATCH_LIMIT=40 FETCH_CONCURRENCY=4 node loterias-ai/scripts/crosscheck-quiniela-historical-selae.mjs
 
             git add \
               loterias-ai/data/archive/quiniela \
