@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'));}catch{return null}};
+const FLOW='loterias-ai/casino/jackpots/evidence/botemania-jpk-flow-model-v1.json';
+const ALLOC='loterias-ai/casino/jackpots/evidence/botemania-jpk-allocation-prospective-status-v1.json';
+const MBWB='loterias-ai/casino/jackpots/evidence/botemania-fishin-ingame-mbwb-v1.json';
+const HELP='loterias-ai/casino/jackpots/evidence/botemania-fishin-ingame-help-hazard-v1.json';
+const OUT='loterias-ai/casino/jackpots/evidence/botemania-irish-riches-jpk-current-screen-v1.json';
+const flow=read(FLOW)||{},alloc=read(ALLOC)||{},mbwb=read(MBWB)||{},help=read(HELP)||{};
+const pots=flow?.latest?.potsEUR||{},shares=alloc?.decision?.networkAllocationProspectivelyValidated===true?alloc.weightedAllocationShares:null;
+const cap={ROYAL:Number(mbwb?.mustBeWonBeforeEUR?.ROYAL),REGAL:Number(mbwb?.mustBeWonBeforeEUR?.REGAL)};
+// Seeds remain hypotheses; screen them rather than treating them as facts.
+const seedScenarios=[{name:'LOW_SEED',ROYAL:0,REGAL:0},{name:'LEGACY_RESEARCH_SEED',ROYAL:500,REGAL:5000},{name:'OBSERVED_UPPER_BOUND_SEED',ROYAL:1500,REGAL:15000}];
+const alphaGrid=[1,1.25,1.5,2,3,4,5,7.5,10];
+const base=0.9593;
+// Botemania publishes +1% but does not split active progressive vs reserve on page.
+// Test conservative active fractions of that 1% instead of claiming a split.
+const activeFractions=[0.25,0.5,0.75,1];
+const clamp=q=>Math.max(.00001,Math.min(.9998,q));
+function jackpotEv(k,alpha,activeContribution,seed){const share=Number(shares?.[k]);const C=cap[k],S=seed[k],P=Number(pots[k]);if(!Number.isFinite(share)||!Number.isFinite(C)||!Number.isFinite(S)||!Number.isFinite(P)||C<=S)return null;const q=clamp((P-S)/(C-S));const F=q**alpha,f=alpha*q**(alpha-1);const meter=activeContribution*share;const h=meter/(C-S)*f/Math.max(1e-15,1-F);return P*h;}
+const scenarios=[];
+for(const seed of seedScenarios)for(const frac of activeFractions)for(const alpha of alphaGrid){const active=0.01*frac;const royal=jackpotEv('ROYAL',alpha,active,seed),regal=jackpotEv('REGAL',alpha,active,seed);const total=base+(royal||0)+(regal||0);scenarios.push({seedScenario:seed.name,activeFractionOfPublishedPlus1Pct:frac,activeContributionPct:+(active*100).toFixed(4),alpha,totalRtp:+total.toFixed(6),totalRtpPct:+(100*total).toFixed(4),royalEv:royal==null?null:+royal.toFixed(6),regalEv:regal==null?null:+regal.toFixed(6)});}
+const vals=scenarios.map(x=>x.totalRtp).filter(Number.isFinite),best=Math.max(...vals),worst=Math.min(...vals);const passes=scenarios.filter(x=>x.totalRtp>=1);
+const out={version:'botemania-irish-riches-jpk-current-screen-v1',generatedAt:new Date().toISOString(),operator:'botemania-es',game:{slug:'irish-riches-megaways-jackpot-king',url:'https://www.botemania.es/juegos/slots-online/irish-riches-megaways-jackpot-king'},publishedBotemaniaEvidence:{baseRtpPct:95.93,additionalPublishedPct:1,additionalSemantics:'UNSPLIT_BETWEEN_ACTIVE_PROGRESSIVE_AND_RESERVE_ON_PUBLIC_PAGE',anyStake:true,threePots:true},networkEvidence:{exactSpainMbwbKnown:mbwb?.decision?.exactSpainMbwbKnown===true,qualitativeHazardDirectionKnown:help?.hazardEvidence?.qualitativeMonotonicIncreaseKnown===true,networkAllocationProspectivelyValidated:Boolean(shares),exactHazardKnown:false,exactSeedKnown:false},current:{observedAt:flow?.latest?.observedAt||null,potsEUR:pots,seedScenarios,activeFractions,alphaGrid,worstRtp:+worst.toFixed(6),bestRtp:+best.toFixed(6),worstRtpPct:+(worst*100).toFixed(4),bestRtpPct:+(best*100).toFixed(4),scenarioCount:scenarios.length,scenarioPassCount:passes.length,allScenariosAbove100:passes.length===scenarios.length,scenarios},decision:{priorityResearchCandidate:true,currentPositiveEvProven:passes.length===scenarios.length,economicPromotionAllowed:false,realMoneyAllowed:false,reason:passes.length===scenarios.length?'ROBUST_SCREEN_PASS_REQUIRES_PROSPECTIVE_EXACT_HAZARD_VALIDATION':'NOT_ROBUST_ABOVE_100_ACROSS_SEMANTIC_SEED_HAZARD_UNCERTAINTY'},guards:{publishedPlus1NotAssumedAllActive:true,seedNotAssumedExact:true,noUniformHazardAssumption:true,zeroCreditToMainJackpotKing:true,noBetting:true,realMoneyAllowed:false}};
+fs.mkdirSync('loterias-ai/casino/jackpots/evidence',{recursive:true});fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify({current:out.current,decision:out.decision},null,2));
