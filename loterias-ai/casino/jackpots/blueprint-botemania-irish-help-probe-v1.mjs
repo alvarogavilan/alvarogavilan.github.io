@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+
+const URL='https://fileservice.blueprintgaming.com/?affiliate=&customer=BOTEMANIA&fileType=help&gameEngineID=irishriches&language=ES&profile=jackpotkingdeluxe3';
+const OUT='loterias-ai/casino/jackpots/evidence/blueprint-botemania-irish-help-probe-v1.json';
+const r=await fetch(URL,{headers:{accept:'text/html,*/*','user-agent':'loterias-ai-blueprint-botemania-irish-help-probe/1.0','cache-control':'no-cache'},redirect:'follow'});
+const html=await r.text();
+const text=html.replace(/<script[\s\S]*?<\/script>/gi,' ').replace(/<style[\s\S]*?<\/style>/gi,' ').replace(/<[^>]+>/g,' ').replace(/&nbsp;|&#160;/gi,' ').replace(/&euro;|&#8364;/gi,'€').replace(/&amp;/gi,'&').replace(/&#39;|&apos;/gi,"'").replace(/&quot;/gi,'"').replace(/\s+/g,' ').trim();
+const needles=['APUESTA TOTAL','TOTAL BET','reserva','Bote Reserva','contribución','contribution','Royal','Regal','Must Be Won','Debe ganarse','jackpot','95,93','1%','1,5%'];
+const contexts={};for(const n of needles){const arr=[];let p=0,c=0,low=text.toLowerCase(),needle=n.toLowerCase();while(c<12){const at=low.indexOf(needle,p);if(at<0)break;arr.push(text.slice(Math.max(0,at-700),Math.min(text.length,at+needle.length+1300)));p=at+needle.length;c++;}contexts[n]=[...new Set(arr)];}
+const euroAmounts=[...new Set([...text.matchAll(/(?:€\s*)?\d{1,5}(?:[.,]\d{1,2})?\s*€/g)].map(m=>m[0]))].slice(0,200);
+const pct=[...new Set([...text.matchAll(/\d{1,3}(?:[.,]\d+)?\s*%/g)].map(m=>m[0]))].slice(0,100);
+const totalBetOptionLists=[];for(const m of text.matchAll(/(?:APUESTA TOTAL|TOTAL BET)[\s\S]{0,800}/gi)){const s=m[0];const nums=[...s.matchAll(/\b\d+(?:[.,]\d+)?\b/g)].map(x=>x[0]);if(nums.length>=3)totalBetOptionLists.push({context:s,numbers:nums});}
+const out={version:'blueprint-botemania-irish-help-probe-v1',generatedAt:new Date().toISOString(),operator:'botemania-es',game:'Irish Riches Megaways: Jackpot King',source:{url:URL,httpStatus:r.status,ok:r.ok,finalUrl:r.url,contentType:r.headers.get('content-type'),bytes:html.length,sha256:crypto.createHash('sha256').update(html).digest('hex'),gameEngineID:'irishriches',profile:'jackpotkingdeluxe3',customer:'BOTEMANIA',language:'ES'},contexts,euroAmounts,pct,totalBetOptionLists,visibleTextPreview:text.slice(0,6000),decision:{officialBotemaniaHelpRecovered:r.ok&&text.length>1000,totalBetInstructionsPresent:/APUESTA TOTAL|TOTAL BET/i.test(text),explicitTotalBetLadderRecovered:totalBetOptionLists.some(x=>x.numbers.length>=5),reserveSemanticsTextPresent:/reserva/i.test(text),contributionSemanticsTextPresent:/contribuci[oó]n|contribution/i.test(text),exactSpainContributionSplitRecovered:false,exactStakeLadderRecovered:false,realMoneyAllowed:false},guards:{officialBlueprintHostOnly:true,customerBotemania:true,languageES:true,publicUnauthenticatedOnly:true,noIntrospection:true,noBetting:true,realMoneyAllowed:false}};
+fs.mkdirSync('loterias-ai/casino/jackpots/evidence',{recursive:true});fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify({source:out.source,decision:out.decision,pct:out.pct,euroAmounts:out.euroAmounts,totalBetOptionLists:out.totalBetOptionLists.slice(0,5)},null,2));
