@@ -38,7 +38,7 @@ import { progressiveVideoPokerEv, BOTEMANIA_VIDEO_POKER_TITLES } from '../casino
 }
 
 // Multi-hand must scale COST as well as expected jackpot wins. Ten hands at 5 coins/hand cost 50 coins,
-// so the jackpot RTP boost per euro/coin is the same as one hand, not 10x larger.
+// so the jackpot RTP boost per coin is the same as one hand, not 10x larger.
 {
   const single = progressiveVideoPokerEv({
     baseRtpAtSeedForFixedStrategy: 0.98,
@@ -103,26 +103,33 @@ for (const t of BOTEMANIA_VIDEO_POKER_TITLES) {
 assert.equal(BOTEMANIA_VIDEO_POKER_TITLES.length, 4);
 assert.ok(BOTEMANIA_VIDEO_POKER_TITLES.every((t) => typeof t.slug === 'string' && t.url.startsWith('https://www.botemania.es/')));
 
-// Ultimate Video Poker: manual-screenshot paytable is recorded but must NOT
-// by itself unblock a verdict - pRoyalFlushForFixedStrategy stays null until
-// independently sourced for this exact 7/5-shaped table, so the engine still
-// refuses to compute a breakeven even though a paytable now exists.
+// Ultimate Video Poker: preserve historical screenshot evidence, but never
+// promote it to a technically recovered paytable or qualifying stake.
 {
   const uvp = BOTEMANIA_VIDEO_POKER_TITLES.find((t) => t.slug === 'ultimate-video-poker');
-  assert.equal(uvp.exactPaytableRecovered, true);
-  assert.equal(uvp.manualScreenshotEvidence.paytableCoinsPerCredit1.royalFlush, 800);
-  assert.equal(uvp.manualScreenshotEvidence.observedHandsPerSpin, 10);
-  assert.equal(uvp.manualScreenshotEvidence.observedBetPerHandEUR, 2.5);
+  assert.equal(uvp.manualScreenshotPaytableObserved, true);
+  assert.equal(uvp.manualScreenshotEvidence.paytableObserved.royalFlush, 800);
+  assert.equal(uvp.manualScreenshotEvidence.technicallyReproduced, false);
+  assert.equal(uvp.manualScreenshotEvidence.qualifyingStakeVerified, false);
+  assert.equal(uvp.manualScreenshotEvidence.doNotUseHistoricalBetAsMinimumQualifyingStake, true);
+  assert.equal(uvp.exactPaytableRecovered, false);
+  assert.equal(uvp.paytableVerified, false);
+  assert.equal(uvp.qualifyingStakeVerified, false);
+  assert.equal(uvp.pRoyalFlushForFixedStrategy, null);
+
+  // Use internally consistent synthetic COIN units here. The live WAGER_BET
+  // amount is EUR and must not be injected into *Coins* arguments until the
+  // denomination/credit conversion is explicitly verified.
   const r = progressiveVideoPokerEv({
-    baseRtpAtSeedForFixedStrategy: 0.95, // illustrative only - not Botemania's real seed RTP
+    baseRtpAtSeedForFixedStrategy: 0.95,
     pRoyalFlushForFixedStrategy: uvp.pRoyalFlushForFixedStrategy,
     seedJackpotCoinsPerWinningHand: 800,
-    currentJackpotCoinsPerWinningHand: 3448.25,
-    qualifyingCoinsBetPerHand: uvp.manualScreenshotEvidence.observedBetPerHandEUR,
-    handsPerSpin: uvp.manualScreenshotEvidence.observedHandsPerSpin,
-    strategyInputsVerified: true,
+    currentJackpotCoinsPerWinningHand: 1000,
+    qualifyingCoinsBetPerHand: 5,
+    handsPerSpin: 1,
+    strategyInputsVerified: false,
   });
-  assert.equal(r.blocked, true, 'a real paytable alone must not be enough to compute a verdict without a sourced pRoyalFlush');
+  assert.equal(r.blocked, true);
   assert.equal(r.reason, 'MISSING_REQUIRED_NUMERIC_INPUT');
 }
 
