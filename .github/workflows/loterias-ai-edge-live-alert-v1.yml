@@ -32,7 +32,7 @@ jobs:
         env:
           EDGE_LIVE_TELEGRAM_BOT_TOKEN: ${{ secrets.EDGE_LIVE_TELEGRAM_BOT_TOKEN }}
           EDGE_LIVE_TELEGRAM_CHAT_ID: ${{ secrets.EDGE_LIVE_TELEGRAM_CHAT_ID }}
-          EDGE_LIVE_URL: https://alvarogavilan.github.io/loterias-ai/edge-live/
+          EDGE_LIVE_URL: https://alvarogavilan.github.io/edge-live/
         run: node loterias-ai/edge-live/telegram-edge-alert-v1.mjs
       - name: Persist safe Telegram diagnostic and transition state
         if: always()
