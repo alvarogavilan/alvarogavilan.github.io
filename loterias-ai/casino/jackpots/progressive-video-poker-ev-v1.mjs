@@ -98,9 +98,27 @@ export const BOTEMANIA_VIDEO_POKER_TITLES = [
     slug: 'ultimate-video-poker',
     url: 'https://www.botemania.es/juegos/casino-online/ultimate-video-poker',
     publishedRtpRangePct: [96.77, 99.54],
-    exactPaytableRecovered: false,
-    pRoyalFlushForFixedStrategy: null,
-    hasVisibleProgressiveJackpot: null,
+    providerId: 'roxor-gaming', // confirmed via Botemania's public GraphQL contentfulGame query (paramHints), not inferred
+    variantOfInterest: 'Jotas o Mejor Progresivo',
+    monitorFeedRef: 'loterias-ai/edge-live/evidence/progressive-score-research-v1.json: generic:WAGER_BET, identity.confidence VERY_HIGH, evidenceClass MANUAL_SCREENSHOT_LIVE_AMOUNT_CROSS_MATCH (human-established, not script-reproducible yet)',
+    manualScreenshotEvidence: {
+      // Provided directly by the user via screenshot of the live game client.
+      // Treated as MANUAL_SCREENSHOT_EVIDENCE per instruction - not re-requested,
+      // but also not independently script-verified, so pRoyalFlushForFixedStrategy
+      // stays null until a primary/reproducible source confirms it for this exact table.
+      paytableCoinsPerCredit1: {
+        jacksOrBetter: 1, twoPair: 2, threeOfAKind: 3, straight: 4, flush: 5,
+        fullHouse: 7, fourOfAKind: 25, straightFlush: 50, royalFlush: 800,
+      },
+      paytableFamily: 'Matches the well-published "7/5 Jacks or Better" shape (800-50-25-7-5-4-3-2-1) - NOT full-pay 9/6. External 9/6 P(Royal Flush)~=1/40391 (WizardOfOdds, WebSearch) is documented for the DIFFERENT 9/6 table and must NOT be reused here without demonstrating equivalence (strategy shifts with a reduced flush/full-house pay).',
+      observedHandsPerSpin: 10,
+      observedBetPerHandEUR: 2.5,
+      observedTotalBetEUR: 25,
+      source: 'MANUAL_SCREENSHOT_EVIDENCE',
+    },
+    exactPaytableRecovered: true,
+    pRoyalFlushForFixedStrategy: null, // still not independently sourced for THIS exact 7/5-shaped table - do not fabricate from the 9/6 figure
+    hasVisibleProgressiveJackpot: true,
   },
   {
     slug: 'videopoker-remasterizado',

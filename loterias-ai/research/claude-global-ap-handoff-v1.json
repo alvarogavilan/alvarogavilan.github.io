@@ -1,6 +1,6 @@
 {
   "status": "NO_PLAY",
-  "generatedAt": "2026-08-20T22:30:00Z",
+  "generatedAt": "2026-08-20T23:15:00Z",
   "reviewedBy": "ChatGPT GPT-5.6 Sol",
   "reviewCorrections": [
     "Corrected lottery rolldown valuation: E[1/W] is not 1/E[W]. The category-specific shared-fund EV now uses Fund*[1-(1-p)^N]/N.",
@@ -8,7 +8,8 @@
     "Confirmed the Euromillones cap and fifth-capped-draw redistribution rule from SELAE's own published Normas de Euromillones.",
     "Rejected the generic inference EGT jackpot == must-hit-by; only exact jackpot families with primary rule evidence may enter the MHB gate.",
     "Corrected multi-hand video poker EV: totalCoinsBet must scale as qualifyingCoinsBetPerHand*handsPerSpin (both the extra-jackpot-EV numerator AND the cost denominator scale with handsPerSpin, so betting more hands does not create a free EV multiplier). Fixed in PR #190.",
-    "Corrected progressive-signal detection: 'Royal'/'Escalera Real' text is NOT itself proof of a progressive jackpot (most non-progressive video poker also has a Royal Flush hand); and substring 'bote' was false-positively matching 'Botemania' itself. Both fixed in PR #190 via whole-word/whole-phrase matching (see botemania-video-poker-jackpot-probe-v1.json version 'v1.2-whole-word-signals')."
+    "Corrected progressive-signal detection: 'Royal'/'Escalera Real' text is NOT itself proof of a progressive jackpot (most non-progressive video poker also has a Royal Flush hand); and substring 'bote' was false-positively matching 'Botemania' itself. Both fixed in PR #190 via whole-word/whole-phrase matching (see botemania-video-poker-jackpot-probe-v1.json version 'v1.2-whole-word-signals').",
+    "PR #192: the global mustDropWithin scan (v1) counted a chunk as scanned even when its fetch had failed, silently understating coverage. This guard (chunksTargeted/chunksFetchedSuccessfully/chunkFetchFailureCount/fetchCoveragePct/scanComplete, with negativeResultInterpretableAsCompleteScan only true at full coverage) must never be removed. The fixed script has not produced a fresh run yet as of this pass - the evidence file on main is still the pre-fix run's output (366 chunks discovered, 361 scanned, 5 hits, no coverage fields)."
   ],
   "documentedWinnersStudied": [
     { "name": "Jerry & Marge Selbee", "mechanism": "ROLL_DOWN_LOTTERY", "classification": "TRANSFERIBLE_WITH_DATA" },
@@ -52,8 +53,17 @@
         "HeadlessJackpots container/component: its query is 'loadGames' (gameIds/gameTag/categoryId/contentfulGames) - a game-catalog loader, structurally unrelated to jackpot amounts or deadlines.",
         "DoubleJackpots settings bundle: confirmed to be carousel/slider display config only (see staticScanResult)."
       ],
-      "newLead": "botemania-double-jackpots-global-mustdropwithin-scan-v1.mjs (new this pass) reuses the exact runtime.js chunk-manifest-parsing technique already proven in botemania-headless-global-bundle-config-scan-v1.mjs (which discovered 260 total chunks site-wide, not just the 36 jackpot-keyword-filtered ones) to search the FULL bundle for every other reference to 'mustDropWithin', since the true enrichment source is outside the jackpot-scoped chunk set. Not yet executed against live data (this session's network is sandboxed); new workflow scheduled every 4h.",
-      "blockedOn": ["global mustDropWithin scan has not run against live data yet", "specific underlying game mapping", "award mechanism: network-random-active-spin versus per-player/session countdown"]
+      "globalScanResult": "botemania-double-jackpots-global-mustdropwithin-scan-v1.mjs ran on GitHub Actions (pre-PR-#192-fix): 366 chunks discovered site-wide, 361 scanned, 5 hitChunks. TWO are genuinely new leads beyond the already-known DoubleJackpots-specific chunks: (1) vendors~albatross-common-components-dist-components-Jackpots (21.3KB) - a SEPARATE, hooks-based, generic 'Jackpots' component distinct from the older class-based DoubleJackpots one. Its render logic: const u = type==='blueprint'; const f = u ? T : S; then f.forEach(id => s.find(jackpot => jackpot.id === id)) - i.e. it FILTERS/REORDERS the raw jackpots array against two FIXED ID-list constants (T for blueprint, S otherwise), but does NOT itself add mustDropWithin - only reads jackpot.mustDropWithin conditionally, same pattern as before. (2) albatross-common-components-dist-components-MustDropWithin (generic, no 'DoubleJackpots-' prefix) - confirms the countdown UI is shared infrastructure, not DoubleJackpots-exclusive.",
+      "hypothesesToFalsify": {
+        "H1_apolloCacheEnrichment": "NOT_YET_TESTED - no writeQuery/writeFragment/cache.modify/typePolicies/fieldPolicy/@client evidence found yet in any traced chunk.",
+        "H2_propertySimplyAbsentForRedTiger": "PLAUSIBLE_NOT_CONFIRMED - the live loadJackpots query only returns {id,amount}; if 'S' (the non-blueprint ID list) really is the Red Tiger set and none of its rows ever carry mustDropWithin, this is the most parsimonious explanation - the shared component just tolerates a missing field.",
+        "H3_onlyUsedByBlueprintOrOtherFamily": "PLAUSIBLE_NOT_CONFIRMED - containers-BlueprintJackpots-index-js has its OWN separate 'blueprintJackpots' query (not yet re-inspected for a mustDropWithin field); Blueprint's OWN Jackpot King MBWB is a MONETARY cap (per issue #168's official Botemania help text: 'se garantiza que el bote Real y el Majestuoso seran otorgados por el valor Debe ser ganado antes de'), which is semantically odd for a field the UI code parses with new Date(x).getTime() - suggesting this specific countdown UI might actually be for a DIFFERENT, time-based Red Tiger 'Daily/Hourly Drop' feature rather than Blueprint's monetary MBWB at all."
+      },
+      "newThisPass": [
+        "botemania-redtiger-jackpots-live-query-v1.mjs (new): executes the exact recovered public query and persists real id/amount rows, to directly compare IDs against Daily/Quick Hit/Hourly labels - not yet run against live data.",
+        "botemania-jackpots-shared-component-idlists-probe-v1.mjs (new): re-fetches the generic Jackpots/MustDropWithin/BlueprintJackpots-container chunks (URL re-derived from runtime.js each run) searching specifically for the literal T/S ID-list definitions and blueprint/daily/hourly/quick vocabulary - not yet run against live data."
+      ],
+      "blockedOn": ["global scan needs a fresh post-PR-#192-fix run with real coverage numbers", "live query for real redTigerJackpots IDs not yet run", "T/S ID-list literal contents not yet recovered", "award mechanism: network-random-active-spin versus per-player/session countdown"]
     },
     {
       "game": "Irish Riches Megaways: Jackpot King",
@@ -79,11 +89,14 @@
         { "slug": "ultimate-video-poker", "publishedRtpRangePct": [96.77, 99.54], "progressiveSignal": true, "progressiveSignalNeedles": ["progresivo"] },
         { "slug": "videopoker-remasterizado", "publishedRtpRangePct": [99.54, 99.54], "progressiveSignal": false, "note": "99.54% under optimal strategy exactly matches the well-published 9/6 Jacks-or-Better full-pay figure - strong but UNCONFIRMED hint, and confirmed NOT the progressive one" }
       ],
-      "engine": "loterias-ai/casino/jackpots/progressive-video-poker-ev-v1.mjs (corrected on main via PR #190: totalCoinsBet now scales as qualifyingCoinsBetPerHand*handsPerSpin so multi-hand play no longer creates a free EV multiplier) - refuses a verdict without pRoyalFlush from a cited primary source using the SAME strategy as baseRtpAtSeedJackpot, never guesses it",
+      "engine": "loterias-ai/casino/jackpots/progressive-video-poker-ev-v1.mjs (corrected on main via PR #190) - refuses a verdict without pRoyalFlush from a cited primary source using the SAME strategy as baseRtpAtSeedJackpot, never guesses it",
+      "providerConfirmed": "providerId=roxor-gaming, recovered via Botemania's own public GraphQL contentfulGame query (botemania-ultimate-video-poker-metadata-probe-v1.json, real run, decision.providerIdRecovered=true). link=null so no direct launch URL was exposed by the public page-level schema.",
+      "manualScreenshotPaytable": "User-provided screenshot evidence (BOTEMANIA_VIDEO_POKER_TITLES[ultimate-video-poker].manualScreenshotEvidence in progressive-video-poker-ev-v1.mjs): JacksOrBetter=1, TwoPair=2, ThreeOfAKind=3, Straight=4, Flush=5, FullHouse=7, FourOfAKind=25, StraightFlush=50, RoyalFlush=800 (per 1 coin) - matches the well-known '7/5 Jacks or Better' shape (NOT full-pay 9/6). Observed play: 10 hands x 2.50 EUR/hand = 25 EUR total. Recorded as MANUAL_SCREENSHOT_EVIDENCE, not re-requested from the user, but pRoyalFlushForFixedStrategy deliberately STAYS NULL: the only citable external figure found (WizardOfOdds, ~1/40391 via WebSearch) is for the DIFFERENT 9/6 table, and strategy (hence P(Royal)) shifts with a reduced flush/full-house pay - reusing it would violate the 'no mezcles estrategias' rule. A unit test now asserts the engine still returns blocked:true (MISSING_REQUIRED_NUMERIC_INPUT) even with this real paytable present, specifically to prevent a future pass from silently filling in the 9/6 figure.",
       "blockedOn": [
-        "botemania-video-poker-jackpot-probe-v1.mjs found no paytable numbers in the static help text (only the variant list and hand-count options) - payouts are almost certainly rendered inside the game CLIENT, not the marketing page",
-        "botemania-ultimate-video-poker-metadata-probe-v1.mjs (new this pass, mirrors the Irish Riches metadata-probe pattern that worked) fetches provider/launch/gameEngineID hints via Botemania's public GraphQL to locate a vendor-specific help/rules asset - not yet run against live data",
-        "qualifying coins bet per hand, credits, denomination, seed/reset of the progressive, and pRoyalFlush under one fixed reproducible strategy - none yet recovered"
+        "Roxor Gaming launch/asset endpoint not yet located (botemania-roxor-launch-flow-probe-v1.mjs new this pass, not yet run) - needed to reach a vendor-primary paytable/rules asset the way Blueprint's fileservice worked for Irish Riches",
+        "pRoyalFlushForFixedStrategy for the exact 7/5-shaped table under one fixed reproducible strategy - no primary source found yet, the 9/6 figure is logged only as an EXTERNAL_MECHANISM_COMPARATOR, never as Botemania's own value",
+        "a FRESH current jackpot reading - the only value on record (3448.25 EUR) is from a single manual observation hours ago and must not be treated as live for a PLAY_NOW computation",
+        "qualifying coins bet per hand / exact denomination confirmation beyond the observed 2.50 EUR/hand screenshot"
       ]
     }
   ],
@@ -125,27 +138,31 @@
     { "candidate": "Generic EGT jackpot == must-hit-by", "reason": "Primary EGT literature establishes MHB for specific families such as 2 Happy Hits, not all Jackpot Cards/isJackpot titles." }
   ],
   "currentBlockers": [
-    "Global mustDropWithin scan (new this pass, botemania-double-jackpots-global-mustdropwithin-scan-v1.mjs) has not run against live data - this session's own network is sandboxed (confirmed again: node fetch to botemania.es returns 'Host not in allowlist').",
-    "Ultimate Video Poker metadata probe (new this pass) has not run against live data for the same reason.",
-    "Botemania Red Tiger venture/customer identifier unresolved (unchanged).",
+    "Three new scripts this pass (redtiger-jackpots-live-query, jackpots-shared-component-idlists-probe, roxor-launch-flow-probe) have not run against live data - this session's own network remains sandboxed (confirmed again).",
+    "Global mustDropWithin scan needs a fresh run under the PR #192 coverage-tracking fix (current evidence on main predates that fix).",
+    "Botemania Red Tiger venture/customer identifier for the redtiger-venture-probe alias-guessing approach still unresolved (unchanged, separate from the now-recovered exact loadJackpots query).",
     "PokerStars Casino España progressive-video-poker audit not started.",
     "Exact EGT MHB family identities in PlayUZU's 142 isJackpot titles unresolved (unchanged, correctly not re-investigated per instruction).",
-    "Exact paytable (all 9 hand categories) and pRoyalFlush for Ultimate Video Poker's Jotas o Mejor Progresivo not yet recovered from any source."
+    "pRoyalFlushForFixedStrategy for Ultimate Video Poker's exact 7/5-shaped paytable: no primary source found via WebSearch/WebFetch (WebFetch to wizardofodds.com is itself EGRESS_BLOCKED from this session); only a 9/6 comparator figure exists, explicitly not usable as Botemania's own value."
   ],
   "codeChanges": [
     "must-drop-ev-engine-v1.mjs, lottery-rolldown-ev-engine-v1.mjs: exact finite-interval/exchangeability math. (reviewed/corrected on main, PR #188)",
-    "progressive-video-poker-ev-v1.mjs: multi-hand EV accounting corrected (PR #190) - totalCoinsBet scales as qualifyingCoinsBetPerHand*handsPerSpin.",
-    "botemania-video-poker-jackpot-probe-v1.mjs: progressive-signal detection corrected to whole-word/whole-phrase matching (PR #190) - fixed both the 'Royal is not proof of progressive' and the 'bote substring matches Botemania' false positives. Real run confirmed: ONLY ultimate-video-poker shows a progressive signal ('progresivo').",
-    "botemania-double-jackpots-container-trace-v1.mjs: real run recovered the EXACT compiled GraphQL query (loadJackpots/redTigerJackpots{id,amount}) and ruled out HeadlessJackpots and the settings bundle as the mustDropWithin source (see botemaniaCandidates[0]).",
-    "botemania-double-jackpots-global-mustdropwithin-scan-v1.mjs (new): searches the FULL 260-chunk site-wide bundle (not just the 36 jackpot-keyword-filtered chunks) for every other reference to mustDropWithin, reusing the runtime.js-parsing technique proven in botemania-headless-global-bundle-config-scan-v1.mjs.",
-    "botemania-ultimate-video-poker-metadata-probe-v1.mjs (new): mirrors the botemania-irish-metadata-probe-v1.mjs pattern that successfully recovered Irish Riches' provider/launch parameters via Botemania's public GraphQL, retargeted at ultimate-video-poker to find its provider/gameEngineID for locating a vendor help/rules asset.",
-    "Two new scheduled GitHub Actions workflows for the above, wired push+schedule triggers matching repo convention."
+    "progressive-video-poker-ev-v1.mjs: multi-hand EV accounting corrected (PR #190); this pass adds providerId=roxor-gaming and the manual-screenshot 7/5 paytable to the ultimate-video-poker registry entry, with pRoyalFlushForFixedStrategy deliberately left null (see botemaniaCandidates).",
+    "progressive-video-poker-ev-v1.test.mjs (this pass): new assertion that a real paytable alone does not unblock a verdict without a sourced pRoyalFlush.",
+    "botemania-video-poker-jackpot-probe-v1.mjs: whole-word signal matching (PR #190); real run confirmed ONLY ultimate-video-poker shows a progressive signal.",
+    "botemania-double-jackpots-container-trace-v1.mjs: real run recovered the EXACT compiled GraphQL query and ruled out HeadlessJackpots/settings bundle as the mustDropWithin source.",
+    "botemania-double-jackpots-global-mustdropwithin-scan-v1.mjs: real (pre-fix) run found 2 new leads - a generic hooks-based Jackpots component with T/S fixed ID-list filtering, and a generic (non-DoubleJackpots) MustDropWithin component. Neither adds the field, both just conditionally read it.",
+    "botemania-redtiger-jackpots-live-query-v1.mjs (new): executes the exact recovered public query on a schedule and persists real id/amount rows.",
+    "botemania-jackpots-shared-component-idlists-probe-v1.mjs (new): targets the T/S ID-list literals in the generic Jackpots component plus blueprint/daily/hourly/quick vocabulary.",
+    "botemania-roxor-launch-flow-probe-v1.mjs (new): bounded (120-chunk) site-wide search for Roxor Gaming launch/session vocabulary, keeps only chunks that actually mention 'roxor'.",
+    "Three new scheduled GitHub Actions workflows for the above."
   ],
   "nextHighestValueActions": [
-    "Trigger/review loterias-ai-botemania-double-jackpots-global-mustdropwithin-scan-v1.yml and read hitChunks for the true mustDropWithin enrichment source.",
-    "Trigger/review loterias-ai-botemania-ultimate-video-poker-metadata-probe-v1.yml and read paramHints/games for a provider ID or vendor help endpoint.",
-    "Once a provider/vendor is identified for Jotas o Mejor Progresivo, probe its public help/rules asset for the exact paytable (same pattern as Blueprint's fileservice for Irish Riches).",
-    "Audit PokerStars Casino España for progressive video poker.",
+    "Trigger/review loterias-ai-botemania-roxor-launch-flow-probe-v1.yml first (Carril B Prioridad 1 per instruction) and read findings for a launch endpoint or asset host.",
+    "Trigger/review loterias-ai-botemania-redtiger-jackpots-live-query-v1.yml and compare real IDs against Daily/Quick Hit/Hourly hints.",
+    "Trigger/review loterias-ai-botemania-jackpots-idlists-probe-v1.yml and read idListCandidates for the T/S constant definitions to resolve H1/H2/H3.",
+    "Once a provider/vendor asset is found for Jotas o Mejor Progresivo, look for a primary-source P(Royal Flush) specific to the 7/5 paytable (same pattern as Blueprint's fileservice for Irish Riches) - do not reuse the 9/6 comparator.",
+    "Re-run the global mustDropWithin scan now that PR #192's coverage-tracking fix is on main, to get real scanComplete/fetchCoveragePct numbers.",
     "Monitor Euromillones jackpot/cap state only as a rare condition; do not buy tickets now for this mechanism."
   ]
 }

@@ -103,4 +103,27 @@ for (const t of BOTEMANIA_VIDEO_POKER_TITLES) {
 assert.equal(BOTEMANIA_VIDEO_POKER_TITLES.length, 4);
 assert.ok(BOTEMANIA_VIDEO_POKER_TITLES.every((t) => typeof t.slug === 'string' && t.url.startsWith('https://www.botemania.es/')));
 
+// Ultimate Video Poker: manual-screenshot paytable is recorded but must NOT
+// by itself unblock a verdict - pRoyalFlushForFixedStrategy stays null until
+// independently sourced for this exact 7/5-shaped table, so the engine still
+// refuses to compute a breakeven even though a paytable now exists.
+{
+  const uvp = BOTEMANIA_VIDEO_POKER_TITLES.find((t) => t.slug === 'ultimate-video-poker');
+  assert.equal(uvp.exactPaytableRecovered, true);
+  assert.equal(uvp.manualScreenshotEvidence.paytableCoinsPerCredit1.royalFlush, 800);
+  assert.equal(uvp.manualScreenshotEvidence.observedHandsPerSpin, 10);
+  assert.equal(uvp.manualScreenshotEvidence.observedBetPerHandEUR, 2.5);
+  const r = progressiveVideoPokerEv({
+    baseRtpAtSeedForFixedStrategy: 0.95, // illustrative only - not Botemania's real seed RTP
+    pRoyalFlushForFixedStrategy: uvp.pRoyalFlushForFixedStrategy,
+    seedJackpotCoinsPerWinningHand: 800,
+    currentJackpotCoinsPerWinningHand: 3448.25,
+    qualifyingCoinsBetPerHand: uvp.manualScreenshotEvidence.observedBetPerHandEUR,
+    handsPerSpin: uvp.manualScreenshotEvidence.observedHandsPerSpin,
+    strategyInputsVerified: true,
+  });
+  assert.equal(r.blocked, true, 'a real paytable alone must not be enough to compute a verdict without a sourced pRoyalFlush');
+  assert.equal(r.reason, 'MISSING_REQUIRED_NUMERIC_INPUT');
+}
+
 console.log('progressive-video-poker-ev-v1.test.mjs: PASS');
