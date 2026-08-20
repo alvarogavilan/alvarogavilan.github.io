@@ -1,0 +1,46 @@
+{
+  "version": "botemania-jpk-shape-free-bound-v1",
+  "generatedAt": "2026-08-20T07:03:38.885Z",
+  "operator": "botemania-es",
+  "purpose": "Determine what can be proved about current EV from exact Spanish MBWB plus monotone-increasing jackpot chance without assuming a parametric hazard family.",
+  "inputs": {
+    "exactSpainMbwbKnown": true,
+    "qualitativeHazardDirectionKnown": true,
+    "currentPotsEUR": {
+      "JACKPOT_KING": 128086.24,
+      "REGAL": 15501.89,
+      "ROYAL": 1689.19
+    },
+    "capEUR": {
+      "ROYAL": 4078.97,
+      "REGAL": 40789.77
+    },
+    "currentStrictlyBelowCap": true
+  },
+  "result": {
+    "theoremApplies": true,
+    "robustIncrementalJackpotEvLowerBoundPerEUR": 0,
+    "reason": "For any current value strictly below MBWB, the verified qualitative constraints still admit a nondecreasing hazard that places arbitrarily little win mass at or below the current value and concentrates the remaining mass later, including a forced terminal event near MBWB. Therefore qualitative monotonicity + MBWB alone cannot provide a positive lower bound on current jackpot EV.",
+    "bestPublishedBaseRtpGame": {
+      "slug": "mega-bars-fortune-wheel-jackpot-king",
+      "title": "Mega Bars Fortune Wheel: Jackpot King ",
+      "baseRtpPct": 95.5
+    },
+    "positiveEvProvableFromQualitativeRulesAlone": false,
+    "providerFormulaOrEmpiricalHitLevelDataRequired": true
+  },
+  "decision": {
+    "closesQualitativeOnlyShortcut": true,
+    "exactHazardStillRequiredForEconomicPromotion": true,
+    "currentPositiveEvProven": false,
+    "realMoneyAllowed": false,
+    "reason": "NO_SHAPE_FREE_POSITIVE_EV_LOWER_BOUND_BELOW_MBWB"
+  },
+  "guards": {
+    "noParametricHazardAssumed": true,
+    "noForcedWinBeforeObservedCapConvertedToCurrentProbability": true,
+    "noOptionalStopping": true,
+    "noBetting": true,
+    "realMoneyAllowed": false
+  }
+}
