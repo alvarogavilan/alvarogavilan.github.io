@@ -1,0 +1,49 @@
+{
+  "version": "botemania-fishin-ingame-help-hazard-v1",
+  "capturedAtLocal": "2026-08-20T08:51:00+02:00",
+  "operator": "botemania-es",
+  "game": "Fishin' Frenzy: Jackpot King",
+  "evidenceClass": "USER_SUPPLIED_IN_GAME_SCREENSHOT",
+  "image": {
+    "sha256": "ab42a46668de254d0b6c2c2c2f096ead5cc348fa522c8c40e0da6386fd392416",
+    "widthPx": 707,
+    "heightPx": 1536,
+    "operatorOriginVisible": true,
+    "gameHelpVisible": true
+  },
+  "observedRules": {
+    "bonusCanActivateOnAnySpin": true,
+    "jackpotSystemAvailableAtAnyBet": true,
+    "jackpotsOnlyWonDuringWheelKingPartOfBonus": true,
+    "afterWinReturnsToReserveAndGrowsAgain": true,
+    "winProbabilityIncreasesWithJackpotValue": true,
+    "royalAndRegalGuaranteedBeforeDisplayedMustBeWonByValue": true,
+    "simultaneousWinnersNotAllowed": true,
+    "initialJackpotValueContributedByOperator": true
+  },
+  "hazardEvidence": {
+    "qualitativeMonotonicIncreaseKnown": true,
+    "exactFunctionalFormKnown": false,
+    "exactPerStakeHazardKnown": false,
+    "exactHazardKnown": false,
+    "modelConstraint": "Only sensitivity families whose jackpot-win hazard is nondecreasing with jackpot value may be retained as compatible with the in-game rule.",
+    "betaAlpha1Constraint": "For the current BETA_ALPHA_1 sensitivity family, require alpha >= 1 to preserve globally nondecreasing hazard over normalized jackpot progress."
+  },
+  "reserveEvidence": {
+    "reserveExists": true,
+    "exactReserveValueKnown": false,
+    "operatorProvidesInitialValue": true
+  },
+  "decision": {
+    "qualitativeHazardDirectionVerifiedInBotemaniaSpain": true,
+    "exactHazardKnown": false,
+    "exactReserveKnown": false,
+    "realMoneyAllowedByThisEvidenceAlone": false
+  },
+  "guards": {
+    "noExactHazardInferenceFromQualitativeRule": true,
+    "noReserveAmountInference": true,
+    "noAutomaticBetting": true,
+    "realMoneyAllowed": false
+  }
+}
