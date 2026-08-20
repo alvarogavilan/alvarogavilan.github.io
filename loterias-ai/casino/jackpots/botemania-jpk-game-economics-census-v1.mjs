@@ -4,7 +4,7 @@ import crypto from 'node:crypto';
 
 const ORIGIN='https://www.botemania.es';
 const OUT='loterias-ai/casino/jackpots/evidence/botemania-jpk-game-economics-census-v1.json';
-const headers={'user-agent':'loterias-ai-botemania-jpk-economics-census/1.1',accept:'text/html,*/*','cache-control':'no-cache'};
+const headers={'user-agent':'loterias-ai-botemania-jpk-economics-census/1.2',accept:'text/html,*/*','cache-control':'no-cache'};
 const fallbackSlugs=[
  'fishin-frenzy-jackpot-king','fishin-frenzy-megaways-jackpot-king','eye-of-horus-jackpot-king','eye-of-horus-megaways-jackpot-king',
  'king-kong-cash-jackpot-king','the-goonies-return-jackpot-king','7s-deluxe-jackpot-king','mega-bars-fortune-wheel-jackpot-king',
@@ -55,6 +55,14 @@ function extractGenericMechanicsContribution(text){
  }
  return {activeContributionPct:null,reserveContributionPct:null,context:null};
 }
+function detectStateDependent(text){
+ const patterns=[
+  /probabilidades?[^.]{0,220}(?:aumentan|aumenta|crecen|crece|incrementan|incrementa)[^.]{0,180}(?:valor|cantidad)[^.]{0,120}(?:Bote|jackpot)/i,
+  /(?:aumentan|aumenta|crecen|crece|incrementan|incrementa)[^.]{0,180}probabilidades?[^.]{0,180}(?:valor|cantidad)[^.]{0,120}(?:Bote|jackpot)/i,
+  /probabilidades? de ganar un Bote crecen según el valor del Bote/i
+ ];
+ return patterns.some(re=>re.test(text));
+}
 const rows=[];
 for(const url of [...urls].sort()){
  try{
@@ -66,13 +74,13 @@ for(const url of [...urls].sort()){
   const specificPresent=Number.isFinite(eco.activeContributionPct)&&Number.isFinite(eco.reserveContributionPct);
   const mechanicsVsRtpConflict=genericPresent&&specificPresent&&(!close(generic.activeContributionPct,eco.activeContributionPct)||!close(generic.reserveContributionPct,eco.reserveContributionPct));
   const minText=text.match(/(?:valor moneda disponible|apuesta)[^.]{0,160}/i)?.[0]||null;
-  const stateDependent=/probabilidades? de ganar un Bote crecen según el valor del Bote/i.test(text);
-  const proportionalBet=/probabilidades?[^.]{0,160}proporcionales? al valor de la Apuesta Total/i.test(text);
-  const sharedBotemaniaCanal=/compartidos?[^.]{0,220}Boteman[ií]a y Canal Bingo/i.test(text);
+  const stateDependent=detectStateDependent(text);
+  const proportionalBet=/probabilidades?[^.]{0,180}proporcionales? al valor de la Apuesta Total/i.test(text);
+  const sharedBotemaniaCanal=/compartidos?[^.]{0,260}Boteman[ií]a[^.]{0,120}Canal Bingo|compartidos?[^.]{0,260}Canal Bingo[^.]{0,120}Boteman[ií]a/i.test(text);
   rows.push({
     url,slug:new URL(r.url).pathname.split('/').filter(Boolean).at(-1),httpStatus:r.status,finalUrl:r.url,title:h1,bytes:html.length,sha256:crypto.createHash('sha256').update(html).digest('hex'),...eco,
     genericMechanicsContribution:generic,
-    contributionConsistency:{genericMechanicsStatementPresent:genericPresent,specificRtpComponentsPresent:specificPresent,mechanicsVsRtpConflict,policy:'RTP_SECTION_SPECIFIC_COMPONENTS_OVERRIDE_GENERIC_MECHANICS_TEXT; CONFLICT_REQUIRES_EXPLICIT_REVIEW_BEFORE_ANY ECONOMIC PROMOTION'},
+    contributionConsistency:{genericMechanicsStatementPresent:genericPresent,specificRtpComponentsPresent:specificPresent,mechanicsVsRtpConflict,policy:'RTP_SECTION_SPECIFIC_COMPONENTS_OVERRIDE_GENERIC_MECHANICS_TEXT; CONFLICT_REQUIRES_EXPLICIT_REVIEW_BEFORE ANY ECONOMIC PROMOTION'},
     minBetText:minText,stateDependentProbability:stateDependent,probabilityProportionalToTotalBet:proportionalBet,explicitBotemaniaCanalBingoSharedNetwork:sharedBotemaniaCanal
   });
  }catch(e){rows.push({url,httpStatus:null,error:String(e?.message||e)});}
@@ -80,11 +88,11 @@ for(const url of [...urls].sort()){
 const conflicts=rows.filter(x=>x.contributionConsistency?.mechanicsVsRtpConflict===true);
 const comparable=rows.filter(x=>x.httpStatus===200&&Number.isFinite(x.explicitComponentsTotalPct)).sort((a,b)=>b.explicitComponentsTotalPct-a.explicitComponentsTotalPct);
 const out={
- version:'botemania-jpk-game-economics-census-v1.1',generatedAt:new Date().toISOString(),operator:'botemania-es',scope:'PUBLIC_OPERATOR_PAGES_ONLY',sitemapAttempts,urlsConsidered:urls.size,rows,
+ version:'botemania-jpk-game-economics-census-v1.2-state-wording',generatedAt:new Date().toISOString(),operator:'botemania-es',scope:'PUBLIC_OPERATOR_PAGES_ONLY',sitemapAttempts,urlsConsidered:urls.size,rows,
  contributionConflictAudit:{count:conflicts.length,slugs:conflicts.map(x=>x.slug),policy:'FAIL_CLOSED_FOR_CONFLICTING_GENERIC_VS_GAME_SPECIFIC_CONTRIBUTION_TEXT'},
  ranking:{metric:'EXPLICIT_PUBLISHED_COMPONENT_SUM_ONLY_NOT_STATE_DEPENDENT_EV',comparable:comparable.map(x=>({slug:x.slug,title:x.title,baseRtpPct:x.baseRtpPct,activeContributionPct:x.activeContributionPct,reserveContributionPct:x.reserveContributionPct,explicitComponentsTotalPct:x.explicitComponentsTotalPct,stateDependentProbability:x.stateDependentProbability,probabilityProportionalToTotalBet:x.probabilityProportionalToTotalBet,explicitBotemaniaCanalBingoSharedNetwork:x.explicitBotemaniaCanalBingoSharedNetwork,mechanicsVsRtpConflict:x.contributionConsistency?.mechanicsVsRtpConflict===true,url:x.url}))},
  decision:{bestPublishedComponentSumCandidate:comparable[0]?.slug||null,stateDependentBestGameNotProven:true,reason:'Trigger/hazard coefficient may differ by game configuration; published RTP component sum alone cannot rank current jackpot-state EV.',realMoneyAllowed:false},
  guards:{specificRtpSectionPreferredOverGenericCopiedMechanicsText:true,conflictCannotPromoteEconomicGate:true,noPublishedRtpAsCurrentEv:true,noCrossGameHazardEqualityAssumption:true,noBetting:true,realMoneyAllowed:false}
 };
 fs.mkdirSync('loterias-ai/casino/jackpots/evidence',{recursive:true});fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
-console.log(JSON.stringify({urlsConsidered:out.urlsConsidered,contributionConflictAudit:out.contributionConflictAudit,ranking:out.ranking.comparable.slice(0,20),decision:out.decision},null,2));
+console.log(JSON.stringify({urlsConsidered:out.urlsConsidered,contributionConflictAudit:out.contributionConflictAudit,ranking:out.ranking.comparable.slice(0,30),decision:out.decision},null,2));
