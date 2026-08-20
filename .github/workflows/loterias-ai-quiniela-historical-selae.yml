@@ -38,7 +38,30 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
 
+            # Phase 1: compute and persist the canonical Quiniela evidence first.
+            # This ensures VALIDATED/PARTIAL/NOT_FOUND/CONFLICT evidence cannot be
+            # lost merely because a later global QA rebuild is slow or fails closed.
             BATCH_LIMIT=80 node loterias-ai/scripts/crosscheck-quiniela-historical-selae.mjs
+
+            git add \
+              loterias-ai/data/archive/quiniela \
+              loterias-ai/data/archive/_meta/quiniela-historical-selae-crosscheck.json
+
+            if ! git diff --cached --quiet; then
+              git commit -m 'data(quiniela): persist historical SELAE cross-check evidence'
+              if ! git push origin HEAD:main; then
+                echo "main moved during Quiniela evidence checkpoint attempt ${attempt}; recomputing"
+                sleep $((attempt * 2))
+                continue
+              fi
+            else
+              echo 'No semantic Quiniela canonical evidence change.'
+            fi
+
+            # Phase 2: rebuild derived QA from the exact main that contains the
+            # canonical checkpoint. If another workflow moves main, recompute.
+            git fetch origin main
+            git reset --hard origin/main
             node loterias-ai/scripts/build-national-archive-index.mjs
             node loterias-ai/scripts/build-completeness-index.mjs
 
@@ -56,37 +79,37 @@ jobs:
             const r=JSON.parse(fs.readFileSync(p,'utf8'));
             const mismatches=(r.failures||[]).filter(x=>x.reason==='OFFICIAL_RESULT_MISMATCH_QUARANTINED');
             if(mismatches.length) {
-              console.error(`Official Quiniela mismatches quarantined: ${mismatches.length}. Persisting diagnostics before failing closed.`);
+              console.error(`Official Quiniela mismatches quarantined: ${mismatches.length}. Canonical evidence is already persisted; failing closed after QA.`);
             }
             const priorities=JSON.parse(fs.readFileSync('loterias-ai/data/archive/_meta/archive-coverage-priorities.json','utf8'));
             if(mismatches.length || priorities.auditQualityPass!==true) process.exit(1);
             NODE
 
             git add \
-              loterias-ai/data/archive/quiniela \
-              loterias-ai/data/archive/_meta/quiniela-historical-selae-crosscheck.json \
               loterias-ai/data/archive/_meta/archive-audit.json \
               loterias-ai/data/archive/_meta/archive-coverage-priorities.json \
               loterias-ai/data/archive/manifest.json \
               loterias-ai/data/archive/completeness-index.json
+
             if git diff --cached --quiet; then
-              echo 'No semantic Quiniela historical SELAE change.'
+              echo 'No semantic derived archive QA change.'
               if [ "$audit_rc" -ne 0 ] || [ "$priorities_rc" -ne 0 ] || [ "$qa_rc" -ne 0 ]; then
-                echo 'Quiniela historical cross-check remains fail-closed; no new diagnostic change to persist.' >&2
+                echo 'Quiniela historical cross-check remains fail-closed; canonical evidence is persisted.' >&2
                 exit 1
               fi
               exit 0
             fi
 
-            git commit -m 'data(quiniela): cross-check historical archive against SELAE'
+            git commit -m 'qa(archive): sync derived state after Quiniela historical cross-check'
             if git push origin HEAD:main; then
               if [ "$audit_rc" -ne 0 ] || [ "$priorities_rc" -ne 0 ] || [ "$qa_rc" -ne 0 ]; then
-                echo 'Persisted Quiniela quarantine/QA diagnostics; failing closed after evidence was saved.' >&2
+                echo 'Persisted derived Quiniela QA diagnostics; failing closed after evidence was saved.' >&2
                 exit 1
               fi
               exit 0
             fi
-            echo "main moved during Quiniela historical cross-check attempt ${attempt}; recomputing"
+
+            echo "main moved during Quiniela derived QA attempt ${attempt}; recomputing"
             sleep $((attempt * 2))
           done
 
