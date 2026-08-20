@@ -1,6 +1,6 @@
 {
-  "version": "edge-live-opportunity-registry-v1",
-  "generatedAt": "2026-08-20T16:59:00.000Z",
+  "version": "edge-live-opportunity-registry-v1.1-progressive-score-research",
+  "generatedAt": "2026-08-20T17:22:00.000Z",
   "operator": "botemania-es",
   "purpose": "STRUCTURAL_NON_PROMOTIONAL_EDGE_MONITORING",
   "mappings": [
@@ -16,6 +16,7 @@
       "feedId": "WAGER_BET",
       "identity": {
         "verified": true,
+        "confidence": "VERY_HIGH",
         "evidenceClass": "MANUAL_SCREENSHOT_LIVE_AMOUNT_CROSS_MATCH",
         "observedAt": "2026-08-20T16:18:00.000Z",
         "screenJackpotEUR": 3448.25,
@@ -43,14 +44,195 @@
         "noThresholdCurrencyAssumption": true,
         "noBettingUntilExactCreditValueAndStrategy": true
       }
+    },
+    {
+      "id": "botemania-diamond-bonanza-25c",
+      "type": "PROGRESSIVE_SLOT_SCORE_RESEARCH",
+      "game": {
+        "id": "danza-de-los-diamantes-diamond-bonanza-25c",
+        "name": "Danza de los Diamantes — Diamond Bonanza 25c",
+        "url": "https://www.botemania.es/juegos/slots-online/danza-de-los-diamantes"
+      },
+      "network": "generic",
+      "feedId": "diamondbonanza25BTM",
+      "identity": {
+        "verified": false,
+        "confidence": "HIGH",
+        "evidenceClass": "OPERATOR_SUFFIXED_INTERNAL_ID_PLUS_OFFICIAL_RULE_SIGNATURE",
+        "notes": "Feed id literally identifies diamondbonanza25BTM. Current Botemania Danza de los Diamantes rules show three denomination-based progressive pots, 25c-1 EUR coin values and five fixed paylines. Strong research mapping; exact live in-game amount cross-match still required before execution use."
+      },
+      "economic": {
+        "publishedRtpPct": 95.44,
+        "progressivePotCount": 3,
+        "coinValuesEUR": [0.25, 0.5, 1],
+        "fixedPaylines": 5,
+        "breakEvenJackpotEUR": null,
+        "scoreModel": {
+          "modelType": "TYPE_1_EXTERNAL_HISTORY_RESEARCH_ONLY",
+          "seed": 500,
+          "averageHit": 7309,
+          "currency": "GBP",
+          "liveCurrency": "EUR",
+          "inputsComparable": false,
+          "allowNominalResearchScore": true,
+          "historicalWins": 1060,
+          "externalReference": {
+            "score": 105,
+            "jackpot": 7797,
+            "currency": "GBP",
+            "sourceClass": "LONG_RUNNING_PUBLIC_PROGRESSIVE_TRACKER"
+          },
+          "notes": "Historical 25p seed/average-hit data are useful to rank research but cannot be converted into a Spanish EUR break-even threshold until currency/network/configuration equivalence and jackpot RTP contribution are verified."
+        },
+        "notes": "Current jackpot size materially affects expected return, but Botemania-specific jackpot contribution semantics and exact break-even remain unresolved."
+      },
+      "execution": {
+        "exactStakeKnown": false,
+        "stakePerDecisionEUR": null,
+        "maxTotalStakeEUR": 5,
+        "strategyVerified": false,
+        "currentAvailabilityVerified": true
+      },
+      "guards": {
+        "noPromotion": true,
+        "scoreResearchOnly": true,
+        "noCrossCurrencyThreshold": true,
+        "noBettingUntilExactContributionStakeAndIdentity": true
+      }
+    },
+    {
+      "id": "botemania-burbujas-saltarinas-progressive",
+      "type": "PROGRESSIVE_SLOT_SCORE_RESEARCH",
+      "game": {
+        "id": "burbujas-saltarinas",
+        "name": "Burbujas Saltarinas",
+        "url": "https://www.botemania.es/juegos/slots-online/burbujas-saltarinas"
+      },
+      "network": "generic",
+      "feedId": "bouncy_bubbles_id",
+      "identity": {
+        "verified": false,
+        "confidence": "HIGH",
+        "evidenceClass": "INTERNAL_ID_SEMANTIC_MATCH_PLUS_OFFICIAL_PROGRESSIVE_RULES",
+        "notes": "bouncy_bubbles_id strongly matches the localized Burbujas Saltarinas title. Official Botemania rules confirm a progressive pot and bet-proportional jackpot eligibility. Exact in-game amount cross-match remains required."
+      },
+      "economic": {
+        "publishedRtpPct": 95.38,
+        "averageJackpotContributionPct": 0.09,
+        "breakEvenJackpotEUR": null,
+        "scoreModel": {
+          "modelType": "LOCAL_RESET_HISTORY_PENDING",
+          "seed": null,
+          "averageHit": null,
+          "currency": "EUR",
+          "liveCurrency": "EUR",
+          "inputsComparable": false,
+          "allowNominalResearchScore": false
+        },
+        "notes": "Botemania publishes 95.38% RTP and 0.09% jackpot contribution. Need local seed and hit distribution before current jackpot RTP can be estimated safely."
+      },
+      "execution": {
+        "exactStakeKnown": false,
+        "stakePerDecisionEUR": null,
+        "maxTotalStakeEUR": 5,
+        "strategyVerified": false,
+        "currentAvailabilityVerified": true
+      },
+      "guards": {
+        "noPromotion": true,
+        "noBettingUntilLocalResetModelAndIdentity": true
+      }
+    },
+    {
+      "id": "botemania-tiki-templo-progressive",
+      "type": "PROGRESSIVE_SLOT_SCORE_RESEARCH",
+      "game": {
+        "id": "tiki-templo",
+        "name": "Tiki Templo",
+        "url": "https://www.botemania.es/juegos/slots-online/tiki-templo"
+      },
+      "network": "generic",
+      "feedId": "tikitemple2_1",
+      "identity": {
+        "verified": false,
+        "confidence": "HIGH",
+        "evidenceClass": "INTERNAL_ID_SEMANTIC_MATCH_PLUS_OFFICIAL_PROGRESSIVE_RULES",
+        "notes": "tikitemple2_1 strongly matches Tiki Templo. Official Botemania rules confirm a progressive pot with probability proportional to stake. Exact live amount cross-match remains required."
+      },
+      "economic": {
+        "publishedBaseRtpRangePct": [80.51, 88.21],
+        "averageJackpotContributionPct": 6.7,
+        "breakEvenJackpotEUR": null,
+        "scoreModel": {
+          "modelType": "LOCAL_RESET_HISTORY_PENDING",
+          "seed": null,
+          "averageHit": null,
+          "currency": "EUR",
+          "liveCurrency": "EUR",
+          "inputsComparable": false,
+          "allowNominalResearchScore": false
+        },
+        "notes": "Large 6.70% jackpot contribution is interesting, but low base RTP means a high jackpot SCORE would be required. Local hit distribution is mandatory."
+      },
+      "execution": {
+        "exactStakeKnown": false,
+        "stakePerDecisionEUR": null,
+        "maxTotalStakeEUR": 5,
+        "strategyVerified": false,
+        "currentAvailabilityVerified": true
+      },
+      "guards": {
+        "noPromotion": true,
+        "noBettingUntilLocalResetModelAndIdentity": true
+      }
+    },
+    {
+      "id": "botemania-deal-or-no-deal-stateful3",
+      "type": "LEGACY_PROGRESSIVE_SLOT_SCORE_RESEARCH",
+      "game": {
+        "id": "deal-or-no-deal-stateful3",
+        "name": "Deal or No Deal — Stateful3",
+        "url": "https://www.botemania.es/"
+      },
+      "network": "generic",
+      "feedId": "DealOrNoDealStateful3",
+      "identity": {
+        "verified": false,
+        "confidence": "MEDIUM",
+        "evidenceClass": "EXACT_LEGACY_FAMILY_INTERNAL_ID_WITH_ACCESS_UNRESOLVED",
+        "notes": "The public feed exposes an exact Gamesys-style DealOrNoDealStateful3 id, but the currently playable Botemania page/denomination has not yet been recovered."
+      },
+      "economic": {
+        "publishedRtpPct": null,
+        "breakEvenJackpotEUR": null,
+        "scoreModel": {
+          "modelType": "LEGACY_EXTERNAL_HISTORY_RESEARCH_ONLY",
+          "seed": 2000,
+          "averageHit": 101969,
+          "currency": "GBP",
+          "liveCurrency": "EUR",
+          "inputsComparable": false,
+          "allowNominalResearchScore": true,
+          "historicalWins": 193,
+          "notes": "Historical 5p family values are not assumed to be Stateful3. Used only to prioritize research until denomination and active game are identified."
+        }
+      },
+      "execution": {
+        "exactStakeKnown": false,
+        "stakePerDecisionEUR": null,
+        "maxTotalStakeEUR": 0,
+        "strategyVerified": false,
+        "currentAvailabilityVerified": false
+      },
+      "guards": {
+        "noPromotion": true,
+        "noBettingWhileCurrentGameAccessUnverified": true,
+        "noCrossCurrencyThreshold": true
+      }
     }
   ],
   "researchOnlyLiveIds": [
-    "generic:bouncy_bubbles_id",
     "generic:classicwildsprogressive",
-    "generic:diamondbonanza25BTM",
-    "generic:DealOrNoDealStateful3",
-    "generic:tikitemple2_1",
     "generic:progressivealice1"
   ],
   "guards": {
@@ -58,6 +240,8 @@
     "firstDepositOffersExcluded": true,
     "freeDailyGamesExcluded": true,
     "onlyStructuralOrRepeatableMechanisms": true,
-    "noAutomaticBetting": true
+    "noAutomaticBetting": true,
+    "noCrossCurrencyHistoricalThresholdPromotion": true,
+    "scoreAloneNeverAuthorizesBetting": true
   }
 }
