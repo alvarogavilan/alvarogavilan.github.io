@@ -51,10 +51,51 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
 
-            # Phase 1: compute and persist the canonical Quiniela evidence first.
-            # Scheduled checkpoints stay bounded at 40; push/manual smoke runs use
-            # only 8 rows to prove the canonical evidence path can complete.
+            # Always leave a minimal durable diagnostic if the historical script
+            # itself fails before it can write its normal report. This marker is
+            # created only when the report does not exist, so repeated failures do
+            # not churn main. A successful script replaces it with the full report.
+            BATCH_LIMIT="$batch_limit" node --input-type=module <<'NODE'
+            import fs from 'node:fs';
+            const qdir='loterias-ai/data/archive/quiniela';
+            const meta='loterias-ai/data/archive/_meta';
+            const report=`${meta}/quiniela-historical-selae-crosscheck.json`;
+            if(!fs.existsSync(report)) {
+              let datedPre2020=0;
+              let eligible=0;
+              for(const file of fs.readdirSync(qdir).filter(x=>/^\d{4}\.json$/.test(x))){
+                const doc=JSON.parse(fs.readFileSync(`${qdir}/${file}`,'utf8'));
+                for(const row of doc.records||[]){
+                  if(!row.drawDate || row.drawDate>='2020-01-01') continue;
+                  datedPre2020++;
+                  const v=row.verification||{};
+                  const c=v.officialCrossCheck||{};
+                  const terminal=(c.provider==='SELAE'&&c.complete===true)
+                    || (v.status==='OFFICIAL_SELAE_NOT_FOUND'&&c.provider==='SELAE'&&c.status==='NOT_FOUND')
+                    || (v.status==='OFFICIAL_SELAE_PARTIAL'&&c.provider==='SELAE'&&c.status==='PARTIAL')
+                    || v.status==='OFFICIAL_CONFLICT_QUARANTINED';
+                  if(!terminal) eligible++;
+                }
+              }
+              fs.mkdirSync(meta,{recursive:true});
+              fs.writeFileSync(report,JSON.stringify({
+                gameId:'quiniela',
+                scope:'dated-canonical-pre-2020',
+                status:'PREFLIGHT_PENDING_SCRIPT',
+                datedPre2020,
+                eligibleTargets:eligible,
+                requestedBatchLimit:Number(process.env.BATCH_LIMIT||0),
+                guards:{noInference:true,realMoney:false}
+              },null,2)+'\n');
+            }
+            NODE
+
+            # Phase 1: compute canonical Quiniela evidence. Capture the script
+            # status instead of letting set -e erase the only useful diagnostic.
+            set +e
             BATCH_LIMIT="$batch_limit" FETCH_CONCURRENCY=4 node loterias-ai/scripts/crosscheck-quiniela-historical-selae.mjs
+            crosscheck_rc=$?
+            set -e
 
             git add \
               loterias-ai/data/archive/quiniela \
@@ -69,6 +110,11 @@ jobs:
               fi
             else
               echo 'No semantic Quiniela canonical evidence change.'
+            fi
+
+            if [ "$crosscheck_rc" -ne 0 ]; then
+              echo "Historical Quiniela SELAE cross-check failed with rc=${crosscheck_rc}; diagnostic checkpoint is persisted." >&2
+              exit "$crosscheck_rc"
             fi
 
             # Phase 2: rebuild derived QA from the exact main that contains the
