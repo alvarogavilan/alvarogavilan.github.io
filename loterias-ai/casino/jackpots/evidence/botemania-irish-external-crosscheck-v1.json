@@ -1,0 +1,82 @@
+{
+  "version": "botemania-irish-external-crosscheck-v1",
+  "generatedAt": "2026-08-20T09:20:00Z",
+  "operator": "botemania-es",
+  "game": {
+    "slug": "irish-riches-megaways-jackpot-king",
+    "title": "Irish Riches Megaways: Jackpot King",
+    "blueprintProfile": "jackpotkingdeluxe3",
+    "blueprintGameEngineID": "irishriches"
+  },
+  "provenanceNote": "This file is a MANUAL research memo assembled via an interactive web-search tool available only inside this Claude session (not the repo's Node fetch probes). It is NOT reproducible by the existing .mjs probes in this repo, because this session's outbound network egress is allowlisted and blocks fileservice.blueprintgaming.com, www.botemania.es, help.botemania.es and web.archive.org directly (confirmed 2026-08-20 via node fetch and WebFetch, both returned EGRESS_BLOCKED / 'Host not in allowlist'). Only the scheduled GitHub Actions workflows (unrestricted runner egress) can execute the existing probe scripts end-to-end. This memo therefore captures third-party review-site snippets returned by a hosted search tool, each with its source URL, so a human or a future CI-connected agent can independently verify by visiting the cited URLs.",
+  "sessionNetworkFinding": {
+    "blockedDirectly": [
+      "fileservice.blueprintgaming.com",
+      "www.botemania.es",
+      "help.botemania.es",
+      "web.archive.org",
+      "www.gmblrs.com",
+      "www.intergameonline.com"
+    ],
+    "workingTool": "WebSearch (hosted, returns snippets + synthesized summary, not raw HTML)",
+    "implication": "Priority-1 sub-goals 2-4 from issue #168 (exact APUESTA TOTAL ladder amounts, exact numeric MBWB for Botemania ES specifically, and confirmation of Blueprint technical identifiers via direct fetch) cannot be completed from an interactive session under this network policy -- they remain achievable only by the existing scheduled workflows (loterias-ai-botemania-irish-research-v1.yml etc.), which run every 30 minutes with unrestricted GitHub Actions runner egress. CORRECTION: an initial local re-run of blueprint-botemania-irish-help-probe-v1.mjs inside this session returned HTTP 403 with body 'Host not in allowlist: fileservice.blueprintgaming.com' -- that is THIS SESSION's own sandbox network policy, not a real re-check of Blueprint. That accidental overwrite of the committed evidence file was reverted (git checkout --) before commit; the real, CI-captured HTTP 200 result generated at 2026-08-20T08:44:59Z (10,648 bytes of official Botemania-ES Blueprint help HTML) was left untouched. That committed capture already contains a genuine Botemania-ES-official qualitative confirmation of the MBWB mechanic for Royal/Regal ('se garantiza que el bote Real y el Majestuoso serán otorgados por el valor \"Debe ser ganado antes de\"'), matching the networkEvidence.qualitativeHazardDirectionKnown=true flag already present in botemania-irish-riches-jpk-current-screen-v1.json. What is still missing from that official capture is the exact numeric MBWB threshold and the exact APUESTA TOTAL stake ladder amounts (the visible text was truncated before reaching a numbered bet list and before any peso/euro MBWB figure)."
+  },
+  "alreadyConfirmedByExistingBotemaniaEvidence": {
+    "source": "loterias-ai/casino/jackpots/evidence/blueprint-botemania-irish-help-probe-v1.json (generatedAt 2026-08-20T08:44:59Z, HTTP 200, official fileservice.blueprintgaming.com response for customer=BOTEMANIA, language=ES)",
+    "qualitativeMbwbConfirmedForRoyalAndRegal": true,
+    "exactNumericMbwbRecovered": false,
+    "exactStakeLadderRecovered": false,
+    "seedFundedByOperatorConfirmed": true,
+    "note": "This is genuine, first-party, Botemania-ES-official evidence -- stronger than any of the third-party externalFindings below. It should be treated as the primary source; the externalFindings are cross-reference-only context for the still-missing numeric values."
+  },
+  "externalFindings": [
+    {
+      "claim": "Irish Riches Megaways (base game, non-jackpot RTP context) is listed at 96.42%-96.43% on third-party aggregators, decomposed by one source as 0.38% jackpot contribution + 0.11% reserve.",
+      "sources": [
+        "https://www.gmblrs.com/game-provider/blueprint-gaming/irish-riches-megaways",
+        "https://www.fluffyspins.com/all-games/slots/irish-riches-megaways-jpk"
+      ],
+      "crossCheckWithBotemaniaEvidence": "The 0.38|0.11 split matches EXACTLY the cluster already found among BOTEMANIA'S OWN peer Jackpot King titles in botemania-jpk-internal-contribution-reconciliation-v1.json (7s-deluxe, eye-of-horus x2, king-kong-cash x2, mega-bars-fortune-wheel, the-goonies-return). Irish Riches itself is NOT in that Botemania cluster (its Botemania page text does not expose an explicit split; only '+1%' unsplit). This is a supporting signal, not proof, that Irish Riches at Botemania could plausibly sit in the same 0.38/0.11 family, but it is a DIFFERENT operator's disclosure and Botemania's own page states '+1%' (not 0.49%) for the combined figure, so the two are not simply interchangeable.",
+      "operatorScope": "THIRD_PARTY_AGGREGATOR_NOT_BOTEMANIA",
+      "confidence": "DISCOVERY_ONLY"
+    },
+    {
+      "claim": "A different Blueprint Jackpot King title (unspecified operator) is described as funded by 'an added 0.86% of each stake, supported by 0.13% reserve'.",
+      "sources": ["websearch-synthesized-snippet-no-single-attributable-url"],
+      "crossCheckWithBotemaniaEvidence": "The 0.13% reserve figure matches the 'null|0.13' cluster already found for mega-bars-jackpot-king in Botemania's own peer data (active contribution unknown there too). Coincidental overlap on the reserve leg only; not attributed to Irish Riches.",
+      "operatorScope": "UNKNOWN_THIRD_PARTY",
+      "confidence": "LOW_UNVERIFIED_SNIPPET"
+    },
+    {
+      "claim": "Blueprint's 'Jackpot King Deluxe' engine (launched 2018, press coverage) introduced must-win Royal and Regal pots: Royal must be won before reaching 3,500 (currency units per source, GBP/USD not consistently specified), Regal before reaching 35,000. Multiple independent 2025/2026-dated review sites repeat these exact figures specifically for Irish Riches Megaways: Jackpot King.",
+      "sources": [
+        "https://www.intergameonline.com/igaming/news/blueprint-gaming-adds-must-win-pots-to-jackpot-king-deluxe",
+        "https://www.yogonet.com/international/news/2018/09/27/47858-blueprint-gaming-raises-the-bar-with-jackpot-king-deluxe",
+        "https://www.casino-on-line.com/irish-riches-slot/"
+      ],
+      "crossCheckWithBotemaniaEvidence": "Botemania's help-probe query for this exact game uses profile=jackpotkingdeluxe3 (see blueprint-botemania-irish-help-probe-v1.mjs), matching the 'Jackpot King Deluxe' engine described in this press coverage. This is a plausible technical link between Botemania's deployment and the described MBWB mechanic, but the press release describes an illustrative/generic configuration, not a confirmed BOTEMANIA-ES-SPECIFIC cap. Operators can and do configure different MBWB values per market/license. As of the most recent same-day observation (botemania-irish-riches-jpk-current-screen-v1.json, 2026-08-20T06:48:55Z), current Botemania pots were REGAL=15,501.89 EUR and ROYAL=1,689.19 EUR -- both well below these candidate caps, so even if these values did apply to Botemania, neither pot is currently near a forced payout.",
+      "operatorScope": "GENERIC_BLUEPRINT_ENGINE_DESCRIPTION_NOT_BOTEMANIA_CONFIRMED",
+      "confidence": "MODERATE_TECHNICAL_LINK_UNVALIDATED_VALUE"
+    }
+  ],
+  "decision": {
+    "botemaniaExactMbwbKnown": false,
+    "botemaniaExactStakeLadderKnown": false,
+    "canPromoteAnyOfTheseAsBotemaniaFact": false,
+    "economicPromotionAllowed": false,
+    "realMoneyAllowed": false,
+    "reason": "ALL_FINDINGS_ARE_THIRD_PARTY_OR_GENERIC_ENGINE_DISCLOSURES; NONE_INDEPENDENTLY_CONFIRMED_ON_A_BOTEMANIA_ES_SURFACE"
+  },
+  "recommendedNextSteps": [
+    "Ask the repository owner whether the interactive session's network egress allowlist can be extended (or whether this research must stay confined to the scheduled GitHub Actions runners, which already have unrestricted egress and already run this exact probe cycle every 30 minutes).",
+    "If/when help-probe HTTP 200 is ever recovered from fileservice.blueprintgaming.com with customer=BOTEMANIA, diff its MBWB/reserve text against these generic 3,500/35,000 figures to confirm or refute the technical link.",
+    "Do not use the 0.38/0.11 or 3,500/35,000 external figures as inputs to any EV/gate computation for Irish Riches at Botemania; keep them as cross-reference-only context alongside the existing seed/hazard scenario grid."
+  ],
+  "guards": {
+    "noCrossOperatorSubstitution": true,
+    "noForeignParametersAsBotemaniaFacts": true,
+    "manualInteractiveResearchNotAutomatedProbe": true,
+    "noBetting": true,
+    "realMoneyAllowed": false
+  }
+}
