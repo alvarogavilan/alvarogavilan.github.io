@@ -1,0 +1,44 @@
+name: Loterias AI Botemania State Dependent Ranker V1
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/archive/botemania-state-dependent-priority-ranker-v1.mjs'
+      - 'loterias-ai/casino/archive/evidence/botemania-all-games-census-v1.json'
+      - '.github/workflows/loterias-ai-botemania-state-dependent-ranker-v1.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-botemania-state-dependent-ranker-v1
+  cancel-in-progress: false
+
+jobs:
+  rank:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node loterias-ai/casino/archive/botemania-state-dependent-priority-ranker-v1.mjs
+      - name: Persist ranker
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/casino/archive/evidence/botemania-state-dependent-priority-ranker-v1.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'data(casino): rank Botemania state-dependent candidates'
+          for attempt in 1 2 3 4; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
