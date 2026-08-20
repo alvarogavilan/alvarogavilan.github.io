@@ -1,0 +1,98 @@
+name: Loterias AI Quiniela Historical Preflight
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/loterias-ai-quiniela-historical-preflight.yml'
+      - 'loterias-ai/scripts/crosscheck-quiniela-historical-selae.mjs'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-quiniela-historical-preflight
+  cancel-in-progress: true
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Persist durable pre-network diagnostic
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+
+            node --input-type=module <<'NODE'
+            import fs from 'node:fs';
+            const qdir='loterias-ai/data/archive/quiniela';
+            const meta='loterias-ai/data/archive/_meta';
+            const report=`${meta}/quiniela-historical-selae-crosscheck-preflight.json`;
+            let datedPre2020=0;
+            let eligibleTargets=0;
+            let validated=0;
+            let notFound=0;
+            let partial=0;
+            let conflict=0;
+            for(const file of fs.readdirSync(qdir).filter(x=>/^\d{4}\.json$/.test(x)).sort()){
+              const doc=JSON.parse(fs.readFileSync(`${qdir}/${file}`,'utf8'));
+              for(const row of doc.records||[]){
+                if(!row.drawDate || row.drawDate>='2020-01-01') continue;
+                datedPre2020++;
+                const v=row.verification||{};
+                const c=v.officialCrossCheck||{};
+                if(c.provider==='SELAE'&&c.complete===true){validated++;continue;}
+                if(v.status==='OFFICIAL_SELAE_NOT_FOUND'&&c.provider==='SELAE'&&c.status==='NOT_FOUND'){notFound++;continue;}
+                if(v.status==='OFFICIAL_SELAE_PARTIAL'&&c.provider==='SELAE'&&c.status==='PARTIAL'){partial++;continue;}
+                if(v.status==='OFFICIAL_CONFLICT_QUARANTINED'){conflict++;continue;}
+                eligibleTargets++;
+              }
+            }
+            const next={
+              version:'quiniela-historical-selae-preflight-v1',
+              gameId:'quiniela',
+              scope:'dated-canonical-pre-2020',
+              status:'NETWORK_PHASE_NOT_YET_PROVEN',
+              datedPre2020,
+              eligibleTargets,
+              cumulative:{validated,notFound,partial,conflict},
+              guards:{diagnosticPersistedBeforeNetwork:true,noInference:true,trainingPromotion:false,realMoney:false}
+            };
+            const stable=x=>JSON.stringify(x);
+            let previous=null;
+            if(fs.existsSync(report)) previous=JSON.parse(fs.readFileSync(report,'utf8'));
+            if(!previous || stable(previous)!==stable(next)){
+              fs.mkdirSync(meta,{recursive:true});
+              fs.writeFileSync(report,JSON.stringify(next,null,2)+'\n');
+            }
+            console.log(JSON.stringify(next,null,2));
+            NODE
+
+            git add loterias-ai/data/archive/_meta/quiniela-historical-selae-crosscheck-preflight.json
+            if git diff --cached --quiet; then
+              echo 'No semantic preflight change.'
+              exit 0
+            fi
+            git commit -m 'qa(quiniela): persist historical SELAE pre-network checkpoint'
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "main moved during Quiniela preflight attempt ${attempt}; recomputing"
+            sleep $((attempt * 2))
+          done
+
+          echo 'Unable to persist Quiniela historical preflight after five recomputations.' >&2
+          exit 1
