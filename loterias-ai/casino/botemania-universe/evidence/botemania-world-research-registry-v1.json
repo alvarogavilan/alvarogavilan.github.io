@@ -1,0 +1,109 @@
+{
+  "version": "botemania-world-research-registry-v1",
+  "createdAt": "2026-08-20T07:35:00Z",
+  "scope": "WORLDWIDE_PUBLIC_RESEARCH_RELEVANT_TO_BOTEMANIA_GAME_MECHANICS_AND_ECONOMICS",
+  "operator": "botemania-es",
+  "sources": [
+    {
+      "id": "botemania-all-games",
+      "class": "SPAIN_OPERATOR_PRIMARY",
+      "url": "https://www.botemania.es/juegos/todos-los-juegos",
+      "use": "Authoritative current public game catalogue and game-page discovery.",
+      "promotionWeight": "PRIMARY"
+    },
+    {
+      "id": "dgoj-gamesys",
+      "class": "SPAIN_REGULATOR_PRIMARY",
+      "url": "https://www.ordenacionjuego.es/operadores-juego/operadores-licencia/operadores/gamesys-spain-sa",
+      "use": "Confirms Gamesys Spain, Botemania domain, slot-machine licence and technical-system homologation.",
+      "promotionWeight": "PRIMARY_REGULATORY"
+    },
+    {
+      "id": "botemania-irish-riches-jpk",
+      "class": "SPAIN_OPERATOR_PRIMARY",
+      "url": "https://www.botemania.es/juegos/slots-online/irish-riches-megaways-jackpot-king",
+      "use": "Botemania-specific Irish Riches Megaways Jackpot King rules and RTP 95.93% + 1% jackpot contribution wording.",
+      "promotionWeight": "PRIMARY"
+    },
+    {
+      "id": "botemania-eye-horus-jpk",
+      "class": "SPAIN_OPERATOR_PRIMARY",
+      "url": "https://www.botemania.es/juegos/slots-online/eye-of-horus-jackpot-king",
+      "use": "Botemania-specific state-dependent probability wording and explicit base/jackpot/reserve RTP components.",
+      "promotionWeight": "PRIMARY"
+    },
+    {
+      "id": "botemania-mega-bars-fortune-jpk",
+      "class": "SPAIN_OPERATOR_PRIMARY",
+      "url": "https://www.botemania.es/juegos/slots-online/mega-bars-fortune-wheel-jackpot-king",
+      "use": "Botemania-specific 95.50% base + 0.38% jackpot + 0.11% reserve configuration.",
+      "promotionWeight": "PRIMARY"
+    },
+    {
+      "id": "danskespil-irish-riches-help",
+      "class": "FOREIGN_OPERATOR_MECHANICS_CORROBORATION",
+      "url": "https://help.danskespil.dk/en/casino-help/jackpot-slots/blueprintirishriches",
+      "use": "Independent operator corroboration of Jackpot King Deluxe reset-to-reserve, increasing win probability with jackpot value and Royal/Regal MBWB mechanics.",
+      "promotionWeight": "DISCOVERY_ONLY_FOR_NUMERIC_PARAMETERS"
+    },
+    {
+      "id": "grosvenor-irish-riches-jpk",
+      "class": "FOREIGN_OPERATOR_MECHANICS_CORROBORATION",
+      "url": "https://www.grosvenorcasinos.com/games/irish-riches-megaways-jk",
+      "use": "Cross-operator corroboration of 95.93% base RTP plus jackpot contribution and common Jackpot King Deluxe mechanics.",
+      "promotionWeight": "DISCOVERY_ONLY_FOR_NUMERIC_PARAMETERS"
+    },
+    {
+      "id": "wizard-must-hit-by",
+      "class": "INDEPENDENT_MATHEMATICAL_REFERENCE",
+      "url": "https://wizardofodds.com/games/slots/mystery-jackpot/",
+      "use": "Expected-value framework for must-hit-by progressives and explicit warning that trigger distributions can differ by manufacturer.",
+      "promotionWeight": "METHOD_ONLY"
+    },
+    {
+      "id": "wizard-mhb-nonuniform-example",
+      "class": "INDEPENDENT_MATHEMATICAL_REFERENCE",
+      "url": "https://wizardofodds.com/newsletter/january-04-2019/",
+      "use": "Empirical example showing a must-hit-by trigger distribution can be highly concentrated near the ceiling rather than uniform.",
+      "promotionWeight": "METHOD_AND_CAUTION_ONLY"
+    },
+    {
+      "id": "formal-slot-modelling-2024",
+      "class": "ACADEMIC_METHOD",
+      "url": "https://arxiv.org/abs/2407.06809",
+      "use": "Formal probabilistic-process method for computing slot RTP and optimal strategies under complex stateful mechanics.",
+      "promotionWeight": "METHOD_ONLY"
+    },
+    {
+      "id": "slotcatalog-irish-riches",
+      "class": "THIRD_PARTY_GAME_DATABASE",
+      "url": "https://slotcatalog.com/es/slots/Irish-Riches-Megaways",
+      "use": "Cross-reference for game identity and Jackpot King connectivity; never overrides Botemania-specific configuration.",
+      "promotionWeight": "CORROBORATION_ONLY"
+    },
+    {
+      "id": "sun-jackpot-king-historical-uk",
+      "class": "FOREIGN_HISTORICAL_DISCOVERY",
+      "url": "https://www.thesun.co.uk/betting/slots/22063563/keep-up-with-katrina-sun-vegas-sea/",
+      "use": "Historical UK Jackpot King Royal/Regal cap observations; useful only to understand network variants and explicitly prohibited from substituting Spain MBWB.",
+      "promotionWeight": "DISCOVERY_ONLY"
+    }
+  ],
+  "findings": {
+    "worldwideMethodConclusion": "Must-hit-by jackpots can become positive-EV near a ceiling, but the crossover depends critically on base RTP, contribution rate, seed/reset and the actual trigger distribution. Uniform trigger assumptions are manufacturer-specific and must not be imported into Botemania without evidence.",
+    "highestPriorityBotemaniaLead": {
+      "game": "Irish Riches Megaways: Jackpot King",
+      "publishedBotemaniaRtpWording": "95.93% + 1%",
+      "reason": "Highest currently identified Botemania Jackpot King published return among researched candidates, so it may require less state-dependent uplift to reach 100% than Fishin Frenzy.",
+      "positiveEvProven": false
+    },
+    "historicalResearchPolicy": "Foreign operator caps, seeds, stake ladders and RTP variants are discovery evidence only. Spain promotion requires Botemania/DGOJ/in-game Spain evidence or prospectively validated Botemania observations."
+  },
+  "guards": {
+    "noForeignNumericSubstitutionIntoSpain": true,
+    "noUniformHazardAssumptionWithoutEvidence": true,
+    "discoverySeparatedFromValidation": true,
+    "noBetting": true,
+    "realMoneyAllowed": false
+  }
+}
