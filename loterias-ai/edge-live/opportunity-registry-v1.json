@@ -1,0 +1,63 @@
+{
+  "version": "edge-live-opportunity-registry-v1",
+  "generatedAt": "2026-08-20T16:59:00.000Z",
+  "operator": "botemania-es",
+  "purpose": "STRUCTURAL_NON_PROMOTIONAL_EDGE_MONITORING",
+  "mappings": [
+    {
+      "id": "botemania-ultimate-video-poker-jacks-progressive",
+      "type": "PROGRESSIVE_VIDEO_POKER",
+      "game": {
+        "id": "ultimate-video-poker-jacks-or-better-progressive",
+        "name": "Ultimate Video Poker — Jotas o Mejor Progresivo",
+        "url": "https://www.botemania.es/juegos/casino-online/ultimate-video-poker"
+      },
+      "network": "generic",
+      "feedId": "WAGER_BET",
+      "identity": {
+        "verified": true,
+        "evidenceClass": "MANUAL_SCREENSHOT_LIVE_AMOUNT_CROSS_MATCH",
+        "observedAt": "2026-08-20T16:18:00.000Z",
+        "screenJackpotEUR": 3448.25,
+        "feedJackpotEUR": 3448.25,
+        "paytableObserved": "7/5 Jacks or Better Progressive",
+        "notes": "User-visible in-game jackpot matched the public generic WAGER_BET feed exactly to the cent during the same live session. This verifies the counter mapping, not positive EV."
+      },
+      "economic": {
+        "publishedBaseRtpPctApprox": 95.95,
+        "breakEvenRoyalCredits": 81387,
+        "breakEvenJackpotEUR": null,
+        "creditValueEUR": null,
+        "creditValueVerified": false,
+        "thresholdEvidenceClass": "EXTERNAL_MATHEMATICAL_REFERENCE_REQUIRES_UNIT_BINDING",
+        "notes": "The 7/5 progressive break-even is expressed in royal-flush credits. EDGE must bind the exact credit denomination used by the Botemania implementation before converting this threshold to EUR."
+      },
+      "execution": {
+        "exactStakeKnown": false,
+        "stakePerDecisionEUR": null,
+        "maxTotalStakeEUR": 5,
+        "strategyVerified": false
+      },
+      "guards": {
+        "noPromotion": true,
+        "noThresholdCurrencyAssumption": true,
+        "noBettingUntilExactCreditValueAndStrategy": true
+      }
+    }
+  ],
+  "researchOnlyLiveIds": [
+    "generic:bouncy_bubbles_id",
+    "generic:classicwildsprogressive",
+    "generic:diamondbonanza25BTM",
+    "generic:DealOrNoDealStateful3",
+    "generic:tikitemple2_1",
+    "generic:progressivealice1"
+  ],
+  "guards": {
+    "promotionsExcluded": true,
+    "firstDepositOffersExcluded": true,
+    "freeDailyGamesExcluded": true,
+    "onlyStructuralOrRepeatableMechanisms": true,
+    "noAutomaticBetting": true
+  }
+}
