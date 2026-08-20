@@ -11,6 +11,7 @@ on:
       - 'loterias-ai/casino/jackpots/botemania-headless-config-public-probe-v1.mjs'
       - 'loterias-ai/casino/jackpots/botemania-headless-global-bundle-config-scan-v1.mjs'
       - 'loterias-ai/casino/jackpots/botemania-cms-component-query-extractor-v1.mjs'
+      - 'loterias-ai/casino/jackpots/botemania-cms-loadgame-readonly-probe-v1.mjs'
       - 'loterias-ai/casino/archive/evidence/botemania-progressive-network-map-v1.json'
       - '.github/workflows/loterias-ai-botemania-headless-jackpots-probe-v1.yml'
   schedule:
@@ -44,6 +45,8 @@ jobs:
         run: node loterias-ai/casino/jackpots/botemania-headless-global-bundle-config-scan-v1.mjs
       - name: Extract public CMS component queries
         run: node loterias-ai/casino/jackpots/botemania-cms-component-query-extractor-v1.mjs
+      - name: Probe Irish with exact recovered loadGame query
+        run: node loterias-ai/casino/jackpots/botemania-cms-loadgame-readonly-probe-v1.mjs
       - name: Map live generic jackpot IDs to public game pages
         run: node loterias-ai/casino/jackpots/botemania-generic-jackpot-id-map-v1.mjs
       - name: Persist evidence
@@ -58,6 +61,7 @@ jobs:
             loterias-ai/casino/jackpots/evidence/botemania-headless-config-public-probe-v1.json \
             loterias-ai/casino/jackpots/evidence/botemania-headless-global-bundle-config-scan-v1.json \
             loterias-ai/casino/jackpots/evidence/botemania-cms-component-query-extractor-v1.json \
+            loterias-ai/casino/jackpots/evidence/botemania-cms-loadgame-readonly-probe-v1.json \
             loterias-ai/casino/jackpots/evidence/botemania-generic-jackpot-id-map-v1.json
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'data(casino): refresh Botemania public jackpot config research'
