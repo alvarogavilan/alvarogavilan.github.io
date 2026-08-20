@@ -20,12 +20,19 @@ function providerIsSelae(v) {
   return /SELAE|LOTERIAS\s*Y\s*APUESTAS/i.test(String(v || ''));
 }
 
+function officialEconomicsEvidence(r) {
+  if (!r || typeof r !== 'object') return false;
+  if (r.economics?.validation?.officialSELAE === true) return true;
+  if (providerIsSelae(r.economics?.source?.provider)) return true;
+  if (providerIsSelae(r.economics?.officialSource?.provider)) return true;
+  return false;
+}
+
 function officialEvidence(r) {
   if (!r || typeof r !== 'object') return false;
   if (r.source?.official === true || providerIsSelae(r.source?.provider)) return true;
   if (/^OFFICIAL(?:_|$)/i.test(String(r.verification?.status || ''))) return true;
-  if (r.economics?.validation?.officialSELAE === true) return true;
-  if (providerIsSelae(r.economics?.officialSource?.provider)) return true;
+  if (officialEconomicsEvidence(r)) return true;
   if (providerIsSelae(r.result?.officialPrizeSchema?.provider)) return true;
   return false;
 }
@@ -46,6 +53,7 @@ const report = {
   missingRowsRestored: 0,
   nonEvidenceMissingRowsNotRestored: 0,
   officialRowsProtected: 0,
+  officialEconomicsProtected: 0,
   economicsRestored: 0,
   touchedFiles: [],
   violations: [],
@@ -87,6 +95,12 @@ for (const rel of walk(beforeRoot, beforeRoot)) {
     if (officialEvidence(oldRow) && !officialEvidence(newRow)) {
       after.records[idx] = oldRow;
       report.officialRowsProtected++;
+      changed = true;
+      continue;
+    }
+    if (officialEconomicsEvidence(oldRow) && !officialEconomicsEvidence(newRow)) {
+      after.records[idx] = { ...newRow, economics: oldRow.economics };
+      report.officialEconomicsProtected++;
       changed = true;
       continue;
     }
