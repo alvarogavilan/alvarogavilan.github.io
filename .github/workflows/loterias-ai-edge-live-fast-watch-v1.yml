@@ -17,14 +17,16 @@ on:
 permissions:
   contents: write
 
+# An active burst must finish: cancelling before the final persist step can lose
+# a clean reset candidate. A later run waits instead of cancelling this one.
 concurrency:
   group: loterias-ai-edge-live-fast-watch-v1
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   watch:
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
         with:
