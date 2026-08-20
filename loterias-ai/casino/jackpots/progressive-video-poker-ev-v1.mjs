@@ -74,8 +74,8 @@ export function progressiveVideoPokerEv({
 }
 
 // Every entry here remains fail-closed until the exact Spanish configuration
-// is recovered. A published RTP range or familiar-looking 99.54% figure is not
-// enough to populate the fixed-strategy inputs above.
+// is technically reproduced. Historical/manual observation is evidence, but
+// it is not equivalent to a verified paytable, qualifying stake or unit model.
 export const BOTEMANIA_VIDEO_POKER_TITLES = [
   {
     slug: 'classic-video-poker',
@@ -98,26 +98,36 @@ export const BOTEMANIA_VIDEO_POKER_TITLES = [
     slug: 'ultimate-video-poker',
     url: 'https://www.botemania.es/juegos/casino-online/ultimate-video-poker',
     publishedRtpRangePct: [96.77, 99.54],
-    providerId: 'roxor-gaming', // confirmed via Botemania's public GraphQL contentfulGame query (paramHints), not inferred
+    providerId: 'roxor-gaming',
     variantOfInterest: 'Jotas o Mejor Progresivo',
-    monitorFeedRef: 'loterias-ai/edge-live/evidence/progressive-score-research-v1.json: generic:WAGER_BET, identity.confidence VERY_HIGH, evidenceClass MANUAL_SCREENSHOT_LIVE_AMOUNT_CROSS_MATCH (human-established, not script-reproducible yet)',
+    monitorFeedRef: 'loterias-ai/edge-live/evidence/progressive-score-research-v1.json: generic:WAGER_BET; MANUAL_SCREENSHOT_LIVE_AMOUNT_CROSS_MATCH; VERY_HIGH identity confidence',
     manualScreenshotEvidence: {
-      // Provided directly by the user via screenshot of the live game client.
-      // Treated as MANUAL_SCREENSHOT_EVIDENCE per instruction - not re-requested,
-      // but also not independently script-verified, so pRoyalFlushForFixedStrategy
-      // stays null until a primary/reproducible source confirms it for this exact table.
-      paytableCoinsPerCredit1: {
-        jacksOrBetter: 1, twoPair: 2, threeOfAKind: 3, straight: 4, flush: 5,
-        fullHouse: 7, fourOfAKind: 25, straightFlush: 50, royalFlush: 800,
+      paytableObserved: {
+        jacksOrBetter: 1,
+        twoPair: 2,
+        threeOfAKind: 3,
+        straight: 4,
+        flush: 5,
+        fullHouse: 7,
+        fourOfAKind: 25,
+        straightFlush: 50,
+        royalFlush: 800,
       },
-      paytableFamily: 'Matches the well-published "7/5 Jacks or Better" shape (800-50-25-7-5-4-3-2-1) - NOT full-pay 9/6. External 9/6 P(Royal Flush)~=1/40391 (WizardOfOdds, WebSearch) is documented for the DIFFERENT 9/6 table and must NOT be reused here without demonstrating equivalence (strategy shifts with a reduced flush/full-house pay).',
-      observedHandsPerSpin: 10,
-      observedBetPerHandEUR: 2.5,
-      observedTotalBetEUR: 25,
-      source: 'MANUAL_SCREENSHOT_EVIDENCE',
+      descriptiveFamily: '7/5-shaped Jacks or Better progressive',
+      historicalObservedHandsPerSpin: 10,
+      historicalObservedBetPerHandEUR: 2.5,
+      historicalObservedTotalBetEUR: 25,
+      sourceClass: 'MANUAL_SCREENSHOT_EVIDENCE_HISTORICAL',
+      technicallyReproduced: false,
+      qualifyingStakeVerified: false,
+      doNotUseHistoricalBetAsMinimumQualifyingStake: true,
+      notes: 'Observed screen values are preserved as historical evidence only. They do not establish the minimum qualifying wager, denomination, seed, jackpot units or fixed-strategy probabilities.',
     },
-    exactPaytableRecovered: true,
-    pRoyalFlushForFixedStrategy: null, // still not independently sourced for THIS exact 7/5-shaped table - do not fabricate from the 9/6 figure
+    manualScreenshotPaytableObserved: true,
+    exactPaytableRecovered: false,
+    paytableVerified: false,
+    qualifyingStakeVerified: false,
+    pRoyalFlushForFixedStrategy: null,
     hasVisibleProgressiveJackpot: true,
   },
   {
