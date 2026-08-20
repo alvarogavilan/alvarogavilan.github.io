@@ -74,8 +74,8 @@ export function progressiveVideoPokerEv({
 }
 
 // Every entry here remains fail-closed until the exact Spanish configuration
-// is recovered. A published RTP range or familiar-looking 99.54% figure is not
-// enough to populate the fixed-strategy inputs above.
+// is technically reproduced. Historical/manual observation is evidence, but
+// it is not equivalent to a verified paytable, qualifying stake or unit model.
 export const BOTEMANIA_VIDEO_POKER_TITLES = [
   {
     slug: 'classic-video-poker',
@@ -98,9 +98,37 @@ export const BOTEMANIA_VIDEO_POKER_TITLES = [
     slug: 'ultimate-video-poker',
     url: 'https://www.botemania.es/juegos/casino-online/ultimate-video-poker',
     publishedRtpRangePct: [96.77, 99.54],
+    providerId: 'roxor-gaming',
+    variantOfInterest: 'Jotas o Mejor Progresivo',
+    monitorFeedRef: 'loterias-ai/edge-live/evidence/progressive-score-research-v1.json: generic:WAGER_BET; MANUAL_SCREENSHOT_LIVE_AMOUNT_CROSS_MATCH; VERY_HIGH identity confidence',
+    manualScreenshotEvidence: {
+      paytableObserved: {
+        jacksOrBetter: 1,
+        twoPair: 2,
+        threeOfAKind: 3,
+        straight: 4,
+        flush: 5,
+        fullHouse: 7,
+        fourOfAKind: 25,
+        straightFlush: 50,
+        royalFlush: 800,
+      },
+      descriptiveFamily: '7/5-shaped Jacks or Better progressive',
+      historicalObservedHandsPerSpin: 10,
+      historicalObservedBetPerHandEUR: 2.5,
+      historicalObservedTotalBetEUR: 25,
+      sourceClass: 'MANUAL_SCREENSHOT_EVIDENCE_HISTORICAL',
+      technicallyReproduced: false,
+      qualifyingStakeVerified: false,
+      doNotUseHistoricalBetAsMinimumQualifyingStake: true,
+      notes: 'Observed screen values are preserved as historical evidence only. They do not establish the minimum qualifying wager, denomination, seed, jackpot units or fixed-strategy probabilities.',
+    },
+    manualScreenshotPaytableObserved: true,
     exactPaytableRecovered: false,
+    paytableVerified: false,
+    qualifyingStakeVerified: false,
     pRoyalFlushForFixedStrategy: null,
-    hasVisibleProgressiveJackpot: null,
+    hasVisibleProgressiveJackpot: true,
   },
   {
     slug: 'videopoker-remasterizado',
