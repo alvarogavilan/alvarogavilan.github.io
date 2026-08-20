@@ -2,6 +2,8 @@ name: Loterias AI Quiniela Historical Preflight
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '5 * * * *'
   push:
     paths:
       - '.github/workflows/loterias-ai-quiniela-historical-preflight.yml'
