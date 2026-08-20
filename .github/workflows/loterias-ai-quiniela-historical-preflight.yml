@@ -4,6 +4,11 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '5 * * * *'
+  workflow_run:
+    workflows:
+      - 'Loterias AI Quiniela Historical SELAE Cross-check'
+    types:
+      - completed
   push:
     paths:
       - '.github/workflows/loterias-ai-quiniela-historical-preflight.yml'
