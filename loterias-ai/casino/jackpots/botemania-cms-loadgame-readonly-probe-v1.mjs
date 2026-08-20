@@ -8,10 +8,16 @@ const ENDPOINT='https://www.botemania.es/es/graphql';
 const VENTURE='botemania_es';
 const GAME='irish-riches-megaways-jackpot-king';
 const src=JSON.parse(fs.readFileSync(SRC,'utf8'));
-const normalize=s=>String(s||'').replace(/\\\r?\n/g,'\n').replace(/\\"/g,'"').trim();
+const normalize=s=>String(s||'')
+  .replace(/\\n/g,'\n')
+  .replace(/\\r/g,'\r')
+  .replace(/\\t/g,'\t')
+  .replace(/\\"/g,'"')
+  .replace(/\\\r?\n/g,'\n')
+  .trim();
 const queries=[...new Set((src.candidateSourceBodies||[]).map(normalize).filter(q=>/^query\s+loadGame\b/i.test(q)&&/\bgames\s*\(/i.test(q)&&!/\bmutation\b/i.test(q)))].slice(0,4);
 if(!queries.length) throw new Error('No exact read-only loadGame query recovered in CMS artifact');
-const headers={accept:'application/json','content-type':'application/json',venture:VENTURE,origin:'https://www.botemania.es',referer:'https://www.botemania.es/juegos/slots-online/irish-riches-megaways-jackpot-king','user-agent':'loterias-ai-cms-loadgame-readonly-probe/1.0','cache-control':'no-cache'};
+const headers={accept:'application/json','content-type':'application/json',venture:VENTURE,origin:'https://www.botemania.es',referer:'https://www.botemania.es/juegos/slots-online/irish-riches-megaways-jackpot-king','user-agent':'loterias-ai-cms-loadgame-readonly-probe/1.1','cache-control':'no-cache'};
 const attempts=[];
 for(const query of queries){
   try{
@@ -23,6 +29,6 @@ for(const query of queries){
 }
 const successful=attempts.filter(a=>a.ok&&a.data&&!(a.errors||[]).length);
 const serialized=JSON.stringify(successful.map(x=>x.data));
-const out={version:'botemania-cms-loadgame-readonly-probe-v1',generatedAt:new Date().toISOString(),operator:'botemania-es',targetGame:GAME,sourceArtifact:SRC,endpoint:ENDPOINT,attempts,decision:{exactRecoveredQueryExecuted:true,successfulReadOnlyResponses:successful.length,gameDataRecovered:successful.some(a=>Array.isArray(a.data?.games)&&a.data.games.length>0),jackpotTermPresentInReturnedData:/jackpot/i.test(serialized),headlessTermPresentInReturnedData:/headless|jackpotsParams/i.test(serialized),realMoneyAllowed:false},guards:{exactBundleRecoveredQueriesOnly:true,noGraphqlIntrospection:true,noMutation:true,noAuthentication:true,noCookies:true,noBetting:true,realMoneyAllowed:false}};
+const out={version:'botemania-cms-loadgame-readonly-probe-v1.1-exact-unescape',generatedAt:new Date().toISOString(),operator:'botemania-es',targetGame:GAME,sourceArtifact:SRC,endpoint:ENDPOINT,attempts,decision:{exactRecoveredQueryExecuted:true,successfulReadOnlyResponses:successful.length,gameDataRecovered:successful.some(a=>Array.isArray(a.data?.games)&&a.data.games.length>0),jackpotTermPresentInReturnedData:/jackpot/i.test(serialized),headlessTermPresentInReturnedData:/headless|jackpotsParams/i.test(serialized),realMoneyAllowed:false},guards:{exactBundleRecoveredQueriesOnly:true,onlyEscapeNormalizationChanged:true,noGraphqlIntrospection:true,noMutation:true,noAuthentication:true,noCookies:true,noBetting:true,realMoneyAllowed:false}};
 fs.mkdirSync('loterias-ai/casino/jackpots/evidence',{recursive:true});fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
 console.log(JSON.stringify({attempts:attempts.map(a=>({querySha256:a.querySha256,httpStatus:a.httpStatus,ok:a.ok,errors:a.errors,dataKeys:a.data&&Object.keys(a.data)})),decision:out.decision},null,2));
