@@ -9,6 +9,16 @@ const signs=a=>(a||[]).map(x=>String(x??'').trim().toUpperCase()).filter(Boolean
 const storedMain=a=>{let x=signs(a);if(x.length>=15&&!['1','X','2'].includes(x[0]))x=x.slice(1);return x.slice(0,14)};
 const num=x=>{const n=Number(String(x??'').replace(/\./g,'').replace(',','.'));return Number.isFinite(n)?n:null};
 const normDate=v=>String(v||'').slice(0,10);
+const provenanceLeaf=source=>{
+  let current=source||null;
+  const seen=new Set();
+  while(current&&typeof current==='object'&&current.archivePreviousSource&&typeof current.archivePreviousSource==='object'){
+    if(seen.has(current)) break;
+    seen.add(current);
+    current=current.archivePreviousSource;
+  }
+  return current;
+};
 const stable=value=>{
   if(Array.isArray(value)) return value.map(stable);
   if(value&&typeof value==='object') return Object.fromEntries(Object.entries(value).filter(([k])=>k!=='generatedAt').map(([k,v])=>[k,stable(v)]));
@@ -87,7 +97,7 @@ for(const [i,{file,row}] of targets.slice(0,limit).entries()){
       changedFiles.add(file);
       continue;
     }
-    const previousSource=row.source;
+    const previousSource=provenanceLeaf(row.source);
     row.drawNumber=official.id_sorteo||row.drawNumber;
     row.season=official.temporada||row.season;
     row.jornada=num(official.jornada)??row.jornada;
@@ -143,6 +153,7 @@ const report={
     partialOfficialRowsMarkedFailClosedAndSkippedByThisPrimaryRoute:true,
     terminalBlockersDoNotPreventOlderDatesFromBeingScanned:true,
     fetchFailuresRemainRetryable:true,
+    provenanceHistoryFlattened:true,
     noInference:true,
     realMoney:false
   }
