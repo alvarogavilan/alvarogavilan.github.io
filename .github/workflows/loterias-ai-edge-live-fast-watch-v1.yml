@@ -9,6 +9,7 @@ on:
       - 'loterias-ai/edge-live/botemania-fast-meter-sample-v1.mjs'
       - 'loterias-ai/edge-live/telegram-edge-alert-v1.mjs'
       - 'loterias-ai/edge-live/edge-live-execution-plan-v1.mjs'
+      - 'loterias-ai/casino/jackpots/botemania-jpk-reset-reconstructor-v1.mjs'
       - '.github/workflows/loterias-ai-edge-live-fast-watch-v1.yml'
   schedule:
     - cron: '*/5 * * * *'
@@ -46,27 +47,35 @@ jobs:
             node loterias-ai/edge-live/botemania-fast-meter-sample-v1.mjs
             node loterias-ai/casino/jackpots/botemania-jpk-flow-model-v1.mjs
             node loterias-ai/casino/jackpots/botemania-jpk-near-cap-ev-scenarios-v1.mjs
+            node loterias-ai/casino/jackpots/botemania-jpk-reset-reconstructor-v1.mjs
             node loterias-ai/casino/jackpots/botemania-jpk-live-gate-v1.mjs
             node loterias-ai/casino/five-euro-real-pilot-gate-v1.mjs
             node loterias-ai/edge-live/edge-live-execution-plan-v1.mjs
             node loterias-ai/edge-live/telegram-edge-alert-v1.mjs
             if [ "$i" -lt 18 ]; then sleep 15; fi
           done
-      - name: Persist only Telegram transition state
+      - name: Persist compact fast-watch state
         shell: bash
         run: |
           set -euo pipefail
           STATE=loterias-ai/edge-live/telegram-alert-state.json
-          if [ ! -f "$STATE" ]; then exit 0; fi
-          cp "$STATE" /tmp/edge-live-telegram-alert-state.json
+          LEDGER=loterias-ai/casino/jackpots/evidence/botemania-jpk-fast-reset-ledger-v1.json
+          mkdir -p /tmp/edge-live-fast
+          copied=0
+          for f in "$STATE" "$LEDGER"; do
+            if [ -f "$f" ]; then cp "$f" "/tmp/edge-live-fast/$(basename "$f")"; copied=1; fi
+          done
+          if [ "$copied" -eq 0 ]; then exit 0; fi
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git reset --hard HEAD
-          mkdir -p loterias-ai/edge-live
-          cp /tmp/edge-live-telegram-alert-state.json "$STATE"
-          git add "$STATE"
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p loterias-ai/edge-live loterias-ai/casino/jackpots/evidence
+          [ ! -f /tmp/edge-live-fast/telegram-alert-state.json ] || cp /tmp/edge-live-fast/telegram-alert-state.json "$STATE"
+          [ ! -f /tmp/edge-live-fast/botemania-jpk-fast-reset-ledger-v1.json ] || cp /tmp/edge-live-fast/botemania-jpk-fast-reset-ledger-v1.json "$LEDGER"
+          git add -- "$STATE" "$LEDGER" 2>/dev/null || true
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'data(edge-live): persist fast Telegram transition state'
+          git commit -m 'data(edge-live): persist compact fast reset and Telegram state'
           for attempt in 1 2 3; do
             if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
             sleep $((attempt*2))
