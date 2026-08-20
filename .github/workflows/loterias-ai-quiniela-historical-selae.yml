@@ -13,7 +13,10 @@ permissions:
   contents: write
 
 concurrency:
-  group: loterias-ai-quiniela-historical-selae
+  # Keep long scheduled production batches serialized, but do not let a queued
+  # cron run block a tiny push/manual smoke checkpoint. Each trigger class gets
+  # its own queue while preserving cancel-in-progress:false inside that class.
+  group: loterias-ai-quiniela-historical-selae-${{ github.event_name }}
   cancel-in-progress: false
 
 jobs:
