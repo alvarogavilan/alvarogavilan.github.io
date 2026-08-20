@@ -13,10 +13,11 @@ permissions:
   contents: write
 
 concurrency:
-  # Keep scheduled micro-batches serialized, but do not let a queued cron run
-  # block a push/manual smoke checkpoint. Each trigger class gets its own queue
-  # while preserving cancel-in-progress:false inside that class.
-  group: loterias-ai-quiniela-historical-selae-${{ github.event_name }}
+  # v2 deliberately breaks away from the legacy scheduled queue. Older workflow
+  # revisions used much larger/longer batches with cancel-in-progress:false; any
+  # queued schedule runs there must not strand the current eight-row micro-batches.
+  # Trigger classes remain isolated and each v2 class stays serialized.
+  group: loterias-ai-quiniela-historical-selae-v2-${{ github.event_name }}
   cancel-in-progress: false
 
 jobs:
