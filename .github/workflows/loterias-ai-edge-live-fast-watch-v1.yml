@@ -12,6 +12,7 @@ on:
       - 'loterias-ai/edge-live/opportunity-registry-v1.json'
       - 'loterias-ai/edge-live/telegram-edge-alert-v1.mjs'
       - 'loterias-ai/edge-live/edge-live-execution-plan-v1.mjs'
+      - 'loterias-ai/casino/botemania-global-economic-gate-v1.mjs'
       - 'loterias-ai/casino/jackpots/botemania-jpk-reset-reconstructor-v1.mjs'
       - 'loterias-ai/casino/jackpots/botemania-headless-jackpots-public-probe-v1.mjs'
       - 'loterias-ai/casino/jackpots/botemania-generic-fast-reset-ledger-v1.mjs'
@@ -23,8 +24,6 @@ on:
 permissions:
   contents: write
 
-# An active burst must finish: cancelling before the final persist step can lose
-# a clean reset candidate. A later run waits instead of cancelling this one.
 concurrency:
   group: loterias-ai-edge-live-fast-watch-v1
   cancel-in-progress: false
@@ -65,6 +64,7 @@ jobs:
             node loterias-ai/edge-live/edge-live-execution-plan-v1.mjs
             node loterias-ai/edge-live/edge-live-multi-execution-plan-v1.mjs
             cp loterias-ai/edge-live/evidence/edge-live-multi-execution-plan-v1.json loterias-ai/edge-live/evidence/edge-live-execution-plan-v1.json
+            node loterias-ai/casino/botemania-global-economic-gate-v1.mjs
             node loterias-ai/edge-live/telegram-edge-alert-v1.mjs
             if [ "$i" -lt 18 ]; then sleep 15; fi
           done
@@ -79,9 +79,10 @@ jobs:
           ALL_NETWORK=loterias-ai/edge-live/evidence/botemania-all-network-live-state-v1.json
           PLAN=loterias-ai/edge-live/evidence/edge-live-execution-plan-v1.json
           MULTI_PLAN=loterias-ai/edge-live/evidence/edge-live-multi-execution-plan-v1.json
+          GLOBAL_GATE=loterias-ai/casino/evidence/botemania-global-economic-gate-v1.json
           mkdir -p /tmp/edge-live-fast
           copied=0
-          for f in "$STATE" "$DIAG" "$JPK_LEDGER" "$GENERIC_LEDGER" "$ALL_NETWORK" "$PLAN" "$MULTI_PLAN"; do
+          for f in "$STATE" "$DIAG" "$JPK_LEDGER" "$GENERIC_LEDGER" "$ALL_NETWORK" "$PLAN" "$MULTI_PLAN" "$GLOBAL_GATE"; do
             if [ -f "$f" ]; then cp "$f" "/tmp/edge-live-fast/$(basename "$f")"; copied=1; fi
           done
           if [ "$copied" -eq 0 ]; then exit 0; fi
@@ -89,7 +90,7 @@ jobs:
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git fetch origin main
           git reset --hard origin/main
-          mkdir -p loterias-ai/edge-live/evidence loterias-ai/casino/jackpots/evidence
+          mkdir -p loterias-ai/edge-live/evidence loterias-ai/casino/evidence loterias-ai/casino/jackpots/evidence
           [ ! -f /tmp/edge-live-fast/telegram-alert-state.json ] || cp /tmp/edge-live-fast/telegram-alert-state.json "$STATE"
           [ ! -f /tmp/edge-live-fast/telegram-alert-diagnostic.json ] || cp /tmp/edge-live-fast/telegram-alert-diagnostic.json "$DIAG"
           [ ! -f /tmp/edge-live-fast/botemania-jpk-fast-reset-ledger-v1.json ] || cp /tmp/edge-live-fast/botemania-jpk-fast-reset-ledger-v1.json "$JPK_LEDGER"
@@ -97,9 +98,10 @@ jobs:
           [ ! -f /tmp/edge-live-fast/botemania-all-network-live-state-v1.json ] || cp /tmp/edge-live-fast/botemania-all-network-live-state-v1.json "$ALL_NETWORK"
           [ ! -f /tmp/edge-live-fast/edge-live-execution-plan-v1.json ] || cp /tmp/edge-live-fast/edge-live-execution-plan-v1.json "$PLAN"
           [ ! -f /tmp/edge-live-fast/edge-live-multi-execution-plan-v1.json ] || cp /tmp/edge-live-fast/edge-live-multi-execution-plan-v1.json "$MULTI_PLAN"
-          git add -- "$STATE" "$DIAG" "$JPK_LEDGER" "$GENERIC_LEDGER" "$ALL_NETWORK" "$PLAN" "$MULTI_PLAN" 2>/dev/null || true
+          [ ! -f /tmp/edge-live-fast/botemania-global-economic-gate-v1.json ] || cp /tmp/edge-live-fast/botemania-global-economic-gate-v1.json "$GLOBAL_GATE"
+          git add -- "$STATE" "$DIAG" "$JPK_LEDGER" "$GENERIC_LEDGER" "$ALL_NETWORK" "$PLAN" "$MULTI_PLAN" "$GLOBAL_GATE" 2>/dev/null || true
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'data(edge-live): persist all-network live state and execution plan'
+          git commit -m 'data(edge-live): persist all-network live state, execution plan and global gate'
           for attempt in 1 2 3; do
             if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
             sleep $((attempt*2))
