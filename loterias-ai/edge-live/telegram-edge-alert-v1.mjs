@@ -10,9 +10,12 @@ const configuredChatId=process.env.EDGE_LIVE_TELEGRAM_CHAT_ID||'';
 const edgeUrl=process.env.EDGE_LIVE_URL||'https://alvarogavilan.github.io/loterias-ai/edge-live/';
 const plan=JSON.parse(fs.readFileSync(PLAN,'utf8'));
 const prior=fs.existsSync(STATE)?JSON.parse(fs.readFileSync(STATE,'utf8')):{};
+const gameName=plan?.game?.name||'Oportunidad EDGE';
+const gameUrl=plan?.game?.url||'https://www.botemania.es/';
+const gameId=plan?.game?.id||plan?.selectedLaneId||'unknown';
 
 function writeDiag(extra={}){
-  const out={version:'edge-live-telegram-diagnostic-v4-three-phase-orders',generatedAt:new Date().toISOString(),tokenPresent:Boolean(token),configuredChatIdPresent:Boolean(configuredChatId),encryptedChannelMemoryPresent:Boolean(prior?.encryptedChannel),planState:plan?.state||null,planGeneratedAt:plan?.generatedAt||null,...extra};
+  const out={version:'edge-live-telegram-diagnostic-v5-universal-game',generatedAt:new Date().toISOString(),tokenPresent:Boolean(token),configuredChatIdPresent:Boolean(configuredChatId),encryptedChannelMemoryPresent:Boolean(prior?.encryptedChannel),planState:plan?.state||null,planGeneratedAt:plan?.generatedAt||null,selectedLaneId:plan?.selectedLaneId||null,gameId,gameName,...extra};
   fs.writeFileSync(DIAG,JSON.stringify(out,null,2)+'\n');
   return out;
 }
@@ -38,7 +41,7 @@ async function discoverChannelId(){
 }
 
 function persistState({phase='RED',executionSignature=null,stake=0,spins=0,total=0,validUntil=null,chatId}){
-  fs.writeFileSync(STATE,JSON.stringify({version:'edge-live-telegram-alert-state-v8-three-phase-orders',updatedAt:new Date().toISOString(),encryptedChannel:encryptChannelId(chatId),lastPhase:phase,lastReady:phase==='GREEN',lastExecutionSignature:executionSignature,lastPlanGeneratedAt:plan?.generatedAt||null,lastValidUntil:phase==='GREEN'?validUntil:null,lastStakePerSpinEUR:stake,lastMaxSpins:spins,lastMaxTotalStakeEUR:total},null,2)+'\n');
+  fs.writeFileSync(STATE,JSON.stringify({version:'edge-live-telegram-alert-state-v9-universal-game',updatedAt:new Date().toISOString(),encryptedChannel:encryptChannelId(chatId),lastPhase:phase,lastReady:phase==='GREEN',lastGameId:gameId,lastSelectedLaneId:plan?.selectedLaneId||null,lastExecutionSignature:executionSignature,lastPlanGeneratedAt:plan?.generatedAt||null,lastValidUntil:phase==='GREEN'?validUntil:null,lastStakePerSpinEUR:stake,lastMaxSpins:spins,lastMaxTotalStakeEUR:total},null,2)+'\n');
 }
 
 try{
@@ -48,28 +51,31 @@ try{
 
   const now=Date.now(),untilMs=Date.parse(plan?.order?.validUntil||'');
   const ready=plan?.state==='READY_TO_EXECUTE_MANUALLY'&&plan?.order?.action==='PLAY'&&Number(plan?.order?.stakePerSpinEUR)>0&&Number(plan?.order?.maxSpins)>0&&Number(plan?.order?.maxTotalStakeEUR)>0&&Number.isFinite(untilMs)&&untilMs>now&&plan?.evidence?.structurePass===true&&plan?.evidence?.economicPass===true&&plan?.evidence?.exactStakeKnown===true&&plan?.evidence?.sourceFresh===true&&plan?.evidence?.withinFreshExecutionWindow===true;
-  const prepare=!ready&&plan?.state==='PREPARE_OPEN_GAME_NO_BET'&&plan?.order?.action==='OPEN_GAME_ONLY_NO_BET'&&plan?.evidence?.structurePass===true&&plan?.evidence?.exactStakeKnown===true&&plan?.evidence?.exactSpainMbwbKnown===true&&plan?.evidence?.exactHazardKnown===true&&plan?.evidence?.sourceFresh===true;
+  const prepare=!ready&&plan?.state==='PREPARE_OPEN_GAME_NO_BET'&&plan?.order?.action==='OPEN_GAME_ONLY_NO_BET'&&plan?.evidence?.structurePass===true&&plan?.evidence?.exactStakeKnown===true&&plan?.evidence?.sourceFresh===true;
   const phase=ready?'GREEN':prepare?'YELLOW':'RED';
   const stake=ready?Number(plan.order.stakePerSpinEUR):0,spins=ready?Number(plan.order.maxSpins):0,total=ready?Number(plan.order.maxTotalStakeEUR):0;
   const remainingSeconds=ready?Math.max(0,Math.ceil((untilMs-now)/1000)):0;
-  const executionSignature=ready?JSON.stringify({stake,spins,total}):null;
+  const executionSignature=ready?JSON.stringify({gameId,selectedLaneId:plan?.selectedLaneId||null,stake,spins,total,validUntil:plan?.order?.validUntil}):null;
   const priorPhase=prior?.lastPhase||(prior?.lastReady===true?'GREEN':'RED');
   const firstConfiguredAlert=!prior?.version;
-  const shouldSend=phase==='GREEN'?(priorPhase!=='GREEN'||prior.lastExecutionSignature!==executionSignature):phase==='YELLOW'?priorPhase!=='YELLOW':(priorPhase!=='RED'||firstConfiguredAlert);
+  const gameChanged=Boolean(prior?.lastGameId&&prior.lastGameId!==gameId);
+  const laneChanged=Boolean(prior?.lastSelectedLaneId&&prior.lastSelectedLaneId!==plan?.selectedLaneId);
+  const changedTarget=gameChanged||laneChanged;
+  const shouldSend=phase==='GREEN'?(priorPhase!=='GREEN'||prior.lastExecutionSignature!==executionSignature||changedTarget):phase==='YELLOW'?(priorPhase!=='YELLOW'||changedTarget):(priorPhase!=='RED'||firstConfiguredAlert||changedTarget);
 
   if(!shouldSend){persistState({phase,executionSignature,stake,spins,total,validUntil:plan?.order?.validUntil,chatId});const d=writeDiag({channelDiscovered:true,discoverySource:discovered.source,phase,ready,sendAttempted:false,sendOk:true,reason:'NO_PHASE_TRANSITION'});console.log(JSON.stringify(d));process.exit(0);}
 
   let message;
   if(phase==='GREEN'){
-    message=`🟢 JUGAR AHORA — EDGE LIVE BOTEMANIA\n\n🎰 ${plan?.game?.name||"Fishin' Frenzy: Jackpot King"}\n💶 APUESTA: ${stake.toFixed(2)} € POR GIRO\n🔁 MÁXIMO: ${spins} GIROS\n🧾 TOPE TOTAL: ${total.toFixed(2)} €\n⏱ SEÑAL VIGENTE: ${remainingSeconds}s\n\nORDEN:\n1️⃣ Entra/permanece en el juego.\n2️⃣ Antes del PRIMER giro confirma que sigue VERDE.\n3️⃣ Ejecuta exactamente el stake y giros indicados.\n4️⃣ Si llega 🔴 PARAR, NO hagas ningún giro más.\n\nNo aumentes importe. No persigas pérdidas.`;
+    message=`🟢 JUGAR AHORA — EDGE LIVE\n\n🎰 ${gameName}\n💶 APUESTA: ${stake.toFixed(2)} € POR GIRO\n🔁 MÁXIMO: ${spins} GIROS\n🧾 TOPE TOTAL: ${total.toFixed(2)} €\n⏱ SEÑAL VIGENTE: ${remainingSeconds}s\n\nORDEN:\n1️⃣ Abre o permanece en el juego indicado.\n2️⃣ Antes del PRIMER giro confirma que sigue VERDE.\n3️⃣ Ejecuta exactamente el stake y giros indicados.\n4️⃣ Si llega 🔴 PARAR, NO hagas ningún giro más.\n\nNo aumentes importe. No persigas pérdidas.`;
   }else if(phase==='YELLOW'){
     const eta=Number(plan?.order?.preparationEtaSeconds);
-    message=`🟡 PREPÁRATE — ABRE BOTEMANIA AHORA\n\n🎰 ${plan?.game?.name||"Fishin' Frenzy: Jackpot King"}\n🚫 TODAVÍA NO APUESTES\n\nORDEN:\n1️⃣ Abre Botemania ahora.\n2️⃣ Entra en Fishin’ Frenzy: Jackpot King.\n3️⃣ Déjalo preparado para jugar.\n4️⃣ Espera el mensaje 🟢 JUGAR AHORA.\n\nTienes contemplados hasta 2 minutos para acceder.${Number.isFinite(eta)?`\nPosible activación operativa aproximada: ${Math.max(0,eta)}s.`:''}\n\nSi llega 🔴, no juegues.`;
+    message=`🟡 PREPÁRATE — EDGE LIVE\n\n🎰 ${gameName}\n🚫 TODAVÍA NO APUESTES\n\nORDEN:\n1️⃣ Abre Botemania ahora.\n2️⃣ Entra en ${gameName}.\n3️⃣ Déjalo preparado para jugar.\n4️⃣ Espera el mensaje 🟢 JUGAR AHORA.${Number.isFinite(eta)?`\n\nPosible activación aproximada: ${Math.max(0,eta)}s.`:''}\n\nSi llega 🔴, no juegues.`;
   }else{
-    message=`🔴 NO JUGAR / PARAR — EDGE LIVE BOTEMANIA\n\n🎰 ${plan?.game?.name||"Fishin' Frenzy: Jackpot King"}\n💶 APUESTA AUTORIZADA: 0 €\n\nORDEN: NO HAGAS NINGÚN GIRO.\nSi estabas preparando el juego o dentro de Botemania, espera una nueva alerta 🟡 o 🟢.`;
+    message=`🔴 NO JUGAR / PARAR — EDGE LIVE\n\n🎰 ${gameName}\n💶 APUESTA AUTORIZADA: 0 €\n\nORDEN: NO HAGAS NINGÚN GIRO.\nEspera una nueva alerta 🟡 o 🟢.`;
   }
 
-  const buttons=phase==='RED'?[[{text:'📊 ABRIR EDGE LIVE',url:edgeUrl}]]:[[{text:'🎰 ABRIR JUEGO',url:plan?.game?.url||'https://www.botemania.es/'}],[{text:'📊 ABRIR EDGE LIVE',url:edgeUrl}]];
+  const buttons=phase==='RED'?[[{text:'📊 ABRIR EDGE LIVE',url:edgeUrl}]]:[[{text:'🎰 ABRIR JUEGO',url:gameUrl}],[{text:'📊 ABRIR EDGE LIVE',url:edgeUrl}]];
   const r=await fetch(`https://api.telegram.org/bot${token}/sendMessage`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({chat_id:chatId,text:message,disable_web_page_preview:true,reply_markup:{inline_keyboard:buttons}})});
   if(!r.ok)throw new Error(`Telegram sendMessage HTTP ${r.status}`);
 
