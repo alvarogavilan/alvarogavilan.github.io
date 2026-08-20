@@ -1,49 +1,172 @@
 {
-  "version": "botemania-headless-jackpots-public-probe-v1",
-  "generatedAt": "2026-08-20T07:47:52.756Z",
+  "version": "botemania-headless-jackpots-public-probe-v1.1-minimal-readable-fields",
+  "generatedAt": "2026-08-20T08:03:26.359Z",
   "operator": "botemania-es",
   "source": {
     "endpoint": "https://www.botemania.es/es/graphql",
     "operationName": "loadJackpots",
-    "querySha256": "d4612d8a8cc5f1b7504618cfff74f9a5ff926b804717f2dbf8ba9ee8461cb96f",
-    "querySource": "EXACT_PUBLIC_HEADLESSJACKPOTS_BUNDLE_QUERY"
+    "querySha256": "21a71249af06cc27319be77bab9d80ef6db94e92184be95ae9bfc468858cbf85",
+    "queryPolicy": "ONLY_FIELDS_ALREADY_ACCEPTED_BY_PUBLIC_SCHEMA"
   },
   "response": {
-    "httpStatus": 400,
-    "ok": false,
+    "httpStatus": 200,
+    "ok": true,
     "contentType": "application/json; charset=utf-8",
-    "bytes": 209,
-    "errors": [
-      "Cannot query field \"name\" on type \"JackpotType\".",
-      "Cannot query field \"originalAmount\" on type \"JackpotType\"."
-    ],
+    "bytes": 1390,
+    "errors": [],
     "error": null,
-    "genericRows": 0,
+    "genericRows": 29,
     "redTigerRows": 0,
-    "blueprintRows": 0
+    "blueprintRows": 3
   },
   "jackpots": {
-    "generic": [],
+    "generic": [
+      {
+        "id": "JackpotPool",
+        "amountEUR": 1416.33
+      },
+      {
+        "id": "bouncy_bubbles_id",
+        "amountEUR": 1918.35
+      },
+      {
+        "id": "bouncy_bubbles_id",
+        "amountEUR": 1918.35
+      },
+      {
+        "id": "WAGER_BET",
+        "amountEUR": 3448.25
+      },
+      {
+        "id": "classicwildsprogressive",
+        "amountEUR": 1835.31
+      },
+      {
+        "id": "diamondbonanza25BTM",
+        "amountEUR": 8032.9
+      },
+      {
+        "id": "diamondbonanza25BTM",
+        "amountEUR": 8032.9
+      },
+      {
+        "id": "DealOrNoDealStateful3",
+        "amountEUR": 120713.26
+      },
+      {
+        "id": "progressive_id1",
+        "amountEUR": 15618.76
+      },
+      {
+        "id": "JACKPOT",
+        "amountEUR": 15618.76
+      },
+      {
+        "id": "progressive_id1",
+        "amountEUR": 15618.76
+      },
+      {
+        "id": "GRAND",
+        "amountEUR": 15618.76
+      },
+      {
+        "id": "GRAND",
+        "amountEUR": 15618.76
+      },
+      {
+        "id": "GOLD",
+        "amountEUR": 2948.52
+      },
+      {
+        "id": "JACKPOT",
+        "amountEUR": 1416.17
+      },
+      {
+        "id": "JackpotPool",
+        "amountEUR": 1416.17
+      },
+      {
+        "id": "JACKPOT",
+        "amountEUR": 126170.57
+      },
+      {
+        "id": "JACKPOT",
+        "amountEUR": 126170.57
+      },
+      {
+        "id": "pool1",
+        "amountEUR": 1416.17
+      },
+      {
+        "id": "JACKPOT",
+        "amountEUR": 1416.17
+      },
+      {
+        "id": "JackpotPool",
+        "amountEUR": 1416.17
+      },
+      {
+        "id": "tikitemple2_1",
+        "amountEUR": 678.05
+      },
+      {
+        "id": "tikitemple2_1",
+        "amountEUR": 678.05
+      },
+      {
+        "id": "WAGER_BET",
+        "amountEUR": 3448.25
+      },
+      {
+        "id": "WAGER_BET",
+        "amountEUR": 3448.25
+      },
+      {
+        "id": "JACKPOT",
+        "amountEUR": 678.05
+      },
+      {
+        "id": "progressive_id1",
+        "amountEUR": 1416.33
+      },
+      {
+        "id": "progressivealice1",
+        "amountEUR": 678.05
+      },
+      {
+        "id": "progressivealice1",
+        "amountEUR": 678.05
+      }
+    ],
     "redTiger": [],
-    "blueprint": []
-  },
-  "derived": {
-    "genericRowsWithOriginalAmount": 0,
-    "originalAmountCandidates": []
+    "blueprint": [
+      {
+        "id": "JACKPOTKING",
+        "amountEUR": 128088.81
+      },
+      {
+        "id": "JACKPOTKING_REGAL",
+        "amountEUR": 15502.74
+      },
+      {
+        "id": "JACKPOTKING_ROYAL",
+        "amountEUR": 1690.04
+      }
+    ]
   },
   "decision": {
-    "publicGenericJackpotFeedReadable": false,
-    "originalAmountsRecovered": false,
-    "blueprintFeedReadable": false,
+    "publicGenericJackpotFeedReadable": true,
+    "blueprintFeedReadable": true,
     "redTigerFeedReadable": false,
+    "anyNonBlueprintLiveFeedReadable": true,
     "realMoneyAllowed": false
   },
   "guards": {
-    "exactRecoveredQueryOnly": true,
     "noGraphqlIntrospection": true,
     "noMutation": true,
     "noAuthentication": true,
     "noCookies": true,
+    "noUnsupportedFieldGuessing": true,
     "noBetting": true,
     "realMoneyAllowed": false
   }
