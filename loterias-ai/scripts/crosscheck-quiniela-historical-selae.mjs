@@ -38,7 +38,7 @@ async function getOfficial(date){
 
 const docs=new Map();
 const targets=[];
-let alreadyComplete=0,alreadyNotFound=0,alreadyConflict=0;
+let alreadyComplete=0,alreadyNotFound=0,alreadyPartial=0,alreadyConflict=0;
 for(const file of fs.readdirSync(qdir).filter(x=>/^\d{4}\.json$/.test(x)).sort()){
   const path=`${qdir}/${file}`;
   const doc=JSON.parse(fs.readFileSync(path,'utf8'));
@@ -49,13 +49,14 @@ for(const file of fs.readdirSync(qdir).filter(x=>/^\d{4}\.json$/.test(x)).sort()
     const cross=verification.officialCrossCheck||{};
     if(cross.provider==='SELAE'&&cross.complete===true){alreadyComplete++;continue}
     if(verification.status==='OFFICIAL_SELAE_NOT_FOUND'&&cross.provider==='SELAE'&&cross.status==='NOT_FOUND'){alreadyNotFound++;continue}
+    if(verification.status==='OFFICIAL_SELAE_PARTIAL'&&cross.provider==='SELAE'&&cross.status==='PARTIAL'){alreadyPartial++;continue}
     if(verification.status==='OFFICIAL_CONFLICT_QUARANTINED'){alreadyConflict++;continue}
     targets.push({file,row});
   }
 }
 targets.sort((a,b)=>b.row.drawDate.localeCompare(a.row.drawDate));
 
-let verified=0,empty=0,mismatch=0;
+let verified=0,empty=0,partial=0,mismatch=0;
 const failures=[];
 const changedFiles=new Set();
 for(const [i,{file,row}] of targets.slice(0,limit).entries()){
@@ -69,7 +70,13 @@ for(const [i,{file,row}] of targets.slice(0,limit).entries()){
       continue;
     }
     const partidos=(official.partidos||[]).map((p,index)=>({position:index+1,home:String(p.local||'').trim(),away:String(p.visitante||'').trim(),sign:String(p.signo||'').trim().toUpperCase(),score:String(p.marcador||'').replace(/\s+/g,'')}));
-    if(partidos.length!==15){failures.push({drawDate:row.drawDate,reason:'party-count',count:partidos.length});continue}
+    if(partidos.length!==15){
+      partial++;
+      row.trainingEligible=false;
+      row.verification={...(row.verification||{}),status:'OFFICIAL_SELAE_PARTIAL',officialCrossCheck:{provider:'SELAE',officialDrawId:official.id_sorteo||null,exactDate:true,complete:false,status:'PARTIAL',reason:'OFFICIAL_PARTIDOS_COUNT_INCOMPLETE',url,partyCount:partidos.length,fields:{outcomes:false,drawId:Boolean(official.id_sorteo)}}};
+      changedFiles.add(file);
+      continue;
+    }
     const officialMain=partidos.slice(0,14).map(p=>p.sign);
     const stored=storedMain(row.result?.outcomes||[]);
     if(stored.length!==14||stored.join(',')!==officialMain.join(',')){
@@ -101,13 +108,14 @@ for(const file of changedFiles){
 }
 fs.mkdirSync(meta,{recursive:true});
 
-let completeNow=0,notFoundNow=0,conflictNow=0,unprocessedNow=0;
+let completeNow=0,notFoundNow=0,partialNow=0,conflictNow=0,unprocessedNow=0;
 for(const {doc} of docs.values()) for(const row of doc.records||[]){
   if(!row.drawDate||row.drawDate>='2020-01-01')continue;
   const verification=row.verification||{};
   const cross=verification.officialCrossCheck||{};
   if(cross.provider==='SELAE'&&cross.complete===true) completeNow++;
   else if(verification.status==='OFFICIAL_SELAE_NOT_FOUND'&&cross.status==='NOT_FOUND') notFoundNow++;
+  else if(verification.status==='OFFICIAL_SELAE_PARTIAL'&&cross.status==='PARTIAL') partialNow++;
   else if(verification.status==='OFFICIAL_CONFLICT_QUARANTINED') conflictNow++;
   else unprocessedNow++;
 }
@@ -119,10 +127,11 @@ const report={
   attempted:Math.min(limit,targets.length),
   verified,
   empty,
+  partial,
   mismatch,
   failures,
   remainingTargets:unprocessedNow,
-  cumulative:{officiallyVerified:completeNow,officialNotFound:notFoundNow,officialConflicts:conflictNow,unprocessed:unprocessedNow},
+  cumulative:{officiallyVerified:completeNow,officialNotFound:notFoundNow,officialPartial:partialNow,officialConflicts:conflictNow,unprocessed:unprocessedNow},
   guards:{
     exactDate:true,
     exactOfficialResponseDateRequired:true,
@@ -131,6 +140,7 @@ const report={
     mismatchesQuarantined:true,
     official404MarkedFailClosedAndSkippedByThisPrimaryRoute:true,
     exactDateMissMarkedFailClosedAndSkippedByThisPrimaryRoute:true,
+    partialOfficialRowsMarkedFailClosedAndSkippedByThisPrimaryRoute:true,
     terminalBlockersDoNotPreventOlderDatesFromBeingScanned:true,
     fetchFailuresRemainRetryable:true,
     noInference:true,
