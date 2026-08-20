@@ -1,0 +1,64 @@
+{
+  "version": "spanish-surebet-live-v1",
+  "generatedAt": "2026-08-20T18:13:29.926Z",
+  "methodology": {
+    "sourceClass": "SUREBET_OFFICIAL_API",
+    "allProngsMustBeSpanishSources": true,
+    "rejectDifferentRules": true,
+    "maxAgeMs": 120000,
+    "minRoiPct": 0.35,
+    "stakeSplitFormula": "stake_i = bankroll * (1/odds_i) / sum_j(1/odds_j)",
+    "economicPass": "sum(1/odds_i) < 1 and computed ROI >= minimum",
+    "executionRule": "Never place automatically. Recheck every price and market before staking."
+  },
+  "guards": {
+    "noAutomaticBetting": true,
+    "apiTokenRequired": true,
+    "allSpanishSourcesRequired": true,
+    "staleRecordRejected": true,
+    "differentRulesRejected": true,
+    "malformedOddsRejected": true,
+    "finalManualRecheckRequired": true
+  },
+  "status": "BLOCKED_NO_API_TOKEN",
+  "source": {
+    "endpoint": "https://api.apostasseguras.com/request",
+    "configuredSpanishSources": [
+      "bet365es",
+      "codere",
+      "sportium",
+      "winamax_es",
+      "betfair_es",
+      "betfair_sb_es",
+      "betsson_es",
+      "daznbet_es",
+      "retabet_es",
+      "bet777_es",
+      "1xbet_es",
+      "leovegas_es",
+      "luckia_es",
+      "goldenpark_es",
+      "olybet_es",
+      "tonybet_es",
+      "versus_es",
+      "jokerbet_es",
+      "ebingo_es",
+      "kirolbet_es",
+      "paston_es",
+      "w88es",
+      "zeBet_es"
+    ],
+    "sports": [
+      "Football",
+      "Basketball",
+      "Tennis"
+    ]
+  },
+  "candidates": [],
+  "summary": {
+    "scanned": 0,
+    "spanishOnlyCount": 0,
+    "greenCount": 0,
+    "reason": "SUREBET_API_TOKEN_MISSING"
+  }
+}
