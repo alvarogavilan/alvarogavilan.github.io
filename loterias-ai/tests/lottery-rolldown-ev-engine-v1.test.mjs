@@ -1,34 +1,65 @@
 import assert from 'node:assert/strict';
-import { rolldownEvPerTicket, clampNonNegative, EUROMILLONES_CAP_ROLLDOWN_MECHANISM } from '../casino/jackpots/lottery-rolldown-ev-engine-v1.mjs';
+import {
+  rolldownEvPerTicket,
+  exactTargetCategoryFundEvPerTicket,
+  clampNonNegative,
+  EUROMILLONES_CAP_ROLLDOWN_MECHANISM,
+} from '../casino/jackpots/lottery-rolldown-ev-engine-v1.mjs';
 
 assert.equal(clampNonNegative(5), 5);
 assert.equal(clampNonNegative(-5), 0);
 assert.equal(clampNonNegative(NaN), 0);
 
-// Hand-computed: expectedWinners=100, fundPerWinner=10000, evBoost/ticket=10, /euro=5, totalRtp=5.5
+// Exact symmetry result. With Np=100 the probability of zero winners is
+// negligible, so the exact target-category EV is essentially Fund/N = 10 EUR.
 {
-  const r = rolldownEvPerTicket({ redistributedFundEUR: 1000000, pCategory: 0.001, expectedTotalTickets: 100000, ticketPriceEUR: 2, baseRtp: 0.5 });
+  const r = rolldownEvPerTicket({
+    redistributedFundEUR: 1000000,
+    pCategory: 0.001,
+    totalTickets: 100000,
+    ticketPriceEUR: 2,
+    baseRtpExcludingRedistribution: 0.5,
+  });
   assert.equal(r.blocked, false);
   assert.equal(r.expectedWinners, 100);
   assert.equal(r.lowSampleWarning, false);
-  assert.ok(Math.abs(r.evBoostPerTicket - 10) < 1e-9);
-  assert.ok(Math.abs(r.totalRtp - 5.5) < 1e-9);
+  assert.ok(Math.abs(r.evBoostPerTicket - 10) < 1e-8);
+  assert.ok(Math.abs(r.totalRtp - 5.5) < 1e-8);
   assert.equal(r.verdict, 'CANDIDATE_PLAY');
+  assert.equal(r.conservativeBecauseLowerCategoryCascadeOmitted, true);
 }
 
-// Low expected-winner count must force NO_PLAY even if the point-estimate RTP clears 100%
+// This is the key regression: with only one expected winner, Fund/E[W] would
+// incorrectly imply 1000 EUR per winning ticket and 1 EUR EV per ticket.
+// Exact E[Fund/(1+X)] gives Fund * P(W>0)/N ~= 632.304575 EUR EV per ticket.
 {
-  const r = rolldownEvPerTicket({ redistributedFundEUR: 1000000, pCategory: 0.001, expectedTotalTickets: 1000, ticketPriceEUR: 2, baseRtp: 0.5 });
+  const f = exactTargetCategoryFundEvPerTicket({ redistributedFundEUR: 1000000, pCategory: 0.001, totalTickets: 1000 });
+  assert.equal(f.blocked, false);
+  assert.equal(f.expectedWinners, 1);
+  assert.ok(Math.abs(f.pAtLeastOneWinner - (1 - (0.999 ** 1000))) < 1e-9);
+  assert.ok(Math.abs(f.evFundPerTicket - (1000000 * (1 - 0.999 ** 1000) / 1000)) < 1e-6);
+
+  const r = rolldownEvPerTicket({
+    redistributedFundEUR: 1000000,
+    pCategory: 0.001,
+    totalTickets: 1000,
+    ticketPriceEUR: 2,
+    baseRtpExcludingRedistribution: 0.5,
+  });
   assert.equal(r.expectedWinners, 1);
   assert.equal(r.lowSampleWarning, true);
   assert.equal(r.verdict, 'NO_PLAY');
 }
 
-// Missing input must block instead of producing NaN
-assert.equal(rolldownEvPerTicket({ redistributedFundEUR: 1000000, pCategory: NaN, expectedTotalTickets: 1000, ticketPriceEUR: 2, baseRtp: 0.5 }).blocked, true);
+// Invalid/missing inputs fail closed.
+assert.equal(rolldownEvPerTicket({ redistributedFundEUR: 1000000, pCategory: NaN, totalTickets: 1000, ticketPriceEUR: 2, baseRtpExcludingRedistribution: 0.5 }).blocked, true);
+assert.equal(exactTargetCategoryFundEvPerTicket({ redistributedFundEUR: 1000000, pCategory: 0.001, totalTickets: 1000.5 }).blocked, true);
 
-// The tracked mechanism record must not claim primary-source confirmation or current activity it hasn't earned
-assert.equal(EUROMILLONES_CAP_ROLLDOWN_MECHANISM.primarySourceConfirmed, false);
+// Primary-source rule is now confirmed from SELAE's own Euromillones norms,
+// but the condition is not currently active and real-money remains blocked.
+assert.equal(EUROMILLONES_CAP_ROLLDOWN_MECHANISM.primarySourceConfirmed, true);
+assert.equal(EUROMILLONES_CAP_ROLLDOWN_MECHANISM.capEUR, 250000000);
 assert.equal(EUROMILLONES_CAP_ROLLDOWN_MECHANISM.currentlyActive, false);
+assert.equal(EUROMILLONES_CAP_ROLLDOWN_MECHANISM.guards.realMoneyAllowed, false);
 
 console.log('lottery-rolldown-ev-engine-v1.test.mjs: PASS');
