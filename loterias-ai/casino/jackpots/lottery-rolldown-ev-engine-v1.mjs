@@ -1,56 +1,104 @@
-// EV engine for lottery roll-down / forced-redistribution mechanisms (the
-// Selbee/Cash-WinFall mechanism family - see loterias-ai/universidad/
-// advantage-play-case-studies-v1.json). Confirmed Spanish analogue: when
-// Euromillones' jackpot (category 1) hits its published cap (250M EUR) for
-// up to 4 consecutive draws without a category-1 winner, the excess funds
-// are forcibly redirected into category 2 (5 numbers + 1 star) - this is an
-// official SELAE/Euromillones rule (WebSearch, cross-checked against
-// multiple independent lottery-info sites), NOT yet independently verified
-// against SELAE's own primary regulation text (see decision.primarySourceConfirmed).
+// EV engine for lottery roll-down / forced-redistribution mechanisms.
+//
+// Important correction: a pari-mutuel fund must NOT be valued by taking the
+// fund divided by the expected number of winners. E[1/W] != 1/E[W].
+// For a fund paid only to one target category, exchangeability gives an exact
+// per-ticket expectation under independent equiprobable tickets:
+//
+//   EV_target_fund_per_ticket = Fund * P(at least one target-category winner) / N
+//                             = Fund * [1-(1-p)^N] / N
+//
+// If the rules cascade the fund to the next lower category when there are no
+// winners, modelling only category 2 is a conservative lower bound because it
+// omits the additional EV from the lower-category cascade.
+
 export function clampNonNegative(x) {
   return Number.isFinite(x) && x > 0 ? x : 0;
 }
 
-// Direct (non-approximated) pari-mutuel EV of a forced redistribution into a
-// shared-prize category. expectedTotalTickets*pCategory is the expected
-// number of winners of THAT category; dividing the redistributed fund by it
-// is only trustworthy when that expected count is comfortably >= minTrustedExpectedWinners
-// (otherwise a single extra/missing winner swings the payout too much for a
-// point EV to be meaningful - flagged via lowSampleWarning rather than hidden).
-export function rolldownEvPerTicket({ redistributedFundEUR, pCategory, expectedTotalTickets, ticketPriceEUR, baseRtp, minTrustedExpectedWinners = 5 }) {
-  if (![redistributedFundEUR, pCategory, expectedTotalTickets, ticketPriceEUR, baseRtp].every(Number.isFinite)) {
+export function exactTargetCategoryFundEvPerTicket({ redistributedFundEUR, pCategory, totalTickets }) {
+  if (![redistributedFundEUR, pCategory, totalTickets].every(Number.isFinite)) {
     return { blocked: true, reason: 'MISSING_REQUIRED_NUMERIC_INPUT' };
   }
-  const expectedWinners = expectedTotalTickets * pCategory;
-  const lowSampleWarning = expectedWinners < minTrustedExpectedWinners;
-  const fundPerWinner = expectedWinners > 0 ? redistributedFundEUR / expectedWinners : 0;
-  const evBoostPerTicket = pCategory * fundPerWinner;
-  const evBoostPerEuroStaked = evBoostPerTicket / ticketPriceEUR;
-  const totalRtp = baseRtp + evBoostPerEuroStaked;
+  if (redistributedFundEUR < 0 || pCategory < 0 || pCategory > 1 || !Number.isInteger(totalTickets) || totalTickets < 1) {
+    return { blocked: true, reason: 'INVALID_REQUIRED_NUMERIC_INPUT' };
+  }
+  const pAtLeastOneWinner = pCategory === 0 ? 0 : -Math.expm1(totalTickets * Math.log1p(-pCategory));
+  const evFundPerTicket = redistributedFundEUR * pAtLeastOneWinner / totalTickets;
+  const expectedWinners = totalTickets * pCategory;
   return {
     blocked: false,
-    expectedWinners: +expectedWinners.toFixed(4),
+    expectedWinners: +expectedWinners.toFixed(6),
+    pAtLeastOneWinner: +pAtLeastOneWinner.toFixed(12),
+    evFundPerTicket: +evFundPerTicket.toFixed(9),
+  };
+}
+
+// Conservative category-2-only valuation of a forced roll-down. This does not
+// count any value from a further cascade to category 3+ if category 2 has no
+// winners, so it cannot overstate the roll-down fund under the stated model.
+export function rolldownEvPerTicket({
+  redistributedFundEUR,
+  pCategory,
+  totalTickets,
+  ticketPriceEUR,
+  baseRtpExcludingRedistribution,
+  minTrustedExpectedWinners = 5,
+}) {
+  if (![redistributedFundEUR, pCategory, totalTickets, ticketPriceEUR, baseRtpExcludingRedistribution].every(Number.isFinite)) {
+    return { blocked: true, reason: 'MISSING_REQUIRED_NUMERIC_INPUT' };
+  }
+  if (ticketPriceEUR <= 0 || baseRtpExcludingRedistribution < 0) {
+    return { blocked: true, reason: 'INVALID_REQUIRED_NUMERIC_INPUT' };
+  }
+
+  const fund = exactTargetCategoryFundEvPerTicket({ redistributedFundEUR, pCategory, totalTickets });
+  if (fund.blocked) return fund;
+
+  const lowSampleWarning = fund.expectedWinners < minTrustedExpectedWinners;
+  const evBoostPerTicket = fund.evFundPerTicket;
+  const evBoostPerEuroStaked = evBoostPerTicket / ticketPriceEUR;
+  const totalRtp = baseRtpExcludingRedistribution + evBoostPerEuroStaked;
+
+  return {
+    blocked: false,
+    model: 'EXACT_TARGET_CATEGORY_BINOMIAL_SYMMETRY',
+    conservativeBecauseLowerCategoryCascadeOmitted: true,
+    expectedWinners: fund.expectedWinners,
+    pAtLeastOneWinner: fund.pAtLeastOneWinner,
     lowSampleWarning,
-    evBoostPerTicket: +evBoostPerTicket.toFixed(6),
-    evBoostPerEuroStaked: +evBoostPerEuroStaked.toFixed(6),
-    totalRtp: +totalRtp.toFixed(6),
-    totalRtpPct: +(totalRtp * 100).toFixed(4),
+    evBoostPerTicket: +evBoostPerTicket.toFixed(9),
+    evBoostPerEuroStaked: +evBoostPerEuroStaked.toFixed(9),
+    totalRtp: +totalRtp.toFixed(9),
+    totalRtpPct: +(totalRtp * 100).toFixed(6),
     verdict: !lowSampleWarning && totalRtp >= 1 ? 'CANDIDATE_PLAY' : 'NO_PLAY',
   };
 }
 
 export const EUROMILLONES_CAP_ROLLDOWN_MECHANISM = {
-  id: 'euromillones-cap-forced-rolldown-to-category2',
+  id: 'euromillones-cap-forced-rolldown-to-category2-or-next-winning-lower-category',
   jurisdiction: 'ES/pan-European (SELAE-administered draw)',
-  triggerCondition: 'Category-1 jackpot reaches the published cap (widely reported as 250M EUR) and goes unwon for up to 4 consecutive draws; from the 5th such draw, category-1 funds are redirected to category 2 (5 numbers + 1 star).',
-  primarySourceConfirmed: false,
-  sourceNote: 'Cross-checked across multiple independent Spanish lottery-info sites via WebSearch this session; NOT yet verified against SELAE\'s own primary regulation text (Real Decreto / reglamento del juego). Treat as DISCOVERY tier until a primary-source citation is attached.',
-  requiredLiveInputsToEvaluate: [
-    'current category-1 jackpot value vs published cap',
-    'how many consecutive draws it has sat at the cap (need >=4 for the redistribution to trigger)',
-    'exact redistributed fund amount for the triggering draw',
-    'expected/actual ticket sales for that draw (for expectedWinners)',
-    'official pCategory2 odds (not hardcoded here - must come from SELAE\'s own published odds table)',
-  ],
+  triggerCondition: 'At the maximum allocation cap, the cap may be offered for a maximum of four successive draws. If the fifth capped draw again has no category-1 winner, the amount allocated to category 1 increases the prize fund of the immediately lower category that has at least one winner in that draw.',
+  capEUR: 250000000,
+  primarySourceConfirmed: true,
+  primarySource: {
+    publisher: 'Sociedad Estatal Loterías y Apuestas del Estado (SELAE)',
+    document: 'Normas de Euromillones, norma 8.3.c and allocation-limit definition',
+    url: 'https://www.loteriasyapuestas.es/f/loterias/documentos/normativa/Normativa%20de%20los%20juegos/Normas_de_Euromillones_Mayo_2020.pdf',
+  },
+  currentResearchStatus: 'MECHANISM_CONFIRMED_NOT_NEAR_TRIGGER',
   currentlyActive: false,
+  requiredLiveInputsToEvaluate: [
+    'current category-1 jackpot value vs 250M EUR cap',
+    'number of successive draws already offered at the maximum cap',
+    'exact category-1 fund that would be redistributed in the triggering draw',
+    'official/verified total ticket count or sales-derived ticket count for the triggering draw',
+    'official category-2 probability per ticket',
+    'base RTP excluding the redistributed category-1 fund so the boost is not double counted',
+  ],
+  guards: {
+    noRatioOfExpectationsApproximation: true,
+    lowerCategoryCascadeOmittedFromCategory2OnlyModel: true,
+    realMoneyAllowed: false,
+  },
 };
