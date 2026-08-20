@@ -89,6 +89,7 @@ for(const [key,current] of Object.entries(currentByKey)){
 const oldEvents=Array.isArray(previous?.resetEvents)?previous.resetEvents:[];
 const dedup=new Map([...oldEvents,...resetEvents].map(e=>[e.eventId,e]));
 const events=[...dedup.values()].sort((a,b)=>Date.parse(a.observedAt)-Date.parse(b.observedAt)).slice(-1000);
+const ambiguousIdentityRows=rows.filter(x=>ambiguousKeys.includes(`${x.network}:${x.id}`)).length;
 const out={
   version:'botemania-all-network-live-state-v1.1-alias-collapse',
   generatedAt:now,
@@ -98,8 +99,10 @@ const out={
   coverage:{
     totalRows:rows.length,
     canonicalIdentityRows:canonicalRows.length,
+    uniqueIdentityRows:canonicalRows.length,
     collapsedAliasRows,
     ambiguousIdentityKeys:ambiguousKeys.length,
+    ambiguousIdentityRows,
     networks:[...new Set(rows.map(x=>x.network))]
   },
   rows,
