@@ -2,8 +2,11 @@
 // Probe Botemania video-poker pages for two separate signal classes:
 //   A) progressive/jackpot evidence
 //   B) paytable/royal-flush evidence
-// These MUST NOT be conflated: a normal video-poker page can contain
-// "Royal"/"Escalera Real" without having any progressive jackpot at all.
+//
+// IMPORTANT: signal matching is whole-word/whole-phrase. A raw substring scan
+// for "bote" incorrectly matches the brand name "Botemania" and would mark
+// every page as progressive. Likewise Royal/Escalera Real are paytable terms,
+// not proof of a progressive jackpot.
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import { BOTEMANIA_VIDEO_POKER_TITLES } from './progressive-video-poker-ev-v1.mjs';
@@ -26,12 +29,26 @@ const PROGRESSIVE_NEEDLES = ['jackpot', 'bote', 'progresivo', 'progressive'];
 const PAYTABLE_NEEDLES = ['Escalera Real', 'Royal', 'coronas', 'crown'];
 const ALL_NEEDLES = [...PROGRESSIVE_NEEDLES, ...PAYTABLE_NEEDLES];
 
+const escapeRegex = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+function contextsForWholePhrase(text, needle, maxMatches = 6) {
+  const re = new RegExp(`\\b${escapeRegex(needle)}\\b`, 'giu');
+  const arr = [];
+  let m;
+  while (arr.length < maxMatches && (m = re.exec(text)) !== null) {
+    const i = m.index;
+    arr.push(text.slice(Math.max(0, i - 300), Math.min(text.length, i + m[0].length + 500)));
+    if (m[0].length === 0) re.lastIndex++;
+  }
+  return arr;
+}
+
 const results = [];
 for (const title of BOTEMANIA_VIDEO_POKER_TITLES) {
   const r = await fetch(title.url, {
     headers: {
       accept: 'text/html,*/*',
-      'user-agent': 'loterias-ai-video-poker-jackpot-probe/1.1',
+      'user-agent': 'loterias-ai-video-poker-jackpot-probe/1.2',
       'cache-control': 'no-cache',
     },
     redirect: 'follow',
@@ -39,22 +56,8 @@ for (const title of BOTEMANIA_VIDEO_POKER_TITLES) {
   const html = await r.text();
   const text = toText(html);
   const contexts = {};
-  const lower = text.toLowerCase();
 
-  for (const needle of ALL_NEEDLES) {
-    const arr = [];
-    let p = 0;
-    let c = 0;
-    const needleLower = needle.toLowerCase();
-    while (c < 6) {
-      const i = lower.indexOf(needleLower, p);
-      if (i < 0) break;
-      arr.push(text.slice(Math.max(0, i - 300), Math.min(text.length, i + needle.length + 500)));
-      p = i + needle.length;
-      c++;
-    }
-    contexts[needle] = arr;
-  }
+  for (const needle of ALL_NEEDLES) contexts[needle] = contextsForWholePhrase(text, needle);
 
   const progressiveSignalNeedles = PROGRESSIVE_NEEDLES.filter((needle) => (contexts[needle] || []).length > 0);
   const paytableSignalNeedles = PAYTABLE_NEEDLES.filter((needle) => (contexts[needle] || []).length > 0);
@@ -74,7 +77,7 @@ for (const title of BOTEMANIA_VIDEO_POKER_TITLES) {
 }
 
 const out = {
-  version: 'botemania-video-poker-jackpot-probe-v1.1-signal-separation',
+  version: 'botemania-video-poker-jackpot-probe-v1.2-whole-word-signals',
   generatedAt: new Date().toISOString(),
   operator: 'botemania-es',
   titlesProbed: results.length,
@@ -87,6 +90,8 @@ const out = {
     realMoneyAllowed: false,
   },
   guards: {
+    wholeWordSignalMatching: true,
+    botemaniaBrandCannotSatisfyBoteNeedle: true,
     royalTextDoesNotCountAsProgressiveEvidence: true,
     publicPageOnly: true,
     noAuthentication: true,
