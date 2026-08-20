@@ -1,6 +1,6 @@
 {
-  "version": "botemania-fishin-public-stake-probe-v1",
-  "generatedAt": "2026-08-20T06:43:08.660Z",
+  "version": "botemania-fishin-public-stake-probe-v1.1-ingame-merged",
+  "generatedAt": "2026-08-20T06:45:44.289Z",
   "operator": "botemania-es",
   "game": "Fishin' Frenzy: Jackpot King",
   "sources": [
@@ -11,7 +11,7 @@
       "ok": true,
       "contentType": "text/html; charset=UTF-8",
       "bytes": 91284,
-      "sha256": "9a887ef5793cf5b20254cae01f03d05231e83b33bd88f02f658bcf9ba7460da7",
+      "sha256": "8f37a9d902aa9d8589834652368b6fe88caef0dd71363f13bbda3e50db1530a6",
       "contexts": {
         "totalBet": [
           "acceder a la Wheel King (Rueda del Rey), cuando consigues más de 15 Coronas. En caso de no alcanzar la Wheel King, se te concederá el premio de acuerdo con la posición mostrada en la escalera de ganancias (cada posición va asociada a un Multiplicador). La Wheel King es una ruleta tipo tómbola en la que podrás obtener Multiplicadores sobre tu Apuesta Total o cualquiera de los 3 Botes progresivos del juego (Real, Majestuoso o Jackpot King) Nota: El Jackpot King sólo se puede ganar durante la parte del Bonus del Wheel King, dentro de la Fase del Jackpot Bonus. Nos esforzamos por mostrar, en todo momento, el valor actual del Bote Progresivo. Pero esto no siempre es posible ya que pueden pr",
@@ -50,21 +50,51 @@
       }
     }
   ],
+  "inGameEvidence": {
+    "file": "loterias-ai/edge-live/evidence/botemania-fishin-ingame-stake-ladder-v1.json",
+    "evidenceClass": "USER_SUPPLIED_IN_GAME_SCREENSHOT",
+    "capturedAtLocal": "2026-08-20T08:38:56+02:00",
+    "imageSha256": "7f789bed7ebd41d5a7abd94983361280ab67882e7aa9e7695b2e12404458a189"
+  },
   "decision": {
-    "exactTotalBetLadderRecovered": false,
-    "exactStakePerSpinKnown": false,
-    "exactTotalBetOptionsEUR": [],
-    "minimumExactTotalBetEUR": null,
+    "exactTotalBetLadderRecovered": true,
+    "exactStakePerSpinKnown": true,
+    "exactTotalBetOptionsEUR": [
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.8,
+      1,
+      1.2,
+      1.4,
+      1.6,
+      1.8,
+      2,
+      2.5,
+      3,
+      3.5,
+      4,
+      4.5,
+      5,
+      10
+    ],
+    "minimumExactTotalBetEUR": 0.1,
+    "evidenceClass": "BOTEMANIA_SPAIN_IN_GAME_OPERATOR_UI",
     "coinValueRangeMustNotBeTreatedAsTotalBet": true
   },
-  "interpretation": "Official public sources mention coin value and operator-configured TOTAL BET selection but do not expose an explicit Botemania Spain total-bet ladder. No stake amount is inferred.",
+  "interpretation": "The exact Botemania Spain TOTAL BET ladder is verified from the user-supplied in-game operator UI. Public pages still do not expose the ladder.",
   "guards": {
-    "officialSourcesOnly": true,
-    "noAuthentication": true,
-    "noCookies": true,
-    "noGuestSession": true,
+    "officialPublicSourcesProbed": true,
+    "authorizedInGameEvidenceAllowed": true,
+    "noAuthenticationAutomation": true,
+    "noCookiesAutomation": true,
+    "noGuestSessionAutomation": true,
     "noCoinValueMultiplicationAssumption": true,
     "noCrossOperatorStakeSubstitution": true,
-    "noBetting": true
+    "noBetting": true,
+    "realMoneyAllowedByStakeEvidenceAlone": false
   }
 }
