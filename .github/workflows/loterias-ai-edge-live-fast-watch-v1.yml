@@ -9,6 +9,7 @@ on:
       - 'loterias-ai/edge-live/botemania-fast-meter-sample-v1.mjs'
       - 'loterias-ai/edge-live/botemania-all-network-fast-meter-sample-v1.mjs'
       - 'loterias-ai/edge-live/progressive-score-research-v1.mjs'
+      - 'loterias-ai/edge-live/spanish-surebet-watch-v1.mjs'
       - 'loterias-ai/edge-live/edge-live-multi-execution-plan-v1.mjs'
       - 'loterias-ai/edge-live/opportunity-registry-v1.json'
       - 'loterias-ai/edge-live/telegram-edge-alert-v1.mjs'
@@ -42,6 +43,9 @@ jobs:
           EDGE_LIVE_TELEGRAM_BOT_TOKEN: ${{ secrets.EDGE_LIVE_TELEGRAM_BOT_TOKEN }}
           EDGE_LIVE_TELEGRAM_CHAT_ID: ${{ secrets.EDGE_LIVE_TELEGRAM_CHAT_ID }}
           EDGE_LIVE_URL: https://alvarogavilan.github.io/edge-live/
+          SUREBET_API_TOKEN: ${{ secrets.SUREBET_API_TOKEN }}
+          SPANISH_SUREBET_MIN_ROI_PCT: '0.35'
+          SPANISH_SUREBET_BANKROLL_EUR: '100'
         shell: bash
         run: |
           set -u
@@ -52,6 +56,7 @@ jobs:
               successful=$((successful+1))
               node loterias-ai/edge-live/botemania-fast-meter-sample-v1.mjs || echo 'WARN: JPK auxiliary meter failed; all-network state retained'
               node loterias-ai/edge-live/progressive-score-research-v1.mjs || echo 'WARN: SCORE refresh failed; retaining last valid output'
+              node loterias-ai/edge-live/spanish-surebet-watch-v1.mjs || echo 'WARN: Spanish surebet lane failed closed'
               node loterias-ai/edge-live/edge-live-multi-execution-plan-v1.mjs || echo 'WARN: multi-plan refresh failed closed'
               node loterias-ai/casino/botemania-global-economic-gate-v1.mjs || echo 'WARN: global gate refresh failed closed'
               node loterias-ai/edge-live/telegram-edge-alert-v1.mjs || echo 'WARN: Telegram delivery failed; monitoring continues'
@@ -76,12 +81,13 @@ jobs:
           GENERIC_LEDGER=loterias-ai/casino/jackpots/evidence/botemania-generic-fast-reset-ledger-v1.json
           ALL_NETWORK=loterias-ai/edge-live/evidence/botemania-all-network-live-state-v1.json
           SCORE=loterias-ai/edge-live/evidence/progressive-score-research-v1.json
+          SUREBET=loterias-ai/edge-live/evidence/spanish-surebet-live-v1.json
           PLAN=loterias-ai/edge-live/evidence/edge-live-execution-plan-v1.json
           MULTI_PLAN=loterias-ai/edge-live/evidence/edge-live-multi-execution-plan-v1.json
           GLOBAL_GATE=loterias-ai/casino/evidence/botemania-global-economic-gate-v1.json
           mkdir -p /tmp/edge-live-fast
           copied=0
-          for f in "$STATE" "$DIAG" "$JPK_LEDGER" "$GENERIC_LEDGER" "$ALL_NETWORK" "$SCORE" "$PLAN" "$MULTI_PLAN" "$GLOBAL_GATE"; do
+          for f in "$STATE" "$DIAG" "$JPK_LEDGER" "$GENERIC_LEDGER" "$ALL_NETWORK" "$SCORE" "$SUREBET" "$PLAN" "$MULTI_PLAN" "$GLOBAL_GATE"; do
             if [ -f "$f" ]; then cp "$f" "/tmp/edge-live-fast/$(basename "$f")"; copied=1; fi
           done
           if [ "$copied" -eq 0 ]; then exit 1; fi
@@ -96,15 +102,16 @@ jobs:
           [ ! -f /tmp/edge-live-fast/botemania-generic-fast-reset-ledger-v1.json ] || cp /tmp/edge-live-fast/botemania-generic-fast-reset-ledger-v1.json "$GENERIC_LEDGER"
           [ ! -f /tmp/edge-live-fast/botemania-all-network-live-state-v1.json ] || cp /tmp/edge-live-fast/botemania-all-network-live-state-v1.json "$ALL_NETWORK"
           [ ! -f /tmp/edge-live-fast/progressive-score-research-v1.json ] || cp /tmp/edge-live-fast/progressive-score-research-v1.json "$SCORE"
+          [ ! -f /tmp/edge-live-fast/spanish-surebet-live-v1.json ] || cp /tmp/edge-live-fast/spanish-surebet-live-v1.json "$SUREBET"
           [ ! -f /tmp/edge-live-fast/edge-live-execution-plan-v1.json ] || cp /tmp/edge-live-fast/edge-live-execution-plan-v1.json "$PLAN"
           [ ! -f /tmp/edge-live-fast/edge-live-multi-execution-plan-v1.json ] || cp /tmp/edge-live-fast/edge-live-multi-execution-plan-v1.json "$MULTI_PLAN"
           [ ! -f /tmp/edge-live-fast/botemania-global-economic-gate-v1.json ] || cp /tmp/edge-live-fast/botemania-global-economic-gate-v1.json "$GLOBAL_GATE"
-          git add -- "$STATE" "$DIAG" "$JPK_LEDGER" "$GENERIC_LEDGER" "$ALL_NETWORK" "$SCORE" "$PLAN" "$MULTI_PLAN" "$GLOBAL_GATE" 2>/dev/null || true
+          git add -- "$STATE" "$DIAG" "$JPK_LEDGER" "$GENERIC_LEDGER" "$ALL_NETWORK" "$SCORE" "$SUREBET" "$PLAN" "$MULTI_PLAN" "$GLOBAL_GATE" 2>/dev/null || true
           if git diff --cached --quiet; then
             echo 'No state change to persist'
             exit 0
           fi
-          git commit -m 'data(edge-live): persist resilient all-network SCORE state'
+          git commit -m 'data(edge-live): persist resilient all-network SCORE and Spanish surebet state'
           for attempt in 1 2 3; do
             if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
             sleep $((attempt*2))
