@@ -1,0 +1,61 @@
+name: Loterias AI Botemania Generic Fast Reset Watch V1
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/jackpots/botemania-headless-jackpots-public-probe-v1.mjs'
+      - 'loterias-ai/casino/jackpots/botemania-generic-fast-reset-ledger-v1.mjs'
+      - '.github/workflows/loterias-ai-botemania-generic-fast-reset-watch-v1.yml'
+  schedule:
+    - cron: '*/5 * * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-botemania-generic-fast-reset-watch-v1
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Sample public generic jackpot feed every 15 seconds
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 16); do
+            echo "generic jackpot sample $i/16 $(date -u +%FT%TZ)"
+            node loterias-ai/casino/jackpots/botemania-headless-jackpots-public-probe-v1.mjs
+            node loterias-ai/casino/jackpots/botemania-generic-fast-reset-ledger-v1.mjs
+            if [ "$i" -lt 16 ]; then sleep 15; fi
+          done
+      - name: Persist compact reset ledger
+        shell: bash
+        run: |
+          set -euo pipefail
+          LEDGER=loterias-ai/casino/jackpots/evidence/botemania-generic-fast-reset-ledger-v1.json
+          [ -f "$LEDGER" ] || exit 1
+          cp "$LEDGER" /tmp/botemania-generic-fast-reset-ledger-v1.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git fetch origin main
+          git reset --hard origin/main
+          cp /tmp/botemania-generic-fast-reset-ledger-v1.json "$LEDGER"
+          git add "$LEDGER"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'data(casino): persist Botemania generic fast reset ledger'
+          for attempt in 1 2 3 4; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
