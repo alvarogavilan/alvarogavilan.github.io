@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - 'loterias-ai/casino/archive/botemania-progressive-network-map-v1.mjs'
+      - 'loterias-ai/casino/archive/botemania-zero-reset-priority-v1.mjs'
       - 'loterias-ai/casino/jackpots/botemania-irish-riches-jpk-current-screen-v1.mjs'
       - '.github/workflows/loterias-ai-botemania-progressive-deep-rank-v1.yml'
   schedule:
@@ -31,6 +32,8 @@ jobs:
           node-version: 24
       - name: Map progressive networks
         run: node loterias-ai/casino/archive/botemania-progressive-network-map-v1.mjs
+      - name: Rank zero-reset progressives
+        run: node loterias-ai/casino/archive/botemania-zero-reset-priority-v1.mjs
       - name: Screen Irish Riches conservatively
         run: node loterias-ai/casino/jackpots/botemania-irish-riches-jpk-current-screen-v1.mjs
       - name: Persist evidence
@@ -39,7 +42,10 @@ jobs:
           set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add loterias-ai/casino/archive/evidence/botemania-progressive-network-map-v1.json loterias-ai/casino/jackpots/evidence/botemania-irish-riches-jpk-current-screen-v1.json
+          git add \
+            loterias-ai/casino/archive/evidence/botemania-progressive-network-map-v1.json \
+            loterias-ai/casino/archive/evidence/botemania-zero-reset-priority-v1.json \
+            loterias-ai/casino/jackpots/evidence/botemania-irish-riches-jpk-current-screen-v1.json
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'data(casino): refresh Botemania progressive deep ranking'
           for attempt in 1 2 3 4; do
