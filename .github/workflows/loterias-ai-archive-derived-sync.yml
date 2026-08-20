@@ -10,6 +10,7 @@ on:
       - 'Loterias AI Bonoloto Official SELAE RSS Sync'
       - 'Loterias AI Quiniela Elige8 Official'
       - 'Loterias AI Quiniela Historical SELAE Cross-check'
+      - 'Loterias AI Quiniela Historical Bootstrap'
       - 'Loterias AI Nacional Persisted SELAE Certification'
       - 'Loterias AI Nacional Official Resultados2'
     types: [completed]
@@ -18,6 +19,8 @@ on:
     branches: [main]
     paths:
       - 'loterias-ai/scripts/audit-national-archive.mjs'
+      - 'loterias-ai/scripts/build-national-archive-index.mjs'
+      - 'loterias-ai/scripts/build-completeness-index.mjs'
       - 'loterias-ai/scripts/build-archive-coverage-priorities.mjs'
       - 'loterias-ai/data/archive/bonoloto/**'
       - 'loterias-ai/data/archive/primitiva/**'
@@ -30,7 +33,6 @@ on:
       - 'loterias-ai/data/archive/quinigol/**'
       - 'loterias-ai/data/archive/lototurf/**'
       - 'loterias-ai/data/archive/quintuple-plus/**'
-      - 'loterias-ai/data/archive/manifest.json'
       - '.github/workflows/loterias-ai-archive-derived-sync.yml'
   schedule:
     - cron: '42 * * * *'
@@ -45,7 +47,7 @@ concurrency:
 jobs:
   derived-sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
         with:
@@ -53,7 +55,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Recompute archive audit and coverage priorities from latest main
+      - name: Recompute canonical indexes, audit and priorities from latest main
         shell: bash
         run: |
           set -euo pipefail
@@ -64,8 +66,13 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
 
+            cp loterias-ai/data/archive/manifest.json /tmp/manifest.prev.json 2>/dev/null || true
+            cp loterias-ai/data/archive/completeness-index.json /tmp/completeness.prev.json 2>/dev/null || true
             cp loterias-ai/data/archive/_meta/archive-audit.json /tmp/archive-audit.prev.json 2>/dev/null || true
             cp loterias-ai/data/archive/_meta/archive-coverage-priorities.json /tmp/archive-priorities.prev.json 2>/dev/null || true
+
+            node loterias-ai/scripts/build-national-archive-index.mjs
+            node loterias-ai/scripts/build-completeness-index.mjs
 
             set +e
             node loterias-ai/scripts/audit-national-archive.mjs
@@ -90,6 +97,8 @@ jobs:
               const old=strip(JSON.parse(fs.readFileSync(previous,'utf8')));
               if(JSON.stringify(now)===JSON.stringify(old)) fs.copyFileSync(previous,file);
             }
+            semantic('loterias-ai/data/archive/manifest.json','/tmp/manifest.prev.json',new Set(['generatedAt']));
+            semantic('loterias-ai/data/archive/completeness-index.json','/tmp/completeness.prev.json',new Set(['generatedAt','manifestGeneratedAt']));
             semantic('loterias-ai/data/archive/_meta/archive-audit.json','/tmp/archive-audit.prev.json',new Set(['generatedAt']));
             semantic('loterias-ai/data/archive/_meta/archive-coverage-priorities.json','/tmp/archive-priorities.prev.json',new Set(['generatedAt','manifestGeneratedAt','auditGeneratedAt']));
             NODE
@@ -112,13 +121,8 @@ jobs:
             const recordMismatches=[];
             for(const [gameId, game] of manifestGames){
               const audited=audit.games?.[gameId];
-              if(!audited){
-                missingAuditGames.push(gameId);
-                continue;
-              }
-              if(Number(audited.records)!==Number(game.records)){
-                recordMismatches.push(`${gameId}:${audited.records}!=${game.records}`);
-              }
+              if(!audited){missingAuditGames.push(gameId);continue;}
+              if(Number(audited.records)!==Number(game.records)) recordMismatches.push(`${gameId}:${audited.records}!=${game.records}`);
             }
             if(missingAuditGames.length) throw Error(`archive audit missing manifest games: ${missingAuditGames.join(',')}`);
             if(recordMismatches.length) throw Error(`archive audit record mismatches: ${recordMismatches.join(',')}`);
@@ -126,11 +130,13 @@ jobs:
             NODE
 
             git add \
+              loterias-ai/data/archive/manifest.json \
+              loterias-ai/data/archive/completeness-index.json \
               loterias-ai/data/archive/_meta/archive-audit.json \
               loterias-ai/data/archive/_meta/archive-coverage-priorities.json
 
             if git diff --cached --quiet; then
-              echo 'Archive derived QA already synchronized.'
+              echo 'Archive canonical indexes and derived QA already synchronized.'
               if [ "$audit_rc" -ne 0 ]; then
                 echo 'Archive QA remains fail-closed; diagnostics are already persisted.' >&2
                 exit "$audit_rc"
@@ -138,7 +144,7 @@ jobs:
               exit 0
             fi
 
-            git commit -m 'qa(archive): synchronize audit and coverage priorities'
+            git commit -m 'qa(archive): synchronize canonical indexes and derived state'
             if git push origin HEAD:main; then
               if [ "$audit_rc" -ne 0 ]; then
                 echo 'Persisted current archive QA diagnostics; failing run because quality gate is closed.' >&2
@@ -151,5 +157,5 @@ jobs:
             sleep $((attempt * 2))
           done
 
-          echo 'Unable to persist archive derived QA after five recomputations.' >&2
+          echo 'Unable to persist archive canonical indexes and derived QA after five recomputations.' >&2
           exit 1
