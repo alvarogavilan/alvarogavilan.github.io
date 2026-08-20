@@ -1,12 +1,14 @@
 {
   "status": "NO_PLAY",
-  "generatedAt": "2026-08-20T21:45:00Z",
+  "generatedAt": "2026-08-20T22:30:00Z",
   "reviewedBy": "ChatGPT GPT-5.6 Sol",
   "reviewCorrections": [
     "Corrected lottery rolldown valuation: E[1/W] is not 1/E[W]. The category-specific shared-fund EV now uses Fund*[1-(1-p)^N]/N.",
     "Corrected must-drop finite-step valuation: wager probability now uses [F(q2)-F(q1)]/[1-F(q1)] rather than the infinitesimal hazard*dq approximation.",
     "Confirmed the Euromillones cap and fifth-capped-draw redistribution rule from SELAE's own published Normas de Euromillones.",
-    "Rejected the generic inference EGT jackpot == must-hit-by; only exact jackpot families with primary rule evidence may enter the MHB gate."
+    "Rejected the generic inference EGT jackpot == must-hit-by; only exact jackpot families with primary rule evidence may enter the MHB gate.",
+    "Corrected multi-hand video poker EV: totalCoinsBet must scale as qualifyingCoinsBetPerHand*handsPerSpin (both the extra-jackpot-EV numerator AND the cost denominator scale with handsPerSpin, so betting more hands does not create a free EV multiplier). Fixed in PR #190.",
+    "Corrected progressive-signal detection: 'Royal'/'Escalera Real' text is NOT itself proof of a progressive jackpot (most non-progressive video poker also has a Royal Flush hand); and substring 'bote' was false-positively matching 'Botemania' itself. Both fixed in PR #190 via whole-word/whole-phrase matching (see botemania-video-poker-jackpot-probe-v1.json version 'v1.2-whole-word-signals')."
   ],
   "documentedWinnersStudied": [
     { "name": "Jerry & Marge Selbee", "mechanism": "ROLL_DOWN_LOTTERY", "classification": "TRANSFERIBLE_WITH_DATA" },
@@ -41,12 +43,17 @@
     {
       "game": "Double Jackpots family",
       "mechanism": "MUST_DROP_WITHIN",
-      "status": "STATIC_SETTINGS_SCAN_EXHAUSTED_DATA_FLOW_TRACE_IN_PROGRESS",
+      "status": "EXACT_QUERY_RECOVERED_ENRICHMENT_SOURCE_STILL_UNKNOWN",
       "rank": 1,
       "realMoneyAllowed": false,
-      "staticScanResult": "v2 extractor ran on GitHub Actions after merge: both bundles HTTP 200, findingsCount=51 (29 needles), objectLiteralCandidateCount=0. The settings bundle contains NO recoverable numeric mustDropWithin/cap/seed config via static text scan - this path is exhausted.",
-      "newLead": "The lazy-chunk-feed manifest lists SIX DoubleJackpots-family chunks the mustdrop extractors never fetched at all: containers-DoubleJackpots-index-js (hitTerms include 'query' - most likely home of the actual GraphQL query), the base albatross-common-components-dist-components-DoubleJackpots component, and three large vendors~...DoubleJackpots~... bundles (also hitTerms include 'query'/'date'). botemania-double-jackpots-container-trace-v1.mjs (new this pass) fetches these, extracts GraphQL/REST signatures, and builds a moduleID->chunkName reference graph. Not yet executed against live data (this session's network is sandboxed); new workflow scheduled every 2h.",
-      "blockedOn": ["container/vendor chunk trace has not run against live data yet", "specific underlying game mapping", "award mechanism: network-random-active-spin versus per-player/session countdown"]
+      "staticScanResult": "Settings-bundle text scan (v1 7 needles, v2 29 needles) confirmed exhausted: findingsCount=51, objectLiteralCandidateCount=0. NOT jackpot config - render() shows the settings bundle's getSettings(venture, gamesLength) result is spread into the react-slick carousel props (breakpoints/arrows), i.e. it is UI display config, not jackpot economics.",
+      "containerTraceResult": "container-trace-v1 ran on GitHub Actions: 5/5 target chunks HTTP 200. Recovered the EXACT compiled GraphQL query in containers-DoubleJackpots-index-js (module 614): query loadJackpots { redTigerJackpots { id amount } } - CONFIRMED via the query's own loc.source.body string, so this is definitive, not inferred. This query requests ONLY id+amount, no mustDropWithin. The container's render() passes this raw array unmodified as jackpots={r} into the base DoubleJackpots component (module 51/'w'). That base component's componentDidMount reads jackpots[t].mustDropWithin directly per item - so SOME parent supplies it, but it is NOT this container.",
+      "ruledOut": [
+        "HeadlessJackpots container/component: its query is 'loadGames' (gameIds/gameTag/categoryId/contentfulGames) - a game-catalog loader, structurally unrelated to jackpot amounts or deadlines.",
+        "DoubleJackpots settings bundle: confirmed to be carousel/slider display config only (see staticScanResult)."
+      ],
+      "newLead": "botemania-double-jackpots-global-mustdropwithin-scan-v1.mjs (new this pass) reuses the exact runtime.js chunk-manifest-parsing technique already proven in botemania-headless-global-bundle-config-scan-v1.mjs (which discovered 260 total chunks site-wide, not just the 36 jackpot-keyword-filtered ones) to search the FULL bundle for every other reference to 'mustDropWithin', since the true enrichment source is outside the jackpot-scoped chunk set. Not yet executed against live data (this session's network is sandboxed); new workflow scheduled every 4h.",
+      "blockedOn": ["global mustDropWithin scan has not run against live data yet", "specific underlying game mapping", "award mechanism: network-random-active-spin versus per-player/session countdown"]
     },
     {
       "game": "Irish Riches Megaways: Jackpot King",
@@ -57,20 +64,27 @@
       "blockedOn": ["exact Royal/Regal MBWB configuration in Botemania ES", "exact qualifying stake ladder"]
     },
     {
-      "game": "Botemania video poker family (4 confirmed titles)",
+      "game": "Ultimate Video Poker -> Jotas o Mejor Progresivo",
       "mechanism": "PROGRESSIVE_VIDEO_POKER",
-      "status": "TITLES_CONFIRMED_FROM_MAIN_EVIDENCE_JACKPOT_SIGNAL_NOT_YET_PROBED",
-      "rank": 3,
+      "status": "VARIANT_AND_LIVE_FEED_CONFIRMED_PAYTABLE_NOT_YET_RECOVERED",
+      "rank": 1,
       "realMoneyAllowed": false,
+      "confirmed": {
+        "variantConfirmedInStaticHelpText": "Ultimate Video Poker's own public help page lists 10 selectable sub-games: Ases y Caras, Doses Salvajes, Doses y Joker, Dieces o Mejor, Jotas o Mejor, Joker Poker, Bono Doble, Bono Doble x2, Bono Triple, and Jotas o Mejor Progresivo. Confirmed 1/5/10/25 simultaneous hands are selectable, matching the earlier instruction exactly.",
+        "liveFeedMapping": "loterias-ai/edge-live/evidence/progressive-score-research-v1.json already contains id=botemania-ultimate-video-poker-jacks-progressive, monitor.feedId=WAGER_BET, current.amountEUR=3448.25 (observed 2026-08-20T21:07 UTC), identity.confidence=VERY_HIGH. IMPORTANT PROVENANCE NOTE: identity.evidenceClass=MANUAL_SCREENSHOT_LIVE_AMOUNT_CROSS_MATCH - this mapping was established by a human providing a screenshot cross-match, not by any reproducible script in this repo. It is trustworthy but not yet independently re-derivable by an automated probe."
+      },
       "titles": [
-        { "slug": "classic-video-poker", "publishedRtpRangePct": [96.77, 99.26] },
-        { "slug": "poker-3-opciones", "publishedRtpRangePct": [97.99, 98.48], "note": "explicit hand-pay ladder visible (Par 4:1, Escalera 6:1, Trio 33:1, Escalera de Color 35:1, Escalera Real 100:1) but shape does not match standard Jacks-or-Better categories - likely a different poker variant family, not a draw-poker royal-progressive candidate" },
-        { "slug": "ultimate-video-poker", "publishedRtpRangePct": [96.77, 99.54] },
-        { "slug": "videopoker-remasterizado", "publishedRtpRangePct": [99.54, 99.54], "note": "99.54% under optimal strategy exactly matches the well-published 9/6 Jacks-or-Better full-pay figure - strong but UNCONFIRMED hint" }
+        { "slug": "classic-video-poker", "publishedRtpRangePct": [96.77, 99.26], "progressiveSignal": false },
+        { "slug": "poker-3-opciones", "publishedRtpRangePct": [97.99, 98.48], "progressiveSignal": false, "note": "explicit hand-pay ladder visible (Par 4:1, Escalera 6:1, Trio 33:1, Escalera de Color 35:1, Escalera Real 100:1) but shape does not match standard Jacks-or-Better categories - likely a different poker variant family" },
+        { "slug": "ultimate-video-poker", "publishedRtpRangePct": [96.77, 99.54], "progressiveSignal": true, "progressiveSignalNeedles": ["progresivo"] },
+        { "slug": "videopoker-remasterizado", "publishedRtpRangePct": [99.54, 99.54], "progressiveSignal": false, "note": "99.54% under optimal strategy exactly matches the well-published 9/6 Jacks-or-Better full-pay figure - strong but UNCONFIRMED hint, and confirmed NOT the progressive one" }
       ],
-      "engine": "loterias-ai/casino/jackpots/progressive-video-poker-ev-v1.mjs (new, tested this pass) - RTP_total = baseRtpAtSeedJackpot + handsPerSpin * pRoyalFlush * (jackpotDelta/totalCoinsBet); refuses a verdict without pRoyalFlush from a cited primary source, never guesses it",
-      "note": "Prior instruction referenced an existing 'WAGER_BET' jackpot mapping for Ultimate Video Poker; searched exhaustively across all evidence files on main and found NO such mapping except a self-reference inside this handoff's own prior draft. Treated as UNVERIFIED and not assumed - see currentBlockers.",
-      "blockedOn": ["botemania-video-poker-jackpot-probe-v1.mjs (new this pass) has not run against live data yet - checks these 4 URLs specifically for jackpot/progresivo text, which prior evidence never searched for (it only captured RTP-context snippets)", "exact paytable per title", "pRoyalFlush per exact paytable (never borrow a foreign operator's figure)"]
+      "engine": "loterias-ai/casino/jackpots/progressive-video-poker-ev-v1.mjs (corrected on main via PR #190: totalCoinsBet now scales as qualifyingCoinsBetPerHand*handsPerSpin so multi-hand play no longer creates a free EV multiplier) - refuses a verdict without pRoyalFlush from a cited primary source using the SAME strategy as baseRtpAtSeedJackpot, never guesses it",
+      "blockedOn": [
+        "botemania-video-poker-jackpot-probe-v1.mjs found no paytable numbers in the static help text (only the variant list and hand-count options) - payouts are almost certainly rendered inside the game CLIENT, not the marketing page",
+        "botemania-ultimate-video-poker-metadata-probe-v1.mjs (new this pass, mirrors the Irish Riches metadata-probe pattern that worked) fetches provider/launch/gameEngineID hints via Botemania's public GraphQL to locate a vendor-specific help/rules asset - not yet run against live data",
+        "qualifying coins bet per hand, credits, denomination, seed/reset of the progressive, and pRoyalFlush under one fixed reproducible strategy - none yet recovered"
+      ]
     }
   ],
   "spanishCandidates": [
@@ -111,27 +125,26 @@
     { "candidate": "Generic EGT jackpot == must-hit-by", "reason": "Primary EGT literature establishes MHB for specific families such as 2 Happy Hits, not all Jackpot Cards/isJackpot titles." }
   ],
   "currentBlockers": [
-    "Double Jackpots container/vendor chunk trace (new this pass) has not run against live data - this session's own network is sandboxed (confirmed again this pass: node fetch to botemania.es returns 'Host not in allowlist').",
-    "Botemania video-poker jackpot probe (new this pass) has not run against live data for the same reason.",
+    "Global mustDropWithin scan (new this pass, botemania-double-jackpots-global-mustdropwithin-scan-v1.mjs) has not run against live data - this session's own network is sandboxed (confirmed again: node fetch to botemania.es returns 'Host not in allowlist').",
+    "Ultimate Video Poker metadata probe (new this pass) has not run against live data for the same reason.",
     "Botemania Red Tiger venture/customer identifier unresolved (unchanged).",
     "PokerStars Casino España progressive-video-poker audit not started.",
-    "Exact EGT MHB family identities in PlayUZU's 142 isJackpot titles unresolved.",
-    "The 'WAGER_BET' / prior jackpot-crossed-for-Ultimate-Video-Poker claim referenced in the previous instruction could NOT be verified anywhere in main's committed evidence except a self-reference inside this handoff's own earlier draft - treated as unconfirmed, not assumed true."
+    "Exact EGT MHB family identities in PlayUZU's 142 isJackpot titles unresolved (unchanged, correctly not re-investigated per instruction).",
+    "Exact paytable (all 9 hand categories) and pRoyalFlush for Ultimate Video Poker's Jotas o Mejor Progresivo not yet recovered from any source."
   ],
   "codeChanges": [
-    "must-drop-ev-engine-v1.mjs: exact finite-interval conditional drop probability under F(q)=q^alpha. (prior pass, reviewed/corrected on main)",
-    "lottery-rolldown-ev-engine-v1.mjs: exact target-category shared-fund EV by exchangeability/binomial symmetry; SELAE primary rule attached. (prior pass, reviewed/corrected on main)",
-    "botemania-double-jackpots-mustdrop-extractor-v2.mjs: widened settings scan, now confirmed exhausted by a real run (findingsCount=51, objectLiteralCandidateCount=0). (prior pass)",
-    "botemania-double-jackpots-container-trace-v1.mjs (new): fetches the 6 never-before-fetched container/vendor DoubleJackpots chunks, extracts GraphQL/REST signatures and a moduleID->chunkName reference graph, per Misión A.",
-    "progressive-video-poker-ev-v1.mjs (new, tested): parametric progressive video-poker EV engine (Bob Dancer mechanism), plus the confirmed BOTEMANIA_VIDEO_POKER_TITLES registry (4 titles, no fabricated pRoyalFlush).",
-    "botemania-video-poker-jackpot-probe-v1.mjs (new): re-probes the 4 confirmed video-poker URLs specifically for jackpot/progresivo text, which prior evidence never searched for.",
-    "advantage-play-case-studies-v1.json (new on this branch - PR #169's version never merged to main): expanded from 8 to 11 documented cases (added Don Johnson, Zeljko Ranogajec, MIT Blackjack Team), restructured to the exact PERSON/DOCUMENTED_PROFIT/GAME/MECHANISM/OBSERVABLE_STATE/FORMULA/ENTRY_THRESHOLD/EXIT_THRESHOLD/BANKROLL/VARIANCE/LEGALITY/ONLINE_TRANSFER/SPAIN_TRANSFER/CURRENT_SPANISH_MATCH schema requested this pass.",
-    "Three new scheduled GitHub Actions workflows (container-trace, video-poker-jackpot-probe) plus 2 new CI test steps for the new engines."
+    "must-drop-ev-engine-v1.mjs, lottery-rolldown-ev-engine-v1.mjs: exact finite-interval/exchangeability math. (reviewed/corrected on main, PR #188)",
+    "progressive-video-poker-ev-v1.mjs: multi-hand EV accounting corrected (PR #190) - totalCoinsBet scales as qualifyingCoinsBetPerHand*handsPerSpin.",
+    "botemania-video-poker-jackpot-probe-v1.mjs: progressive-signal detection corrected to whole-word/whole-phrase matching (PR #190) - fixed both the 'Royal is not proof of progressive' and the 'bote substring matches Botemania' false positives. Real run confirmed: ONLY ultimate-video-poker shows a progressive signal ('progresivo').",
+    "botemania-double-jackpots-container-trace-v1.mjs: real run recovered the EXACT compiled GraphQL query (loadJackpots/redTigerJackpots{id,amount}) and ruled out HeadlessJackpots and the settings bundle as the mustDropWithin source (see botemaniaCandidates[0]).",
+    "botemania-double-jackpots-global-mustdropwithin-scan-v1.mjs (new): searches the FULL 260-chunk site-wide bundle (not just the 36 jackpot-keyword-filtered chunks) for every other reference to mustDropWithin, reusing the runtime.js-parsing technique proven in botemania-headless-global-bundle-config-scan-v1.mjs.",
+    "botemania-ultimate-video-poker-metadata-probe-v1.mjs (new): mirrors the botemania-irish-metadata-probe-v1.mjs pattern that successfully recovered Irish Riches' provider/launch parameters via Botemania's public GraphQL, retargeted at ultimate-video-poker to find its provider/gameEngineID for locating a vendor help/rules asset.",
+    "Two new scheduled GitHub Actions workflows for the above, wired push+schedule triggers matching repo convention."
   ],
   "nextHighestValueActions": [
-    "Wait for/trigger loterias-ai-botemania-double-jackpots-container-trace-v1.yml and read its referenceGraph + graphqlLikeSnippets for the actual DoubleJackpots data source.",
-    "Wait for/trigger loterias-ai-botemania-video-poker-jackpot-probe-v1.yml and read which (if any) of the 4 confirmed titles shows jackpot/progresivo text.",
-    "If a video-poker title shows jackpot signal, get its exact paytable (not assumed) before computing pRoyalFlush.",
+    "Trigger/review loterias-ai-botemania-double-jackpots-global-mustdropwithin-scan-v1.yml and read hitChunks for the true mustDropWithin enrichment source.",
+    "Trigger/review loterias-ai-botemania-ultimate-video-poker-metadata-probe-v1.yml and read paramHints/games for a provider ID or vendor help endpoint.",
+    "Once a provider/vendor is identified for Jotas o Mejor Progresivo, probe its public help/rules asset for the exact paytable (same pattern as Blueprint's fileservice for Irish Riches).",
     "Audit PokerStars Casino España for progressive video poker.",
     "Monitor Euromillones jackpot/cap state only as a rare condition; do not buy tickets now for this mechanism."
   ]
