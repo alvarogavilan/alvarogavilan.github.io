@@ -34,15 +34,24 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
+          # Code/config changes need a small durable smoke checkpoint so a bad
+          # runtime or API assumption becomes visible quickly. Scheduled runs keep
+          # the larger production batch once the path is known to persist safely.
+          if [ "${{ github.event_name }}" = 'schedule' ]; then
+            batch_limit=40
+          else
+            batch_limit=8
+          fi
+          echo "Quiniela historical SELAE batch_limit=${batch_limit} event=${{ github.event_name }}"
+
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
 
             # Phase 1: compute and persist the canonical Quiniela evidence first.
-            # Keep each checkpoint deliberately bounded: two runs/hour still provide
-            # useful throughput, while a smaller batch is much more likely to leave
-            # durable VALIDATED/PARTIAL/NOT_FOUND/CONFLICT evidence before any later QA.
-            BATCH_LIMIT=40 FETCH_CONCURRENCY=4 node loterias-ai/scripts/crosscheck-quiniela-historical-selae.mjs
+            # Scheduled checkpoints stay bounded at 40; push/manual smoke runs use
+            # only 8 rows to prove the canonical evidence path can complete.
+            BATCH_LIMIT="$batch_limit" FETCH_CONCURRENCY=4 node loterias-ai/scripts/crosscheck-quiniela-historical-selae.mjs
 
             git add \
               loterias-ai/data/archive/quiniela \
