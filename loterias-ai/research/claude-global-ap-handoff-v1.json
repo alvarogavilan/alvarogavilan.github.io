@@ -1,6 +1,6 @@
 {
   "status": "NO_PLAY",
-  "generatedAt": "2026-08-20T19:30:00Z",
+  "generatedAt": "2026-08-20T20:05:00Z",
   "documentedWinnersStudied": [
     { "name": "Jerry & Marge Selbee", "mechanism": "ROLL_DOWN_LOTTERY", "detailIn": "PR #169 (branch claude/issue-168-alvarogavilan-60xksw, not yet merged): loterias-ai/universidad/advantage-play-case-studies-v1.json" },
     { "name": "Stefan Mandel", "mechanism": "FULL_COMBINATORIAL_COVERAGE", "detailIn": "PR #169: advantage-play-case-studies-v1.json" },
@@ -47,7 +47,17 @@
   ],
   "spanishCandidates": [
     { "operator": "Botemania", "status": "SEE botemaniaCandidates" },
-    { "operator": "PlayUZU", "status": "GAME_CATALOG_INDEXED_NOT_YET_AUDITED_FOR_MUST_DROP_OR_PROGRESSIVE_VIDEO_POKER (loterias-ai/casino/playuzu/evidence/validated-game-catalog-v1.json exists from prior work; no video-poker or must-drop match found by a quick grep this pass, needs a real per-game pass not just a text search)" },
+    {
+      "operator": "PlayUZU",
+      "status": "CATALOG_FULLY_AUDITED_THIS_PASS_FIELD_BY_FIELD",
+      "findings": [
+        "0 of 552 indexed games have 'poker' in name/category - PlayUZU has NO video poker of any kind, progressive or otherwise. Misión 2 is a dead end at this operator.",
+        "0 games flagged dailyJackpot=true and 0 flagged isJackpotKing=true - no Blueprint Jackpot King family and no daily-jackpot-tagged title at PlayUZU.",
+        "0 Red Tiger-provider games at PlayUZU (providers present: Pragmatic 151, EGT 115, PlayTech 106, Slingo 45, Play N Go 35, Evolution OSS 23, Tequity 20, Microgaming 20, SG Digital 19, GVG 6, Yggdrasil 4, IGT 3, Edict 3, Eyecon 2).",
+        "142 games flagged isJackpot=true, dominated by EGT titles (Burning Hot, 20 Golden Coins, Shining Crown Buy Bonus, Mystic Tiger, Phoenix Star Super Pot, etc.) with maxWin values (50000-250000) recorded in the catalog but no jackpot-tier seed/cap/contribution fields captured yet.",
+        "NEW LEAD (not yet quantified): EGT's own published jackpot architecture uses Minor/Major/Grand tiers with a publicly-disclosed must-hit-by RANGE per EGT's own documentation (per WebSearch, generic EGT-wide claim, NOT yet confirmed for these specific PlayUZU titles) and typically does not require max-bet to qualify (unlike some vendors) - worth a dedicated per-title probe before ruling in or out."
+      ]
+    },
     { "operator": "PokerStars Casino España", "status": "NOT_YET_AUDITED_THIS_PASS" }
   ],
   "exactPositiveEvCandidates": [],
@@ -73,7 +83,8 @@
   "nextHighestValueActions": [
     "Wait for/trigger the new loterias-ai-botemania-double-jackpots-mustdrop-v2.yml run and review objectLiteralCandidates for a real numeric mustDropWithin config.",
     "Try additional Red Tiger venture identifier candidates beyond the 4 already tested (check Botemania's own public game-launch client map for any Red Tiger-branded game's launch parameters, which often embed the real venture/customer string).",
-    "Run a dedicated Misión 2 pass: enumerate every game in loterias-ai/casino/playuzu/evidence/validated-game-catalog-v1.json and Botemania's own catalog for video poker titles, check each for a live progressive jackpot component.",
+    "Probe PlayUZU's 142 isJackpot=true EGT titles individually for their real jackpot tier feed (Minor/Major/Grand current values, seed, and any published must-hit-by range) - PlayUZU's games-api.netdnstrace1.com backend is already known-reachable from prior work (validated-game-catalog-v1.json), so this is a concrete, well-scoped next probe, not a fresh discovery problem.",
+    "Misión 2 (progressive video poker) is CLOSED at PlayUZU (0 titles, confirmed this pass) - redirect video-poker search to Botemania's own catalog and PokerStars Casino España instead of re-checking PlayUZU.",
     "Audit SELAE's official Euromillones/Primitiva/Bonoloto regulations for any roll-down-to-lower-tier or bote-máximo-con-reparto-forzado clause (Selbee-equivalent search, not yet done)."
   ]
 }
