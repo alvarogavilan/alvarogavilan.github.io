@@ -1,0 +1,45 @@
+{
+  "version": "botemania-cms-loadgame-readonly-probe-v1",
+  "generatedAt": "2026-08-20T08:35:43.507Z",
+  "operator": "botemania-es",
+  "targetGame": "irish-riches-megaways-jackpot-king",
+  "sourceArtifact": "loterias-ai/casino/jackpots/evidence/botemania-cms-component-query-extractor-v1.json",
+  "endpoint": "https://www.botemania.es/es/graphql",
+  "attempts": [
+    {
+      "querySha256": "5b4c9a5119f7f1b7d9aa25a815139de5d668b0e120bd5dc86551a02d74ca26f0",
+      "queryPreview": "query loadGame(\\n  $gameIds: [String]\\n  $categoryId: String\\n  $limit: Int\\n  $published: Boolean\\n  $released: Boolean\\n  $sort: String\\n  $tags: [String]\\n) {\\n  games(\\n    gameIds: $gameIds\\n    categoryId: $categoryId\\n    published: $published\\n    released: $released\\n    limit: $limit\\n    sort: $sort\\n    tags: $tags\\n  ) {\\n    id\\n    categoryId\\n    subCategoryId\\n    order\\n    title\\n    titleOverride\\n    imageSlug\\n    providerId\\n    added\\n    backgroundColour\\n    link\\n    video\\n    jackpot {\\n      id\\n      amount\\n    }\\n    labelText\\n  }\\n}",
+      "variables": {
+        "gameIds": [
+          "irish-riches-megaways-jackpot-king"
+        ]
+      },
+      "httpStatus": 400,
+      "ok": false,
+      "bytes": 115,
+      "responseSha256": "5671d168528025d8f614c38259228636bbd982eff83f93ec8294cab58443f335",
+      "errors": [
+        "Syntax Error: Cannot parse the unexpected character \"\\\\\"."
+      ],
+      "data": null,
+      "rawPreview": null
+    }
+  ],
+  "decision": {
+    "exactRecoveredQueryExecuted": true,
+    "successfulReadOnlyResponses": 0,
+    "gameDataRecovered": false,
+    "jackpotTermPresentInReturnedData": false,
+    "headlessTermPresentInReturnedData": false,
+    "realMoneyAllowed": false
+  },
+  "guards": {
+    "exactBundleRecoveredQueriesOnly": true,
+    "noGraphqlIntrospection": true,
+    "noMutation": true,
+    "noAuthentication": true,
+    "noCookies": true,
+    "noBetting": true,
+    "realMoneyAllowed": false
+  }
+}
