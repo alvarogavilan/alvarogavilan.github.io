@@ -62,7 +62,13 @@ jobs:
             if(mismatches.length || priorities.auditQualityPass!==true) process.exit(1);
             NODE
 
-            git add loterias-ai/data/archive/quiniela loterias-ai/data/archive/_meta/quiniela-historical-selae-crosscheck.json loterias-ai/data/archive/manifest.json loterias-ai/data/archive/_meta
+            git add \
+              loterias-ai/data/archive/quiniela \
+              loterias-ai/data/archive/_meta/quiniela-historical-selae-crosscheck.json \
+              loterias-ai/data/archive/_meta/archive-audit.json \
+              loterias-ai/data/archive/_meta/archive-coverage-priorities.json \
+              loterias-ai/data/archive/manifest.json \
+              loterias-ai/data/archive/completeness-index.json
             if git diff --cached --quiet; then
               echo 'No semantic Quiniela historical SELAE change.'
               if [ "$audit_rc" -ne 0 ] || [ "$priorities_rc" -ne 0 ] || [ "$qa_rc" -ne 0 ]; then
