@@ -10,6 +10,7 @@ on:
       - 'loterias-ai/casino/jackpots/botemania-headless-jackpot-param-extractor-v1.mjs'
       - 'loterias-ai/casino/jackpots/botemania-headless-config-public-probe-v1.mjs'
       - 'loterias-ai/casino/jackpots/botemania-headless-global-bundle-config-scan-v1.mjs'
+      - 'loterias-ai/casino/jackpots/botemania-cms-component-query-extractor-v1.mjs'
       - 'loterias-ai/casino/archive/evidence/botemania-progressive-network-map-v1.json'
       - '.github/workflows/loterias-ai-botemania-headless-jackpots-probe-v1.yml'
   schedule:
@@ -25,7 +26,7 @@ concurrency:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 18
     steps:
       - uses: actions/checkout@v4
         with:
@@ -41,6 +42,8 @@ jobs:
         run: node loterias-ai/casino/jackpots/botemania-headless-config-public-probe-v1.mjs
       - name: Scan all public Botemania bundles for Headless config
         run: node loterias-ai/casino/jackpots/botemania-headless-global-bundle-config-scan-v1.mjs
+      - name: Extract public CMS component queries
+        run: node loterias-ai/casino/jackpots/botemania-cms-component-query-extractor-v1.mjs
       - name: Map live generic jackpot IDs to public game pages
         run: node loterias-ai/casino/jackpots/botemania-generic-jackpot-id-map-v1.mjs
       - name: Persist evidence
@@ -54,9 +57,10 @@ jobs:
             loterias-ai/casino/jackpots/evidence/botemania-headless-jackpot-param-extractor-v1.json \
             loterias-ai/casino/jackpots/evidence/botemania-headless-config-public-probe-v1.json \
             loterias-ai/casino/jackpots/evidence/botemania-headless-global-bundle-config-scan-v1.json \
+            loterias-ai/casino/jackpots/evidence/botemania-cms-component-query-extractor-v1.json \
             loterias-ai/casino/jackpots/evidence/botemania-generic-jackpot-id-map-v1.json
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'data(casino): refresh and map Botemania live generic jackpots'
+          git commit -m 'data(casino): refresh Botemania public jackpot config research'
           for attempt in 1 2 3 4; do
             if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
             sleep $((attempt*2))
