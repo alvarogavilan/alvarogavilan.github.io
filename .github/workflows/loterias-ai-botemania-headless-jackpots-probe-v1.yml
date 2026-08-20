@@ -7,6 +7,7 @@ on:
     paths:
       - 'loterias-ai/casino/jackpots/botemania-headless-jackpots-public-probe-v1.mjs'
       - 'loterias-ai/casino/jackpots/botemania-generic-jackpot-id-map-v1.mjs'
+      - 'loterias-ai/casino/jackpots/botemania-headless-jackpot-param-extractor-v1.mjs'
       - 'loterias-ai/casino/archive/evidence/botemania-progressive-network-map-v1.json'
       - '.github/workflows/loterias-ai-botemania-headless-jackpots-probe-v1.yml'
   schedule:
@@ -32,6 +33,8 @@ jobs:
           node-version: 24
       - name: Read live public jackpot feeds
         run: node loterias-ai/casino/jackpots/botemania-headless-jackpots-public-probe-v1.mjs
+      - name: Extract public jackpot parameter contract
+        run: node loterias-ai/casino/jackpots/botemania-headless-jackpot-param-extractor-v1.mjs
       - name: Map live generic jackpot IDs to public game pages
         run: node loterias-ai/casino/jackpots/botemania-generic-jackpot-id-map-v1.mjs
       - name: Persist evidence
@@ -42,6 +45,7 @@ jobs:
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add \
             loterias-ai/casino/jackpots/evidence/botemania-headless-jackpots-public-probe-v1.json \
+            loterias-ai/casino/jackpots/evidence/botemania-headless-jackpot-param-extractor-v1.json \
             loterias-ai/casino/jackpots/evidence/botemania-generic-jackpot-id-map-v1.json
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'data(casino): refresh and map Botemania live generic jackpots'
