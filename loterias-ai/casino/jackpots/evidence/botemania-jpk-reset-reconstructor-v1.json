@@ -1,12 +1,17 @@
 {
-  "version": "botemania-jpk-reset-reconstructor-v1",
-  "generatedAt": "2026-08-20T06:46:36.847Z",
+  "version": "botemania-jpk-reset-reconstructor-v1.1-fast-merged",
+  "generatedAt": "2026-08-20T06:49:16.873Z",
   "operator": "botemania-es",
-  "source": "loterias-ai/casino/jackpots/evidence/botemania-jackpot-king-observer-v1.json",
-  "method": "INTERVAL_CENSOR_RESET_AWARD_USING_NONRESET_SIBLING_GROWTH",
-  "evidenceBasis": "Royal and Regal active meters have repeatedly shown approximately equal growth on Botemania and independent Jackpot King Deluxe control network.",
+  "sources": [
+    "loterias-ai/casino/jackpots/evidence/botemania-jackpot-king-observer-v1.json",
+    "loterias-ai/casino/jackpots/evidence/botemania-jpk-fast-reset-ledger-v1.json",
+    "loterias-ai/casino/jackpots/evidence/botemania-fishin-ingame-mbwb-v1.json"
+  ],
+  "method": "MERGE_5MIN_INTERVAL_CENSORING_WITH_COMPACT_15S_RESET_EVENTS",
+  "evidenceBasis": "Royal and Regal share a prospectively validated network allocation; fast events reduce reset-window censoring while exact Spanish MBWB comes from the operator UI.",
   "windows": [
     {
+      "source": "PERSISTED_OBSERVER_WINDOWS",
       "tier": "ROYAL",
       "fromObservedAt": "2026-08-19T17:56:00.697Z",
       "toObservedAt": "2026-08-19T17:56:45.622Z",
@@ -30,6 +35,7 @@
       "usableForSpainHazardValidation": false
     },
     {
+      "source": "PERSISTED_OBSERVER_WINDOWS",
       "tier": "REGAL",
       "fromObservedAt": "2026-08-19T17:56:00.697Z",
       "toObservedAt": "2026-08-19T17:56:45.622Z",
@@ -53,6 +59,7 @@
       "usableForSpainHazardValidation": false
     },
     {
+      "source": "PERSISTED_OBSERVER_WINDOWS",
       "tier": "ROYAL",
       "fromObservedAt": "2026-08-19T22:02:54.735Z",
       "toObservedAt": "2026-08-19T22:03:25.168Z",
@@ -76,6 +83,7 @@
       "usableForSpainHazardValidation": false
     },
     {
+      "source": "PERSISTED_OBSERVER_WINDOWS",
       "tier": "REGAL",
       "fromObservedAt": "2026-08-19T22:02:54.735Z",
       "toObservedAt": "2026-08-19T22:03:25.168Z",
@@ -99,6 +107,7 @@
       "usableForSpainHazardValidation": false
     },
     {
+      "source": "PERSISTED_OBSERVER_WINDOWS",
       "tier": "ROYAL",
       "fromObservedAt": "2026-08-19T23:32:51.095Z",
       "toObservedAt": "2026-08-19T23:55:52.657Z",
@@ -122,6 +131,7 @@
       "usableForSpainHazardValidation": false
     },
     {
+      "source": "PERSISTED_OBSERVER_WINDOWS",
       "tier": "REGAL",
       "fromObservedAt": "2026-08-19T23:32:51.095Z",
       "toObservedAt": "2026-08-19T23:55:52.657Z",
@@ -150,17 +160,29 @@
     "cleanSingleTierCandidates": 0,
     "royal": 0,
     "regal": 0,
+    "fastCleanCandidates": 0,
+    "minimumCleanResetsForHazardFit": 10,
+    "hazardFitReady": false,
     "medianIntervalWidthEUR": null
   },
+  "mbwb": {
+    "exactSpainMbwbKnown": true,
+    "capEUR": {
+      "REGAL": 40789.77,
+      "ROYAL": 4078.97
+    }
+  },
   "decision": {
-    "exactSpainMbwbKnown": false,
+    "exactSpainMbwbKnown": true,
+    "hazardFitReady": false,
     "exactHazardKnown": false,
     "realMoneyAllowed": false
   },
   "guards": {
     "intervalCensoringPreserved": true,
+    "fastEventsDeduplicated": true,
     "noSeedPointEstimateAsFact": true,
-    "noMultipleResetAssumptionHidden": true,
+    "noHazardFitBeforeMinimumResets": true,
     "noBetting": true,
     "realMoneyAllowed": false
   }
