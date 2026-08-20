@@ -3,6 +3,7 @@ import path from 'node:path';
 
 const OUT = 'loterias-ai/edge-live/evidence/spanish-surebet-live-v1.json';
 const API = 'https://api.apostasseguras.com/request';
+const PUBLIC_PAGE = 'https://en.surebet.com/by/country/spain/surebets';
 const token = process.env.SUREBET_API_TOKEN || '';
 const bankroll = Number(process.env.SPANISH_SUREBET_BANKROLL_EUR || 100);
 const minRoiPct = Number(process.env.SPANISH_SUREBET_MIN_ROI_PCT || 0.35);
@@ -24,21 +25,23 @@ const write = (obj) => {
 };
 
 const base = {
-  version: 'spanish-surebet-live-v1',
+  version: 'spanish-surebet-live-v1.1-free-fallback',
   generatedAt: iso,
   methodology: {
-    sourceClass: 'SUREBET_OFFICIAL_API',
+    preferredSourceClass: 'SUREBET_OFFICIAL_API_IF_FREE_TOKEN_EXISTS',
+    freeFallbackSourceClass: 'PUBLIC_SPAIN_SUREBET_PAGE_RESEARCH_ONLY',
     allProngsMustBeSpanishSources: true,
     rejectDifferentRules: true,
     maxAgeMs,
     minRoiPct,
     stakeSplitFormula: 'stake_i = bankroll * (1/odds_i) / sum_j(1/odds_j)',
     economicPass: 'sum(1/odds_i) < 1 and computed ROI >= minimum',
-    executionRule: 'Never place automatically. Recheck every price and market before staking.'
+    executionRule: 'Never place automatically. Recheck every price and market directly at each Spanish bookmaker before staking.'
   },
   guards: {
     noAutomaticBetting: true,
-    apiTokenRequired: true,
+    paidApiNeverRequired: true,
+    publicPageNeverPromotesDirectlyToGreen: true,
     allSpanishSourcesRequired: true,
     staleRecordRejected: true,
     differentRulesRejected: true,
@@ -47,14 +50,100 @@ const base = {
   }
 };
 
+const decodeHtml = (s) => s
+  .replace(/&nbsp;/gi, ' ')
+  .replace(/&amp;/gi, '&')
+  .replace(/&lt;/gi, '<')
+  .replace(/&gt;/gi, '>')
+  .replace(/&#39;/gi, "'")
+  .replace(/&quot;/gi, '"');
+
+const publicFallback = async () => {
+  try {
+    const response = await fetch(PUBLIC_PAGE, {
+      headers: { 'User-Agent': 'Mozilla/5.0 EDGE research monitor', Accept: 'text/html,*/*' }
+    });
+    if (!response.ok) {
+      write({
+        ...base,
+        status: 'FREE_PUBLIC_SOURCE_ERROR',
+        source: { endpoint: PUBLIC_PAGE, httpStatus: response.status, paidApiUsed: false },
+        candidates: [],
+        publicResearchCandidates: [],
+        summary: { scanned: 0, spanishOnlyCount: 0, greenCount: 0, reason: `PUBLIC_HTTP_${response.status}` }
+      });
+      return;
+    }
+
+    const html = await response.text();
+    const text = decodeHtml(html)
+      .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+      .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+      .replace(/<br\s*\/?\s*>/gi, '\n')
+      .replace(/<\/tr>|<\/div>|<\/li>|<\/p>|<\/h\d>/gi, '\n')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/[ \t]+/g, ' ')
+      .replace(/\n{2,}/g, '\n');
+
+    const blocks = text.split(/Hide this surebet/i).slice(0, 80);
+    const rows = [];
+    for (const raw of blocks) {
+      const block = raw.slice(-5000).trim();
+      if (!block) continue;
+      const profitMatches = [...block.matchAll(/(?:^|\s)(\d+(?:\.\d+)?)%/g)].map((m) => Number(m[1]));
+      const visibleProfitPct = profitMatches.find((v) => v > 0 && v <= 25) ?? null;
+      const esBookmakers = [...new Set([...block.matchAll(/([A-Za-z0-9À-ÿ .&'_-]{2,40}\(ES\))/g)].map((m) => m[1].trim()))];
+      if (!visibleProfitPct || esBookmakers.length === 0) continue;
+      rows.push({
+        visibleProfitPct,
+        spanishBookmakersMentioned: esBookmakers,
+        evidenceSnippet: block.slice(-1200),
+        phase: 'PUBLIC_RESEARCH_RECHECK_REQUIRED',
+        green: false,
+        blockers: [
+          'PUBLIC_AGGREGATOR_SAMPLE_NOT_EXECUTION_GRADE',
+          'ALL_PRONGS_NOT_MACHINE_VERIFIED_AS_SPANISH',
+          'DIRECT_BOOKMAKER_ODDS_RECHECK_REQUIRED',
+          'MARKET_RULE_EQUIVALENCE_RECHECK_REQUIRED'
+        ]
+      });
+    }
+
+    rows.sort((a, b) => b.visibleProfitPct - a.visibleProfitPct);
+    write({
+      ...base,
+      status: 'FREE_PUBLIC_SCAN_ACTIVE',
+      source: {
+        endpoint: PUBLIC_PAGE,
+        paidApiUsed: false,
+        bytes: html.length,
+        fetchedAt: iso,
+        note: 'Free public source is triage only and can never authorize wagering by itself.'
+      },
+      candidates: [],
+      publicResearchCandidates: rows.slice(0, 30),
+      summary: {
+        scanned: blocks.length,
+        spanishOnlyCount: 0,
+        greenCount: 0,
+        freeResearchCandidateCount: rows.length,
+        reason: rows.length ? 'FREE_PUBLIC_CANDIDATES_REQUIRE_DIRECT_RECHECK' : 'NO_FREE_PUBLIC_CANDIDATE_PARSED'
+      }
+    });
+  } catch (error) {
+    write({
+      ...base,
+      status: 'FREE_PUBLIC_SOURCE_EXCEPTION',
+      source: { endpoint: PUBLIC_PAGE, paidApiUsed: false },
+      candidates: [],
+      publicResearchCandidates: [],
+      summary: { scanned: 0, spanishOnlyCount: 0, greenCount: 0, reason: String(error?.message || error) }
+    });
+  }
+};
+
 if (!token) {
-  write({
-    ...base,
-    status: 'BLOCKED_NO_API_TOKEN',
-    source: { endpoint: API, configuredSpanishSources: sources, sports },
-    candidates: [],
-    summary: { scanned: 0, spanishOnlyCount: 0, greenCount: 0, reason: 'SUREBET_API_TOKEN_MISSING' }
-  });
+  await publicFallback();
   process.exit(0);
 }
 
@@ -75,13 +164,7 @@ const response = await fetch(`${API}?${params.toString()}`, {
 });
 
 if (!response.ok) {
-  write({
-    ...base,
-    status: 'API_ERROR',
-    source: { endpoint: API, httpStatus: response.status, configuredSpanishSources: sources, sports },
-    candidates: [],
-    summary: { scanned: 0, spanishOnlyCount: 0, greenCount: 0, reason: `HTTP_${response.status}` }
-  });
+  await publicFallback();
   process.exit(0);
 }
 
@@ -171,6 +254,7 @@ write({
   status: greenRows.length ? 'GREEN_CANDIDATE_RECHECK_REQUIRED' : 'NO_EXECUTABLE_SPANISH_SUREBET',
   source: {
     endpoint: API,
+    paidApiUsed: true,
     apiUpdatedAt: json.updated_at ?? null,
     configuredSpanishSources: sources,
     sports,
