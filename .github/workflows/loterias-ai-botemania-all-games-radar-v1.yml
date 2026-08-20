@@ -5,10 +5,16 @@ on:
   push:
     branches: [main]
     paths:
+      - 'loterias-ai/casino/archive/evidence/botemania-all-games-census-v1.json'
+      - 'loterias-ai/casino/archive/evidence/botemania-state-dependent-priority-ranker-v1.json'
       - 'loterias-ai/casino/jackpots/evidence/botemania-jpk-flow-model-v1.json'
       - 'loterias-ai/casino/jackpots/evidence/botemania-jpk-game-economics-census-v1.json'
       - 'loterias-ai/casino/jackpots/evidence/botemania-jpk-allocation-prospective-status-v1.json'
+      - 'loterias-ai/casino/jackpots/evidence/botemania-irish-riches-jpk-current-screen-v1.json'
+      - 'loterias-ai/casino/jackpots/evidence/botemania-generic-fast-reset-ledger-v1.json'
+      - 'loterias-ai/casino/jackpots/evidence/botemania-progressive-network-map-v1.json'
       - 'loterias-ai/casino/jackpots/botemania-jpk-current-all-games-ev-screen-v1.mjs'
+      - 'loterias-ai/casino/botemania-global-economic-gate-v1.mjs'
       - '.github/workflows/loterias-ai-botemania-all-games-radar-v1.yml'
 
 permissions:
@@ -21,7 +27,7 @@ concurrency:
 jobs:
   radar:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 7
     steps:
       - uses: actions/checkout@v4
         with:
@@ -34,12 +40,15 @@ jobs:
         run: |
           set -euo pipefail
           node loterias-ai/casino/jackpots/botemania-jpk-current-all-games-ev-screen-v1.mjs
+          node loterias-ai/casino/botemania-global-economic-gate-v1.mjs
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add -- loterias-ai/casino/jackpots/evidence/botemania-jpk-current-all-games-ev-screen-v1.json
+          git add -- \
+            loterias-ai/casino/jackpots/evidence/botemania-jpk-current-all-games-ev-screen-v1.json \
+            loterias-ai/casino/evidence/botemania-global-economic-gate-v1.json
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'data(casino): refresh Botemania all-games EV radar'
-          for attempt in 1 2 3; do
+          git commit -m 'data(casino): refresh Botemania global economic gate'
+          for attempt in 1 2 3 4; do
             if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
             sleep $((attempt*2))
           done
