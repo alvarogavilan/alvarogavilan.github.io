@@ -9,6 +9,7 @@ on:
       - 'loterias-ai/casino/jackpots/botemania-jpk-reserve-envelope-v1.mjs'
       - 'loterias-ai/casino/jackpots/botemania-jpk-high-rtp-reconciliation-v1.mjs'
       - 'loterias-ai/casino/jackpots/botemania-jpk-current-all-games-ev-screen-v1.mjs'
+      - 'loterias-ai/casino/jackpots/botemania-mega-bars-jpk-priority-screen-v1.mjs'
       - '.github/workflows/loterias-ai-botemania-hazard-acceleration-v1.yml'
   schedule:
     - cron: '*/5 * * * *'
@@ -44,11 +45,13 @@ jobs:
             node loterias-ai/casino/jackpots/botemania-jpk-reserve-envelope-v1.mjs
             node loterias-ai/casino/jackpots/botemania-jpk-high-rtp-reconciliation-v1.mjs
             node loterias-ai/casino/jackpots/botemania-jpk-current-all-games-ev-screen-v1.mjs
+            node loterias-ai/casino/jackpots/botemania-mega-bars-jpk-priority-screen-v1.mjs
             git add \
               loterias-ai/casino/jackpots/evidence/botemania-jpk-shape-free-bound-v1.json \
               loterias-ai/casino/jackpots/evidence/botemania-jpk-reserve-envelope-v1.json \
               loterias-ai/casino/jackpots/evidence/botemania-jpk-high-rtp-reconciliation-v1.json \
-              loterias-ai/casino/jackpots/evidence/botemania-jpk-current-all-games-ev-screen-v1.json
+              loterias-ai/casino/jackpots/evidence/botemania-jpk-current-all-games-ev-screen-v1.json \
+              loterias-ai/casino/jackpots/evidence/botemania-mega-bars-jpk-priority-screen-v1.json
             if git diff --cached --quiet; then exit 0; fi
             git commit -m 'data(casino): refresh Botemania hazard acceleration lanes'
             if git push origin HEAD:main; then exit 0; fi
