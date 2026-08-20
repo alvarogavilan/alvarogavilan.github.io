@@ -1,0 +1,27 @@
+name: Loterias AI MetaPleno v139 v140 Current
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v139-v140-current]
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v139-bonoloto-mdl.mjs'
+      - 'loterias-ai/scripts/meta-pleno-v140-bonoloto-family-union-null.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v139-v140-current.yml'
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/meta-pleno-v139-bonoloto-mdl.mjs
+      - run: node loterias-ai/scripts/meta-pleno-v140-bonoloto-family-union-null.mjs
+      - name: Persist v139 and v140
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v139-bonoloto-mdl.json loterias-ai/data/research/meta-pleno-v140-bonoloto-family-union-null.json
+          git diff --cached --quiet || git commit -m 'data(loterias-ai): persist v139 MDL and v140 union-null'
+          git push
