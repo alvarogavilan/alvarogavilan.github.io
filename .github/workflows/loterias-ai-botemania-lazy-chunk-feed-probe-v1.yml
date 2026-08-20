@@ -9,6 +9,8 @@ on:
       - 'loterias-ai/casino/jackpots/botemania-jpk-lazy-chunk-feed-summary-v1.mjs'
       - 'loterias-ai/casino/jackpots/botemania-get-winners-query-extractor-v1.mjs'
       - 'loterias-ai/casino/jackpots/botemania-get-winners-public-probe-v1.mjs'
+      - 'loterias-ai/casino/jackpots/botemania-get-winners-venture-probe-v1.mjs'
+      - 'loterias-ai/casino/jackpots/botemania-double-jackpots-query-extractor-v1.mjs'
       - '.github/workflows/loterias-ai-botemania-lazy-chunk-feed-probe-v1.yml'
   schedule:
     - cron: '11 */3 * * *'
@@ -37,6 +39,8 @@ jobs:
           node loterias-ai/casino/jackpots/botemania-jpk-lazy-chunk-feed-summary-v1.mjs
           node loterias-ai/casino/jackpots/botemania-get-winners-query-extractor-v1.mjs
           node loterias-ai/casino/jackpots/botemania-get-winners-public-probe-v1.mjs
+          node loterias-ai/casino/jackpots/botemania-get-winners-venture-probe-v1.mjs
+          node loterias-ai/casino/jackpots/botemania-double-jackpots-query-extractor-v1.mjs
       - name: Persist evidence
         shell: bash
         run: |
@@ -47,7 +51,9 @@ jobs:
             loterias-ai/casino/jackpots/evidence/botemania-jpk-lazy-chunk-feed-probe-v1.json \
             loterias-ai/casino/jackpots/evidence/botemania-jpk-lazy-chunk-feed-summary-v1.json \
             loterias-ai/casino/jackpots/evidence/botemania-get-winners-query-extractor-v1.json \
-            loterias-ai/casino/jackpots/evidence/botemania-get-winners-public-probe-v1.json
+            loterias-ai/casino/jackpots/evidence/botemania-get-winners-public-probe-v1.json \
+            loterias-ai/casino/jackpots/evidence/botemania-get-winners-venture-probe-v1.json \
+            loterias-ai/casino/jackpots/evidence/botemania-double-jackpots-query-extractor-v1.json
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'data(casino): refresh Botemania lazy-chunk feed evidence'
           for attempt in 1 2 3; do
