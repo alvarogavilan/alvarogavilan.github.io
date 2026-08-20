@@ -1,6 +1,6 @@
 {
-  "version": "botemania-global-economic-gate-v1",
-  "generatedAt": "2026-08-20T09:02:27.574Z",
+  "version": "botemania-global-economic-gate-v1.2-multi-execution-wired",
+  "generatedAt": "2026-08-20T17:16:58.111Z",
   "operator": "botemania-es",
   "scope": {
     "promotionsExcluded": true,
@@ -16,16 +16,29 @@
     "jackpotKingGames": 20,
     "jpkCurrentlyScreenable": 10,
     "resetZeroCandidates": 0,
-    "genericLiveMeterTracks": 17,
-    "genericResetCandidateEvents": 0,
-    "staticPublishedRtpAtOrAbove100Count": 0
+    "genericLiveMeterTracks": 18,
+    "genericResetCandidateEvents": 31,
+    "staticPublishedRtpAtOrAbove100Count": 0,
+    "executionLanesTracked": 1,
+    "executionLanesGreen": 0
   },
   "currentEvidence": {
     "jpkObservedAt": "2026-08-20T06:48:55.020Z",
     "jpkRobustResearchScreenPassCount": 0,
     "irishObservedAt": "2026-08-20T06:48:55.020Z",
-    "irishBestResearchRtpPct": 95.93,
+    "irishBestResearchRtpPct": 96.1917,
     "irishCurrentPositiveEvProven": false,
+    "researchScreenCandidates": [],
+    "executionPlan": {
+      "generatedAt": "2026-08-20T06:49:17.452Z",
+      "selectedLaneId": null,
+      "state": "NO_EXECUTION",
+      "action": "DO_NOT_PLAY",
+      "validUntil": null,
+      "freshNow": false,
+      "trackedLanes": 1,
+      "greenLanes": 0
+    },
     "topDynamic": [
       {
         "slug": "irish-riches-megaways-jackpot-king",
@@ -130,21 +143,24 @@
     ],
     "staticPublishedRtpAtOrAbove100": []
   },
+  "validatedEconomicCandidates": [],
   "decision": {
     "state": "NO_VALIDATED_POSITIVE_EV_CANDIDATE",
     "action": "DO_NOT_PLAY",
     "validatedPositiveEvCount": 0,
     "unresolvedProgressiveOrDynamicCandidates": 65,
     "realMoneyAllowed": false,
-    "reason": "ZERO_CANDIDATES_HAVE_PASSED_FULL_ECONOMIC_PROMOTION_GATE"
+    "automaticBettingAllowed": false,
+    "reason": "ZERO_CANDIDATES_HAVE_PASSED_FULL_EXECUTION_GATE"
   },
-  "interpretation": "This is a global promotion gate, not a proof that every censused game has negative EV in every future state. Fixed-RTP games below 100% are not promoted; progressive/state-dependent games remain open until their live state, hazard and execution parameters are sufficiently resolved.",
+  "interpretation": "Global economic gate for structural, non-promotional opportunities. Research screens never authorize wagering. Only fully green, fresh, stake-bounded EDGE LIVE lanes are promoted, and a final live recheck remains mandatory.",
   "guards": {
     "noPromotionFromPublishedRtpAlone": true,
     "noPromotionFromResearchScreenAlone": true,
     "noClaimAllGamesExhaustivelyNegative": true,
     "promotionsExcluded": true,
     "noAutomaticBetting": true,
-    "realMoneyAllowed": false
+    "finalGreenRecheckMandatory": true,
+    "staleExecutionPlanFailsClosed": true
   }
 }
