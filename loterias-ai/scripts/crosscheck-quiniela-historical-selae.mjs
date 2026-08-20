@@ -8,6 +8,7 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const signs=a=>(a||[]).map(x=>String(x??'').trim().toUpperCase()).filter(Boolean);
 const storedMain=a=>{let x=signs(a);if(x.length>=15&&!['1','X','2'].includes(x[0]))x=x.slice(1);return x.slice(0,14)};
 const num=x=>{const n=Number(String(x??'').replace(/\./g,'').replace(',','.'));return Number.isFinite(n)?n:null};
+const normDate=v=>String(v||'').slice(0,10);
 const stable=value=>{
   if(Array.isArray(value)) return value.map(stable);
   if(value&&typeof value==='object') return Object.fromEntries(Object.entries(value).filter(([k])=>k!=='generatedAt').map(([k,v])=>[k,stable(v)]));
@@ -21,13 +22,18 @@ async function getOfficial(date){
   for(let attempt=1;attempt<=3;attempt++){
     try{
       const r=await fetch(url,{redirect:'follow',signal:AbortSignal.timeout(18000),headers:{'user-agent':'Mozilla/5.0 LoteriasAI scientific archive','accept':'*/*'}});
-      if(r.ok)return {url,json:await r.json()};
-      if(r.status===404)return {url,json:[]};
-      last=new Error(`HTTP ${r.status}`);
+      if(r.status===404)return {url,row:null,reason:'HTTP_404'};
+      if(!r.ok){last=new Error(`HTTP ${r.status}`);}
+      else {
+        const json=await r.json();
+        const rows=Array.isArray(json)?json:[];
+        const row=rows.find(x=>normDate(x?.fecha_sorteo)===date)||null;
+        return {url,row,reason:row?null:'EXACT_DATE_NOT_RETURNED'};
+      }
     }catch(e){last=e}
     await sleep(attempt*450);
   }
-  throw last;
+  throw last||new Error('official SELAE fetch failed');
 }
 
 const docs=new Map();
@@ -54,12 +60,11 @@ const failures=[];
 const changedFiles=new Set();
 for(const [i,{file,row}] of targets.slice(0,limit).entries()){
   try{
-    const {url,json}=await getOfficial(row.drawDate);
-    const official=Array.isArray(json)?json[0]:null;
+    const {url,row:official,reason}=await getOfficial(row.drawDate);
     if(!official){
       empty++;
       row.trainingEligible=false;
-      row.verification={...(row.verification||{}),status:'OFFICIAL_SELAE_NOT_FOUND',officialCrossCheck:{provider:'SELAE',exactDate:true,complete:false,status:'NOT_FOUND',url,fields:{outcomes:false}}};
+      row.verification={...(row.verification||{}),status:'OFFICIAL_SELAE_NOT_FOUND',officialCrossCheck:{provider:'SELAE',exactDate:false,complete:false,status:'NOT_FOUND',reason:reason||'NO_OFFICIAL_ROW',url,fields:{outcomes:false}}};
       changedFiles.add(file);
       continue;
     }
@@ -82,7 +87,7 @@ for(const [i,{file,row}] of targets.slice(0,limit).entries()){
     row.result={outcomes:partidos.map(p=>p.sign),matches:partidos};
     row.economics={currency:'EUR',ticketCost:.75,stakes:num(official.apuestas),revenue:num(official.recaudacion),jackpot:num(official.premio_bote),prizePool:num(official.premios),rolloverFund:num(official.fondo_bote),categories:(official.escrutinio||[]).map(x=>({category:Number(x.categoria),label:String(x.tipo||'').trim(),winners:num(x.ganadores),prize:num(x.premio)})),source:{provider:'SELAE',url,capturedAt:new Date().toISOString()},validation:{status:'OFFICIAL_PARSED',officialSELAE:true}};
     row.source={provider:'SELAE',tier:'official',url,validation:'official-fechav3-historical',archivePreviousSource:previousSource};
-    row.verification={status:'OFFICIAL_SELAE_VALIDATED',officialCrossCheck:{provider:'SELAE',exactDate:true,complete:true,status:'MATCH',url,fields:{outcomes:true,drawId:Boolean(official.id_sorteo)}}};
+    row.verification={status:'OFFICIAL_SELAE_VALIDATED',officialCrossCheck:{provider:'SELAE',officialDrawId:official.id_sorteo||null,exactDate:true,complete:true,status:'MATCH',url,fields:{outcomes:true,drawId:Boolean(official.id_sorteo)}}};
     row.trainingEligible=true;
     changedFiles.add(file);
     verified++;
@@ -120,10 +125,12 @@ const report={
   cumulative:{officiallyVerified:completeNow,officialNotFound:notFoundNow,officialConflicts:conflictNow,unprocessed:unprocessedNow},
   guards:{
     exactDate:true,
+    exactOfficialResponseDateRequired:true,
     exactStored14VsOfficial14:true,
     pleno15TakenOnlyAfterMainMatch:true,
     mismatchesQuarantined:true,
     official404MarkedFailClosedAndSkippedByThisPrimaryRoute:true,
+    exactDateMissMarkedFailClosedAndSkippedByThisPrimaryRoute:true,
     terminalBlockersDoNotPreventOlderDatesFromBeingScanned:true,
     fetchFailuresRemainRetryable:true,
     noInference:true,
