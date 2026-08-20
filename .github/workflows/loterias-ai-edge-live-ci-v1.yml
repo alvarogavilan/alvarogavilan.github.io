@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'loterias-ai/edge-live/**'
+      - 'loterias-ai/casino/botemania-global-economic-gate-v1.mjs'
       - '.github/workflows/loterias-ai-edge-live-fast-watch-v1.yml'
       - '.github/workflows/loterias-ai-edge-live-ci-v1.yml'
 
@@ -22,9 +23,11 @@ jobs:
           node-version: 24
       - name: Validate EDGE Live JavaScript syntax
         run: |
+          node --check loterias-ai/edge-live/app.js
           node --check loterias-ai/edge-live/botemania-all-network-fast-meter-sample-v1.mjs
           node --check loterias-ai/edge-live/edge-live-multi-execution-plan-v1.mjs
           node --check loterias-ai/edge-live/edge-live-execution-plan-v1.mjs
           node --check loterias-ai/edge-live/telegram-edge-alert-v1.mjs
+          node --check loterias-ai/casino/botemania-global-economic-gate-v1.mjs
       - name: Validate structural opportunity registry
         run: node -e "JSON.parse(require('node:fs').readFileSync('loterias-ai/edge-live/opportunity-registry-v1.json','utf8')); console.log('registry ok')"
