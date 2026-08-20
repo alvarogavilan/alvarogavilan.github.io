@@ -1,12 +1,9 @@
 #!/usr/bin/env node
-// Misión B: prior evidence (botemania-universe-current-v1.json) confirmed 4
-// Botemania video-poker titles and their RTP-context text, but never
-// specifically searched those same pages for jackpot/progressive-related
-// text - RTP context snippets and jackpot context snippets are extracted
-// around DIFFERENT keywords, so a page having no "jackpot" text near its RTP
-// disclosure does not mean the page has no jackpot text at all. This probe
-// re-fetches the 4 confirmed titles and searches specifically for jackpot/
-// progressive/bote signal, plus full paytable text where present.
+// Probe Botemania video-poker pages for two separate signal classes:
+//   A) progressive/jackpot evidence
+//   B) paytable/royal-flush evidence
+// These MUST NOT be conflated: a normal video-poker page can contain
+// "Royal"/"Escalera Real" without having any progressive jackpot at all.
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 import { BOTEMANIA_VIDEO_POKER_TITLES } from './progressive-video-poker-ev-v1.mjs';
@@ -25,18 +22,30 @@ const toText = (h) =>
     .replace(/\s+/g, ' ')
     .trim();
 
-const NEEDLES = ['jackpot', 'bote', 'progresivo', 'progressive', 'Escalera Real', 'Royal', 'coronas', 'crown'];
+const PROGRESSIVE_NEEDLES = ['jackpot', 'bote', 'progresivo', 'progressive'];
+const PAYTABLE_NEEDLES = ['Escalera Real', 'Royal', 'coronas', 'crown'];
+const ALL_NEEDLES = [...PROGRESSIVE_NEEDLES, ...PAYTABLE_NEEDLES];
 
 const results = [];
 for (const title of BOTEMANIA_VIDEO_POKER_TITLES) {
-  const r = await fetch(title.url, { headers: { accept: 'text/html,*/*', 'user-agent': 'loterias-ai-video-poker-jackpot-probe/1.0', 'cache-control': 'no-cache' }, redirect: 'follow' });
+  const r = await fetch(title.url, {
+    headers: {
+      accept: 'text/html,*/*',
+      'user-agent': 'loterias-ai-video-poker-jackpot-probe/1.1',
+      'cache-control': 'no-cache',
+    },
+    redirect: 'follow',
+  });
   const html = await r.text();
   const text = toText(html);
   const contexts = {};
-  for (const needle of NEEDLES) {
+  const lower = text.toLowerCase();
+
+  for (const needle of ALL_NEEDLES) {
     const arr = [];
-    let p = 0, c = 0;
-    const lower = text.toLowerCase(), needleLower = needle.toLowerCase();
+    let p = 0;
+    let c = 0;
+    const needleLower = needle.toLowerCase();
     while (c < 6) {
       const i = lower.indexOf(needleLower, p);
       if (i < 0) break;
@@ -46,7 +55,10 @@ for (const title of BOTEMANIA_VIDEO_POKER_TITLES) {
     }
     contexts[needle] = arr;
   }
-  const anyJackpotSignal = Object.entries(contexts).some(([k, v]) => v.length > 0);
+
+  const progressiveSignalNeedles = PROGRESSIVE_NEEDLES.filter((needle) => (contexts[needle] || []).length > 0);
+  const paytableSignalNeedles = PAYTABLE_NEEDLES.filter((needle) => (contexts[needle] || []).length > 0);
+
   results.push({
     slug: title.slug,
     url: title.url,
@@ -54,23 +66,28 @@ for (const title of BOTEMANIA_VIDEO_POKER_TITLES) {
     bytes: text.length,
     sha256: crypto.createHash('sha256').update(html).digest('hex'),
     contexts,
-    anyJackpotSignal,
+    progressiveSignalNeedles,
+    paytableSignalNeedles,
+    anyProgressiveSignal: progressiveSignalNeedles.length > 0,
+    anyPaytableSignal: paytableSignalNeedles.length > 0,
   });
 }
 
 const out = {
-  version: 'botemania-video-poker-jackpot-probe-v1',
+  version: 'botemania-video-poker-jackpot-probe-v1.1-signal-separation',
   generatedAt: new Date().toISOString(),
   operator: 'botemania-es',
   titlesProbed: results.length,
   results,
   decision: {
-    anyTitleWithJackpotSignal: results.some((r) => r.anyJackpotSignal),
-    titlesWithJackpotSignal: results.filter((r) => r.anyJackpotSignal).map((r) => r.slug),
-    exactPaytableRecoveredForAnyTitle: false, // requires manual/model read of contexts, never auto-set
+    anyTitleWithProgressiveSignal: results.some((r) => r.anyProgressiveSignal),
+    titlesWithProgressiveSignal: results.filter((r) => r.anyProgressiveSignal).map((r) => r.slug),
+    titlesWithPaytableSignal: results.filter((r) => r.anyPaytableSignal).map((r) => r.slug),
+    exactPaytableRecoveredForAnyTitle: false,
     realMoneyAllowed: false,
   },
   guards: {
+    royalTextDoesNotCountAsProgressiveEvidence: true,
     publicPageOnly: true,
     noAuthentication: true,
     noCookies: true,
@@ -78,6 +95,7 @@ const out = {
     realMoneyAllowed: false,
   },
 };
+
 fs.mkdirSync('loterias-ai/casino/jackpots/evidence', { recursive: true });
 fs.writeFileSync(OUT, JSON.stringify(out, null, 2) + '\n');
 console.log(JSON.stringify({ titlesProbed: out.titlesProbed, decision: out.decision }, null, 2));
