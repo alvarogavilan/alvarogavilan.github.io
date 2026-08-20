@@ -1,0 +1,79 @@
+{
+  "status": "NO_PLAY",
+  "generatedAt": "2026-08-20T19:30:00Z",
+  "documentedWinnersStudied": [
+    { "name": "Jerry & Marge Selbee", "mechanism": "ROLL_DOWN_LOTTERY", "detailIn": "PR #169 (branch claude/issue-168-alvarogavilan-60xksw, not yet merged): loterias-ai/universidad/advantage-play-case-studies-v1.json" },
+    { "name": "Stefan Mandel", "mechanism": "FULL_COMBINATORIAL_COVERAGE", "detailIn": "PR #169: advantage-play-case-studies-v1.json" },
+    { "name": "Gonzalo García-Pelayo", "mechanism": "PHYSICAL_WHEEL_BIAS", "detailIn": "PR #169: advantage-play-case-studies-v1.json" },
+    { "name": "Richard Jarecki", "mechanism": "PHYSICAL_WHEEL_BIAS", "detailIn": "PR #169: advantage-play-case-studies-v1.json" },
+    { "name": "Joseph Jagger", "mechanism": "PHYSICAL_WHEEL_BIAS", "detailIn": "PR #169: advantage-play-case-studies-v1.json" },
+    { "name": "Bob Dancer", "mechanism": "PROGRESSIVE_PAYTABLE_THRESHOLD_VIDEO_POKER", "detailIn": "PR #169: advantage-play-case-studies-v1.json" },
+    { "name": "Peter Liston", "mechanism": "MUST_HIT_BY_PROGRESSIVE_SLOTS", "detailIn": "PR #169: advantage-play-case-studies-v1.json" },
+    { "name": "James Grosjean", "mechanism": "TABLE_PROCEDURE_EXPLOITATION", "detailIn": "PR #169: advantage-play-case-studies-v1.json" }
+  ],
+  "mechanismsStudied": [
+    "ROLL_DOWN_LOTTERY",
+    "FULL_COMBINATORIAL_COVERAGE",
+    "PHYSICAL_WHEEL_BIAS",
+    "PROGRESSIVE_PAYTABLE_THRESHOLD_VIDEO_POKER",
+    "MUST_HIT_BY_PROGRESSIVE_SLOTS (monetary cap)",
+    "MUST_DROP_WITHIN (wall-clock deadline) - Botemania DoubleJackpots component confirmed to exist, exact numeric config still unrecovered",
+    "TABLE_PROCEDURE_EXPLOITATION"
+  ],
+  "transferableMechanisms": [
+    { "mechanism": "MUST_HIT_BY_PROGRESSIVE_SLOTS", "classification": "TRANSFERIBLE_WITH_DATA", "reason": "Same math as Botemania Jackpot King Royal/Regal, already in active audit (issue #168); blocked only on exact numeric MBWB/stake ladder, not on mechanism transfer." },
+    { "mechanism": "MUST_DROP_WITHIN", "classification": "TRANSFERIBLE_WITH_DATA", "reason": "Confirmed to exist as a live UI component (MustDropWithinContainer/CountdownContainer) in Botemania's DoubleJackpots bundle; blocked on numeric config AND on the award-mechanism question (network-random vs per-player countdown) - see currentBlockers." },
+    { "mechanism": "PROGRESSIVE_PAYTABLE_THRESHOLD_VIDEO_POKER", "classification": "TRANSFERIBLE_WITH_DATA", "reason": "Mathematically the cleanest mechanism of all studied; not yet audited against any live Spanish operator paytable/jackpot feed this pass." },
+    { "mechanism": "ROLL_DOWN_LOTTERY", "classification": "NO_EDGE", "reason": "No Spanish lottery (Primitiva/Bonoloto/Euromillones) identified with an announced roll-down-to-lower-tiers rule; not yet exhaustively audited against SELAE's official regulation text." },
+    { "mechanism": "FULL_COMBINATORIAL_COVERAGE", "classification": "OBSOLETE", "reason": "Modern Spanish/European lottery combinatorial spaces are orders of magnitude too large for full coverage to be economical at any realistic jackpot." },
+    { "mechanism": "PHYSICAL_WHEEL_BIAS", "classification": "PHYSICAL_ONLY", "reason": "No RNG-roulette equivalent exists; only conditionally relevant to live-dealer roulette with a persistently identifiable physical wheel, which has not been demonstrated for any operator accessible from Spain." },
+    { "mechanism": "TABLE_PROCEDURE_EXPLOITATION", "classification": "PHYSICAL_ONLY", "reason": "Requires a human dealer with a procedural flaw; standardized live-dealer software (automatic shufflers, fixed camera coverage) makes this near-inapplicable online." }
+  ],
+  "botemaniaCandidates": [
+    {
+      "game": "Irish Riches Megaways: Jackpot King",
+      "mechanism": "MUST_HIT_BY_PROGRESSIVE_SLOTS",
+      "state": "SCENARIO_GRID_COMPUTED_NOT_ABOVE_100_ACROSS_ALL_SCENARIOS",
+      "evidence": "loterias-ai/casino/jackpots/evidence/botemania-irish-riches-jpk-current-screen-v1.json (from issue #168 lineage)",
+      "blockedOn": ["exact numeric MBWB for Royal/Regal in Botemania ES", "exact APUESTA TOTAL stake ladder"]
+    },
+    {
+      "game": "Double Jackpots (unspecified underlying slot titles)",
+      "mechanism": "MUST_DROP_WITHIN",
+      "state": "MECHANISM_CONFIRMED_NUMERIC_CONFIG_NOT_RECOVERED",
+      "evidence": "loterias-ai/casino/jackpots/evidence/botemania-double-jackpots-mustdrop-extractor-v1.json (UI component confirmed, zero numeric matches in 'settings' chunk with v1's 7-needle scan) -> this session added botemania-double-jackpots-mustdrop-extractor-v2.mjs with an 18-needle scan plus a needle-independent numeric-object-literal scan, not yet executed against live data (session's own network egress is sandboxed; requires the new v2 GitHub Actions workflow's first scheduled run)",
+      "blockedOn": ["numeric mustDropWithin config in the settings bundle", "which specific game(s) 'Double Jackpots' currently maps to", "award mechanism: network-random-active-spin vs per-player-session-countdown (needed to convert time-hazard into a per-spin win probability at all - see must-drop-ev-engine-v1.mjs timedDeadlineHazardGrid)"]
+    }
+  ],
+  "spanishCandidates": [
+    { "operator": "Botemania", "status": "SEE botemaniaCandidates" },
+    { "operator": "PlayUZU", "status": "GAME_CATALOG_INDEXED_NOT_YET_AUDITED_FOR_MUST_DROP_OR_PROGRESSIVE_VIDEO_POKER (loterias-ai/casino/playuzu/evidence/validated-game-catalog-v1.json exists from prior work; no video-poker or must-drop match found by a quick grep this pass, needs a real per-game pass not just a text search)" },
+    { "operator": "PokerStars Casino España", "status": "NOT_YET_AUDITED_THIS_PASS" }
+  ],
+  "exactPositiveEvCandidates": [],
+  "nearThresholdCandidates": [],
+  "rejectedCandidates": [
+    { "candidate": "Lightning Roulette / RNG-driven multiplier roulette (loterias-ai/casino/lightning/)", "reason": "RNG multipliers are not a physical wheel-bias mechanism; prior prospective attempts already failed per repo history and were not rescued, per explicit instruction not to resurrect failed prospectives." },
+    { "candidate": "Red Tiger jackpot feed for Botemania via venture alias guessing", "reason": "botemania-redtiger-venture-probe-v1.json: all 4 tested venture aliases (botemania_es/botemania/BOTEMANIA/BOTEMANIA_ES) returned HTTP 200 with 0 jackpot rows - wrong venture identifier, not evidence of absence of Red Tiger jackpots at Botemania." }
+  ],
+  "currentBlockers": [
+    "This interactive session's own network egress is allowlisted and blocks direct fetches to Botemania/Blueprint/Red Tiger/Wayback (confirmed repeatedly across this and the prior session in PR #169). All live-data probes in this repo can only actually run via the scheduled GitHub Actions workflows, which have unrestricted egress but run on their own cadence (here: every 2 hours for the new v2 DoubleJackpots scan) - so this pass could ADD and IMPROVE probe code and math, but could not itself pull a single fresh number from any operator.",
+    "Double Jackpots settings bundle: even the widened v2 needle list has not been run against live data yet (requires the new workflow's first scheduled or manually dispatched run on GitHub's infrastructure).",
+    "Red Tiger's correct venture/customer identifier for Botemania is still unknown; 4 plausible aliases all returned empty result sets.",
+    "MUST_DROP_WITHIN award mechanism (network-random-active-spin vs per-player-session-countdown) is unresolved for any Botemania must-drop game; without it, must-drop-ev-engine-v1.mjs's timedDeadlineHazardGrid() correctly refuses to output a PLAY-eligible EV rather than guessing.",
+    "Misión 2 (progressive video poker) was not executed this pass beyond a superficial repo grep; needs a dedicated pass auditing Botemania/PlayUZU/PokerStars Casino España catalogs game-by-game for a real progressive-jackpot video poker title with a public paytable."
+  ],
+  "codeChanges": [
+    "loterias-ai/casino/jackpots/must-drop-ev-engine-v1.mjs (new): reusable hazard-shape EV engine generalizing the proven Irish Riches q/F/f/h formula to any monetary-cap must-drop tier, plus a wall-clock must-drop-within model that explicitly refuses to fabricate a PLAY verdict without a validated award mechanism.",
+    "loterias-ai/tests/must-drop-ev-engine-v1.test.mjs (new): unit tests with hand-verified numeric expectations for every exported function, including the refusal-to-fabricate path.",
+    "loterias-ai/casino/jackpots/botemania-double-jackpots-mustdrop-extractor-v2.mjs (new): widens v1's 7-needle scan to 18 needles plus a needle-independent numeric-object-literal scan of the settings bundle.",
+    ".github/workflows/loterias-ai-botemania-double-jackpots-mustdrop-v2.yml (new): runs the v2 extractor every 2 hours with unrestricted egress and commits fresh evidence directly (matching this repo's existing convention for read-only research cycles).",
+    ".github/workflows/loterias-ai-ci.yml (modified): added the new must-drop EV engine test to the CI gate."
+  ],
+  "nextHighestValueActions": [
+    "Wait for/trigger the new loterias-ai-botemania-double-jackpots-mustdrop-v2.yml run and review objectLiteralCandidates for a real numeric mustDropWithin config.",
+    "Try additional Red Tiger venture identifier candidates beyond the 4 already tested (check Botemania's own public game-launch client map for any Red Tiger-branded game's launch parameters, which often embed the real venture/customer string).",
+    "Run a dedicated Misión 2 pass: enumerate every game in loterias-ai/casino/playuzu/evidence/validated-game-catalog-v1.json and Botemania's own catalog for video poker titles, check each for a live progressive jackpot component.",
+    "Audit SELAE's official Euromillones/Primitiva/Bonoloto regulations for any roll-down-to-lower-tier or bote-máximo-con-reparto-forzado clause (Selbee-equivalent search, not yet done)."
+  ]
+}
