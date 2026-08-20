@@ -1,0 +1,118 @@
+{
+  "status": "NO_PLAY",
+  "generatedAt": "2026-08-20T20:05:00Z",
+  "reviewedBy": "ChatGPT GPT-5.6 Sol",
+  "reviewCorrections": [
+    "Corrected lottery rolldown valuation: E[1/W] is not 1/E[W]. The category-specific shared-fund EV now uses Fund*[1-(1-p)^N]/N.",
+    "Corrected must-drop finite-step valuation: wager probability now uses [F(q2)-F(q1)]/[1-F(q1)] rather than the infinitesimal hazard*dq approximation.",
+    "Confirmed the Euromillones cap and fifth-capped-draw redistribution rule from SELAE's own published Normas de Euromillones.",
+    "Rejected the generic inference EGT jackpot == must-hit-by; only exact jackpot families with primary rule evidence may enter the MHB gate."
+  ],
+  "documentedWinnersStudied": [
+    { "name": "Jerry & Marge Selbee", "mechanism": "ROLL_DOWN_LOTTERY", "classification": "TRANSFERIBLE_WITH_DATA" },
+    { "name": "Stefan Mandel", "mechanism": "FULL_COMBINATORIAL_COVERAGE", "classification": "OBSOLETE_AT_CURRENT_SCALE" },
+    { "name": "Gonzalo García-Pelayo", "mechanism": "PHYSICAL_WHEEL_BIAS", "classification": "PHYSICAL_ONLY_UNLESS_PERSISTENT_LIVE_WHEEL_ID_PROVEN" },
+    { "name": "Richard Jarecki", "mechanism": "PHYSICAL_WHEEL_BIAS", "classification": "PHYSICAL_ONLY_UNLESS_PERSISTENT_LIVE_WHEEL_ID_PROVEN" },
+    { "name": "Joseph Jagger", "mechanism": "PHYSICAL_WHEEL_BIAS", "classification": "PHYSICAL_ONLY" },
+    { "name": "Bob Dancer", "mechanism": "PROGRESSIVE_PAYTABLE_THRESHOLD_VIDEO_POKER", "classification": "TRANSFERIBLE_WITH_DATA" },
+    { "name": "Peter Liston", "mechanism": "MUST_HIT_BY_PROGRESSIVE_SLOTS", "classification": "TRANSFERIBLE_WITH_DATA" },
+    { "name": "James Grosjean", "mechanism": "TABLE_PROCEDURE_EXPLOITATION", "classification": "MOSTLY_PHYSICAL_ONLY" }
+  ],
+  "mechanismsStudied": [
+    "MUST_HIT_BY_PROGRESSIVE_SLOTS",
+    "MUST_DROP_WITHIN_TIMED_JACKPOTS",
+    "PROGRESSIVE_VIDEO_POKER_THRESHOLDING",
+    "ROLL_DOWN_LOTTERY",
+    "FULL_COMBINATORIAL_COVERAGE",
+    "PHYSICAL_WHEEL_BIAS",
+    "TABLE_PROCEDURE_EXPLOITATION"
+  ],
+  "transferableMechanisms": [
+    { "mechanism": "MUST_HIT_BY_PROGRESSIVE_SLOTS", "classification": "TRANSFERIBLE_WITH_DATA", "reason": "Botemania Jackpot King/MBWB mechanics are present; exact cap/seed/stake economics remain blockers." },
+    { "mechanism": "MUST_DROP_WITHIN_TIMED_JACKPOTS", "classification": "TRANSFERIBLE_WITH_DATA", "reason": "Botemania front-end contains MustDropWithin/Countdown components; numeric config and award mechanism remain unresolved." },
+    { "mechanism": "PROGRESSIVE_PAYTABLE_THRESHOLD_VIDEO_POKER", "classification": "TRANSFERIBLE_WITH_DATA", "reason": "Mechanism is mathematically clean; Botemania/PokerStars ES exact paytable/jackpot feeds require dedicated audit." },
+    { "mechanism": "ROLL_DOWN_LOTTERY", "classification": "TRANSFERIBLE_WITH_DATA", "reason": "SELAE confirms a fifth-capped-draw forced redistribution to the immediately lower winning category. Condition is not active now." }
+  ],
+  "botemaniaCandidates": [
+    {
+      "game": "Double Jackpots family",
+      "mechanism": "MUST_DROP_WITHIN",
+      "status": "MECHANISM_CONFIRMED_NUMERIC_CONFIG_NOT_RECOVERED",
+      "rank": 1,
+      "realMoneyAllowed": false,
+      "blockedOn": ["numeric mustDropWithin configuration", "specific underlying game mapping", "award mechanism: network-random-active-spin versus per-player/session countdown"]
+    },
+    {
+      "game": "Irish Riches Megaways: Jackpot King",
+      "mechanism": "MUST_HIT_BY_PROGRESSIVE_SLOTS",
+      "status": "SCENARIO_GRID_NOT_ROBUSTLY_ABOVE_100",
+      "rank": 2,
+      "realMoneyAllowed": false,
+      "blockedOn": ["exact Royal/Regal MBWB configuration in Botemania ES", "exact qualifying stake ladder"]
+    },
+    {
+      "game": "Ultimate Video Poker — progressive variant",
+      "mechanism": "PROGRESSIVE_VIDEO_POKER",
+      "status": "DEDICATED_REAUDIT_REQUIRED",
+      "rank": 3,
+      "realMoneyAllowed": false,
+      "blockedOn": ["exact current paytable and denomination", "full-jackpot qualifying wager", "current jackpot feed mapping", "break-even calculation from verified Spanish configuration"]
+    }
+  ],
+  "spanishCandidates": [
+    {
+      "operator": "PlayUZU",
+      "status": "CATALOG_AUDITED",
+      "findings": {
+        "indexedGames": 552,
+        "videoPoker": 0,
+        "dailyJackpotFlag": 0,
+        "jackpotKingFlag": 0,
+        "redTigerProviderGames": 0,
+        "isJackpotGames": 142,
+        "nextLead": "Resolve exact EGT jackpot family identities and primary rules; do not infer must-hit-by from the generic isJackpot flag."
+      }
+    },
+    { "operator": "PokerStars Casino España", "status": "PROGRESSIVE_VIDEO_POKER_AUDIT_PENDING" }
+  ],
+  "exactPositiveEvCandidates": [],
+  "nearThresholdCandidates": [
+    {
+      "candidate": "Euromillones maximum-cap forced redistribution",
+      "mechanism": "ROLL_DOWN_LOTTERY",
+      "status": "PRIMARY_RULE_CONFIRMED_NOT_ACTIVE",
+      "capEUR": 250000000,
+      "trigger": "maximum cap offered for up to four successive draws; if the fifth capped draw again has no category-1 winner, category-1 funds increase the immediately lower category having at least one winner",
+      "primarySource": "SELAE Normas de Euromillones, norma 8.3.c",
+      "primarySourceUrl": "https://www.loteriasyapuestas.es/f/loterias/documentos/normativa/Normativa%20de%20los%20juegos/Normas_de_Euromillones_Mayo_2020.pdf",
+      "engine": "loterias-ai/casino/jackpots/lottery-rolldown-ev-engine-v1.mjs",
+      "realMoneyAllowed": false,
+      "blockedOn": ["condition is not currently active", "future triggering-draw ticket count/sales", "exact redistributed category-1 fund", "base RTP excluding redistribution"]
+    }
+  ],
+  "rejectedCandidates": [
+    { "candidate": "Lightning Roulette predictive edge", "reason": "Prospective replications failed; no post-hoc rescue allowed." },
+    { "candidate": "Physical roulette bias transferred to RNG", "reason": "Mechanism does not transfer to RNG." },
+    { "candidate": "PlayUZU progressive video poker", "reason": "0 video-poker titles in the audited 552-game catalog." },
+    { "candidate": "Generic EGT jackpot == must-hit-by", "reason": "Primary EGT literature establishes MHB for specific families such as 2 Happy Hits, not all Jackpot Cards/isJackpot titles." }
+  ],
+  "currentBlockers": [
+    "Double Jackpots numeric configuration and award mechanism unresolved.",
+    "Botemania Red Tiger venture/customer identifier unresolved.",
+    "Botemania/PokerStars ES progressive-video-poker dedicated audit incomplete.",
+    "Exact EGT MHB family identities in Spanish operator catalogs unresolved."
+  ],
+  "codeChanges": [
+    "must-drop-ev-engine-v1.mjs: exact finite-interval conditional drop probability under F(q)=q^alpha.",
+    "must-drop-ev-engine-v1.test.mjs: regression tests against hazard*dq approximation.",
+    "lottery-rolldown-ev-engine-v1.mjs: exact target-category shared-fund EV by exchangeability/binomial symmetry; SELAE primary rule attached.",
+    "lottery-rolldown-ev-engine-v1.test.mjs: low-winner regression demonstrating E[1/W] != 1/E[W].",
+    "botemania-double-jackpots-mustdrop-extractor-v2.mjs and scheduled workflow: widened settings scan."
+  ],
+  "nextHighestValueActions": [
+    "Run/review the Double Jackpots v2 workflow output and inspect objectLiteralCandidates for cap/deadline/seed values.",
+    "Audit Botemania and PokerStars Casino España for progressive video poker with exact paytable and live progressive counter.",
+    "Resolve exact MHB families only where primary rules prove the semantics.",
+    "Monitor Euromillones jackpot/cap state only as a rare condition; do not buy tickets now for this mechanism."
+  ]
+}
