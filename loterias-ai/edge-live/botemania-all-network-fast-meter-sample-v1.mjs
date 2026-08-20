@@ -21,7 +21,7 @@ const r=await fetch(ENDPOINT,{
     origin:'https://www.botemania.es',
     referer:'https://www.botemania.es/',
     'cache-control':'no-cache, no-store, max-age=0',
-    'user-agent':'edge-live-all-network-fast-meter/1.0'
+    'user-agent':'edge-live-all-network-fast-meter/1.1'
   },
   body:JSON.stringify({operationName:'loadJackpots',variables:{},query:QUERY})
 });
@@ -41,11 +41,26 @@ add('redTiger',body?.data?.redTigerJackpots);
 add('blueprint',body?.data?.blueprintJackpots);
 if(!rows.length)throw new Error('Botemania all-network meter returned no readable rows');
 
-const counts=new Map();
-for(const x of rows){const k=`${x.network}:${x.id}`;counts.set(k,(counts.get(k)||0)+1)}
-const ambiguousKeys=[...counts.entries()].filter(([,n])=>n>1).map(([k])=>k).sort();
-const uniqueRows=rows.filter(x=>!ambiguousKeys.includes(`${x.network}:${x.id}`));
-const currentByKey=Object.fromEntries(uniqueRows.map(x=>[`${x.network}:${x.id}`,x]));
+// The public feed can repeat the same logical jackpot for several tiles/games.
+// Equal network+id+amount rows are safe aliases and collapse to one state.
+// Only an id carrying >1 distinct amount at the same instant is ambiguous.
+const grouped=new Map();
+for(const x of rows){
+  const key=`${x.network}:${x.id}`;
+  if(!grouped.has(key))grouped.set(key,[]);
+  grouped.get(key).push(x);
+}
+const ambiguousKeys=[];
+const canonicalRows=[];
+let collapsedAliasRows=0;
+for(const [key,group] of grouped){
+  const amounts=[...new Set(group.map(x=>Number(x.amountEUR).toFixed(6)))];
+  if(amounts.length!==1){ambiguousKeys.push(key);continue;}
+  canonicalRows.push(group[0]);
+  collapsedAliasRows+=Math.max(0,group.length-1);
+}
+ambiguousKeys.sort();
+const currentByKey=Object.fromEntries(canonicalRows.map(x=>[`${x.network}:${x.id}`,x]));
 const prevByKey=previous?.currentByKey&&typeof previous.currentByKey==='object'?previous.currentByKey:{};
 
 const resetEvents=[];
@@ -66,7 +81,7 @@ for(const [key,current] of Object.entries(currentByKey)){
     toEUR:+to.toFixed(6),
     dropEUR:+(from-to).toFixed(6),
     dropFraction:+dropFraction.toFixed(6),
-    identityClass:'EXACT_NETWORK_PLUS_UNIQUE_ID',
+    identityClass:'EXACT_NETWORK_ID_WITH_SINGLE_LIVE_AMOUNT',
     economicPromotionAllowed:false
   });
 }
@@ -74,22 +89,33 @@ for(const [key,current] of Object.entries(currentByKey)){
 const oldEvents=Array.isArray(previous?.resetEvents)?previous.resetEvents:[];
 const dedup=new Map([...oldEvents,...resetEvents].map(e=>[e.eventId,e]));
 const events=[...dedup.values()].sort((a,b)=>Date.parse(a.observedAt)-Date.parse(b.observedAt)).slice(-1000);
+const ambiguousIdentityRows=rows.filter(x=>ambiguousKeys.includes(`${x.network}:${x.id}`)).length;
 const out={
-  version:'botemania-all-network-live-state-v1',
+  version:'botemania-all-network-live-state-v1.1-alias-collapse',
   generatedAt:now,
   observedAt:now,
   operator:'botemania-es',
   source:{endpoint:ENDPOINT,operationName:'loadJackpots',httpStatus:r.status,publicNoAuth:true},
-  coverage:{totalRows:rows.length,uniqueIdentityRows:uniqueRows.length,ambiguousIdentityRows:rows.length-uniqueRows.length,networks:[...new Set(rows.map(x=>x.network))]},
+  coverage:{
+    totalRows:rows.length,
+    canonicalIdentityRows:canonicalRows.length,
+    uniqueIdentityRows:canonicalRows.length,
+    collapsedAliasRows,
+    ambiguousIdentityKeys:ambiguousKeys.length,
+    ambiguousIdentityRows,
+    networks:[...new Set(rows.map(x=>x.network))]
+  },
   rows,
+  canonicalRows,
   ambiguousKeys,
   currentByKey,
   resetEvents:events,
   summary:{newResetEvents:resetEvents.length,totalResetEvents:events.length},
   guards:{
     noRankBasedIdentity:true,
-    duplicateIdsQuarantined:true,
-    exactNetworkPlusUniqueIdRequiredForTransitions:true,
+    equalAmountAliasesCollapsed:true,
+    conflictingAmountIdsQuarantined:true,
+    exactNetworkIdSingleAmountRequiredForTransitions:true,
     noResetImpliesNoEdgeClaim:true,
     noBetting:true,
     realMoneyAllowed:false
@@ -97,4 +123,4 @@ const out={
 };
 fs.mkdirSync('loterias-ai/edge-live/evidence',{recursive:true});
 fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
-console.log(JSON.stringify({observedAt:now,coverage:out.coverage,ambiguousKeys,newResetEvents:resetEvents,current:uniqueRows},null,2));
+console.log(JSON.stringify({observedAt:now,coverage:out.coverage,ambiguousKeys,newResetEvents:resetEvents,current:canonicalRows},null,2));
