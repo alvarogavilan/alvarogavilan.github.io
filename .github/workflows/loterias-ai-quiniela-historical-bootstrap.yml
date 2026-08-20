@@ -1,0 +1,79 @@
+name: Loterias AI Quiniela Historical Bootstrap
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 * * * *'
+  push:
+    paths:
+      - '.github/workflows/loterias-ai-quiniela-historical-bootstrap.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-quiniela-historical-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Persist first strict historical SELAE checkpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          report='loterias-ai/data/archive/_meta/quiniela-historical-selae-crosscheck.json'
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+
+            if [ -f "$report" ]; then
+              echo 'Historical Quiniela report already exists; bootstrap is permanently fail-quiet.'
+              exit 0
+            fi
+
+            set +e
+            BATCH_LIMIT=4 FETCH_CONCURRENCY=2 node loterias-ai/scripts/crosscheck-quiniela-historical-selae.mjs
+            crosscheck_rc=$?
+            set -e
+
+            if [ ! -f "$report" ]; then
+              echo 'Historical script returned without creating its diagnostic report.' >&2
+              exit 1
+            fi
+
+            git add \
+              loterias-ai/data/archive/quiniela \
+              "$report"
+
+            if git diff --cached --quiet; then
+              echo 'No durable Quiniela bootstrap change despite missing report on entry.' >&2
+              exit 1
+            fi
+
+            git commit -m 'data(quiniela): bootstrap historical SELAE checkpoint'
+            if git push origin HEAD:main; then
+              if [ "$crosscheck_rc" -ne 0 ]; then
+                echo "Persisted Quiniela diagnostic checkpoint; cross-check failed closed with rc=${crosscheck_rc}." >&2
+                exit "$crosscheck_rc"
+              fi
+              exit 0
+            fi
+
+            echo "main moved during Quiniela bootstrap attempt ${attempt}; recomputing"
+            sleep $((attempt * 2))
+          done
+
+          echo 'Unable to persist first Quiniela historical checkpoint after five recomputations.' >&2
+          exit 1
