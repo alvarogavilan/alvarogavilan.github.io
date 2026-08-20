@@ -56,9 +56,19 @@ PlayUZU is closed as a video-poker lane. The dedicated search must move to **Bot
 - PlayUZU progressive video poker: absent from audited catalog.
 - Generic assumption `EGT jackpot == must-hit-by`: rejected. Only exact jackpot families with primary rules may enter the MHB gate.
 
+## This pass (Misión A/B/C)
+
+**Misión A — Double Jackpots data-flow trace.** The v2 settings scan actually ran on GitHub Actions after the review merge: both bundles HTTP 200, 51 findings across 29 needles, **0 object-literal candidates**. That static path is now confirmed exhausted, not just suspected. But the lazy-chunk-feed manifest lists **six DoubleJackpots-family chunks the mustdrop extractors never fetched at all** — the `containers-DoubleJackpots-index-js` container (hitTerms include `query`, the most likely home of the real GraphQL data source) and three large `vendors~...DoubleJackpots~...` bundles (also tagged `query`/`date`). `botemania-double-jackpots-container-trace-v1.mjs` fetches these, extracts GraphQL/REST signatures, and builds a moduleID→chunk-name reference graph. Not yet run against live data (this session's network is sandboxed); scheduled every 2h.
+
+**Misión B — video poker.** Confirmed via main's own `botemania-universe-current-v1.json`: Botemania has **4 real video-poker titles** — Classic Video Poker (96.77–99.26%), Póker 3 Opciones (97.99%/98.48%, explicit hand-pay ladder but shape doesn't match Jacks-or-Better, likely a different variant), Ultimate Video Poker (96.77–99.54%), Videopóker Remasterizado (99.54% flat — matches the well-published 9/6 Jacks-or-Better figure, unconfirmed hint). The previously-referenced "WAGER_BET" jackpot mapping for Ultimate Video Poker could **not** be found anywhere in main's evidence and is treated as unverified, not assumed. `progressive-video-poker-ev-v1.mjs` implements the Dancer-style EV engine (refuses a verdict without a cited `pRoyalFlush`), and `botemania-video-poker-jackpot-probe-v1.mjs` re-probes all 4 URLs specifically for jackpot/progresivo text that prior evidence never searched for.
+
+**Misión C — world case studies expanded.** `loterias-ai/universidad/advantage-play-case-studies-v1.json` grows from 8 to 11 cases (added Don Johnson's negotiated rebate, Zeljko Ranogajec's pari-mutuel rebate arbitrage, the MIT Blackjack Team), restructured to the exact PERSON/DOCUMENTED_PROFIT/GAME/MECHANISM/OBSERVABLE_STATE/FORMULA/ENTRY_THRESHOLD/EXIT_THRESHOLD/BANKROLL/VARIANCE/LEGALITY/ONLINE_TRANSFER/SPAIN_TRANSFER/CURRENT_SPANISH_MATCH schema requested this pass. Both new mechanisms are marked NO_APLICABLE for a 20 EUR bankroll (negotiated high-roller rebates and industrial-scale pari-mutuel syndicates don't transfer down).
+
 ## Next automatic actions
 
-1. Review the first fresh Double Jackpots v2 workflow output.
-2. Audit Botemania/PokerStars ES progressive video poker.
-3. Resolve exact EGT jackpot family identities only where primary rules prove MHB semantics.
-4. Monitor Euromillones only when its jackpot approaches the official cap condition.
+1. Trigger/review `loterias-ai-botemania-double-jackpots-container-trace-v1.yml` and read `referenceGraph`/`graphqlLikeSnippets`.
+2. Trigger/review `loterias-ai-botemania-video-poker-jackpot-probe-v1.yml` and read which titles show jackpot signal.
+3. If any video-poker title shows jackpot signal, get its exact paytable before computing `pRoyalFlush` — never borrow a foreign figure.
+4. Audit PokerStars Casino España for progressive video poker.
+5. Resolve exact EGT jackpot family identities only where primary rules prove MHB semantics.
+6. Monitor Euromillones only when its jackpot approaches the official cap condition.
