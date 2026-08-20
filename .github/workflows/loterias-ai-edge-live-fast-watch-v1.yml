@@ -7,6 +7,9 @@ on:
     branches: [main]
     paths:
       - 'loterias-ai/edge-live/botemania-fast-meter-sample-v1.mjs'
+      - 'loterias-ai/edge-live/botemania-all-network-fast-meter-sample-v1.mjs'
+      - 'loterias-ai/edge-live/edge-live-multi-execution-plan-v1.mjs'
+      - 'loterias-ai/edge-live/opportunity-registry-v1.json'
       - 'loterias-ai/edge-live/telegram-edge-alert-v1.mjs'
       - 'loterias-ai/edge-live/edge-live-execution-plan-v1.mjs'
       - 'loterias-ai/casino/jackpots/botemania-jpk-reset-reconstructor-v1.mjs'
@@ -39,7 +42,7 @@ jobs:
           node-version: 24
       - name: Refresh non-live execution metadata once
         run: node loterias-ai/edge-live/botemania-fishin-public-stake-probe-v1.mjs
-      - name: Watch Botemania meters every 15 seconds and alert exact execution transitions
+      - name: Watch all Botemania jackpot networks every 15 seconds and alert exact execution transitions
         env:
           EDGE_LIVE_TELEGRAM_BOT_TOKEN: ${{ secrets.EDGE_LIVE_TELEGRAM_BOT_TOKEN }}
           EDGE_LIVE_TELEGRAM_CHAT_ID: ${{ secrets.EDGE_LIVE_TELEGRAM_CHAT_ID }}
@@ -48,7 +51,8 @@ jobs:
         run: |
           set -euo pipefail
           for i in $(seq 1 18); do
-            echo "EDGE LIVE fast sample $i/18 at $(date -u +%FT%TZ)"
+            echo "EDGE LIVE all-network fast sample $i/18 at $(date -u +%FT%TZ)"
+            node loterias-ai/edge-live/botemania-all-network-fast-meter-sample-v1.mjs
             node loterias-ai/edge-live/botemania-fast-meter-sample-v1.mjs
             node loterias-ai/casino/jackpots/botemania-headless-jackpots-public-probe-v1.mjs
             node loterias-ai/casino/jackpots/botemania-generic-fast-reset-ledger-v1.mjs
@@ -59,19 +63,25 @@ jobs:
             node loterias-ai/casino/jackpots/botemania-irish-riches-jpk-current-screen-v1.mjs
             node loterias-ai/casino/five-euro-real-pilot-gate-v1.mjs
             node loterias-ai/edge-live/edge-live-execution-plan-v1.mjs
+            node loterias-ai/edge-live/edge-live-multi-execution-plan-v1.mjs
+            cp loterias-ai/edge-live/evidence/edge-live-multi-execution-plan-v1.json loterias-ai/edge-live/evidence/edge-live-execution-plan-v1.json
             node loterias-ai/edge-live/telegram-edge-alert-v1.mjs
             if [ "$i" -lt 18 ]; then sleep 15; fi
           done
-      - name: Persist compact fast-watch state
+      - name: Persist compact fast-watch state and current execution plan
         shell: bash
         run: |
           set -euo pipefail
           STATE=loterias-ai/edge-live/telegram-alert-state.json
+          DIAG=loterias-ai/edge-live/telegram-alert-diagnostic.json
           JPK_LEDGER=loterias-ai/casino/jackpots/evidence/botemania-jpk-fast-reset-ledger-v1.json
           GENERIC_LEDGER=loterias-ai/casino/jackpots/evidence/botemania-generic-fast-reset-ledger-v1.json
+          ALL_NETWORK=loterias-ai/edge-live/evidence/botemania-all-network-live-state-v1.json
+          PLAN=loterias-ai/edge-live/evidence/edge-live-execution-plan-v1.json
+          MULTI_PLAN=loterias-ai/edge-live/evidence/edge-live-multi-execution-plan-v1.json
           mkdir -p /tmp/edge-live-fast
           copied=0
-          for f in "$STATE" "$JPK_LEDGER" "$GENERIC_LEDGER"; do
+          for f in "$STATE" "$DIAG" "$JPK_LEDGER" "$GENERIC_LEDGER" "$ALL_NETWORK" "$PLAN" "$MULTI_PLAN"; do
             if [ -f "$f" ]; then cp "$f" "/tmp/edge-live-fast/$(basename "$f")"; copied=1; fi
           done
           if [ "$copied" -eq 0 ]; then exit 0; fi
@@ -79,13 +89,17 @@ jobs:
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git fetch origin main
           git reset --hard origin/main
-          mkdir -p loterias-ai/edge-live loterias-ai/casino/jackpots/evidence
+          mkdir -p loterias-ai/edge-live/evidence loterias-ai/casino/jackpots/evidence
           [ ! -f /tmp/edge-live-fast/telegram-alert-state.json ] || cp /tmp/edge-live-fast/telegram-alert-state.json "$STATE"
+          [ ! -f /tmp/edge-live-fast/telegram-alert-diagnostic.json ] || cp /tmp/edge-live-fast/telegram-alert-diagnostic.json "$DIAG"
           [ ! -f /tmp/edge-live-fast/botemania-jpk-fast-reset-ledger-v1.json ] || cp /tmp/edge-live-fast/botemania-jpk-fast-reset-ledger-v1.json "$JPK_LEDGER"
           [ ! -f /tmp/edge-live-fast/botemania-generic-fast-reset-ledger-v1.json ] || cp /tmp/edge-live-fast/botemania-generic-fast-reset-ledger-v1.json "$GENERIC_LEDGER"
-          git add -- "$STATE" "$JPK_LEDGER" "$GENERIC_LEDGER" 2>/dev/null || true
+          [ ! -f /tmp/edge-live-fast/botemania-all-network-live-state-v1.json ] || cp /tmp/edge-live-fast/botemania-all-network-live-state-v1.json "$ALL_NETWORK"
+          [ ! -f /tmp/edge-live-fast/edge-live-execution-plan-v1.json ] || cp /tmp/edge-live-fast/edge-live-execution-plan-v1.json "$PLAN"
+          [ ! -f /tmp/edge-live-fast/edge-live-multi-execution-plan-v1.json ] || cp /tmp/edge-live-fast/edge-live-multi-execution-plan-v1.json "$MULTI_PLAN"
+          git add -- "$STATE" "$DIAG" "$JPK_LEDGER" "$GENERIC_LEDGER" "$ALL_NETWORK" "$PLAN" "$MULTI_PLAN" 2>/dev/null || true
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'data(edge-live): persist compact multi-network reset and Telegram state'
+          git commit -m 'data(edge-live): persist all-network live state and execution plan'
           for attempt in 1 2 3; do
             if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
             sleep $((attempt*2))
