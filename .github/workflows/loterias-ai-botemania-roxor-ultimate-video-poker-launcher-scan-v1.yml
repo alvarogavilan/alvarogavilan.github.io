@@ -1,0 +1,56 @@
+name: Loterias AI Botemania Roxor Ultimate Video Poker Launcher Scan V1
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'loterias-ai/casino/jackpots/botemania-roxor-ultimate-video-poker-launcher-scan-v1.mjs'
+      - 'loterias-ai/casino/jackpots/botemania-double-jackpots-global-mustdropwithin-scan-v1.mjs'
+      - '.github/workflows/loterias-ai-botemania-roxor-ultimate-video-poker-launcher-scan-v1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/jackpots/botemania-roxor-ultimate-video-poker-launcher-scan-v1.mjs'
+      - '.github/workflows/loterias-ai-botemania-roxor-ultimate-video-poker-launcher-scan-v1.yml'
+  schedule:
+    - cron: '41 */4 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-botemania-roxor-ultimate-video-poker-launcher-scan-v1-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Syntax regression checks
+        run: |
+          node --check loterias-ai/casino/jackpots/botemania-roxor-ultimate-video-poker-launcher-scan-v1.mjs
+          node --check loterias-ai/casino/jackpots/botemania-double-jackpots-global-mustdropwithin-scan-v1.mjs
+      - name: Scan public Botemania runtime for Roxor launcher and rules assets
+        run: node loterias-ai/casino/jackpots/botemania-roxor-ultimate-video-poker-launcher-scan-v1.mjs
+      - name: Persist evidence on main only
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/casino/jackpots/evidence/botemania-roxor-ultimate-video-poker-launcher-scan-v1.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'data(casino): refresh Roxor Ultimate Video Poker launcher scan'
+          for attempt in 1 2 3 4; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
