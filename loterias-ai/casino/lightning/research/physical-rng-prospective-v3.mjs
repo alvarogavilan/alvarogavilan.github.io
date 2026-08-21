@@ -1,14 +1,26 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 const ROOT='loterias-ai/casino/lightning';
 const DATA=`${ROOT}/data/casinoorg-lightningroulette-segment-v2.jsonl`;
 const FREEZE=`${ROOT}/evidence/physical-rng-prospective-v3-freeze.json`;
+const V2_STATUS=`${ROOT}/evidence/physical-rng-prospective-v2-status.json`;
 const OUT=`${ROOT}/evidence/physical-rng-prospective-v3-status.json`;
 const f=JSON.parse(fs.readFileSync(FREEZE,'utf8'));
 if(f.version!=='physical-rng-prospective-v3-freeze-v1'||f.activation?.anchorBoundaryRounds!==5000||f.activation?.preRegisteredBeforeV2Final!==true||f.activation?.activationIndependentOfV2Outcome!==true||f.protocol?.fixedReplicationRounds!==5000||f.protocol?.permutationReplicates!==10000||f.protocol?.familyWiseAlpha!==0.01||f.protocol?.noInterimStatisticsRead!==true||f.guards?.realMoneyAllowed!==false)throw Error('physical RNG v3 frozen protocol drift');
 const rows=fs.existsSync(DATA)?fs.readFileSync(DATA,'utf8').split(/\r?\n/).filter(Boolean).map(JSON.parse).filter(r=>r.trainingEligible!==false&&Number.isInteger(Number(r.winner))&&Number(r.winner)>=0&&Number(r.winner)<=36).sort((a,b)=>Date.parse(a.timestamp??a.ts)-Date.parse(b.timestamp??b.ts)):[];
-const post=rows.slice(5000),used=post.slice(0,5000),ready=used.length===5000;
-const out={version:'physical-rng-prospective-v3-status',freezeVersion:f.version,sourceSegment:'authoritative-v2',activation:{anchorBoundaryRounds:5000,preRegisteredBeforeV2Final:true,activationIndependentOfV2Outcome:true,postBoundarySampleOnly:true},progress:{eligibleSegmentRows:rows.length,postV2BoundaryRows:post.length,replicationRoundsUsed:used.length,fixedReplicationRounds:5000,roundsRemaining:Math.max(0,5000-used.length),postReplicationRowsIgnored:Math.max(0,post.length-5000)},disclosure:{policy:ready?'FIXED_FINAL_AVAILABLE':'ADMINISTRATIVE_PROGRESS_ONLY',observedStatisticsHidden:!ready,pValuesHidden:!ready,directionHidden:!ready},final:null,guards:{first5000PostBoundaryOnly:true,noRetuning:true,noOptionalStopping:true,postBoundaryCannotRescue:true,automaticBettingAllowed:false,realMoneyAllowed:false,realStakeEUR:0}};
+const v2=fs.existsSync(V2_STATUS)?JSON.parse(fs.readFileSync(V2_STATUS,'utf8')):null;
+const v2BoundaryFinalized=v2?.progress?.roundsUsedForV2===5000&&v2?.final?.boundaryRounds===5000;
+if(rows.length>5000&&!v2BoundaryFinalized)throw Error('physical RNG v3 cannot start before finalized V2 boundary');
+const boundaryRows=rows.slice(0,Math.min(5000,rows.length));
+const anchorFingerprint=boundaryRows.length===5000?crypto.createHash('sha256').update(boundaryRows.map(r=>`${r.roundId??''}|${r.timestamp??r.ts??''}|${Number(r.winner)}`).join('\n')).digest('hex'):null;
+if(fs.existsSync(OUT)){
+ const prev=JSON.parse(fs.readFileSync(OUT,'utf8'));
+ const prior=prev.activation?.anchorFingerprint||null;
+ if(prior&&anchorFingerprint&&prior!==anchorFingerprint)throw Error('physical RNG v3 V2 boundary fingerprint drift');
+}
+const post=v2BoundaryFinalized?rows.slice(5000):[],used=post.slice(0,5000),ready=used.length===5000;
+const out={version:'physical-rng-prospective-v3-status',freezeVersion:f.version,sourceSegment:'authoritative-v2',activation:{anchorBoundaryRounds:5000,preRegisteredBeforeV2Final:true,activationIndependentOfV2Outcome:true,postBoundarySampleOnly:true,v2BoundaryFinalized,anchorFingerprint},progress:{eligibleSegmentRows:rows.length,postV2BoundaryRows:post.length,replicationRoundsUsed:used.length,fixedReplicationRounds:5000,roundsRemaining:Math.max(0,5000-used.length),postReplicationRowsIgnored:Math.max(0,post.length-5000)},disclosure:{policy:ready?'FIXED_FINAL_AVAILABLE':'ADMINISTRATIVE_PROGRESS_ONLY',observedStatisticsHidden:!ready,pValuesHidden:!ready,directionHidden:!ready},final:null,guards:{first5000PostBoundaryOnly:true,noRetuning:true,noOptionalStopping:true,postBoundaryCannotRescue:true,v2BoundaryFingerprintLocked:true,automaticBettingAllowed:false,realMoneyAllowed:false,realStakeEUR:0}};
 if(ready){
  const seq=Int16Array.from(used.map(r=>Number(r.winner))),N=seq.length,counts=Array(37).fill(0);for(const x of seq)counts[x]++;
  const expected=N/37,chi2=counts.reduce((s,c)=>s+(c-expected)**2/expected,0);
