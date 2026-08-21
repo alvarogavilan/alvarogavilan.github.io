@@ -1,0 +1,42 @@
+name: Loterias AI UVP Virgin Public Page Probe V1
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/jackpots/ultimate-video-poker-virgin-public-page-probe-v1.mjs'
+      - '.github/workflows/loterias-ai-uvp-virgin-public-page-probe-v1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Syntax check
+        run: node --check loterias-ai/casino/jackpots/ultimate-video-poker-virgin-public-page-probe-v1.mjs
+      - name: Probe exact public West Pier-linked Virgin Ultimate Video Poker page
+        run: node loterias-ai/casino/jackpots/ultimate-video-poker-virgin-public-page-probe-v1.mjs
+      - name: Assert fail-closed semantics and print compact evidence
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const p='loterias-ai/edge-live/evidence/ultimate-video-poker-virgin-public-page-probe-v1.json';
+          const x=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(x.interpretation.economicPromotionAllowed!==false) throw new Error('external public-page probe promoted economics');
+          if(x.interpretation.realMoneyAllowed!==false) throw new Error('external public-page probe enabled real money');
+          if(x.coverage.globalRuntimeChunkScanPerformed!==false) throw new Error('probe repeated exhausted global scan');
+          console.log(JSON.stringify({page:x.page,coverage:x.coverage,technicalTerms:x.technicalTerms,interpretation:x.interpretation},null,2));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: uvp-virgin-public-page-probe-v1
+          path: loterias-ai/edge-live/evidence/ultimate-video-poker-virgin-public-page-probe-v1.json
+          retention-days: 7
