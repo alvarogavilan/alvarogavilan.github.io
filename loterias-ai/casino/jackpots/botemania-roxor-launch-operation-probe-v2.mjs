@@ -60,6 +60,71 @@ function contexts(text,needle,limit=12,before=800,after=1400){
   return out;
 }
 
+// The real cancelled run's own progress log proved the top-level watchdog
+// NEVER fired even though it should have at the 10-minute mark - the only
+// way a plain setTimeout can fail to fire is a fully blocked Node event
+// loop, which only synchronous CPU-bound work (not a hung network I/O
+// promise) can cause. The two regexes this replaced both ran unbounded
+// matchAll over full multi-hundred-KB minified script text with nested/
+// alternating quantifiers ((?:\\.|[^"']){20,20000} and [\s\S]{0,5000}?),
+// both classic catastrophic-backtracking shapes. These replacements use only
+// native indexOf/lastIndexOf (linear, no backtracking) plus single-character
+// regex tests and hard-capped bounded windows, so worst-case cost per anchor
+// is a small constant regardless of file size.
+function extractGraphqlBodiesNearAnchor(text,maxResults=300){
+  const bodies=[],anchor='"GraphQL request"';
+  let searchFrom=0;
+  while(bodies.length<maxResults){
+    const anchorIdx=text.indexOf(anchor,searchFrom);
+    if(anchorIdx<0)break;
+    searchFrom=anchorIdx+anchor.length;
+    const windowStart=Math.max(0,anchorIdx-21000);
+    const window=text.slice(windowStart,anchorIdx);
+    const bodyKeyIdx=window.lastIndexOf('body:');
+    if(bodyKeyIdx<0)continue;
+    let i=bodyKeyIdx+5;
+    while(i<window.length&&(window[i]===' '||window[i]==='\t'))i++;
+    const quote=window[i];
+    if(quote!=='"'&&quote!=="'")continue;
+    i++;
+    const strStart=i;
+    let escaped=false,closed=false;
+    while(i<window.length&&i-strStart<20000){
+      const ch=window[i];
+      if(escaped){escaped=false;i++;continue;}
+      if(ch==='\\'){escaped=true;i++;continue;}
+      if(ch===quote){closed=true;break;}
+      i++;
+    }
+    if(!closed)continue;
+    const raw=window.slice(strStart,i);
+    if(raw.length>=20)bodies.push(decodeJsStringBody(raw));
+  }
+  return bodies;
+}
+function extractQueryMutationSnippets(text,maxResults=500){
+  const bodies=[];
+  for(const kw of ['query','mutation']){
+    let from=0;
+    while(bodies.length<maxResults){
+      const idx=text.indexOf(kw,from);
+      if(idx<0)break;
+      from=idx+kw.length;
+      if(!/\s/.test(text[idx+kw.length]||''))continue;
+      let j=idx+kw.length;
+      while(j<text.length&&j-idx<50&&/\s/.test(text[j]))j++;
+      if(!/[A-Za-z_]/.test(text[j]||''))continue;
+      let k=j;
+      while(k<text.length&&k-j<200&&/[A-Za-z0-9_]/.test(text[k]))k++;
+      const searchEnd=Math.min(text.length,k+5000);
+      const closeIdx=text.indexOf('}',k);
+      if(closeIdx<0||closeIdx>searchEnd)continue;
+      bodies.push(text.slice(idx,closeIdx+1));
+    }
+  }
+  return bodies;
+}
+
 const markerNeedles=[
   'gameLaunch','launchGame','launchUrl','launchURL','gameUrl','gameURL','openGame','playGame','playUrl','playURL',
   'gameSession','sessionToken','iframeUrl','iframeURL','gameEngineId','gameEngineID','realPlay','demoPlay','game-info',
@@ -94,16 +159,7 @@ async function main(){
       for(const needle of markerNeedles){if(text.toLowerCase().includes(needle.toLowerCase())) hits.push(...contexts(text,needle,5));}
 
       // Apollo/webpack bundles commonly retain GraphQL source in loc.source.body strings.
-      const bodies=[];
-      for(const m of text.matchAll(/body:\s*["']((?:\\.|[^"']){20,20000})["']\s*,\s*name:\s*["']GraphQL request["']/g)){
-        bodies.push(decodeJsStringBody(m[1]));
-        if(bodies.length>=300)break;
-      }
-      // Also capture readable embedded query/mutation strings when minifier layout differs.
-      for(const m of text.matchAll(/(?:query|mutation)\s+[A-Za-z_][A-Za-z0-9_]*[\s\S]{0,5000}?\}/g)){
-        bodies.push(m[0]);
-        if(bodies.length>=500)break;
-      }
+      const bodies=[...extractGraphqlBodiesNearAnchor(text),...extractQueryMutationSnippets(text)];
       const uniqueBodies=[...new Set(bodies)];
       for(const body of uniqueBodies){
         const opMatch=body.match(/\b(query|mutation)\s+([A-Za-z_][A-Za-z0-9_]*)/);
