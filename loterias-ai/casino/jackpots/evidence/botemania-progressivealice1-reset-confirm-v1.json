@@ -1,0 +1,89 @@
+{
+  "version": "botemania-progressivealice1-reset-confirm-v1",
+  "generatedAt": "2026-08-21T14:54:26.911Z",
+  "operator": "botemania-es",
+  "workflowRunId": 32494665594,
+  "workflowJobId": 96810140516,
+  "provenance": {
+    "source": "Loterias AI Tiki Pair Reset Confirm V1",
+    "pr": 262,
+    "headSha": "5528cdcb6135c36b4630eb2c3b4b62b571a943b6",
+    "evidenceClass": "INDEPENDENT_TWO_SAMPLE_STABLE_ID_RESET_CONFIRMATION"
+  },
+  "target": {
+    "network": "generic",
+    "id": "progressivealice1"
+  },
+  "baseline": {
+    "observedAt": "2026-08-21T14:44:06.603Z",
+    "amountEUR": 1208.43,
+    "identityClass": "EXACT_NETWORK_PLUS_UNIQUE_ID",
+    "identityExact": true,
+    "sourceLedgerVersion": "botemania-generic-fast-reset-ledger-v2.1-independent-reset-confirmation"
+  },
+  "observedDropEvent": {
+    "currentEUR": 2.82,
+    "dropEUR": 1205.61,
+    "dropFraction": 0.997666,
+    "priorClassification": "UNCLASSIFIED_DROP_CANDIDATE"
+  },
+  "confirmationSamples": [
+    {
+      "observedAt": "2026-08-21T14:54:23.502Z",
+      "httpStatus": 200,
+      "targetRowCount": 2,
+      "targetDistinctAmounts": [5.06],
+      "uniqueIdentityInSnapshot": true
+    },
+    {
+      "observedAt": "2026-08-21T14:54:26.911Z",
+      "httpStatus": 200,
+      "targetRowCount": 2,
+      "targetDistinctAmounts": [5.06],
+      "uniqueIdentityInSnapshot": true
+    }
+  ],
+  "transition": {
+    "baselineEUR": 1208.43,
+    "eventPostEUR": 2.82,
+    "confirmationPostResetUpperBoundEUR": 5.06,
+    "dropEUR": 1205.61,
+    "dropFraction": 0.997666,
+    "classification": "CONFIRMED_RESET_OF_STABLE_FEED_ID"
+  },
+  "pairObservation": {
+    "pairedId": "tikitemple2_1",
+    "sameEventTimestamp": true,
+    "sameBaselineEUR": true,
+    "sameEventPostEUR": true,
+    "sameTwoFreshConfirmationAmounts": true,
+    "classification": "SYNCHRONIZED_SHARED_RESET_SIGNATURE",
+    "exactAliasProven": false,
+    "reasonExactAliasNotProven": "Earlier simultaneous observations of tikitemple2_1 and progressivealice1 diverged by cents; synchronized reset evidence supports a shared/reset-linked mechanism but cannot restore exact-alias identity."
+  },
+  "inference": {
+    "meterResetConfirmed": true,
+    "jackpotWinConfirmed": false,
+    "triggeringGameKnown": false,
+    "triggeringTierKnown": false,
+    "seedPointEstimateEUR": null,
+    "postResetSeedUpperBoundEUR": 5.06,
+    "exactGameIdentityProven": false,
+    "tikiTemploIdentityProven": false,
+    "tikiTropicoIdentityProven": false,
+    "currentPositiveEvProven": false,
+    "economicPromotionAllowed": false,
+    "realMoneyAllowed": false
+  },
+  "guards": {
+    "baselineMustBeExactStableId": true,
+    "twoFreshUniqueCurrentSamplesRequired": true,
+    "earlierDivergencePreventsExactAliasClaim": true,
+    "noResetEqualsJackpotWin": true,
+    "noPostResetEqualsExactSeed": true,
+    "noTriggerAttribution": true,
+    "noGameBindingFromResetAlone": true,
+    "noBetting": true,
+    "realMoneyAllowed": false
+  }
+}
