@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import {compareAttempt,targetSummary} from '../casino/jackpots/tiki-canalbingo-venture-discriminator-v1.mjs';
+
+const control={rows:[{id:'tikitemple2_1',amountEUR:12.11},{id:'tikitemple2_1',amountEUR:12.11},{id:'progressivealice1',amountEUR:12.11},{id:'progressivealice1',amountEUR:12.11},{id:'other',amountEUR:99}]};
+const same={rows:structuredClone(control.rows)};
+const sameCmp=compareAttempt(control,same);
+assert.equal(sameCmp.fullFeedDiffers,false);
+assert.equal(sameCmp.anyTargetIncidenceDifference,false);
+assert.equal(targetSummary(control.rows,'tikitemple2_1').rowCount,2);
+assert.equal(targetSummary(control.rows,'tikitemple2_1').amountEUR,12.11);
+const changed={rows:[{id:'tikitemple2_1',amountEUR:12.11},{id:'progressivealice1',amountEUR:12.11},{id:'other',amountEUR:99}]};
+const changedCmp=compareAttempt(control,changed);
+assert.equal(changedCmp.fullFeedDiffers,true);
+assert.equal(changedCmp.anyTargetIncidenceDifference,true);
+assert.equal(changedCmp.targetComparison.tikitemple2_1.incidenceDiffers,true);
+const globalOnlyChanged={rows:[...control.rows,{id:'unrelated',amountEUR:1}]};
+const g=compareAttempt(control,globalOnlyChanged);
+assert.equal(g.fullFeedDiffers,true);
+assert.equal(g.anyTargetIncidenceDifference,false);
+console.log('tiki-canalbingo-venture-discriminator-v1: PASS');
