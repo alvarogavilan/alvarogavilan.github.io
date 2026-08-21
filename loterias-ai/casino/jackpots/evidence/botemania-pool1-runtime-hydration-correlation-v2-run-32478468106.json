@@ -1,0 +1,71 @@
+{
+  "version": "botemania-pool1-runtime-hydration-correlation-v2-run-summary",
+  "generatedAt": "2026-08-21T11:43:19.642Z",
+  "workflowRunId": 32478468106,
+  "workflowJobId": 96759620411,
+  "artifactId": 9445166829,
+  "operator": "botemania-es",
+  "target": {
+    "network": "generic",
+    "id": "pool1"
+  },
+  "confirmedResetInput": {
+    "valid": true,
+    "baselineAt": "2026-08-21T10:15:31.717Z",
+    "confirmedAt": "2026-08-21T10:29:49.813Z",
+    "baselineEUR": 1818.60,
+    "postResetUpperBoundEUR": 41.03,
+    "dropEUR": 1777.57,
+    "dropFraction": 0.977439,
+    "confirmationSampleCount": 2,
+    "classification": "CONFIRMED_RESET_OF_STABLE_FEED_ID"
+  },
+  "freshFeedCorrelation": {
+    "sampleCount": 3,
+    "samples": [
+      {"observedAt":"2026-08-21T11:43:10.908Z","pool1EUR":432.82,"coAmountIds":["JACKPOT","JackpotPool"]},
+      {"observedAt":"2026-08-21T11:43:12.629Z","pool1EUR":432.82,"coAmountIds":["JACKPOT","JackpotPool"]},
+      {"observedAt":"2026-08-21T11:43:14.358Z","pool1EUR":432.82,"coAmountIds":["JACKPOT","JackpotPool"]}
+    ],
+    "persistentCoAmountAliases": ["JACKPOT","JackpotPool"],
+    "progressive_id1PersistentInThisRun": false,
+    "identityInterpretation": "ALIAS_DISCOVERY_ONLY_AMBIGUOUS_IDS_REMAIN_QUARANTINED"
+  },
+  "winnerFeed": {
+    "venturesTested": ["botemania_es","botemania","BOTEMANIA","BOTEMANIA_ES"],
+    "allHttp200": true,
+    "totalRows": 0,
+    "correlationWindowStart": "2026-08-21T09:45:31.717Z",
+    "correlationWindowEnd": "2026-08-21T11:59:49.813Z",
+    "correlationRows": 0,
+    "canConfirmResetCause": false
+  },
+  "staticHydration": {
+    "targetPages": 10,
+    "commonScriptCount": 17,
+    "pageSpecificScriptCount": 22,
+    "strongInlineSignals": 0,
+    "strongExternalSignals": 0,
+    "exactPool1LiteralInHydration": false,
+    "allTargetJackpotEntityRefsNullOrEmpty": true,
+    "meaningfulRuntimeCandidateCount": 0,
+    "layerStatus": "EXHAUSTED_FOR_STATIC_PUBLIC_PAGE_HYDRATION"
+  },
+  "decision": {
+    "exactRuntimeGameIdentityRecovered": false,
+    "triggeringGameKnown": false,
+    "triggeringTierKnown": false,
+    "nextStep": "BOUNDED_HEADLESS_RENDERED_DOM_ON_SAME_10_PUBLIC_PAGES",
+    "economicPromotionAllowed": false,
+    "realMoneyAllowed": false
+  },
+  "guards": {
+    "noWeakCmsHydrationPromotion": true,
+    "noCoAmountIdentityPromotion": true,
+    "noWinnerCorrelationIdentityPromotion": true,
+    "nullNeverCoercedToZero": true,
+    "noGameLaunch": true,
+    "noBetting": true,
+    "realMoneyAllowed": false
+  }
+}
