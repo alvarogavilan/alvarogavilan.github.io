@@ -12,10 +12,10 @@
 //
 // Fix: accept either a trailing "%" or a trailing "(Base)"/"(base)" as a
 // valid RTP terminator. rtpContexts is already pre-filtered to windows found
-// near "Porcentaje de Retorno al Jugador"/"RTP", so any number found inside
-// it is legitimately RTP-related by construction - broadening the
-// terminator does not risk picking up unrelated numbers.
-const dec = (s) => Number(String(s).replace(/\./g, '').replace(',', '.'));
+// near "Porcentaje de Retorno al Jugador"/"RTP". Percentage decimals may be
+// written with either Spanish comma or a dot; neither form is a thousands
+// separator here because valid RTP values are constrained to (0,100).
+const dec = (s) => Number(String(s).replace(',', '.'));
 
 export function parseRtpPctsFromContexts(rtpContexts) {
   const out = new Set();
