@@ -48,6 +48,7 @@ jobs:
             const qdir='loterias-ai/data/archive/quiniela';
             const meta='loterias-ai/data/archive/_meta';
             const report=`${meta}/quiniela-historical-selae-crosscheck-preflight.json`;
+            const networkReport=`${meta}/quiniela-historical-selae-crosscheck.json`;
             let datedPre2020=0;
             let eligibleTargets=0;
             let validated=0;
@@ -68,15 +69,36 @@ jobs:
                 eligibleTargets++;
               }
             }
+            let lastNetworkCheckpoint=null;
+            if(fs.existsSync(networkReport)){
+              const r=JSON.parse(fs.readFileSync(networkReport,'utf8'));
+              const attempted=Number(r.attempted||0);
+              const verified=Number(r.verified||0);
+              const empty=Number(r.empty||0);
+              const partialRows=Number(r.partial||0);
+              const mismatch=Number(r.mismatch||0);
+              const terminalObserved=verified+empty+partialRows+mismatch;
+              lastNetworkCheckpoint={
+                attempted,
+                verified,
+                empty,
+                partial:partialRows,
+                mismatch,
+                remainingTargets:Number(r.remainingTargets||0),
+                proven:attempted>0&&terminalObserved>0
+              };
+            }
+            const networkPhaseProven=lastNetworkCheckpoint?.proven===true;
             const next={
-              version:'quiniela-historical-selae-preflight-v1',
+              version:'quiniela-historical-selae-preflight-v2',
               gameId:'quiniela',
               scope:'dated-canonical-pre-2020',
-              status:'NETWORK_PHASE_NOT_YET_PROVEN',
+              status:networkPhaseProven?'NETWORK_PHASE_PROVEN':'NETWORK_PHASE_NOT_YET_PROVEN',
               datedPre2020,
               eligibleTargets,
               cumulative:{validated,notFound,partial,conflict},
-              guards:{diagnosticPersistedBeforeNetwork:true,noInference:true,trainingPromotion:false,realMoney:false}
+              lastNetworkCheckpoint,
+              guards:{diagnosticPersistedBeforeNetwork:true,networkStatusDerivedFromPersistedCheckpoint:true,noInference:true,trainingPromotion:false,realMoney:false}
             };
             const stable=x=>JSON.stringify(x);
             let previous=null;
