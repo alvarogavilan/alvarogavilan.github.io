@@ -1,0 +1,31 @@
+{
+  "version": "physical-rng-prospective-v3-freeze-v1",
+  "createdAt": "2026-08-21T06:08:00Z",
+  "sourceSegment": "authoritative-v2",
+  "activation": {
+    "anchorExperiment": "physical-rng-prospective-v2",
+    "anchorBoundaryRounds": 5000,
+    "activationIndependentOfV2Outcome": true,
+    "preRegisteredBeforeV2Final": true,
+    "postBoundarySampleOnly": true
+  },
+  "protocol": {
+    "fixedReplicationRounds": 5000,
+    "tests": ["uniform37", "serial-max20", "wheel-neighbour-max"],
+    "permutationReplicates": 10000,
+    "familyWiseAlpha": 0.01,
+    "multiplicity": "Holm-Bonferroni",
+    "noInterimStatisticsRead": true,
+    "noRetuning": true,
+    "noOptionalStopping": true,
+    "first5000PostBoundaryOnly": true
+  },
+  "guards": {
+    "v2OutcomeKnownAtFreeze": false,
+    "v2ObservedStatisticsReadAtFreeze": false,
+    "activationIndependentOfV2Outcome": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
