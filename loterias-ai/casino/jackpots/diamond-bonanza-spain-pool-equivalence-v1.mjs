@@ -50,11 +50,12 @@ const bothTargets=bg.target&&mg.target;
 const amountDiffEUR=bothTargets?Math.abs(bg.target.amount-mg.target.amount):null;
 const sameToCent=bothTargets?Math.round(bg.target.amount*100)===Math.round(mg.target.amount*100):false;
 const identicalSpanishPublicRules=bp.facts.rtp9544&&mp.facts.rtp9544&&bp.facts.coin25c&&mp.facts.coin25c&&bp.facts.coin1eur&&mp.facts.coin1eur&&bp.facts.fivePaylines&&mp.facts.fivePaylines;
+const sameSpanishSharedPoolStronglySupported=Boolean(sameToCent&&identicalSpanishPublicRules);
 const out={
   version:'diamond-bonanza-spain-pool-equivalence-v1',observedAt,targetId:TARGET_ID,
   operators:{botemania:{graphql:bg,page:bp},monopoly:{graphql:mg,page:mp}},
   comparison:{exactTargetIdPresentBoth:Boolean(bothTargets),sameAmountToCent:sameToCent,amountDiffEUR,identicalSpanishPublicRules,sharedPoolEvidence:sameToCent?'VERY_HIGH_SIMULTANEOUS_EXACT_ID_AMOUNT_MATCH':bothTargets?'SAME_EXACT_ID_DIFFERENT_AMOUNT_OR_TIMING':'NOT_ESTABLISHED'},
-  interpretation:{sameProviderFamilyConfigurationStronglySupported:Boolean(identicalSpanishPublicRules&&bothTargets),exactHistoricalGBP25pConfigurationEquivalent:false,seed500EURVerified:false,averageHit7309EURVerified:false,exactJackpotContributionVerifiedForSpain:false,breakEvenJackpotEURVerified:false,economicPromotionAllowed:false,realMoneyAllowed:false},
+  interpretation:{sameSpanishSharedPoolStronglySupported,sameProviderFamilyConfigurationStronglySupported:Boolean(identicalSpanishPublicRules&&bothTargets),exactHistoricalGBP25pConfigurationEquivalent:false,seed500EURVerified:false,averageHit7309EURVerified:false,exactJackpotContributionVerifiedForSpain:false,breakEvenJackpotEURVerified:false,economicPromotionAllowed:false,realMoneyAllowed:false},
   guards:{publicNoAuthOnly:true,noCookies:true,noLogin:true,noGameLaunch:true,noBetting:true,noCrossCurrencyThresholdPromotion:true,noHistoricalSeedSubstitution:true,realMoneyAllowed:false}
 };
 fs.mkdirSync('loterias-ai/casino/jackpots/evidence',{recursive:true});
