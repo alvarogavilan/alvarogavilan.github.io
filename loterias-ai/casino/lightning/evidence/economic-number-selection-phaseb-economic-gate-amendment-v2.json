@@ -1,0 +1,37 @@
+{
+  "version": "economic-number-selection-phaseb-economic-gate-amendment-v2",
+  "createdAt": "2026-08-21T11:04:00Z",
+  "scope": "ECONOMIC_PROMOTION_ONLY",
+  "parentFreezeVersion": "economic-number-selection-prospective-freeze-v2",
+  "parentStatusBlobShaAtAmendment": "390b566f25851d576614ea93987eab56bf2cb1a5",
+  "phaseAtAmendment": "PHASE_A_LOCKED_PHASE_B_BLINDED",
+  "phaseACompleteAtAmendment": true,
+  "phaseBOutcomeDisclosedAtAmendment": false,
+  "phaseBEligibleRowsAtReferencedStatus": 8,
+  "referencedStatusEligibleFutureRounds": 5008,
+  "rationale": "The original primary statistical confirmation remains unchanged. This amendment only hardens downstream economic promotion so that a statistically higher hit rate cannot be called an economic edge when Phase-B paper ROI or net P&L is non-positive. It was fixed while Phase-B performance remained blinded.",
+  "primaryStatisticalHypothesisUnchanged": true,
+  "candidateSelectionUnchanged": true,
+  "phaseAWinnersUnchanged": true,
+  "phaseBWindowUnchanged": true,
+  "phaseBAlphaUnchanged": true,
+  "economicPromotionGate": {
+    "requireOriginalStatisticalConfirmationPass": true,
+    "requirePositivePhaseBRoi": true,
+    "requirePositivePhaseBNetPnlEUR": true,
+    "allConditionsRequired": true,
+    "phaseAProfitabilityIsNotUsedToReselectFinalists": true,
+    "phaseBOutcomeCannotRetuneSelectors": true
+  },
+  "guards": {
+    "noPhaseBOutcomeReadForThisAmendment": true,
+    "noCandidateChange": true,
+    "noLookbackChange": true,
+    "noCoverageChange": true,
+    "noOptionalStopping": true,
+    "statisticalResultStillReportedEvenIfEconomicallyNegative": true,
+    "automaticBettingAllowed": false,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  }
+}
