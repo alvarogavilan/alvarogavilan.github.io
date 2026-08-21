@@ -4,19 +4,52 @@
   "prospectiveStartsAt": "2026-08-18T10:50:00Z",
   "sourceSegment": "authoritative-v2",
   "progress": {
-    "eligibleRows": 4949,
+    "eligibleRows": 5007,
     "fixedBoundaryRounds": 5000,
-    "roundsUsedForV2": 4949,
-    "roundsRemaining": 51,
-    "postBoundaryRowsIgnored": 0
+    "roundsUsedForV2": 5000,
+    "roundsRemaining": 0,
+    "postBoundaryRowsIgnored": 7
   },
   "disclosure": {
-    "policy": "ADMINISTRATIVE_PROGRESS_ONLY",
-    "observedStatisticsHidden": true,
-    "pValuesHidden": true,
-    "directionHidden": true
+    "policy": "FIXED_FINAL_AVAILABLE",
+    "observedStatisticsHidden": false,
+    "pValuesHidden": false,
+    "directionHidden": false
   },
-  "final": null,
+  "final": {
+    "boundaryRounds": 5000,
+    "tests": [
+      {
+        "id": "uniform37",
+        "p": 0.8637493497161052,
+        "statistic": 26.908800000000003,
+        "holmThreshold": 0.01,
+        "rejected": false
+      },
+      {
+        "id": "serial-max20",
+        "p": 0.8233176682331766,
+        "statistic": 1.7208061768086371,
+        "holmThreshold": 0.005,
+        "rejected": false
+      },
+      {
+        "id": "wheel-neighbour-max",
+        "p": 0.16948305169483052,
+        "statistic": 1.6306679421415267,
+        "holmThreshold": 0.0033333333333333335,
+        "rejected": false
+      }
+    ],
+    "multiplicity": {
+      "method": "Holm-Bonferroni",
+      "familyWiseAlpha": 0.01,
+      "anyRejected": false
+    },
+    "interpretation": "NO_REPRODUCIBLE_PHYSICAL_ANOMALY_DETECTED",
+    "claimAllowed": false,
+    "realMoneyAllowed": false
+  },
   "guards": {
     "newCleanSegmentAfterSourceDiscontinuity": true,
     "fixedFirst5000Only": true,
@@ -27,5 +60,5 @@
     "realMoneyAllowed": false,
     "realStakeEUR": 0
   },
-  "generatedAt": "2026-08-21T07:05:38.568Z"
+  "generatedAt": "2026-08-21T07:54:57.787Z"
 }
