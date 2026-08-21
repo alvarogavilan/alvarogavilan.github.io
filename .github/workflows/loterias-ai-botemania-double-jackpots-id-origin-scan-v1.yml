@@ -1,0 +1,60 @@
+name: Loterias AI Botemania Double Jackpots ID Origin Scan V1
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'loterias-ai/casino/jackpots/botemania-double-jackpots-id-origin-scan-v1.mjs'
+      - '.github/workflows/loterias-ai-botemania-double-jackpots-id-origin-scan-v1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/jackpots/botemania-double-jackpots-id-origin-scan-v1.mjs'
+      - '.github/workflows/loterias-ai-botemania-double-jackpots-id-origin-scan-v1.yml'
+  schedule:
+    - cron: '29 */4 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-botemania-double-jackpots-id-origin-v1-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Syntax check
+        run: node --check loterias-ai/casino/jackpots/botemania-double-jackpots-id-origin-scan-v1.mjs
+      - name: Scan full public runtime for Double Jackpot ID origins
+        run: node loterias-ai/casino/jackpots/botemania-double-jackpots-id-origin-scan-v1.mjs
+      - name: Persist evidence on main only
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          EVIDENCE=loterias-ai/casino/jackpots/evidence/botemania-double-jackpots-id-origin-scan-v1.json
+          mkdir -p /tmp/double-id-origin
+          cp "$EVIDENCE" /tmp/double-id-origin/evidence.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p "$(dirname "$EVIDENCE")"
+          cp /tmp/double-id-origin/evidence.json "$EVIDENCE"
+          git add "$EVIDENCE"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'data(casino): refresh Double Jackpot ID origin scan'
+          for attempt in 1 2 3 4; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
