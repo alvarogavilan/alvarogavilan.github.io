@@ -1,0 +1,42 @@
+name: Loterias AI Bouncy Bubbles Spain Pool Screen V1
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/jackpots/bouncy-bubbles-spain-pool-screen-v1.mjs'
+      - '.github/workflows/loterias-ai-bouncy-bubbles-spain-pool-screen-v1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  screen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax check
+        run: node --check loterias-ai/casino/jackpots/bouncy-bubbles-spain-pool-screen-v1.mjs
+      - name: Run public Spain shared-pool/economic screen
+        run: node loterias-ai/casino/jackpots/bouncy-bubbles-spain-pool-screen-v1.mjs
+      - name: Enforce non-promotional semantics
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const x=JSON.parse(fs.readFileSync('loterias-ai/casino/jackpots/evidence/bouncy-bubbles-spain-pool-screen-v1.json','utf8'));
+          if(x.spanishEconomics?.requiredMultipleOfPublishedContributionRate!==51.333) throw new Error('Bouncy contribution gap arithmetic drifted');
+          if(x.interpretation?.breakEvenJackpotEUR!==null || x.interpretation?.currentPositiveEvProven!==false) throw new Error('screen fabricated an execution threshold');
+          if(x.guards?.requiredContributionScaleIsNotThreshold!==true || x.guards?.noExternalSeedSubstitution!==true) throw new Error('screen guards missing');
+          if(x.interpretation?.economicPromotionAllowed!==false || x.interpretation?.realMoneyAllowed!==false) throw new Error('screen promoted real money');
+          console.log(JSON.stringify({comparison:x.comparison,spanishEconomics:x.spanishEconomics,interpretation:x.interpretation},null,2));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bouncy-bubbles-spain-pool-screen-v1
+          path: loterias-ai/casino/jackpots/evidence/bouncy-bubbles-spain-pool-screen-v1.json
+          retention-days: 7
