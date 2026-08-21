@@ -76,7 +76,7 @@ jobs:
             const p='loterias-ai/data/archive/_meta/quiniela-historical-selae-crosscheck.json';
             const r=JSON.parse(fs.readFileSync(p,'utf8'));
             process.stdout.write(String(Number(r.remainingTargets ?? r.cumulative?.unprocessed ?? 0)));
-            NODE
+          NODE
             )
 
             changed=$(git diff --name-only -- "$qdir" "$report" | sed '/^$/d')
