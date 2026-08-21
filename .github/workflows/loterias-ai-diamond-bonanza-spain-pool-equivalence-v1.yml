@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - 'loterias-ai/casino/jackpots/diamond-bonanza-spain-pool-equivalence-v1.mjs'
+      - 'loterias-ai/casino/jackpots/botemania-diamond-bonanza-content-tabledata-probe-v1.mjs'
+      - 'loterias-ai/casino/jackpots/evidence/diamond-bonanza-*.json'
+      - 'loterias-ai/tests/diamond-bonanza-evidence-guards-v1.test.mjs'
       - '.github/workflows/loterias-ai-diamond-bonanza-spain-pool-equivalence-v1.yml'
   workflow_dispatch:
 
@@ -21,21 +24,31 @@ jobs:
         with:
           node-version: '24'
       - name: Syntax check
-        run: node --check loterias-ai/casino/jackpots/diamond-bonanza-spain-pool-equivalence-v1.mjs
+        run: |
+          node --check loterias-ai/casino/jackpots/diamond-bonanza-spain-pool-equivalence-v1.mjs
+          node --check loterias-ai/casino/jackpots/botemania-diamond-bonanza-content-tabledata-probe-v1.mjs
       - name: Probe public Spanish operator pools
         run: node loterias-ai/casino/jackpots/diamond-bonanza-spain-pool-equivalence-v1.mjs
+      - name: Probe Botemania Diamond CMS/tableData layer
+        run: node loterias-ai/casino/jackpots/botemania-diamond-bonanza-content-tabledata-probe-v1.mjs
       - name: Enforce fail-closed economics
         run: |
           node - <<'NODE'
           const fs=require('node:fs');
           const x=JSON.parse(fs.readFileSync('loterias-ai/casino/jackpots/evidence/diamond-bonanza-spain-pool-equivalence-v1.json','utf8'));
+          const cms=JSON.parse(fs.readFileSync('loterias-ai/casino/jackpots/evidence/botemania-diamond-bonanza-content-tabledata-probe-v1.json','utf8'));
           if(x.interpretation.exactHistoricalGBP25pConfigurationEquivalent!==false) throw new Error('historical GBP config promoted');
           if(x.interpretation.breakEvenJackpotEURVerified!==false) throw new Error('break-even fabricated');
           if(x.interpretation.realMoneyAllowed!==false) throw new Error('real money enabled');
-          console.log(JSON.stringify({comparison:x.comparison,interpretation:x.interpretation},null,2));
+          if(cms.decision.breakEvenModelVerified!==false || cms.decision.realMoneyAllowed!==false) throw new Error('CMS probe promoted economics');
+          console.log(JSON.stringify({comparison:x.comparison,interpretation:x.interpretation,cms:{providerIds:cms.extracted.providerIds,signals:cms.extracted.signals,decision:cms.decision}},null,2));
           NODE
+      - name: Deterministic evidence guards
+        run: node loterias-ai/tests/diamond-bonanza-evidence-guards-v1.test.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: diamond-bonanza-spain-pool-equivalence-v1
-          path: loterias-ai/casino/jackpots/evidence/diamond-bonanza-spain-pool-equivalence-v1.json
+          path: |
+            loterias-ai/casino/jackpots/evidence/diamond-bonanza-spain-pool-equivalence-v1.json
+            loterias-ai/casino/jackpots/evidence/botemania-diamond-bonanza-content-tabledata-probe-v1.json
           retention-days: 7
