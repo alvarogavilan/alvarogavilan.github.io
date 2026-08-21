@@ -85,7 +85,7 @@ jobs:
             }
             fs.writeFileSync(out,JSON.stringify({...payload,generatedAt:new Date().toISOString()},null,2)+'\n');
             console.log(JSON.stringify({changed:true,...payload.progress,status:payload.status}));
-            NODE
+          NODE
 
             git add "$out"
             if git diff --cached --quiet; then
