@@ -2,16 +2,17 @@
 import fs from 'node:fs';
 import { canonicalizeGenericRows, detectStableDrops } from './generic-jackpot-identity-v2.mjs';
 
-const FEED='loterias-ai/casino/jackpots/evidence/botemania-headless-jackpots-public-probe-v1.json';
+const FEED='loterias-ai/edge-live/evidence/botemania-all-network-live-state-v1.json';
 const OUT='loterias-ai/casino/jackpots/evidence/botemania-generic-fast-reset-ledger-v1.json';
 const VERSION='botemania-generic-fast-reset-ledger-v2-stable-id';
 const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'));}catch{return null;}};
 const feed=read(FEED);
-if(!feed?.jackpots?.generic?.length) throw new Error('generic jackpot feed unavailable');
+const genericRows=Array.isArray(feed?.rows)?feed.rows.filter(r=>r?.network==='generic'):[];
+if(!genericRows.length) throw new Error('generic all-network live feed unavailable');
 const prior=read(OUT)||{};
-const observedAt=feed.generatedAt||new Date().toISOString();
+const observedAt=feed.observedAt||feed.generatedAt||new Date().toISOString();
 
-const { tracks, quarantined }=canonicalizeGenericRows(feed.jackpots.generic);
+const { tracks, quarantined }=canonicalizeGenericRows(genericRows);
 const priorIsStable=prior?.version===VERSION;
 const newEvents=priorIsStable
   ? detectStableDrops({currentTracks:tracks,priorTracks:prior?.lastTracks||[],observedAt})
@@ -41,9 +42,10 @@ const out={
   version:VERSION,
   generatedAt:new Date().toISOString(),
   operator:'botemania-es',
+  source:'botemania-all-network-live-state-v1.json',
   sourceFeedGeneratedAt:observedAt,
   coverage:{
-    genericRows:feed.jackpots.generic.length,
+    genericRows:genericRows.length,
     stableTrackCount:tracks.length,
     quarantinedIdCount:quarantined.length,
     baselineOnlyBecauseIdentityMigration:!priorIsStable,
@@ -57,9 +59,10 @@ const out={
     newEventCount:newEvents.length,
     newestEvent:events.length?events[events.length-1]:null,
   },
-  interpretation:'Stable generic jackpot ledger. Duplicate rows with the same network+ID+amount collapse to one track. Same network+ID with multiple simultaneous amounts is quarantined and never compared across samples. A stable-ID drop remains a candidate only, not proof of a win/reset.',
+  interpretation:'Stable generic jackpot ledger sourced from the same fresh all-network sample used by EDGE. Duplicate rows with the same network+ID+amount collapse to one track. Same network+ID with multiple simultaneous amounts is quarantined and never compared across samples. A stable-ID drop remains a candidate only, not proof of a win/reset.',
   guards:{
     publicFeedOnly:true,
+    sameFreshAllNetworkSampleAsEdge:true,
     noRankBasedIdentity:true,
     equalAmountAliasesCollapsed:true,
     conflictingAmountIdsQuarantined:true,
