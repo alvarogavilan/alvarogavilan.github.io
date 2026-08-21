@@ -24,16 +24,21 @@ jobs:
         run: node --check loterias-ai/casino/jackpots/bouncy-bubbles-spain-pool-screen-v1.mjs
       - name: Run public Spain shared-pool/economic screen
         run: node loterias-ai/casino/jackpots/bouncy-bubbles-spain-pool-screen-v1.mjs
-      - name: Enforce non-promotional semantics
+      - name: Enforce non-promotional and shared-reset semantics
         run: |
           node - <<'NODE'
           const fs=require('node:fs');
           const x=JSON.parse(fs.readFileSync('loterias-ai/casino/jackpots/evidence/bouncy-bubbles-spain-pool-screen-v1.json','utf8'));
           if(x.spanishEconomics?.requiredMultipleOfPublishedContributionRate!==51.333) throw new Error('Bouncy contribution gap arithmetic drifted');
           if(x.interpretation?.breakEvenJackpotEUR!==null || x.interpretation?.currentPositiveEvProven!==false) throw new Error('screen fabricated an execution threshold');
-          if(x.guards?.requiredContributionScaleIsNotThreshold!==true || x.guards?.noExternalSeedSubstitution!==true) throw new Error('screen guards missing');
+          if(x.sharedResetTopology?.verifiedFromBothSpainOperatorRulePages!==true) throw new Error('shared-reset topology not verified on both Spain operator pages');
+          if(x.sharedResetTopology?.linkedPotsResetTogether!==true) throw new Error('linked-pot simultaneous reset rule missing');
+          if(x.sharedResetTopology?.implicationForInference?.aBouncyMeterResetProvesBouncyGameWonJackpot!==false) throw new Error('reset was wrongly attributed to Bouncy');
+          if(x.sharedResetTopology?.implicationForInference?.bouncyResetCountCanEstimateBouncySpecificHitProbability!==false) throw new Error('shared resets were wrongly treated as Bouncy pHit observations');
+          if(x.guards?.requiredContributionScaleIsNotThreshold!==true || x.guards?.noExternalSeedSubstitution!==true) throw new Error('economic screen guards missing');
+          if(x.guards?.noResetAttributionWithoutTriggeringGame!==true || x.guards?.noResetCountAsBouncyPHit!==true) throw new Error('shared-reset inference guards missing');
           if(x.interpretation?.economicPromotionAllowed!==false || x.interpretation?.realMoneyAllowed!==false) throw new Error('screen promoted real money');
-          console.log(JSON.stringify({comparison:x.comparison,spanishEconomics:x.spanishEconomics,interpretation:x.interpretation},null,2));
+          console.log(JSON.stringify({comparison:x.comparison,spanishEconomics:x.spanishEconomics,sharedResetTopology:x.sharedResetTopology,interpretation:x.interpretation},null,2));
           NODE
       - uses: actions/upload-artifact@v4
         with:
