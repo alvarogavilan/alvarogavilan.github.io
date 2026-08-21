@@ -47,42 +47,96 @@ jobs:
             git reset --hard origin/main
 
             node loterias-ai/casino/lightning/corpus-readiness.mjs
-            node loterias-ai/casino/lightning/research/physical-rng-prospective-v3.mjs
 
-            node --input-type=module <<'NODE'
-            import fs from 'node:fs';
-            const s=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/authoritative-segment-v2-status.json','utf8'));
-            const a=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/corpus-audit.json','utf8'));
-            const r=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/corpus-readiness.json','utf8'));
-            const v2=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-v2-status.json','utf8'));
-            const v3=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-status.json','utf8'));
-            if(a.qualityPass!==true||r.qualityPass!==true)throw Error('Lightning corpus quality gate failed');
-            if(a.continuity?.activeSegment!=='authoritative-v2'||r.continuity?.activeSegment!=='authoritative-v2')throw Error('active segment drift');
-            if(a.continuity?.activeSegmentRounds!==s.progress?.rows||r.continuity?.activeSegmentRounds!==s.progress?.rows)throw Error('audit/readiness lag active segment status');
-            if(a.continuity?.crossSegmentTrainingAllowed!==false||r.continuity?.crossSegmentTrainingAllowed!==false)throw Error('cross-segment training regression');
-            if(a.realMoney!==false||r.realMoney!==false)throw Error('real-money invariant broken');
-            if(a.authenticationBypassAttempted!==false||r.authenticationBypassAttempted!==false)throw Error('authentication bypass invariant broken');
-            if(v2.progress?.roundsUsedForV2!==5000||v2.final?.boundaryRounds!==5000)throw Error('RNG V2 boundary is not finalized');
-            if(v3.activation?.v2BoundaryFinalized!==true||v3.activation?.anchorBoundaryRounds!==5000)throw Error('RNG V3 did not anchor to finalized V2 boundary');
-            if(!/^[a-f0-9]{64}$/.test(String(v3.activation?.anchorFingerprint||'')))throw Error('RNG V3 boundary fingerprint missing');
-            const expectedPost=Math.max(0,Number(s.progress?.rows||0)-5000);
-            if(v3.progress?.postV2BoundaryRows!==expectedPost||v3.progress?.replicationRoundsUsed!==Math.min(5000,expectedPost))throw Error('RNG V3 progress lag active segment');
-            if(v3.progress?.replicationRoundsUsed<5000&&(v3.final!==null||v3.disclosure?.observedStatisticsHidden!==true||v3.disclosure?.pValuesHidden!==true||v3.disclosure?.directionHidden!==true))throw Error('RNG V3 interim blindness regression');
-            if(v3.guards?.realMoneyAllowed!==false)throw Error('RNG V3 real-money invariant broken');
+            V3_LOG="$(mktemp)"
+            V3_RC=0
+            set +e
+            node loterias-ai/casino/lightning/research/physical-rng-prospective-v3.mjs >"$V3_LOG" 2>&1
+            V3_RC=$?
+            set -e
+            cat "$V3_LOG"
+
+            if [ "$V3_RC" -ne 0 ]; then
+              V3_RC="$V3_RC" V3_LOG="$V3_LOG" node --input-type=module <<'NODE'
+              import fs from 'node:fs';
+              const out='loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-diagnostic.json';
+              const log=fs.readFileSync(process.env.V3_LOG,'utf8').trim();
+              const payload={
+                version:'physical-rng-prospective-v3-diagnostic-v1',
+                status:'EVALUATOR_FAILED_BEFORE_STATUS_CHECKPOINT',
+                evaluatorExitCode:Number(process.env.V3_RC),
+                errorTail:log.split(/\r?\n/).slice(-20),
+                guards:{trainingPromotion:false,claimAllowed:false,realMoneyAllowed:false},
+                generatedAt:new Date().toISOString()
+              };
+              fs.writeFileSync(out,JSON.stringify(payload,null,2)+'\n');
 NODE
+            fi
+
+            V3_GATE_RC=0
+            if [ "$V3_RC" -eq 0 ] && [ -f loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-status.json ]; then
+              set +e
+              node --input-type=module <<'NODE'
+              import fs from 'node:fs';
+              const s=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/authoritative-segment-v2-status.json','utf8'));
+              const a=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/corpus-audit.json','utf8'));
+              const r=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/corpus-readiness.json','utf8'));
+              const v2=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-v2-status.json','utf8'));
+              const v3=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-status.json','utf8'));
+              if(a.qualityPass!==true||r.qualityPass!==true)throw Error('Lightning corpus quality gate failed');
+              if(a.continuity?.activeSegment!=='authoritative-v2'||r.continuity?.activeSegment!=='authoritative-v2')throw Error('active segment drift');
+              if(a.continuity?.activeSegmentRounds!==s.progress?.rows||r.continuity?.activeSegmentRounds!==s.progress?.rows)throw Error('audit/readiness lag active segment status');
+              if(a.continuity?.crossSegmentTrainingAllowed!==false||r.continuity?.crossSegmentTrainingAllowed!==false)throw Error('cross-segment training regression');
+              if(a.realMoney!==false||r.realMoney!==false)throw Error('real-money invariant broken');
+              if(a.authenticationBypassAttempted!==false||r.authenticationBypassAttempted!==false)throw Error('authentication bypass invariant broken');
+              if(v2.progress?.roundsUsedForV2!==5000||v2.final?.boundaryRounds!==5000)throw Error('RNG V2 boundary is not finalized');
+              if(v3.activation?.v2BoundaryFinalized!==true||v3.activation?.anchorBoundaryRounds!==5000)throw Error('RNG V3 did not anchor to finalized V2 boundary');
+              if(!/^[a-f0-9]{64}$/.test(String(v3.activation?.anchorFingerprint||'')))throw Error('RNG V3 boundary fingerprint missing');
+              const expectedPost=Math.max(0,Number(s.progress?.rows||0)-5000);
+              if(v3.progress?.postV2BoundaryRows!==expectedPost||v3.progress?.replicationRoundsUsed!==Math.min(5000,expectedPost))throw Error('RNG V3 progress lag active segment');
+              if(v3.progress?.replicationRoundsUsed<5000&&(v3.final!==null||v3.disclosure?.observedStatisticsHidden!==true||v3.disclosure?.pValuesHidden!==true||v3.disclosure?.directionHidden!==true))throw Error('RNG V3 interim blindness regression');
+              if(v3.guards?.realMoneyAllowed!==false)throw Error('RNG V3 real-money invariant broken');
+NODE
+              V3_GATE_RC=$?
+              set -e
+            elif [ "$V3_RC" -eq 0 ]; then
+              V3_GATE_RC=90
+              V3_GATE_RC="$V3_GATE_RC" node --input-type=module <<'NODE'
+              import fs from 'node:fs';
+              const out='loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-diagnostic.json';
+              const payload={
+                version:'physical-rng-prospective-v3-diagnostic-v1',
+                status:'EVALUATOR_RETURNED_WITHOUT_STATUS_CHECKPOINT',
+                evaluatorExitCode:0,
+                gateExitCode:Number(process.env.V3_GATE_RC),
+                guards:{trainingPromotion:false,claimAllowed:false,realMoneyAllowed:false},
+                generatedAt:new Date().toISOString()
+              };
+              fs.writeFileSync(out,JSON.stringify(payload,null,2)+'\n');
+NODE
+            fi
 
             git add \
               loterias-ai/casino/lightning/evidence/corpus-audit.json \
-              loterias-ai/casino/lightning/evidence/corpus-readiness.json \
-              loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-status.json
+              loterias-ai/casino/lightning/evidence/corpus-readiness.json
+            [ ! -f loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-status.json ] || git add loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-status.json
+            [ ! -f loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-diagnostic.json ] || git add loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-diagnostic.json
 
             if git diff --cached --quiet; then
+              if [ "$V3_RC" -ne 0 ] || [ "$V3_GATE_RC" -ne 0 ]; then
+                echo "RNG V3 failed without new persistable diagnostic (evaluator=$V3_RC gate=$V3_GATE_RC)." >&2
+                exit 1
+              fi
               echo 'Lightning audit/readiness/RNG v3 already synchronized.'
               exit 0
             fi
 
-            git commit -m 'qa(lightning): sync strict audit and RNG v3 replication'
+            git commit -m 'qa(lightning): persist strict audit and RNG v3 diagnostics'
             if git push origin HEAD:main; then
+              if [ "$V3_RC" -ne 0 ] || [ "$V3_GATE_RC" -ne 0 ]; then
+                echo "RNG V3 diagnostic persisted; failing closed (evaluator=$V3_RC gate=$V3_GATE_RC)." >&2
+                exit 1
+              fi
               exit 0
             fi
 
