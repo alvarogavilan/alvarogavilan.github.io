@@ -1,0 +1,131 @@
+name: Loterias AI Lightning RNG V3 Durable Direct
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ['Loterias AI Lightning Clean Segment V2']
+    types: [completed]
+  schedule:
+    - cron: '*/10 * * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-lightning-rng-v3-durable-direct-${{ github.event_name }}
+  cancel-in-progress: false
+
+jobs:
+  checkpoint:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Recompute and persist RNG V3 checkpoint from latest main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+          for attempt in $(seq 1 12); do
+            git fetch origin main
+            git reset --hard origin/main
+
+            LOG="$(mktemp)"
+            RC=0
+            set +e
+            node loterias-ai/casino/lightning/research/physical-rng-prospective-v3.mjs >"$LOG" 2>&1
+            RC=$?
+            set -e
+            cat "$LOG"
+
+            if [ "$RC" -ne 0 ]; then
+              RC="$RC" LOG="$LOG" node --input-type=module <<'NODE'
+              import fs from 'node:fs';
+              const out='loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-diagnostic.json';
+              const payload={
+                version:'physical-rng-prospective-v3-diagnostic-v2',
+                status:'EVALUATOR_FAILED',
+                evaluatorExitCode:Number(process.env.RC),
+                errorTail:fs.readFileSync(process.env.LOG,'utf8').trim().split(/\r?\n/).slice(-30),
+                guards:{trainingPromotion:false,claimAllowed:false,realMoneyAllowed:false},
+                generatedAt:new Date().toISOString()
+              };
+              fs.writeFileSync(out,JSON.stringify(payload,null,2)+'\n');
+NODE
+            fi
+
+            GATE_RC=0
+            if [ "$RC" -eq 0 ]; then
+              set +e
+              node --input-type=module <<'NODE'
+              import fs from 'node:fs';
+              const statusPath='loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-status.json';
+              if(!fs.existsSync(statusPath)) throw Error('RNG V3 evaluator returned without status checkpoint');
+              const s=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/authoritative-segment-v2-status.json','utf8'));
+              const v2=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-v2-status.json','utf8'));
+              const v3=JSON.parse(fs.readFileSync(statusPath,'utf8'));
+              if(v2.progress?.roundsUsedForV2!==5000||v2.final?.boundaryRounds!==5000) throw Error('RNG V2 boundary not finalized at 5000');
+              if(v3.activation?.v2BoundaryFinalized!==true||v3.activation?.anchorBoundaryRounds!==5000) throw Error('RNG V3 activation boundary drift');
+              if(!/^[a-f0-9]{64}$/.test(String(v3.activation?.anchorFingerprint||''))) throw Error('RNG V3 SHA-256 boundary fingerprint missing');
+              const expectedPost=Math.max(0,Number(s.progress?.rows||0)-5000);
+              if(v3.progress?.postV2BoundaryRows!==expectedPost) throw Error(`RNG V3 post-boundary lag: ${v3.progress?.postV2BoundaryRows} != ${expectedPost}`);
+              if(v3.progress?.replicationRoundsUsed!==Math.min(5000,expectedPost)) throw Error('RNG V3 fixed-window progress drift');
+              if(v3.progress?.replicationRoundsUsed<5000){
+                if(v3.final!==null||v3.disclosure?.observedStatisticsHidden!==true||v3.disclosure?.pValuesHidden!==true||v3.disclosure?.directionHidden!==true) throw Error('RNG V3 interim blindness regression');
+              }
+              if(v3.guards?.noRetuning!==true||v3.guards?.noOptionalStopping!==true||v3.guards?.realMoneyAllowed!==false||v3.guards?.automaticBettingAllowed!==false) throw Error('RNG V3 guard regression');
+NODE
+              GATE_RC=$?
+              set -e
+            fi
+
+            if [ "$GATE_RC" -ne 0 ]; then
+              GATE_RC="$GATE_RC" node --input-type=module <<'NODE'
+              import fs from 'node:fs';
+              const out='loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-diagnostic.json';
+              const payload={
+                version:'physical-rng-prospective-v3-diagnostic-v2',
+                status:'STATUS_GATE_FAILED',
+                gateExitCode:Number(process.env.GATE_RC),
+                guards:{trainingPromotion:false,claimAllowed:false,realMoneyAllowed:false},
+                generatedAt:new Date().toISOString()
+              };
+              fs.writeFileSync(out,JSON.stringify(payload,null,2)+'\n');
+NODE
+            fi
+
+            [ ! -f loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-status.json ] || git add loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-status.json
+            [ ! -f loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-diagnostic.json ] || git add loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-diagnostic.json
+
+            if git diff --cached --quiet; then
+              if [ "$RC" -ne 0 ] || [ "$GATE_RC" -ne 0 ]; then
+                echo "RNG V3 remains fail-closed without a new semantic diagnostic." >&2
+                exit 1
+              fi
+              echo 'RNG V3 checkpoint already synchronized.'
+              exit 0
+            fi
+
+            git commit -m 'research(lightning): persist durable RNG v3 checkpoint'
+            if git push origin HEAD:main; then
+              if [ "$RC" -ne 0 ] || [ "$GATE_RC" -ne 0 ]; then
+                echo "RNG V3 diagnostic persisted; failing closed (evaluator=$RC gate=$GATE_RC)." >&2
+                exit 1
+              fi
+              exit 0
+            fi
+
+            echo "main moved during RNG V3 persistence; recomputing attempt $attempt/12"
+            sleep $((attempt * 2))
+          done
+
+          echo 'Unable to persist RNG V3 after twelve recomputations.' >&2
+          exit 1
