@@ -30,10 +30,15 @@ jobs:
           const fs=require('node:fs');
           const x=JSON.parse(fs.readFileSync('loterias-ai/casino/jackpots/evidence/botemania-duble-buble-tier-id-map-v1.json','utf8'));
           if(x.interpretation?.executionPromotionAllowed!==false || x.interpretation?.realMoneyAllowed!==false) throw new Error('tier probe promoted execution');
-          if(x.guards?.noSemanticNameMappingWithoutEvidence!==true || x.guards?.noAmountOnlyExecutionMapping!==true) throw new Error('tier mapping guards missing');
+          if(x.guards?.noSemanticNameMappingWithoutEvidence!==true || x.guards?.noAmountOnlyExecutionMapping!==true || x.guards?.semanticGenericWordsNeverLiteralProof!==true || x.guards?.sameIdMultipleAmountsQuarantined!==true) throw new Error('tier mapping guards missing');
+          const exact=new Set(x.evidence?.exactLiteralMappings||[]);
+          for(const id of ['JACKPOT','GRAND','GOLD']) if(exact.has(id)) throw new Error(`semantic generic id ${id} promoted as literal proof`);
+          for(const row of x.candidateRows||[]){
+            if(row.sameSnapshotAmbiguous===true && row.literalFound===true) throw new Error(`ambiguous id ${row.id} promoted as literal proof`);
+          }
           if(x.interpretation?.allThreeTierFeedIdsVerified===true){
             const ids=x.evidence?.exactLiteralMappings||[];
-            if(ids.length<3) throw new Error('three-tier verification lacks literal evidence');
+            if(ids.length<3) throw new Error('three-tier verification lacks distinctive literal evidence');
           }
           console.log(JSON.stringify({topology:x.topology,evidence:x.evidence,interpretation:x.interpretation,candidateRows:x.candidateRows},null,2));
           NODE
