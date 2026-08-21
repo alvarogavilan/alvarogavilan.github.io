@@ -7171,14 +7171,109 @@
           26
         ],
         "horse": 1,
+        "horseWinners": [
+          1,
+          2
+        ],
         "reintegro": 2
       },
       "source": {
-        "provider": "Lotoideas CSV",
-        "tier": "secondary-history",
-        "url": "https://docs.google.com/spreadsheets/d/e/2PACX-1vSQxwVULcm6WNNgABV5yWBAqb-McS26NFgiEbm5qmWoiDYA4Yk4Yxqa5gS1jnRRUiEFPXb_yf7utD8G/pub?output=csv",
-        "validation": "structural-pending-official-cross-check"
-      }
+        "provider": "SELAE",
+        "tier": "official",
+        "url": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LOTU&fecha_sorteo=20211205",
+        "validation": "official-fechav3",
+        "archivePreviousSource": {
+          "provider": "Lotoideas CSV",
+          "tier": "secondary-history",
+          "url": "https://docs.google.com/spreadsheets/d/e/2PACX-1vSQxwVULcm6WNNgABV5yWBAqb-McS26NFgiEbm5qmWoiDYA4Yk4Yxqa5gS1jnRRUiEFPXb_yf7utD8G/pub?output=csv",
+          "validation": "structural-pending-official-cross-check"
+        }
+      },
+      "drawNumber": "1148103074",
+      "economics": {
+        "currency": "EUR",
+        "ticketCost": 1,
+        "stakes": 47608,
+        "revenue": 47608,
+        "jackpot": 1200000,
+        "prizePool": 26184,
+        "rolloverFund": 1194429,
+        "categories": [
+          {
+            "category": 1,
+            "label": "1ª  (6 Números + Caballo Ganador)",
+            "winners": 0,
+            "prize": 0
+          },
+          {
+            "category": 2,
+            "label": "2ª  (6 Números)",
+            "winners": 0,
+            "prize": 0
+          },
+          {
+            "category": 3,
+            "label": "3ª  (5 Números + Caballo Ganador)",
+            "winners": 5,
+            "prize": 285.65
+          },
+          {
+            "category": 4,
+            "label": "4ª  (5 Números)",
+            "winners": 7,
+            "prize": 272.05
+          },
+          {
+            "category": 5,
+            "label": "5ª  (4 Números + Caballo Ganador)",
+            "winners": 148,
+            "prize": 6.43
+          },
+          {
+            "category": 6,
+            "label": "6ª  (4 Números)",
+            "winners": 177,
+            "prize": 10.76
+          },
+          {
+            "category": 7,
+            "label": "7ª  (3 Números + Caballo Ganador)",
+            "winners": 1450,
+            "prize": 0
+          },
+          {
+            "category": 8,
+            "label": "Reintegro",
+            "winners": 4602,
+            "prize": 1
+          }
+        ],
+        "source": {
+          "provider": "SELAE",
+          "url": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LOTU&fecha_sorteo=20211205",
+          "capturedAt": "2026-08-21T12:05:16.209Z"
+        },
+        "validation": {
+          "status": "OFFICIAL_PARSED",
+          "officialSELAE": true
+        }
+      },
+      "verification": {
+        "officialCrossCheck": {
+          "provider": "SELAE",
+          "exactDate": true,
+          "complete": true,
+          "status": "MATCH",
+          "url": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LOTU&fecha_sorteo=20211205",
+          "fields": {
+            "main": true,
+            "horseWinners": true,
+            "reintegro": true
+          },
+          "horseDeadHeat": true
+        }
+      },
+      "trainingEligible": false
     },
     {
       "drawId": "lototurf-2021-12-08",
