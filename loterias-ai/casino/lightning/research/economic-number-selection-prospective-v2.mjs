@@ -7,6 +7,7 @@ const SOURCE='loterias-ai/casino/lightning/research/economic-number-selection-pr
 const EXPECTED_GIT_BLOB_SHA='1e9431d663b6f5ced9dcb24a9d6074bb6bea3874';
 const DATA='loterias-ai/casino/lightning/data/casinoorg-lightningroulette-segment-v2.jsonl';
 const FREEZE='loterias-ai/casino/lightning/evidence/economic-number-selection-prospective-freeze-v2.json';
+const AMENDMENT='loterias-ai/casino/lightning/evidence/economic-number-selection-phaseb-economic-gate-amendment-v2.json';
 const OUT='loterias-ai/casino/lightning/evidence/economic-number-selection-prospective-status-v2.json';
 const WARMUP=200;
 
@@ -15,6 +16,8 @@ const blob=crypto.createHash('sha1').update(`blob ${Buffer.byteLength(source)}\0
 if(blob!==EXPECTED_GIT_BLOB_SHA)throw new Error(`v1 selector engine drifted: ${blob}`);
 const f=JSON.parse(fs.readFileSync(FREEZE,'utf8'));
 if(f.version!=='economic-number-selection-prospective-freeze-v2'||Number(f.cleanSegmentWarmup?.rounds)!==WARMUP||f.guards?.candidateFamilyByteForByteEquivalentToV1!==true||f.guards?.v1CandidateRankingWasNotDisclosed!==true||f.guards?.allScoredLookbacksUseOnlyCleanSegmentRows!==true||f.guards?.realMoneyAllowed!==false)throw new Error('v2 selector freeze drift');
+const amendment=JSON.parse(fs.readFileSync(AMENDMENT,'utf8'));
+if(amendment.version!=='economic-number-selection-phaseb-economic-gate-amendment-v2'||amendment.parentFreezeVersion!==f.version||amendment.scope!=='ECONOMIC_PROMOTION_ONLY'||amendment.primaryStatisticalHypothesisUnchanged!==true||amendment.candidateSelectionUnchanged!==true||amendment.phaseAWinnersUnchanged!==true||amendment.phaseBWindowUnchanged!==true||amendment.phaseBAlphaUnchanged!==true||amendment.phaseBOutcomeDisclosedAtAmendment!==false||amendment.economicPromotionGate?.requireOriginalStatisticalConfirmationPass!==true||amendment.economicPromotionGate?.requirePositivePhaseBRoi!==true||amendment.economicPromotionGate?.requirePositivePhaseBNetPnlEUR!==true||amendment.guards?.noPhaseBOutcomeReadForThisAmendment!==true||amendment.guards?.realMoneyAllowed!==false)throw new Error('v2 economic promotion amendment drift');
 if(!fs.existsSync(DATA))fs.writeFileSync(DATA,'');
 
 let runtime=source
@@ -31,7 +34,7 @@ if(runtime===source||!runtime.includes('cleanWarmupRounds'))throw new Error('fai
 const TMP='/tmp/economic-number-selection-prospective-v2-runtime.mjs';
 fs.writeFileSync(TMP,runtime);
 if(fs.statSync(DATA).size===0){
-  const zero={version:'economic-number-selection-prospective-status-v2',generatedAt:new Date().toISOString(),freezeVersion:f.version,prospectiveStartsAt:f.prospectiveStartsAt,source:{file:DATA,currentEligibleCorpusRows:0,currentMaxTimestamp:null},frozenFamily:{coverages:f.candidateFamily.coverages,modes:f.candidateFamily.modes,lookbacks:f.candidateFamily.lookbacks,totalCandidates:132},progress:{eligibleFutureRounds:0,fixedBoundaryUsedRounds:0,phaseARoundsRequired:5000,phaseBRoundsRequired:5000,fixedFinalBoundary:10000,roundsUntilPhaseA:5000,roundsUntilFixedFinal:10000,postBoundaryRowsIgnoredForV2:0,cleanWarmupRequired:WARMUP,cleanWarmupObserved:0,cleanWarmupComplete:false,totalCleanSegmentRows:0},administrativeEta:null,phase:'WAITING_FOR_PROSPECTIVE_START',disclosure:{candidatePerformanceHidden:true,reason:f.readPolicy.duringWarmup},phaseAWinners:null,confirmation:null,gates:{phaseAComplete:false,fixedFinalComplete:false,numberSelectionProspectiveEdge:false,separateTimingGateStillRequired:true,automaticBettingAllowed:false,realMoneyAllowed:false},guards:{noHistoricalModelSelection:true,all132CandidatesFrozenBeforeStart:true,optionalStoppingBlocked:true,v1SelectorAlgorithmUnchanged:true,cleanWarmupNotScored:true,realMoneyAllowed:false},algorithmCustody:{sourceEngine:SOURCE,sourceEngineGitBlobSha:blob,derivation:'same frozen selector algorithm; no scored round exists yet'},sourceSegment:'authoritative-v2',interpretation:'Administrative zero point only; no selector performance exists or is disclosed.'};
+  const zero={version:'economic-number-selection-prospective-status-v2',generatedAt:new Date().toISOString(),freezeVersion:f.version,prospectiveStartsAt:f.prospectiveStartsAt,source:{file:DATA,currentEligibleCorpusRows:0,currentMaxTimestamp:null},frozenFamily:{coverages:f.candidateFamily.coverages,modes:f.candidateFamily.modes,lookbacks:f.candidateFamily.lookbacks,totalCandidates:132},progress:{eligibleFutureRounds:0,fixedBoundaryUsedRounds:0,phaseARoundsRequired:5000,phaseBRoundsRequired:5000,fixedFinalBoundary:10000,roundsUntilPhaseA:5000,roundsUntilFixedFinal:10000,postBoundaryRowsIgnoredForV2:0,cleanWarmupRequired:WARMUP,cleanWarmupObserved:0,cleanWarmupComplete:false,totalCleanSegmentRows:0},administrativeEta:null,phase:'WAITING_FOR_PROSPECTIVE_START',disclosure:{candidatePerformanceHidden:true,reason:f.readPolicy.duringWarmup},phaseAWinners:null,confirmation:null,gates:{phaseAComplete:false,fixedFinalComplete:false,numberSelectionProspectiveEdge:false,economicPromotionAllowed:false,separateTimingGateStillRequired:true,automaticBettingAllowed:false,realMoneyAllowed:false},economicPromotionGate:{amendmentVersion:amendment.version,scope:amendment.scope,primaryStatisticalHypothesisUnchanged:true,phaseBOutcomeDisclosedAtAmendment:false,pass:false,reason:'NO_SCORED_ROUNDS'},guards:{noHistoricalModelSelection:true,all132CandidatesFrozenBeforeStart:true,optionalStoppingBlocked:true,v1SelectorAlgorithmUnchanged:true,cleanWarmupNotScored:true,realMoneyAllowed:false},algorithmCustody:{sourceEngine:SOURCE,sourceEngineGitBlobSha:blob,derivation:'same frozen selector algorithm; no scored round exists yet'},sourceSegment:'authoritative-v2',interpretation:'Administrative zero point only; no selector performance exists or is disclosed.'};
   fs.writeFileSync(OUT,JSON.stringify(zero,null,2)+'\n');console.log(JSON.stringify({phase:zero.phase,progress:zero.progress,realMoneyAllowed:false},null,2));process.exit(0);
 }
 const run=spawnSync(process.execPath,[TMP],{encoding:'utf8',maxBuffer:64*1024*1024});
@@ -53,8 +56,54 @@ if(totalSegmentRows<WARMUP){
   out.disclosure={candidatePerformanceHidden:true,reason:'CLEAN_WARMUP_NOT_SCORED'};
   out.interpretation=`Warm-up limpio ${totalSegmentRows}/${WARMUP}. Ninguna de estas rondas puntúa candidatos y no se publica rendimiento.`;
 }
+
+const finalists=Object.entries(out.phaseAWinners??{}).map(([coverage,w])=>({
+  coverage:Number(coverage),
+  config:w?.config??null,
+  phaseARoi:w?.phaseA?.roi??null,
+  phaseANetPnlEUR:w?.phaseA?.netPnlEUR??null
+}));
+const economicPromotionGate={
+  amendmentVersion:amendment.version,
+  scope:amendment.scope,
+  createdAt:amendment.createdAt,
+  primaryStatisticalHypothesisUnchanged:true,
+  phaseBOutcomeDisclosedAtAmendment:false,
+  candidateSelectionUnchanged:true,
+  finalists,
+  requirements:{
+    originalStatisticalConfirmationPass:true,
+    positivePhaseBRoi:true,
+    positivePhaseBNetPnlEUR:true,
+    allRequired:true
+  },
+  pass:false,
+  reason:out.gates?.fixedFinalComplete===true?'NO_FINALIST_PASSED_ECONOMIC_PROMOTION_GATE':'PHASE_B_STILL_BLINDED',
+  confirmation:null
+};
+if(out.gates?.fixedFinalComplete===true){
+  const confirmation={};
+  let anyEconomicPass=false;
+  for(const [coverage,c] of Object.entries(out.confirmation??{})){
+    const statisticalPass=c?.pass===true;
+    const positiveRoiPass=Number(c?.phaseB?.roi)>0;
+    const positiveNetPnlPass=Number(c?.phaseB?.netPnlEUR)>0;
+    const economicPass=statisticalPass&&positiveRoiPass&&positiveNetPnlPass;
+    confirmation[coverage]={statisticalPass,positiveRoiPass,positiveNetPnlPass,economicPass};
+    if(economicPass)anyEconomicPass=true;
+  }
+  economicPromotionGate.confirmation=confirmation;
+  economicPromotionGate.pass=anyEconomicPass;
+  economicPromotionGate.reason=anyEconomicPass?'AT_LEAST_ONE_FINALIST_PASSED_STATISTICAL_AND_POSITIVE_ECONOMIC_GATES':'NO_FINALIST_PASSED_STATISTICAL_AND_POSITIVE_ECONOMIC_GATES';
+}
+out.economicPromotionGate=economicPromotionGate;
+out.gates.economicPromotionAllowed=economicPromotionGate.pass===true;
+out.gates.automaticBettingAllowed=false;
+out.gates.realMoneyAllowed=false;
 out.guards.v1SelectorAlgorithmUnchanged=true;
 out.guards.cleanWarmupNotScored=true;
+out.guards.phaseBEconomicPromotionGateFixedBeforeOutcomeDisclosure=true;
+out.guards.phaseBStatisticalClaimUnchangedByEconomicAmendment=true;
 out.guards.realMoneyAllowed=false;
 fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
-console.log(JSON.stringify({phase:out.phase,progress:out.progress,algorithmCustody:out.algorithmCustody,realMoneyAllowed:false},null,2));
+console.log(JSON.stringify({phase:out.phase,progress:out.progress,economicPromotionGate:out.economicPromotionGate,algorithmCustody:out.algorithmCustody,realMoneyAllowed:false},null,2));
