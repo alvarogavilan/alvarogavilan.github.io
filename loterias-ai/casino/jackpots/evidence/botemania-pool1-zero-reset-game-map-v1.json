@@ -1,0 +1,82 @@
+{
+  "version": "botemania-pool1-zero-reset-game-map-v1.1-null-safe",
+  "generatedAt": "2026-08-21T10:42:33.846Z",
+  "workflowRunId": 32473848170,
+  "operator": "botemania-es",
+  "target": {
+    "network": "generic",
+    "id": "pool1"
+  },
+  "liveWindow": {
+    "before": {
+      "httpStatus": 200,
+      "targetDistinctAmountsEUR": [212.09],
+      "uniqueIdentityInSnapshot": true
+    },
+    "after": {
+      "httpStatus": 200,
+      "targetDistinctAmountsEUR": [212.09],
+      "uniqueIdentityInSnapshot": true
+    },
+    "currentPool1EUR": 212.09
+  },
+  "coverage": {
+    "targetedGameCount": 10,
+    "targetedSlugs": [
+      "winfall-wishes-jackpot",
+      "wonderland",
+      "la-isla-de-tiki",
+      "boteman",
+      "paper-wins-jackpot",
+      "la-isla-de-tiki-bote",
+      "winstones-bote",
+      "la-isla-de-tiki-tropico-dorado",
+      "bote-de-secretos-del-fenix",
+      "duble-buble-bote-triple"
+    ],
+    "contentfulHttp200Count": 10,
+    "pageOrGameHttp200Count": 10,
+    "publicPageProbeCompleted": true
+  },
+  "evidence": {
+    "exactGraphqlIdMatches": [],
+    "exactGraphqlAmountMatches": [],
+    "literalPageMatches": [],
+    "amountPageMatches": [],
+    "usableGraphqlJackpotObjectCount": 0,
+    "nullOrEmptyJackpotShellsDiscarded": true,
+    "botemanEmptyIdNullAmountShellWasNotConvertedToZero": true
+  },
+  "interpretation": {
+    "exactGameMappingVerified": false,
+    "exactGameMapping": null,
+    "candidateDiscoveryOnly": [],
+    "noMatchMeansPublicKnownFieldsExhaustedForTheseTargets": true,
+    "nextLayer": "RUNTIME_OR_LAUNCH_CONTEXT_WITHOUT_BETTING_OR_AUTH_BYPASS",
+    "doNotRepeat": [
+      "contentfulGame jackpot{id,amount} for these 10 targets",
+      "pageOrGame jackpot{id,amount} for these 10 targets",
+      "direct public page HTML literal pool1/current-amount matching for these 10 targets"
+    ],
+    "economicPromotionAllowed": false,
+    "realMoneyAllowed": false,
+    "note": "The known public CMS/page surfaces do not expose pool1 identity for these targeted zero-reset/shared progressive games. Absence here is a layer-closure result, not proof that pool1 belongs to none of these games."
+  },
+  "guards": {
+    "targetedKnownGamesOnly": true,
+    "publicNoAuthOnly": true,
+    "noCookies": true,
+    "noIntrospection": true,
+    "noMutation": true,
+    "noGameLaunch": true,
+    "noBetting": true,
+    "nullGraphqlJackpotNotEvidence": true,
+    "nullNeverCoercedToZero": true,
+    "emptyJackpotIdNotEvidence": true,
+    "amountMatchDiscoveryOnly": true,
+    "pageLiteralDiscoveryOnly": true,
+    "noSharedNetworkHintAsIdentityProof": true,
+    "noEconomicPromotion": true,
+    "realMoneyAllowed": false
+  }
+}

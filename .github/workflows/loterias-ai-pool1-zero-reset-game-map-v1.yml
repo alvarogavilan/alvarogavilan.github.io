@@ -1,0 +1,46 @@
+name: Loterias AI Pool1 Zero Reset Game Map V1
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/jackpots/botemania-pool1-zero-reset-game-map-v1.mjs'
+      - '.github/workflows/loterias-ai-pool1-zero-reset-game-map-v1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax check
+        run: node --check loterias-ai/casino/jackpots/botemania-pool1-zero-reset-game-map-v1.mjs
+      - name: Probe targeted zero-reset game GraphQL surfaces
+        run: node loterias-ai/casino/jackpots/botemania-pool1-zero-reset-game-map-v1.mjs
+      - name: Enforce fail-closed mapping semantics
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const x=JSON.parse(fs.readFileSync('loterias-ai/casino/jackpots/evidence/botemania-pool1-zero-reset-game-map-v1.json','utf8'));
+          if(x.guards?.amountMatchDiscoveryOnly!==true || x.guards?.pageLiteralDiscoveryOnly!==true || x.guards?.nullGraphqlJackpotNotEvidence!==true || x.guards?.nullNeverCoercedToZero!==true || x.guards?.emptyJackpotIdNotEvidence!==true) throw new Error('mapping evidence/null guards missing');
+          if(x.interpretation?.economicPromotionAllowed!==false || x.interpretation?.realMoneyAllowed!==false) throw new Error('mapping probe promoted economics');
+          if(x.interpretation?.exactGameMappingVerified===true && (x.evidence?.exactGraphqlIdMatches||[]).length!==1) throw new Error('exact mapping lacks unique exact GraphQL id match');
+          for(const g of (x.games||[])){
+            const raws=[g.graphql?.contentfulGame?.jackpot,g.graphql?.pageOrGame?.jackpot].filter(Boolean);
+            const allRawEmpty=raws.length>0&&raws.every(j=>(j?.id==null||String(j.id).trim()==='')&&j?.amount==null);
+            if(allRawEmpty&&(g.graphql?.usableJackpotObjects||[]).length!==0) throw new Error(`null/empty jackpot shell promoted for ${g.slug}`);
+          }
+          console.log(JSON.stringify({liveWindow:x.liveWindow,evidence:x.evidence,interpretation:x.interpretation,games:(x.games||[]).map(g=>({slug:g.slug,graphql:g.graphql,identityDiscovery:g.identityDiscovery,rules:g.rules}))},null,2));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pool1-zero-reset-game-map-v1
+          path: loterias-ai/casino/jackpots/evidence/botemania-pool1-zero-reset-game-map-v1.json
+          retention-days: 7
