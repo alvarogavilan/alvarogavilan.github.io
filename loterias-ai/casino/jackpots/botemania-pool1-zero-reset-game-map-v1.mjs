@@ -5,7 +5,7 @@ import crypto from 'node:crypto';
 const ORIGIN='https://www.botemania.es';
 const GRAPHQL=`${ORIGIN}/es/graphql`;
 const OUT='loterias-ai/casino/jackpots/evidence/botemania-pool1-zero-reset-game-map-v1.json';
-const UA='loterias-ai-pool1-zero-reset-game-map/1.0';
+const UA='loterias-ai-pool1-zero-reset-game-map/1.1';
 const FEED_QUERY='query loadJackpots { jackpots { id amount } }';
 const TARGET_ID='pool1';
 const TARGETS=[
@@ -20,6 +20,7 @@ const TARGETS=[
   {slug:'bote-de-secretos-del-fenix',networkHint:'PHOENIX_CROSS_OPERATOR_ZERO_RESET'},
   {slug:'duble-buble-bote-triple',networkHint:'DUBLE_BUBLE_THREE_TIER_LINKED_RESET'}
 ];
+const finiteOrNull=v=>{if(v===null||v===undefined||v==='')return null;const n=Number(v);return Number.isFinite(n)?n:null;};
 
 async function request(url,opts={}){
   try{
@@ -33,10 +34,17 @@ async function gql(query,variables={},referer=`${ORIGIN}/juegos/todos-los-juegos
   let body=null;try{body=JSON.parse(r.text)}catch{}
   return {httpStatus:r.status,ok:r.ok,body,error:r.error,sha256:r.sha256};
 }
-const feedRows=body=>(body?.data?.jackpots||[]).map(x=>({id:String(x?.id??''),amountEUR:Number(x?.amount)})).filter(x=>x.id&&Number.isFinite(x.amountEUR));
+const feedRows=body=>(body?.data?.jackpots||[]).map(x=>({id:String(x?.id??''),amountEUR:finiteOrNull(x?.amount)})).filter(x=>x.id&&x.amountEUR!==null);
 const distinct=(rows,id)=>[...new Set(rows.filter(x=>x.id===id).map(x=>x.amountEUR))];
 const moneyStrings=n=>{if(!Number.isFinite(n))return[];const f=n.toFixed(2),c=f.replace('.',','),es=new Intl.NumberFormat('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);return[...new Set([f,c,es,`${f} €`,`${c} €`,`${es} €`])];};
 const clean=s=>String(s||'').replace(/<script[\s\S]*?<\/script>/gi,' ').replace(/<style[\s\S]*?<\/style>/gi,' ').replace(/<[^>]+>/g,' ').replace(/&nbsp;|&#160;/gi,' ').replace(/\s+/g,' ').trim();
+const usableJackpot=j=>{
+  if(!j||typeof j!=='object')return null;
+  const id=j.id==null?null:String(j.id).trim()||null;
+  const amountEUR=finiteOrNull(j.amount);
+  if(id===null&&amountEUR===null)return null;
+  return {id,amountEUR};
+};
 
 const before=await gql(FEED_QUERY);
 const beforeRows=feedRows(before.body);
@@ -55,7 +63,7 @@ for(const target of TARGETS){
   const b=pageOrGame.body?.data?.pageOrGame?.game||null;
   const html=page.text||'';
   const combined=[html,JSON.stringify(a||{}),JSON.stringify(b||{})].join('\n');
-  const graphJackpots=[a?.jackpot,b?.jackpot].filter(j=>j&&typeof j==='object'&&(j.id!=null||j.amount!=null)).map(j=>({id:j.id==null?null:String(j.id),amountEUR:Number.isFinite(Number(j.amount))?Number(j.amount):null}));
+  const graphJackpots=[usableJackpot(a?.jackpot),usableJackpot(b?.jackpot)].filter(Boolean);
   const poolLiteral=combined.toLowerCase().includes(TARGET_ID.toLowerCase());
   const poolAmountTextHits=[];
   for(const v of beforePool){const hits=moneyStrings(v).filter(s=>combined.includes(s));if(hits.length)poolAmountTextHits.push({amountEUR:v,matchedStrings:hits});}
@@ -64,7 +72,7 @@ for(const target of TARGETS){
   games.push({
     slug:target.slug,networkHint:target.networkHint,pageUrl,
     page:{httpStatus:page.status,ok:page.ok,sha256:page.sha256},
-    graphql:{contentfulHttpStatus:content.httpStatus,pageOrGameHttpStatus:pageOrGame.httpStatus,contentfulGame:a?{id:a.id,title:a.title,providerId:a.providerId,jackpot:a.jackpot}:null,pageOrGame:b?{id:b.id,title:b.title,providerId:b.providerId,jackpot:b.jackpot}:null,nonNullJackpotObjects:graphJackpots},
+    graphql:{contentfulHttpStatus:content.httpStatus,pageOrGameHttpStatus:pageOrGame.httpStatus,contentfulGame:a?{id:a.id,title:a.title,providerId:a.providerId,jackpot:a.jackpot}:null,pageOrGame:b?{id:b.id,title:b.title,providerId:b.providerId,jackpot:b.jackpot}:null,usableJackpotObjects:graphJackpots},
     identityDiscovery:{pool1LiteralFound:poolLiteral,pool1CurrentAmountTextHits:poolAmountTextHits},
     rules:{mentionsResetZero:(low.includes('reinicia desde los 0')||low.includes('reinicia desde 0')||low.includes('establece en 0 €')||low.includes('partió de 0 €')||low.includes('partio de 0 €')),mentionsSharedPool:low.includes('compartido con'),mentionsResetTogether:low.includes('reiniciarán')&&low.includes('a la vez'),howToPlayPresent:text.length>0}
   });
@@ -76,7 +84,7 @@ const afterPool=distinct(afterRows,TARGET_ID);
 const exactGraphqlIdMatches=[];
 const exactGraphqlAmountMatches=[];
 for(const g of games){
-  for(const j of g.graphql.nonNullJackpotObjects){
+  for(const j of g.graphql.usableJackpotObjects){
     if(j.id===TARGET_ID) exactGraphqlIdMatches.push({slug:g.slug,jackpot:j});
     if(j.amountEUR!==null&&[...beforePool,...afterPool].some(v=>Math.round(v*100)===Math.round(j.amountEUR*100))) exactGraphqlAmountMatches.push({slug:g.slug,jackpot:j});
   }
@@ -88,7 +96,7 @@ const poolUniqueAfter=afterPool.length===1;
 const poolCurrentEUR=poolUniqueAfter?afterPool[0]:poolUniqueBefore?beforePool[0]:null;
 
 const out={
-  version:'botemania-pool1-zero-reset-game-map-v1',generatedAt:new Date().toISOString(),operator:'botemania-es',target:{network:'generic',id:TARGET_ID},
+  version:'botemania-pool1-zero-reset-game-map-v1.1-null-safe',generatedAt:new Date().toISOString(),operator:'botemania-es',target:{network:'generic',id:TARGET_ID},
   liveWindow:{before:{httpStatus:before.httpStatus,targetDistinctAmountsEUR:beforePool,uniqueIdentityInSnapshot:poolUniqueBefore},after:{httpStatus:after.httpStatus,targetDistinctAmountsEUR:afterPool,uniqueIdentityInSnapshot:poolUniqueAfter},currentPool1EUR:poolCurrentEUR},
   games,
   evidence:{exactGraphqlIdMatches,exactGraphqlAmountMatches,literalPageMatches,amountPageMatches},
@@ -98,9 +106,9 @@ const out={
     candidateDiscoveryOnly:[...new Set([...exactGraphqlAmountMatches.map(x=>x.slug),...literalPageMatches,...amountPageMatches.map(x=>x.slug)])],
     noMatchMeansPublicKnownFieldsExhaustedForTheseTargets:exactGraphqlIdMatches.length===0&&exactGraphqlAmountMatches.length===0&&literalPageMatches.length===0&&amountPageMatches.length===0,
     economicPromotionAllowed:false,realMoneyAllowed:false,
-    note:'Only an exact jackpot.id=pool1 response can directly verify a game mapping in this probe. Same-cent amounts or page literals are discovery evidence only because shared assets, duplicated values and sequential meter movement can create false associations.'
+    note:'Only an exact jackpot.id=pool1 response can directly verify a game mapping in this probe. Same-cent amounts or page literals are discovery evidence only because shared assets, duplicated values and sequential meter movement can create false associations. Null/empty GraphQL jackpot shells are discarded, never converted to zero.'
   },
-  guards:{targetedKnownGamesOnly:true,publicNoAuthOnly:true,noCookies:true,noIntrospection:true,noMutation:true,noGameLaunch:true,noBetting:true,nullGraphqlJackpotNotEvidence:true,amountMatchDiscoveryOnly:true,pageLiteralDiscoveryOnly:true,noSharedNetworkHintAsIdentityProof:true,noEconomicPromotion:true,realMoneyAllowed:false}
+  guards:{targetedKnownGamesOnly:true,publicNoAuthOnly:true,noCookies:true,noIntrospection:true,noMutation:true,noGameLaunch:true,noBetting:true,nullGraphqlJackpotNotEvidence:true,nullNeverCoercedToZero:true,emptyJackpotIdNotEvidence:true,amountMatchDiscoveryOnly:true,pageLiteralDiscoveryOnly:true,noSharedNetworkHintAsIdentityProof:true,noEconomicPromotion:true,realMoneyAllowed:false}
 };
 fs.mkdirSync('loterias-ai/casino/jackpots/evidence',{recursive:true});
 fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
