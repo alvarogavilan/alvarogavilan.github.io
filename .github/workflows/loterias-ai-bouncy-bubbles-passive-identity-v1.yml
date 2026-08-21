@@ -1,0 +1,55 @@
+name: Loterias AI Bouncy Bubbles Passive Identity V1
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/jackpots/bouncy-bubbles-passive-identity-v1.mjs'
+      - 'loterias-ai/casino/jackpots/bouncy-bubbles-passive-identity-normalize-v1.mjs'
+      - '.github/workflows/loterias-ai-bouncy-bubbles-passive-identity-v1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax check
+        run: |
+          node --check loterias-ai/casino/jackpots/bouncy-bubbles-passive-identity-v1.mjs
+          node --check loterias-ai/casino/jackpots/bouncy-bubbles-passive-identity-normalize-v1.mjs
+      - name: Show browser
+        run: |
+          command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true
+          (google-chrome --version || google-chrome-stable --version || chromium --version || chromium-browser --version || true) 2>/dev/null
+      - name: Capture bounded passive target/control network
+        run: node loterias-ai/casino/jackpots/bouncy-bubbles-passive-identity-v1.mjs
+      - name: Normalize exact-ID duplicate-row semantics
+        run: node loterias-ai/casino/jackpots/bouncy-bubbles-passive-identity-normalize-v1.mjs
+      - name: Enforce identity fail-closed semantics
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const x=JSON.parse(fs.readFileSync('loterias-ai/casino/jackpots/evidence/bouncy-bubbles-passive-identity-v1.json','utf8'));
+          if(x.guards?.publicPageLoadOnly!==true || x.guards?.noLogin!==true || x.guards?.noClick!==true || x.guards?.noRuntimeEvaluate!==true || x.guards?.noRequestInterception!==true || x.guards?.noGameLaunch!==true || x.guards?.noSessionCreation!==true || x.guards?.noBetting!==true) throw new Error('passive guards missing');
+          if(x.guards?.globalExactIdResponseNeverVerifiesGameIdentity!==true || x.guards?.targetBindingRequiresSameObjectOrRequestSelector!==true || x.guards?.controlsRequired!==true || x.guards?.singleRunNeverPromotesIdentity!==true || x.guards?.exactIdentityHardFalseInDiscoveryRun!==true) throw new Error('identity guards missing');
+          if(x.decision?.exactFeedToGameIdentityVerified!==false || x.decision?.economicPromotionAllowed!==false || x.decision?.realMoneyAllowed!==false) throw new Error('discovery run promoted identity/economics');
+          if(x.coverage?.expectedCaptures!==6 || x.coverage?.successfulCaptures!==6 || x.coverage?.complete!==true) throw new Error(`incomplete capture ${x.coverage?.successfulCaptures}/6`);
+          if(x.normalization?.noIdentityPromotion!==true || x.normalization?.noEconomicPromotion!==true) throw new Error('identity normalization guard missing');
+          for(const op of ['botemania','monopoly']){
+            if(x.feedBefore?.[op]?.targetUniqueDistinctAmount!==true || x.feedAfter?.[op]?.targetUniqueDistinctAmount!==true) throw new Error(`${op} exact ID has zero or multiple simultaneous distinct amounts`);
+          }
+          console.log(JSON.stringify({feedBefore:x.feedBefore,feedAfter:x.feedAfter,coverage:x.coverage,comparison:x.comparison,decision:x.decision,normalization:x.normalization,pages:(x.pages||[]).map(p=>({operator:p.operator,role:p.role,slug:p.slug,success:p.success,targetIdResponseCount:p.targetIdResponseCount,hits:(p.hits||[]).map(h=>({signature:h.signature,selectorSignature:h.selectorSignature,requestVariablesContainTarget:h.requestVariablesContainTarget,sameObjectTargetBindings:h.sameObjectTargetBindings,idPaths:h.idPaths}))}))},null,2));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bouncy-bubbles-passive-identity-v1
+          path: loterias-ai/casino/jackpots/evidence/bouncy-bubbles-passive-identity-v1.json
+          retention-days: 7
