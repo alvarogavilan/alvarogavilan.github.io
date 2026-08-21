@@ -1,0 +1,372 @@
+{
+  "version": "tiki-canalbingo-venture-discriminator-v1",
+  "generatedAt": "2026-08-21T16:38:23.493Z",
+  "operator": "botemania-es",
+  "scope": "PUBLIC_LOADJACKPOTS_BOUNDED_VENTURE_ALIAS_DISCRIMINATION",
+  "source": {
+    "endpoint": "https://www.botemania.es/es/graphql",
+    "operationName": "loadJackpots",
+    "publicNoAuth": true,
+    "canalBingoDomainCurrentState": "REDIRECTS_TO_BOTEMANIA_BINGO_PAGE"
+  },
+  "attempts": [
+    {
+      "label": "BOTEMANIA_CONTROL",
+      "venture": "botemania_es",
+      "httpStatus": 200,
+      "ok": true,
+      "observedAt": "2026-08-21T16:38:22.043Z",
+      "bytes": 1201,
+      "graphqlErrors": [],
+      "rowCount": 29,
+      "feedFingerprintSha256": "159259636eb89924ce90f900239ca3a6add754a52d0ab49f8caf0d363f807ce2",
+      "targets": {
+        "tikitemple2_1": {
+          "rowCount": 2,
+          "distinctAmountsEUR": [
+            12.37
+          ],
+          "singleLiveAmount": true,
+          "amountEUR": 12.37
+        },
+        "progressivealice1": {
+          "rowCount": 2,
+          "distinctAmountsEUR": [
+            12.37
+          ],
+          "singleLiveAmount": true,
+          "amountEUR": 12.37
+        }
+      }
+    },
+    {
+      "label": "CANAL_BINGO_A",
+      "venture": "canalbingo_es",
+      "httpStatus": 200,
+      "ok": true,
+      "observedAt": "2026-08-21T16:38:22.850Z",
+      "bytes": 25,
+      "graphqlErrors": [],
+      "rowCount": 0,
+      "feedFingerprintSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "targets": {
+        "tikitemple2_1": {
+          "rowCount": 0,
+          "distinctAmountsEUR": [],
+          "singleLiveAmount": false,
+          "amountEUR": null
+        },
+        "progressivealice1": {
+          "rowCount": 0,
+          "distinctAmountsEUR": [],
+          "singleLiveAmount": false,
+          "amountEUR": null
+        }
+      }
+    },
+    {
+      "label": "CANAL_BINGO_B",
+      "venture": "canalbingo",
+      "httpStatus": 200,
+      "ok": true,
+      "observedAt": "2026-08-21T16:38:23.000Z",
+      "bytes": 25,
+      "graphqlErrors": [],
+      "rowCount": 0,
+      "feedFingerprintSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "targets": {
+        "tikitemple2_1": {
+          "rowCount": 0,
+          "distinctAmountsEUR": [],
+          "singleLiveAmount": false,
+          "amountEUR": null
+        },
+        "progressivealice1": {
+          "rowCount": 0,
+          "distinctAmountsEUR": [],
+          "singleLiveAmount": false,
+          "amountEUR": null
+        }
+      }
+    },
+    {
+      "label": "CANAL_BINGO_C",
+      "venture": "canal_bingo_es",
+      "httpStatus": 200,
+      "ok": true,
+      "observedAt": "2026-08-21T16:38:23.205Z",
+      "bytes": 25,
+      "graphqlErrors": [],
+      "rowCount": 0,
+      "feedFingerprintSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "targets": {
+        "tikitemple2_1": {
+          "rowCount": 0,
+          "distinctAmountsEUR": [],
+          "singleLiveAmount": false,
+          "amountEUR": null
+        },
+        "progressivealice1": {
+          "rowCount": 0,
+          "distinctAmountsEUR": [],
+          "singleLiveAmount": false,
+          "amountEUR": null
+        }
+      }
+    },
+    {
+      "label": "NO_HEADER_CONTROL",
+      "venture": null,
+      "httpStatus": 200,
+      "ok": true,
+      "observedAt": "2026-08-21T16:38:23.350Z",
+      "bytes": 25,
+      "graphqlErrors": [],
+      "rowCount": 0,
+      "feedFingerprintSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "targets": {
+        "tikitemple2_1": {
+          "rowCount": 0,
+          "distinctAmountsEUR": [],
+          "singleLiveAmount": false,
+          "amountEUR": null
+        },
+        "progressivealice1": {
+          "rowCount": 0,
+          "distinctAmountsEUR": [],
+          "singleLiveAmount": false,
+          "amountEUR": null
+        }
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "label": "CANAL_BINGO_A",
+      "venture": "canalbingo_es",
+      "rowCount": 0,
+      "httpStatus": 200,
+      "controlFingerprint": "159259636eb89924ce90f900239ca3a6add754a52d0ab49f8caf0d363f807ce2",
+      "candidateFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "fullFeedDiffers": true,
+      "targetComparison": {
+        "tikitemple2_1": {
+          "control": {
+            "rowCount": 2,
+            "distinctAmountsEUR": [
+              12.37
+            ],
+            "singleLiveAmount": true,
+            "amountEUR": 12.37
+          },
+          "candidate": {
+            "rowCount": 0,
+            "distinctAmountsEUR": [],
+            "singleLiveAmount": false,
+            "amountEUR": null
+          },
+          "sameRowCount": false,
+          "sameAmounts": false,
+          "incidenceDiffers": true
+        },
+        "progressivealice1": {
+          "control": {
+            "rowCount": 2,
+            "distinctAmountsEUR": [
+              12.37
+            ],
+            "singleLiveAmount": true,
+            "amountEUR": 12.37
+          },
+          "candidate": {
+            "rowCount": 0,
+            "distinctAmountsEUR": [],
+            "singleLiveAmount": false,
+            "amountEUR": null
+          },
+          "sameRowCount": false,
+          "sameAmounts": false,
+          "incidenceDiffers": true
+        }
+      },
+      "anyTargetIncidenceDifference": true
+    },
+    {
+      "label": "CANAL_BINGO_B",
+      "venture": "canalbingo",
+      "rowCount": 0,
+      "httpStatus": 200,
+      "controlFingerprint": "159259636eb89924ce90f900239ca3a6add754a52d0ab49f8caf0d363f807ce2",
+      "candidateFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "fullFeedDiffers": true,
+      "targetComparison": {
+        "tikitemple2_1": {
+          "control": {
+            "rowCount": 2,
+            "distinctAmountsEUR": [
+              12.37
+            ],
+            "singleLiveAmount": true,
+            "amountEUR": 12.37
+          },
+          "candidate": {
+            "rowCount": 0,
+            "distinctAmountsEUR": [],
+            "singleLiveAmount": false,
+            "amountEUR": null
+          },
+          "sameRowCount": false,
+          "sameAmounts": false,
+          "incidenceDiffers": true
+        },
+        "progressivealice1": {
+          "control": {
+            "rowCount": 2,
+            "distinctAmountsEUR": [
+              12.37
+            ],
+            "singleLiveAmount": true,
+            "amountEUR": 12.37
+          },
+          "candidate": {
+            "rowCount": 0,
+            "distinctAmountsEUR": [],
+            "singleLiveAmount": false,
+            "amountEUR": null
+          },
+          "sameRowCount": false,
+          "sameAmounts": false,
+          "incidenceDiffers": true
+        }
+      },
+      "anyTargetIncidenceDifference": true
+    },
+    {
+      "label": "CANAL_BINGO_C",
+      "venture": "canal_bingo_es",
+      "rowCount": 0,
+      "httpStatus": 200,
+      "controlFingerprint": "159259636eb89924ce90f900239ca3a6add754a52d0ab49f8caf0d363f807ce2",
+      "candidateFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "fullFeedDiffers": true,
+      "targetComparison": {
+        "tikitemple2_1": {
+          "control": {
+            "rowCount": 2,
+            "distinctAmountsEUR": [
+              12.37
+            ],
+            "singleLiveAmount": true,
+            "amountEUR": 12.37
+          },
+          "candidate": {
+            "rowCount": 0,
+            "distinctAmountsEUR": [],
+            "singleLiveAmount": false,
+            "amountEUR": null
+          },
+          "sameRowCount": false,
+          "sameAmounts": false,
+          "incidenceDiffers": true
+        },
+        "progressivealice1": {
+          "control": {
+            "rowCount": 2,
+            "distinctAmountsEUR": [
+              12.37
+            ],
+            "singleLiveAmount": true,
+            "amountEUR": 12.37
+          },
+          "candidate": {
+            "rowCount": 0,
+            "distinctAmountsEUR": [],
+            "singleLiveAmount": false,
+            "amountEUR": null
+          },
+          "sameRowCount": false,
+          "sameAmounts": false,
+          "incidenceDiffers": true
+        }
+      },
+      "anyTargetIncidenceDifference": true
+    },
+    {
+      "label": "NO_HEADER_CONTROL",
+      "venture": null,
+      "rowCount": 0,
+      "httpStatus": 200,
+      "controlFingerprint": "159259636eb89924ce90f900239ca3a6add754a52d0ab49f8caf0d363f807ce2",
+      "candidateFingerprint": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "fullFeedDiffers": true,
+      "targetComparison": {
+        "tikitemple2_1": {
+          "control": {
+            "rowCount": 2,
+            "distinctAmountsEUR": [
+              12.37
+            ],
+            "singleLiveAmount": true,
+            "amountEUR": 12.37
+          },
+          "candidate": {
+            "rowCount": 0,
+            "distinctAmountsEUR": [],
+            "singleLiveAmount": false,
+            "amountEUR": null
+          },
+          "sameRowCount": false,
+          "sameAmounts": false,
+          "incidenceDiffers": true
+        },
+        "progressivealice1": {
+          "control": {
+            "rowCount": 2,
+            "distinctAmountsEUR": [
+              12.37
+            ],
+            "singleLiveAmount": true,
+            "amountEUR": 12.37
+          },
+          "candidate": {
+            "rowCount": 0,
+            "distinctAmountsEUR": [],
+            "singleLiveAmount": false,
+            "amountEUR": null
+          },
+          "sameRowCount": false,
+          "sameAmounts": false,
+          "incidenceDiffers": true
+        }
+      },
+      "anyTargetIncidenceDifference": true
+    }
+  ],
+  "decision": {
+    "canalAliasesWithNonEmptyFeed": [],
+    "ventureLayerDiscriminatesFullFeed": false,
+    "ventureLayerDiscriminatesTargetPair": false,
+    "allNonEmptyCanalAliasesIndistinguishableFromBotemania": false,
+    "exactGameBindingRecovered": false,
+    "tikiTropicoIdentityProven": false,
+    "winfallIdentityProven": false,
+    "identityPromotionAllowed": false,
+    "economicPromotionAllowed": false,
+    "realMoneyAllowed": false
+  },
+  "interpretation": "No bounded Canal Bingo alias produced an interpretable non-empty discriminating feed. This layer cannot distinguish Tiki Tropico from Winfall.",
+  "guards": {
+    "boundedAliasesOnly": true,
+    "publicNoAuthOnly": true,
+    "noCookies": true,
+    "noLogin": true,
+    "noGameLaunch": true,
+    "http200NeverEqualsVentureRecognition": true,
+    "globalFeedNeverEqualsGameBinding": true,
+    "rowMultiplicityNeverEqualsGameIdentity": true,
+    "ventureDifferenceIsDiscoveryOnly": true,
+    "noIdentityPromotion": true,
+    "noBetting": true,
+    "realMoneyAllowed": false
+  }
+}
