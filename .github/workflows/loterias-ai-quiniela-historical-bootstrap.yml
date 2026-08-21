@@ -2,6 +2,10 @@ name: Loterias AI Quiniela Historical Durable Fallback
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows:
+      - 'Loterias AI Quiniela Historical SELAE Cross-check'
+    types: [completed]
   schedule:
     - cron: '31 * * * *'
   push:
@@ -39,6 +43,9 @@ jobs:
           # its own report. It does not rebuild global QA, so a slow downstream QA
           # phase cannot prevent durable progress. The regular historical workflow
           # remains responsible for manifest/audit/priorities.
+          # workflow_run ensures every completed primary historical attempt is
+          # followed by a small durable checkpoint, even when the primary attempt
+          # fails closed or produces no push-trigger cascade.
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
