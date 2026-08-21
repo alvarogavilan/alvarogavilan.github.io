@@ -1,0 +1,71 @@
+name: Loterias AI Lightning Physical RNG V3
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - 'Loterias AI Lightning Clean Segment V2'
+    types: [completed]
+  schedule:
+    - cron: '6 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/lightning/research/physical-rng-prospective-v3.mjs'
+      - 'loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-freeze.json'
+      - '.github/workflows/loterias-ai-lightning-physical-rng-v3.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-lightning-physical-rng-v3-${{ github.event_name }}
+  cancel-in-progress: false
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Advance only the frozen post-V2 RNG replication
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          out='loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-status.json'
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            node loterias-ai/casino/lightning/research/physical-rng-prospective-v3.mjs
+
+            node --input-type=module <<'NODE'
+            import fs from 'node:fs';
+            const f=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-freeze.json','utf8'));
+            const s=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-status.json','utf8'));
+            if(f.activation?.preRegisteredBeforeV2Final!==true||f.activation?.activationIndependentOfV2Outcome!==true||f.guards?.v2OutcomeKnownAtFreeze!==false) throw Error('v3 preregistration custody drift');
+            if(s.freezeVersion!=='physical-rng-prospective-v3-freeze-v1'||s.activation?.postBoundarySampleOnly!==true||s.guards?.first5000PostBoundaryOnly!==true||s.guards?.realMoneyAllowed!==false) throw Error('v3 protocol drift');
+            if(s.progress?.replicationRoundsUsed<5000&&(s.final!==null||s.disclosure?.observedStatisticsHidden!==true||s.disclosure?.pValuesHidden!==true||s.disclosure?.directionHidden!==true)) throw Error('v3 interim blindness regression');
+            if(s.final?.claimAllowed===true||s.final?.realMoneyAllowed===true) throw Error('v3 cannot authorize claims or real money');
+NODE
+
+            git add "$out"
+            if git diff --cached --quiet; then
+              echo 'No semantic physical RNG v3 change.'
+              exit 0
+            fi
+            git commit -m 'research(lightning): advance preregistered physical RNG v3 replication'
+            if git push origin HEAD:main; then exit 0; fi
+            echo "main moved during physical RNG v3 attempt ${attempt}; recomputing"
+            sleep $((attempt * 2))
+          done
+
+          echo 'Unable to persist physical RNG v3 after five recomputations.' >&2
+          exit 1
