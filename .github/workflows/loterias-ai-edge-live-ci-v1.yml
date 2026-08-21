@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'loterias-ai/edge-live/**'
+      - 'loterias-ai/casino/jackpots/generic-jackpot-identity-v2.mjs'
+      - 'loterias-ai/casino/jackpots/botemania-generic-fast-reset-ledger-v1.mjs'
       - 'loterias-ai/casino/botemania-global-economic-gate-v1.mjs'
       - '.github/workflows/loterias-ai-edge-live-fast-watch-v1.yml'
       - '.github/workflows/loterias-ai-edge-live-ci-v1.yml'
@@ -15,7 +17,7 @@ permissions:
 jobs:
   syntax-and-registry:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -25,10 +27,45 @@ jobs:
         run: |
           node --check loterias-ai/edge-live/app.js
           node --check loterias-ai/edge-live/botemania-all-network-fast-meter-sample-v1.mjs
+          node --check loterias-ai/edge-live/meter-stasis-core-v1.mjs
+          node --check loterias-ai/edge-live/meter-stasis-tracker-v1.mjs
           node --check loterias-ai/edge-live/progressive-score-research-v1.mjs
           node --check loterias-ai/edge-live/edge-live-multi-execution-plan-v1.mjs
           node --check loterias-ai/edge-live/edge-live-execution-plan-v1.mjs
           node --check loterias-ai/edge-live/telegram-edge-alert-v1.mjs
+          node --check loterias-ai/casino/jackpots/generic-jackpot-identity-v2.mjs
+          node --check loterias-ai/casino/jackpots/botemania-generic-fast-reset-ledger-v1.mjs
           node --check loterias-ai/casino/botemania-global-economic-gate-v1.mjs
       - name: Validate structural opportunity registry
         run: node -e "JSON.parse(require('node:fs').readFileSync('loterias-ai/edge-live/opportunity-registry-v1.json','utf8')); console.log('registry ok')"
+      - name: Live public fail-closed smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f loterias-ai/edge-live/evidence/meter-stasis-ledger-v1.json
+          node loterias-ai/edge-live/botemania-all-network-fast-meter-sample-v1.mjs
+          node loterias-ai/casino/jackpots/botemania-generic-fast-reset-ledger-v1.mjs
+          node loterias-ai/edge-live/meter-stasis-tracker-v1.mjs
+          node loterias-ai/edge-live/progressive-score-research-v1.mjs
+          node loterias-ai/edge-live/edge-live-multi-execution-plan-v1.mjs
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const ledger=JSON.parse(fs.readFileSync('loterias-ai/casino/jackpots/evidence/botemania-generic-fast-reset-ledger-v1.json','utf8'));
+          if(ledger.version!=='botemania-generic-fast-reset-ledger-v2-stable-id') throw new Error('stable ledger v2 not produced');
+          if((ledger.lastTracks||[]).some(x=>String(x.trackKey||'').includes('::'))) throw new Error('rank-based active identity survived');
+          if((ledger.events||[]).some(x=>String(x.trackKey||'').includes('::'))) throw new Error('rank-based active event survived');
+          const stasis=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/meter-stasis-ledger-v1.json','utf8'));
+          const wager=stasis.meters?.['generic:WAGER_BET'];
+          if(!wager) throw new Error('WAGER_BET missing from stasis ledger');
+          if(wager.dynamicMovementObserved!==false) throw new Error('first observation must not fabricate movement');
+          const score=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/progressive-score-research-v1.json','utf8'));
+          const uvp=score.rows.find(x=>x.monitor?.key==='generic:WAGER_BET');
+          if(!uvp) throw new Error('UVP row missing');
+          if(uvp.current.dynamicFreshnessVerified!==false) throw new Error('UVP dynamic freshness fabricated');
+          const plan=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/edge-live-multi-execution-plan-v1.json','utf8'));
+          const lane=plan.lanes.find(x=>x.monitor?.key==='generic:WAGER_BET');
+          if(!lane) throw new Error('UVP lane missing');
+          if(lane.executionReady!==false || lane.order?.action!=='DO_NOT_PLAY') throw new Error('UVP must fail closed');
+          if(!lane.blockers.includes('DYNAMIC_METER_FRESHNESS_NOT_VERIFIED')) throw new Error('dynamic freshness blocker missing');
+          console.log(JSON.stringify({ledgerVersion:ledger.version,stableTracks:ledger.lastTracks.length,quarantined:ledger.quarantinedIds?.map(x=>x.id),wagerBet:wager,uvpCurrent:uvp.current,uvpBlockers:lane.blockers},null,2));
+          NODE
