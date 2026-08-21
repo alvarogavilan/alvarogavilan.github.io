@@ -1,12 +1,12 @@
 {
   "version": "economic-number-selection-prospective-status-v2",
-  "generatedAt": "2026-08-21T10:02:26.432Z",
+  "generatedAt": "2026-08-21T10:45:01.087Z",
   "freezeVersion": "economic-number-selection-prospective-freeze-v2",
   "prospectiveStartsAt": "2026-08-18T10:50:00Z",
   "source": {
     "file": "loterias-ai/casino/lightning/data/casinoorg-lightningroulette-segment-v2.jsonl",
-    "currentEligibleCorpusRows": 5156,
-    "currentMaxTimestamp": "2026-08-21T10:02:07.885Z"
+    "currentEligibleCorpusRows": 5208,
+    "currentMaxTimestamp": "2026-08-21T10:44:45.945Z"
   },
   "frozenFamily": {
     "coverages": [
@@ -37,40 +37,91 @@
     "totalCandidates": 132
   },
   "progress": {
-    "eligibleFutureRounds": 4956,
-    "fixedBoundaryUsedRounds": 4956,
+    "eligibleFutureRounds": 5008,
+    "fixedBoundaryUsedRounds": 5008,
     "phaseARoundsRequired": 5000,
     "phaseBRoundsRequired": 5000,
     "fixedFinalBoundary": 10000,
-    "roundsUntilPhaseA": 44,
-    "roundsUntilFixedFinal": 5044,
+    "roundsUntilPhaseA": 0,
+    "roundsUntilFixedFinal": 4992,
     "cleanWarmupRequired": 200,
     "cleanWarmupObserved": 200,
     "cleanWarmupComplete": true,
-    "totalCleanSegmentRows": 5156,
+    "totalCleanSegmentRows": 5208,
     "postBoundaryRowsIgnoredForV2": 0
   },
   "administrativeEta": {
     "method": "Observed eligible future-round cadence only; no selector outcomes or rankings are used.",
     "firstEligibleAt": "2026-08-18T13:37:06.645Z",
-    "lastEligibleAt": "2026-08-21T10:02:07.885Z",
-    "observedRoundsPerHour": 72.424,
-    "phaseAEstimatedHoursRemaining": 0.61,
-    "fixedFinalEstimatedHoursRemaining": 69.65,
-    "phaseAEstimatedAt": "2026-08-21T10:38:35.020Z",
-    "fixedFinalEstimatedAt": "2026-08-24T07:40:53.102Z",
+    "lastEligibleAt": "2026-08-21T10:44:45.945Z",
+    "observedRoundsPerHour": 72.431,
+    "phaseAEstimatedHoursRemaining": 0,
+    "fixedFinalEstimatedHoursRemaining": 68.92,
+    "phaseAEstimatedAt": "2026-08-21T10:44:45.945Z",
+    "fixedFinalEstimatedAt": "2026-08-24T07:39:59.710Z",
     "descriptiveOnly": true,
     "notAScientificGate": true
   },
-  "phase": "ACCUMULATING_PHASE_A_BLINDED",
+  "phase": "PHASE_A_LOCKED_PHASE_B_BLINDED",
   "disclosure": {
-    "candidatePerformanceHidden": true,
-    "reason": "ADMINISTRATIVE_COUNTS_ONLY_NO_MODEL_RANKING"
+    "candidatePerformanceHidden": false,
+    "phaseAWinnersVisible": true,
+    "phaseBPerformanceHidden": true,
+    "reason": "PHASE_A_WINNERS_MAY_BE_REVEALED; PHASE_B_OUTCOMES_REMAIN_BLINDED"
   },
-  "phaseAWinners": null,
+  "phaseAWinners": {
+    "3": {
+      "config": {
+        "pickCount": 3,
+        "mode": "cold",
+        "lookback": 50
+      },
+      "phaseA": {
+        "rounds": 5000,
+        "hits": 453,
+        "hitRate": 0.0906,
+        "uniformNullRate": 0.081081,
+        "hitExcess": 0.009519,
+        "exactOneSidedP": 0.008063997,
+        "winningLightningEvents": 333,
+        "capturedWinningLightning": 24,
+        "captureRate": 0.072072,
+        "totalStakeEUR": 75000,
+        "grossReturnEUR": 73350,
+        "netPnlEUR": -1650,
+        "roi": -0.022,
+        "maxDrawdownEUR": 5975
+      },
+      "selectedAtFixedBoundaryRound": 5000
+    },
+    "4": {
+      "config": {
+        "pickCount": 4,
+        "mode": "cold",
+        "lookback": 50
+      },
+      "phaseA": {
+        "rounds": 5000,
+        "hits": 581,
+        "hitRate": 0.1162,
+        "uniformNullRate": 0.108108,
+        "hitExcess": 0.008092,
+        "exactOneSidedP": 0.035406822,
+        "winningLightningEvents": 333,
+        "capturedWinningLightning": 32,
+        "captureRate": 0.096096,
+        "totalStakeEUR": 75000,
+        "grossReturnEUR": 72637.5,
+        "netPnlEUR": -2362.5,
+        "roi": -0.0315,
+        "maxDrawdownEUR": 5790
+      },
+      "selectedAtFixedBoundaryRound": 5000
+    }
+  },
   "confirmation": null,
   "gates": {
-    "phaseAComplete": false,
+    "phaseAComplete": true,
     "fixedFinalComplete": false,
     "numberSelectionProspectiveEdge": false,
     "separateTimingGateStillRequired": true,
@@ -91,7 +142,7 @@
     "v1SelectorAlgorithmUnchanged": true,
     "cleanWarmupNotScored": true
   },
-  "interpretation": "No selector ranking is disclosed before the fixed 5000-round prospective selection boundary.",
+  "interpretation": "The two phase-A winners are fixed deterministically. Phase-B outcomes remain blinded until the 10000-round fixed final boundary.",
   "algorithmCustody": {
     "sourceEngine": "loterias-ai/casino/lightning/research/economic-number-selection-prospective-v1.mjs",
     "sourceEngineGitBlobSha": "1e9431d663b6f5ced9dcb24a9d6074bb6bea3874",
