@@ -1,0 +1,60 @@
+name: Loterias AI Botemania Roxor Launch Operation Probe V2
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'loterias-ai/casino/jackpots/botemania-roxor-launch-operation-probe-v2.mjs'
+      - '.github/workflows/loterias-ai-botemania-roxor-launch-operation-probe-v2.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/jackpots/botemania-roxor-launch-operation-probe-v2.mjs'
+      - '.github/workflows/loterias-ai-botemania-roxor-launch-operation-probe-v2.yml'
+  schedule:
+    - cron: '7 */6 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-botemania-roxor-launch-operation-v2-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Syntax check
+        run: node --check loterias-ai/casino/jackpots/botemania-roxor-launch-operation-probe-v2.mjs
+      - name: Inspect public UVP page client launch operations
+        run: node loterias-ai/casino/jackpots/botemania-roxor-launch-operation-probe-v2.mjs
+      - name: Persist evidence on main only
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          EVIDENCE=loterias-ai/casino/jackpots/evidence/botemania-roxor-launch-operation-probe-v2.json
+          mkdir -p /tmp/roxor-launch-v2
+          cp "$EVIDENCE" /tmp/roxor-launch-v2/evidence.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p "$(dirname "$EVIDENCE")"
+          cp /tmp/roxor-launch-v2/evidence.json "$EVIDENCE"
+          git add "$EVIDENCE"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'data(casino): refresh Roxor launch-operation probe'
+          for attempt in 1 2 3 4; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1

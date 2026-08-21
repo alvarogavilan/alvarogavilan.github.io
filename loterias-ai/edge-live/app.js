@@ -1,3 +1,4 @@
+import {pickTopLane,buildRadarCards,radarSummary,unmappedLiveRows} from './edge-radar-lanes-v1.mjs';
 const DEFAULT_GAME_URL='https://www.botemania.es/juegos/slots-online/fishin-frenzy-jackpot-king';
 const BOT_GRAPHQL='https://www.botemania.es/es/graphql';
 const BOT_QUERY=`query loadJackpots {
@@ -41,7 +42,7 @@ async function maybeJson(url){try{return await json(url);}catch{return null;}}
 function directFresh(){const a=secAge(state.directAt);return state.directOk&&a!=null&&a<=10;}
 function selectedLane(){
   const p=state.plan||{},lanes=Array.isArray(p.lanes)?p.lanes:[];
-  return lanes.find(x=>x?.id===p?.selectedLaneId)||lanes[0]||null;
+  return pickTopLane(lanes,p?.selectedLaneId);
 }
 function selectedGame(){return state.plan?.game||selectedLane()?.game||{id:'none',name:'EDGE LIVE',url:DEFAULT_GAME_URL};}
 function selectedKey(){return selectedLane()?.monitor?.key||null;}
@@ -119,6 +120,47 @@ function render(){
   $('observed').textContent=time(selectedDirectRow()?state.directAt:observedAt);
   $('channel').textContent=directFresh()?`DIRECTO · ${state.directCanonicalRows} IDs válidos${state.directAmbiguousKeys?` · ${state.directAmbiguousKeys} ambiguos`:''}`:`EVIDENCIA · ${Number(p?.coverage?.liveFeedRows||0)} IDs`;
   $('why').innerHTML=whyText();$('liveDot').style.background=ready?'var(--green)':prepare?'var(--amber)':'var(--red)';
+  renderRadar();
+}
+const mechanismLabel={
+  MUST_BE_WON_BY_PROGRESSIVE_NETWORK:'Red progresiva Must-Be-Won-By',
+  PROGRESSIVE_VIDEO_POKER:'Vídeo póker progresivo',
+  PROGRESSIVE_SLOT_SCORE_RESEARCH:'Slot progresivo (investigación)',
+  LEGACY_PROGRESSIVE_SLOT_SCORE_RESEARCH:'Slot progresivo legado (investigación)'
+};
+const statusBadgeClass=s=>s==='GREEN'?'ok':s==='YELLOW'?'warn':'bad';
+function laneCardHtml(c){
+  const blockersHtml=c.blockers.length?c.blockers.map(b=>`• ${blockerLabel[b]||escapeHtml(b)}`).join('<br>'):'Sin bloqueos registrados.';
+  const distance=Number.isFinite(c.distanceToThresholdEUR)?(c.distanceToThresholdEUR<=0?'SUPERADO':eur(c.distanceToThresholdEUR)):'—';
+  const link=c.gameUrl?`<a href="${c.gameUrl}" target="_blank" rel="noopener">Abrir juego real →</a>`:'Juego no identificado todavía';
+  const age=c.observedAt?secAge(c.observedAt):null;
+  return `<div class="laneCard">
+    <div class="laneTop"><b>${escapeHtml(c.name)}</b><span class="badge ${statusBadgeClass(c.status)}">${c.status}</span></div>
+    <div class="laneMeta">${escapeHtml(mechanismLabel[c.mechanism]||c.mechanism||'—')} · ${c.operator}</div>
+    <div class="laneGrid">
+      <div><small>CONTADOR</small><b>${eur(c.currentEUR)}</b></div>
+      <div><small>ÚLTIMA OBS.</small><b>${c.observedAt?time(c.observedAt):'—'}</b></div>
+      <div><small>EDAD DATO</small><b>${age!=null?`${age}s`:'—'}</b></div>
+      <div><small>MOVIMIENTO</small><b>${c.movementDemonstrated==='SI'?'SÍ':c.movementDemonstrated==='NO'?'NO':'N/D'}</b></div>
+      <div><small>ESTASIS</small><b>${c.stasisSeconds!=null?`${c.stasisSeconds}s`:'—'}</b></div>
+      <div><small>IDENTIDAD</small><b>${c.identityVerified?'SÍ':'NO'}</b></div>
+      <div><small>THRESHOLD</small><b>${c.thresholdKnown?'SÍ':'NO'}</b></div>
+      <div><small>STAKE</small><b>${c.stakeKnown?'SÍ':'NO'}</b></div>
+      <div><small>ESTRATEGIA</small><b>${c.strategyVerified?'SÍ':'NO'}</b></div>
+      <div><small>DISTANCIA</small><b>${distance}</b></div>
+    </div>
+    ${c.investigation?'<div class="investBadge">INVESTIGACIÓN — todavía no ejecutable</div>':''}
+    <div class="laneBlockers">${blockersHtml}</div>
+    <div class="laneLink">${link}</div>
+  </div>`;
+}
+function renderRadar(){
+  const lanes=Array.isArray(state.plan?.lanes)?state.plan.lanes:[];
+  const summary=radarSummary(lanes);
+  $('radarSummary').textContent=`RADAR: ${summary.total} juegos monitorizados / GREEN: ${summary.green} / YELLOW: ${summary.yellow} / RED: ${summary.red}`;
+  $('radarList').innerHTML=buildRadarCards(lanes).map(laneCardHtml).join('')||'<div class="laneCard">Sin lanes en el plan todavía.</div>';
+  const unmapped=unmappedLiveRows(state.directByKey,lanes);
+  $('radarUnmappedList').innerHTML=unmapped.length?unmapped.map(u=>`<div class="tickerRow"><span>${escapeHtml(u.key)}</span><b>${eur(u.amountEUR)}</b></div>`).join(''):'<div class="tickerRow"><span>Sin IDs sin mapear detectados ahora mismo.</span></div>';
 }
 async function refreshScientific(){
   const [plan,multi,params,assets,metadata,live,validation]=await Promise.all([maybeJson(SOURCES.plan),maybeJson(SOURCES.multi),maybeJson(SOURCES.params),maybeJson(SOURCES.assets),maybeJson(SOURCES.metadata),maybeJson(SOURCES.live),maybeJson(SOURCES.validation)]);
