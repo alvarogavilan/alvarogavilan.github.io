@@ -41,6 +41,8 @@ jobs:
         run: node loterias-ai/tests/edge-number-and-uvp-evidence-v1.test.mjs
       - name: Dynamic meter freshness tests
         run: node loterias-ai/tests/meter-stasis-core-v1.test.mjs
+      - name: EDGE multi-lane radar tests
+        run: node loterias-ai/tests/edge-radar-lanes-v1.test.mjs
       - name: Validate JSON data files
         run: |
           node - <<'NODE'
