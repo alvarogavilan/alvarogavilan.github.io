@@ -26,6 +26,11 @@ const live={
   }
 };
 const out=refreshJpkNearCapCurrent(ev,live,'2026-08-21T12:30:01.000Z');
+assert.equal(out.version,'test-jpk-model+live-current-refresh-v1');
+const twice=refreshJpkNearCapCurrent(out,live,'2026-08-21T12:30:02.000Z');
+assert.equal(twice.version,'test-jpk-model+live-current-refresh-v1','repeated live refresh must not grow the version suffix');
+const legacyRepeated={...ev,version:'test-jpk-model+live-current-refresh-v1+live-current-refresh-v1+live-current-refresh-v1'};
+assert.equal(refreshJpkNearCapCurrent(legacyRepeated,live).version,'test-jpk-model+live-current-refresh-v1','existing repeated suffixes must collapse on next refresh');
 assert.equal(out.current.observedAt,live.observedAt);
 assert.deepEqual(out.current.potsEUR,{JACKPOT_KING:128431.96,REGAL:15579.45,ROYAL:1748.02});
 assert.equal(out.current.sourceClass,'ALL_NETWORK_BLUEPRINT_EXACT_IDS');

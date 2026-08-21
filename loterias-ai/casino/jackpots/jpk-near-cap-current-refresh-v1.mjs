@@ -3,6 +3,8 @@ import fs from 'node:fs';
 
 const finite=v=>{if(v===null||v===undefined||v==='')return null;const n=Number(v);return Number.isFinite(n)?n:null;};
 const clamp=q=>Math.max(0.0001,Math.min(0.9998,q));
+const LIVE_SUFFIX='+live-current-refresh-v1';
+const baseVersion=v=>String(v||'botemania-jpk-near-cap-ev-scenarios-v1').replace(/(?:\+live-current-refresh-v1)+$/,'');
 
 export function refreshJpkNearCapCurrent(ev={},allNetwork={},generatedAt=new Date().toISOString()){
   if(ev?.model?.family!=='HIDDEN_DROP_THRESHOLD_BETA_ALPHA_1_ON_SEED_TO_CAP') throw new Error('unsupported JPK sensitivity model family');
@@ -56,7 +58,7 @@ export function refreshJpkNearCapCurrent(ev={},allNetwork={},generatedAt=new Dat
   const worst=conservative.length?Math.min(...conservative.map(x=>x.totalRtp)):null;
   const best=conservative.length?Math.max(...conservative.map(x=>x.totalRtp)):null;
   const out=structuredClone(ev);
-  out.version=`${String(ev.version||'botemania-jpk-near-cap-ev-scenarios-v1')}+live-current-refresh-v1`;
+  out.version=`${baseVersion(ev.version)}${LIVE_SUFFIX}`;
   out.generatedAt=generatedAt;
   out.current={
     observedAt,potsEUR:pots,sourceClass:'ALL_NETWORK_BLUEPRINT_EXACT_IDS',normalizedSeedToCap:q,scenarios,
