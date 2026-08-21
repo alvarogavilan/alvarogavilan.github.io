@@ -18,9 +18,10 @@ const stasis=read(STASIS)||{};
 
 const RESEARCH_SCENARIOS={
   'botemania-diamond-bonanza-25c':{
-    name:'DIAMOND_BONANZA_25C_HISTORICAL_COMPONENT_SCENARIO',
-    baseRtpExcludingJackpotPct:93.52,
-    averageJackpotContributionPct:5.66,
+    name:'DIAMOND_BONANZA_25C_CROSS_SOURCE_COMPARATOR',
+    economicInputsComposable:false,
+    baseRtpExcludingJackpotPct:null,
+    averageJackpotContributionPct:null,
     seedNominal:500,
     averageHitNominal:7309,
     sourceModelCurrency:'GBP',
@@ -28,13 +29,20 @@ const RESEARCH_SCENARIOS={
     configurationEquivalentToBotemaniaVerified:false,
     currencyNetworkEquivalentVerified:false,
     nearThresholdWindowNominal:500,
+    legacyExternalInputs:{
+      roxorPublishedRtpPct:93.52,
+      ballyPublishedRtpPct:95.01,
+      ballyJackpotContributionPct:5.66,
+      historicalGamesysSeedGBP:500,
+      historicalGamesysAverageHitGBP:7309
+    },
     evidenceNotes:[
-      'External Roxor/Gamesys references report 93.52% RTP for Diamond Bonanza.',
-      'A current Bally-family rules page reports 95.01% plus 5.66% jackpot contribution for a Diamond Bonanza configuration, but the contribution semantics are not safe to add without an exact definition.',
-      'Long-running public jackpot history reports 25p seed 500 and average hit 7309 over 1060 wins.',
-      'Botemania publishes 95.44% RTP and three denomination-based progressive pots but does not publish the 5.66% split.',
-      'Botemania and Monopoly Casino Spain expose the same exact diamondbonanza25BTM id and amount with matching visible rules, strongly supporting a shared Spanish pool; this still does not prove the historical GBP economic configuration transfers to EUR.',
-      'This is therefore prioritisation research only and never wager authorisation.'
+      'External Roxor/Gamesys-family references report 93.52% RTP for a Diamond Bonanza build, but do not establish that this is base RTP excluding the progressive jackpot.',
+      'A current Bally-family rules page separately reports 95.01% RTP and 5.66% jackpot contribution for a Diamond Bonanza configuration. That contribution belongs to a different source/build and must not be combined with the 93.52% Roxor figure.',
+      'Long-running Gamesys jackpot history reports 25p seed 500 and average hit 7309 over 1060 wins. These values remain GBP historical mechanism comparators only.',
+      'Botemania and Monopoly Casino Spain publish 95.44% RTP and expose the same exact diamondbonanza25BTM id and amount with matching visible 25c-1EUR / 5-line rules. Their public wording does not establish a separate Spain base-RTP and jackpot-contribution split.',
+      'Therefore no break-even jackpot or current RTP may be calculated by mixing 93.52%, 5.66%, GBP seed/average-hit and the Spanish EUR meter.',
+      'This scenario is useful only for mechanism lineage and SCORE-style prioritisation research; it can never authorize wagering.'
     ]
   }
 };
@@ -75,27 +83,29 @@ for(const m of mappings){
     const sAvg=finiteNumberOrNull(scenario.averageHitNominal);
     const sDen=sSeed!==null&&sAvg!==null?sAvg-sSeed:null;
     const score=current!==null&&sSeed!==null&&sAvg!==null&&sDen>0?((current-sSeed)/sDen)*100:null;
-    const sBase=finiteNumberOrNull(scenario.baseRtpExcludingJackpotPct);
-    const sContribution=finiteNumberOrNull(scenario.averageJackpotContributionPct);
-    const breakEvenScore=sBase!==null&&sContribution!==null&&sContribution>0?((100-sBase)/sContribution)*100:null;
+    const economicInputsComposable=scenario.economicInputsComposable===true;
+    const sBase=economicInputsComposable?finiteNumberOrNull(scenario.baseRtpExcludingJackpotPct):null;
+    const sContribution=economicInputsComposable?finiteNumberOrNull(scenario.averageJackpotContributionPct):null;
+    const breakEvenScore=economicInputsComposable&&sBase!==null&&sContribution!==null&&sContribution>0?((100-sBase)/sContribution)*100:null;
     const breakEvenNominal=breakEvenScore!==null&&sDen>0?sSeed+sDen*(breakEvenScore/100):null;
-    const estimatedRtp=score!==null&&sBase!==null&&sContribution!==null?sBase+(score/100)*sContribution:null;
+    const estimatedRtp=economicInputsComposable&&score!==null&&sBase!==null&&sContribution!==null?sBase+(score/100)*sContribution:null;
     const distance=current!==null&&breakEvenNominal!==null?breakEvenNominal-current:null;
     const nearWindow=finiteNumberOrNull(scenario.nearThresholdWindowNominal)??500;
-    const nominalZone=distance!==null?(distance<=0?'ABOVE_RESEARCH_THRESHOLD':distance<=nearWindow?'NEAR_RESEARCH_THRESHOLD':'BELOW_RESEARCH_THRESHOLD'):'NO_LIVE_VALUE';
+    const nominalZone=breakEvenNominal===null?'NO_VERIFIED_RESEARCH_THRESHOLD':distance!==null?(distance<=0?'ABOVE_RESEARCH_THRESHOLD':distance<=nearWindow?'NEAR_RESEARCH_THRESHOLD':'BELOW_RESEARCH_THRESHOLD'):'NO_LIVE_VALUE';
     const thresholdGate=gateResearchThresholdZone({
       nominalZone,
       dynamicFreshnessVerified:dynamicFreshness.verified===true,
-      configurationEquivalentVerified:scenario.configurationEquivalentToBotemaniaVerified===true,
-      currencyNetworkEquivalentVerified:scenario.currencyNetworkEquivalentVerified===true,
+      configurationEquivalentVerified:economicInputsComposable&&scenario.configurationEquivalentToBotemaniaVerified===true,
+      currencyNetworkEquivalentVerified:economicInputsComposable&&scenario.currencyNetworkEquivalentVerified===true,
     });
     researchScenario={
       name:scenario.name,
+      economicInputsComposable,
       zone:thresholdGate.zone,
       nominalZone:thresholdGate.nominalZone,
       nominalNearOrAbove:thresholdGate.nominalNearOrAbove,
-      operationalThresholdComparable:thresholdGate.operationalThresholdComparable,
-      countsAsNearOrAboveResearchThreshold:thresholdGate.countsAsNearOrAboveResearchThreshold,
+      operationalThresholdComparable:economicInputsComposable&&thresholdGate.operationalThresholdComparable,
+      countsAsNearOrAboveResearchThreshold:economicInputsComposable&&thresholdGate.countsAsNearOrAboveResearchThreshold,
       stateDynamicallyVerified:dynamicFreshness.verified===true,
       currentNominal:current!==null?+current.toFixed(6):null,
       score:score!==null?+score.toFixed(3):null,
@@ -109,11 +119,12 @@ for(const m of mappings){
       averageHitNominal:sAvg,
       sourceModelCurrency:scenario.sourceModelCurrency,
       liveCurrency:scenario.liveCurrency,
+      legacyExternalInputs:scenario.legacyExternalInputs||null,
       configurationEquivalentToBotemaniaVerified:scenario.configurationEquivalentToBotemaniaVerified===true,
       currencyNetworkEquivalentVerified:scenario.currencyNetworkEquivalentVerified===true,
       executionPromotionAllowed:false,
       evidenceNotes:scenario.evidenceNotes,
-      safety:'RESEARCH_ONLY_NEVER_GREEN'
+      safety:'RESEARCH_ONLY_NEVER_GREEN_NO_MIXED_SOURCE_ARITHMETIC'
     };
   }
 
@@ -139,7 +150,7 @@ for(const m of mappings){
 
 rows.sort((a,b)=>b.researchPriorityScore-a.researchPriorityScore);
 const nearResearch=rows.filter(x=>x?.researchScenario?.countsAsNearOrAboveResearchThreshold===true);
-const out={version:'progressive-score-research-v1.4-operational-research-zone-gate',generatedAt:now,operator:'botemania-es',sourceObservedAt:network?.observedAt||null,sourceAgeSeconds,methodology:{scoreFormula:'(Jackpot-Seed)/(AverageHit-Seed)*100',interpretation:'SCORE 100 means current growth equals historical average growth before a hit. SCORE alone is not total RTP.',exactRtpFormula:'baseRtpExcludingJackpotPct + (SCORE/100)*averageJackpotContributionPct',dynamicFreshnessRule:'HTTP/sample freshness and dynamic-meter freshness are separate. No recent observed movement does not prove stale data, but execution remains blocked until dynamic freshness is positively verified.',researchScenarioRule:'A nominal cross-network/cross-currency threshold may remain visible as a comparator, but it is not counted as near/above until dynamic state, configuration equivalence and currency/network equivalence are all positively verified.',safety:'Cross-currency/cross-network historical inputs are research-only and cannot authorize wagering.'},rows,summary:{trackedProgressiveMappings:rows.length,exactScoreRows:rows.filter(x=>x?.score?.exactScore!==null).length,exactEconomicPositiveRows:rows.filter(x=>x?.economic?.exactEconomicPass===true).length,executionPromotableRows:rows.filter(x=>x?.economic?.executionPromotionAllowed===true).length,dynamicallyFreshRows:rows.filter(x=>x?.current?.dynamicFreshnessVerified===true).length,nominalNearOrAboveComparatorRows:rows.filter(x=>x?.researchScenario?.nominalNearOrAbove===true).length,nearOrAboveResearchThresholdRows:nearResearch.length},nearResearchThreshold:nearResearch.map(x=>({id:x.id,game:x.game?.name||null,zone:x.researchScenario.nominalZone,currentNominal:x.researchScenario.currentNominal,breakEvenJackpotNominal:x.researchScenario.breakEvenJackpotNominal,distanceNominal:x.researchScenario.distanceToResearchThresholdNominal,estimatedRtpPct:x.researchScenario.estimatedRtpPct,operationalThresholdComparable:true,executionPromotionAllowed:false})),guards:{nullNeverCoercedToZero:true,stableExactIdEventsOnly:true,identityClassDoesNotEqualConfirmedReset:true,httpFreshnessDoesNotEqualDynamicFreshness:true,dynamicFreshnessRequiredForExecution:true,noAutomaticBetting:true,noCrossCurrencyScoreForExecution:true,noScoreAloneAsEvProof:true,noExternalHistoricalAverageAsSpanishThreshold:true,unverifiedNominalNearDoesNotCountAsOperationalNear:true,researchScenarioNeverPromotesToGreen:true,finalExecutionGateStillRequired:true,realMoneyAllowed:false}};
+const out={version:'progressive-score-research-v1.5-no-mixed-source-arithmetic',generatedAt:now,operator:'botemania-es',sourceObservedAt:network?.observedAt||null,sourceAgeSeconds,methodology:{scoreFormula:'(Jackpot-Seed)/(AverageHit-Seed)*100',interpretation:'SCORE 100 means current growth equals historical average growth before a hit. SCORE alone is not total RTP.',exactRtpFormula:'baseRtpExcludingJackpotPct + (SCORE/100)*averageJackpotContributionPct',dynamicFreshnessRule:'HTTP/sample freshness and dynamic-meter freshness are separate. No recent observed movement does not prove stale data, but execution remains blocked until dynamic freshness is positively verified.',researchScenarioRule:'A research break-even exists only when base RTP, jackpot contribution, seed/average-hit and meter units are economically composable for the same configuration. Cross-source/cross-build components may remain visible as separate comparators but are never arithmetically combined.',safety:'Cross-currency/cross-network historical inputs are research-only and cannot authorize wagering.'},rows,summary:{trackedProgressiveMappings:rows.length,exactScoreRows:rows.filter(x=>x?.score?.exactScore!==null).length,exactEconomicPositiveRows:rows.filter(x=>x?.economic?.exactEconomicPass===true).length,executionPromotableRows:rows.filter(x=>x?.economic?.executionPromotionAllowed===true).length,dynamicallyFreshRows:rows.filter(x=>x?.current?.dynamicFreshnessVerified===true).length,nominalNearOrAboveComparatorRows:rows.filter(x=>x?.researchScenario?.nominalNearOrAbove===true).length,nearOrAboveResearchThresholdRows:nearResearch.length},nearResearchThreshold:nearResearch.map(x=>({id:x.id,game:x.game?.name||null,zone:x.researchScenario.nominalZone,currentNominal:x.researchScenario.currentNominal,breakEvenJackpotNominal:x.researchScenario.breakEvenJackpotNominal,distanceNominal:x.researchScenario.distanceToResearchThresholdNominal,estimatedRtpPct:x.researchScenario.estimatedRtpPct,operationalThresholdComparable:true,executionPromotionAllowed:false})),guards:{nullNeverCoercedToZero:true,stableExactIdEventsOnly:true,identityClassDoesNotEqualConfirmedReset:true,httpFreshnessDoesNotEqualDynamicFreshness:true,dynamicFreshnessRequiredForExecution:true,noAutomaticBetting:true,noCrossCurrencyScoreForExecution:true,noScoreAloneAsEvProof:true,noExternalHistoricalAverageAsSpanishThreshold:true,noMixedSourceRtpContributionArithmetic:true,unverifiedNominalNearDoesNotCountAsOperationalNear:true,researchScenarioNeverPromotesToGreen:true,finalExecutionGateStillRequired:true,realMoneyAllowed:false}};
 fs.mkdirSync('loterias-ai/edge-live/evidence',{recursive:true});
 fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
 console.log(JSON.stringify({summary:out.summary,diamond:rows.find(x=>x.monitor.key==='generic:diamondbonanza25BTM')||null,wagerBet:rows.find(x=>x.monitor.key==='generic:WAGER_BET')||null,nearResearchThreshold:out.nearResearchThreshold},null,2));
