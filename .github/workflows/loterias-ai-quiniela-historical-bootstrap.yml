@@ -40,18 +40,26 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          qdir='loterias-ai/data/archive/quiniela'
           report='loterias-ai/data/archive/_meta/quiniela-historical-selae-crosscheck.json'
+          cache='/tmp/quiniela-historical-fallback'
 
-          # This fallback deliberately stages only canonical Quiniela evidence and
-          # its own report. It does not rebuild global QA, so a slow downstream QA
-          # phase cannot prevent durable progress. The regular historical workflow
-          # remains responsible for manifest/audit/priorities.
-          # workflow_run ensures every completed primary historical attempt is
-          # followed by a small durable checkpoint, even when the primary attempt
-          # fails closed or produces no push-trigger cascade.
-          for attempt in 1 2 3 4 5; do
+          owned_hash() {
+            {
+              find "$qdir" -type f -name '*.json' -print0 | sort -z | xargs -0 sha256sum
+              if [ -f "$report" ]; then sha256sum "$report"; else printf '%s\n' 'NO_REPORT'; fi
+            } | sha256sum | awk '{print $1}'
+          }
+
+          # Network computation and persistence are separated deliberately. Heavy
+          # EDGE/casino workflows move main every few seconds; an unrelated commit
+          # must not force us to re-query SELAE or discard a valid Quiniela result.
+          # A cached checkpoint may be replayed onto the latest main only while the
+          # complete Quiniela-owned state (archive + report) is unchanged.
+          for compute_attempt in 1 2 3; do
             git fetch origin main
             git reset --hard origin/main
+            baseline_owned_hash="$(owned_hash)"
 
             set +e
             BATCH_LIMIT=4 FETCH_CONCURRENCY=2 node loterias-ai/scripts/crosscheck-quiniela-historical-selae.mjs
@@ -71,11 +79,8 @@ jobs:
             NODE
             )
 
-            git add \
-              loterias-ai/data/archive/quiniela \
-              "$report"
-
-            if git diff --cached --quiet; then
+            changed=$(git diff --name-only -- "$qdir" "$report" | sed '/^$/d')
+            if [ -z "$changed" ]; then
               echo "No semantic Quiniela fallback change; remainingTargets=${remaining}."
               if [ "$crosscheck_rc" -ne 0 ]; then
                 echo "Cross-check remains fail-closed with rc=${crosscheck_rc}." >&2
@@ -84,19 +89,54 @@ jobs:
               exit 0
             fi
 
-            git commit -m 'data(quiniela): persist durable historical SELAE micro-checkpoint'
-            if git push origin HEAD:main; then
-              if [ "$crosscheck_rc" -ne 0 ]; then
-                echo "Persisted Quiniela diagnostic checkpoint; cross-check failed closed with rc=${crosscheck_rc}." >&2
-                exit "$crosscheck_rc"
-              fi
-              echo "Persisted strict Quiniela historical micro-checkpoint; remainingTargets=${remaining}."
-              exit 0
-            fi
+            rm -rf "$cache"
+            mkdir -p "$cache/archive" "$cache/meta"
+            cp -a "$qdir"/. "$cache/archive"/
+            cp "$report" "$cache/meta/report.json"
 
-            echo "main moved during Quiniela fallback attempt ${attempt}; recomputing"
-            sleep $((attempt * 2))
+            owner_changed=0
+            for persist_attempt in 1 2 3 4 5 6 7 8 9 10; do
+              git fetch origin main
+              git reset --hard origin/main
+              current_owned_hash="$(owned_hash)"
+              if [ "$current_owned_hash" != "$baseline_owned_hash" ]; then
+                echo 'Canonical Quiniela-owned state changed concurrently; recomputing SELAE checkpoint.'
+                owner_changed=1
+                break
+              fi
+
+              cp -a "$cache/archive"/. "$qdir"/
+              cp "$cache/meta/report.json" "$report"
+              git add "$qdir" "$report"
+
+              if git diff --cached --quiet; then
+                echo "Checkpoint already present on latest main; remainingTargets=${remaining}."
+                if [ "$crosscheck_rc" -ne 0 ]; then
+                  echo "Cross-check remains fail-closed with rc=${crosscheck_rc}." >&2
+                  exit "$crosscheck_rc"
+                fi
+                exit 0
+              fi
+
+              git commit -m 'data(quiniela): persist durable historical SELAE micro-checkpoint'
+              if git push origin HEAD:main; then
+                if [ "$crosscheck_rc" -ne 0 ]; then
+                  echo "Persisted Quiniela diagnostic checkpoint; cross-check failed closed with rc=${crosscheck_rc}." >&2
+                  exit "$crosscheck_rc"
+                fi
+                echo "Persisted strict Quiniela historical micro-checkpoint; remainingTargets=${remaining}."
+                exit 0
+              fi
+
+              echo "main moved because of unrelated work during persistence attempt ${persist_attempt}/10; retrying cached owned files"
+              sleep 1
+            done
+
+            if [ "$owner_changed" -eq 0 ]; then
+              echo 'Unable to persist cached Quiniela checkpoint after ten owner-safe retries.' >&2
+              exit 1
+            fi
           done
 
-          echo 'Unable to persist Quiniela historical fallback checkpoint after five recomputations.' >&2
+          echo 'Quiniela-owned files changed repeatedly during three recomputations; failing closed.' >&2
           exit 1
