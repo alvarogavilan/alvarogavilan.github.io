@@ -45,9 +45,16 @@ jobs:
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
-            node loterias-ai/casino/lightning/research/physical-rng-prospective-v3.mjs
 
-            node --input-type=module <<'NODE'
+            set +e
+            node loterias-ai/casino/lightning/research/physical-rng-prospective-v3.mjs
+            script_rc=$?
+            set -e
+
+            validation_rc=0
+            if [ -f "$out" ]; then
+              set +e
+              node --input-type=module <<'NODE'
             import fs from 'node:fs';
             const f=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-freeze.json','utf8'));
             const s=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-status.json','utf8'));
@@ -61,17 +68,38 @@ jobs:
             if(boundaryFinalized&&(!/^[a-f0-9]{64}$/.test(String(fingerprint))||s.activation?.anchorBoundaryRounds!==5000)) throw Error('v3 finalized boundary fingerprint missing or invalid');
             if(used<5000&&(s.final!==null||s.disclosure?.observedStatisticsHidden!==true||s.disclosure?.pValuesHidden!==true||s.disclosure?.directionHidden!==true)) throw Error('v3 interim blindness regression');
             if(s.final?.claimAllowed===true||s.final?.realMoneyAllowed===true) throw Error('v3 cannot authorize claims or real money');
-NODE
-
-            git add "$out"
-            if git diff --cached --quiet; then
-              echo 'No semantic physical RNG v3 change.'
-              exit 0
+            NODE
+              validation_rc=$?
+              set -e
             fi
-            git commit -m 'research(lightning): advance preregistered physical RNG v3 replication'
-            if git push origin HEAD:main; then exit 0; fi
-            echo "main moved during physical RNG v3 attempt ${attempt}; recomputing"
-            sleep $((attempt * 2))
+
+            if [ -f "$out" ]; then
+              git add "$out"
+              if ! git diff --cached --quiet; then
+                git commit -m 'research(lightning): advance preregistered physical RNG v3 replication'
+                if ! git push origin HEAD:main; then
+                  echo "main moved during physical RNG v3 attempt ${attempt}; recomputing"
+                  sleep $((attempt * 2))
+                  continue
+                fi
+              fi
+            fi
+
+            if [ "$script_rc" -ne 0 ]; then
+              echo "physical RNG v3 evaluator failed with rc=${script_rc}; any durable status was persisted first" >&2
+              exit "$script_rc"
+            fi
+            if [ ! -f "$out" ]; then
+              echo 'physical RNG v3 evaluator completed without producing a status artifact' >&2
+              exit 1
+            fi
+            if [ "$validation_rc" -ne 0 ]; then
+              echo "physical RNG v3 validation failed with rc=${validation_rc}; diagnostic status was persisted first" >&2
+              exit "$validation_rc"
+            fi
+
+            echo 'Physical RNG v3 status is synchronized and valid.'
+            exit 0
           done
 
           echo 'Unable to persist physical RNG v3 after five recomputations.' >&2
