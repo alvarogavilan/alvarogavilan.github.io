@@ -12,11 +12,17 @@ import { parseRtpPctsFromContexts } from '../casino/archive/botemania-rtp-pct-pa
   assert.ok(pcts.includes(0.38));
 }
 
-// Regression: the normal case (a literal "%" right after the number) must
-// keep working exactly as before.
+// Regression: a literal "%" with Spanish comma stays correct.
 {
   const ctx = ['Porcentaje de Retorno al Jugador: 94,85% (base)'];
   assert.deepEqual(parseRtpPctsFromContexts(ctx), [94.85]);
+}
+
+// Dot-decimal percentages are valid too. They must not be interpreted as
+// thousands separators (94.85 must never become 9485 and get silently lost).
+{
+  const ctx = ['RTP: 94.85% (Base) Contribución al Bote: 0.60%'];
+  assert.deepEqual(parseRtpPctsFromContexts(ctx), [94.85, 0.6]);
 }
 
 // A range-shaped context (two numbers, both with "%") must still recover both.
