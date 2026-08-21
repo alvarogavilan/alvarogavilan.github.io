@@ -1,15 +1,15 @@
 {
-  "version": "progressive-score-research-v1.3-dynamic-freshness",
-  "generatedAt": "2026-08-21T09:34:46.781Z",
+  "version": "progressive-score-research-v1.4-operational-research-zone-gate",
+  "generatedAt": "2026-08-21T09:39:08.194Z",
   "operator": "botemania-es",
-  "sourceObservedAt": "2026-08-21T09:34:46.048Z",
+  "sourceObservedAt": "2026-08-21T09:39:07.543Z",
   "sourceAgeSeconds": 0,
   "methodology": {
     "scoreFormula": "(Jackpot-Seed)/(AverageHit-Seed)*100",
     "interpretation": "SCORE 100 means current growth equals historical average growth before a hit. SCORE alone is not total RTP.",
     "exactRtpFormula": "baseRtpExcludingJackpotPct + (SCORE/100)*averageJackpotContributionPct",
     "dynamicFreshnessRule": "HTTP/sample freshness and dynamic-meter freshness are separate. No recent observed movement does not prove stale data, but execution remains blocked until dynamic freshness is positively verified.",
-    "researchScenarioRule": "Cross-network/cross-currency scenarios may rank and accelerate investigation but can never authorize wagering.",
+    "researchScenarioRule": "A nominal cross-network/cross-currency threshold may remain visible as a comparator, but it is not counted as near/above until dynamic state, configuration equivalence and currency/network equivalence are all positively verified.",
     "safety": "Cross-currency/cross-network historical inputs are research-only and cannot authorize wagering."
   },
   "rows": [
@@ -28,13 +28,13 @@
       },
       "current": {
         "amountEUR": 8032.9,
-        "observedAt": "2026-08-21T09:34:46.048Z",
+        "observedAt": "2026-08-21T09:39:07.543Z",
         "sourceAgeSeconds": 0,
         "dynamicFreshnessVerified": false,
         "dynamicFreshnessReason": "DYNAMIC_MOVEMENT_NOT_YET_OBSERVED",
-        "stasisSeconds": 2602,
+        "stasisSeconds": 2864,
         "lastChangedAt": null,
-        "observationCount": 35,
+        "observationCount": 47,
         "changeCount": 0
       },
       "identity": {
@@ -64,7 +64,12 @@
       },
       "researchScenario": {
         "name": "DIAMOND_BONANZA_25C_HISTORICAL_COMPONENT_SCENARIO",
-        "zone": "NEAR_RESEARCH_THRESHOLD",
+        "zone": "DYNAMIC_STATE_NOT_VERIFIED",
+        "nominalZone": "NEAR_RESEARCH_THRESHOLD",
+        "nominalNearOrAbove": true,
+        "operationalThresholdComparable": false,
+        "countsAsNearOrAboveResearchThreshold": false,
+        "stateDynamicallyVerified": false,
         "currentNominal": 8032.9,
         "score": 110.632,
         "estimatedRtpPct": 99.7817,
@@ -82,9 +87,10 @@
         "executionPromotionAllowed": false,
         "evidenceNotes": [
           "External Roxor/Gamesys references report 93.52% RTP for Diamond Bonanza.",
-          "A current Bally-family rules page reports 95.01% plus 5.66% jackpot contribution for a Diamond Bonanza configuration.",
+          "A current Bally-family rules page reports 95.01% plus 5.66% jackpot contribution for a Diamond Bonanza configuration, but the contribution semantics are not safe to add without an exact definition.",
           "Long-running public jackpot history reports 25p seed 500 and average hit 7309 over 1060 wins.",
           "Botemania publishes 95.44% RTP and three denomination-based progressive pots but does not publish the 5.66% split.",
+          "Botemania and Monopoly Casino Spain expose the same exact diamondbonanza25BTM id and amount with matching visible rules, strongly supporting a shared Spanish pool; this still does not prove the historical GBP economic configuration transfers to EUR.",
           "This is therefore prioritisation research only and never wager authorisation."
         ],
         "safety": "RESEARCH_ONLY_NEVER_GREEN"
@@ -99,13 +105,13 @@
         "exactEconomicPass": false,
         "executionPromotionAllowed": false
       },
-      "researchPriorityScore": 500,
+      "researchPriorityScore": 75,
       "blockers": [
         "COUNTER_IDENTITY_NOT_FULLY_VERIFIED",
         "DYNAMIC_METER_FRESHNESS_NOT_VERIFIED",
         "SCORE_INPUT_UNITS_NOT_COMPARABLE",
         "RTP_COMPONENTS_NOT_VERIFIED",
-        "RESEARCH_SCENARIO_CONFIGURATION_NOT_VERIFIED",
+        "RESEARCH_SCENARIO_CONFIGURATION_OR_STATE_NOT_VERIFIED",
         "EXACT_STAKE_NOT_VERIFIED",
         "EXECUTION_STRATEGY_NOT_VERIFIED"
       ]
@@ -125,13 +131,13 @@
       },
       "current": {
         "amountEUR": 120779.69,
-        "observedAt": "2026-08-21T09:34:46.048Z",
+        "observedAt": "2026-08-21T09:39:07.543Z",
         "sourceAgeSeconds": 0,
         "dynamicFreshnessVerified": true,
         "dynamicFreshnessReason": "RECENT_DYNAMIC_MOVEMENT_OBSERVED",
-        "stasisSeconds": 177,
+        "stasisSeconds": 439,
         "lastChangedAt": "2026-08-21T09:31:48.313Z",
-        "observationCount": 35,
+        "observationCount": 47,
         "changeCount": 5
       },
       "identity": {
@@ -165,7 +171,7 @@
         "exactEconomicPass": false,
         "executionPromotionAllowed": false
       },
-      "researchPriorityScore": 118.817,
+      "researchPriorityScore": 50,
       "blockers": [
         "COUNTER_IDENTITY_NOT_FULLY_VERIFIED",
         "SCORE_INPUT_UNITS_NOT_COMPARABLE",
@@ -189,13 +195,13 @@
       },
       "current": {
         "amountEUR": 3448.25,
-        "observedAt": "2026-08-21T09:34:46.048Z",
+        "observedAt": "2026-08-21T09:39:07.543Z",
         "sourceAgeSeconds": 0,
         "dynamicFreshnessVerified": false,
         "dynamicFreshnessReason": "DYNAMIC_MOVEMENT_NOT_YET_OBSERVED",
-        "stasisSeconds": 2602,
+        "stasisSeconds": 2864,
         "lastChangedAt": null,
-        "observationCount": 35,
+        "observationCount": 47,
         "changeCount": 0
       },
       "identity": {
@@ -255,15 +261,15 @@
         "key": "generic:bouncy_bubbles_id"
       },
       "current": {
-        "amountEUR": 1942.02,
-        "observedAt": "2026-08-21T09:34:46.048Z",
+        "amountEUR": 1942.06,
+        "observedAt": "2026-08-21T09:39:07.543Z",
         "sourceAgeSeconds": 0,
         "dynamicFreshnessVerified": true,
         "dynamicFreshnessReason": "RECENT_DYNAMIC_MOVEMENT_OBSERVED",
-        "stasisSeconds": 47,
-        "lastChangedAt": "2026-08-21T09:33:58.095Z",
-        "observationCount": 35,
-        "changeCount": 7
+        "stasisSeconds": 15,
+        "lastChangedAt": "2026-08-21T09:38:51.745Z",
+        "observationCount": 47,
+        "changeCount": 10
       },
       "identity": {
         "verified": false,
@@ -319,15 +325,15 @@
         "key": "generic:tikitemple2_1"
       },
       "current": {
-        "amountEUR": 1060.4,
-        "observedAt": "2026-08-21T09:34:46.048Z",
+        "amountEUR": 1062.65,
+        "observedAt": "2026-08-21T09:39:07.543Z",
         "sourceAgeSeconds": 0,
         "dynamicFreshnessVerified": true,
         "dynamicFreshnessReason": "RECENT_DYNAMIC_MOVEMENT_OBSERVED",
-        "stasisSeconds": 0,
-        "lastChangedAt": "2026-08-21T09:34:46.048Z",
-        "observationCount": 35,
-        "changeCount": 9
+        "stasisSeconds": 15,
+        "lastChangedAt": "2026-08-21T09:38:51.745Z",
+        "observationCount": 47,
+        "changeCount": 13
       },
       "identity": {
         "verified": false,
@@ -376,20 +382,10 @@
     "exactEconomicPositiveRows": 0,
     "executionPromotableRows": 0,
     "dynamicallyFreshRows": 3,
-    "nearOrAboveResearchThresholdRows": 1
+    "nominalNearOrAboveComparatorRows": 1,
+    "nearOrAboveResearchThresholdRows": 0
   },
-  "nearResearchThreshold": [
-    {
-      "id": "botemania-diamond-bonanza-25c",
-      "game": "Danza de los Diamantes — Diamond Bonanza 25c",
-      "zone": "NEAR_RESEARCH_THRESHOLD",
-      "currentNominal": 8032.9,
-      "breakEvenJackpotNominal": 8295.46,
-      "distanceNominal": 262.56,
-      "estimatedRtpPct": 99.7817,
-      "executionPromotionAllowed": false
-    }
-  ],
+  "nearResearchThreshold": [],
   "guards": {
     "nullNeverCoercedToZero": true,
     "stableExactIdEventsOnly": true,
@@ -400,6 +396,7 @@
     "noCrossCurrencyScoreForExecution": true,
     "noScoreAloneAsEvProof": true,
     "noExternalHistoricalAverageAsSpanishThreshold": true,
+    "unverifiedNominalNearDoesNotCountAsOperationalNear": true,
     "researchScenarioNeverPromotesToGreen": true,
     "finalExecutionGateStillRequired": true,
     "realMoneyAllowed": false
