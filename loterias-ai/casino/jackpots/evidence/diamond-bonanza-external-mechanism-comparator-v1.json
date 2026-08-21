@@ -1,0 +1,71 @@
+{
+  "version": "diamond-bonanza-external-mechanism-comparator-v1",
+  "createdAt": "2026-08-21T09:22:00.000Z",
+  "purpose": "EXTERNAL_MECHANISM_COMPARATOR_ONLY",
+  "currentSpain": {
+    "botemania": {
+      "source": "https://www.botemania.es/juegos/slots-online/danza-de-los-diamantes",
+      "coinRange": "25c-1EUR",
+      "fixedPaylines": 5,
+      "publishedRtpPct": 95.44,
+      "progressivePotCount": 3
+    },
+    "monopolyCasinoSpain": {
+      "source": "https://www.monopolycasino.es/juegos/slots-online/danza-de-los-diamantes",
+      "coinRange": "25c-1EUR",
+      "fixedPaylines": 5,
+      "publishedRtpPct": 95.44,
+      "progressivePotCount": 3
+    },
+    "liveSharedPoolEvidenceFile": "loterias-ai/casino/jackpots/evidence/diamond-bonanza-spain-pool-equivalence-v1.json"
+  },
+  "ballyCurrentComparator": {
+    "source": "https://www.ballycasino.com/jackpot-slots/diamond-bonanza",
+    "sameTitle": "Diamond Bonanza",
+    "upToFivePaylines": true,
+    "fiveDiamondsWinsJackpot": true,
+    "allFiveLinesRequiredForProgressive": true,
+    "rtpText": "95.01% + 5.66% Jackpot contribution",
+    "classification": "AMBIGUOUS_RTP_WORDING_NOT_SAFE_AS_ADDITIVE_ECONOMIC_INPUT",
+    "economicPromotionAllowed": false
+  },
+  "historicalGamesysComparator": {
+    "source25p": "https://www.casinolistings.com/jackpots/gamesys/diamond-bonanza-25p-jackpot",
+    "source50p": "https://www.casinolistings.com/jackpots/gamesys/diamond-bonanza-50p-jackpot",
+    "source1gbp": "https://www.casinolistings.com/jackpots/gamesys/diamond-bonanza-1pound-jackpot",
+    "mechanics": {
+      "paylines": 5,
+      "coinDenominationsGBP": [0.25, 0.5, 1],
+      "distinctJackpotPerCoinSize": true,
+      "progressiveRequiresMaxCoinsAndFiveDiamondsOnFifthPayline": true,
+      "fiveDiamondsOtherPaylinesPaysCoinMultiple": 2000
+    },
+    "tiers": [
+      {"coinGBP": 0.25, "seedGBP": 500, "averageHitGBP": 7309, "winsRecorded": 1060},
+      {"coinGBP": 0.5, "seedGBP": 1000, "averageHitGBP": 14044, "winsRecorded": 243},
+      {"coinGBP": 1, "seedGBP": 2000, "averageHitGBP": 28566, "winsRecorded": 267}
+    ],
+    "scaleChecks": {
+      "seedPerCoin": [2000, 2000, 2000],
+      "averageHitToSeedRatio": [14.618, 14.044, 14.283],
+      "interpretation": "Historical Gamesys denominations scale seeds exactly with coin size and have broadly similar average-hit/seed ratios. This supports a denomination-scaled family mechanism historically, but does not prove the current Spain EUR configuration uses the same seed, contribution, or hit law."
+    }
+  },
+  "unresolved": {
+    "currentSpainSeedEUR": null,
+    "currentSpainJackpotContributionPct": null,
+    "currentSpainBaseRtpExcludingProgressivePct": null,
+    "currentSpainHitProbabilityPerEligibleSpin": null,
+    "currentSpainExactStakeEUR": null,
+    "historicalGbpConfigurationEquivalentToSpain": false,
+    "breakEvenJackpotEUR": null
+  },
+  "guards": {
+    "noGbpToEurNominalSubstitution": true,
+    "noHistoricalAverageHitAsSpainFact": true,
+    "noBallyRtpPlusContributionArithmeticWithoutDefinition": true,
+    "noCrossOperatorMechanicsAsEconomicProof": true,
+    "economicPromotionAllowed": false,
+    "realMoneyAllowed": false
+  }
+}
