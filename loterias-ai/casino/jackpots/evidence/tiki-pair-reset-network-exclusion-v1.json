@@ -1,0 +1,69 @@
+{
+  "version": "tiki-pair-reset-network-exclusion-v1",
+  "generatedAt": "2026-08-21T16:18:30Z",
+  "operator": "botemania-es",
+  "event": {
+    "observedAt": "2026-08-21T14:44:06.603Z",
+    "targets": [
+      "generic:tikitemple2_1",
+      "generic:progressivealice1"
+    ],
+    "firstObservedPostResetEUR": 2.82,
+    "confirmedReset": true,
+    "classification": "SYNCHRONIZED_SHARED_RESET_SIGNATURE"
+  },
+  "snapshotComparison": {
+    "before": {
+      "commit": "6a6a7635c85122efb1cf113d86098bf9463cd348",
+      "observedAt": "2026-08-21T14:05:50.121Z"
+    },
+    "after": {
+      "commit": "b0a59185606819a4c3ee883165ca76ef5c3e994e",
+      "observedAt": "2026-08-21T14:47:03.526Z"
+    },
+    "canonicalIdentityCount": 13,
+    "rows": [
+      {"key":"generic:bouncy_bubbles_id","beforeEUR":1947.68,"afterEUR":1949.35,"deltaEUR":1.67,"dropFraction":0},
+      {"key":"generic:WAGER_BET","beforeEUR":3448.25,"afterEUR":3448.25,"deltaEUR":0,"dropFraction":0},
+      {"key":"generic:classicwildsprogressive","beforeEUR":1946.61,"afterEUR":1946.61,"deltaEUR":0,"dropFraction":0},
+      {"key":"generic:diamondbonanza25BTM","beforeEUR":8032.9,"afterEUR":8032.9,"deltaEUR":0,"dropFraction":0},
+      {"key":"generic:DealOrNoDealStateful3","beforeEUR":120784.04,"afterEUR":120784.04,"deltaEUR":0,"dropFraction":0},
+      {"key":"generic:GRAND","beforeEUR":15701.46,"afterEUR":15704.49,"deltaEUR":3.03,"dropFraction":0},
+      {"key":"generic:GOLD","beforeEUR":3032.35,"afterEUR":3034.54,"deltaEUR":2.19,"dropFraction":0},
+      {"key":"generic:pool1","beforeEUR":778.56,"afterEUR":979.08,"deltaEUR":200.52,"dropFraction":0},
+      {"key":"generic:tikitemple2_1","beforeEUR":1208.43,"afterEUR":4.1,"deltaEUR":-1204.33,"dropFraction":0.996607},
+      {"key":"generic:progressivealice1","beforeEUR":1208.43,"afterEUR":4.1,"deltaEUR":-1204.33,"dropFraction":0.996607},
+      {"key":"blueprint:JACKPOTKING","beforeEUR":128439.29,"afterEUR":128443.13,"deltaEUR":3.84,"dropFraction":0},
+      {"key":"blueprint:JACKPOTKING_REGAL","beforeEUR":15581.86,"afterEUR":15583.12,"deltaEUR":1.26,"dropFraction":0},
+      {"key":"blueprint:JACKPOTKING_ROYAL","beforeEUR":1750.43,"afterEUR":1751.69,"deltaEUR":1.26,"dropFraction":0}
+    ]
+  },
+  "result": {
+    "largeDropThresholdFraction": 0.5,
+    "largeDropKeys": [
+      "generic:tikitemple2_1",
+      "generic:progressivealice1"
+    ],
+    "otherCanonicalKeysWithLargeDrop": [],
+    "pairSpecificResetAmongTrackedCanonicalMeters": true,
+    "exactAliasProven": false,
+    "exactGameBindingRecovered": false,
+    "triggeringGameKnown": false,
+    "triggeringTierKnown": false,
+    "jackpotWinConfirmed": false,
+    "seedPointEstimateEUR": null,
+    "economicPromotionAllowed": false,
+    "realMoneyAllowed": false
+  },
+  "interpretation": "Within the two persisted all-network snapshots bracketing the independently confirmed 14:44Z event, the only canonical meters with a large negative transition are tikitemple2_1 and progressivealice1. This isolates a pair-specific reset signature among the 13 tracked canonical identities. Non-dropping meters must not be treated as the same exact reset state. This does not prove that the pair are aliases, does not bind either ID to a named game, and does not identify the triggering game or tier.",
+  "guards": {
+    "historicalSnapshotsAddressedByImmutableCommit": true,
+    "noRankIdentity": true,
+    "noNonDropEqualsDifferentProviderClaim": true,
+    "noPairResetEqualsExactAlias": true,
+    "noPairResetEqualsGameBinding": true,
+    "noPostResetEqualsExactSeed": true,
+    "noBetting": true,
+    "realMoneyAllowed": false
+  }
+}
