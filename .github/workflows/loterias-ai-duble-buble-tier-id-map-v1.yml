@@ -1,0 +1,44 @@
+name: Loterias AI Duble Buble Tier ID Map V1
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/jackpots/botemania-duble-buble-tier-id-map-v1.mjs'
+      - '.github/workflows/loterias-ai-duble-buble-tier-id-map-v1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax check
+        run: node --check loterias-ai/casino/jackpots/botemania-duble-buble-tier-id-map-v1.mjs
+      - name: Probe public tier identity surfaces
+        run: node loterias-ai/casino/jackpots/botemania-duble-buble-tier-id-map-v1.mjs
+      - name: Enforce fail-closed mapping semantics
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const x=JSON.parse(fs.readFileSync('loterias-ai/casino/jackpots/evidence/botemania-duble-buble-tier-id-map-v1.json','utf8'));
+          if(x.interpretation?.executionPromotionAllowed!==false || x.interpretation?.realMoneyAllowed!==false) throw new Error('tier probe promoted execution');
+          if(x.guards?.noSemanticNameMappingWithoutEvidence!==true || x.guards?.noAmountOnlyExecutionMapping!==true) throw new Error('tier mapping guards missing');
+          if(x.interpretation?.allThreeTierFeedIdsVerified===true){
+            const ids=x.evidence?.exactLiteralMappings||[];
+            if(ids.length<3) throw new Error('three-tier verification lacks literal evidence');
+          }
+          console.log(JSON.stringify({topology:x.topology,evidence:x.evidence,interpretation:x.interpretation,candidateRows:x.candidateRows},null,2));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: duble-buble-tier-id-map-v1
+          path: loterias-ai/casino/jackpots/evidence/botemania-duble-buble-tier-id-map-v1.json
+          retention-days: 7
