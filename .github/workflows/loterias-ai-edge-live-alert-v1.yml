@@ -1,4 +1,4 @@
-# verification trigger 2026-08-20 01:05 Europe/Madrid
+# verification trigger 2026-08-21 10:06 Europe/Madrid
 name: Loterias AI Edge Live Alert V1
 
 on:
@@ -6,6 +6,7 @@ on:
   push:
     branches: [main]
     paths:
+      - 'loterias-ai/edge-live/evidence/edge-live-multi-execution-plan-v1.json'
       - 'loterias-ai/edge-live/evidence/edge-live-execution-plan-v1.json'
       - 'loterias-ai/edge-live/telegram-edge-alert-v1.mjs'
       - '.github/workflows/loterias-ai-edge-live-alert-v1.yml'
@@ -28,11 +29,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Send Edge Live Telegram alert from exact execution plan
+      - name: Send Edge Live Telegram alert from multi-lane execution plan
         env:
           EDGE_LIVE_TELEGRAM_BOT_TOKEN: ${{ secrets.EDGE_LIVE_TELEGRAM_BOT_TOKEN }}
           EDGE_LIVE_TELEGRAM_CHAT_ID: ${{ secrets.EDGE_LIVE_TELEGRAM_CHAT_ID }}
-          EDGE_LIVE_URL: https://alvarogavilan.github.io/edge-live/
+          EDGE_LIVE_URL: https://alvarogavilan.github.io/loterias-ai/edge-live/
         run: node loterias-ai/edge-live/telegram-edge-alert-v1.mjs
       - name: Persist safe Telegram diagnostic and transition state
         if: always()
@@ -52,7 +53,8 @@ jobs:
           if [ "$copied" -eq 0 ]; then exit 0; fi
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git reset --hard HEAD
+          git fetch origin main
+          git reset --hard origin/main
           mkdir -p loterias-ai/edge-live
           for f in "$DIAG" "$STATE"; do
             b=$(basename "$f")
