@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const p='loterias-ai/edge-live/evidence/diamond-bonanza-spanish-rtp-semantics-v1.json';
+const x=JSON.parse(fs.readFileSync(p,'utf8'));
+assert.equal(x.interpretation?.publishedSpainRtpIsExactPageValue,true);
+assert.equal(x.interpretation?.publishedSpainRtpMayBeCalledBaseExcludingJackpot,false);
+assert.equal(x.interpretation?.publishedSpainRtpMayBeAddedToExternalContribution,false);
+assert.equal(x.interpretation?.exactSpainBaseRtpExcludingJackpotPct,null);
+assert.equal(x.interpretation?.exactSpainJackpotContributionPct,null);
+assert.equal(x.interpretation?.breakEvenJackpotEUR,null);
+assert.equal(x.guards?.noMixedBuildArithmetic,true);
+assert.equal(x.guards?.economicPromotionAllowed,false);
+console.log('diamond-spanish-rtp-semantics-v1.test.mjs: ok');
