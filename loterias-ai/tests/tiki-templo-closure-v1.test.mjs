@@ -8,7 +8,7 @@ import { aliasComparison, analyzeJackpotMechanism, closeTikiTemploLane } from '.
   const b = { ...a };
   const r = aliasComparison(a, b);
   assert.equal(r.identicalAcrossAllFields, true);
-  assert.equal(r.verdict, 'SAME_POOL_ALIAS_HIGH_CONFIDENCE');
+  assert.equal(r.verdict, 'SUMMARY_STATE_DUPLICATE_OR_SHARED_POOL_HIGH_CONFIDENCE');
 }
 
 // Identical but with too few observations/changes must not overclaim confidence.
@@ -16,7 +16,7 @@ import { aliasComparison, analyzeJackpotMechanism, closeTikiTemploLane } from '.
   const a = { currentAmountEUR: 10, previousAmountEUR: 10, firstSeenAt: 't0', lastObservedAt: 't1', lastChangedAt: 't1', observationCount: 2, changeCount: 1 };
   const b = { ...a };
   const r = aliasComparison(a, b);
-  assert.equal(r.verdict, 'SAME_POOL_ALIAS_LOW_SAMPLE');
+  assert.equal(r.verdict, 'SUMMARY_STATE_DUPLICATE_OR_SHARED_POOL_LOW_SAMPLE');
 }
 
 // Any divergent field must break the alias claim.
@@ -81,10 +81,18 @@ import { aliasComparison, analyzeJackpotMechanism, closeTikiTemploLane } from '.
   };
   const result = closeTikiTemploLane({ ledger, identityProbe });
   assert.equal(result.verdict, 'KILLED_NOT_CURRENTLY_ACTIONABLE');
-  assert.equal(result.aliasClosure.verdict, 'SAME_POOL_ALIAS_HIGH_CONFIDENCE');
+  assert.equal(result.aliasClosure.verdict, 'SUMMARY_STATE_DUPLICATE_OR_SHARED_POOL_HIGH_CONFIDENCE');
+  assert.equal(result.aliasClosure.evidenceScope, 'ROLLING_SUMMARY_STATE_ONLY_NOT_PER_OBSERVATION_HISTORY', 'must never claim a verified per-observation match - only a rolling-summary match');
   assert.equal(result.identityClosure.verified, false);
   assert.ok(Array.isArray(result.identityClosure.manualNoBetVerificationInstruction.steps) && result.identityClosure.manualNoBetVerificationInstruction.steps.length > 0);
-  assert.equal(result.economicClosure.blockerId, 'JACKPOT_HIT_PROBABILITY_NOT_PUBLICLY_DISCLOSED');
+  assert.equal(result.economicClosure.blockerId, 'JACKPOT_HIT_PROBABILITY_NOT_PUBLICLY_DISCLOSED_FOR_BOTEMANIA_SPAIN');
+  // Broader Gamesys/Roxor-family public sources are NOT exhausted - the
+  // closure must document them as external comparators, never silently
+  // claim "no public evidence exists anywhere".
+  assert.ok(Array.isArray(result.economicClosure.externalMechanismComparators) && result.economicClosure.externalMechanismComparators.length > 0);
+  assert.ok(result.economicClosure.externalMechanismComparators.every((c) => c.class === 'EXTERNAL_MECHANISM_COMPARATOR'));
+  assert.equal(result.economicClosure.jackpotTierMappingVerified, false);
+  assert.ok(result.blockers.includes('JACKPOT_TIER_MAPPING_AND_HIT_PROBABILITIES_NOT_VERIFIED'), 'a possible multi-tier structure must block the single-pHit EV formula until the tier mapping is verified');
 }
 
 // Missing evidence entirely must still return a well-formed, fail-closed result.

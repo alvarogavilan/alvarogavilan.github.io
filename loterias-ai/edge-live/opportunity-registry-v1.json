@@ -184,7 +184,7 @@
           "inputsComparable": false,
           "allowNominalResearchScore": false
         },
-        "notes": "Mystery chest-pick bonus (3 Bono symbols -> bonus phase -> 1 of 9 heads for a key -> 1 of 5 chests, one may hold the jackpot). Win probability is described only qualitatively as proportional to stake; no exact per-spin hit probability or Must-Hit-By/Must-Be-Won-By cap is publicly disclosed. See lifecycle.evidenceFile for the full closure record. This blocks breakEvenJackpotEUR regardless of identity/alias status."
+        "notes": "Mystery chest-pick bonus (3 Bono symbols -> bonus phase -> 1 of 9 heads for a key -> 1 of 5 chests, one may hold the jackpot). Win probability is described only qualitatively as proportional to stake; no exact per-spin hit probability or Must-Hit-By/Must-Be-Won-By cap is disclosed on Botemania's own Spain-facing sources. Broader Gamesys/Roxor-family public trackers exist (see lifecycle.evidenceFile) and hint the jackpot family may be multi-tier, which is not yet mapped for this exact configuration. See lifecycle.evidenceFile for the full closure record. This blocks breakEvenJackpotEUR regardless of identity/alias status."
       },
       "execution": {
         "exactStakeKnown": false,
@@ -199,14 +199,16 @@
       },
       "lifecycle": {
         "status": "KILLED_NOT_CURRENTLY_ACTIONABLE",
-        "reason": "JACKPOT_HIT_PROBABILITY_NOT_PUBLICLY_DISCLOSED",
-        "closedAt": "2026-08-21T08:30:00.000Z",
+        "reason": "JACKPOT_HIT_PROBABILITY_NOT_PUBLICLY_DISCLOSED_FOR_BOTEMANIA_SPAIN",
+        "secondaryBlocker": "JACKPOT_TIER_MAPPING_AND_HIT_PROBABILITIES_NOT_VERIFIED",
+        "closedAt": "2026-08-21T08:44:00.000Z",
         "evidenceFile": "loterias-ai/edge-live/evidence/botemania-tiki-templo-closure-v1.json",
         "aliasOf": "generic:progressivealice1",
-        "aliasVerdict": "SAME_POOL_ALIAS_HIGH_CONFIDENCE",
+        "aliasVerdict": "SUMMARY_STATE_DUPLICATE_OR_SHARED_POOL_HIGH_CONFIDENCE",
+        "aliasEvidenceScope": "ROLLING_SUMMARY_STATE_ONLY_NOT_PER_OBSERVATION_HISTORY",
         "reactivationCriteria": [
-          "A public technical/provider document discloses the exact chest/bonus jackpot probability.",
-          "A clean, stable-identity local reset event is prospectively observed with enough data to bound the hit probability empirically."
+          "A public technical/provider document discloses the exact chest/bonus jackpot probability and tier structure for the Botemania Spain configuration.",
+          "Confirmed local hit(s) are observed together with a verified eligible-exposure denominator (spins or wagered turnover) sufficient to bound the hit probability empirically per tier."
         ]
       }
     },

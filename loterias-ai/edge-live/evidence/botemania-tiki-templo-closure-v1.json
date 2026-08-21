@@ -13,12 +13,13 @@
       "observationCount",
       "changeCount"
     ],
+    "evidenceScope": "ROLLING_SUMMARY_STATE_ONLY_NOT_PER_OBSERVATION_HISTORY",
     "mismatches": [],
     "identicalAcrossAllFields": true,
-    "observationCount": 60,
-    "changeCount": 6,
-    "verdict": "SAME_POOL_ALIAS_HIGH_CONFIDENCE",
-    "reason": "Identical across all 7 tracked fields over 60 observations and 6 independent change events; two independent progressive meters matching to the cent across multiple independent change events by chance has negligible probability."
+    "observationCount": 72,
+    "changeCount": 8,
+    "verdict": "SUMMARY_STATE_DUPLICATE_OR_SHARED_POOL_HIGH_CONFIDENCE",
+    "reason": "The two keys' rolling summary state matches on all 7 tracked fields after 72 observations and 8 recorded changes each (current amount, previous amount, first/last-seen/last-changed timestamps). This is strong evidence of a shared pool or duplicate feed, but it is a summary-state match, not a verified identical per-observation/per-delta series - no raw per-tick history is persisted yet to make that stronger claim."
   },
   "jackpotMechanism": {
     "sourceField": "contentfulGame.howToPlay (public GraphQL, botemania.es)",
@@ -52,27 +53,44 @@
     }
   },
   "economicClosure": {
-    "blockerId": "JACKPOT_HIT_PROBABILITY_NOT_PUBLICLY_DISCLOSED",
-    "explanation": "Tiki Templo's progressive is a mystery chest-pick bonus (3 Bono symbols trigger a bonus phase; pick 1 of 9 heads for a key, open 1 of 5 chests, one of which may hold the jackpot), with win probability described only qualitatively as \"proportional to stake\". No exact per-spin probability of landing the jackpot chest (pHit), no bonus-trigger frequency, and no Must-Hit-By/Must-Be-Won-By cap are published anywhere in the public rules text. The same EV structure already built for progressive video poker (breakEvenJackpotEUR = stakePerSpin * (1-baseRtp) / pHit) applies structurally, but pHit itself is the one input this investigation could not recover from any public source.",
-    "publicSourcesExhausted": [
+    "blockerId": "JACKPOT_HIT_PROBABILITY_NOT_PUBLICLY_DISCLOSED_FOR_BOTEMANIA_SPAIN",
+    "explanation": "Tiki Templo's progressive is a mystery chest-pick bonus (3 Bono symbols trigger a bonus phase; pick 1 of 9 heads for a key, open 1 of 5 chests, one of which may hold the jackpot), with win probability described only qualitatively as \"proportional to stake\". Botemania's own Spain-facing public sources (GraphQL, HTML rules page) never disclose an exact per-spin probability of landing the jackpot chest (pHit), a bonus-trigger frequency, or a Must-Hit-By/Must-Be-Won-By cap - that specific layer is exhausted. Broader Gamesys/Roxor-family public sources are NOT exhausted (see externalMechanismComparators) and hint the underlying jackpot family may be multi-tier (multiple seed levels), which would mean the true jackpot EV component is sum_i(p_i * award_i) across tiers, not a single pHit*jackpotAmount term - the single-pHit formula already built for progressive video poker has not been demonstrated to apply to Tiki Templo's exact tier structure.",
+    "botemaniaSpainSourcesExhaustedFor": [
       "contentfulGame GraphQL howToPlay text",
       "pageOrGame GraphQL howToPlay text",
       "direct rules-page HTML fetch (PR #214 and this closure)"
     ],
-    "empiricalPathBlocked": "No local reset/hit event has been prospectively observed yet (the ledger shows only increments across all recorded observations so far), so no empirical estimate of pHit exists either. Estimating pHit from real-money play is explicitly forbidden.",
+    "externalMechanismComparators": [
+      {
+        "source": "casinolistings.com - \"Tiki Temple 1p Jackpot\" (Gamesys network jackpot tracker)",
+        "note": "Reports an average win of approximately £19,434, paid roughly every 3 days, for a 1p-denomination Gamesys \"Tiki Temple\" jackpot. Different denomination/branding/region from Botemania Spain's Tiki Templo; does not by itself establish tikitemple2_1's exact tier structure or pHit.",
+        "class": "EXTERNAL_MECHANISM_COMPARATOR"
+      },
+      {
+        "source": "wizardofpots.com - SCORE methodology (progressive jackpot tracker covering 1,500+ jackpots across 35 studios)",
+        "note": "Describes jackpot SCORE as jackpot value relative to historical average hit level (SCORE=100 at the historical average), used across many Gamesys-family titles including Tiki-branded ones. A general methodology reference, not a Botemania Spain-specific pHit or tier disclosure.",
+        "class": "EXTERNAL_MECHANISM_COMPARATOR"
+      }
+    ],
+    "jackpotTierMappingVerified": false,
+    "empiricalPathBlocked": "No local reset/hit event has been prospectively observed yet (the ledger shows only increments across all recorded observations so far), so no empirical estimate of pHit exists either. A single observed hit alone would not be sufficient either: estimating a per-spin probability needs a verified exposure denominator (eligible spins or wagered turnover), not just the hit amount. Estimating pHit from real-money play is explicitly forbidden.",
     "mustHitByCapDisclosed": false,
     "reactivationCriteria": [
-      "A public technical/provider document (Roxor Gaming or Bally-family paytable/odds disclosure) surfaces the exact chest/bonus probability.",
-      "A clean, stable-identity local reset event is prospectively observed with enough surrounding spin/time data to bound pHit empirically."
+      "A public technical/provider document (Roxor Gaming or Bally-family paytable/odds disclosure) surfaces the exact chest/bonus probability and tier structure for the Botemania Spain configuration.",
+      "Confirmed local hit(s) are observed together with a verified eligible-exposure denominator (spins or wagered turnover) sufficient to bound pHit empirically per tier."
     ]
   },
+  "blockers": [
+    "JACKPOT_HIT_PROBABILITY_NOT_PUBLICLY_DISCLOSED_FOR_BOTEMANIA_SPAIN",
+    "JACKPOT_TIER_MAPPING_AND_HIT_PROBABILITIES_NOT_VERIFIED"
+  ],
   "verdict": "KILLED_NOT_CURRENTLY_ACTIONABLE",
-  "verdictReason": "Economics cannot close: the one missing input (per-spin probability of landing the progressive jackpot chest) is not publicly disclosed and has no safe empirical substitute without real-money play. This alone is sufficient to kill execution-grade closure regardless of the alias/identity outcome above.",
+  "verdictReason": "Economics cannot close: Botemania Spain's own public sources never disclose pHit, and even the broader external Gamesys/Roxor-family sources that DO exist (not exhausted, see externalMechanismComparators) only hint at a possible multi-tier structure rather than proving Botemania's exact tier mapping or per-tier probabilities. Neither the exact pHit nor the applicability of a single-tier EV formula is established, and there is no safe empirical substitute without real-money play. This alone is sufficient to kill execution-grade closure regardless of the alias/identity outcome above.",
   "guards": {
     "noBetting": true,
     "noFabricatedProbability": true,
     "noExternalMechanismSubstitutedAsBotemaniaFact": true,
     "realMoneyAllowed": false
   },
-  "generatedAt": "2026-08-21T08:29:56.289Z"
+  "generatedAt": "2026-08-21T08:48:45.775Z"
 }
