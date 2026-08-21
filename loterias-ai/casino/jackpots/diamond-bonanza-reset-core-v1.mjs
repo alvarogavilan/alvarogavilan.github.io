@@ -1,12 +1,18 @@
+const finiteNumberOrNull=(value)=>{
+  if(value===null||value===undefined||value==='') return null;
+  const n=Number(value);
+  return Number.isFinite(n)?n:null;
+};
+
 export function classifyDiamondTransition({
   priorAmountEUR,
   currentAmountEUR,
   priorPositiveGrowthObserved = false,
   resetScaleDropFraction = 0.20,
 }) {
-  const prior=Number(priorAmountEUR), current=Number(currentAmountEUR);
-  if(!Number.isFinite(current)||current<0) return {classification:'INVALID_CURRENT',usableForSeedInference:false};
-  if(!Number.isFinite(prior)||prior<0) return {classification:'BASELINE',usableForSeedInference:false,currentAmountEUR:current};
+  const prior=finiteNumberOrNull(priorAmountEUR), current=finiteNumberOrNull(currentAmountEUR);
+  if(current===null||current<0) return {classification:'INVALID_CURRENT',usableForSeedInference:false};
+  if(prior===null||prior<0) return {classification:'BASELINE',usableForSeedInference:false,currentAmountEUR:current};
   const deltaEUR=Number((current-prior).toFixed(6));
   if(deltaEUR>0) return {classification:'POSITIVE_GROWTH',deltaEUR,positiveGrowthObserved:true,usableForSeedInference:false};
   if(deltaEUR===0) return {classification:'UNCHANGED',deltaEUR:0,usableForSeedInference:false};
