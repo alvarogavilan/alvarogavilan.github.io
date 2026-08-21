@@ -1,0 +1,69 @@
+name: Loterias AI Tiki Tropico Passive Network V1
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'loterias-ai/casino/jackpots/tiki-tropico-passive-network-v1.mjs'
+      - 'loterias-ai/tests/tiki-tropico-passive-network-v1.test.mjs'
+      - '.github/workflows/loterias-ai-tiki-tropico-passive-network-v1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/jackpots/tiki-tropico-passive-network-v1.mjs'
+      - '.github/workflows/loterias-ai-tiki-tropico-passive-network-v1.yml'
+  schedule:
+    - cron: '29 */2 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-tiki-tropico-passive-network-v1-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Deterministic configuration guards
+        run: node loterias-ai/tests/tiki-tropico-passive-network-v1.test.mjs
+      - name: Run passive public network capture
+        run: node loterias-ai/casino/jackpots/tiki-tropico-passive-network-v1.mjs
+      - name: Verify fail-closed evidence
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const p='loterias-ai/casino/jackpots/evidence/tiki-tropico-passive-network-v1.json';
+          const x=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(x?.coverage?.complete!==true) throw new Error('passive CDP coverage incomplete');
+          if(x?.decision?.exactLiveIdVerified!==false) throw new Error('single run cannot verify identity');
+          if(x?.decision?.economicPromotionAllowed!==false||x?.decision?.realMoneyAllowed!==false) throw new Error('economic gate opened unexpectedly');
+          if(x?.guards?.globalLoadJackpotsNeverIdentityProof!==true||x?.guards?.ambiguousGenericIdsExcluded!==true) throw new Error('identity controls missing');
+          if(x?.guards?.secondFrozenReplicationRequiredBeforeVerification!==true) throw new Error('second replication guard missing');
+          console.log(JSON.stringify({coverage:x.coverage,candidates:x?.comparison?.discoveryCandidates||[],decision:x.decision,pages:(x.pages||[]).map(p=>({slug:p.slug,success:p.success,hitCount:(p.hits||[]).length}))},null,2));
+          NODE
+      - name: Persist evidence
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          E=loterias-ai/casino/jackpots/evidence/tiki-tropico-passive-network-v1.json
+          git add "$E"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'data(casino): refresh Tiki Tropico passive network probe'
+          for attempt in 1 2 3 4; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
