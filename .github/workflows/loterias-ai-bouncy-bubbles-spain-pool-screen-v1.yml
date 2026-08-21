@@ -24,7 +24,7 @@ jobs:
         run: node --check loterias-ai/casino/jackpots/bouncy-bubbles-spain-pool-screen-v1.mjs
       - name: Run public Spain shared-pool/economic screen
         run: node loterias-ai/casino/jackpots/bouncy-bubbles-spain-pool-screen-v1.mjs
-      - name: Enforce evidence-safe non-promotional semantics
+      - name: Enforce operator-specific evidence-safe semantics
         run: |
           node - <<'NODE'
           const fs=require('node:fs');
@@ -32,13 +32,11 @@ jobs:
           if(x.spanishEconomics?.requiredMultipleOfPublishedContributionRate!==51.333) throw new Error('Bouncy contribution gap arithmetic drifted');
           if(x.interpretation?.breakEvenJackpotEUR!==null || x.interpretation?.currentPositiveEvProven!==false) throw new Error('screen fabricated an execution threshold');
           if(x.comparison?.sameInstantaneousPoolVerified!==false || x.guards?.sequentialCrossOperatorSamplesNotAtomic!==true) throw new Error('sequential cross-operator samples were overclaimed as atomic pool proof');
-          if(x.sharedResetTopology?.verifiedFromBothSpainOperatorRulePages!==true){
-            if(x.sharedResetTopology?.status!=='NOT_REPRODUCED_ON_CURRENT_PUBLIC_PAGES') throw new Error('unverified topology status is not fail-closed');
-            if(x.sharedResetTopology?.priorClaimStatus!=='RETRACTED_UNTIL_REPRODUCED') throw new Error('prior topology claim was not retracted');
-          }
+          if(x.sharedResetTopology?.botemaniaCurrentPageVerified!==true) throw new Error('Botemania current linked topology was not reproduced');
+          if(x.sharedResetTopology?.verifiedFromBothSpainOperatorRulePages===true && x.sharedResetTopology?.monopolyCurrentPageVerified!==true) throw new Error('cross-operator topology promoted without Monopoly confirmation');
           if(x.sharedResetTopology?.implicationForInference?.aBouncyMeterResetProvesBouncyGameWonJackpot!==false) throw new Error('reset was wrongly attributed to Bouncy');
           if(x.sharedResetTopology?.implicationForInference?.bouncyResetCountCanEstimateBouncySpecificHitProbability!==false) throw new Error('reset counts were wrongly treated as Bouncy pHit observations');
-          if(x.guards?.requiredContributionScaleIsNotThreshold!==true || x.guards?.noExternalSeedSubstitution!==true || x.guards?.unverifiedTopologyNeverPromoted!==true) throw new Error('economic/evidence guards missing');
+          if(x.guards?.requiredContributionScaleIsNotThreshold!==true || x.guards?.noExternalSeedSubstitution!==true || x.guards?.crossOperatorTopologyRequiresBothOperators!==true) throw new Error('economic/evidence guards missing');
           if(x.interpretation?.economicPromotionAllowed!==false || x.interpretation?.realMoneyAllowed!==false) throw new Error('screen promoted real money');
           console.log(JSON.stringify({comparison:x.comparison,spanishEconomics:x.spanishEconomics,sharedResetTopology:x.sharedResetTopology,interpretation:x.interpretation},null,2));
           NODE
