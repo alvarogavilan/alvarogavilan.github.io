@@ -1,20 +1,23 @@
-name: Loterias AI Quiniela Historical Bootstrap
+name: Loterias AI Quiniela Historical Durable Fallback
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '31 * * * *'
   push:
     paths:
       - '.github/workflows/loterias-ai-quiniela-historical-bootstrap.yml'
+      - 'loterias-ai/scripts/crosscheck-quiniela-historical-selae.mjs'
 
 permissions:
   contents: write
 
 concurrency:
-  group: loterias-ai-quiniela-historical-bootstrap
+  group: loterias-ai-quiniela-historical-durable-fallback
   cancel-in-progress: false
 
 jobs:
-  bootstrap:
+  checkpoint:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -24,7 +27,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Persist first strict historical SELAE checkpoint
+      - name: Persist a strict historical SELAE micro-checkpoint
         shell: bash
         run: |
           set -euo pipefail
@@ -32,14 +35,13 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           report='loterias-ai/data/archive/_meta/quiniela-historical-selae-crosscheck.json'
 
+          # This fallback deliberately stages only canonical Quiniela evidence and
+          # its own report. It does not rebuild global QA, so a slow downstream QA
+          # phase cannot prevent durable progress. The regular historical workflow
+          # remains responsible for manifest/audit/priorities.
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git reset --hard origin/main
-
-            if [ -f "$report" ]; then
-              echo 'Historical Quiniela report already exists; bootstrap is permanently fail-quiet.'
-              exit 0
-            fi
 
             set +e
             BATCH_LIMIT=4 FETCH_CONCURRENCY=2 node loterias-ai/scripts/crosscheck-quiniela-historical-selae.mjs
@@ -51,27 +53,40 @@ jobs:
               exit 1
             fi
 
+            remaining=$(node --input-type=module <<'NODE'
+            import fs from 'node:fs';
+            const p='loterias-ai/data/archive/_meta/quiniela-historical-selae-crosscheck.json';
+            const r=JSON.parse(fs.readFileSync(p,'utf8'));
+            process.stdout.write(String(Number(r.remainingTargets ?? r.cumulative?.unprocessed ?? 0)));
+            NODE
+            )
+
             git add \
               loterias-ai/data/archive/quiniela \
               "$report"
 
             if git diff --cached --quiet; then
-              echo 'No durable Quiniela bootstrap change despite missing report on entry.' >&2
-              exit 1
-            fi
-
-            git commit -m 'data(quiniela): bootstrap historical SELAE checkpoint'
-            if git push origin HEAD:main; then
+              echo "No semantic Quiniela fallback change; remainingTargets=${remaining}."
               if [ "$crosscheck_rc" -ne 0 ]; then
-                echo "Persisted Quiniela diagnostic checkpoint; cross-check failed closed with rc=${crosscheck_rc}." >&2
+                echo "Cross-check remains fail-closed with rc=${crosscheck_rc}." >&2
                 exit "$crosscheck_rc"
               fi
               exit 0
             fi
 
-            echo "main moved during Quiniela bootstrap attempt ${attempt}; recomputing"
+            git commit -m 'data(quiniela): persist durable historical SELAE micro-checkpoint'
+            if git push origin HEAD:main; then
+              if [ "$crosscheck_rc" -ne 0 ]; then
+                echo "Persisted Quiniela diagnostic checkpoint; cross-check failed closed with rc=${crosscheck_rc}." >&2
+                exit "$crosscheck_rc"
+              fi
+              echo "Persisted strict Quiniela historical micro-checkpoint; remainingTargets=${remaining}."
+              exit 0
+            fi
+
+            echo "main moved during Quiniela fallback attempt ${attempt}; recomputing"
             sleep $((attempt * 2))
           done
 
-          echo 'Unable to persist first Quiniela historical checkpoint after five recomputations.' >&2
+          echo 'Unable to persist Quiniela historical fallback checkpoint after five recomputations.' >&2
           exit 1
