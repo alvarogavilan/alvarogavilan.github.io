@@ -26,7 +26,7 @@ concurrency:
 jobs:
   checkpoint:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
         with:
@@ -52,11 +52,11 @@ jobs:
           }
 
           # Network computation and persistence are separated deliberately. Heavy
-          # EDGE/casino workflows move main every few seconds; an unrelated commit
-          # must not force us to re-query SELAE or discard a valid Quiniela result.
+          # EDGE/casino workflows move main frequently; an unrelated commit must
+          # not force us to discard a valid official Quiniela micro-checkpoint.
           # A cached checkpoint may be replayed onto the latest main only while the
           # complete Quiniela-owned state (archive + report) is unchanged.
-          for compute_attempt in 1 2 3; do
+          for compute_attempt in $(seq 1 6); do
             git fetch origin main
             git reset --hard origin/main
             baseline_owned_hash="$(owned_hash)"
@@ -95,7 +95,7 @@ jobs:
             cp "$report" "$cache/meta/report.json"
 
             owner_changed=0
-            for persist_attempt in 1 2 3 4 5 6 7 8 9 10; do
+            for persist_attempt in $(seq 1 25); do
               git fetch origin main
               git reset --hard origin/main
               current_owned_hash="$(owned_hash)"
@@ -128,15 +128,15 @@ jobs:
                 exit 0
               fi
 
-              echo "main moved because of unrelated work during persistence attempt ${persist_attempt}/10; retrying cached owned files"
-              sleep 1
+              echo "main moved because of unrelated work during persistence attempt ${persist_attempt}/25; retrying cached owned files"
+              sleep 2
             done
 
             if [ "$owner_changed" -eq 0 ]; then
-              echo 'Unable to persist cached Quiniela checkpoint after ten owner-safe retries.' >&2
+              echo 'Unable to persist cached Quiniela checkpoint after twenty-five owner-safe retries.' >&2
               exit 1
             fi
           done
 
-          echo 'Quiniela-owned files changed repeatedly during three recomputations; failing closed.' >&2
+          echo 'Quiniela-owned files changed repeatedly during six recomputations; failing closed.' >&2
           exit 1
