@@ -1,0 +1,60 @@
+{
+  "version": "botemania-tikitemple2-reset-confirm-v1",
+  "generatedAt": "2026-08-21T14:54:27.015Z",
+  "workflowRunId": 32494665594,
+  "operator": "botemania-es",
+  "target": {
+    "network": "generic",
+    "id": "tikitemple2_1"
+  },
+  "baseline": {
+    "observedAt": "2026-08-21T14:05:50.121Z",
+    "amountEUR": 1208.43,
+    "identityClass": "EXACT_NETWORK_PLUS_UNIQUE_ID",
+    "identityExact": true,
+    "sourceEventObservedAt": "2026-08-21T14:44:06.603Z"
+  },
+  "confirmationSamples": [
+    {
+      "observedAt": "2026-08-21T14:54:23.502Z",
+      "httpStatus": 200,
+      "targetRowCount": 2,
+      "targetDistinctAmounts": [5.06],
+      "uniqueIdentityInSnapshot": true
+    },
+    {
+      "observedAt": "2026-08-21T14:54:26.911Z",
+      "httpStatus": 200,
+      "targetRowCount": 2,
+      "targetDistinctAmounts": [5.06],
+      "uniqueIdentityInSnapshot": true
+    }
+  ],
+  "transition": {
+    "baselineEUR": 1208.43,
+    "firstObservedPostResetEUR": 2.82,
+    "confirmedPostResetUpperBoundEUR": 5.06,
+    "dropEUR": 1205.61,
+    "dropFraction": 0.997666,
+    "classification": "CONFIRMED_RESET_OF_STABLE_FEED_ID"
+  },
+  "inference": {
+    "meterResetConfirmed": true,
+    "jackpotWinConfirmed": false,
+    "triggeringGameKnown": false,
+    "triggeringTierKnown": false,
+    "seedPointEstimateEUR": null,
+    "postResetSeedUpperBoundEUR": 5.06,
+    "currentPositiveEvProven": false,
+    "economicPromotionAllowed": false,
+    "realMoneyAllowed": false
+  },
+  "guards": {
+    "noResetEqualsJackpotWin": true,
+    "noPostResetEqualsExactSeed": true,
+    "noTriggerAttribution": true,
+    "twoFreshUniqueCurrentSamplesRequired": true,
+    "noBetting": true,
+    "realMoneyAllowed": false
+  }
+}
