@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   workflow_run:
     workflows:
+      - 'Loterias AI Lightning Clean Segment V2'
       - 'Loterias AI Lightning Audit Sync'
       - 'Loterias AI Lightning Physical RNG V3'
     types: [completed]
@@ -26,6 +27,7 @@ concurrency:
 
 jobs:
   checkpoint:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
