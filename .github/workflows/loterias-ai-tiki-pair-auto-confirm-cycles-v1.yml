@@ -1,0 +1,102 @@
+name: Loterias AI Tiki Pair Auto Confirm Cycles V1
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'loterias-ai/casino/jackpots/tiki-pair-reset-auto-confirm-v1.mjs'
+      - 'loterias-ai/casino/jackpots/tiki-pair-prospective-cycle-ledger-v1.mjs'
+      - 'loterias-ai/tests/tiki-pair-auto-confirm-cycles-v1.test.mjs'
+      - '.github/workflows/loterias-ai-tiki-pair-auto-confirm-cycles-v1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/jackpots/evidence/botemania-generic-fast-reset-ledger-v1.json'
+      - 'loterias-ai/casino/jackpots/tiki-pair-reset-auto-confirm-v1.mjs'
+      - 'loterias-ai/casino/jackpots/tiki-pair-prospective-cycle-ledger-v1.mjs'
+      - '.github/workflows/loterias-ai-tiki-pair-auto-confirm-cycles-v1.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-tiki-pair-auto-confirm-cycles-v1
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Frozen prospective guards
+        run: node loterias-ai/tests/tiki-pair-auto-confirm-cycles-v1.test.mjs
+
+  confirm:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Detect and independently confirm only a new post-freeze synchronized reset
+        id: confirm
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f /tmp/tiki-pair-reset-confirmed
+          node loterias-ai/casino/jackpots/tiki-pair-reset-auto-confirm-v1.mjs
+          if [ -f /tmp/tiki-pair-reset-confirmed ]; then
+            echo 'confirmed=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'confirmed=false' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Persist confirmed reset on latest main and close prospective cycle
+        if: steps.confirm.outputs.confirmed == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          EDIR=loterias-ai/casino/jackpots/evidence
+          A="$EDIR/botemania-tikitemple2_1-reset-confirm-v1.json"
+          B="$EDIR/botemania-progressivealice1-reset-confirm-v1.json"
+          PAIR="$EDIR/tiki-pair-latest-auto-confirm-v1.json"
+          LEDGER="$EDIR/botemania-generic-fast-reset-ledger-v1.json"
+          CYCLES="$EDIR/tiki-pair-prospective-cycle-ledger-v1.json"
+          mkdir -p /tmp/tiki-confirm-evidence
+          cp "$A" /tmp/tiki-confirm-evidence/a.json
+          cp "$B" /tmp/tiki-confirm-evidence/b.json
+          cp "$PAIR" /tmp/tiki-confirm-evidence/pair.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p "$EDIR"
+            cp /tmp/tiki-confirm-evidence/a.json "$A"
+            cp /tmp/tiki-confirm-evidence/b.json "$B"
+            cp /tmp/tiki-confirm-evidence/pair.json "$PAIR"
+            node loterias-ai/casino/jackpots/botemania-generic-fast-reset-ledger-v1.mjs
+            node loterias-ai/casino/jackpots/tiki-pair-prospective-cycle-ledger-v1.mjs
+            git add -- "$A" "$B" "$PAIR" "$LEDGER" "$CYCLES"
+            if git diff --cached --quiet; then
+              echo 'Confirmed evidence already present on latest main; nothing to persist.'
+              exit 0
+            fi
+            git commit -m 'data(casino): confirm prospective synchronized Tiki pair reset'
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "Concurrent main update; retrying confirmed evidence persistence ($attempt/4)"
+            sleep $((attempt*2))
+          done
+          echo 'ERROR: could not persist confirmed reset after four ownership-safe retries'
+          exit 1
