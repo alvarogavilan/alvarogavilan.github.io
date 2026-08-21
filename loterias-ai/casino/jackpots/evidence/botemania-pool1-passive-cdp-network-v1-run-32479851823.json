@@ -1,0 +1,54 @@
+{
+  "version": "botemania-pool1-passive-cdp-network-v1-run-summary",
+  "generatedAt": "2026-08-21T12:02:14.410Z",
+  "workflowRunId": 32479851823,
+  "workflowJobId": 96763659247,
+  "operator": "botemania-es",
+  "target": {
+    "network": "generic",
+    "id": "pool1"
+  },
+  "browser": {
+    "binary": "/usr/bin/google-chrome",
+    "version": "Google Chrome 151.0.7922.137"
+  },
+  "coverage": {
+    "targetCount": 10,
+    "successfulCaptures": 10,
+    "complete": true,
+    "allLoadEventsFired": true
+  },
+  "networkComparison": {
+    "commonRouteSignatureCount": 6,
+    "commonSelectorSignatureCount": 6,
+    "classifiedPoolResponses": 0,
+    "globalLoadJackpotsResponsesContainingPool1": 0,
+    "pageSpecificCandidates": 0,
+    "explicitTargetCandidates": 0,
+    "differentialSelectorCandidates": 0,
+    "relevantRequestCountsByPage": [14, 11, 11, 11, 14, 11, 11, 11, 11, 11]
+  },
+  "decision": {
+    "exactGameIdentityRecovered": false,
+    "passiveNetworkGameMappingVerified": false,
+    "pageSpecificPoolDiscoveryFound": false,
+    "publicPageLoadNetworkLayerExhausted": true,
+    "nextStep": "PROVIDER_PUBLIC_RULE_OR_HELP_ASSET_MAPPING",
+    "economicPromotionAllowed": false,
+    "realMoneyAllowed": false
+  },
+  "interpretation": "After fixing the initial zero-coverage bug and making the classifier selector-aware, passive CDP capture completed on all ten bounded public candidate pages. No relevant response body contained the exact stable ID pool1, including no page-bound or differential-selector response. This closes only the unauthenticated public information-page load network layer for these ten pages. It does not identify the game, tier, seed, stake, RTP mechanics, break-even or any positive-EV state.",
+  "guards": {
+    "publicPageLoadOnly": true,
+    "noLogin": true,
+    "noClick": true,
+    "noRuntimeEvaluate": true,
+    "noRequestInterception": true,
+    "noGameLaunch": true,
+    "noBetting": true,
+    "graphqlVariableBindingConsidered": true,
+    "selectorDifferentialPreventsPrematureExhaustion": true,
+    "completeCoverageRequiredForNegativeExhaustion": true,
+    "realMoneyAllowed": false
+  }
+}
