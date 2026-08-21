@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {
   laneStatus, pickTopLane, buildRadarCards, radarSummary, unmappedLiveRows,
   laneAmountEUR, laneDistanceToThresholdEUR, laneStakeDisplayEUR,
+  laneIdentityVerified, laneStakeKnown, laneStrategyVerified,
 } from '../edge-live/edge-radar-lanes-v1.mjs';
 
 function lane(overrides) {
@@ -11,6 +12,7 @@ function lane(overrides) {
     monitor: { network: 'generic', feedId: 'laneXId', key: 'generic:laneXId' },
     current: { observedAt: '2026-08-21T06:00:00.000Z', jackpotEUR: 100, dynamicFreshnessVerified: false, stasisSeconds: 10 },
     economic: { breakEvenJackpotEUR: null, creditValueVerified: false },
+    evidence: { identityVerified: false, exactStakeKnown: false, strategyVerified: false },
     executionReady: false, prepareOnly: false,
     blockers: ['LIVE_COUNTER_IDENTITY_NOT_VERIFIED'],
     order: { action: 'DO_NOT_PLAY', stakePerSpinEUR: 0 },
@@ -70,6 +72,36 @@ function lane(overrides) {
   const laneB = lane({ id: 'b', current: { jackpotEUR: 50 }, economic: { breakEvenJackpotEUR: 5000 } });
   assert.equal(laneDistanceToThresholdEUR(laneA), 100);
   assert.equal(laneDistanceToThresholdEUR(laneB), 4950);
+}
+
+// (f) blocker absence and denomination checks are NOT verification evidence.
+// The multi-plan can omit downstream blockers until the economic gate passes;
+// the radar must read positive evidence flags instead of inferring proof.
+{
+  const deceptivelyClean = lane({
+    blockers: [],
+    economic: { breakEvenJackpotEUR: null, creditValueVerified: true },
+    evidence: { identityVerified: false, exactStakeKnown: false, strategyVerified: false },
+  });
+  assert.equal(laneIdentityVerified(deceptivelyClean), false);
+  assert.equal(laneStakeKnown(deceptivelyClean), false, 'creditValueVerified must not equal exact stake known');
+  assert.equal(laneStrategyVerified(deceptivelyClean), false, 'missing strategy blocker must not equal strategy verified');
+
+  const positivelyVerified = lane({
+    blockers: [],
+    evidence: { identityVerified: true, exactStakeKnown: true, strategyVerified: true },
+  });
+  assert.equal(laneIdentityVerified(positivelyVerified), true);
+  assert.equal(laneStakeKnown(positivelyVerified), true);
+  assert.equal(laneStrategyVerified(positivelyVerified), true);
+
+  const jackpotKingSchema = lane({
+    id: 'botemania-jackpot-king',
+    evidence: { structurePass: true, networkAllocationProspectivelyValidated: true, exactStakeKnown: true },
+  });
+  assert.equal(laneIdentityVerified(jackpotKingSchema), true);
+  assert.equal(laneStakeKnown(jackpotKingSchema), true);
+  assert.equal(laneStrategyVerified(jackpotKingSchema), false, 'no explicit strategy proof in legacy JPK schema');
 }
 
 // pickTopLane: GREEN beats YELLOW beats the plan's own pinned selection.
