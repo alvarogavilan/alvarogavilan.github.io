@@ -1,0 +1,42 @@
+name: Loterias AI Botemania DOND Stateful3 Availability Probe V1
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/jackpots/botemania-dond-stateful3-availability-probe-v1.mjs'
+      - '.github/workflows/loterias-ai-botemania-dond-stateful3-availability-probe-v1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax check
+        run: node --check loterias-ai/casino/jackpots/botemania-dond-stateful3-availability-probe-v1.mjs
+      - name: Probe current public Botemania availability
+        run: node loterias-ai/casino/jackpots/botemania-dond-stateful3-availability-probe-v1.mjs
+      - name: Enforce fail-closed interpretation
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const p='loterias-ai/casino/jackpots/evidence/botemania-dond-stateful3-availability-probe-v1.json';
+          const x=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(x.guards?.liveMeterDoesNotEqualPlayableGame!==true) throw new Error('live-meter/playable-game guard missing');
+          if(x.interpretation?.executionPromotionAllowed!==false || x.interpretation?.realMoneyAllowed!==false) throw new Error('availability probe promoted execution');
+          if(!Number.isInteger(x.sitemap?.gameUrls) || x.sitemap.gameUrls<1) throw new Error('sitemap game coverage missing');
+          console.log(JSON.stringify({target:x.target,sitemap:x.sitemap,allGamesCatalogue:x.allGamesCatalogue,graphql:{recoveredGameCount:x.graphql?.recoveredGameCount,recoveredGames:x.graphql?.recoveredGames},interpretation:x.interpretation},null,2));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dond-stateful3-availability-probe-v1
+          path: loterias-ai/casino/jackpots/evidence/botemania-dond-stateful3-availability-probe-v1.json
+          retention-days: 7
