@@ -104,8 +104,8 @@ for(const slug of TARGETS){
     slug,url,
     static:{httpStatus:staticPage.status,sha256:staticPage.sha256,bytes:staticPage.text.length,pool1Literal:exactPoolLiteralStatic,poolIntervalMoneyMentions:staticPoolIntervalMentions.slice(0,12)},
     feed:{before:{observedAt:before.observedAt,httpStatus:before.httpStatus,pool1DistinctAmountsEUR:poolBefore},after:{observedAt:after.observedAt,httpStatus:after.httpStatus,pool1DistinctAmountsEUR:poolAfter},poolInterval,competingSpecificIds},
-    rendered:{attempted:render.attempted,success:render.success,status:render.status,durationMs:render.durationMs,stderr:render.stderr,domSha256:render.success?sha(render.dom):null,domBytes:render.dom.length,visibleTextBytes:renderedText.length,pool1Literal:exactPoolLiteralRendered,clientOnlyPool1Literal,renderedPoolIntervalMoneyMentions:renderedPoolIntervalMentions.slice(0,20),clientOnlyPoolIntervalMoneyMentions:clientOnlyPoolIntervalMentions.slice(0,20)},
-    discovery:{clientOnlyPool1Literal,clientOnlyIntervalAmountSeen:clientOnlyPoolIntervalMentions.length>0,noCompetingSpecificIdInInterval:competingSpecificIds.length===0,poolBranchRenderedDiscovery:render.success&&(clientOnlyPoolLiteral||(clientOnlyPoolIntervalMentions.length>0&&competingSpecificIds.length===0))}
+    rendered:{attempted:render.attempted,success:render.success,status:render.status,durationMs:render.durationMs,stderr:render.stderr,domSha256:render.success?sha(render.dom):null,domBytes:render.dom.length,visibleTextBytes:renderedText.length,pool1Literal:exactPoolLiteralRendered,clientOnlyPool1Literal:clientOnlyPoolLiteral,renderedPoolIntervalMoneyMentions:renderedPoolIntervalMentions.slice(0,20),clientOnlyPoolIntervalMoneyMentions:clientOnlyPoolIntervalMentions.slice(0,20)},
+    discovery:{clientOnlyPool1Literal:clientOnlyPoolLiteral,clientOnlyIntervalAmountSeen:clientOnlyPoolIntervalMentions.length>0,noCompetingSpecificIdInInterval:competingSpecificIds.length===0,poolBranchRenderedDiscovery:render.success&&(clientOnlyPoolLiteral||(clientOnlyPoolIntervalMentions.length>0&&competingSpecificIds.length===0))}
   });
 }
 
