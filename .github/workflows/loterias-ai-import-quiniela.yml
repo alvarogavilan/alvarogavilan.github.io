@@ -44,6 +44,45 @@ jobs:
             node loterias-ai/scripts/audit-national-archive.mjs
             node loterias-ai/scripts/build-archive-coverage-priorities.mjs
 
+            node --input-type=module <<'NODE'
+            import fs from 'node:fs';
+            import { execFileSync } from 'node:child_process';
+
+            const files = [
+              'loterias-ai/data/archive/_meta/archive-audit.json',
+              'loterias-ai/data/archive/_meta/archive-coverage-priorities.json',
+              'loterias-ai/data/archive/_meta/archive-preservation.json',
+              'loterias-ai/data/archive/_meta/quiniela-import-quarantine.json',
+              'loterias-ai/data/archive/_meta/quiniela-import.json',
+              'loterias-ai/data/archive/_meta/quiniela-structural-quarantine.json',
+              'loterias-ai/data/archive/completeness-index.json',
+              'loterias-ai/data/archive/manifest.json'
+            ];
+            const volatile = new Set(['generatedAt','manifestGeneratedAt','auditGeneratedAt']);
+            const stable = value => {
+              if (Array.isArray(value)) return value.map(stable);
+              if (value && typeof value === 'object') {
+                return Object.fromEntries(Object.entries(value)
+                  .filter(([k]) => !volatile.has(k))
+                  .map(([k,v]) => [k, stable(v)]));
+              }
+              return value;
+            };
+            for (const file of files) {
+              if (!fs.existsSync(file)) continue;
+              let previous;
+              try { previous = execFileSync('git',['show',`HEAD:${file}`],{encoding:'utf8'}); }
+              catch { continue; }
+              let a,b;
+              try { a=JSON.parse(previous); b=JSON.parse(fs.readFileSync(file,'utf8')); }
+              catch { continue; }
+              if (JSON.stringify(stable(a)) === JSON.stringify(stable(b))) {
+                fs.writeFileSync(file, previous);
+                console.log(`restored timestamp-only derived artifact: ${file}`);
+              }
+            }
+            NODE
+
             git add loterias-ai/data/archive
             if git diff --cached --quiet; then
               echo 'No semantic Quiniela history change.'
