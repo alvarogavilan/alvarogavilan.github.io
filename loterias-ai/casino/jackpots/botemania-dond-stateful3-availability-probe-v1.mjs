@@ -8,7 +8,7 @@ const SITEMAP=`${ORIGIN}/es/sitemap.xml`;
 const ALL_GAMES=`${ORIGIN}/juegos/todos-los-juegos`;
 const LIVE='loterias-ai/edge-live/evidence/botemania-all-network-live-state-v1.json';
 const OUT='loterias-ai/casino/jackpots/evidence/botemania-dond-stateful3-availability-probe-v1.json';
-const UA='loterias-ai-dond-stateful3-availability/1.0';
+const UA='loterias-ai-dond-stateful3-availability/1.1';
 const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'));}catch{return null}};
 const textHeaders={accept:'text/html,application/xml,*/*','user-agent':UA,'cache-control':'no-cache'};
 const gqlHeaders={accept:'application/json','content-type':'application/json',venture:'botemania_es',origin:ORIGIN,referer:ALL_GAMES,'user-agent':UA};
@@ -23,19 +23,16 @@ async function gql(gameId){
   const r=await fetch(GRAPHQL,{method:'POST',headers:gqlHeaders,body:JSON.stringify({query,variables:{gameId}}),signal:AbortSignal.timeout(12000)});
   const raw=await r.text();
   let body=null;try{body=JSON.parse(raw)}catch{}
-  return {gameId,httpStatus:r.status,data:body?.data?.contentfulGame||null,errors:(body?.errors||[]).map(e=>String(e?.message||e)).slice(0,10),responseSha256:crypto.createHash('sha256').update(raw).digest('hex')};
+  return {gameId,httpStatus:r.status,data:body?.data?.contentfulGame??null,errors:(body?.errors||[]).map(e=>String(e?.message||e)).slice(0,10),responseSha256:crypto.createHash('sha256').update(raw).digest('hex')};
+}
+function meaningfulGame(data){
+  if(!data||typeof data!=='object')return false;
+  return [data.id,data.title,data.link,data.providerId,data.authorName,data.imageSlug,data?.jackpot?.id].some(v=>typeof v==='string'&&v.trim().length>0);
 }
 
 const live=read(LIVE)||{};
 const liveRow=live?.currentByKey?.['generic:DealOrNoDealStateful3']||null;
-const candidateIds=[
-  'DealOrNoDealStateful3',
-  'dealornodealstateful3',
-  'deal-or-no-deal-stateful3',
-  'deal-or-no-deal-stateful-3',
-  'deal-or-no-deal',
-  'deal-no-deal'
-];
+const candidateIds=['DealOrNoDealStateful3','dealornodealstateful3','deal-or-no-deal-stateful3','deal-or-no-deal-stateful-3','deal-or-no-deal','deal-no-deal'];
 
 const sm=await boundedText(SITEMAP);
 if(!sm.ok) throw new Error(`SITEMAP_HTTP_${sm.status}`);
@@ -46,44 +43,29 @@ const dondUrls=gameUrls.filter(u=>{const s=u.toLowerCase();return s.includes('de
 const all=await boundedText(ALL_GAMES);
 if(!all.ok) throw new Error(`ALL_GAMES_HTTP_${all.status}`);
 const lowerAll=all.text.toLowerCase();
-const catalogueTerms={
-  exactFeedId:lowerAll.includes('dealornodealstateful3'.toLowerCase()),
-  dealOrNoDeal:lowerAll.includes('deal or no deal'),
-  dealNoDeal:lowerAll.includes('deal no deal'),
-  stateful3:lowerAll.includes('stateful3')
-};
+const catalogueTerms={exactFeedId:lowerAll.includes('dealornodealstateful3'),dealOrNoDeal:lowerAll.includes('deal or no deal'),dealNoDeal:lowerAll.includes('deal no deal'),stateful3:lowerAll.includes('stateful3')};
 
 const graphql=[];
 for(const id of candidateIds){
   try{graphql.push(await gql(id));}
   catch(e){graphql.push({gameId:id,httpStatus:null,data:null,errors:[String(e?.name||e?.message||e)]});}
 }
-const recoveredGames=graphql.filter(x=>x.data&&typeof x.data==='object');
-const exactFeedLiteralRecovered=recoveredGames.some(x=>JSON.stringify(x.data).toLowerCase().includes('dealornodealstateful3'.toLowerCase()));
-const exactPublicGameUrlRecovered=dondUrls.length===1||recoveredGames.some(x=>typeof x.data?.link==='string'&&x.data.link.length>0);
+const recoveredGames=graphql.filter(x=>meaningfulGame(x.data));
+const nullShellCount=graphql.filter(x=>x.data&&typeof x.data==='object'&&!meaningfulGame(x.data)).length;
+const exactFeedLiteralRecovered=recoveredGames.some(x=>JSON.stringify(x.data).toLowerCase().includes('dealornodealstateful3'));
+const exactPublicGameUrlRecovered=dondUrls.length===1||recoveredGames.some(x=>typeof x.data?.link==='string'&&x.data.link.trim().length>0);
 const publicCataloguePresence=Object.values(catalogueTerms).some(Boolean)||dondUrls.length>0||recoveredGames.length>0;
+const currentBotemaniaPlayableGameVerified=publicCataloguePresence&&exactPublicGameUrlRecovered;
 
 const out={
-  version:'botemania-dond-stateful3-availability-probe-v1',
-  generatedAt:new Date().toISOString(),
-  operator:'botemania-es',
+  version:'botemania-dond-stateful3-availability-probe-v1.1-null-shell-safe',generatedAt:new Date().toISOString(),operator:'botemania-es',
   target:{monitorKey:'generic:DealOrNoDealStateful3',feedId:'DealOrNoDealStateful3',liveAmountEUR:Number.isFinite(Number(liveRow?.amountEUR))?Number(liveRow.amountEUR):null,liveObservedAt:live?.observedAt||null},
-  sitemap:{httpStatus:sm.status,totalLocs:sitemapUrls.length,gameUrls:gameUrls.length,matchingUrls:dondUrls,sha256:sm.sha256},
+  sitemap:{httpStatus:sm.status,totalLocs:sitemapUrls.length,gameUrls:gameUrls.length,matchingUrls:dondUrls,fullCurrentGameUrlListChecked:true,sha256:sm.sha256},
   allGamesCatalogue:{httpStatus:all.status,finalUrl:all.finalUrl,termPresence:catalogueTerms,sha256:all.sha256},
-  graphql:{candidateIds,probes:graphql,recoveredGameCount:recoveredGames.length,recoveredGames:recoveredGames.map(x=>({candidateGameId:x.gameId,...x.data}))},
-  interpretation:{
-    publicCataloguePresence,
-    exactPublicGameUrlRecovered,
-    exactFeedLiteralRecovered,
-    currentBotemaniaPlayableGameVerified:publicCataloguePresence&&exactPublicGameUrlRecovered,
-    liveNetworkMeterMayExistWithoutCurrentBotemaniaGame:true,
-    executionPromotionAllowed:false,
-    realMoneyAllowed:false,
-    verdict:publicCataloguePresence&&exactPublicGameUrlRecovered?'PUBLIC_GAME_CANDIDATE_RECOVERED_NEEDS_IDENTITY_CROSS_MATCH':'CURRENT_BOTEMANIA_PUBLIC_GAME_ACCESS_NOT_RECOVERED',
-    note:'A moving shared-network meter is not evidence that a currently playable Botemania game exposing that meter exists. This bounded probe checks the complete current sitemap URL list, the public all-games catalogue, and derived public contentfulGame IDs without authentication or launch actions.'
-  },
-  guards:{publicSourcesOnly:true,noAuthentication:true,noCookies:true,noIntrospection:true,noMutation:true,noLaunch:true,noBetting:true,liveMeterDoesNotEqualPlayableGame:true,realMoneyAllowed:false}
+  graphql:{candidateIds,probes:graphql,recoveredGameCount:recoveredGames.length,nullShellCount,recoveredGames:recoveredGames.map(x=>({candidateGameId:x.gameId,...x.data}))},
+  interpretation:{publicCataloguePresence,exactPublicGameUrlRecovered,exactFeedLiteralRecovered,currentBotemaniaPlayableGameVerified,liveNetworkMeterMayExistWithoutCurrentBotemaniaGame:true,executionPromotionAllowed:false,realMoneyAllowed:false,verdict:currentBotemaniaPlayableGameVerified?'PUBLIC_GAME_CANDIDATE_RECOVERED_NEEDS_IDENTITY_CROSS_MATCH':'CURRENT_BOTEMANIA_PUBLIC_GAME_ACCESS_NOT_RECOVERED',note:'A moving shared-network meter is not evidence that a currently playable Botemania game exposing that meter exists. Null GraphQL shells are explicitly not counted as recovered games.'},
+  guards:{publicSourcesOnly:true,noAuthentication:true,noCookies:true,noIntrospection:true,noMutation:true,noLaunch:true,noBetting:true,liveMeterDoesNotEqualPlayableGame:true,nullGraphqlShellIsNotRecoveredGame:true,realMoneyAllowed:false}
 };
 fs.mkdirSync('loterias-ai/casino/jackpots/evidence',{recursive:true});
 fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
-console.log(JSON.stringify({target:out.target,sitemap:out.sitemap,allGamesCatalogue:out.allGamesCatalogue,graphql:{recoveredGameCount:out.graphql.recoveredGameCount,recoveredGames:out.graphql.recoveredGames},interpretation:out.interpretation},null,2));
+console.log(JSON.stringify({target:out.target,sitemap:out.sitemap,allGamesCatalogue:out.allGamesCatalogue,graphql:{recoveredGameCount:out.graphql.recoveredGameCount,nullShellCount:out.graphql.nullShellCount,recoveredGames:out.graphql.recoveredGames},interpretation:out.interpretation},null,2));
