@@ -1,6 +1,6 @@
 {
-  "version": "edge-live-multi-execution-plan-v1",
-  "generatedAt": "2026-08-21T05:52:05.183Z",
+  "version": "edge-live-multi-execution-plan-v1.1-null-safe",
+  "generatedAt": "2026-08-21T06:09:00.129Z",
   "operator": "botemania-es",
   "state": "NO_EXECUTION",
   "game": {
@@ -79,7 +79,7 @@
     "liveFeedRows": 32,
     "uniqueLiveRows": 14,
     "ambiguousLiveRows": 9,
-    "sourceObservedAt": "2026-08-21T05:52:04.562Z",
+    "sourceObservedAt": "2026-08-21T06:08:59.591Z",
     "sourceAgeSeconds": 0
   },
   "lanes": [
@@ -176,14 +176,14 @@
       "executionReady": false,
       "prepareOnly": false,
       "current": {
-        "observedAt": "2026-08-21T05:52:04.562Z",
+        "observedAt": "2026-08-21T06:08:59.591Z",
         "jackpotEUR": 3448.25,
         "sourceAgeSeconds": 0,
         "sourceFresh": true
       },
       "economic": {
         "breakEvenJackpotEUR": null,
-        "breakEvenRoyalCredits": 81387,
+        "breakEvenRoyalCredits": null,
         "creditValueEUR": null,
         "creditValueVerified": false,
         "aboveBreakEven": false,
@@ -208,8 +208,8 @@
           "observedAt": "2026-08-20T16:18:00.000Z",
           "screenJackpotEUR": 3448.25,
           "feedJackpotEUR": 3448.25,
-          "paytableObserved": "7/5 Jacks or Better Progressive",
-          "notes": "User-visible in-game jackpot matched the public generic WAGER_BET feed exactly to the cent during the same live session. This verifies the counter mapping, not positive EV."
+          "paytableObserved": "7/5-shaped Jacks or Better Progressive",
+          "notes": "User-visible in-game jackpot matched the public generic WAGER_BET feed exactly to the cent during the same live session. This verifies the counter mapping only. The paytable shape is historical manual-screen evidence, not a technically reproduced configuration."
         },
         "thresholdKnown": false,
         "exactStakeKnown": false,
@@ -246,7 +246,7 @@
       "executionReady": false,
       "prepareOnly": false,
       "current": {
-        "observedAt": "2026-08-21T05:52:04.562Z",
+        "observedAt": "2026-08-21T06:08:59.591Z",
         "jackpotEUR": 8032.9,
         "sourceAgeSeconds": 0,
         "sourceFresh": true
@@ -313,8 +313,8 @@
       "executionReady": false,
       "prepareOnly": false,
       "current": {
-        "observedAt": "2026-08-21T05:52:04.562Z",
-        "jackpotEUR": 1939.87,
+        "observedAt": "2026-08-21T06:08:59.591Z",
+        "jackpotEUR": 1940.11,
         "sourceAgeSeconds": 0,
         "sourceFresh": true
       },
@@ -380,7 +380,7 @@
       "executionReady": false,
       "prepareOnly": false,
       "current": {
-        "observedAt": "2026-08-21T05:52:04.562Z",
+        "observedAt": "2026-08-21T06:08:59.591Z",
         "jackpotEUR": 1044.92,
         "sourceAgeSeconds": 0,
         "sourceFresh": true
@@ -447,7 +447,7 @@
       "executionReady": false,
       "prepareOnly": false,
       "current": {
-        "observedAt": "2026-08-21T05:52:04.562Z",
+        "observedAt": "2026-08-21T06:08:59.591Z",
         "jackpotEUR": 120773.12,
         "sourceAgeSeconds": 0,
         "sourceFresh": true
@@ -500,6 +500,7 @@
   ],
   "interpretation": "No tracked lane currently passes the full economic and execution gate.",
   "guards": {
+    "nullNeverCoercedToZero": true,
     "noAutomaticBetting": true,
     "manualExecutionOnly": true,
     "finalGreenRecheckMandatory": true,
