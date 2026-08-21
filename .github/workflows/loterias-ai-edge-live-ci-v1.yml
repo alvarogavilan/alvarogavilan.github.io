@@ -7,6 +7,8 @@ on:
       - 'loterias-ai/edge-live/**'
       - 'loterias-ai/casino/jackpots/generic-jackpot-identity-v2.mjs'
       - 'loterias-ai/casino/jackpots/botemania-generic-fast-reset-ledger-v1.mjs'
+      - 'loterias-ai/casino/jackpots/botemania-jpk-reset-reconstructor-v1.mjs'
+      - 'loterias-ai/casino/jackpots/jackpot-king-mbwb-inference-v1.mjs'
       - 'loterias-ai/casino/botemania-global-economic-gate-v1.mjs'
       - '.github/workflows/loterias-ai-edge-live-alert-v1.yml'
       - '.github/workflows/loterias-ai-edge-live-fast-watch-v1.yml'
@@ -36,7 +38,11 @@ jobs:
           node --check loterias-ai/edge-live/telegram-edge-alert-v1.mjs
           node --check loterias-ai/casino/jackpots/generic-jackpot-identity-v2.mjs
           node --check loterias-ai/casino/jackpots/botemania-generic-fast-reset-ledger-v1.mjs
+          node --check loterias-ai/casino/jackpots/botemania-jpk-reset-reconstructor-v1.mjs
+          node --check loterias-ai/casino/jackpots/jackpot-king-mbwb-inference-v1.mjs
           node --check loterias-ai/casino/botemania-global-economic-gate-v1.mjs
+      - name: Jackpot King live-source inference deterministic test
+        run: node loterias-ai/tests/jackpot-king-mbwb-live-source-v1.test.mjs
       - name: Validate structural opportunity registry
         run: node -e "JSON.parse(require('node:fs').readFileSync('loterias-ai/edge-live/opportunity-registry-v1.json','utf8')); console.log('registry ok')"
       - name: Telegram alert selects multi-lane plan fail-closed
@@ -65,6 +71,7 @@ jobs:
           node loterias-ai/edge-live/botemania-all-network-fast-meter-sample-v1.mjs
           node loterias-ai/casino/jackpots/botemania-generic-fast-reset-ledger-v1.mjs
           node loterias-ai/edge-live/meter-stasis-tracker-v1.mjs
+          node loterias-ai/casino/jackpots/jackpot-king-mbwb-inference-v1.mjs
           node loterias-ai/edge-live/progressive-score-research-v1.mjs
           node loterias-ai/edge-live/edge-live-multi-execution-plan-v1.mjs
           node - <<'NODE'
@@ -77,6 +84,13 @@ jobs:
           const wager=stasis.meters?.['generic:WAGER_BET'];
           if(!wager) throw new Error('WAGER_BET missing from stasis ledger');
           if(wager.dynamicMovementObserved!==false) throw new Error('first observation must not fabricate movement');
+          const network=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/botemania-all-network-live-state-v1.json','utf8'));
+          const jpk=JSON.parse(fs.readFileSync('loterias-ai/casino/jackpots/evidence/jackpot-king-mbwb-inference-v1.json','utf8'));
+          if(jpk.exactSpainMbwb?.verified!==true) throw new Error('exact Spain Royal/Regal MBWB not recovered from operator-UI reconstructor');
+          if(jpk.exactSpainMbwb.capEUR.ROYAL!==4078.97 || jpk.exactSpainMbwb.capEUR.REGAL!==40789.77) throw new Error('Spain MBWB caps drifted');
+          if(jpk.potReadability?.potsEUR?.ROYAL!==Number(network.currentByKey?.['blueprint:JACKPOTKING_ROYAL']?.amountEUR)) throw new Error('Royal pot not sourced from current EDGE feed');
+          if(jpk.potReadability?.potsEUR?.REGAL!==Number(network.currentByKey?.['blueprint:JACKPOTKING_REGAL']?.amountEUR)) throw new Error('Regal pot not sourced from current EDGE feed');
+          if(jpk.decision?.positiveEVKnown!==false || jpk.decision?.realMoneyAllowed!==false) throw new Error('JPK inference must remain fail-closed');
           const score=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/progressive-score-research-v1.json','utf8'));
           const uvp=score.rows.find(x=>x.monitor?.key==='generic:WAGER_BET');
           if(!uvp) throw new Error('UVP row missing');
@@ -86,5 +100,5 @@ jobs:
           if(!lane) throw new Error('UVP lane missing');
           if(lane.executionReady!==false || lane.order?.action!=='DO_NOT_PLAY') throw new Error('UVP must fail closed');
           if(!lane.blockers.includes('DYNAMIC_METER_FRESHNESS_NOT_VERIFIED')) throw new Error('dynamic freshness blocker missing');
-          console.log(JSON.stringify({ledgerVersion:ledger.version,stableTracks:ledger.lastTracks.length,quarantined:ledger.quarantinedIds?.map(x=>x.id),wagerBet:wager,uvpCurrent:uvp.current,uvpBlockers:lane.blockers},null,2));
+          console.log(JSON.stringify({ledgerVersion:ledger.version,jpk:{caps:jpk.exactSpainMbwb,pots:jpk.potReadability.potsEUR,decision:jpk.decision},stableTracks:ledger.lastTracks.length,wagerBet:wager,uvpCurrent:uvp.current,uvpBlockers:lane.blockers},null,2));
           NODE
