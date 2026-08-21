@@ -51,8 +51,14 @@ jobs:
             const f=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-freeze.json','utf8'));
             const s=JSON.parse(fs.readFileSync('loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-status.json','utf8'));
             if(f.activation?.preRegisteredBeforeV2Final!==true||f.activation?.activationIndependentOfV2Outcome!==true||f.guards?.v2OutcomeKnownAtFreeze!==false) throw Error('v3 preregistration custody drift');
-            if(s.freezeVersion!=='physical-rng-prospective-v3-freeze-v1'||s.activation?.postBoundarySampleOnly!==true||s.guards?.first5000PostBoundaryOnly!==true||s.guards?.realMoneyAllowed!==false) throw Error('v3 protocol drift');
-            if(s.progress?.replicationRoundsUsed<5000&&(s.final!==null||s.disclosure?.observedStatisticsHidden!==true||s.disclosure?.pValuesHidden!==true||s.disclosure?.directionHidden!==true)) throw Error('v3 interim blindness regression');
+            if(s.freezeVersion!=='physical-rng-prospective-v3-freeze-v1'||s.activation?.postBoundarySampleOnly!==true||s.guards?.first5000PostBoundaryOnly!==true||s.guards?.realMoneyAllowed!==false||s.guards?.v2BoundaryFingerprintLocked!==true) throw Error('v3 protocol drift');
+            const boundaryFinalized=s.activation?.v2BoundaryFinalized===true;
+            const postBoundary=Number(s.progress?.postV2BoundaryRows||0);
+            const used=Number(s.progress?.replicationRoundsUsed||0);
+            const fingerprint=s.activation?.anchorFingerprint||null;
+            if(!boundaryFinalized&&(postBoundary!==0||used!==0||fingerprint!==null)) throw Error('v3 advanced before finalized V2 boundary');
+            if(boundaryFinalized&&(!/^[a-f0-9]{64}$/.test(String(fingerprint))||s.activation?.anchorBoundaryRounds!==5000)) throw Error('v3 finalized boundary fingerprint missing or invalid');
+            if(used<5000&&(s.final!==null||s.disclosure?.observedStatisticsHidden!==true||s.disclosure?.pValuesHidden!==true||s.disclosure?.directionHidden!==true)) throw Error('v3 interim blindness regression');
             if(s.final?.claimAllowed===true||s.final?.realMoneyAllowed===true) throw Error('v3 cannot authorize claims or real money');
 NODE
 
