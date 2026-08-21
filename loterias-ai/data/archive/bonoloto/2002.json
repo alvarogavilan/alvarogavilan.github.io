@@ -33,12 +33,41 @@
         }
       },
       "verification": {
-        "status": "SECONDARY_VALIDATED",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "csv-shape",
           "ranges",
-          "unique-main"
-        ]
+          "unique-main",
+          "official-fechav3-exact-date",
+          "official-main-cross-check",
+          "official-complementary-cross-check",
+          "official-reintegro-cross-check"
+        ],
+        "officialCrossCheck": {
+          "provider": "SELAE",
+          "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=20020101",
+          "checkedAt": "2026-08-21T12:14:55.230Z",
+          "officialDrawId": "420301002",
+          "exactDate": true,
+          "fields": {
+            "main": true,
+            "complementary": true,
+            "reintegro": true
+          },
+          "complete": true,
+          "officialResult": {
+            "main": [
+              5,
+              12,
+              15,
+              27,
+              43,
+              45
+            ],
+            "complementary": 30,
+            "reintegro": 7
+          }
+        }
       },
       "economics": {
         "currency": "EUR",
