@@ -2,20 +2,25 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 
-const PLAN='loterias-ai/edge-live/evidence/edge-live-execution-plan-v1.json';
+const MULTI_PLAN='loterias-ai/edge-live/evidence/edge-live-multi-execution-plan-v1.json';
+const SINGLE_PLAN='loterias-ai/edge-live/evidence/edge-live-execution-plan-v1.json';
 const STATE='loterias-ai/edge-live/telegram-alert-state.json';
 const DIAG='loterias-ai/edge-live/telegram-alert-diagnostic.json';
 const token=process.env.EDGE_LIVE_TELEGRAM_BOT_TOKEN||'';
 const configuredChatId=process.env.EDGE_LIVE_TELEGRAM_CHAT_ID||'';
 const edgeUrl=process.env.EDGE_LIVE_URL||'https://alvarogavilan.github.io/loterias-ai/edge-live/';
-const plan=JSON.parse(fs.readFileSync(PLAN,'utf8'));
-const prior=fs.existsSync(STATE)?JSON.parse(fs.readFileSync(STATE,'utf8')):{};
+const readJson=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'));}catch{return null;}};
+const multiPlan=readJson(MULTI_PLAN);
+const singlePlan=readJson(SINGLE_PLAN);
+const plan=multiPlan&&Array.isArray(multiPlan?.lanes)?multiPlan:singlePlan;
+const planSource=plan===multiPlan?'MULTI_EXECUTION_PLAN':plan===singlePlan?'SINGLE_EXECUTION_PLAN_FALLBACK':'NO_VALID_PLAN';
+const prior=fs.existsSync(STATE)?(readJson(STATE)||{}):{};
 const gameName=plan?.game?.name||'Oportunidad EDGE';
 const gameUrl=plan?.game?.url||'https://www.botemania.es/';
 const gameId=plan?.game?.id||plan?.selectedLaneId||'unknown';
 
 function writeDiag(extra={}){
-  const out={version:'edge-live-telegram-diagnostic-v5-universal-game',generatedAt:new Date().toISOString(),tokenPresent:Boolean(token),configuredChatIdPresent:Boolean(configuredChatId),encryptedChannelMemoryPresent:Boolean(prior?.encryptedChannel),planState:plan?.state||null,planGeneratedAt:plan?.generatedAt||null,selectedLaneId:plan?.selectedLaneId||null,gameId,gameName,...extra};
+  const out={version:'edge-live-telegram-diagnostic-v6-multilane',generatedAt:new Date().toISOString(),tokenPresent:Boolean(token),configuredChatIdPresent:Boolean(configuredChatId),encryptedChannelMemoryPresent:Boolean(prior?.encryptedChannel),planSource,planState:plan?.state||null,planGeneratedAt:plan?.generatedAt||null,selectedLaneId:plan?.selectedLaneId||null,trackedLanes:Array.isArray(plan?.lanes)?plan.lanes.length:null,gameId,gameName,...extra};
   fs.writeFileSync(DIAG,JSON.stringify(out,null,2)+'\n');
   return out;
 }
@@ -41,10 +46,11 @@ async function discoverChannelId(){
 }
 
 function persistState({phase='RED',executionSignature=null,stake=0,spins=0,total=0,validUntil=null,chatId}){
-  fs.writeFileSync(STATE,JSON.stringify({version:'edge-live-telegram-alert-state-v9-universal-game',updatedAt:new Date().toISOString(),encryptedChannel:encryptChannelId(chatId),lastPhase:phase,lastReady:phase==='GREEN',lastGameId:gameId,lastSelectedLaneId:plan?.selectedLaneId||null,lastExecutionSignature:executionSignature,lastPlanGeneratedAt:plan?.generatedAt||null,lastValidUntil:phase==='GREEN'?validUntil:null,lastStakePerSpinEUR:stake,lastMaxSpins:spins,lastMaxTotalStakeEUR:total},null,2)+'\n');
+  fs.writeFileSync(STATE,JSON.stringify({version:'edge-live-telegram-alert-state-v10-multilane',updatedAt:new Date().toISOString(),encryptedChannel:encryptChannelId(chatId),lastPhase:phase,lastReady:phase==='GREEN',lastGameId:gameId,lastSelectedLaneId:plan?.selectedLaneId||null,lastExecutionSignature:executionSignature,lastPlanSource:planSource,lastPlanGeneratedAt:plan?.generatedAt||null,lastValidUntil:phase==='GREEN'?validUntil:null,lastStakePerSpinEUR:stake,lastMaxSpins:spins,lastMaxTotalStakeEUR:total},null,2)+'\n');
 }
 
 try{
+  if(!plan){const d=writeDiag({channelDiscovered:null,sendAttempted:false,sendOk:false,reason:'NO_VALID_EXECUTION_PLAN'});console.log(JSON.stringify(d));process.exit(0);}
   if(!token){const d=writeDiag({channelDiscovered:false,sendAttempted:false,sendOk:false,reason:'MISSING_EDGE_LIVE_TELEGRAM_BOT_TOKEN'});console.log(JSON.stringify(d));process.exit(0);}
   const discovered=await discoverChannelId(),chatId=discovered?.id||null;
   if(!chatId){const d=writeDiag({channelDiscovered:false,discoverySource:null,sendAttempted:false,sendOk:false,reason:'PRIVATE_CHANNEL_NOT_DISCOVERED_YET'});console.log(JSON.stringify(d));process.exit(0);}
