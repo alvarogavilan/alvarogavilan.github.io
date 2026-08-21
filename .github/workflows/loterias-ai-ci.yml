@@ -69,6 +69,8 @@ jobs:
         run: node loterias-ai/tests/winfall-wishes-identity-binding-v1.test.mjs
       - name: Winfall Wishes economics synthesis tests
         run: node loterias-ai/tests/winfall-economics-synthesis-v1.test.mjs
+      - name: RTP percentage parser tests (Base-suffix without a literal %)
+        run: node loterias-ai/tests/rtp-pct-parser-v1.test.mjs
       - name: Validate JSON data files
         run: |
           node - <<'NODE'

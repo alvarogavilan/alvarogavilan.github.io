@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import crypto from 'node:crypto';
+import { parseRtpPctsFromContexts } from './botemania-rtp-pct-parser-v1.mjs';
 
 const ORIGIN='https://www.botemania.es';
 const SITEMAPS=['/es/sitemap.xml','/sitemap.xml'];
@@ -24,7 +25,7 @@ for(const p of SITEMAPS){
 function extract(html,url){
   const text=strip(html);const title=(text.match(/(?:^|\s)([^|]{2,120}?)(?:\s+Resumen del Juego|\s+Resumen|\s+Slots Online)/i)||[])[1]?.trim()||null;
   const rtpContexts=uniq([...text.matchAll(/(?:Porcentaje de Retorno al Jugador|\bRTP\b)[^.]{0,700}/gi)].map(m=>m[0].slice(0,700))).slice(0,8);
-  const rtpPcts=uniq(rtpContexts.flatMap(c=>[...c.matchAll(/(\d{1,2}(?:[.,]\d{1,3})?)\s*%/g)].map(m=>dec(m[1])).filter(x=>x>0&&x<100)));
+  const rtpPcts=parseRtpPctsFromContexts(rtpContexts);
   const betContexts=uniq([...text.matchAll(/(?:valor moneda|apuesta(?: total)?|apuesta mínima|apuesta máxima)[^.]{0,260}/gi)].map(m=>m[0].slice(0,260))).slice(0,10);
   const euroVals=uniq(betContexts.flatMap(c=>[...c.matchAll(/(\d+(?:[.,]\d+)?)\s*(?:€|eur|c\b)/gi)].map(m=>({raw:m[0],value:dec(m[1]),unit:/c\b/i.test(m[0])?'cent':'eur'})).map(x=>x.unit==='cent'?x.value/100:x.value))).filter(x=>x>0&&x<=10000).sort((a,b)=>a-b);
   const jackpotKing=/Jackpot King/i.test(text);const mustDrop=/must\s*drop|debe\s+ganarse|habr[aá]\s+un\s+ganador\s+antes|must\s+be\s+won/i.test(text);
