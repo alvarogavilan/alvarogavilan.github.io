@@ -2,6 +2,13 @@ name: Loterias AI Lightning RNG V3 Durable Direct
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/loterias-ai-lightning-rng-v3-durable-direct.yml'
+      - 'loterias-ai/casino/lightning/research/physical-rng-prospective-v3.mjs'
+      - 'loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-freeze.json'
+      - 'loterias-ai/casino/lightning/evidence/physical-rng-prospective-v2-status.json'
   workflow_run:
     workflows: ['Loterias AI Lightning Clean Segment V2']
     types: [completed]
