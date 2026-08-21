@@ -1,0 +1,33 @@
+{
+  "version": "tiki-alice-simultaneous-divergence-v1",
+  "observedAt": "2026-08-21T09:39:07.543Z",
+  "source": "loterias-ai/edge-live/evidence/botemania-all-network-live-state-v1.json",
+  "meters": {
+    "generic:tikitemple2_1": {
+      "amountEUR": 1062.65,
+      "observationCount": 47,
+      "changeCount": 13,
+      "lastChangedAt": "2026-08-21T09:38:51.745Z"
+    },
+    "generic:progressivealice1": {
+      "amountEUR": 1062.79,
+      "observationCount": 47,
+      "changeCount": 13,
+      "lastChangedAt": "2026-08-21T09:38:51.745Z"
+    }
+  },
+  "differenceEUR": 0.14,
+  "samePublicSample": true,
+  "conclusion": {
+    "exactAliasDisproved": true,
+    "sameExactMeterDisproved": true,
+    "sharedOrCorrelatedMechanismStillPossible": true,
+    "relationshipVerdict": "NOT_EXACT_ALIAS_RELATED_POOL_UNRESOLVED",
+    "reason": "Both stable IDs were present in the same public GraphQL sample with different amounts. They therefore cannot be treated as two labels for one exact instantaneous meter. Their matching change counts/timestamps may still indicate a related or correlated progressive family, which remains unresolved."
+  },
+  "guards": {
+    "neverCollapseTheseKeysAsExactAliasesAgain": true,
+    "noEconomicPromotionFromCorrelation": true,
+    "realMoneyAllowed": false
+  }
+}
