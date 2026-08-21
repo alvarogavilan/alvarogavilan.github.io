@@ -50,9 +50,10 @@ export function visibleTextFromHtml(html=''){
 
 export function extractEuroAmounts(text=''){
   const out=[];
-  const re=/(?:€\s*)?(\d{1,6}(?:[.,]\d{1,2})?)(?:\s*€)/g;
+  const re=/(?:€\s*(\d{1,6}(?:[.,]\d{1,2})?)|(\d{1,6}(?:[.,]\d{1,2})?)\s*€)/g;
   for(const m of String(text).matchAll(re)){
-    const n=Number(String(m[1]).replace(',','.'));
+    const raw=m[1]??m[2];
+    const n=Number(String(raw).replace(',','.'));
     if(Number.isFinite(n)&&n>=0&&n<1_000_000)out.push(+n.toFixed(2));
   }
   return [...new Set(out)].sort((a,b)=>a-b);
