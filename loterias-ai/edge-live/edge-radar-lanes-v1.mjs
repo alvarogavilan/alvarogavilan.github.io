@@ -53,23 +53,34 @@ export function laneStasisSeconds(lane) {
   return finiteOrNull(lane?.current?.stasisSeconds);
 }
 
+// Verification fields MUST come from positive evidence on this lane, not from
+// the mere absence of a blocker. The multi-plan intentionally suppresses some
+// blockers until other gates pass, so blocker absence is not proof.
 export function laneIdentityVerified(lane) {
-  const blockers = Array.isArray(lane?.blockers) ? lane.blockers : [];
-  return !blockers.includes('LIVE_COUNTER_IDENTITY_NOT_VERIFIED');
+  if (lane?.evidence?.identityVerified === true) return true;
+  if (lane?.evidence?.identityVerified === false) return false;
+  // Jackpot King uses the older single-plan evidence schema. Treat identity
+  // as verified only when BOTH the structural gate and prospective network
+  // allocation validation are explicitly true.
+  return lane?.evidence?.structurePass === true && lane?.evidence?.networkAllocationProspectivelyValidated === true;
 }
 
 export function laneThresholdKnown(lane) {
+  if (lane?.evidence?.thresholdKnown === true) return true;
+  if (lane?.evidence?.thresholdKnown === false) return false;
   const n = finiteOrNull(lane?.economic?.breakEvenJackpotEUR);
   return n != null && n > 0;
 }
 
 export function laneStakeKnown(lane) {
-  return lane?.economic?.creditValueVerified === true;
+  // creditValueVerified is a denomination/unit check, not proof of exact stake.
+  return lane?.evidence?.exactStakeKnown === true;
 }
 
 export function laneStrategyVerified(lane) {
-  const blockers = Array.isArray(lane?.blockers) ? lane.blockers : [];
-  return !blockers.includes('EXECUTION_STRATEGY_NOT_VERIFIED');
+  // Never infer strategy verification from the absence of a blocker: for
+  // research lanes that blocker may be omitted until the economic gate passes.
+  return lane?.evidence?.strategyVerified === true;
 }
 
 // Distance uses ONLY this lane's own current amount and this lane's own
@@ -155,7 +166,10 @@ export function unmappedLiveRows(directByKey, lanes) {
   }
   const out = [];
   for (const [key, row] of Object.entries(directByKey || {})) {
-    if (!known.has(key)) out.push({ key, amountEUR: Number(row?.amountEUR) });
+    if (!known.has(key)) {
+      const amountEUR = finiteOrNull(row?.amountEUR);
+      out.push({ key, amountEUR });
+    }
   }
   return out;
 }
