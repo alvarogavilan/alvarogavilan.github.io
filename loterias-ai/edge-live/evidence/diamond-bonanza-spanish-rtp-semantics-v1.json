@@ -1,0 +1,44 @@
+{
+  "version": "diamond-bonanza-spanish-rtp-semantics-v1",
+  "capturedAt": "2026-08-21T09:40:00.000Z",
+  "purpose": "SPAIN_PRIMARY_SOURCE_SEMANTICS",
+  "sources": [
+    {
+      "operator": "Botemania Spain",
+      "url": "https://www.botemania.es/juegos/slots-online/danza-de-los-diamantes",
+      "publishedRtpPct": 95.44,
+      "coinRange": "25c-1EUR",
+      "fixedPaylines": 5,
+      "rtpMeaningTextSummary": "The page defines expected RTP as the amount paid to players relative to amount wagered and gives the example that 100 EUR wagered pays 95.44 EUR in prizes on average.",
+      "separateBaseRtpExcludingJackpotDisclosed": false,
+      "separateJackpotContributionPctDisclosed": false
+    },
+    {
+      "operator": "Monopoly Casino Spain",
+      "url": "https://www.monopolycasino.es/juegos/slots-online/danza-de-los-diamantes",
+      "publishedRtpPct": 95.44,
+      "coinRange": "25c-1EUR",
+      "fixedPaylines": 5,
+      "rtpMeaningTextSummary": "The page uses the same expected-payback wording as Botemania Spain and does not disclose a separate progressive contribution percentage.",
+      "separateBaseRtpExcludingJackpotDisclosed": false,
+      "separateJackpotContributionPctDisclosed": false
+    }
+  ],
+  "interpretation": {
+    "publishedSpainRtpIsExactPageValue": true,
+    "publishedSpainRtpMayBeCalledBaseExcludingJackpot": false,
+    "publishedSpainRtpMayBeAddedToExternalContribution": false,
+    "exactSpainBaseRtpExcludingJackpotPct": null,
+    "exactSpainJackpotContributionPct": null,
+    "exactSpainCurrentRtpFromMeter": null,
+    "breakEvenJackpotEUR": null,
+    "reason": "The Spain-facing pages disclose a 95.44% expected payback but do not provide the decomposition needed to convert the changing progressive meter into incremental RTP. External Roxor and Bally component values are not configuration-compatible proof."
+  },
+  "guards": {
+    "no95_44AsBaseRtpAssumption": true,
+    "noExternalContributionAddition": true,
+    "noMixedBuildArithmetic": true,
+    "economicPromotionAllowed": false,
+    "realMoneyAllowed": false
+  }
+}
