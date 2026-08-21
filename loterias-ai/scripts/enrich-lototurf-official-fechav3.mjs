@@ -51,14 +51,21 @@ async function get(date){
 }
 
 function parseCombo(s){
-  const m=String(s||'').match(/^(.*?)\s+C\((\d+)\)\s+R\((\d+)\)/i);
+  const m=String(s||'').match(/^(.*?)\s+C\(([^)]+)\)\s+R\((\d+)\)/i);
   if(!m)return null;
   const main=(m[1].match(/\d+/g)||[]).map(Number);
-  if(main.length!==6)return null;
-  return {main:[...main].sort((a,b)=>a-b),horse:Number(m[2]),reintegro:Number(m[3])};
+  const horseWinners=[...new Set((m[2].match(/\d+/g)||[]).map(Number))].sort((a,b)=>a-b);
+  if(main.length!==6||horseWinners.length<1)return null;
+  return {
+    main:[...main].sort((a,b)=>a-b),
+    horse:horseWinners.length===1?horseWinners[0]:null,
+    horseWinners,
+    horseDeadHeat:horseWinners.length>1,
+    reintegro:Number(m[3])
+  };
 }
 
-let updated=0,mismatch=0,empty=0,exactDateMisses=0;
+let updated=0,mismatch=0,empty=0,exactDateMisses=0,deadHeatRows=0;
 const failures=[];
 const quarantine=[];
 const changedFiles=new Set();
@@ -80,16 +87,21 @@ for(const [i,target] of targets.slice(0,limit).entries()){
       const q={date:r.drawDate,reason:'main-mismatch',internal:current,official:c.main,officialUrl:url};
       failures.push(q);quarantine.push(q);continue;
     }
-    if(r.result?.horse!=null&&Number(r.result.horse)!==c.horse){
+    const currentHorse=r.result?.horse==null?null:Number(r.result.horse);
+    if(currentHorse!=null&&!c.horseWinners.includes(currentHorse)){
       mismatch++;
-      const q={date:r.drawDate,reason:'horse-mismatch',internal:r.result.horse,official:c.horse,officialUrl:url};
+      const q={date:r.drawDate,reason:'horse-mismatch',internal:r.result.horse,official:c.horseWinners,officialUrl:url};
       failures.push(q);quarantine.push(q);continue;
     }
     const previousSource=provenanceLeaf(r.source);
-    r.result=c;
+    const canonicalHorse=c.horseDeadHeat?(currentHorse!=null&&c.horseWinners.includes(currentHorse)?currentHorse:null):c.horse;
+    r.result={main:c.main,horse:canonicalHorse,horseWinners:c.horseWinners,reintegro:c.reintegro};
     r.drawNumber=row.id_sorteo;
     r.economics={currency:'EUR',ticketCost:1,stakes:num(row.apuestas),revenue:num(row.recaudacion),jackpot:num(row.premio_bote),prizePool:num(row.premios),rolloverFund:num(row.fondo_bote),categories:(row.escrutinio||[]).map(x=>({category:Number(x.categoria),label:String(x.tipo||'').trim(),winners:num(x.ganadores),prize:num(x.premio)})),source:{provider:'SELAE',url,capturedAt:new Date().toISOString()},validation:{status:'OFFICIAL_PARSED',officialSELAE:true}};
     r.source={provider:'SELAE',tier:'official',url,validation:'official-fechav3',archivePreviousSource:previousSource};
+    r.verification={...(r.verification||{}),officialCrossCheck:{provider:'SELAE',exactDate:true,complete:true,status:'MATCH',url,fields:{main:true,horseWinners:true,reintegro:true},horseDeadHeat:c.horseDeadHeat}};
+    r.trainingEligible=c.horseDeadHeat?false:true;
+    if(c.horseDeadHeat) deadHeatRows++;
     updated++;
     changedFiles.add(file);
   }catch(e){failures.push({date:r.drawDate,reason:String(e)})}
@@ -99,7 +111,7 @@ for(const [i,target] of targets.slice(0,limit).entries()){
 for(const file of changedFiles){const {p,doc}=docs.get(file);fs.writeFileSync(p,JSON.stringify(doc,null,2)+'\n')}
 let total=0,official=0;
 for(const {doc} of docs.values()) for(const r of doc.records||[]){total++;if(r.economics?.validation?.officialSELAE)official++}
-const out={generatedAt:new Date().toISOString(),gameId:'lototurf',batchLimit:limit,attempted:Math.min(limit,targets.length),updated,empty,exactDateMisses,mismatch,failures,totalRecords:total,officialEconomicsRecords:official,remaining:Math.max(0,total-official),qualityPass:mismatch===0,quarantinedMismatchCount:quarantine.length,guards:{exactOfficialDrawDateRequired:true,noDateShiftPromotion:true,provenanceHistoryFlattened:true,noInference:true},next:quarantine.length?'review-quarantined-mismatches-while-continuing-nonconflicting-official-enrichment':'continue-official-enrichment'};
+const out={generatedAt:new Date().toISOString(),gameId:'lototurf',batchLimit:limit,attempted:Math.min(limit,targets.length),updated,empty,exactDateMisses,mismatch,deadHeatRows,failures,totalRecords:total,officialEconomicsRecords:official,remaining:Math.max(0,total-official),qualityPass:mismatch===0,quarantinedMismatchCount:quarantine.length,guards:{exactOfficialDrawDateRequired:true,noDateShiftPromotion:true,provenanceHistoryFlattened:true,officialDeadHeatPreserved:true,deadHeatNotPromotedToSingleHorseTraining:true,noInference:true},next:quarantine.length?'review-quarantined-mismatches-while-continuing-nonconflicting-official-enrichment':'continue-official-enrichment'};
 fs.writeFileSync(`${meta}/lototurf-official-enrichment.json`,JSON.stringify(out,null,2)+'\n');
-fs.writeFileSync(`${meta}/lototurf-official-mismatch-quarantine.json`,JSON.stringify({generatedAt:out.generatedAt,gameId:'lototurf',count:quarantine.length,items:quarantine,policy:'Never overwrite an internal archived result when SELAE disagrees. Require exact official draw date, quarantine mismatches, and continue enriching only non-conflicting records.'},null,2)+'\n');
+fs.writeFileSync(`${meta}/lototurf-official-mismatch-quarantine.json`,JSON.stringify({generatedAt:out.generatedAt,gameId:'lototurf',count:quarantine.length,items:quarantine,policy:'Never overwrite an internal archived result when SELAE disagrees. Require exact official draw date, preserve all official dead-heat horse winners, quarantine mismatches, and continue enriching only non-conflicting records.'},null,2)+'\n');
 console.log(JSON.stringify({...out,failures:failures.length,changedFiles:[...changedFiles].sort()},null,2));
