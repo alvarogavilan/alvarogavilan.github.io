@@ -112,6 +112,18 @@ export function laneIsInvestigation(lane) {
   return laneStatus(lane) !== 'GREEN';
 }
 
+export function laneIsKilled(lane) {
+  return lane?.lifecycle?.killed === true || lane?.lifecycle?.status === 'KILLED_NOT_CURRENTLY_ACTIONABLE';
+}
+
+export function laneKilledReason(lane) {
+  return typeof lane?.lifecycle?.reason === 'string' ? lane.lifecycle.reason : null;
+}
+
+export function laneAliasOf(lane) {
+  return typeof lane?.lifecycle?.aliasOf === 'string' ? lane.lifecycle.aliasOf : null;
+}
+
 // Stake display must never coerce an unknown stake to 0. Only an explicit
 // DO_NOT_PLAY order (the plan's real, evidenced verdict) may show 0; any
 // other missing/unset stake stays null ("pending"), never 0.
@@ -141,6 +153,9 @@ export function buildLaneCard(lane) {
     distanceToThresholdEUR: laneDistanceToThresholdEUR(lane),
     gameUrl: laneGameUrl(lane),
     investigation: laneIsInvestigation(lane),
+    killed: laneIsKilled(lane),
+    killedReason: laneKilledReason(lane),
+    aliasOf: laneAliasOf(lane),
   };
 }
 

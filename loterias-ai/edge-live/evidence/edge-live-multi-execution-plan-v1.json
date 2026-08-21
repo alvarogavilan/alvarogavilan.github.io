@@ -1,6 +1,6 @@
 {
   "version": "edge-live-multi-execution-plan-v1.2-dynamic-freshness",
-  "generatedAt": "2026-08-21T08:26:02.301Z",
+  "generatedAt": "2026-08-21T08:48:45.815Z",
   "operator": "botemania-es",
   "state": "NO_EXECUTION",
   "game": {
@@ -80,7 +80,7 @@
     "uniqueLiveRows": 14,
     "ambiguousLiveRows": 9,
     "sourceObservedAt": "2026-08-21T08:26:01.505Z",
-    "sourceAgeSeconds": 0,
+    "sourceAgeSeconds": 1364,
     "stasisMeters": 14
   },
   "lanes": [
@@ -176,11 +176,17 @@
       "phase": "RED",
       "executionReady": false,
       "prepareOnly": false,
+      "lifecycle": {
+        "status": null,
+        "killed": false,
+        "reason": null,
+        "aliasOf": null
+      },
       "current": {
         "observedAt": "2026-08-21T08:26:01.505Z",
         "jackpotEUR": 3448.25,
-        "sourceAgeSeconds": 0,
-        "sourceFresh": true,
+        "sourceAgeSeconds": 1364,
+        "sourceFresh": false,
         "currentStateFresh": false,
         "dynamicFreshnessVerified": false,
         "dynamicFreshnessReason": "DYNAMIC_MOVEMENT_NOT_YET_OBSERVED",
@@ -222,7 +228,7 @@
         "thresholdKnown": false,
         "exactStakeKnown": false,
         "strategyVerified": false,
-        "sourceFresh": true,
+        "sourceFresh": false,
         "dynamicFreshnessVerified": false,
         "currentStateFresh": false,
         "withinFreshExecutionWindow": false,
@@ -230,6 +236,7 @@
         "economicPass": false
       },
       "blockers": [
+        "SOURCE_NOT_FRESH",
         "DYNAMIC_METER_FRESHNESS_NOT_VERIFIED",
         "BREAK_EVEN_THRESHOLD_EUR_NOT_VERIFIED"
       ],
@@ -258,11 +265,17 @@
       "phase": "RED",
       "executionReady": false,
       "prepareOnly": false,
+      "lifecycle": {
+        "status": null,
+        "killed": false,
+        "reason": null,
+        "aliasOf": null
+      },
       "current": {
         "observedAt": "2026-08-21T08:26:01.505Z",
         "jackpotEUR": 8032.9,
-        "sourceAgeSeconds": 0,
-        "sourceFresh": true,
+        "sourceAgeSeconds": 1364,
+        "sourceFresh": false,
         "currentStateFresh": false,
         "dynamicFreshnessVerified": false,
         "dynamicFreshnessReason": "DYNAMIC_MOVEMENT_NOT_YET_OBSERVED",
@@ -300,7 +313,7 @@
         "thresholdKnown": false,
         "exactStakeKnown": false,
         "strategyVerified": false,
-        "sourceFresh": true,
+        "sourceFresh": false,
         "dynamicFreshnessVerified": false,
         "currentStateFresh": false,
         "withinFreshExecutionWindow": false,
@@ -309,6 +322,7 @@
       },
       "blockers": [
         "LIVE_COUNTER_IDENTITY_NOT_VERIFIED",
+        "SOURCE_NOT_FRESH",
         "DYNAMIC_METER_FRESHNESS_NOT_VERIFIED",
         "BREAK_EVEN_THRESHOLD_EUR_NOT_VERIFIED"
       ],
@@ -337,12 +351,18 @@
       "phase": "RED",
       "executionReady": false,
       "prepareOnly": false,
+      "lifecycle": {
+        "status": null,
+        "killed": false,
+        "reason": null,
+        "aliasOf": null
+      },
       "current": {
         "observedAt": "2026-08-21T08:26:01.505Z",
         "jackpotEUR": 1941.29,
-        "sourceAgeSeconds": 0,
-        "sourceFresh": true,
-        "currentStateFresh": true,
+        "sourceAgeSeconds": 1364,
+        "sourceFresh": false,
+        "currentStateFresh": false,
         "dynamicFreshnessVerified": true,
         "dynamicFreshnessReason": "RECENT_DYNAMIC_MOVEMENT_OBSERVED",
         "stasisSeconds": 47,
@@ -379,15 +399,16 @@
         "thresholdKnown": false,
         "exactStakeKnown": false,
         "strategyVerified": false,
-        "sourceFresh": true,
+        "sourceFresh": false,
         "dynamicFreshnessVerified": true,
-        "currentStateFresh": true,
-        "withinFreshExecutionWindow": true,
+        "currentStateFresh": false,
+        "withinFreshExecutionWindow": false,
         "structurePass": false,
         "economicPass": false
       },
       "blockers": [
         "LIVE_COUNTER_IDENTITY_NOT_VERIFIED",
+        "SOURCE_NOT_FRESH",
         "BREAK_EVEN_THRESHOLD_EUR_NOT_VERIFIED"
       ],
       "guards": {
@@ -415,12 +436,18 @@
       "phase": "RED",
       "executionReady": false,
       "prepareOnly": false,
+      "lifecycle": {
+        "status": "KILLED_NOT_CURRENTLY_ACTIONABLE",
+        "killed": true,
+        "reason": "JACKPOT_HIT_PROBABILITY_NOT_PUBLICLY_DISCLOSED_FOR_BOTEMANIA_SPAIN",
+        "aliasOf": "generic:progressivealice1"
+      },
       "current": {
         "observedAt": "2026-08-21T08:26:01.505Z",
         "jackpotEUR": 1049.38,
-        "sourceAgeSeconds": 0,
-        "sourceFresh": true,
-        "currentStateFresh": true,
+        "sourceAgeSeconds": 1364,
+        "sourceFresh": false,
+        "currentStateFresh": false,
         "dynamicFreshnessVerified": true,
         "dynamicFreshnessReason": "RECENT_DYNAMIC_MOVEMENT_OBSERVED",
         "stasisSeconds": 95,
@@ -457,15 +484,17 @@
         "thresholdKnown": false,
         "exactStakeKnown": false,
         "strategyVerified": false,
-        "sourceFresh": true,
+        "sourceFresh": false,
         "dynamicFreshnessVerified": true,
-        "currentStateFresh": true,
-        "withinFreshExecutionWindow": true,
+        "currentStateFresh": false,
+        "withinFreshExecutionWindow": false,
         "structurePass": false,
         "economicPass": false
       },
       "blockers": [
+        "LANE_KILLED_NOT_CURRENTLY_ACTIONABLE",
         "LIVE_COUNTER_IDENTITY_NOT_VERIFIED",
+        "SOURCE_NOT_FRESH",
         "BREAK_EVEN_THRESHOLD_EUR_NOT_VERIFIED"
       ],
       "guards": {
@@ -493,12 +522,18 @@
       "phase": "RED",
       "executionReady": false,
       "prepareOnly": false,
+      "lifecycle": {
+        "status": null,
+        "killed": false,
+        "reason": null,
+        "aliasOf": null
+      },
       "current": {
         "observedAt": "2026-08-21T08:26:01.505Z",
         "jackpotEUR": 120776.57,
-        "sourceAgeSeconds": 0,
-        "sourceFresh": true,
-        "currentStateFresh": true,
+        "sourceAgeSeconds": 1364,
+        "sourceFresh": false,
+        "currentStateFresh": false,
         "dynamicFreshnessVerified": true,
         "dynamicFreshnessReason": "RECENT_DYNAMIC_MOVEMENT_OBSERVED",
         "stasisSeconds": 174,
@@ -535,15 +570,16 @@
         "thresholdKnown": false,
         "exactStakeKnown": false,
         "strategyVerified": false,
-        "sourceFresh": true,
+        "sourceFresh": false,
         "dynamicFreshnessVerified": true,
-        "currentStateFresh": true,
-        "withinFreshExecutionWindow": true,
+        "currentStateFresh": false,
+        "withinFreshExecutionWindow": false,
         "structurePass": false,
         "economicPass": false
       },
       "blockers": [
         "LIVE_COUNTER_IDENTITY_NOT_VERIFIED",
+        "SOURCE_NOT_FRESH",
         "BREAK_EVEN_THRESHOLD_EUR_NOT_VERIFIED"
       ],
       "guards": {

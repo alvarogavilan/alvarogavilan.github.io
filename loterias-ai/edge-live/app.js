@@ -149,7 +149,8 @@ function laneCardHtml(c){
       <div><small>ESTRATEGIA</small><b>${c.strategyVerified?'SÍ':'NO'}</b></div>
       <div><small>DISTANCIA</small><b>${distance}</b></div>
     </div>
-    ${c.investigation?'<div class="investBadge">INVESTIGACIÓN — todavía no ejecutable</div>':''}
+    ${c.killed?`<div class="killedBadge">☠️ DESCARTADO — ${escapeHtml(c.killedReason||'bloqueador no recuperable')}</div>`:c.investigation?'<div class="investBadge">INVESTIGACIÓN — todavía no ejecutable</div>':''}
+    ${c.aliasOf?`<div class="laneMeta">Mismo pool que ${escapeHtml(c.aliasOf)} — no se cuenta como oportunidad independiente.</div>`:''}
     <div class="laneBlockers">${blockersHtml}</div>
     <div class="laneLink">${link}</div>
   </div>`;

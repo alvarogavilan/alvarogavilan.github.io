@@ -3,6 +3,17 @@ import fs from 'node:fs';
 import { finiteNumberOrNull } from './number-safety-v1.mjs';
 import { dynamicFreshnessForMeter } from './meter-stasis-core-v1.mjs';
 
+// A killed lane must never become executionReady again, even if a later
+// registry edit sets a threshold/stake for it - the lifecycle status is a
+// hard override that always wins over the economic/identity gates.
+export function laneExecutionReadyWithLifecycle(lifecycleStatus, edgePass, exactStakeKnown, strategyVerified) {
+  if (lifecycleStatus === 'KILLED_NOT_CURRENTLY_ACTIONABLE') return false;
+  return edgePass === true && exactStakeKnown === true && strategyVerified === true;
+}
+
+// Guarded so importing laneExecutionReadyWithLifecycle for tests never
+// triggers this script's real file reads/writes as a side effect.
+if (import.meta.url === `file://${process.argv[1]}`) {
 const SINGLE='loterias-ai/edge-live/evidence/edge-live-execution-plan-v1.json';
 const NETWORK='loterias-ai/edge-live/evidence/botemania-all-network-live-state-v1.json';
 const REGISTRY='loterias-ai/edge-live/opportunity-registry-v1.json';
@@ -44,8 +55,14 @@ for(const m of mappings){
   const stakeConfigured=finiteNumberOrNull(m?.execution?.stakePerDecisionEUR);
   const exactStakeKnown=m?.execution?.exactStakeKnown===true&&stakeConfigured!==null&&stakeConfigured>0;
   const strategyVerified=m?.execution?.strategyVerified===true;
-  const executionReady=edgePass&&exactStakeKnown&&strategyVerified;
+  // A killed lane must never become executionReady again just because a
+  // later registry edit sets a threshold/stake - the lifecycle status is a
+  // hard override, checked last so it always wins.
+  const lifecycleStatus=typeof m?.lifecycle?.status==='string'?m.lifecycle.status:null;
+  const killed=lifecycleStatus==='KILLED_NOT_CURRENTLY_ACTIONABLE';
+  const executionReady=laneExecutionReadyWithLifecycle(lifecycleStatus,edgePass,exactStakeKnown,strategyVerified);
   const blockers=[];
+  if(killed)blockers.push('LANE_KILLED_NOT_CURRENTLY_ACTIONABLE');
   if(!row)blockers.push('LIVE_COUNTER_NOT_FOUND');
   if(!exactIdentity)blockers.push('LIVE_COUNTER_IDENTITY_NOT_VERIFIED');
   if(!sourceFresh)blockers.push('SOURCE_NOT_FRESH');
@@ -60,6 +77,7 @@ for(const m of mappings){
   const maxSpins=executionReady?Math.max(1,Math.floor(maxTotal/stake)):0;
   lanes.push({
     id:m.id,type:m.type,game:m.game,monitor:{network:m.network,feedId:m.feedId,key},phase:executionReady?'GREEN':'RED',executionReady,prepareOnly:false,
+    lifecycle:{status:lifecycleStatus,killed,reason:m?.lifecycle?.reason||null,aliasOf:m?.lifecycle?.aliasOf||null},
     current:{observedAt:network?.observedAt||null,jackpotEUR,sourceAgeSeconds,sourceFresh,currentStateFresh,dynamicFreshnessVerified:dynamicFreshness.verified,dynamicFreshnessReason:dynamicFreshness.reason,stasisSeconds:dynamicFreshness.stasisSeconds??meter?.stasisSeconds??null,lastChangedAt:meter?.lastChangedAt||null,observationCount:meter?.observationCount||0,changeCount:meter?.changeCount||0},
     economic:{breakEvenJackpotEUR:thresholdKnown?+threshold.toFixed(6):null,breakEvenRoyalCredits:breakEvenCredits,creditValueEUR:creditValueVerified?creditValueEUR:null,creditValueVerified,aboveBreakEven:edgePass,distanceToBreakEvenEUR:jackpotEUR!==null&&thresholdKnown?+(threshold-jackpotEUR).toFixed(6):null},
     order:{action:executionReady?'PLAY':'DO_NOT_PLAY',stakePerSpinEUR:stake,maxSpins,maxTotalStakeEUR:maxTotal,validFrom:executionReady?network?.observedAt:null,validUntil:executionReady?new Date(Date.now()+180000).toISOString():null,maxSignalAgeSeconds:180,requiresFinalGreenRecheckBeforeFirstSpin:true},
@@ -77,3 +95,4 @@ const out={version:'edge-live-multi-execution-plan-v1.2-dynamic-freshness',gener
 fs.mkdirSync('loterias-ai/edge-live/evidence',{recursive:true});
 fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
 console.log(JSON.stringify({state:out.state,selectedLaneId:out.selectedLaneId,coverage:out.coverage,wagerBet:lanes.find(x=>x.monitor?.key==='generic:WAGER_BET')||null},null,2));
+}
