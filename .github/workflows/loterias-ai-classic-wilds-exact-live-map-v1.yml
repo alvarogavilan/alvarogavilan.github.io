@@ -1,0 +1,42 @@
+name: Loterias AI Classic Wilds Exact Live Map V1
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/jackpots/botemania-classic-wilds-exact-live-map-v1.mjs'
+      - '.github/workflows/loterias-ai-classic-wilds-exact-live-map-v1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax check
+        run: node --check loterias-ai/casino/jackpots/botemania-classic-wilds-exact-live-map-v1.mjs
+      - name: Probe exact Classic Wilds mapping
+        run: node loterias-ai/casino/jackpots/botemania-classic-wilds-exact-live-map-v1.mjs
+      - name: Enforce fail-closed evidence semantics
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const x=JSON.parse(fs.readFileSync('loterias-ai/casino/jackpots/evidence/botemania-classic-wilds-exact-live-map-v1.json','utf8'));
+          if(x.guards?.nullNeverCoercedToZero!==true || x.guards?.amountOnlyNeverVerifiesIdentity!==true || x.guards?.htmlLiteralNeverVerifiesIdentity!==true || x.guards?.percentageContextNeverDefinesEconomicSemantics!==true) throw new Error('scientific evidence guard missing');
+          if(x.decision?.economicPromotionAllowed!==false || x.decision?.realMoneyAllowed!==false) throw new Error('research probe promoted wagering');
+          if(x.decision?.exactCounterIdentityVerified===true && (x.graphql?.exactTargetIdObjects||[]).length!==1) throw new Error('identity verified without one exact operator GraphQL ID');
+          if(x.economicsDiscovery?.semanticsVerified!==false || x.economicsDiscovery?.breakEvenJackpotEUR!==null) throw new Error('percentage text promoted economic semantics');
+          console.log(JSON.stringify({liveFeed:x.liveFeed,graphql:x.graphql,page:x.page,economicsDiscovery:x.economicsDiscovery,decision:x.decision},null,2));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: classic-wilds-exact-live-map-v1
+          path: loterias-ai/casino/jackpots/evidence/botemania-classic-wilds-exact-live-map-v1.json
+          retention-days: 7
