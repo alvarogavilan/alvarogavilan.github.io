@@ -1,0 +1,45 @@
+name: Loterias AI Tiki Zero Reset Visible Amount Binding V1
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'loterias-ai/casino/jackpots/tiki-zero-reset-visible-amount-binding-v1.mjs'
+      - 'loterias-ai/tests/tiki-zero-reset-visible-amount-binding-v1.test.mjs'
+      - '.github/workflows/loterias-ai-tiki-zero-reset-visible-amount-binding-v1.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Deterministic guards
+        run: node loterias-ai/tests/tiki-zero-reset-visible-amount-binding-v1.test.mjs
+      - name: Run public visible-amount probe
+        run: node loterias-ai/casino/jackpots/tiki-zero-reset-visible-amount-binding-v1.mjs
+      - name: Verify fail-closed contract
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const p='loterias-ai/casino/jackpots/evidence/tiki-zero-reset-visible-amount-binding-v1.json';
+          const x=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(x?.coverage?.complete!==true) throw new Error('visible amount coverage incomplete');
+          if(x?.decision?.exactGameBindingVerified!==false) throw new Error('first run must never verify exact game identity');
+          if(x?.decision?.identityPromotionAllowed!==false||x?.decision?.economicPromotionAllowed!==false||x?.decision?.realMoneyAllowed!==false) throw new Error('promotion opened unexpectedly');
+          if(x?.guards?.scriptsAndStylesExcludedFromVisibleText!==true||x?.guards?.controlsMandatory!==true||x?.guards?.singleRunNeverVerifiesIdentity!==true) throw new Error('scientific guards missing');
+          console.log(JSON.stringify({coverage:x.coverage,comparison:x.comparison,decision:x.decision,rows:(x.rows||[]).map(r=>({slug:r.slug,role:r.role,before:r.feed?.before?.pair?.amountEUR??null,after:r.feed?.after?.pair?.amountEUR??null,matches:r.windowMatchesEUR||[],euroAmountCount:r.dom?.euroAmountCount??null}))},null,2));
+          NODE
+      - name: Upload exact evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: tiki-zero-reset-visible-amount-binding-v1
+          path: loterias-ai/casino/jackpots/evidence/tiki-zero-reset-visible-amount-binding-v1.json
+          if-no-files-found: error
