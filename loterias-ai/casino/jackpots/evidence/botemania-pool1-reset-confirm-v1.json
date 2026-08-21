@@ -1,0 +1,91 @@
+{
+  "version": "botemania-pool1-reset-confirm-v1",
+  "generatedAt": "2026-08-21T10:29:49.813Z",
+  "operator": "botemania-es",
+  "workflowRunId": 32472881319,
+  "target": {
+    "network": "generic",
+    "id": "pool1"
+  },
+  "baseline": {
+    "observedAt": "2026-08-21T10:15:31.717Z",
+    "amountEUR": 1818.6,
+    "identityClass": "EXACT_NETWORK_PLUS_UNIQUE_ID",
+    "identityExact": true,
+    "rowCount": 1,
+    "sourceLedgerVersion": "botemania-generic-fast-reset-ledger-v2-stable-id"
+  },
+  "confirmationSamples": [
+    {
+      "observedAt": "2026-08-21T10:29:46.581Z",
+      "httpStatus": 200,
+      "graphqlErrors": [],
+      "rowCount": 29,
+      "targetRowCount": 1,
+      "targetDistinctAmounts": [41.03],
+      "uniqueIdentityInSnapshot": true
+    },
+    {
+      "observedAt": "2026-08-21T10:29:49.813Z",
+      "httpStatus": 200,
+      "graphqlErrors": [],
+      "rowCount": 29,
+      "targetRowCount": 1,
+      "targetDistinctAmounts": [41.03],
+      "uniqueIdentityInSnapshot": true
+    }
+  ],
+  "transition": {
+    "baselineEUR": 1818.6,
+    "currentMinEUR": 41.03,
+    "currentMaxEUR": 41.03,
+    "dropEUR": 1777.57,
+    "dropFraction": 0.977439,
+    "currentBandStable": true,
+    "resetScaleThreshold": 0.2,
+    "classification": "CONFIRMED_RESET_OF_STABLE_FEED_ID"
+  },
+  "topologyObservation": {
+    "samePostResetAmount": [
+      {
+        "id": "JackpotPool",
+        "distinctAmountsEUR": [41.03],
+        "stableWithinSnapshot": true
+      }
+    ],
+    "cooccurringAmbiguousIds": [
+      {
+        "id": "progressive_id1",
+        "distinctAmountsEUR": [15688.27, 41.03],
+        "stableWithinSnapshot": false
+      },
+      {
+        "id": "JACKPOT",
+        "distinctAmountsEUR": [15688.27, 41.03, 126301.23, 1075.99],
+        "stableWithinSnapshot": false
+      }
+    ]
+  },
+  "inference": {
+    "meterResetConfirmed": true,
+    "jackpotWinConfirmed": false,
+    "triggeringGameKnown": false,
+    "triggeringTierKnown": false,
+    "seedPointEstimateEUR": null,
+    "postResetSeedUpperBoundEUR": 41.03,
+    "currentPositiveEvProven": false,
+    "economicPromotionAllowed": false,
+    "realMoneyAllowed": false,
+    "reason": "The exact stable feed ID pool1 fell from a committed exact-ID baseline of EUR 1818.60 to EUR 41.03 and remained there across two fresh unique-ID samples. This confirms a reset/large drop of the pool1 meter only. It does not prove a jackpot win, triggering game, tier, or exact seed."
+  },
+  "guards": {
+    "baselineMustBeExactStableId": true,
+    "twoFreshUniqueCurrentSamplesRequired": true,
+    "noRankIdentity": true,
+    "noResetEqualsJackpotWin": true,
+    "noPostResetEqualsExactSeed": true,
+    "noTriggerAttribution": true,
+    "noBetting": true,
+    "realMoneyAllowed": false
+  }
+}
