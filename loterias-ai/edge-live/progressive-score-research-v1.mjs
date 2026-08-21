@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
+import { finiteNumberOrNull } from './number-safety-v1.mjs';
 
 const NETWORK='loterias-ai/edge-live/evidence/botemania-all-network-live-state-v1.json';
 const REGISTRY='loterias-ai/edge-live/opportunity-registry-v1.json';
@@ -41,44 +42,47 @@ for(const m of mappings){
   if(!String(m?.type||'').includes('PROGRESSIVE'))continue;
   const key=`${m.network}:${m.feedId}`;
   const live=network?.currentByKey?.[key]||null;
-  const current=Number(live?.amountEUR);
+  const current=finiteNumberOrNull(live?.amountEUR);
   const scoreModel=m?.economic?.scoreModel||null;
-  const seed=Number(scoreModel?.seed);
-  const averageHit=Number(scoreModel?.averageHit);
+  const seed=finiteNumberOrNull(scoreModel?.seed);
+  const averageHit=finiteNumberOrNull(scoreModel?.averageHit);
   const inputsComparable=scoreModel?.inputsComparable===true;
-  const denominator=averageHit-seed;
-  const exactScore=inputsComparable&&Number.isFinite(current)&&Number.isFinite(seed)&&Number.isFinite(averageHit)&&denominator>0
+  const denominator=seed!==null&&averageHit!==null?averageHit-seed:null;
+  const exactScore=inputsComparable&&current!==null&&seed!==null&&averageHit!==null&&denominator>0
     ?((current-seed)/denominator)*100:null;
-  const nominalCrossUnitScore=!inputsComparable&&scoreModel?.allowNominalResearchScore===true&&Number.isFinite(current)&&Number.isFinite(seed)&&Number.isFinite(averageHit)&&denominator>0
+  const nominalCrossUnitScore=!inputsComparable&&scoreModel?.allowNominalResearchScore===true&&current!==null&&seed!==null&&averageHit!==null&&denominator>0
     ?((current-seed)/denominator)*100:null;
 
-  const baseExJackpot=Number(m?.economic?.baseRtpExcludingJackpotPct);
-  const avgContribution=Number(m?.economic?.averageJackpotContributionPct);
-  const estimatedCurrentRtpPct=Number.isFinite(exactScore)&&Number.isFinite(baseExJackpot)&&Number.isFinite(avgContribution)
+  const baseExJackpot=finiteNumberOrNull(m?.economic?.baseRtpExcludingJackpotPct);
+  const avgContribution=finiteNumberOrNull(m?.economic?.averageJackpotContributionPct);
+  const estimatedCurrentRtpPct=exactScore!==null&&baseExJackpot!==null&&avgContribution!==null
     ?baseExJackpot+(exactScore/100)*avgContribution:null;
-  const exactEconomicPass=Number.isFinite(estimatedCurrentRtpPct)&&estimatedCurrentRtpPct>100;
+  const exactEconomicPass=estimatedCurrentRtpPct!==null&&estimatedCurrentRtpPct>100;
 
   const scenario=RESEARCH_SCENARIOS[m.id]||null;
   let researchScenario=null;
   if(scenario){
-    const sSeed=Number(scenario.seedNominal),sAvg=Number(scenario.averageHitNominal),sDen=sAvg-sSeed;
-    const score=Number.isFinite(current)&&Number.isFinite(sSeed)&&Number.isFinite(sAvg)&&sDen>0?((current-sSeed)/sDen)*100:null;
-    const sBase=Number(scenario.baseRtpExcludingJackpotPct),sContribution=Number(scenario.averageJackpotContributionPct);
-    const breakEvenScore=Number.isFinite(sBase)&&Number.isFinite(sContribution)&&sContribution>0?((100-sBase)/sContribution)*100:null;
-    const breakEvenNominal=Number.isFinite(breakEvenScore)&&sDen>0?sSeed+sDen*(breakEvenScore/100):null;
-    const estimatedRtp=Number.isFinite(score)&&Number.isFinite(sBase)&&Number.isFinite(sContribution)?sBase+(score/100)*sContribution:null;
-    const distance=Number.isFinite(current)&&Number.isFinite(breakEvenNominal)?breakEvenNominal-current:null;
-    const nearWindow=Number(scenario.nearThresholdWindowNominal)||500;
-    const zone=Number.isFinite(distance)?(distance<=0?'ABOVE_RESEARCH_THRESHOLD':distance<=nearWindow?'NEAR_RESEARCH_THRESHOLD':'BELOW_RESEARCH_THRESHOLD'):'NO_LIVE_VALUE';
+    const sSeed=finiteNumberOrNull(scenario.seedNominal);
+    const sAvg=finiteNumberOrNull(scenario.averageHitNominal);
+    const sDen=sSeed!==null&&sAvg!==null?sAvg-sSeed:null;
+    const score=current!==null&&sSeed!==null&&sAvg!==null&&sDen>0?((current-sSeed)/sDen)*100:null;
+    const sBase=finiteNumberOrNull(scenario.baseRtpExcludingJackpotPct);
+    const sContribution=finiteNumberOrNull(scenario.averageJackpotContributionPct);
+    const breakEvenScore=sBase!==null&&sContribution!==null&&sContribution>0?((100-sBase)/sContribution)*100:null;
+    const breakEvenNominal=breakEvenScore!==null&&sDen>0?sSeed+sDen*(breakEvenScore/100):null;
+    const estimatedRtp=score!==null&&sBase!==null&&sContribution!==null?sBase+(score/100)*sContribution:null;
+    const distance=current!==null&&breakEvenNominal!==null?breakEvenNominal-current:null;
+    const nearWindow=finiteNumberOrNull(scenario.nearThresholdWindowNominal)??500;
+    const zone=distance!==null?(distance<=0?'ABOVE_RESEARCH_THRESHOLD':distance<=nearWindow?'NEAR_RESEARCH_THRESHOLD':'BELOW_RESEARCH_THRESHOLD'):'NO_LIVE_VALUE';
     researchScenario={
       name:scenario.name,
       zone,
-      currentNominal:Number.isFinite(current)?+current.toFixed(6):null,
-      score:Number.isFinite(score)?+score.toFixed(3):null,
-      estimatedRtpPct:Number.isFinite(estimatedRtp)?+estimatedRtp.toFixed(4):null,
-      breakEvenScore:Number.isFinite(breakEvenScore)?+breakEvenScore.toFixed(3):null,
-      breakEvenJackpotNominal:Number.isFinite(breakEvenNominal)?+breakEvenNominal.toFixed(2):null,
-      distanceToResearchThresholdNominal:Number.isFinite(distance)?+distance.toFixed(2):null,
+      currentNominal:current!==null?+current.toFixed(6):null,
+      score:score!==null?+score.toFixed(3):null,
+      estimatedRtpPct:estimatedRtp!==null?+estimatedRtp.toFixed(4):null,
+      breakEvenScore:breakEvenScore!==null?+breakEvenScore.toFixed(3):null,
+      breakEvenJackpotNominal:breakEvenNominal!==null?+breakEvenNominal.toFixed(2):null,
+      distanceToResearchThresholdNominal:distance!==null?+distance.toFixed(2):null,
       baseRtpExcludingJackpotPct:sBase,
       averageJackpotContributionPct:sContribution,
       seedNominal:sSeed,
@@ -93,44 +97,49 @@ for(const m of mappings){
     };
   }
 
-  const exactIdEvents=ledgerEvents.filter(e=>String(e?.id||'')===String(m?.feedId||''));
-  const cleanLocalResets=exactIdEvents.filter(e=>e?.classification==='CONFIRMED_RESET'||e?.identityClass==='EXACT_NETWORK_PLUS_UNIQUE_ID');
-  const externalReferenceScore=Number(scoreModel?.externalReference?.score);
+  const exactIdDropCandidates=ledgerEvents.filter(e=>(e?.network||'generic')===m?.network&&String(e?.id||'')===String(m?.feedId||'')&&e?.identityClass==='EXACT_NETWORK_PLUS_UNIQUE_ID');
+  const confirmedLocalResets=exactIdDropCandidates.filter(e=>e?.classification==='CONFIRMED_RESET');
+  const externalReferenceScore=finiteNumberOrNull(scoreModel?.externalReference?.score);
   const researchPriority=(
     researchScenario?.zone==='ABOVE_RESEARCH_THRESHOLD'?900:
     researchScenario?.zone==='NEAR_RESEARCH_THRESHOLD'?500:
     exactEconomicPass?1000:
-    Number.isFinite(exactScore)?exactScore:
-    Number.isFinite(nominalCrossUnitScore)?Math.min(nominalCrossUnitScore,300):
-    Number.isFinite(externalReferenceScore)?externalReferenceScore:0
+    exactScore!==null?exactScore:
+    nominalCrossUnitScore!==null?Math.min(nominalCrossUnitScore,300):
+    externalReferenceScore!==null?externalReferenceScore:0
   );
 
+  const publishedRtp=finiteNumberOrNull(m?.economic?.publishedRtpPct);
   rows.push({
     id:m.id,
     game:m.game,
     type:m.type,
     monitor:{network:m.network,feedId:m.feedId,key},
-    current:{amountEUR:Number.isFinite(current)?current:null,observedAt:network?.observedAt||null,sourceAgeSeconds},
+    current:{amountEUR:current,observedAt:network?.observedAt||null,sourceAgeSeconds},
     identity:{verified:m?.identity?.verified===true,confidence:m?.identity?.confidence||null,evidenceClass:m?.identity?.evidenceClass||null},
     score:{
-      exactScore:Number.isFinite(exactScore)?+exactScore.toFixed(3):null,
-      nominalCrossUnitResearchScore:Number.isFinite(nominalCrossUnitScore)?+nominalCrossUnitScore.toFixed(3):null,
+      exactScore:exactScore!==null?+exactScore.toFixed(3):null,
+      nominalCrossUnitResearchScore:nominalCrossUnitScore!==null?+nominalCrossUnitScore.toFixed(3):null,
       inputsComparable,
       formula:'(jackpot-seed)/(averageHit-seed)*100',
-      seed:Number.isFinite(seed)?seed:null,
-      averageHit:Number.isFinite(averageHit)?averageHit:null,
+      seed,
+      averageHit,
       modelCurrency:scoreModel?.currency||null,
       liveCurrency:scoreModel?.liveCurrency||'EUR',
       externalReference:scoreModel?.externalReference||null,
-      localExactIdResetEvents:exactIdEvents.length,
-      localCleanResetEvents:cleanLocalResets.length
+      localExactIdDropCandidates:exactIdDropCandidates.length,
+      localConfirmedResetEvents:confirmedLocalResets.length,
+      localExactIdResetEvents:confirmedLocalResets.length,
+      localCleanResetEvents:confirmedLocalResets.length
     },
     researchScenario,
     economic:{
-      publishedRtpPct:Number(m?.economic?.publishedRtpPct||m?.economic?.publishedBaseRtpPctApprox)||null,
-      baseRtpExcludingJackpotPct:Number.isFinite(baseExJackpot)?baseExJackpot:null,
-      averageJackpotContributionPct:Number.isFinite(avgContribution)?avgContribution:null,
-      estimatedCurrentRtpPct:Number.isFinite(estimatedCurrentRtpPct)?+estimatedCurrentRtpPct.toFixed(4):null,
+      publishedRtpPct:publishedRtp,
+      publishedRtpRangePct:Array.isArray(m?.economic?.publishedRtpRangePct)?m.economic.publishedRtpRangePct:null,
+      exactVariantRtpVerified:m?.economic?.exactVariantRtpVerified===true,
+      baseRtpExcludingJackpotPct:baseExJackpot,
+      averageJackpotContributionPct:avgContribution,
+      estimatedCurrentRtpPct:estimatedCurrentRtpPct!==null?+estimatedCurrentRtpPct.toFixed(4):null,
       exactEconomicPass,
       executionPromotionAllowed:exactEconomicPass&&m?.identity?.verified===true&&m?.execution?.exactStakeKnown===true&&m?.execution?.strategyVerified===true
     },
@@ -139,7 +148,7 @@ for(const m of mappings){
       ...(live?[]:['LIVE_COUNTER_NOT_FOUND']),
       ...(m?.identity?.verified===true?[]:['COUNTER_IDENTITY_NOT_FULLY_VERIFIED']),
       ...(inputsComparable?[]:['SCORE_INPUT_UNITS_NOT_COMPARABLE']),
-      ...(Number.isFinite(baseExJackpot)&&Number.isFinite(avgContribution)?[]:['RTP_COMPONENTS_NOT_VERIFIED']),
+      ...(baseExJackpot!==null&&avgContribution!==null?[]:['RTP_COMPONENTS_NOT_VERIFIED']),
       ...(researchScenario?['RESEARCH_SCENARIO_CONFIGURATION_NOT_VERIFIED']:[]),
       ...(m?.execution?.exactStakeKnown===true?[]:['EXACT_STAKE_NOT_VERIFIED']),
       ...(m?.execution?.strategyVerified===true?[]:['EXECUTION_STRATEGY_NOT_VERIFIED'])
@@ -150,7 +159,7 @@ for(const m of mappings){
 rows.sort((a,b)=>b.researchPriorityScore-a.researchPriorityScore);
 const nearResearch=rows.filter(x=>['NEAR_RESEARCH_THRESHOLD','ABOVE_RESEARCH_THRESHOLD'].includes(x?.researchScenario?.zone));
 const out={
-  version:'progressive-score-research-v1.1-near-edge',
+  version:'progressive-score-research-v1.2-null-safe-stable-id',
   generatedAt:now,
   operator:'botemania-es',
   sourceObservedAt:network?.observedAt||null,
@@ -165,13 +174,16 @@ const out={
   rows,
   summary:{
     trackedProgressiveMappings:rows.length,
-    exactScoreRows:rows.filter(x=>Number.isFinite(x?.score?.exactScore)).length,
+    exactScoreRows:rows.filter(x=>x?.score?.exactScore!==null).length,
     exactEconomicPositiveRows:rows.filter(x=>x?.economic?.exactEconomicPass===true).length,
     executionPromotableRows:rows.filter(x=>x?.economic?.executionPromotionAllowed===true).length,
     nearOrAboveResearchThresholdRows:nearResearch.length
   },
   nearResearchThreshold:nearResearch.map(x=>({id:x.id,game:x.game?.name||null,zone:x.researchScenario.zone,currentNominal:x.researchScenario.currentNominal,breakEvenJackpotNominal:x.researchScenario.breakEvenJackpotNominal,distanceNominal:x.researchScenario.distanceToResearchThresholdNominal,estimatedRtpPct:x.researchScenario.estimatedRtpPct,executionPromotionAllowed:false})),
   guards:{
+    nullNeverCoercedToZero:true,
+    stableExactIdEventsOnly:true,
+    identityClassDoesNotEqualConfirmedReset:true,
     noAutomaticBetting:true,
     noCrossCurrencyScoreForExecution:true,
     noScoreAloneAsEvProof:true,

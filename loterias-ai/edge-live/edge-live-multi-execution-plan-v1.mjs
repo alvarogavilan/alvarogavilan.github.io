@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
+import { finiteNumberOrNull } from './number-safety-v1.mjs';
 
 const SINGLE='loterias-ai/edge-live/evidence/edge-live-execution-plan-v1.json';
 const NETWORK='loterias-ai/edge-live/evidence/botemania-all-network-live-state-v1.json';
@@ -12,7 +13,7 @@ const network=read(NETWORK)||{};
 const registry=read(REGISTRY)||{};
 const ageSeconds=t=>{const n=Date.parse(t||'');return Number.isFinite(n)?Math.max(0,Math.floor((Date.now()-n)/1000)):null};
 const sourceAgeSeconds=ageSeconds(network?.observedAt);
-const sourceFresh=Number.isFinite(sourceAgeSeconds)&&sourceAgeSeconds<=180;
+const sourceFresh=sourceAgeSeconds!==null&&sourceAgeSeconds<=180;
 
 const lanes=[];
 const singleGreen=single?.state==='READY_TO_EXECUTE_MANUALLY'&&single?.order?.action==='PLAY';
@@ -34,18 +35,19 @@ const mappings=Array.isArray(registry?.mappings)?registry.mappings:[];
 for(const m of mappings){
   const key=`${m.network}:${m.feedId}`;
   const row=network?.currentByKey?.[key]||null;
-  const jackpotEUR=Number(row?.amountEUR);
+  const jackpotEUR=finiteNumberOrNull(row?.amountEUR);
   const exactIdentity=m?.identity?.verified===true;
-  const exactThresholdEUR=Number(m?.economic?.breakEvenJackpotEUR);
-  const thresholdEURKnown=Number.isFinite(exactThresholdEUR)&&exactThresholdEUR>0;
-  const breakEvenCredits=Number(m?.economic?.breakEvenRoyalCredits);
-  const creditValueEUR=Number(m?.economic?.creditValueEUR);
-  const creditValueVerified=m?.economic?.creditValueVerified===true&&Number.isFinite(creditValueEUR)&&creditValueEUR>0;
-  const computedThresholdEUR=!thresholdEURKnown&&Number.isFinite(breakEvenCredits)&&breakEvenCredits>0&&creditValueVerified?breakEvenCredits*creditValueEUR:null;
+  const exactThresholdEUR=finiteNumberOrNull(m?.economic?.breakEvenJackpotEUR);
+  const thresholdEURKnown=exactThresholdEUR!==null&&exactThresholdEUR>0;
+  const breakEvenCredits=finiteNumberOrNull(m?.economic?.breakEvenRoyalCredits);
+  const creditValueEUR=finiteNumberOrNull(m?.economic?.creditValueEUR);
+  const creditValueVerified=m?.economic?.creditValueVerified===true&&creditValueEUR!==null&&creditValueEUR>0;
+  const computedThresholdEUR=!thresholdEURKnown&&breakEvenCredits!==null&&breakEvenCredits>0&&creditValueVerified?breakEvenCredits*creditValueEUR:null;
   const threshold=thresholdEURKnown?exactThresholdEUR:computedThresholdEUR;
-  const thresholdKnown=Number.isFinite(threshold)&&threshold>0;
-  const edgePass=exactIdentity&&sourceFresh&&Number.isFinite(jackpotEUR)&&thresholdKnown&&jackpotEUR>=threshold;
-  const exactStakeKnown=m?.execution?.exactStakeKnown===true&&Number(m?.execution?.stakePerDecisionEUR)>0;
+  const thresholdKnown=threshold!==null&&threshold>0;
+  const edgePass=exactIdentity&&sourceFresh&&jackpotEUR!==null&&thresholdKnown&&jackpotEUR>=threshold;
+  const stakeConfigured=finiteNumberOrNull(m?.execution?.stakePerDecisionEUR);
+  const exactStakeKnown=m?.execution?.exactStakeKnown===true&&stakeConfigured!==null&&stakeConfigured>0;
   const strategyVerified=m?.execution?.strategyVerified===true;
   const executionReady=edgePass&&exactStakeKnown&&strategyVerified;
   const blockers=[];
@@ -53,11 +55,12 @@ for(const m of mappings){
   if(!exactIdentity)blockers.push('LIVE_COUNTER_IDENTITY_NOT_VERIFIED');
   if(!sourceFresh)blockers.push('SOURCE_NOT_FRESH');
   if(!thresholdKnown)blockers.push('BREAK_EVEN_THRESHOLD_EUR_NOT_VERIFIED');
-  if(Number.isFinite(jackpotEUR)&&thresholdKnown&&jackpotEUR<threshold)blockers.push('CURRENT_STATE_BELOW_BREAK_EVEN');
+  if(jackpotEUR!==null&&thresholdKnown&&jackpotEUR<threshold)blockers.push('CURRENT_STATE_BELOW_BREAK_EVEN');
   if(edgePass&&!exactStakeKnown)blockers.push('EXACT_STAKE_NOT_VERIFIED');
   if(edgePass&&!strategyVerified)blockers.push('EXECUTION_STRATEGY_NOT_VERIFIED');
-  const stake=executionReady?Number(m.execution.stakePerDecisionEUR):0;
-  const maxTotal=executionReady?Number(m.execution.maxTotalStakeEUR||stake):0;
+  const stake=executionReady?stakeConfigured:0;
+  const configuredMax=finiteNumberOrNull(m?.execution?.maxTotalStakeEUR);
+  const maxTotal=executionReady?(configuredMax??stake):0;
   const maxSpins=executionReady?Math.max(1,Math.floor(maxTotal/stake)):0;
   lanes.push({
     id:m.id,
@@ -67,8 +70,8 @@ for(const m of mappings){
     phase:executionReady?'GREEN':'RED',
     executionReady,
     prepareOnly:false,
-    current:{observedAt:network?.observedAt||null,jackpotEUR:Number.isFinite(jackpotEUR)?jackpotEUR:null,sourceAgeSeconds,sourceFresh},
-    economic:{breakEvenJackpotEUR:thresholdKnown?+threshold.toFixed(6):null,breakEvenRoyalCredits:Number.isFinite(breakEvenCredits)?breakEvenCredits:null,creditValueEUR:creditValueVerified?creditValueEUR:null,creditValueVerified,aboveBreakEven:edgePass,distanceToBreakEvenEUR:Number.isFinite(jackpotEUR)&&thresholdKnown?+(threshold-jackpotEUR).toFixed(6):null},
+    current:{observedAt:network?.observedAt||null,jackpotEUR,sourceAgeSeconds,sourceFresh},
+    economic:{breakEvenJackpotEUR:thresholdKnown?+threshold.toFixed(6):null,breakEvenRoyalCredits:breakEvenCredits,creditValueEUR:creditValueVerified?creditValueEUR:null,creditValueVerified,aboveBreakEven:edgePass,distanceToBreakEvenEUR:jackpotEUR!==null&&thresholdKnown?+(threshold-jackpotEUR).toFixed(6):null},
     order:{action:executionReady?'PLAY':'DO_NOT_PLAY',stakePerSpinEUR:stake,maxSpins,maxTotalStakeEUR:maxTotal,validFrom:executionReady?network?.observedAt:null,validUntil:executionReady?new Date(Date.now()+180000).toISOString():null,maxSignalAgeSeconds:180,requiresFinalGreenRecheckBeforeFirstSpin:true},
     evidence:{identityVerified:exactIdentity,identityEvidence:m.identity||{},thresholdKnown,exactStakeKnown,strategyVerified,sourceFresh,withinFreshExecutionWindow:sourceFresh,structurePass:exactIdentity,economicPass:edgePass},
     blockers,
@@ -81,7 +84,7 @@ const yellow=lanes.filter(x=>x.prepareOnly===true);
 const selected=green[0]||yellow[0]||lanes[0];
 const state=green.length?'READY_TO_EXECUTE_MANUALLY':yellow.length?'PREPARE_OPEN_GAME_NO_BET':'NO_EXECUTION';
 const out={
-  version:'edge-live-multi-execution-plan-v1',
+  version:'edge-live-multi-execution-plan-v1.1-null-safe',
   generatedAt:now,
   operator:'botemania-es',
   state,
@@ -90,10 +93,10 @@ const out={
   evidence:selected?.evidence||{structurePass:false,economicPass:false,exactStakeKnown:false,sourceFresh:false,withinFreshExecutionWindow:false},
   blockers:selected?.blockers||['NO_TRACKED_LANE_READY'],
   selectedLaneId:selected?.id||null,
-  coverage:{trackedLanes:lanes.length,greenLanes:green.length,yellowLanes:yellow.length,liveFeedRows:Number(network?.coverage?.totalRows||0),uniqueLiveRows:Number(network?.coverage?.uniqueIdentityRows||0),ambiguousLiveRows:Number(network?.coverage?.ambiguousIdentityRows||0),sourceObservedAt:network?.observedAt||null,sourceAgeSeconds},
+  coverage:{trackedLanes:lanes.length,greenLanes:green.length,yellowLanes:yellow.length,liveFeedRows:finiteNumberOrNull(network?.coverage?.totalRows)??0,uniqueLiveRows:finiteNumberOrNull(network?.coverage?.uniqueIdentityRows)??0,ambiguousLiveRows:finiteNumberOrNull(network?.coverage?.ambiguousIdentityRows)??0,sourceObservedAt:network?.observedAt||null,sourceAgeSeconds},
   lanes,
   interpretation:green.length?'At least one lane passed all currently encoded execution gates. Final live recheck remains mandatory before any wager.':yellow.length?'At least one lane is in preparation-only state; no wager is authorized.':'No tracked lane currently passes the full economic and execution gate.',
-  guards:{noAutomaticBetting:true,manualExecutionOnly:true,finalGreenRecheckMandatory:true,noPromotionsRequired:true,noUnverifiedIdentityPromotion:true,noUnverifiedThresholdPromotion:true,realMoneyAllowed:green.length>0}
+  guards:{nullNeverCoercedToZero:true,noAutomaticBetting:true,manualExecutionOnly:true,finalGreenRecheckMandatory:true,noPromotionsRequired:true,noUnverifiedIdentityPromotion:true,noUnverifiedThresholdPromotion:true,realMoneyAllowed:green.length>0}
 };
 fs.mkdirSync('loterias-ai/edge-live/evidence',{recursive:true});
 fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');

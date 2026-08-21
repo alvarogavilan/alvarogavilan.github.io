@@ -1,6 +1,6 @@
 {
-  "version": "edge-live-opportunity-registry-v1.1-progressive-score-research",
-  "generatedAt": "2026-08-20T17:22:00.000Z",
+  "version": "edge-live-opportunity-registry-v1.2-evidence-safe",
+  "generatedAt": "2026-08-21T05:52:06.000Z",
   "operator": "botemania-es",
   "purpose": "STRUCTURAL_NON_PROMOTIONAL_EDGE_MONITORING",
   "mappings": [
@@ -21,17 +21,28 @@
         "observedAt": "2026-08-20T16:18:00.000Z",
         "screenJackpotEUR": 3448.25,
         "feedJackpotEUR": 3448.25,
-        "paytableObserved": "7/5 Jacks or Better Progressive",
-        "notes": "User-visible in-game jackpot matched the public generic WAGER_BET feed exactly to the cent during the same live session. This verifies the counter mapping, not positive EV."
+        "paytableObserved": "7/5-shaped Jacks or Better Progressive",
+        "notes": "User-visible in-game jackpot matched the public generic WAGER_BET feed exactly to the cent during the same live session. This verifies the counter mapping only. The paytable shape is historical manual-screen evidence, not a technically reproduced configuration."
       },
       "economic": {
-        "publishedBaseRtpPctApprox": 95.95,
-        "breakEvenRoyalCredits": 81387,
+        "publishedRtpRangePct": [96.77, 99.54],
+        "publishedRtpScope": "BOTEMANIA_VIDEO_POKER_GAMES_RANGE_NOT_EXACT_VARIANT",
+        "exactVariantRtpVerified": false,
+        "baseRtpForFixedStrategy": null,
+        "pRoyalFlushForFixedStrategy": null,
+        "seedJackpotCredits": null,
+        "breakEvenRoyalCredits": null,
         "breakEvenJackpotEUR": null,
         "creditValueEUR": null,
         "creditValueVerified": false,
-        "thresholdEvidenceClass": "EXTERNAL_MATHEMATICAL_REFERENCE_REQUIRES_UNIT_BINDING",
-        "notes": "The 7/5 progressive break-even is expressed in royal-flush credits. EDGE must bind the exact credit denomination used by the Botemania implementation before converting this threshold to EUR."
+        "paytableVerified": false,
+        "qualifyingStakeVerified": false,
+        "removedUnverifiedInputs": [
+          "publishedBaseRtpPctApprox=95.95",
+          "breakEvenRoyalCredits=81387"
+        ],
+        "thresholdEvidenceClass": "NOT_VERIFIED_FOR_EXACT_BOTEMANIA_CONFIGURATION",
+        "notes": "Botemania publicly states only a 96.77%-99.54% range across its Video Poker games and says rules vary by game. The manual screenshot suggests a 7/5-shaped Jacks or Better progressive table, but exact paytable, progressive trigger, qualifying credits, denomination, fixed-strategy Royal probability, base RTP and reset/seed remain unverified. Break-even must be recalculated from the same exact verified strategy/configuration."
       },
       "execution": {
         "exactStakeKnown": false,
@@ -41,8 +52,9 @@
       },
       "guards": {
         "noPromotion": true,
+        "noExternalThresholdAsSpanishThreshold": true,
         "noThresholdCurrencyAssumption": true,
-        "noBettingUntilExactCreditValueAndStrategy": true
+        "noBettingUntilExactPaytableTriggerCreditValueStakeAndStrategy": true
       }
     },
     {
