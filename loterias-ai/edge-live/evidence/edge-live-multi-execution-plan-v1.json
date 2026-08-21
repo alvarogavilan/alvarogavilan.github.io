@@ -1,6 +1,6 @@
 {
-  "version": "edge-live-multi-execution-plan-v1.1-null-safe",
-  "generatedAt": "2026-08-21T06:09:00.129Z",
+  "version": "edge-live-multi-execution-plan-v1.2-dynamic-freshness",
+  "generatedAt": "2026-08-21T06:19:02.237Z",
   "operator": "botemania-es",
   "state": "NO_EXECUTION",
   "game": {
@@ -79,8 +79,9 @@
     "liveFeedRows": 32,
     "uniqueLiveRows": 14,
     "ambiguousLiveRows": 9,
-    "sourceObservedAt": "2026-08-21T06:08:59.591Z",
-    "sourceAgeSeconds": 0
+    "sourceObservedAt": "2026-08-21T06:19:01.645Z",
+    "sourceAgeSeconds": 0,
+    "stasisMeters": 14
   },
   "lanes": [
     {
@@ -176,10 +177,17 @@
       "executionReady": false,
       "prepareOnly": false,
       "current": {
-        "observedAt": "2026-08-21T06:08:59.591Z",
+        "observedAt": "2026-08-21T06:19:01.645Z",
         "jackpotEUR": 3448.25,
         "sourceAgeSeconds": 0,
-        "sourceFresh": true
+        "sourceFresh": true,
+        "currentStateFresh": false,
+        "dynamicFreshnessVerified": false,
+        "dynamicFreshnessReason": "DYNAMIC_MOVEMENT_NOT_YET_OBSERVED",
+        "stasisSeconds": 173,
+        "lastChangedAt": null,
+        "observationCount": 12,
+        "changeCount": 0
       },
       "economic": {
         "breakEvenJackpotEUR": null,
@@ -215,18 +223,23 @@
         "exactStakeKnown": false,
         "strategyVerified": false,
         "sourceFresh": true,
-        "withinFreshExecutionWindow": true,
+        "dynamicFreshnessVerified": false,
+        "currentStateFresh": false,
+        "withinFreshExecutionWindow": false,
         "structurePass": true,
         "economicPass": false
       },
       "blockers": [
+        "DYNAMIC_METER_FRESHNESS_NOT_VERIFIED",
         "BREAK_EVEN_THRESHOLD_EUR_NOT_VERIFIED"
       ],
       "guards": {
         "noAutomaticBetting": true,
         "manualExecutionOnly": true,
         "noThresholdUnitAssumption": true,
-        "noUnverifiedCounterMapping": true
+        "noUnverifiedCounterMapping": true,
+        "httpFreshnessDoesNotEqualDynamicFreshness": true,
+        "dynamicFreshnessRequiredForExecution": true
       }
     },
     {
@@ -246,10 +259,17 @@
       "executionReady": false,
       "prepareOnly": false,
       "current": {
-        "observedAt": "2026-08-21T06:08:59.591Z",
+        "observedAt": "2026-08-21T06:19:01.645Z",
         "jackpotEUR": 8032.9,
         "sourceAgeSeconds": 0,
-        "sourceFresh": true
+        "sourceFresh": true,
+        "currentStateFresh": false,
+        "dynamicFreshnessVerified": false,
+        "dynamicFreshnessReason": "DYNAMIC_MOVEMENT_NOT_YET_OBSERVED",
+        "stasisSeconds": 173,
+        "lastChangedAt": null,
+        "observationCount": 12,
+        "changeCount": 0
       },
       "economic": {
         "breakEvenJackpotEUR": null,
@@ -281,19 +301,24 @@
         "exactStakeKnown": false,
         "strategyVerified": false,
         "sourceFresh": true,
-        "withinFreshExecutionWindow": true,
+        "dynamicFreshnessVerified": false,
+        "currentStateFresh": false,
+        "withinFreshExecutionWindow": false,
         "structurePass": false,
         "economicPass": false
       },
       "blockers": [
         "LIVE_COUNTER_IDENTITY_NOT_VERIFIED",
+        "DYNAMIC_METER_FRESHNESS_NOT_VERIFIED",
         "BREAK_EVEN_THRESHOLD_EUR_NOT_VERIFIED"
       ],
       "guards": {
         "noAutomaticBetting": true,
         "manualExecutionOnly": true,
         "noThresholdUnitAssumption": true,
-        "noUnverifiedCounterMapping": true
+        "noUnverifiedCounterMapping": true,
+        "httpFreshnessDoesNotEqualDynamicFreshness": true,
+        "dynamicFreshnessRequiredForExecution": true
       }
     },
     {
@@ -313,10 +338,17 @@
       "executionReady": false,
       "prepareOnly": false,
       "current": {
-        "observedAt": "2026-08-21T06:08:59.591Z",
-        "jackpotEUR": 1940.11,
+        "observedAt": "2026-08-21T06:19:01.645Z",
+        "jackpotEUR": 1940.28,
         "sourceAgeSeconds": 0,
-        "sourceFresh": true
+        "sourceFresh": true,
+        "currentStateFresh": true,
+        "dynamicFreshnessVerified": true,
+        "dynamicFreshnessReason": "RECENT_DYNAMIC_MOVEMENT_OBSERVED",
+        "stasisSeconds": 15,
+        "lastChangedAt": "2026-08-21T06:18:45.947Z",
+        "observationCount": 12,
+        "changeCount": 3
       },
       "economic": {
         "breakEvenJackpotEUR": null,
@@ -348,6 +380,8 @@
         "exactStakeKnown": false,
         "strategyVerified": false,
         "sourceFresh": true,
+        "dynamicFreshnessVerified": true,
+        "currentStateFresh": true,
         "withinFreshExecutionWindow": true,
         "structurePass": false,
         "economicPass": false
@@ -360,7 +394,9 @@
         "noAutomaticBetting": true,
         "manualExecutionOnly": true,
         "noThresholdUnitAssumption": true,
-        "noUnverifiedCounterMapping": true
+        "noUnverifiedCounterMapping": true,
+        "httpFreshnessDoesNotEqualDynamicFreshness": true,
+        "dynamicFreshnessRequiredForExecution": true
       }
     },
     {
@@ -380,10 +416,17 @@
       "executionReady": false,
       "prepareOnly": false,
       "current": {
-        "observedAt": "2026-08-21T06:08:59.591Z",
+        "observedAt": "2026-08-21T06:19:01.645Z",
         "jackpotEUR": 1044.92,
         "sourceAgeSeconds": 0,
-        "sourceFresh": true
+        "sourceFresh": true,
+        "currentStateFresh": false,
+        "dynamicFreshnessVerified": false,
+        "dynamicFreshnessReason": "DYNAMIC_MOVEMENT_NOT_YET_OBSERVED",
+        "stasisSeconds": 173,
+        "lastChangedAt": null,
+        "observationCount": 12,
+        "changeCount": 0
       },
       "economic": {
         "breakEvenJackpotEUR": null,
@@ -415,19 +458,24 @@
         "exactStakeKnown": false,
         "strategyVerified": false,
         "sourceFresh": true,
-        "withinFreshExecutionWindow": true,
+        "dynamicFreshnessVerified": false,
+        "currentStateFresh": false,
+        "withinFreshExecutionWindow": false,
         "structurePass": false,
         "economicPass": false
       },
       "blockers": [
         "LIVE_COUNTER_IDENTITY_NOT_VERIFIED",
+        "DYNAMIC_METER_FRESHNESS_NOT_VERIFIED",
         "BREAK_EVEN_THRESHOLD_EUR_NOT_VERIFIED"
       ],
       "guards": {
         "noAutomaticBetting": true,
         "manualExecutionOnly": true,
         "noThresholdUnitAssumption": true,
-        "noUnverifiedCounterMapping": true
+        "noUnverifiedCounterMapping": true,
+        "httpFreshnessDoesNotEqualDynamicFreshness": true,
+        "dynamicFreshnessRequiredForExecution": true
       }
     },
     {
@@ -447,10 +495,17 @@
       "executionReady": false,
       "prepareOnly": false,
       "current": {
-        "observedAt": "2026-08-21T06:08:59.591Z",
+        "observedAt": "2026-08-21T06:19:01.645Z",
         "jackpotEUR": 120773.12,
         "sourceAgeSeconds": 0,
-        "sourceFresh": true
+        "sourceFresh": true,
+        "currentStateFresh": false,
+        "dynamicFreshnessVerified": false,
+        "dynamicFreshnessReason": "DYNAMIC_MOVEMENT_NOT_YET_OBSERVED",
+        "stasisSeconds": 173,
+        "lastChangedAt": null,
+        "observationCount": 12,
+        "changeCount": 0
       },
       "economic": {
         "breakEvenJackpotEUR": null,
@@ -482,25 +537,32 @@
         "exactStakeKnown": false,
         "strategyVerified": false,
         "sourceFresh": true,
-        "withinFreshExecutionWindow": true,
+        "dynamicFreshnessVerified": false,
+        "currentStateFresh": false,
+        "withinFreshExecutionWindow": false,
         "structurePass": false,
         "economicPass": false
       },
       "blockers": [
         "LIVE_COUNTER_IDENTITY_NOT_VERIFIED",
+        "DYNAMIC_METER_FRESHNESS_NOT_VERIFIED",
         "BREAK_EVEN_THRESHOLD_EUR_NOT_VERIFIED"
       ],
       "guards": {
         "noAutomaticBetting": true,
         "manualExecutionOnly": true,
         "noThresholdUnitAssumption": true,
-        "noUnverifiedCounterMapping": true
+        "noUnverifiedCounterMapping": true,
+        "httpFreshnessDoesNotEqualDynamicFreshness": true,
+        "dynamicFreshnessRequiredForExecution": true
       }
     }
   ],
-  "interpretation": "No tracked lane currently passes the full economic and execution gate.",
+  "interpretation": "No tracked lane currently passes the full economic, state-freshness and execution gate.",
   "guards": {
     "nullNeverCoercedToZero": true,
+    "httpFreshnessDoesNotEqualDynamicFreshness": true,
+    "dynamicFreshnessRequiredForExecution": true,
     "noAutomaticBetting": true,
     "manualExecutionOnly": true,
     "finalGreenRecheckMandatory": true,

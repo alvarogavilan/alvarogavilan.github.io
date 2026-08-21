@@ -1,13 +1,14 @@
 {
-  "version": "progressive-score-research-v1.2-null-safe-stable-id",
-  "generatedAt": "2026-08-21T06:09:00.094Z",
+  "version": "progressive-score-research-v1.3-dynamic-freshness",
+  "generatedAt": "2026-08-21T06:19:02.204Z",
   "operator": "botemania-es",
-  "sourceObservedAt": "2026-08-21T06:08:59.591Z",
+  "sourceObservedAt": "2026-08-21T06:19:01.645Z",
   "sourceAgeSeconds": 0,
   "methodology": {
     "scoreFormula": "(Jackpot-Seed)/(AverageHit-Seed)*100",
     "interpretation": "SCORE 100 means current growth equals historical average growth before a hit. SCORE alone is not total RTP.",
     "exactRtpFormula": "baseRtpExcludingJackpotPct + (SCORE/100)*averageJackpotContributionPct",
+    "dynamicFreshnessRule": "HTTP/sample freshness and dynamic-meter freshness are separate. No recent observed movement does not prove stale data, but execution remains blocked until dynamic freshness is positively verified.",
     "researchScenarioRule": "Cross-network/cross-currency scenarios may rank and accelerate investigation but can never authorize wagering.",
     "safety": "Cross-currency/cross-network historical inputs are research-only and cannot authorize wagering."
   },
@@ -27,8 +28,14 @@
       },
       "current": {
         "amountEUR": 8032.9,
-        "observedAt": "2026-08-21T06:08:59.591Z",
-        "sourceAgeSeconds": 0
+        "observedAt": "2026-08-21T06:19:01.645Z",
+        "sourceAgeSeconds": 0,
+        "dynamicFreshnessVerified": false,
+        "dynamicFreshnessReason": "DYNAMIC_MOVEMENT_NOT_YET_OBSERVED",
+        "stasisSeconds": 173,
+        "lastChangedAt": null,
+        "observationCount": 12,
+        "changeCount": 0
       },
       "identity": {
         "verified": false,
@@ -95,6 +102,7 @@
       "researchPriorityScore": 500,
       "blockers": [
         "COUNTER_IDENTITY_NOT_FULLY_VERIFIED",
+        "DYNAMIC_METER_FRESHNESS_NOT_VERIFIED",
         "SCORE_INPUT_UNITS_NOT_COMPARABLE",
         "RTP_COMPONENTS_NOT_VERIFIED",
         "RESEARCH_SCENARIO_CONFIGURATION_NOT_VERIFIED",
@@ -117,8 +125,14 @@
       },
       "current": {
         "amountEUR": 120773.12,
-        "observedAt": "2026-08-21T06:08:59.591Z",
-        "sourceAgeSeconds": 0
+        "observedAt": "2026-08-21T06:19:01.645Z",
+        "sourceAgeSeconds": 0,
+        "dynamicFreshnessVerified": false,
+        "dynamicFreshnessReason": "DYNAMIC_MOVEMENT_NOT_YET_OBSERVED",
+        "stasisSeconds": 173,
+        "lastChangedAt": null,
+        "observationCount": 12,
+        "changeCount": 0
       },
       "identity": {
         "verified": false,
@@ -154,6 +168,7 @@
       "researchPriorityScore": 118.81,
       "blockers": [
         "COUNTER_IDENTITY_NOT_FULLY_VERIFIED",
+        "DYNAMIC_METER_FRESHNESS_NOT_VERIFIED",
         "SCORE_INPUT_UNITS_NOT_COMPARABLE",
         "RTP_COMPONENTS_NOT_VERIFIED",
         "EXACT_STAKE_NOT_VERIFIED",
@@ -175,8 +190,14 @@
       },
       "current": {
         "amountEUR": 3448.25,
-        "observedAt": "2026-08-21T06:08:59.591Z",
-        "sourceAgeSeconds": 0
+        "observedAt": "2026-08-21T06:19:01.645Z",
+        "sourceAgeSeconds": 0,
+        "dynamicFreshnessVerified": false,
+        "dynamicFreshnessReason": "DYNAMIC_MOVEMENT_NOT_YET_OBSERVED",
+        "stasisSeconds": 173,
+        "lastChangedAt": null,
+        "observationCount": 12,
+        "changeCount": 0
       },
       "identity": {
         "verified": true,
@@ -214,6 +235,7 @@
       },
       "researchPriorityScore": 0,
       "blockers": [
+        "DYNAMIC_METER_FRESHNESS_NOT_VERIFIED",
         "SCORE_INPUT_UNITS_NOT_COMPARABLE",
         "RTP_COMPONENTS_NOT_VERIFIED",
         "EXACT_STAKE_NOT_VERIFIED",
@@ -234,9 +256,15 @@
         "key": "generic:bouncy_bubbles_id"
       },
       "current": {
-        "amountEUR": 1940.11,
-        "observedAt": "2026-08-21T06:08:59.591Z",
-        "sourceAgeSeconds": 0
+        "amountEUR": 1940.28,
+        "observedAt": "2026-08-21T06:19:01.645Z",
+        "sourceAgeSeconds": 0,
+        "dynamicFreshnessVerified": true,
+        "dynamicFreshnessReason": "RECENT_DYNAMIC_MOVEMENT_OBSERVED",
+        "stasisSeconds": 15,
+        "lastChangedAt": "2026-08-21T06:18:45.947Z",
+        "observationCount": 12,
+        "changeCount": 3
       },
       "identity": {
         "verified": false,
@@ -293,8 +321,14 @@
       },
       "current": {
         "amountEUR": 1044.92,
-        "observedAt": "2026-08-21T06:08:59.591Z",
-        "sourceAgeSeconds": 0
+        "observedAt": "2026-08-21T06:19:01.645Z",
+        "sourceAgeSeconds": 0,
+        "dynamicFreshnessVerified": false,
+        "dynamicFreshnessReason": "DYNAMIC_MOVEMENT_NOT_YET_OBSERVED",
+        "stasisSeconds": 173,
+        "lastChangedAt": null,
+        "observationCount": 12,
+        "changeCount": 0
       },
       "identity": {
         "verified": false,
@@ -330,6 +364,7 @@
       "researchPriorityScore": 0,
       "blockers": [
         "COUNTER_IDENTITY_NOT_FULLY_VERIFIED",
+        "DYNAMIC_METER_FRESHNESS_NOT_VERIFIED",
         "SCORE_INPUT_UNITS_NOT_COMPARABLE",
         "RTP_COMPONENTS_NOT_VERIFIED",
         "EXACT_STAKE_NOT_VERIFIED",
@@ -342,6 +377,7 @@
     "exactScoreRows": 0,
     "exactEconomicPositiveRows": 0,
     "executionPromotableRows": 0,
+    "dynamicallyFreshRows": 1,
     "nearOrAboveResearchThresholdRows": 1
   },
   "nearResearchThreshold": [
@@ -360,6 +396,8 @@
     "nullNeverCoercedToZero": true,
     "stableExactIdEventsOnly": true,
     "identityClassDoesNotEqualConfirmedReset": true,
+    "httpFreshnessDoesNotEqualDynamicFreshness": true,
+    "dynamicFreshnessRequiredForExecution": true,
     "noAutomaticBetting": true,
     "noCrossCurrencyScoreForExecution": true,
     "noScoreAloneAsEvProof": true,
