@@ -2,11 +2,22 @@ name: Loterias AI Botemania Progressive Deep Rank V1
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'loterias-ai/casino/archive/botemania-rtp-pct-parser-v1.mjs'
+      - 'loterias-ai/casino/archive/botemania-rtp-pct-backfill-v1.mjs'
+      - 'loterias-ai/casino/archive/botemania-all-games-census-v1.mjs'
+      - 'loterias-ai/tests/rtp-pct-parser-v1.test.mjs'
+      - '.github/workflows/loterias-ai-botemania-progressive-deep-rank-v1.yml'
   push:
     branches: [main]
     paths:
       - 'loterias-ai/casino/archive/botemania-progressive-network-map-v1.mjs'
       - 'loterias-ai/casino/archive/botemania-zero-reset-priority-v1.mjs'
+      - 'loterias-ai/casino/archive/botemania-rtp-pct-parser-v1.mjs'
+      - 'loterias-ai/casino/archive/botemania-rtp-pct-backfill-v1.mjs'
+      - 'loterias-ai/casino/archive/botemania-all-games-census-v1.mjs'
+      - 'loterias-ai/casino/archive/evidence/botemania-all-games-census-v1.json'
       - 'loterias-ai/casino/jackpots/botemania-zero-reset-live-id-probe-v1.mjs'
       - 'loterias-ai/casino/jackpots/evidence/botemania-headless-jackpots-public-probe-v1.json'
       - 'loterias-ai/casino/jackpots/botemania-irish-riches-jpk-current-screen-v1.mjs'
@@ -18,7 +29,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: loterias-ai-botemania-progressive-deep-rank-v1
+  group: loterias-ai-botemania-progressive-deep-rank-v1-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -32,21 +43,51 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+      - name: RTP parser guards
+        run: node loterias-ai/tests/rtp-pct-parser-v1.test.mjs
+      - name: Backfill already-fetched RTP contexts deterministically
+        run: node loterias-ai/casino/archive/botemania-rtp-pct-backfill-v1.mjs
+      - name: Verify narrowly scoped backfill
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const c=JSON.parse(fs.readFileSync('loterias-ai/casino/archive/evidence/botemania-all-games-census-v1.json','utf8'));
+          const g=(c.games||[]).find(x=>x.slug==='la-isla-de-tiki-tropico-dorado');
+          if(!g) throw new Error('Tiki Tropico game missing from committed census');
+          if(!Array.isArray(g.rtpPcts)||!g.rtpPcts.includes(95.39)||!g.rtpPcts.includes(0.38)) throw new Error(`Tiki Tropico RTP backfill incorrect: ${JSON.stringify(g?.rtpPcts)}`);
+          console.log(JSON.stringify({slug:g.slug,rtpPcts:g.rtpPcts,totalGames:(c.games||[]).length},null,2));
+          NODE
       - name: Map progressive networks
         run: node loterias-ai/casino/archive/botemania-progressive-network-map-v1.mjs
       - name: Rank zero-reset progressives
         run: node loterias-ai/casino/archive/botemania-zero-reset-priority-v1.mjs
+      - name: Verify discovery ranking only
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const x=JSON.parse(fs.readFileSync('loterias-ai/casino/archive/evidence/botemania-zero-reset-priority-v1.json','utf8'));
+          const t=(x.ranked||[]).find(g=>g.slug==='la-isla-de-tiki-tropico-dorado');
+          if(!t) throw new Error('Tiki Tropico missing from zero-reset ranking');
+          if(t.baseRtpPct!==95.39) throw new Error(`unexpected base RTP ${t.baseRtpPct}`);
+          if(t.publishedBasePlusKnownContributionPct!==95.77) throw new Error(`unexpected published-known total ${t.publishedBasePlusKnownContributionPct}`);
+          if(x?.guards?.noBetting!==true||x?.guards?.realMoneyAllowed!==false) throw new Error('ranking must remain discovery-only / no betting');
+          console.log(JSON.stringify({best:x.summary?.bestByPublishedBasePlusKnownContribution,tikiTropico:t,guards:x.guards},null,2));
+          NODE
       - name: Probe live IDs for zero-reset progressives
         run: node loterias-ai/casino/jackpots/botemania-zero-reset-live-id-probe-v1.mjs
       - name: Screen Irish Riches conservatively
         run: node loterias-ai/casino/jackpots/botemania-irish-riches-jpk-current-screen-v1.mjs
       - name: Persist evidence
+        if: github.event_name != 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add \
+            loterias-ai/casino/archive/evidence/botemania-all-games-census-v1.json \
             loterias-ai/casino/archive/evidence/botemania-progressive-network-map-v1.json \
             loterias-ai/casino/archive/evidence/botemania-zero-reset-priority-v1.json \
             loterias-ai/casino/jackpots/evidence/botemania-zero-reset-live-id-probe-v1.json \
