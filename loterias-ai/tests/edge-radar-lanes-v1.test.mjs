@@ -3,6 +3,7 @@ import {
   laneStatus, pickTopLane, buildRadarCards, radarSummary, unmappedLiveRows,
   laneAmountEUR, laneDistanceToThresholdEUR, laneStakeDisplayEUR,
   laneIdentityVerified, laneStakeKnown, laneStrategyVerified,
+  laneIsKilled, laneKilledReason, laneAliasOf,
 } from '../edge-live/edge-radar-lanes-v1.mjs';
 
 function lane(overrides) {
@@ -133,6 +134,27 @@ function lane(overrides) {
   assert.equal(unmapped.length, 2);
   const keys = unmapped.map((x) => x.key).sort();
   assert.deepEqual(keys, ['generic:classicwildsprogressive', 'generic:progressivealice1']);
+}
+
+// (g) a killed lane exposes its reason/alias so EDGE never renders it as
+// generic INVESTIGACIÓN and never silently drops it from the radar.
+{
+  const active = lane({ id: 'active', lifecycle: { status: null, killed: false } });
+  const killed = lane({
+    id: 'tiki', lifecycle: { status: 'KILLED_NOT_CURRENTLY_ACTIONABLE', killed: true, reason: 'JACKPOT_HIT_PROBABILITY_NOT_PUBLICLY_DISCLOSED', aliasOf: 'generic:progressivealice1' },
+  });
+  assert.equal(laneIsKilled(active), false);
+  assert.equal(laneKilledReason(active), null);
+  assert.equal(laneAliasOf(active), null);
+  assert.equal(laneIsKilled(killed), true);
+  assert.equal(laneKilledReason(killed), 'JACKPOT_HIT_PROBABILITY_NOT_PUBLICLY_DISCLOSED');
+  assert.equal(laneAliasOf(killed), 'generic:progressivealice1');
+
+  const cards = buildRadarCards([active, killed]);
+  assert.equal(cards.find((c) => c.id === 'tiki').killed, true);
+  assert.equal(cards.find((c) => c.id === 'active').killed, false);
+  // Killed lanes still render - never filtered out of the radar.
+  assert.equal(cards.length, 2);
 }
 
 console.log('edge-radar-lanes-v1.test.mjs: PASS');

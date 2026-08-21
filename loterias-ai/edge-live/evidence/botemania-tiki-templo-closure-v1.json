@@ -1,0 +1,78 @@
+{
+  "version": "botemania-tiki-templo-closure-v1",
+  "laneId": "botemania-tiki-templo-progressive",
+  "monitorKey": "generic:tikitemple2_1",
+  "aliasClosure": {
+    "comparable": true,
+    "fieldsCompared": [
+      "currentAmountEUR",
+      "previousAmountEUR",
+      "firstSeenAt",
+      "lastObservedAt",
+      "lastChangedAt",
+      "observationCount",
+      "changeCount"
+    ],
+    "mismatches": [],
+    "identicalAcrossAllFields": true,
+    "observationCount": 60,
+    "changeCount": 6,
+    "verdict": "SAME_POOL_ALIAS_HIGH_CONFIDENCE",
+    "reason": "Identical across all 7 tracked fields over 60 observations and 6 independent change events; two independent progressive meters matching to the cent across multiple independent change events by chance has negligible probability."
+  },
+  "jackpotMechanism": {
+    "sourceField": "contentfulGame.howToPlay (public GraphQL, botemania.es)",
+    "rawExcerptPresent": true,
+    "mentionsChestPickBonus": true,
+    "mentionsProbabilityProportionalToStake": true,
+    "mustHitByOrMustBeWonByLanguageFound": false
+  },
+  "identityClosure": {
+    "feedKey": "generic:tikitemple2_1",
+    "aliasCandidateKey": "generic:progressivealice1",
+    "graphqlGameIdMatchesSlug": true,
+    "providerIdRecovered": true,
+    "providerIds": [
+      "roxor-gaming"
+    ],
+    "feedIdLiteralFoundInHtml": false,
+    "verified": false,
+    "reason": "GraphQL game record and RTP/contribution text match Tiki Templo exactly (id, title, RTP range, contribution %), and providerId=roxor-gaming is recovered, but the live feed id string is never literally present in the public page/GraphQL payload - Botemania resolves the counter mapping server-side, not via any public identifier. Public sources are exhausted for a stronger cross-match than this.",
+    "manualNoBetVerificationInstruction": {
+      "steps": [
+        "Abrir Tiki Templo en Botemania España. No hacer ningún giro.",
+        "Sin apostar, hacer UNA sola captura de pantalla que muestre a la vez: nombre exacto del juego, el importe del Bote Progresivo visible en pantalla, y la denominación/apuesta seleccionada si aparece en esa misma pantalla.",
+        "Cruzar el importe mostrado en la captura, al céntimo, contra el valor simultáneo de generic:tikitemple2_1 en la evidencia en vivo (misma ventana de tiempo)."
+      ],
+      "prohibitedActions": [
+        "No realizar ningún giro.",
+        "No depositar ni apostar para verificar identidad."
+      ],
+      "upgradesIdentityTo": "MANUAL_SCREENSHOT_LIVE_AMOUNT_CROSS_MATCH (same evidence class already used for Ultimate Video Poker / generic:WAGER_BET)"
+    }
+  },
+  "economicClosure": {
+    "blockerId": "JACKPOT_HIT_PROBABILITY_NOT_PUBLICLY_DISCLOSED",
+    "explanation": "Tiki Templo's progressive is a mystery chest-pick bonus (3 Bono symbols trigger a bonus phase; pick 1 of 9 heads for a key, open 1 of 5 chests, one of which may hold the jackpot), with win probability described only qualitatively as \"proportional to stake\". No exact per-spin probability of landing the jackpot chest (pHit), no bonus-trigger frequency, and no Must-Hit-By/Must-Be-Won-By cap are published anywhere in the public rules text. The same EV structure already built for progressive video poker (breakEvenJackpotEUR = stakePerSpin * (1-baseRtp) / pHit) applies structurally, but pHit itself is the one input this investigation could not recover from any public source.",
+    "publicSourcesExhausted": [
+      "contentfulGame GraphQL howToPlay text",
+      "pageOrGame GraphQL howToPlay text",
+      "direct rules-page HTML fetch (PR #214 and this closure)"
+    ],
+    "empiricalPathBlocked": "No local reset/hit event has been prospectively observed yet (the ledger shows only increments across all recorded observations so far), so no empirical estimate of pHit exists either. Estimating pHit from real-money play is explicitly forbidden.",
+    "mustHitByCapDisclosed": false,
+    "reactivationCriteria": [
+      "A public technical/provider document (Roxor Gaming or Bally-family paytable/odds disclosure) surfaces the exact chest/bonus probability.",
+      "A clean, stable-identity local reset event is prospectively observed with enough surrounding spin/time data to bound pHit empirically."
+    ]
+  },
+  "verdict": "KILLED_NOT_CURRENTLY_ACTIONABLE",
+  "verdictReason": "Economics cannot close: the one missing input (per-spin probability of landing the progressive jackpot chest) is not publicly disclosed and has no safe empirical substitute without real-money play. This alone is sufficient to kill execution-grade closure regardless of the alias/identity outcome above.",
+  "guards": {
+    "noBetting": true,
+    "noFabricatedProbability": true,
+    "noExternalMechanismSubstitutedAsBotemaniaFact": true,
+    "realMoneyAllowed": false
+  },
+  "generatedAt": "2026-08-21T08:29:56.289Z"
+}
