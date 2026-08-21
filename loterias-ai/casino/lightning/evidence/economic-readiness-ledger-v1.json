@@ -19449,34 +19449,101 @@
     "realStakeEUR": 0
   },
   "jackpotKingMbwbInferenceV1": {
-    "generatedAt": "2026-08-21T08:49:09.529Z",
+    "generatedAt": "2026-08-21T09:01:40.486Z",
     "progress": {
-      "validFutureObservations": 0,
-      "cleanHardResets": 0,
-      "minimumHardResetsBeforeHazardDiscovery": 10,
-      "minimumIndependentHardResetsBeforeEconomicReplication": 20,
-      "thresholdInferenceExploratory": false,
-      "hazardDiscoveryAllowed": false,
-      "economicReplicationAllowed": false
+      "cleanHardResetsTotal": 0,
+      "cleanHardResetsByTier": {
+        "ROYAL": 0,
+        "REGAL": 0
+      },
+      "minimumCleanResetsBeforeHazardDiscovery": 10,
+      "hazardDiscoveryAllowedByTier": {
+        "ROYAL": false,
+        "REGAL": false
+      },
+      "pooledTierHazardFitForbidden": true
     },
-    "uniformHiddenTriggerResearch": null,
+    "exactSpainMbwb": {
+      "verified": true,
+      "capEUR": {
+        "ROYAL": 4078.97,
+        "REGAL": 40789.77
+      },
+      "source": "loterias-ai/casino/jackpots/evidence/botemania-jpk-reset-reconstructor-v1.json"
+    },
     "potReadability": {
-      "currentSourceReadable": false,
-      "currentNetworkPotEUR": null,
-      "lastValidCorroboratedPotEUR": 143691.07,
-      "lastValidCorroboratedObservedAt": "2026-08-19T12:17:08.674Z",
-      "stalePotNeverPresentedAsCurrent": true
+      "sourceReadable": true,
+      "sourceObservedAt": "2026-08-21T08:54:00.962Z",
+      "sourceAgeSeconds": 459,
+      "researchFresh": true,
+      "executionFresh": false,
+      "potsEUR": {
+        "JACKPOT_KING": 128414.91,
+        "REGAL": 15573.85,
+        "ROYAL": 1742.42
+      },
+      "stalePotNeverPresentedAsExecutionCurrent": true
     },
     "nearCapScreen": {
-      "current": {
-        "royal": null,
-        "regal": null
-      },
-      "lastValidReference": {
-        "observedAt": "2026-08-19T12:17:08.674Z",
-        "royal": null,
-        "regal": null,
-        "historicalReferenceOnly": true
+      "current": null,
+      "lastObservedReference": {
+        "observedAt": "2026-08-21T08:54:00.962Z",
+        "sourceAgeSeconds": 459,
+        "ROYAL": {
+          "capEUR": 4078.97,
+          "potEUR": 1742.42,
+          "fractionOfCap": 0.4271715653706696,
+          "percentOfCap": 42.717156537066955,
+          "distanceToCapEUR": 2336.55,
+          "researchOnlyZones": {
+            "optimisticAllMeter": {
+              "fraction": 0.9221311475409837,
+              "targetEUR": 3761.35,
+              "distanceEUR": 2018.93,
+              "inside": false
+            },
+            "halfMeter": {
+              "fraction": 0.9594882729211087,
+              "targetEUR": 3913.72,
+              "distanceEUR": 2171.3,
+              "inside": false
+            },
+            "equalThreeWay": {
+              "fraction": 0.9726224783861671,
+              "targetEUR": 3967.3,
+              "distanceEUR": 2224.88,
+              "inside": false
+            }
+          }
+        },
+        "REGAL": {
+          "capEUR": 40789.77,
+          "potEUR": 15573.85,
+          "fractionOfCap": 0.38180774248052884,
+          "percentOfCap": 38.180774248052884,
+          "distanceToCapEUR": 25215.92,
+          "researchOnlyZones": {
+            "optimisticAllMeter": {
+              "fraction": 0.9221311475409837,
+              "targetEUR": 37613.52,
+              "distanceEUR": 22039.67,
+              "inside": false
+            },
+            "halfMeter": {
+              "fraction": 0.9594882729211087,
+              "targetEUR": 39137.31,
+              "distanceEUR": 23563.46,
+              "inside": false
+            },
+            "equalThreeWay": {
+              "fraction": 0.9726224783861671,
+              "targetEUR": 39673.05,
+              "distanceEUR": 24099.2,
+              "inside": false
+            }
+          }
+        },
+        "historicalOrResearchReferenceOnly": true
       },
       "researchThresholdFractions": {
         "optimisticAllMeter": 0.9221311475409837,
@@ -19485,14 +19552,16 @@
       }
     },
     "decision": {
+      "exactSpainMbwbKnown": true,
       "nearCapEntryThresholdKnown": false,
       "positiveEVKnown": false,
       "realMoneyAllowed": false,
-      "reason": "EXACT_SPAIN_MBWB_NOT_YET_RESOLVED"
+      "reason": "NO_CLEAN_SINGLE_TIER_RESETS_YET"
     },
     "guards": {
-      "futureOnlyEvidence": true,
-      "legacyResetLabelsExcluded": true,
+      "useSameBotemaniaLiveFeedAsEdge": true,
+      "exactSpainMbwbFromOperatorUiReconstructorOnly": true,
+      "noRoyalRegalHazardPooling": true,
       "uniformModelNeverPromotesAlone": true,
       "noCrossMarketThresholdSubstitution": true,
       "stalePotNeverPromotes": true,
