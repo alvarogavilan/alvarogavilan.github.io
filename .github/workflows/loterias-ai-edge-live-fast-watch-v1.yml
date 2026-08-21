@@ -1,4 +1,4 @@
-# verification trigger 2026-08-20
+# verification trigger 2026-08-21
 name: Loterias AI Edge Live Fast Watch V1
 
 on:
@@ -8,11 +8,15 @@ on:
     paths:
       - 'loterias-ai/edge-live/botemania-fast-meter-sample-v1.mjs'
       - 'loterias-ai/edge-live/botemania-all-network-fast-meter-sample-v1.mjs'
+      - 'loterias-ai/edge-live/meter-stasis-core-v1.mjs'
+      - 'loterias-ai/edge-live/meter-stasis-tracker-v1.mjs'
       - 'loterias-ai/edge-live/progressive-score-research-v1.mjs'
       - 'loterias-ai/edge-live/edge-live-multi-execution-plan-v1.mjs'
       - 'loterias-ai/edge-live/opportunity-registry-v1.json'
       - 'loterias-ai/edge-live/telegram-edge-alert-v1.mjs'
       - 'loterias-ai/edge-live/edge-live-execution-plan-v1.mjs'
+      - 'loterias-ai/casino/jackpots/generic-jackpot-identity-v2.mjs'
+      - 'loterias-ai/casino/jackpots/botemania-generic-fast-reset-ledger-v1.mjs'
       - 'loterias-ai/casino/botemania-global-economic-gate-v1.mjs'
       - '.github/workflows/loterias-ai-edge-live-fast-watch-v1.yml'
   schedule:
@@ -50,6 +54,8 @@ jobs:
             echo "EDGE LIVE casino sample $i/12 at $(date -u +%FT%TZ)"
             if node loterias-ai/edge-live/botemania-all-network-fast-meter-sample-v1.mjs; then
               successful=$((successful+1))
+              node loterias-ai/casino/jackpots/botemania-generic-fast-reset-ledger-v1.mjs || echo 'WARN: generic stable-ID ledger refresh failed closed'
+              node loterias-ai/edge-live/meter-stasis-tracker-v1.mjs || echo 'WARN: meter stasis refresh failed closed'
               node loterias-ai/edge-live/botemania-fast-meter-sample-v1.mjs || echo 'WARN: JPK auxiliary meter failed; all-network state retained'
               node loterias-ai/edge-live/progressive-score-research-v1.mjs || echo 'WARN: SCORE refresh failed; retaining last valid output'
               node loterias-ai/edge-live/edge-live-multi-execution-plan-v1.mjs || echo 'WARN: multi-plan refresh failed closed'
@@ -75,13 +81,14 @@ jobs:
           JPK_LEDGER=loterias-ai/casino/jackpots/evidence/botemania-jpk-fast-reset-ledger-v1.json
           GENERIC_LEDGER=loterias-ai/casino/jackpots/evidence/botemania-generic-fast-reset-ledger-v1.json
           ALL_NETWORK=loterias-ai/edge-live/evidence/botemania-all-network-live-state-v1.json
+          STASIS=loterias-ai/edge-live/evidence/meter-stasis-ledger-v1.json
           SCORE=loterias-ai/edge-live/evidence/progressive-score-research-v1.json
           PLAN=loterias-ai/edge-live/evidence/edge-live-execution-plan-v1.json
           MULTI_PLAN=loterias-ai/edge-live/evidence/edge-live-multi-execution-plan-v1.json
           GLOBAL_GATE=loterias-ai/casino/evidence/botemania-global-economic-gate-v1.json
           mkdir -p /tmp/edge-live-fast
           copied=0
-          for f in "$STATE" "$DIAG" "$JPK_LEDGER" "$GENERIC_LEDGER" "$ALL_NETWORK" "$SCORE" "$PLAN" "$MULTI_PLAN" "$GLOBAL_GATE"; do
+          for f in "$STATE" "$DIAG" "$JPK_LEDGER" "$GENERIC_LEDGER" "$ALL_NETWORK" "$STASIS" "$SCORE" "$PLAN" "$MULTI_PLAN" "$GLOBAL_GATE"; do
             if [ -f "$f" ]; then cp "$f" "/tmp/edge-live-fast/$(basename "$f")"; copied=1; fi
           done
           if [ "$copied" -eq 0 ]; then exit 1; fi
@@ -95,11 +102,12 @@ jobs:
           [ ! -f /tmp/edge-live-fast/botemania-jpk-fast-reset-ledger-v1.json ] || cp /tmp/edge-live-fast/botemania-jpk-fast-reset-ledger-v1.json "$JPK_LEDGER"
           [ ! -f /tmp/edge-live-fast/botemania-generic-fast-reset-ledger-v1.json ] || cp /tmp/edge-live-fast/botemania-generic-fast-reset-ledger-v1.json "$GENERIC_LEDGER"
           [ ! -f /tmp/edge-live-fast/botemania-all-network-live-state-v1.json ] || cp /tmp/edge-live-fast/botemania-all-network-live-state-v1.json "$ALL_NETWORK"
+          [ ! -f /tmp/edge-live-fast/meter-stasis-ledger-v1.json ] || cp /tmp/edge-live-fast/meter-stasis-ledger-v1.json "$STASIS"
           [ ! -f /tmp/edge-live-fast/progressive-score-research-v1.json ] || cp /tmp/edge-live-fast/progressive-score-research-v1.json "$SCORE"
           [ ! -f /tmp/edge-live-fast/edge-live-execution-plan-v1.json ] || cp /tmp/edge-live-fast/edge-live-execution-plan-v1.json "$PLAN"
           [ ! -f /tmp/edge-live-fast/edge-live-multi-execution-plan-v1.json ] || cp /tmp/edge-live-fast/edge-live-multi-execution-plan-v1.json "$MULTI_PLAN"
           [ ! -f /tmp/edge-live-fast/botemania-global-economic-gate-v1.json ] || cp /tmp/edge-live-fast/botemania-global-economic-gate-v1.json "$GLOBAL_GATE"
-          git add -- "$STATE" "$DIAG" "$JPK_LEDGER" "$GENERIC_LEDGER" "$ALL_NETWORK" "$SCORE" "$PLAN" "$MULTI_PLAN" "$GLOBAL_GATE" 2>/dev/null || true
+          git add -- "$STATE" "$DIAG" "$JPK_LEDGER" "$GENERIC_LEDGER" "$ALL_NETWORK" "$STASIS" "$SCORE" "$PLAN" "$MULTI_PLAN" "$GLOBAL_GATE" 2>/dev/null || true
           if git diff --cached --quiet; then
             echo 'No state change to persist'
             exit 0
