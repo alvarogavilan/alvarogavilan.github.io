@@ -1,0 +1,98 @@
+name: Loterias AI Lightning RNG V3 Preflight
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - 'Loterias AI Lightning Audit Sync'
+      - 'Loterias AI Lightning Physical RNG V3'
+    types: [completed]
+  schedule:
+    - cron: '5 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/loterias-ai-lightning-rng-v3-preflight.yml'
+      - 'loterias-ai/casino/lightning/evidence/physical-rng-prospective-v2-status.json'
+      - 'loterias-ai/casino/lightning/evidence/authoritative-segment-v2-status.json'
+      - 'loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-freeze.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-lightning-rng-v3-preflight-${{ github.event_name }}
+  cancel-in-progress: false
+
+jobs:
+  checkpoint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Persist deterministic preflight before RNG V3 evaluator
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          out='loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-preflight.json'
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+
+            node --input-type=module <<'NODE'
+            import fs from 'node:fs';
+            const root='loterias-ai/casino/lightning/evidence';
+            const out=`${root}/physical-rng-prospective-v3-preflight.json`;
+            const read=(p)=>JSON.parse(fs.readFileSync(p,'utf8'));
+            const v2=read(`${root}/physical-rng-prospective-v2-status.json`);
+            const seg=read(`${root}/authoritative-segment-v2-status.json`);
+            const freeze=read(`${root}/physical-rng-prospective-v3-freeze.json`);
+            const rows=Number(seg.progress?.rows||0);
+            const boundaryFinalized=v2.progress?.roundsUsedForV2===5000&&v2.final?.boundaryRounds===5000;
+            const postBoundaryRows=boundaryFinalized?Math.max(0,rows-5000):0;
+            const payload={
+              version:'physical-rng-prospective-v3-preflight-v1',
+              status:boundaryFinalized?'READY_FOR_V3_EVALUATOR':'WAITING_FOR_FINALIZED_V2_BOUNDARY',
+              sourceSegment:'authoritative-v2',
+              v2:{boundaryFinalized,boundaryRounds:Number(v2.final?.boundaryRounds||0),interpretation:v2.final?.interpretation||null},
+              v3Freeze:{version:freeze.version,anchorBoundaryRounds:Number(freeze.activation?.anchorBoundaryRounds||0),preRegisteredBeforeV2Final:freeze.activation?.preRegisteredBeforeV2Final===true,activationIndependentOfV2Outcome:freeze.activation?.activationIndependentOfV2Outcome===true},
+              progress:{activeSegmentRows:rows,expectedPostV2BoundaryRows:postBoundaryRows},
+              guards:{noNetwork:true,noTrainingPromotion:true,noInterimStatistics:true,claimAllowed:false,realMoneyAllowed:false}
+            };
+            if(payload.v3Freeze.version!=='physical-rng-prospective-v3-freeze-v1'||payload.v3Freeze.anchorBoundaryRounds!==5000||payload.v3Freeze.preRegisteredBeforeV2Final!==true||payload.v3Freeze.activationIndependentOfV2Outcome!==true)throw Error('RNG V3 freeze custody drift');
+            let prior=null;
+            if(fs.existsSync(out)){
+              prior=read(out);
+              delete prior.generatedAt;
+            }
+            if(prior&&JSON.stringify(prior)===JSON.stringify(payload)){
+              console.log(JSON.stringify({changed:false,...payload.progress,status:payload.status}));
+              process.exit(0);
+            }
+            fs.writeFileSync(out,JSON.stringify({...payload,generatedAt:new Date().toISOString()},null,2)+'\n');
+            console.log(JSON.stringify({changed:true,...payload.progress,status:payload.status}));
+            NODE
+
+            git add "$out"
+            if git diff --cached --quiet; then
+              echo 'RNG V3 preflight already synchronized.'
+              exit 0
+            fi
+            git commit -m 'qa(lightning): persist RNG v3 preflight checkpoint'
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "main moved during RNG v3 preflight attempt ${attempt}; recomputing"
+            sleep $((attempt * 2))
+          done
+
+          echo 'Unable to persist RNG V3 preflight after five recomputations.' >&2
+          exit 1
