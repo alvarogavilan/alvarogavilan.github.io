@@ -1,15 +1,17 @@
 {
-  "version": "botemania-jpk-live-gate-v1.4",
-  "generatedAt": "2026-08-20T06:49:16.921Z",
+  "version": "botemania-jpk-live-gate-v1.6-all-network-live-source",
+  "generatedAt": "2026-08-21T12:46:06.607Z",
   "operator": "botemania-es",
   "state": "BELOW_RESEARCH_BAND",
   "current": {
-    "observedAt": "2026-08-20T06:48:55.020Z",
+    "observedAt": "2026-08-21T12:46:05.934Z",
+    "sourceClass": "ALL_NETWORK_BLUEPRINT_EXACT_IDS",
+    "sourceAgeSeconds": 0,
     "sourceFresh": true,
     "potsEUR": {
-      "JACKPOT_KING": 128086.24,
-      "REGAL": 15501.89,
-      "ROYAL": 1689.19
+      "JACKPOT_KING": 128433.13,
+      "REGAL": 15579.83,
+      "ROYAL": 1748.4
     },
     "recentDirectMeterGrowthPerHourEUR": {
       "JACKPOT_KING": 11.7803,
@@ -17,21 +19,22 @@
       "ROYAL": 3.8712
     },
     "normalizedSeedToCapHypothesis": {
-      "ROYAL": 0.3322715753415089,
-      "REGAL": 0.29343273231428985
+      "ROYAL": 0.3488154413141211,
+      "REGAL": 0.29561044957818955
     },
     "modelScreen": {
+      "stateCompatible": false,
       "pass": false,
       "royalOnlyPass": false,
       "regalOnlyPass": false,
-      "worstConservativeRtp": 0.933201,
-      "bestConservativeRtp": 0.943083
+      "worstConservativeRtp": null,
+      "bestConservativeRtp": null
     }
   },
   "researchBand": {
     "hypothesisOnly": false,
     "etaMethod": "LINEAR_RECENT_DIRECT_METER_GROWTH_NO_RESET_EXTRAPOLATION_ONLY",
-    "etaWarning": "Not a prediction. Any reset, traffic change, sampling delay, or false MBWB hypothesis invalidates the ETA.",
+    "etaWarning": "Not a prediction. Any reset, traffic change, stale rate input or sampling delay invalidates the ETA.",
     "routes": {
       "BOTH_HIGH": {
         "thresholdNormalized": 0.9093,
@@ -42,8 +45,8 @@
         "active": false,
         "creditPolicy": "ROYAL_PLUS_REGAL_ONLY_KING_ZERO",
         "etaNoReset": {
-          "hours": 5693.78,
-          "days": 237.24
+          "hours": 5673.64,
+          "days": 236.4
         }
       },
       "ROYAL_ONLY": {
@@ -52,8 +55,8 @@
         "active": false,
         "creditPolicy": "ROYAL_ONLY_ZERO_CREDIT_TO_REGAL_AND_KING",
         "etaNoReset": {
-          "hours": 565.09,
-          "days": 23.55
+          "hours": 549.79,
+          "days": 22.91
         }
       },
       "REGAL_ONLY": {
@@ -62,8 +65,8 @@
         "active": false,
         "creditPolicy": "REGAL_ONLY_ZERO_CREDIT_TO_ROYAL_AND_KING",
         "etaNoReset": {
-          "hours": 6009.96,
-          "days": 250.42
+          "hours": 5989.83,
+          "days": 249.58
         }
       }
     },
@@ -71,10 +74,13 @@
   },
   "evidence": {
     "exactSpainMbwbKnown": true,
+    "qualitativeHazardDirectionKnown": false,
+    "hazardDirection": "INCREASES_WITH_JACKPOT_VALUE",
     "hazardFitReady": false,
     "exactHazardKnown": false,
     "cleanResets": 0,
     "minimumResetsForFit": 10,
+    "modelStateCompatible": false,
     "canalBingoSharedPotCorroborated": false,
     "canalBingoResolvedVenture": null,
     "monopolyCasinoVentureResolved": false,
@@ -86,11 +92,15 @@
     "economicPromotionCandidate": false,
     "realMoneyAllowed": false,
     "automaticBettingAllowed": false,
-    "reason": "BELOW_CONSERVATIVE_RESEARCH_BAND"
+    "reason": "CURRENT_JPK_MODEL_SCREEN_NOT_REFRESHED_FOR_LIVE_POTS"
   },
   "guards": {
+    "allNetworkExactBlueprintIdsPreferred": true,
+    "sourceAgeRecomputed": true,
+    "staleEconomicModelNeverPromotes": true,
     "hypothesisNeverPromotes": true,
     "noCrossMarketCapAsFact": true,
+    "qualitativeHazardNeverEqualsExactHazard": true,
     "fitReadyNeverEqualsExactHazard": true,
     "individualHighPotRoutesGiveZeroOtherJackpotCredit": true,
     "etaNeverPromotesGate": true,
