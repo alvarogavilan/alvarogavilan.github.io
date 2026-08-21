@@ -1,9 +1,9 @@
 {
   "version": "botemania-generic-fast-reset-ledger-v2.1-independent-reset-confirmation",
-  "generatedAt": "2026-08-21T10:42:08.794Z",
+  "generatedAt": "2026-08-21T10:48:47.199Z",
   "operator": "botemania-es",
   "source": "botemania-all-network-live-state-v1.json",
-  "sourceFeedGeneratedAt": "2026-08-21T10:15:31.717Z",
+  "sourceFeedGeneratedAt": "2026-08-21T10:48:46.820Z",
   "coverage": {
     "genericRows": 29,
     "stableTrackCount": 10,
@@ -17,7 +17,7 @@
       "trackKey": "generic:bouncy_bubbles_id",
       "network": "generic",
       "id": "bouncy_bubbles_id",
-      "amountEUR": 1942.52,
+      "amountEUR": 1942.95,
       "rowCount": 2,
       "collapsedAliasRows": 1,
       "identityClass": "EXACT_NETWORK_PLUS_UNIQUE_ID"
@@ -26,7 +26,7 @@
       "trackKey": "generic:classicwildsprogressive",
       "network": "generic",
       "id": "classicwildsprogressive",
-      "amountEUR": 1903.14,
+      "amountEUR": 1903.98,
       "rowCount": 1,
       "collapsedAliasRows": 0,
       "identityClass": "EXACT_NETWORK_PLUS_UNIQUE_ID"
@@ -53,7 +53,7 @@
       "trackKey": "generic:GOLD",
       "network": "generic",
       "id": "GOLD",
-      "amountEUR": 3016.11,
+      "amountEUR": 3020.5,
       "rowCount": 1,
       "collapsedAliasRows": 0,
       "identityClass": "EXACT_NETWORK_PLUS_UNIQUE_ID"
@@ -62,7 +62,7 @@
       "trackKey": "generic:GRAND",
       "network": "generic",
       "id": "GRAND",
-      "amountEUR": 15687.82,
+      "amountEUR": 15688.72,
       "rowCount": 2,
       "collapsedAliasRows": 1,
       "identityClass": "EXACT_NETWORK_PLUS_UNIQUE_ID"
@@ -71,7 +71,7 @@
       "trackKey": "generic:pool1",
       "network": "generic",
       "id": "pool1",
-      "amountEUR": 1818.6,
+      "amountEUR": 233.11,
       "rowCount": 1,
       "collapsedAliasRows": 0,
       "identityClass": "EXACT_NETWORK_PLUS_UNIQUE_ID"
@@ -80,7 +80,7 @@
       "trackKey": "generic:progressivealice1",
       "network": "generic",
       "id": "progressivealice1",
-      "amountEUR": 1075.17,
+      "amountEUR": 1078.95,
       "rowCount": 2,
       "collapsedAliasRows": 1,
       "identityClass": "EXACT_NETWORK_PLUS_UNIQUE_ID"
@@ -89,7 +89,7 @@
       "trackKey": "generic:tikitemple2_1",
       "network": "generic",
       "id": "tikitemple2_1",
-      "amountEUR": 1075.17,
+      "amountEUR": 1078.95,
       "rowCount": 2,
       "collapsedAliasRows": 1,
       "identityClass": "EXACT_NETWORK_PLUS_UNIQUE_ID"
@@ -110,11 +110,11 @@
       "id": "JACKPOT",
       "rowCount": 6,
       "distinctAmounts": [
-        1075.17,
-        1818.6,
-        1818.61,
-        15687.82,
-        126300.45
+        232.97,
+        233.11,
+        1078.95,
+        15688.72,
+        126303
       ],
       "reason": "SAME_NETWORK_ID_MULTIPLE_AMOUNTS",
       "economicPromotionAllowed": false
@@ -124,8 +124,8 @@
       "id": "JackpotPool",
       "rowCount": 3,
       "distinctAmounts": [
-        1818.6,
-        1818.61
+        232.97,
+        233.11
       ],
       "reason": "SAME_NETWORK_ID_MULTIPLE_AMOUNTS",
       "economicPromotionAllowed": false
@@ -135,14 +135,37 @@
       "id": "progressive_id1",
       "rowCount": 3,
       "distinctAmounts": [
-        1818.6,
-        15687.82
+        232.97,
+        15688.72
       ],
       "reason": "SAME_NETWORK_ID_MULTIPLE_AMOUNTS",
       "economicPromotionAllowed": false
     }
   ],
-  "events": [],
+  "events": [
+    {
+      "eventKey": "generic:pool1|1818.60|231.40|2026-08-21T10:45:48.560Z",
+      "observedAt": "2026-08-21T10:45:48.560Z",
+      "trackKey": "generic:pool1",
+      "network": "generic",
+      "id": "pool1",
+      "previousEUR": 1818.6,
+      "currentEUR": 231.4,
+      "dropEUR": 1587.2,
+      "dropFraction": 0.872759,
+      "identityClass": "EXACT_NETWORK_PLUS_UNIQUE_ID",
+      "classification": "CONFIRMED_METER_RESET",
+      "economicPromotionAllowed": false,
+      "confirmationEvidenceClass": "INDEPENDENT_TWO_SAMPLE_STABLE_ID_RESET_CONFIRMATION",
+      "confirmationSourceFile": "loterias-ai/casino/jackpots/evidence/botemania-pool1-reset-confirm-v1.json",
+      "confirmationWorkflowRunId": 32472881319,
+      "jackpotWinConfirmed": false,
+      "triggeringGameKnown": false,
+      "triggeringTierKnown": false,
+      "seedPointEstimateEUR": null,
+      "realMoneyAllowed": false
+    }
+  ],
   "independentlyConfirmedMeterResets": [
     {
       "network": "generic",
@@ -499,11 +522,32 @@
     "economicPromotionAllowed": false
   },
   "summary": {
-    "eventCount": 0,
+    "eventCount": 1,
     "newEventCount": 0,
-    "confirmedMeterResetEventCount": 0,
+    "confirmedMeterResetEventCount": 1,
     "independentConfirmedMeterResetCount": 1,
-    "newestEvent": null,
+    "newestEvent": {
+      "eventKey": "generic:pool1|1818.60|231.40|2026-08-21T10:45:48.560Z",
+      "observedAt": "2026-08-21T10:45:48.560Z",
+      "trackKey": "generic:pool1",
+      "network": "generic",
+      "id": "pool1",
+      "previousEUR": 1818.6,
+      "currentEUR": 231.4,
+      "dropEUR": 1587.2,
+      "dropFraction": 0.872759,
+      "identityClass": "EXACT_NETWORK_PLUS_UNIQUE_ID",
+      "classification": "CONFIRMED_METER_RESET",
+      "economicPromotionAllowed": false,
+      "confirmationEvidenceClass": "INDEPENDENT_TWO_SAMPLE_STABLE_ID_RESET_CONFIRMATION",
+      "confirmationSourceFile": "loterias-ai/casino/jackpots/evidence/botemania-pool1-reset-confirm-v1.json",
+      "confirmationWorkflowRunId": 32472881319,
+      "jackpotWinConfirmed": false,
+      "triggeringGameKnown": false,
+      "triggeringTierKnown": false,
+      "seedPointEstimateEUR": null,
+      "realMoneyAllowed": false
+    },
     "latestIndependentConfirmation": {
       "network": "generic",
       "id": "pool1",
