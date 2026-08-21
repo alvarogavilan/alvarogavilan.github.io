@@ -44,7 +44,7 @@ for(const slug of ALL){
   const staticText=visibleText(staticPage.text),renderText=visibleText(render.dom),staticMoney=money(staticText),renderMoney=money(renderText);
   const b=byUniqueId(before.rows),a=byUniqueId(after.rows);
   const commonIds=[...b.keys()].filter(id=>a.has(id));
-  const clientOnlyMoney=renderMoney.filter(r=>!staticMoney.some(s=>Math.abs(s.amountEUR-r.amountEUR)<.005&&s.raw===r.raw));
+  const clientOnlyMoney=renderMoney.filter(r=>!staticMoney.some(s=>Math.abs(s.amountEUR-r.amountEUR)<.005));
   const clientOnlyLiterals=commonIds.filter(id=>render.dom.includes(id)&&!staticPage.text.includes(id));
   const matches=[];
   for(const id of commonIds){if(AMBIGUOUS_IDS.has(id))continue;const beforeEUR=b.get(id),afterEUR=a.get(id);const amountMentions=clientOnlyMoney.filter(x=>inInterval(x.amountEUR,beforeEUR,afterEUR));const literal=clientOnlyLiterals.includes(id);if(literal||amountMentions.length)matches.push({id,beforeEUR,afterEUR,clientOnlyLiteral:literal,clientOnlyAmountMentions:amountMentions.slice(0,8)});}
