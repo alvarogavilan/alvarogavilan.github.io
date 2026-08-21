@@ -6,6 +6,7 @@ on:
     paths:
       - 'loterias-ai/edge-live/**'
       - 'loterias-ai/casino/jackpots/generic-jackpot-identity-v2.mjs'
+      - 'loterias-ai/casino/jackpots/confirmed-reset-evidence-v1.mjs'
       - 'loterias-ai/casino/jackpots/botemania-generic-fast-reset-ledger-v1.mjs'
       - 'loterias-ai/casino/jackpots/diamond-bonanza-reset-core-v1.mjs'
       - 'loterias-ai/casino/jackpots/diamond-bonanza-prospective-reset-ledger-v1.mjs'
@@ -39,6 +40,7 @@ jobs:
           node --check loterias-ai/edge-live/edge-live-execution-plan-v1.mjs
           node --check loterias-ai/edge-live/telegram-edge-alert-v1.mjs
           node --check loterias-ai/casino/jackpots/generic-jackpot-identity-v2.mjs
+          node --check loterias-ai/casino/jackpots/confirmed-reset-evidence-v1.mjs
           node --check loterias-ai/casino/jackpots/botemania-generic-fast-reset-ledger-v1.mjs
           node --check loterias-ai/casino/jackpots/diamond-bonanza-reset-core-v1.mjs
           node --check loterias-ai/casino/jackpots/diamond-bonanza-prospective-reset-ledger-v1.mjs
@@ -85,9 +87,16 @@ jobs:
           node - <<'NODE'
           const fs=require('node:fs');
           const ledger=JSON.parse(fs.readFileSync('loterias-ai/casino/jackpots/evidence/botemania-generic-fast-reset-ledger-v1.json','utf8'));
-          if(ledger.version!=='botemania-generic-fast-reset-ledger-v2-stable-id') throw new Error('stable ledger v2 not produced');
+          if(ledger.version!=='botemania-generic-fast-reset-ledger-v2.1-independent-reset-confirmation') throw new Error(`unexpected stable ledger version: ${ledger.version}`);
           if((ledger.lastTracks||[]).some(x=>String(x.trackKey||'').includes('::'))) throw new Error('rank-based active identity survived');
           if((ledger.events||[]).some(x=>String(x.trackKey||'').includes('::'))) throw new Error('rank-based active event survived');
+          if(Number(ledger.summary?.independentConfirmedMeterResetCount||0)<1) throw new Error('persisted independent reset confirmation missing');
+          const poolConfirmation=(ledger.independentlyConfirmedMeterResets||[]).find(x=>x?.trackKey==='generic:pool1');
+          if(!poolConfirmation) throw new Error('pool1 independent reset confirmation missing');
+          if(poolConfirmation.jackpotWinConfirmed!==false || poolConfirmation.triggeringGameKnown!==false || poolConfirmation.triggeringTierKnown!==false || poolConfirmation.seedPointEstimateEUR!==null || poolConfirmation.economicPromotionAllowed!==false || poolConfirmation.realMoneyAllowed!==false) throw new Error('pool1 confirmation violated fail-closed inference guards');
+          for(const event of (ledger.events||[]).filter(x=>x?.classification==='CONFIRMED_METER_RESET')){
+            if(event.economicPromotionAllowed!==false || event.jackpotWinConfirmed!==false || event.triggeringGameKnown!==false || event.triggeringTierKnown!==false || event.seedPointEstimateEUR!==null || event.realMoneyAllowed!==false) throw new Error(`confirmed meter reset ${event.eventKey} violated fail-closed guards`);
+          }
           const stasis=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/meter-stasis-ledger-v1.json','utf8'));
           const wager=stasis.meters?.['generic:WAGER_BET'];
           if(!wager) throw new Error('WAGER_BET missing from stasis ledger');
@@ -113,5 +122,5 @@ jobs:
           if(!lane) throw new Error('UVP lane missing');
           if(lane.executionReady!==false || lane.order?.action!=='DO_NOT_PLAY') throw new Error('UVP must fail closed');
           if(!lane.blockers.includes('DYNAMIC_METER_FRESHNESS_NOT_VERIFIED')) throw new Error('dynamic freshness blocker missing');
-          console.log(JSON.stringify({ledgerVersion:ledger.version,diamond:{monitor:diamond.monitor,movement:diamond.movement,resetResearch:diamond.resetResearch,decision:diamond.decision},jpk:{caps:jpk.exactSpainMbwb,pots:jpk.potReadability.potsEUR,decision:jpk.decision},stableTracks:ledger.lastTracks.length,wagerBet:wager,uvpCurrent:uvp.current,uvpBlockers:lane.blockers},null,2));
+          console.log(JSON.stringify({ledgerVersion:ledger.version,confirmedMeterResetEventCount:ledger.summary?.confirmedMeterResetEventCount,independentConfirmedMeterResetCount:ledger.summary?.independentConfirmedMeterResetCount,poolConfirmation,diamond:{monitor:diamond.monitor,movement:diamond.movement,resetResearch:diamond.resetResearch,decision:diamond.decision},jpk:{caps:jpk.exactSpainMbwb,pots:jpk.potReadability.potsEUR,decision:jpk.decision},stableTracks:ledger.lastTracks.length,wagerBet:wager,uvpCurrent:uvp.current,uvpBlockers:lane.blockers},null,2));
           NODE
