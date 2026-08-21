@@ -1,0 +1,72 @@
+name: Loterias AI Winfall Passive Network Triangulation V2
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'loterias-ai/casino/jackpots/winfall-passive-network-triangulation-v2.mjs'
+      - 'loterias-ai/tests/winfall-passive-network-triangulation-v2.test.mjs'
+      - '.github/workflows/loterias-ai-winfall-passive-network-triangulation-v2.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/jackpots/winfall-passive-network-triangulation-v2.mjs'
+      - '.github/workflows/loterias-ai-winfall-passive-network-triangulation-v2.yml'
+  schedule:
+    - cron: '47 */2 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-winfall-passive-network-triangulation-v2
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Unit guards
+        run: node loterias-ai/tests/winfall-passive-network-triangulation-v2.test.mjs
+      - name: Run passive Winfall network triangulation
+        run: node loterias-ai/casino/jackpots/winfall-passive-network-triangulation-v2.mjs
+      - name: Validate fail-closed evidence
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const x=JSON.parse(fs.readFileSync('loterias-ai/casino/jackpots/evidence/winfall-passive-network-triangulation-v2.json','utf8'));
+          if(x?.coverage?.complete!==true) throw new Error('incomplete CDP coverage');
+          if(x?.decision?.exactLiveIdVerified!==false) throw new Error('first network run may not verify identity');
+          if(x?.decision?.economicPromotionAllowed!==false||x?.decision?.realMoneyAllowed!==false) throw new Error('economic promotion must stay false');
+          if(x?.guards?.globalLoadJackpotsNeverIdentityProof!==true) throw new Error('global feed guard missing');
+          console.log(JSON.stringify({coverage:x.coverage,candidates:x.comparison?.discoveryCandidates||[],decision:x.decision},null,2));
+          NODE
+      - name: Persist evidence on main only
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE=loterias-ai/casino/jackpots/evidence/winfall-passive-network-triangulation-v2.json
+          cp "$FILE" /tmp/winfall-passive-network-triangulation-v2.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p "$(dirname "$FILE")"
+          cp /tmp/winfall-passive-network-triangulation-v2.json "$FILE"
+          git add "$FILE"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'data(casino): refresh Winfall passive network triangulation'
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
