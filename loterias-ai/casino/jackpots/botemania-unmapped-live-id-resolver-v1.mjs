@@ -6,10 +6,12 @@
 // NOT filter to "mentions Bote Progresivo" - an unmapped id could belong to a
 // delisted, non-progressive-labelled, or casino-online (not slots-online)
 // page, so this scans raw HTML/embedded script URLs for a literal id-fragment
-// match instead of rules text. Coverage is tracked explicitly (scanned vs
-// discovered, fetch failures) so a partial scan can never be misread as a
-// complete negative result - same convention as the other global scans in
-// this repo (scanComplete / negativeResultInterpretableAsCompleteScan).
+// match instead of rules text. Coverage is tracked explicitly and distinguishes
+// two different claims that must never be conflated: targetSubsetScanComplete
+// (the MAX_PAGES-capped subset was fully attempted) and fullSitemapScanComplete
+// (the ENTIRE sitemap slot/casino URL set was attempted) - only the latter may
+// license negativeResultInterpretableAsCompleteScan, since a truncated subset
+// completing cleanly says nothing about the URLs outside that cap.
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 
@@ -53,11 +55,27 @@ for (const url of urls) {
   } catch (e) { failures.push({ url, httpStatus: null, error: String(e?.name || e?.message || e) }); }
 }
 
-const resolvedByMonitorKey = {};
-for (const c of CANDIDATES) resolvedByMonitorKey[c.monitorKey] = rows.filter((r) => r.matchedMonitorKeys.includes(c.monitorKey)).map((r) => ({ url: r.url, slug: r.slug }));
+// A literal HTML-fragment hit is discovery evidence, never identity proof by
+// itself - even a single unambiguous match could be a shared bundle/asset
+// reference (a common script, stylesheet, or CDN path reused across many
+// pages) rather than data specific to that one game's page. Multiple matches
+// for the same candidate are explicitly ambiguous and must not collapse into
+// a "resolved" mapping.
+const discoveryCandidatesByMonitorKey = {};
+for (const c of CANDIDATES) {
+  const candidateRows = rows.filter((r) => r.matchedMonitorKeys.includes(c.monitorKey)).map((r) => ({ url: r.url, slug: r.slug }));
+  const status = candidateRows.length === 0 ? 'NO_CANDIDATE_FOUND' : candidateRows.length === 1 ? 'STRONG_CANDIDATE_UNVERIFIED' : 'AMBIGUOUS_MULTIPLE_CANDIDATES';
+  discoveryCandidatesByMonitorKey[c.monitorKey] = { status, candidates: candidateRows, verifiedIdentity: false };
+}
 
 const attempted = fetchedOk + failures.length;
-const scanComplete = !budgetExceeded && attempted === urls.length && failures.length === 0;
+// targetSubsetScanComplete only claims the MAX_PAGES-capped subset was fully
+// covered - it must never be read as sitemap-wide coverage. Only
+// fullSitemapScanComplete (attempted === the ENTIRE sitemap slot/casino URL
+// set, not just the capped target list) may license
+// negativeResultInterpretableAsCompleteScan.
+const targetSubsetScanComplete = !budgetExceeded && attempted === urls.length && failures.length === 0;
+const fullSitemapScanComplete = !budgetExceeded && attempted === allUrls.length && failures.length === 0;
 
 const out = {
   version: 'botemania-unmapped-live-id-resolver-v1',
@@ -72,13 +90,15 @@ const out = {
     fetchFailureCount: failures.length,
     failures: failures.slice(0, 50),
     wallClockBudgetExceeded: budgetExceeded,
-    scanComplete,
-    negativeResultInterpretableAsCompleteScan: scanComplete,
+    targetSubsetScanComplete,
+    fullSitemapCoveragePct: allUrls.length > 0 ? +(100 * attempted / allUrls.length).toFixed(3) : 0,
+    fullSitemapScanComplete,
+    negativeResultInterpretableAsCompleteScan: fullSitemapScanComplete,
   },
   matches: rows,
-  resolvedByMonitorKey,
-  guards: { operatorDomainOnly: true, boundedScan: true, noAuthentication: true, noCookies: true, noMutation: true, noBetting: true, realMoneyAllowed: false, noFabricatedGameNameGuess: true },
+  discoveryCandidatesByMonitorKey,
+  guards: { operatorDomainOnly: true, boundedScan: true, noAuthentication: true, noCookies: true, noMutation: true, noBetting: true, realMoneyAllowed: false, noFabricatedGameNameGuess: true, literalHtmlMatchIsNotIdentityProof: true },
 };
 fs.mkdirSync('loterias-ai/casino/jackpots/evidence', { recursive: true });
 fs.writeFileSync(OUT, JSON.stringify(out, null, 2) + '\n');
-console.log(JSON.stringify({ coverage: out.coverage, resolvedByMonitorKey }, null, 2));
+console.log(JSON.stringify({ coverage: out.coverage, discoveryCandidatesByMonitorKey }, null, 2));
