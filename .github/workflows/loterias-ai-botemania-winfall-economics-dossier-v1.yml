@@ -1,0 +1,69 @@
+name: Loterias AI Botemania Winfall Economics Dossier V1
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'loterias-ai/casino/archive/botemania-winfall-economics-synthesis-v1.mjs'
+      - 'loterias-ai/casino/archive/botemania-winfall-economics-dossier-v1.mjs'
+      - 'loterias-ai/tests/winfall-economics-synthesis-v1.test.mjs'
+      - '.github/workflows/loterias-ai-botemania-winfall-economics-dossier-v1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/archive/botemania-winfall-economics-synthesis-v1.mjs'
+      - 'loterias-ai/casino/archive/botemania-winfall-economics-dossier-v1.mjs'
+      - 'loterias-ai/casino/archive/evidence/botemania-all-games-census-v1.json'
+      - 'loterias-ai/casino/archive/evidence/botemania-zero-reset-priority-v1.json'
+      - 'loterias-ai/casino/jackpots/evidence/winfall-shared-network-triangulation-v1.json'
+      - 'loterias-ai/casino/jackpots/evidence/botemania-winfall-wishes-identity-binding-probe-v1.json'
+      - '.github/workflows/loterias-ai-botemania-winfall-economics-dossier-v1.yml'
+  schedule:
+    - cron: '41 */6 * * *'
+
+concurrency:
+  group: loterias-ai-botemania-winfall-economics-dossier-v1-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  synthesize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Syntax check
+        run: |
+          node --check loterias-ai/casino/archive/botemania-winfall-economics-synthesis-v1.mjs
+          node --check loterias-ai/casino/archive/botemania-winfall-economics-dossier-v1.mjs
+      - name: Unit tests
+        run: node loterias-ai/tests/winfall-economics-synthesis-v1.test.mjs
+      - name: Build dossier (zero-network synthesis of already-fetched evidence)
+        run: node loterias-ai/casino/archive/botemania-winfall-economics-dossier-v1.mjs
+      - name: Persist evidence
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          cp loterias-ai/casino/archive/evidence/botemania-winfall-economics-dossier-v1.json /tmp/winfall-economics-dossier-v1.json
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p loterias-ai/casino/archive/evidence
+            cp /tmp/winfall-economics-dossier-v1.json loterias-ai/casino/archive/evidence/botemania-winfall-economics-dossier-v1.json
+            git add loterias-ai/casino/archive/evidence/botemania-winfall-economics-dossier-v1.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'data(casino): refresh Winfall Wishes economics dossier'
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
