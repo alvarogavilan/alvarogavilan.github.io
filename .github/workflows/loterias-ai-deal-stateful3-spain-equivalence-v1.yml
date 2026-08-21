@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'loterias-ai/casino/jackpots/deal-stateful3-spain-pool-equivalence-v1.mjs'
+      - 'loterias-ai/casino/jackpots/deal-stateful3-current-game-discovery-v1.mjs'
+      - 'loterias-ai/casino/jackpots/evidence/deal-stateful3-*.json'
       - '.github/workflows/loterias-ai-deal-stateful3-spain-equivalence-v1.yml'
   workflow_dispatch:
 
@@ -21,21 +23,29 @@ jobs:
         with:
           node-version: '24'
       - name: Syntax check
-        run: node --check loterias-ai/casino/jackpots/deal-stateful3-spain-pool-equivalence-v1.mjs
+        run: |
+          node --check loterias-ai/casino/jackpots/deal-stateful3-spain-pool-equivalence-v1.mjs
+          node --check loterias-ai/casino/jackpots/deal-stateful3-current-game-discovery-v1.mjs
       - name: Probe public Spanish operator pools
         run: node loterias-ai/casino/jackpots/deal-stateful3-spain-pool-equivalence-v1.mjs
+      - name: Probe bounded current-game CMS candidates
+        run: node loterias-ai/casino/jackpots/deal-stateful3-current-game-discovery-v1.mjs
       - name: Enforce no legacy/economic promotion
         run: |
           node - <<'NODE'
           const fs=require('node:fs');
           const x=JSON.parse(fs.readFileSync('loterias-ai/casino/jackpots/evidence/deal-stateful3-spain-pool-equivalence-v1.json','utf8'));
+          const d=JSON.parse(fs.readFileSync('loterias-ai/casino/jackpots/evidence/deal-stateful3-current-game-discovery-v1.json','utf8'));
           if(x.interpretation.historical5pGamesysConfigurationEquivalent!==false) throw new Error('legacy 5p config promoted');
           if(x.interpretation.currentSpainBreakEvenEUR!==null) throw new Error('Spain break-even fabricated');
           if(x.interpretation.realMoneyAllowed!==false) throw new Error('real money enabled');
-          console.log(JSON.stringify({operators:{botemania:x.operators.botemania.target,monopoly:x.operators.monopoly.target},comparison:x.comparison,interpretation:x.interpretation},null,2));
+          if(d.decision.currentStateful3ExactMappingVerified!==false || d.decision.realMoneyAllowed!==false) throw new Error('candidate slug promoted to exact Stateful3 mapping');
+          console.log(JSON.stringify({operators:{botemania:x.operators.botemania.target,monopoly:x.operators.monopoly.target},comparison:x.comparison,discovery:{hits:d.hits.map(h=>({operator:h.operator,gameId:h.gameId,title:h.game.title,providerId:h.game.providerId,providerName:h.game.providerName,canonical:h.game.canonical})),decision:d.decision}},null,2));
           NODE
       - uses: actions/upload-artifact@v4
         with:
           name: deal-stateful3-spain-equivalence-v1
-          path: loterias-ai/casino/jackpots/evidence/deal-stateful3-spain-pool-equivalence-v1.json
+          path: |
+            loterias-ai/casino/jackpots/evidence/deal-stateful3-spain-pool-equivalence-v1.json
+            loterias-ai/casino/jackpots/evidence/deal-stateful3-current-game-discovery-v1.json
           retention-days: 7
