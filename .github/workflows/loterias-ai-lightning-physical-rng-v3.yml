@@ -8,12 +8,13 @@ on:
       - 'Loterias AI Lightning Audit Sync'
     types: [completed]
   schedule:
-    - cron: '6 * * * *'
+    - cron: '*/10 * * * *'
   push:
     branches: [main]
     paths:
       - 'loterias-ai/casino/lightning/research/physical-rng-prospective-v3.mjs'
       - 'loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-freeze.json'
+      - 'loterias-ai/casino/lightning/evidence/physical-rng-prospective-v2-status.json'
       - '.github/workflows/loterias-ai-lightning-physical-rng-v3.yml'
 
 permissions:
@@ -25,8 +26,9 @@ concurrency:
 
 jobs:
   evaluate:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,7 +44,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           out='loterias-ai/casino/lightning/evidence/physical-rng-prospective-v3-status.json'
 
-          for attempt in 1 2 3 4 5; do
+          for attempt in $(seq 1 20); do
             git fetch origin main
             git reset --hard origin/main
 
@@ -78,8 +80,8 @@ jobs:
               if ! git diff --cached --quiet; then
                 git commit -m 'research(lightning): advance preregistered physical RNG v3 replication'
                 if ! git push origin HEAD:main; then
-                  echo "main moved during physical RNG v3 attempt ${attempt}; recomputing"
-                  sleep $((attempt * 2))
+                  echo "main moved during physical RNG v3 attempt ${attempt}/20; recomputing"
+                  sleep $(( attempt < 10 ? attempt * 2 : 20 ))
                   continue
                 fi
               fi
@@ -102,5 +104,5 @@ jobs:
             exit 0
           done
 
-          echo 'Unable to persist physical RNG v3 after five recomputations.' >&2
+          echo 'Unable to persist physical RNG v3 after twenty recomputations.' >&2
           exit 1
