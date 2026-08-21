@@ -1,0 +1,118 @@
+{
+  "version": "ultimate-video-poker-gamesys-lineage-comparator-v1",
+  "generatedAt": "2026-08-21T09:10:00.000Z",
+  "target": {
+    "operator": "Botemania Spain",
+    "game": "Ultimate Video Poker",
+    "variant": "Jotas o Mejor Progresivo",
+    "providerId": "roxor-gaming",
+    "monitorKey": "generic:WAGER_BET",
+    "identityEvidenceClass": "MANUAL_SCREENSHOT_LIVE_AMOUNT_CROSS_MATCH",
+    "identityConfidence": "VERY_HIGH"
+  },
+  "lineageEvidence": [
+    {
+      "evidenceClass": "PRIMARY_PROVIDER_PORTFOLIO",
+      "source": "https://westpiergaming.com/",
+      "fact": "West Pier Gaming states it has developed/launched 120+ titles in collaboration with Roxor, Gamesys and Bally's, and shows Botemania among ventures/brands in its public portfolio context."
+    },
+    {
+      "evidenceClass": "PRIMARY_PROVIDER_PORTFOLIO",
+      "source": "https://westpiergaming.com/games/",
+      "fact": "West Pier Gaming publicly lists Ultimate Video Poker in its casino-game catalogue."
+    },
+    {
+      "evidenceClass": "LEGAL_HISTORICAL_PRIMARY",
+      "source": "https://www.wipo.int/amc/en/domains/decisions/text/2013/d2013-1179.html",
+      "fact": "WIPO records historical Gamesys website material referencing Ultimate Video Poker, supporting Gamesys product lineage."
+    },
+    {
+      "evidenceClass": "SECONDARY_GAME_DATABASE",
+      "source": "https://www.keytocasinos.com/online-casinos/software/gamesys-limited",
+      "fact": "KeyToCasinos describes Jacks or Better, Tens or Better, Deuces Wild and other variants as united in the Ultimate Video Poker collection, and its Gamesys catalogue contains named Ultimate Video Poker variants."
+    },
+    {
+      "evidenceClass": "SECONDARY_GAME_DATABASE_SAME_SUITE_VARIANT",
+      "source": "https://www.keytocasinos.com/online-casinos/software/gamesys-limited",
+      "variant": "Ultimate Video Poker - Aces and Faces",
+      "provider": "Gamesys Limited",
+      "reportedPaytableFragments": {
+        "royalFlush": 800,
+        "fourAces": 80,
+        "fourJQK": 40,
+        "four2to10": 25,
+        "fullHouse": 8,
+        "twoPair": 2
+      },
+      "reportedAdvantagePct": 0.74,
+      "interpretationGuard": "Database 'Advantage' is treated as reported house-advantage-style metadata, not imported as Botemania RTP."
+    },
+    {
+      "evidenceClass": "SECONDARY_GAME_DATABASE_SAME_SUITE_VARIANT",
+      "source": "https://www.keytocasinos.com/games/joker-wild-pocket-games-soft",
+      "variant": "Ultimate Video Poker - Joker Poker",
+      "provider": "Gamesys Limited",
+      "reportedPaytableFragments": {
+        "royalFlush": 1000,
+        "fiveOfAKind": 200,
+        "jokerRoyalFlush": 100,
+        "straightFlush": 50,
+        "fourOfAKind": 17,
+        "fullHouse": 7
+      },
+      "reportedAdvantagePct": 1.4,
+      "interpretationGuard": "Same product-suite lineage only; different variant and not Botemania configuration evidence."
+    }
+  ],
+  "productMechanismComparator": {
+    "source": "https://www.casinomeister.com/online-casinos/reviews/virgin/",
+    "evidenceClass": "SECONDARY_OPERATOR_REVIEW",
+    "facts": [
+      "Ultimate Video Poker is described as a container presenting multiple video-poker games within one product.",
+      "The reviewed Virgin implementation supported up to 50 hands at a time."
+    ],
+    "configurationEquivalentToBotemaniaVerified": false
+  },
+  "botemaniaObservedEvidence": {
+    "historicalManualScreenPaytableShape": [1, 2, 3, 4, 5, 7, 25, 50, 800],
+    "shapeLabel": "7/5-shaped Jacks or Better Progressive",
+    "technicalReproductionVerified": false,
+    "exactVariantRtpVerified": false,
+    "qualifyingCreditsVerified": false,
+    "creditValueEURVerified": false,
+    "qualifyingStakeVerified": false,
+    "progressiveTriggerVerified": false,
+    "seedResetVerified": false,
+    "fixedStrategyVerified": false,
+    "pRoyalFlushVerified": false,
+    "breakEvenJackpotEUR": null
+  },
+  "prohibitedSubstitutions": [
+    {
+      "sourceFamily": "Playtech",
+      "value": "95.95% RTP for a 7/5 Jacks or Better Progressive table",
+      "reason": "Paytable-shape coincidence is not provider/configuration equivalence. Playtech is not Gamesys/Roxor and this value was previously removed from Botemania economic inputs."
+    },
+    {
+      "sourceFamily": "Wizard of Odds / Gtech 20/7/5 note",
+      "value": "14,111 coins / 2,822 full bets",
+      "reason": "This threshold belongs to the following 20/7/5 Gtech progressive table, not the 25-7-5 paytable shape observed in Botemania."
+    }
+  ],
+  "closureState": {
+    "exactGamesysJacksOrBetterVariantRecordRecovered": false,
+    "exactGamesysProgressiveJacksPaytableRecovered": false,
+    "exactBotemaniaConfigurationEquivalentToExternalGamesysVerified": false,
+    "configurationEquivalentToBotemaniaVerified": false,
+    "economicPromotionAllowed": false,
+    "realMoneyAllowed": false,
+    "nextEvidenceTargets": [
+      "Exact Gamesys/Roxor Ultimate Video Poker Jacks or Better record/paytable",
+      "Progressive royal trigger and qualifying credits",
+      "Coin/credit denomination to EUR",
+      "Exact stake eligibility",
+      "Provider/configuration-level RTP and fixed-strategy royal probability",
+      "Local seed/reset or exact equivalent network proof"
+    ]
+  }
+}
