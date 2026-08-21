@@ -26,7 +26,7 @@ jobs:
   checkpoint:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
         with:
@@ -41,7 +41,7 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
 
-          for attempt in $(seq 1 12); do
+          for attempt in $(seq 1 30); do
             git fetch origin main
             git reset --hard origin/main
 
@@ -130,9 +130,10 @@ NODE
               exit 0
             fi
 
-            echo "main moved during RNG V3 persistence; recomputing attempt $attempt/12"
-            sleep $((attempt * 2))
+            echo "main moved during RNG V3 persistence; recomputing attempt $attempt/30"
+            BACKOFF=$(( attempt < 10 ? attempt * 2 : 20 ))
+            sleep "$BACKOFF"
           done
 
-          echo 'Unable to persist RNG V3 after twelve recomputations.' >&2
+          echo 'Unable to persist RNG V3 after thirty recomputations.' >&2
           exit 1
