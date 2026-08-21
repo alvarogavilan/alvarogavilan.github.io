@@ -51,7 +51,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -f /tmp/tiki-pair-reset-confirmed
+          rm -f /tmp/tiki-pair-reset-confirmed /tmp/tiki-pair-confirm-files.txt
           node loterias-ai/casino/jackpots/tiki-pair-reset-auto-confirm-v1.mjs
           if [ -f /tmp/tiki-pair-reset-confirmed ]; then
             echo 'confirmed=true' >> "$GITHUB_OUTPUT"
@@ -65,15 +65,15 @@ jobs:
         run: |
           set -euo pipefail
           EDIR=loterias-ai/casino/jackpots/evidence
-          A="$EDIR/botemania-tikitemple2_1-reset-confirm-v1.json"
-          B="$EDIR/botemania-progressivealice1-reset-confirm-v1.json"
           PAIR="$EDIR/tiki-pair-latest-auto-confirm-v1.json"
           LEDGER="$EDIR/botemania-generic-fast-reset-ledger-v1.json"
           CYCLES="$EDIR/tiki-pair-prospective-cycle-ledger-v1.json"
           mkdir -p /tmp/tiki-confirm-evidence
-          cp "$A" /tmp/tiki-confirm-evidence/a.json
-          cp "$B" /tmp/tiki-confirm-evidence/b.json
-          cp "$PAIR" /tmp/tiki-confirm-evidence/pair.json
+          while IFS= read -r f; do
+            [ -n "$f" ] || continue
+            cp "$f" "/tmp/tiki-confirm-evidence/$(basename "$f")"
+          done < /tmp/tiki-pair-confirm-files.txt
+          cp "$PAIR" /tmp/tiki-confirm-evidence/tiki-pair-latest-auto-confirm-v1.json
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
 
@@ -81,12 +81,14 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             mkdir -p "$EDIR"
-            cp /tmp/tiki-confirm-evidence/a.json "$A"
-            cp /tmp/tiki-confirm-evidence/b.json "$B"
-            cp /tmp/tiki-confirm-evidence/pair.json "$PAIR"
+            for f in /tmp/tiki-confirm-evidence/botemania-*-reset-confirm-v*.json; do
+              [ -f "$f" ] || continue
+              cp "$f" "$EDIR/$(basename "$f")"
+            done
+            cp /tmp/tiki-confirm-evidence/tiki-pair-latest-auto-confirm-v1.json "$PAIR"
             node loterias-ai/casino/jackpots/botemania-generic-fast-reset-ledger-v1.mjs
             node loterias-ai/casino/jackpots/tiki-pair-prospective-cycle-ledger-v1.mjs
-            git add -- "$A" "$B" "$PAIR" "$LEDGER" "$CYCLES"
+            git add -- "$EDIR"/botemania-tikitemple2_1-reset-confirm-v*.json "$EDIR"/botemania-progressivealice1-reset-confirm-v*.json "$PAIR" "$LEDGER" "$CYCLES" 2>/dev/null || true
             if git diff --cached --quiet; then
               echo 'Confirmed evidence already present on latest main; nothing to persist.'
               exit 0
