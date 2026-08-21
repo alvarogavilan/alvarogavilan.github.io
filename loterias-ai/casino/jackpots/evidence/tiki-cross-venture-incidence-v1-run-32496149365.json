@@ -1,0 +1,59 @@
+{
+  "version": "tiki-cross-venture-incidence-v1-run",
+  "generatedAt": "2026-08-21T15:10:36.195Z",
+  "workflowRunId": 32496149365,
+  "workflowJobId": 96814894655,
+  "operatorScope": ["botemania-es", "monopolycasino-es"],
+  "coverage": {
+    "publicFeedCoverageComplete": true,
+    "pageCoverageComplete": true,
+    "candidatePageCount": 8,
+    "botemaniaFeedRows": 29,
+    "monopolyFeedRows": 29
+  },
+  "availability": [
+    {"slug":"tiki-templo","networkHint":"TIKI_TEMPLO_UNKNOWN","botemania":true,"monopoly":true},
+    {"slug":"la-isla-de-tiki-tropico-dorado","networkHint":"TIKI_TROPICO_ZERO_RESET","botemania":true,"monopoly":true},
+    {"slug":"winfall-wishes-jackpot","networkHint":"WINFALL_ZERO_RESET","botemania":true,"monopoly":true},
+    {"slug":"wonderland","networkHint":"WINFALL_ZERO_RESET","botemania":false,"monopoly":false},
+    {"slug":"la-isla-de-tiki-bote","networkHint":"TIKI_TROPICO_ZERO_RESET","botemania":true,"monopoly":true},
+    {"slug":"paper-wins-jackpot","networkHint":"TIKI_TROPICO_ZERO_RESET","botemania":true,"monopoly":true},
+    {"slug":"boteman","networkHint":"TIKI_TROPICO_ZERO_RESET","botemania":true,"monopoly":false},
+    {"slug":"winstones-bote","networkHint":"TIKI_TROPICO_ZERO_RESET","botemania":true,"monopoly":true}
+  ],
+  "targetComparison": {
+    "tikitemple2_1": {
+      "botemania": {"rowCount":2,"distinctAmountsEUR":[7.36],"singleLiveAmount":true,"amountEUR":7.36},
+      "monopoly": {"rowCount":2,"distinctAmountsEUR":[7.36],"singleLiveAmount":true,"amountEUR":7.36},
+      "sameRowCount": true,
+      "sameDistinctAmounts": true,
+      "incidenceDiffers": false
+    },
+    "progressivealice1": {
+      "botemania": {"rowCount":2,"distinctAmountsEUR":[7.36],"singleLiveAmount":true,"amountEUR":7.36},
+      "monopoly": {"rowCount":2,"distinctAmountsEUR":[7.36],"singleLiveAmount":true,"amountEUR":7.36},
+      "sameRowCount": true,
+      "sameDistinctAmounts": true,
+      "incidenceDiffers": false
+    }
+  },
+  "decision": {
+    "crossVentureIncidenceSignalFound": false,
+    "exactGameBindingRecovered": false,
+    "identityPromotionAllowed": false,
+    "economicPromotionAllowed": false,
+    "realMoneyAllowed": false
+  },
+  "interpretation": "Botemania and Monopoly Spain expose the same row multiplicity and exact live amount for both reset-linked IDs in this snapshot. Boteman is available on Botemania but not Monopoly while incidence remains unchanged, so this two-venture layer is non-discriminating and must not be used to bind either ID to Boteman or another candidate game.",
+  "guards": {
+    "publicNoAuthOnly": true,
+    "noCookies": true,
+    "noLogin": true,
+    "noGameLaunch": true,
+    "noBetting": true,
+    "rowMultiplicityNeverEqualsGameIdentity": true,
+    "catalogIncidenceIsDiscoveryOnly": true,
+    "noHeuristicIdentityPromotion": true,
+    "realMoneyAllowed": false
+  }
+}
