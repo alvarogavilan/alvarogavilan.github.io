@@ -11,8 +11,46 @@ export function laneExecutionReadyWithLifecycle(lifecycleStatus, edgePass, exact
   return edgePass === true && exactStakeKnown === true && strategyVerified === true;
 }
 
-// Guarded so importing laneExecutionReadyWithLifecycle for tests never
-// triggers this script's real file reads/writes as a side effect.
+export function sanitizeLegacySingleLane(single={}, nowMs=Date.now(), maxAgeSeconds=180) {
+  const rawEvidence=single?.evidence||{};
+  const observedAt=rawEvidence?.observedAt||single?.generatedAt||null;
+  const observedMs=Date.parse(observedAt||'');
+  const signalAgeSeconds=Number.isFinite(observedMs)?Math.max(0,Math.floor((nowMs-observedMs)/1000)):null;
+  const sourceFresh=signalAgeSeconds!==null&&signalAgeSeconds<=maxAgeSeconds;
+  const withinFreshExecutionWindow=sourceFresh&&rawEvidence?.withinFreshExecutionWindow===true;
+  const requestedGreen=single?.state==='READY_TO_EXECUTE_MANUALLY'&&single?.order?.action==='PLAY';
+  const green=requestedGreen&&withinFreshExecutionWindow;
+  const requestedYellow=!green&&single?.state==='PREPARE_OPEN_GAME_NO_BET'&&single?.order?.action==='OPEN_GAME_ONLY_NO_BET';
+  const yellow=requestedYellow&&withinFreshExecutionWindow;
+  const blockers=Array.isArray(single?.blockers)?[...single.blockers]:[];
+  if(!sourceFresh&&!blockers.includes('SOURCE_NOT_FRESH'))blockers.push('SOURCE_NOT_FRESH');
+  const safeOrder=(green||yellow)?(single?.order||{}):{
+    ...(single?.order||{}),
+    action:'DO_NOT_PLAY',
+    stakePerSpinEUR:0,
+    maxSpins:0,
+    maxTotalStakeEUR:0,
+    entryMode:'WAIT',
+    validFrom:null,
+    validUntil:null,
+    preparationEtaSeconds:null
+  };
+  return {
+    id:'botemania-jackpot-king',
+    type:'MUST_BE_WON_BY_PROGRESSIVE_NETWORK',
+    game:single?.game||{id:'fishin-frenzy-jackpot-king',name:"Fishin' Frenzy: Jackpot King",url:'https://www.botemania.es/juegos/slots-online/fishin-frenzy-jackpot-king'},
+    phase:green?'GREEN':yellow?'YELLOW':'RED',
+    executionReady:green,
+    prepareOnly:yellow,
+    order:safeOrder,
+    evidence:{...rawEvidence,observedAt,signalAgeSeconds,sourceFresh,withinFreshExecutionWindow},
+    blockers,
+    sourcePlan:'edge-live-execution-plan-v1.json'
+  };
+}
+
+// Guarded so importing helpers for tests never triggers this script's
+// real file reads/writes as a side effect.
 if (import.meta.url === `file://${process.argv[1]}`) {
 const SINGLE='loterias-ai/edge-live/evidence/edge-live-execution-plan-v1.json';
 const NETWORK='loterias-ai/edge-live/evidence/botemania-all-network-live-state-v1.json';
@@ -30,9 +68,7 @@ const sourceAgeSeconds=ageSeconds(network?.observedAt);
 const sourceFresh=sourceAgeSeconds!==null&&sourceAgeSeconds<=180;
 
 const lanes=[];
-const singleGreen=single?.state==='READY_TO_EXECUTE_MANUALLY'&&single?.order?.action==='PLAY';
-const singleYellow=!singleGreen&&single?.state==='PREPARE_OPEN_GAME_NO_BET'&&single?.order?.action==='OPEN_GAME_ONLY_NO_BET';
-lanes.push({id:'botemania-jackpot-king',type:'MUST_BE_WON_BY_PROGRESSIVE_NETWORK',game:single?.game||{id:'fishin-frenzy-jackpot-king',name:"Fishin' Frenzy: Jackpot King",url:'https://www.botemania.es/juegos/slots-online/fishin-frenzy-jackpot-king'},phase:singleGreen?'GREEN':singleYellow?'YELLOW':'RED',executionReady:singleGreen,prepareOnly:singleYellow,order:single?.order||{action:'DO_NOT_PLAY',stakePerSpinEUR:0,maxSpins:0,maxTotalStakeEUR:0},evidence:single?.evidence||{},blockers:Array.isArray(single?.blockers)?single.blockers:[],sourcePlan:'edge-live-execution-plan-v1.json'});
+lanes.push(sanitizeLegacySingleLane(single));
 
 const mappings=Array.isArray(registry?.mappings)?registry.mappings:[];
 for(const m of mappings){
@@ -55,9 +91,6 @@ for(const m of mappings){
   const stakeConfigured=finiteNumberOrNull(m?.execution?.stakePerDecisionEUR);
   const exactStakeKnown=m?.execution?.exactStakeKnown===true&&stakeConfigured!==null&&stakeConfigured>0;
   const strategyVerified=m?.execution?.strategyVerified===true;
-  // A killed lane must never become executionReady again just because a
-  // later registry edit sets a threshold/stake - the lifecycle status is a
-  // hard override, checked last so it always wins.
   const lifecycleStatus=typeof m?.lifecycle?.status==='string'?m.lifecycle.status:null;
   const killed=lifecycleStatus==='KILLED_NOT_CURRENTLY_ACTIONABLE';
   const executionReady=laneExecutionReadyWithLifecycle(lifecycleStatus,edgePass,exactStakeKnown,strategyVerified);
@@ -91,8 +124,8 @@ const green=lanes.filter(x=>x.executionReady===true);
 const yellow=lanes.filter(x=>x.prepareOnly===true);
 const selected=green[0]||yellow[0]||lanes[0];
 const state=green.length?'READY_TO_EXECUTE_MANUALLY':yellow.length?'PREPARE_OPEN_GAME_NO_BET':'NO_EXECUTION';
-const out={version:'edge-live-multi-execution-plan-v1.2-dynamic-freshness',generatedAt:now,operator:'botemania-es',state,game:selected?.game||{id:'none',name:'Sin oportunidad validada',url:'https://www.botemania.es/'},order:selected?.order||{action:'DO_NOT_PLAY',stakePerSpinEUR:0,maxSpins:0,maxTotalStakeEUR:0},evidence:selected?.evidence||{structurePass:false,economicPass:false,exactStakeKnown:false,sourceFresh:false,dynamicFreshnessVerified:false,currentStateFresh:false,withinFreshExecutionWindow:false},blockers:selected?.blockers||['NO_TRACKED_LANE_READY'],selectedLaneId:selected?.id||null,coverage:{trackedLanes:lanes.length,greenLanes:green.length,yellowLanes:yellow.length,liveFeedRows:finiteNumberOrNull(network?.coverage?.totalRows)??0,uniqueLiveRows:finiteNumberOrNull(network?.coverage?.uniqueIdentityRows)??0,ambiguousLiveRows:finiteNumberOrNull(network?.coverage?.ambiguousIdentityRows)??0,sourceObservedAt:network?.observedAt||null,sourceAgeSeconds,stasisMeters:Object.keys(stasis?.meters||{}).length},lanes,interpretation:green.length?'At least one lane passed all currently encoded execution gates including dynamic current-state freshness. Final live recheck remains mandatory before any wager.':yellow.length?'At least one lane is in preparation-only state; no wager is authorized.':'No tracked lane currently passes the full economic, state-freshness and execution gate.',guards:{nullNeverCoercedToZero:true,httpFreshnessDoesNotEqualDynamicFreshness:true,dynamicFreshnessRequiredForExecution:true,noAutomaticBetting:true,manualExecutionOnly:true,finalGreenRecheckMandatory:true,noPromotionsRequired:true,noUnverifiedIdentityPromotion:true,noUnverifiedThresholdPromotion:true,realMoneyAllowed:green.length>0}};
+const out={version:'edge-live-multi-execution-plan-v1.3-jpk-freshness',generatedAt:now,operator:'botemania-es',state,game:selected?.game||{id:'none',name:'Sin oportunidad validada',url:'https://www.botemania.es/'},order:selected?.order||{action:'DO_NOT_PLAY',stakePerSpinEUR:0,maxSpins:0,maxTotalStakeEUR:0},evidence:selected?.evidence||{structurePass:false,economicPass:false,exactStakeKnown:false,sourceFresh:false,dynamicFreshnessVerified:false,currentStateFresh:false,withinFreshExecutionWindow:false},blockers:selected?.blockers||['NO_TRACKED_LANE_READY'],selectedLaneId:selected?.id||null,coverage:{trackedLanes:lanes.length,greenLanes:green.length,yellowLanes:yellow.length,liveFeedRows:finiteNumberOrNull(network?.coverage?.totalRows)??0,uniqueLiveRows:finiteNumberOrNull(network?.coverage?.uniqueIdentityRows)??0,ambiguousLiveRows:finiteNumberOrNull(network?.coverage?.ambiguousIdentityRows)??0,sourceObservedAt:network?.observedAt||null,sourceAgeSeconds,stasisMeters:Object.keys(stasis?.meters||{}).length},lanes,interpretation:green.length?'At least one lane passed all currently encoded execution gates including dynamic current-state freshness. Final live recheck remains mandatory before any wager.':yellow.length?'At least one lane is in preparation-only state; no wager is authorized.':'No tracked lane currently passes the full economic, state-freshness and execution gate.',guards:{nullNeverCoercedToZero:true,httpFreshnessDoesNotEqualDynamicFreshness:true,dynamicFreshnessRequiredForExecution:true,jpkLegacyPlanFreshnessRecomputed:true,noAutomaticBetting:true,manualExecutionOnly:true,finalGreenRecheckMandatory:true,noPromotionsRequired:true,noUnverifiedIdentityPromotion:true,noUnverifiedThresholdPromotion:true,realMoneyAllowed:green.length>0}};
 fs.mkdirSync('loterias-ai/edge-live/evidence',{recursive:true});
 fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
-console.log(JSON.stringify({state:out.state,selectedLaneId:out.selectedLaneId,coverage:out.coverage,wagerBet:lanes.find(x=>x.monitor?.key==='generic:WAGER_BET')||null},null,2));
+console.log(JSON.stringify({state:out.state,selectedLaneId:out.selectedLaneId,coverage:out.coverage,jpk:lanes[0],wagerBet:lanes.find(x=>x.monitor?.key==='generic:WAGER_BET')||null},null,2));
 }
