@@ -10,6 +10,7 @@ fs.mkdirSync(META,{recursive:true});
 const now=new Date();
 const nowIso=now.toISOString();
 const isoDate=d=>d.toISOString().slice(0,10);
+const today=isoDate(now);
 const normDate=v=>String(v||'').slice(0,10);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const money=v=>{if(v==null||v==='')return null;const n=Number(String(v).replace(/\./g,'').replace(',','.'));return Number.isFinite(n)?n:null;};
@@ -68,16 +69,34 @@ for(let d=new Date(start);d<=now;d.setUTCDate(d.getUTCDate()+1)){
 
 const oldConflictDoc=fs.existsSync(CONFLICTS)?JSON.parse(fs.readFileSync(CONFLICTS,'utf8')):{conflicts:[]};
 const conflictMap=new Map((oldConflictDoc.conflicts||[]).map(x=>[x.date,x]));
-let attempted=0,inserted=0,alreadyPresent=0,empty=0,failed=0;
-const failures=[],insertedDates=[];
+let attempted=0,inserted=0,alreadyPresent=0,empty=0,waiting=0,failed=0;
+const failures=[],waitingDetails=[],insertedDates=[];
 
 for(const [i,date] of targetDates.entries()){
   attempted++;
   try{
     const {url,row,reason}=await fetchOfficial(date);
-    if(!row){empty++;failures.push({date,reason:reason||'NO_OFFICIAL_ROW',url});continue;}
+    if(!row){
+      if(date===today){
+        waiting++;
+        waitingDetails.push({date,reason:'OFFICIAL_RESULT_NOT_READY',sourceReason:reason||'NO_OFFICIAL_ROW',url});
+      }else {
+        empty++;
+        failures.push({date,reason:reason||'NO_OFFICIAL_ROW',url});
+      }
+      continue;
+    }
     const parsed=parseOfficial(row);
-    if(!parsed.validMain||!parsed.validStars){failed++;failures.push({date,reason:'INCOMPLETE_OFFICIAL_5PLUS2',official:{main:parsed.main,stars:parsed.stars,raw:parsed.raw},url});continue;}
+    if(!parsed.validMain||!parsed.validStars){
+      if(date===today){
+        waiting++;
+        waitingDetails.push({date,reason:'OFFICIAL_RESULT_NOT_READY',sourceReason:'INCOMPLETE_OFFICIAL_5PLUS2',official:{main:parsed.main,stars:parsed.stars,raw:parsed.raw},url});
+      }else {
+        failed++;
+        failures.push({date,reason:'INCOMPLETE_OFFICIAL_5PLUS2',official:{main:parsed.main,stars:parsed.stars,raw:parsed.raw},url});
+      }
+      continue;
+    }
     const existing=byDate.get(date)?.record||null;
     if(existing){
       const storedMain=sorted(existing.result?.main),storedStars=sorted(existing.result?.stars);
@@ -113,6 +132,6 @@ for(const [i,date] of targetDates.entries()){
 for(const {p,doc} of docs.values())fs.writeFileSync(p,JSON.stringify(doc,null,2)+'\n');
 const conflictDoc={generatedAt:nowIso,gameId:'euromillones',policy:'QUARANTINE_DO_NOT_OVERWRITE_ARCHIVE_RESULT',conflicts:[...conflictMap.values()].sort((a,b)=>a.date.localeCompare(b.date))};
 fs.writeFileSync(CONFLICTS,JSON.stringify(conflictDoc,null,2)+'\n');
-const out={generatedAt:nowIso,gameId:'euromillones',source:'SELAE /servicios/fechav3 game_id=EMIL',latestBefore:latest,targetDates,attempted,inserted,insertedDates,alreadyPresent,empty,failed,openConflicts:conflictDoc.conflicts.length,qualityPass:conflictDoc.conflicts.length===0,guards:{exactDateRequired:true,complete5plus2Required:true,officialSourceOnly:true,noSecondaryFill:true,overwriteOnConflict:false,conflictsQuarantined:true},failures};
+const out={generatedAt:nowIso,gameId:'euromillones',source:'SELAE /servicios/fechav3 game_id=EMIL',latestBefore:latest,targetDates,attempted,inserted,insertedDates,alreadyPresent,empty,waiting,waitingDetails,failed,openConflicts:conflictDoc.conflicts.length,qualityPass:conflictDoc.conflicts.length===0,guards:{exactDateRequired:true,complete5plus2Required:true,currentScheduledDrawMayBeUnpublished:true,officialSourceOnly:true,noSecondaryFill:true,overwriteOnConflict:false,conflictsQuarantined:true},failures};
 fs.writeFileSync(STATUS,JSON.stringify(out,null,2)+'\n');
-console.log(JSON.stringify({...out,failures:failures.length},null,2));
+console.log(JSON.stringify({...out,waitingDetails:waitingDetails.length,failures:failures.length},null,2));
