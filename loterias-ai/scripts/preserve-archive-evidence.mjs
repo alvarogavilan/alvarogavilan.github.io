@@ -28,6 +28,24 @@ function officialEconomicsEvidence(r) {
   return false;
 }
 
+function strictResultVerification(r) {
+  if (!r || typeof r !== 'object') return false;
+  const status = String(r.verification?.status || '');
+  const cross = r.verification?.officialCrossCheck;
+  if (/^OFFICIAL_[A-Z0-9_]*VALIDATED$/i.test(status)) return true;
+  if (cross?.complete === true && (providerIsSelae(cross?.provider) || /BOE/i.test(String(cross?.provider || '')))) return true;
+  return false;
+}
+
+function officialConflictEvidence(r) {
+  const status = String(r?.verification?.status || '');
+  return /CONFLICT|QUARANTIN/i.test(status);
+}
+
+function sameResultPayload(a, b) {
+  return JSON.stringify(a?.result ?? null) === JSON.stringify(b?.result ?? null);
+}
+
 function officialEvidence(r) {
   if (!r || typeof r !== 'object') return false;
   if (r.source?.official === true || providerIsSelae(r.source?.provider)) return true;
@@ -53,6 +71,7 @@ const report = {
   missingRowsRestored: 0,
   nonEvidenceMissingRowsNotRestored: 0,
   officialRowsProtected: 0,
+  strictResultVerificationProtected: 0,
   officialEconomicsProtected: 0,
   economicsRestored: 0,
   touchedFiles: [],
@@ -91,7 +110,38 @@ for (const rel of walk(beforeRoot, beforeRoot)) {
       changed = true;
       continue;
     }
-    const newRow = after.records[idx];
+
+    let newRow = after.records[idx];
+
+    // Result certification is stricter than generic "official" provenance or
+    // economics. A refresh must not erase an exact officialCrossCheck merely
+    // because the replacement row still comes from SELAE. Preserve the strict
+    // verification only when the certified result payload itself is unchanged.
+    if (strictResultVerification(oldRow) && !strictResultVerification(newRow) && !officialConflictEvidence(newRow)) {
+      if (sameResultPayload(oldRow, newRow)) {
+        after.records[idx] = {
+          ...newRow,
+          verification: oldRow.verification,
+          ...(Object.prototype.hasOwnProperty.call(oldRow, 'trainingEligible')
+            ? { trainingEligible: oldRow.trainingEligible }
+            : {})
+        };
+        newRow = after.records[idx];
+        report.strictResultVerificationProtected++;
+        changed = true;
+      } else {
+        after.records[idx] = { ...newRow, trainingEligible: false };
+        newRow = after.records[idx];
+        report.violations.push({
+          file: rel,
+          key,
+          reason: 'STRICT_RESULT_VERIFICATION_WOULD_BE_LOST_WITH_RESULT_PAYLOAD_DRIFT'
+        });
+        report.pass = false;
+        changed = true;
+      }
+    }
+
     if (officialEvidence(oldRow) && !officialEvidence(newRow)) {
       after.records[idx] = oldRow;
       report.officialRowsProtected++;
@@ -100,9 +150,9 @@ for (const rel of walk(beforeRoot, beforeRoot)) {
     }
     if (officialEconomicsEvidence(oldRow) && !officialEconomicsEvidence(newRow)) {
       after.records[idx] = { ...newRow, economics: oldRow.economics };
+      newRow = after.records[idx];
       report.officialEconomicsProtected++;
       changed = true;
-      continue;
     }
     if (oldRow?.economics && !newRow?.economics) {
       after.records[idx] = { ...newRow, economics: oldRow.economics };
