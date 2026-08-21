@@ -1,9 +1,9 @@
 {
   "version": "botemania-generic-fast-reset-ledger-v2-stable-id",
-  "generatedAt": "2026-08-21T06:19:01.906Z",
+  "generatedAt": "2026-08-21T06:19:57.737Z",
   "operator": "botemania-es",
   "source": "botemania-all-network-live-state-v1.json",
-  "sourceFeedGeneratedAt": "2026-08-21T06:19:01.645Z",
+  "sourceFeedGeneratedAt": "2026-08-21T06:08:59.591Z",
   "coverage": {
     "genericRows": 29,
     "stableTrackCount": 11,
@@ -15,7 +15,7 @@
       "trackKey": "generic:bouncy_bubbles_id",
       "network": "generic",
       "id": "bouncy_bubbles_id",
-      "amountEUR": 1940.28,
+      "amountEUR": 1940.11,
       "rowCount": 2,
       "collapsedAliasRows": 1,
       "identityClass": "EXACT_NETWORK_PLUS_UNIQUE_ID"
@@ -51,7 +51,7 @@
       "trackKey": "generic:GOLD",
       "network": "generic",
       "id": "GOLD",
-      "amountEUR": 3010.05,
+      "amountEUR": 3009.9,
       "rowCount": 1,
       "collapsedAliasRows": 0,
       "identityClass": "EXACT_NETWORK_PLUS_UNIQUE_ID"
@@ -60,7 +60,7 @@
       "trackKey": "generic:GRAND",
       "network": "generic",
       "id": "GRAND",
-      "amountEUR": 15681.64,
+      "amountEUR": 15681.41,
       "rowCount": 2,
       "collapsedAliasRows": 1,
       "identityClass": "EXACT_NETWORK_PLUS_UNIQUE_ID"
@@ -69,7 +69,7 @@
       "trackKey": "generic:JackpotPool",
       "network": "generic",
       "id": "JackpotPool",
-      "amountEUR": 1535.15,
+      "amountEUR": 1523.13,
       "rowCount": 3,
       "collapsedAliasRows": 2,
       "identityClass": "EXACT_NETWORK_PLUS_UNIQUE_ID"
@@ -78,7 +78,7 @@
       "trackKey": "generic:pool1",
       "network": "generic",
       "id": "pool1",
-      "amountEUR": 1535.15,
+      "amountEUR": 1523.13,
       "rowCount": 1,
       "collapsedAliasRows": 0,
       "identityClass": "EXACT_NETWORK_PLUS_UNIQUE_ID"
@@ -118,9 +118,9 @@
       "rowCount": 6,
       "distinctAmounts": [
         1044.92,
-        1535.15,
-        15681.64,
-        126287.11
+        1523.13,
+        15681.41,
+        126286.24
       ],
       "reason": "SAME_NETWORK_ID_MULTIPLE_AMOUNTS",
       "economicPromotionAllowed": false
@@ -130,14 +130,43 @@
       "id": "progressive_id1",
       "rowCount": 3,
       "distinctAmounts": [
-        1535.15,
-        15681.64
+        1523.13,
+        15681.41
       ],
       "reason": "SAME_NETWORK_ID_MULTIPLE_AMOUNTS",
       "economicPromotionAllowed": false
     }
   ],
-  "events": [],
+  "events": [
+    {
+      "eventKey": "generic:JackpotPool|1526.95|1523.13|2026-08-21T06:08:59.591Z",
+      "observedAt": "2026-08-21T06:08:59.591Z",
+      "trackKey": "generic:JackpotPool",
+      "network": "generic",
+      "id": "JackpotPool",
+      "previousEUR": 1526.95,
+      "currentEUR": 1523.13,
+      "dropEUR": 3.82,
+      "dropFraction": 0.002502,
+      "identityClass": "EXACT_NETWORK_PLUS_UNIQUE_ID",
+      "classification": "UNCLASSIFIED_DROP_CANDIDATE",
+      "economicPromotionAllowed": false
+    },
+    {
+      "eventKey": "generic:pool1|1526.95|1523.13|2026-08-21T06:08:59.591Z",
+      "observedAt": "2026-08-21T06:08:59.591Z",
+      "trackKey": "generic:pool1",
+      "network": "generic",
+      "id": "pool1",
+      "previousEUR": 1526.95,
+      "currentEUR": 1523.13,
+      "dropEUR": 3.82,
+      "dropFraction": 0.002502,
+      "identityClass": "EXACT_NETWORK_PLUS_UNIQUE_ID",
+      "classification": "UNCLASSIFIED_DROP_CANDIDATE",
+      "economicPromotionAllowed": false
+    }
+  ],
   "legacyRankBasedEvidence": {
     "quarantined": true,
     "sourceVersion": "botemania-generic-fast-reset-ledger-v1",
@@ -473,9 +502,22 @@
     "economicPromotionAllowed": false
   },
   "summary": {
-    "eventCount": 0,
+    "eventCount": 2,
     "newEventCount": 0,
-    "newestEvent": null
+    "newestEvent": {
+      "eventKey": "generic:pool1|1526.95|1523.13|2026-08-21T06:08:59.591Z",
+      "observedAt": "2026-08-21T06:08:59.591Z",
+      "trackKey": "generic:pool1",
+      "network": "generic",
+      "id": "pool1",
+      "previousEUR": 1526.95,
+      "currentEUR": 1523.13,
+      "dropEUR": 3.82,
+      "dropFraction": 0.002502,
+      "identityClass": "EXACT_NETWORK_PLUS_UNIQUE_ID",
+      "classification": "UNCLASSIFIED_DROP_CANDIDATE",
+      "economicPromotionAllowed": false
+    }
   },
   "interpretation": "Stable generic jackpot ledger sourced from the same fresh all-network sample used by EDGE. Duplicate rows with the same network+ID+amount collapse to one track. Same network+ID with multiple simultaneous amounts is quarantined and never compared across samples. A stable-ID drop remains a candidate only, not proof of a win/reset.",
   "guards": {
