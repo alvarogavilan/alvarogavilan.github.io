@@ -67,7 +67,15 @@ if(both){
 const comparableTerritories=[...provinceRows,...communityRows].filter(x=>x.comparable);
 const missingTerritories=[...provinceRows,...communityRows].filter(x=>!x.comparable);
 const negativeHeadroom=comparableTerritories.filter(x=>x.seriesHeadroom<-EPS_SERIES||x.amountHeadroomEUR<-EPS_EUR);
-const headroomQualityPass=both&&aggregate?.nonNegativeWithinTolerance===true&&missingTerritories.length===0&&negativeHeadroom.length===0;
+
+const sourceSeriesExcess=d?.crossSurface?.global?.globalSeriesExcess;
+const sourceAmountExcessEUR=d?.crossSurface?.global?.globalAmountExcessEUR;
+const sourceDeltasPresent=Number.isFinite(sourceSeriesExcess)&&Number.isFinite(sourceAmountExcessEUR);
+const seriesAlgebraicDelta=aggregate&&sourceDeltasPresent?aggregate.seriesHeadroom+sourceSeriesExcess:null;
+const amountAlgebraicDeltaEUR=aggregate&&sourceDeltasPresent?aggregate.amountHeadroomEUR+sourceAmountExcessEUR:null;
+const algebraicConsistencyPass=both&&sourceDeltasPresent&&Math.abs(seriesAlgebraicDelta)<=EPS_SERIES&&Math.abs(amountAlgebraicDeltaEUR)<=EPS_EUR;
+const sourceCrossSurfacePass=!both||d?.crossSurface?.qualityPass===true;
+const headroomQualityPass=both&&aggregate?.nonNegativeWithinTolerance===true&&missingTerritories.length===0&&negativeHeadroom.length===0&&algebraicConsistencyPass&&sourceCrossSurfacePass;
 
 d.crossSurfaceHeadroom={
   definition:'consignation-minus-sales',
@@ -79,10 +87,23 @@ d.crossSurfaceHeadroom={
   communities:communityRows,
   missingTerritories,
   negativeHeadroom,
+  consistency:{
+    sourceCrossSurfacePass,
+    sourceDeltasPresent,
+    expectedRelationship:'headroom = -(sales-minus-consignation excess)',
+    sourceSeriesExcess:sourceSeriesExcess??null,
+    sourceAmountExcessEUR:sourceAmountExcessEUR??null,
+    seriesAlgebraicDelta,
+    amountAlgebraicDeltaEUR,
+    seriesTolerance:EPS_SERIES,
+    amountToleranceEUR:EPS_EUR,
+    algebraicConsistencyPass
+  },
   qualityPass:headroomQualityPass
 };
 d.aggregateHeadroomPersisted=aggregate!==null;
 d.salesConsignationHeadroomRequired=true;
+d.salesConsignationHeadroomAlgebraicConsistencyRequired=true;
 
 if(d.bothSurfacesReady===true){
   d.qualityPass=d.qualityPass===true&&headroomQualityPass;
@@ -101,6 +122,8 @@ console.log(JSON.stringify({
   aggregate:d.crossSurfaceHeadroom.aggregate,
   missingTerritories:d.crossSurfaceHeadroom.missingTerritories.length,
   negativeHeadroom:d.crossSurfaceHeadroom.negativeHeadroom.length,
+  algebraicConsistencyPass:d.crossSurfaceHeadroom.consistency.algebraicConsistencyPass,
+  sourceCrossSurfacePass:d.crossSurfaceHeadroom.consistency.sourceCrossSurfacePass,
   headroomQualityPass:d.crossSurfaceHeadroom.qualityPass,
   analysisReady:d.analysisReady,
   readinessReason:d.readinessReason
