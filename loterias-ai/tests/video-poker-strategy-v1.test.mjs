@@ -83,8 +83,8 @@ function remainingDeck(hand) {
     // chosen hold's EV must be within a small, explicit tolerance of the
     // true exact-optimal EV for that specific hand, never wildly worse.
     const { exactHoldEV } = await import('../casino/video-poker/exact-hold-ev-v1.mjs');
-    const chosenEV = exactHoldEV(hand, chosenIdx, rest, STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE).evCredits;
-    assert.ok(exact.evCredits - chosenEV <= 0.5, `hand ${JSON.stringify(hand)}: strategy EV ${chosenEV} too far below exact-optimal EV ${exact.evCredits}`);
+    const chosenEV = exactHoldEV(hand, chosenIdx, rest, STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE).evReturnMultiple;
+    assert.ok(exact.evReturnMultiple - chosenEV <= 0.5, `hand ${JSON.stringify(hand)}: strategy EV ${chosenEV} too far below exact-optimal EV ${exact.evReturnMultiple}`);
   }
 }
 

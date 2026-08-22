@@ -32,7 +32,7 @@
 import { evaluateHand } from './hand-evaluator-v1.mjs';
 
 export const STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE = {
-  royalFlushCredits: 800, // per 1 credit bet; the real 4000-credit 5-coin bonus is a separate, well-known wrinkle not modelled here
+  royalFlushReturnMultiple: 800, // per 1 credit bet; the real 4000-credit 5-coin bonus is a separate, well-known wrinkle not modelled here
   STRAIGHT_FLUSH: 50,
   FOUR_OF_A_KIND: 25,
   FULL_HOUSE: 9,

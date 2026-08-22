@@ -1,6 +1,6 @@
 {
   "version": "optimal-hold-engine-validation-v1",
-  "generatedAt": "2026-08-22T11:05:15.065Z",
+  "generatedAt": "2026-08-22T11:26:47.597Z",
   "purpose": "Real, persisted proof that chooseOptimalHold() is genuinely paytable- and progressive-parametric, not a fixed heuristic - required before any claim that this engine could safely determine strategy for an actual live progressive.",
   "demonstrationA_differentPaytables": {
     "hand": [
@@ -81,9 +81,51 @@
       2,
       3
     ],
-    "lowJackpotEvCredits": 4,
-    "highJackpotEvCredits": 23.851063829787233,
+    "lowJackpotEvReturnMultiple": 4,
+    "highJackpotEvReturnMultiple": 23.851063829787233,
     "decisionDiffers": true
+  },
+  "demonstrationC_replaceVsAddToBase": {
+    "hand": [
+      {
+        "rank": 10,
+        "suit": 0
+      },
+      {
+        "rank": 11,
+        "suit": 0
+      },
+      {
+        "rank": 12,
+        "suit": 0
+      },
+      {
+        "rank": 13,
+        "suit": 0
+      },
+      {
+        "rank": 14,
+        "suit": 0
+      }
+    ],
+    "jackpotEUR": 5000,
+    "replaceEvReturnMultiple": 5000,
+    "addToBaseEvReturnMultiple": 5800,
+    "fixedRoyalReturnMultiple": 800,
+    "differenceMatchesFixedRoyalPayout": true
+  },
+  "failClosedRejections": {
+    "unknownPayoutMode": {
+      "applied": false,
+      "reason": "PAYOUT_MODE_MISSING_OR_UNKNOWN",
+      "effective": null
+    },
+    "unsupportedTriggerSuitCategory": {
+      "applied": false,
+      "reason": "UNSUPPORTED_TRIGGER_SUIT_CATEGORY",
+      "effective": null
+    },
+    "bothRejectedCorrectly": true
   },
   "decision": {
     "exactPerHandOptimizerValidated": true,

@@ -57,8 +57,17 @@ export function evaluateHand(cards) {
   return 'NOTHING';
 }
 
+// Units, unambiguously: every number this module returns or accepts as a
+// paytable/payout value is a RETURN MULTIPLE of a single 1-credit bet -
+// dimensionless, not a currency amount (25 means "25x your 1-credit bet
+// back", not "25 EUR"). A paytable's fixed entries (FOUR_OF_A_KIND: 25,
+// etc.) already follow this convention throughout this codebase; this
+// comment exists so a future progressive/currency calculation is never
+// blended with a raw paytable multiple without first converting units
+// explicitly (see optimal-hold-engine-v1.mjs's resolveProgressiveConfig for
+// exactly that conversion: jackpotEUR / (denomination * creditsBet)).
 export function payoutCredits(category, paytable) {
-  if (category === 'ROYAL_FLUSH') return paytable.royalFlushCredits ?? 0;
+  if (category === 'ROYAL_FLUSH') return paytable.royalFlushReturnMultiple ?? 0;
   return paytable[category] ?? 0;
 }
 
@@ -70,22 +79,30 @@ export function royalFlushSuit(cards) {
   return evaluateHand(cards) === 'ROYAL_FLUSH' ? cards[0].suit : null;
 }
 
-// Resolves the exact payout for a finished hand, applying a progressive
-// jackpot override when applicable. `progressive` (optional):
-//   { effectiveCredits, triggerCategory = 'ROYAL_FLUSH', triggerSuit = null }
-// `effectiveCredits` must already be computed (jackpotEUR / (denomination *
-// creditsBet)) and must already reflect an ineligible bet (qualifyingBet not
-// met) by being omitted entirely - this function never evaluates staking
-// eligibility itself, it only applies whatever override it's given.
+// Resolves the exact payout (return multiple) for a finished hand, applying
+// a progressive jackpot override when applicable. `progressive` (optional)
+// must already be a FULLY VALIDATED effective config - this function trusts
+// it completely and never itself validates payoutMode, staking eligibility,
+// or trigger-suit/category combinations; all of that validation (including
+// the fail-closed rejections) happens once, upfront, in
+// optimal-hold-engine-v1.mjs's resolveProgressiveConfig(), specifically so
+// this function - called once per enumerated draw, up to ~1.5M times per
+// hand - never has to branch on invalid-input handling in its hot path.
+// Shape: { effectiveReturnMultiple, triggerCategory, triggerSuit, payoutMode }
+// where payoutMode is 'REPLACE' (payout = effectiveReturnMultiple only) or
+// 'ADD_TO_BASE' (payout = the ordinary fixed paytable value PLUS
+// effectiveReturnMultiple) - resolveProgressiveConfig guarantees payoutMode
+// is always one of exactly these two values before this function ever sees it.
 export function resolvePayout(cards, paytable, progressive) {
   const category = evaluateHand(cards);
-  if (progressive && category === (progressive.triggerCategory || 'ROYAL_FLUSH')) {
-    if (progressive.triggerSuit == null || royalFlushSuit(cards) === progressive.triggerSuit) {
-      return progressive.effectiveCredits;
-    }
+  const baseReturnMultiple = payoutCredits(category, paytable);
+  if (!progressive) return baseReturnMultiple;
+  if (category !== (progressive.triggerCategory || 'ROYAL_FLUSH')) return baseReturnMultiple;
+  if (progressive.triggerSuit != null && royalFlushSuit(cards) !== progressive.triggerSuit) {
     // Made the triggering category but in the wrong suit for this
     // progressive - falls back to the ordinary fixed payout, never the
     // jackpot amount.
+    return baseReturnMultiple;
   }
-  return payoutCredits(category, paytable);
+  return progressive.payoutMode === 'ADD_TO_BASE' ? baseReturnMultiple + progressive.effectiveReturnMultiple : progressive.effectiveReturnMultiple;
 }
