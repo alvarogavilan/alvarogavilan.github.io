@@ -1,0 +1,63 @@
+{
+  "version": "tiki-alice-paired-reset-relationship-v1",
+  "generatedAt": "2026-08-22T01:48:00.000Z",
+  "operator": "botemania-es",
+  "hypothesis": {
+    "operatorClaim": "Winfall Wishes Jackpot shares its progressive pot with Wonderland and La Isla de Tiki Templo and all reset together after an award.",
+    "feedCandidates": {
+      "tikiTemplo": "generic:tikitemple2_1",
+      "wonderland": "generic:progressivealice1"
+    },
+    "scope": "TEST_COUPLED_RESET_RELATIONSHIP_ONLY_NOT_EXACT_ALIAS_OR_GAME_IDENTITY"
+  },
+  "relationship": {
+    "pairIds": [
+      "generic:tikitemple2_1",
+      "generic:progressivealice1"
+    ],
+    "operatorRuleSupportsCoupling": true,
+    "exactAliasDisproved": true,
+    "frozenDiscoveryPresent": true,
+    "frozenDiscoveryResetAt": "2026-08-21T14:44:06.603Z",
+    "prospectivePairedResetCount": 0,
+    "independentPairedResetCount": 1,
+    "requiredIndependentPairedResets": 2,
+    "pairedResetCouplingCandidate": true,
+    "pairedResetCouplingVerified": false,
+    "exactAliasVerified": false,
+    "exactGameIdentityVerified": false,
+    "winfallExactLiveIdVerified": false,
+    "economicPromotionAllowed": false,
+    "realMoneyAllowed": false,
+    "pairedEvents": [
+      {
+        "observedAt": "2026-08-21T14:44:06.603Z",
+        "tiki": {
+          "previousEUR": 1208.43,
+          "currentEUR": 2.82,
+          "eventKey": "generic:tikitemple2_1|1208.43|2.82|2026-08-21T14:44:06.603Z"
+        },
+        "alice": {
+          "previousEUR": 1208.43,
+          "currentEUR": 2.82,
+          "eventKey": "generic:progressivealice1|1208.43|2.82|2026-08-21T14:44:06.603Z"
+        },
+        "sameTransition": true,
+        "isFrozenDiscoveryEvent": true
+      }
+    ],
+    "nextStep": "WAIT_FOR_SECOND_INDEPENDENT_SYNCHRONIZED_RESET_AFTER_FROZEN_DISCOVERY_EVENT"
+  },
+  "guards": {
+    "firstResetFrozenBeforeProspectiveReplication": true,
+    "secondIndependentPairedResetRequired": true,
+    "exactAliasDisproofIsMonotonic": true,
+    "pairedResetCouplingNeverEqualsExactGameIdentity": true,
+    "pairedResetCouplingNeverEqualsWinfallLiveId": true,
+    "noAmountEqualityIdentityInference": true,
+    "noJackpotWinAttributionFromMeterReset": true,
+    "noHazardInferenceFromTwoResets": true,
+    "noBetting": true,
+    "realMoneyAllowed": false
+  }
+}
