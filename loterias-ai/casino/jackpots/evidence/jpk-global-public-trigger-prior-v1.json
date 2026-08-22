@@ -1,0 +1,40 @@
+{
+  "version": "jpk-global-public-trigger-prior-v1",
+  "generatedAt": "2026-08-22T14:15:00Z",
+  "purpose": "CROSS_MARKET_TRIGGER_POSITION_PRIOR_ONLY",
+  "sources": [
+    {
+      "url": "https://www.casinolistings.com/jackpots/blueprint-gaming",
+      "sourceClass": "GLOBAL_THIRD_PARTY_TRACKER",
+      "claim": "recent Blueprint Jackpot King Royal/Regal wins with amounts"
+    },
+    {
+      "url": "https://www.casinotrackpot.com/en/jackpot-trackers/jackpot-king/",
+      "sourceClass": "GLOBAL_THIRD_PARTY_TRACKER",
+      "claim": "Royal must drop before GBP 3500 and Regal before GBP 35000; tracker exposes historical amount/time surfaces"
+    }
+  ],
+  "market": "PADDYPOWER_BETFAIR_UK_COMPARATOR",
+  "capsGBP": {"ROYAL": 3500, "REGAL": 35000},
+  "wins": [
+    {"tier":"ROYAL","amountGBP":1929},
+    {"tier":"ROYAL","amountGBP":1047},
+    {"tier":"ROYAL","amountGBP":2261},
+    {"tier":"ROYAL","amountGBP":3024},
+    {"tier":"REGAL","amountGBP":15859}
+  ],
+  "spain": {
+    "operator":"botemania-es",
+    "capsEUR":{"ROYAL":4078.97,"REGAL":40789.77},
+    "marketEquivalent":false,
+    "hazardEquivalent":false,
+    "seedEquivalent":false
+  },
+  "guards": {
+    "tinyPublicSample": true,
+    "noSpainThresholdPromotion": true,
+    "noHazardFitFromThisSample": true,
+    "realMoneyAllowed": false,
+    "stakeEUR": 0
+  }
+}
