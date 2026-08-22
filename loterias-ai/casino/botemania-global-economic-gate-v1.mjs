@@ -6,7 +6,7 @@ const RANK='loterias-ai/casino/archive/evidence/botemania-state-dependent-priori
 const JPK='loterias-ai/casino/jackpots/evidence/botemania-jpk-current-all-games-ev-screen-v1.json';
 const IRISH='loterias-ai/casino/jackpots/evidence/botemania-irish-riches-jpk-current-screen-v1.json';
 const LEDGER='loterias-ai/casino/jackpots/evidence/botemania-generic-fast-reset-ledger-v1.json';
-const MAP='loterias-ai/casino/jackpots/evidence/botemania-progressive-network-map-v1.json';
+const MAP='loterias-ai/casino/archive/evidence/botemania-progressive-network-map-v1.json';
 const MULTI_EXECUTION='loterias-ai/edge-live/evidence/edge-live-multi-execution-plan-v1.json';
 const EXECUTION_FALLBACK='loterias-ai/edge-live/evidence/edge-live-execution-plan-v1.json';
 const OUT='loterias-ai/casino/evidence/botemania-global-economic-gate-v1.json';
@@ -67,13 +67,13 @@ const selectedValidUntilMs=Date.parse(selectedValidUntil||'');
 const selectedFreshNow=Number.isFinite(selectedValidUntilMs)&&selectedValidUntilMs>Date.now();
 
 const out={
-  version:'botemania-global-economic-gate-v1.2-multi-execution-wired',generatedAt:new Date().toISOString(),operator:'botemania-es',
+  version:'botemania-global-economic-gate-v1.3-zero-reset-map-path',generatedAt:new Date().toISOString(),operator:'botemania-es',
   scope:{promotionsExcluded:true,publicOperatorGamesOnly:true,automaticBettingExcluded:true},
   coverage:{censusGames:Number(census?.summary?.gamesDiscovered||games.length||0),http200:Number(census?.summary?.http200||0),gamesWithPublishedRtp:Number(census?.summary?.withRtp||withRtp.length||0),progressiveOrJackpotCandidates:Number(rank?.summary?.progressiveOrJackpotCandidates||progressive.length||0),stateOrMustDropCandidates:Number(rank?.summary?.stateOrMustDropCandidates||dynamic.length||0),jackpotKingGames:Number(census?.summary?.jackpotKing||0),jpkCurrentlyScreenable:jpkRows.filter(x=>x.screenable===true).length,resetZeroCandidates:resetZeroRows.length,genericLiveMeterTracks:liveTracks.length,genericResetCandidateEvents:resetEvents.length,staticPublishedRtpAtOrAbove100Count:staticPublishedAtOrAbove100.length,executionLanesTracked:executionLanes.length,executionLanesGreen:validatedEconomicCandidates.length},
   currentEvidence:{jpkObservedAt:jpk.observedAt||null,jpkRobustResearchScreenPassCount:robustJpk.length,irishObservedAt:irish?.current?.observedAt||null,irishBestResearchRtpPct:Number(irish?.current?.bestRtpPct)||null,irishCurrentPositiveEvProven:irishPass,researchScreenCandidates,executionPlan:{generatedAt:execution?.generatedAt||null,selectedLaneId:execution?.selectedLaneId||null,state:execution?.state||null,action:execution?.order?.action||null,validUntil:selectedValidUntil,freshNow:selectedFreshNow,trackedLanes:executionLanes.length,greenLanes:validatedEconomicCandidates.length},topDynamic,staticPublishedRtpAtOrAbove100:staticPublishedAtOrAbove100.slice(0,20)},
   validatedEconomicCandidates,
   decision:{state:currentAnyValidatedPositiveEv?'VALIDATED_POSITIVE_EV_CANDIDATE_EXISTS':'NO_VALIDATED_POSITIVE_EV_CANDIDATE',action:currentAnyValidatedPositiveEv?'MANUAL_EXECUTION_ALLOWED_IF_FINAL_RECHECK_GREEN':'DO_NOT_PLAY',validatedPositiveEvCount:validatedEconomicCandidates.length,unresolvedProgressiveOrDynamicCandidates:unresolvedDynamicCount,realMoneyAllowed:currentAnyValidatedPositiveEv,automaticBettingAllowed:false,reason:currentAnyValidatedPositiveEv?'ONE_OR_MORE_FULL_EDGE_LIVE_EXECUTION_GATES_PASSED':'ZERO_CANDIDATES_HAVE_PASSED_FULL_EXECUTION_GATE'},
   interpretation:'Global economic gate for structural, non-promotional opportunities. Research screens never authorize wagering. Only fully green, fresh, stake-bounded EDGE LIVE lanes are promoted, and a final live recheck remains mandatory.',
-  guards:{noPromotionFromPublishedRtpAlone:true,noPromotionFromResearchScreenAlone:true,noClaimAllGamesExhaustivelyNegative:true,promotionsExcluded:true,noAutomaticBetting:true,finalGreenRecheckMandatory:true,staleExecutionPlanFailsClosed:true}
+  guards:{zeroResetMapSource:'CASINO_ARCHIVE_EVIDENCE',noPromotionFromPublishedRtpAlone:true,noPromotionFromResearchScreenAlone:true,noClaimAllGamesExhaustivelyNegative:true,promotionsExcluded:true,noAutomaticBetting:true,finalGreenRecheckMandatory:true,staleExecutionPlanFailsClosed:true}
 };
 fs.mkdirSync('loterias-ai/casino/evidence',{recursive:true});fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify({coverage:out.coverage,currentEvidence:{jpkRobustResearchScreenPassCount:out.currentEvidence.jpkRobustResearchScreenPassCount,irishBestResearchRtpPct:out.currentEvidence.irishBestResearchRtpPct,executionPlan:out.currentEvidence.executionPlan,topDynamic:out.currentEvidence.topDynamic},decision:out.decision,validatedEconomicCandidates:out.validatedEconomicCandidates},null,2));
