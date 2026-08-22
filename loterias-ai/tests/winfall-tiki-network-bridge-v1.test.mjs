@@ -6,10 +6,17 @@ const dossier={dossier:{sharedNetwork:{officiallyClaimedPartners:['Wonderland','
 const network={observedAt:'2026-08-22T00:59:30.000Z',currentByKey:{[CANDIDATE_FEED_KEY]:{amountEUR:123.45}}};
 const unverifiedTiki={identityClosure:{feedKey:CANDIDATE_FEED_KEY,verified:false},aliasClosure:{sameExactMeterDisproved:true}};
 const verifiedTiki={identityClosure:{feedKey:CANDIDATE_FEED_KEY,verified:true},aliasClosure:{sameExactMeterDisproved:true}};
+const lineage={interpretation:{tikiWonderlandRelationshipHasIndependentHistoricalLineageSupport:true},guards:{noIdentityPromotionFromLineageAlone:true}};
+const onePair={relationship:{pairedResetCouplingCandidate:true,pairedResetCouplingVerified:false,independentPairedResetCount:1}};
+const twoPairs={relationship:{pairedResetCouplingCandidate:true,pairedResetCouplingVerified:true,independentPairedResetCount:2}};
 
 {
-  const x=buildWinfallTikiBridge({dossier,tikiClosure:unverifiedTiki,network,nowMs:now});
+  const x=buildWinfallTikiBridge({dossier,tikiClosure:unverifiedTiki,network,pairedRelationship:onePair,lineage,nowMs:now});
   assert.equal(x.structuralBridge.officialWinfallSharesPotWithTikiTemplo,true);
+  assert.equal(x.structuralBridge.historicalGamesysTikiWonderlandLineageCorroborated,true);
+  assert.equal(x.structuralBridge.pairedResetCouplingCandidate,true);
+  assert.equal(x.structuralBridge.pairedResetCouplingVerified,false);
+  assert.equal(x.structuralBridge.independentPairedResetCount,1);
   assert.equal(x.structuralBridge.tikiTemploExactCounterVerified,false);
   assert.equal(x.structuralBridge.exactLiveIdVerified,false);
   assert.equal(x.current.candidateMeterEUR,123.45);
@@ -19,7 +26,15 @@ const verifiedTiki={identityClosure:{feedKey:CANDIDATE_FEED_KEY,verified:true},a
 }
 
 {
-  const x=buildWinfallTikiBridge({dossier,tikiClosure:verifiedTiki,network,nowMs:now});
+  const x=buildWinfallTikiBridge({dossier,tikiClosure:unverifiedTiki,network,pairedRelationship:twoPairs,lineage,nowMs:now});
+  assert.equal(x.structuralBridge.pairedResetCouplingVerified,true);
+  assert.equal(x.structuralBridge.exactLiveIdVerified,false,'even two paired resets plus historical lineage cannot replace exact Tiki counter identity');
+  assert.equal(x.decision.identityPromotionAllowed,false);
+  assert.equal(x.current.currentJackpotEUR,null);
+}
+
+{
+  const x=buildWinfallTikiBridge({dossier,tikiClosure:verifiedTiki,network,pairedRelationship:twoPairs,lineage,nowMs:now});
   assert.equal(x.structuralBridge.exactLiveIdVerified,true);
   assert.equal(x.current.currentJackpotEUR,123.45);
   assert.equal(x.decision.identityPromotionAllowed,true);
@@ -31,7 +46,7 @@ const verifiedTiki={identityClosure:{feedKey:CANDIDATE_FEED_KEY,verified:true},a
 
 {
   const stale={...network,observedAt:'2026-08-21T20:00:00.000Z'};
-  const x=buildWinfallTikiBridge({dossier,tikiClosure:verifiedTiki,network:stale,nowMs:now});
+  const x=buildWinfallTikiBridge({dossier,tikiClosure:verifiedTiki,network:stale,pairedRelationship:twoPairs,lineage,nowMs:now});
   assert.equal(x.structuralBridge.exactLiveIdVerified,true,'structural identity can remain verified');
   assert.equal(x.current.sourceFresh,false);
   assert.equal(x.current.currentJackpotEUR,null,'stale meter may never be exposed as current jackpot');
@@ -40,7 +55,7 @@ const verifiedTiki={identityClosure:{feedKey:CANDIDATE_FEED_KEY,verified:true},a
 
 {
   const wrongPartner={dossier:{sharedNetwork:{officiallyClaimedPartners:['Wonderland','La Isla de Tiki']}}};
-  const x=buildWinfallTikiBridge({dossier:wrongPartner,tikiClosure:verifiedTiki,network,nowMs:now});
+  const x=buildWinfallTikiBridge({dossier:wrongPartner,tikiClosure:verifiedTiki,network,pairedRelationship:twoPairs,lineage,nowMs:now});
   assert.equal(x.structuralBridge.officialWinfallSharesPotWithTikiTemplo,false);
   assert.equal(x.structuralBridge.exactLiveIdVerified,false);
 }
