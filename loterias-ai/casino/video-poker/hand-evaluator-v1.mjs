@@ -65,7 +65,8 @@ export function evaluateHand(cards) {
 // comment exists so a future progressive/currency calculation is never
 // blended with a raw paytable multiple without first converting units
 // explicitly (see optimal-hold-engine-v1.mjs's resolveProgressiveConfig for
-// exactly that conversion: jackpotEUR / (denomination * creditsBet)).
+// exactly that conversion: jackpotEUR / (denominationEURPerCredit *
+// creditsBetPerHand)).
 export function payoutCredits(category, paytable) {
   if (category === 'ROYAL_FLUSH') return paytable.royalFlushReturnMultiple ?? 0;
   return paytable[category] ?? 0;
@@ -88,21 +89,23 @@ export function royalFlushSuit(cards) {
 // optimal-hold-engine-v1.mjs's resolveProgressiveConfig(), specifically so
 // this function - called once per enumerated draw, up to ~1.5M times per
 // hand - never has to branch on invalid-input handling in its hot path.
-// Shape: { effectiveReturnMultiple, triggerCategory, triggerSuit, payoutMode }
-// where payoutMode is 'REPLACE' (payout = effectiveReturnMultiple only) or
-// 'ADD_TO_BASE' (payout = the ordinary fixed paytable value PLUS
-// effectiveReturnMultiple) - resolveProgressiveConfig guarantees payoutMode
-// is always one of exactly these two values before this function ever sees it.
+// Shape: { jackpotReturnMultiple, totalHandBetEUR, triggerCategory,
+// triggerSuit, payoutMode } where payoutMode is 'REPLACE' (payout =
+// jackpotReturnMultiple only) or 'ADD_TO_BASE' (payout = the ordinary fixed
+// paytable value PLUS jackpotReturnMultiple) - resolveProgressiveConfig
+// guarantees payoutMode is always one of exactly these two values, and
+// triggerCategory/triggerSuit are always explicit (never defaulted), before
+// this function ever sees them.
 export function resolvePayout(cards, paytable, progressive) {
   const category = evaluateHand(cards);
   const baseReturnMultiple = payoutCredits(category, paytable);
   if (!progressive) return baseReturnMultiple;
-  if (category !== (progressive.triggerCategory || 'ROYAL_FLUSH')) return baseReturnMultiple;
+  if (category !== progressive.triggerCategory) return baseReturnMultiple;
   if (progressive.triggerSuit != null && royalFlushSuit(cards) !== progressive.triggerSuit) {
     // Made the triggering category but in the wrong suit for this
     // progressive - falls back to the ordinary fixed payout, never the
     // jackpot amount.
     return baseReturnMultiple;
   }
-  return progressive.payoutMode === 'ADD_TO_BASE' ? baseReturnMultiple + progressive.effectiveReturnMultiple : progressive.effectiveReturnMultiple;
+  return progressive.payoutMode === 'ADD_TO_BASE' ? baseReturnMultiple + progressive.jackpotReturnMultiple : progressive.jackpotReturnMultiple;
 }

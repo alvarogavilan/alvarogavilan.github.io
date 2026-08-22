@@ -1,7 +1,7 @@
 {
   "version": "optimal-hold-engine-validation-v1",
-  "generatedAt": "2026-08-22T11:26:47.597Z",
-  "purpose": "Real, persisted proof that chooseOptimalHold() is genuinely paytable- and progressive-parametric, not a fixed heuristic - required before any claim that this engine could safely determine strategy for an actual live progressive.",
+  "generatedAt": "2026-08-22T11:51:54.229Z",
+  "purpose": "Real, persisted proof that chooseOptimalHold() is genuinely paytable- and progressive-parametric, fails closed on an invalid live-progressive request rather than silently downgrading, and rejects physically-impossible hand/incomplete-or-corrupt paytable inputs - all via a structured return value, never a thrown exception.",
   "demonstrationA_differentPaytables": {
     "hand": [
       {
@@ -114,22 +114,50 @@
     "fixedRoyalReturnMultiple": 800,
     "differenceMatchesFixedRoyalPayout": true
   },
+  "demonstrationD_blockedVsNoProgressive": {
+    "noProgressiveResult": {
+      "exact": true,
+      "blocked": false,
+      "heldIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "invalidProgressiveResult": {
+      "exact": false,
+      "blocked": true,
+      "configurationValid": false,
+      "heldIndices": null,
+      "blockReason": "PAYOUT_MODE_MISSING_OR_UNKNOWN"
+    },
+    "correctlyDistinguished": true
+  },
   "failClosedRejections": {
-    "unknownPayoutMode": {
-      "applied": false,
-      "reason": "PAYOUT_MODE_MISSING_OR_UNKNOWN",
-      "effective": null
+    "progressive": {
+      "unknownPayoutMode": "PAYOUT_MODE_MISSING_OR_UNKNOWN",
+      "missingTriggerCategory": "TRIGGER_CATEGORY_MISSING_OR_UNKNOWN",
+      "missingTriggerSuitMode": "TRIGGER_SUIT_MODE_MISSING_OR_UNKNOWN",
+      "specificSuitModeMissingSuit": "TRIGGER_SUIT_MISSING_FOR_SPECIFIC_SUIT_MODE",
+      "unsupportedTriggerSuitCategory": "UNSUPPORTED_TRIGGER_SUIT_CATEGORY",
+      "anySuitModeValid": true,
+      "specificSuitModeValid": true
     },
-    "unsupportedTriggerSuitCategory": {
-      "applied": false,
-      "reason": "UNSUPPORTED_TRIGGER_SUIT_CATEGORY",
-      "effective": null
+    "handAndPaytable": {
+      "duplicateCard": "HAND_DUPLICATE_CARD",
+      "invalidRank": "HAND_INVALID_CARD",
+      "decimalRank": "HAND_INVALID_CARD",
+      "invalidSuit": "HAND_INVALID_CARD",
+      "negativePaytableValue": "PAYTABLE_INVALID_VALUE",
+      "incompletePaytable": "PAYTABLE_INCOMPLETE"
     },
-    "bothRejectedCorrectly": true
+    "allRejectedCorrectly": true
   },
   "decision": {
     "exactPerHandOptimizerValidated": true,
-    "scope": "This validates the ENGINE responds correctly to changing inputs on individual example hands via exact enumeration. It does NOT establish a global exact RTP, does NOT verify any Spain-specific paytable, and does NOT authorize real money.",
+    "scope": "This validates the ENGINE responds correctly to changing inputs on individual example hands via exact enumeration, and fails closed on invalid requests. It does NOT establish a global exact RTP, does NOT verify any Spain-specific paytable, and does NOT authorize real money.",
     "globalExactRtpValidated": false,
     "spainPaytableVerified": false,
     "realMoneyAllowed": false
