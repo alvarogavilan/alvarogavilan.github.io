@@ -1,5 +1,9 @@
 import assert from 'node:assert/strict';
-import { classifyNetwork } from '../casino/jackpots/winfall-passive-network-triangulation-v2.mjs';
+import { classifyNetwork, TARGETS, CONTROLS } from '../casino/jackpots/winfall-passive-network-triangulation-v2.mjs';
+
+assert.deepEqual(TARGETS,['winfall-wishes-jackpot','wonderland','tiki-templo']);
+assert.deepEqual(CONTROLS,['paper-wins-jackpot','bote-de-secretos-del-fenix']);
+assert.ok(!TARGETS.includes('la-isla-de-tiki'),'La Isla de Tiki is not the Tiki Templo shared partner');
 
 const targets=['a','b','c'],controls=['x','y'];
 const mk=(slug,hits)=>({slug,hits});

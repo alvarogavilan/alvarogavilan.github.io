@@ -1,0 +1,43 @@
+name: Loterias AI Winfall Correct Target Guard V1
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'loterias-ai/casino/jackpots/winfall-shared-network-triangulation-v1.mjs'
+      - 'loterias-ai/casino/jackpots/winfall-passive-network-triangulation-v2.mjs'
+      - 'loterias-ai/casino/jackpots/winfall-provider-network-metadata-v1.mjs'
+      - 'loterias-ai/tests/winfall-correct-target-minimal-v1.test.mjs'
+      - 'loterias-ai/tests/winfall-passive-network-triangulation-v2.test.mjs'
+      - 'loterias-ai/tests/winfall-provider-network-metadata-v1.test.mjs'
+      - '.github/workflows/loterias-ai-winfall-correct-target-guard-v1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/jackpots/winfall-shared-network-triangulation-v1.mjs'
+      - 'loterias-ai/casino/jackpots/winfall-passive-network-triangulation-v2.mjs'
+      - 'loterias-ai/casino/jackpots/winfall-provider-network-metadata-v1.mjs'
+      - 'loterias-ai/tests/winfall-correct-target-minimal-v1.test.mjs'
+      - 'loterias-ai/tests/winfall-passive-network-triangulation-v2.test.mjs'
+      - 'loterias-ai/tests/winfall-provider-network-metadata-v1.test.mjs'
+      - '.github/workflows/loterias-ai-winfall-correct-target-guard-v1.yml'
+
+jobs:
+  target-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Syntax check corrected probes
+        run: |
+          node --check loterias-ai/casino/jackpots/winfall-shared-network-triangulation-v1.mjs
+          node --check loterias-ai/casino/jackpots/winfall-passive-network-triangulation-v2.mjs
+          node --check loterias-ai/casino/jackpots/winfall-provider-network-metadata-v1.mjs
+      - name: Freeze exact target trio
+        run: node loterias-ai/tests/winfall-correct-target-minimal-v1.test.mjs
+      - name: Passive network classifier tests
+        run: node loterias-ai/tests/winfall-passive-network-triangulation-v2.test.mjs
+      - name: Provider metadata classifier tests
+        run: node loterias-ai/tests/winfall-provider-network-metadata-v1.test.mjs
