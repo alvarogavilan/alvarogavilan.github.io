@@ -13,41 +13,85 @@ permissions:
   contents: write
 concurrency:
   group: loterias-ai-horse-official-archive
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
   archive:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
-      - name: Enrich Lototurf from SELAE
-        run: BATCH_LIMIT=500 node loterias-ai/scripts/enrich-lototurf-official-fechav3.mjs
-      - name: Discover Quíntuple Plus on racing dates
-        run: BATCH_LIMIT=500 node loterias-ai/scripts/import-quintuple-from-lototurf-dates.mjs
-      - name: Persist safely on fresh main
+          node-version: 24
+      - name: Recompute official horse archive on latest main and persist owned evidence
         shell: bash
         run: |
-          mkdir -p /tmp/horse
-          cp -r loterias-ai/data/archive/lototurf /tmp/horse/
-          cp -r loterias-ai/data/archive/quintuple-plus /tmp/horse/
-          cp loterias-ai/data/archive/_meta/lototurf-official-enrichment.json /tmp/horse/lototurf-summary.json
-          cp loterias-ai/data/archive/_meta/quintuple-ingestion.json /tmp/horse/quintuple-summary.json
-          cp loterias-ai/data/archive/_meta/quintuple-scan-state.json /tmp/horse/quintuple-state.json
-          git fetch origin main
-          git reset --hard origin/main
-          rm -rf loterias-ai/data/archive/lototurf loterias-ai/data/archive/quintuple-plus
-          cp -r /tmp/horse/lototurf loterias-ai/data/archive/
-          cp -r /tmp/horse/quintuple-plus loterias-ai/data/archive/
-          cp /tmp/horse/lototurf-summary.json loterias-ai/data/archive/_meta/lototurf-official-enrichment.json
-          cp /tmp/horse/quintuple-summary.json loterias-ai/data/archive/_meta/quintuple-ingestion.json
-          cp /tmp/horse/quintuple-state.json loterias-ai/data/archive/_meta/quintuple-scan-state.json
-          node loterias-ai/scripts/build-national-archive-index.mjs
-          node loterias-ai/scripts/build-completeness-index.mjs
-          node loterias-ai/scripts/audit-national-archive.mjs
+          set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add loterias-ai/data/archive
-          git commit -m 'data(loterias-ai): update official horse-game archive' || exit 0
-          git push origin HEAD:main
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+
+            set +e
+            BATCH_LIMIT=500 node loterias-ai/scripts/enrich-lototurf-official-fechav3.mjs
+            lototurf_rc=$?
+            BATCH_LIMIT=500 node loterias-ai/scripts/import-quintuple-from-lototurf-dates.mjs
+            quintuple_rc=$?
+            set -e
+
+            node loterias-ai/scripts/build-national-archive-index.mjs
+            node loterias-ai/scripts/build-completeness-index.mjs
+
+            set +e
+            node loterias-ai/scripts/audit-national-archive.mjs
+            audit_rc=$?
+            set -e
+            node loterias-ai/scripts/build-archive-coverage-priorities.mjs
+
+            git add \
+              loterias-ai/data/archive/lototurf \
+              loterias-ai/data/archive/quintuple-plus \
+              loterias-ai/data/archive/_meta/lototurf-official-enrichment.json \
+              loterias-ai/data/archive/_meta/lototurf-official-mismatch-quarantine.json \
+              loterias-ai/data/archive/_meta/quintuple-ingestion.json \
+              loterias-ai/data/archive/_meta/quintuple-scan-state.json \
+              loterias-ai/data/archive/manifest.json \
+              loterias-ai/data/archive/completeness-index.json \
+              loterias-ai/data/archive/_meta/archive-audit.json \
+              loterias-ai/data/archive/_meta/archive-coverage-priorities.json
+
+            if git diff --cached --quiet; then
+              echo 'Horse archive has no scientific change to persist.'
+              if [ "$lototurf_rc" -ne 0 ]; then exit "$lototurf_rc"; fi
+              if [ "$quintuple_rc" -ne 0 ]; then exit "$quintuple_rc"; fi
+              if [ "$audit_rc" -ne 0 ]; then exit "$audit_rc"; fi
+              exit 0
+            fi
+
+            git commit -m 'data(loterias-ai): update official horse-game archive'
+            if git push origin HEAD:main; then
+              if [ "$lototurf_rc" -ne 0 ]; then
+                echo 'Persisted Lototurf diagnostics; failing closed because enrichment reported an error.' >&2
+                exit "$lototurf_rc"
+              fi
+              if [ "$quintuple_rc" -ne 0 ]; then
+                echo 'Persisted Quíntuple diagnostics; failing closed because ingestion reported an error.' >&2
+                exit "$quintuple_rc"
+              fi
+              if [ "$audit_rc" -ne 0 ]; then
+                echo 'Persisted archive QA diagnostics; failing closed because audit quality gate is red.' >&2
+                exit "$audit_rc"
+              fi
+              exit 0
+            fi
+
+            echo "main moved during horse archive persistence; recomputing attempt $attempt/5"
+            sleep $((attempt * 2))
+          done
+
+          echo 'Unable to persist horse archive after five full recomputations on latest main.' >&2
+          exit 1
