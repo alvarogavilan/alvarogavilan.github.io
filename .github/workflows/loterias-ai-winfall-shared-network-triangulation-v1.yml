@@ -5,11 +5,15 @@ on:
   pull_request:
     paths:
       - 'loterias-ai/casino/jackpots/winfall-shared-network-triangulation-v1.mjs'
+      - 'loterias-ai/casino/jackpots/winfall-shared-target-audit-v1.mjs'
+      - 'loterias-ai/tests/winfall-shared-target-audit-v1.test.mjs'
       - '.github/workflows/loterias-ai-winfall-shared-network-triangulation-v1.yml'
   push:
     branches: [main]
     paths:
       - 'loterias-ai/casino/jackpots/winfall-shared-network-triangulation-v1.mjs'
+      - 'loterias-ai/casino/jackpots/winfall-shared-target-audit-v1.mjs'
+      - 'loterias-ai/tests/winfall-shared-target-audit-v1.test.mjs'
       - '.github/workflows/loterias-ai-winfall-shared-network-triangulation-v1.yml'
   schedule:
     - cron: '37 */2 * * *'
@@ -32,6 +36,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+      - name: Validate Winfall shared-target configuration
+        run: node loterias-ai/tests/winfall-shared-target-audit-v1.test.mjs
+      - name: Persist target-audit evidence for this run
+        run: node loterias-ai/casino/jackpots/winfall-shared-target-audit-v1.mjs
       - name: Run passive Winfall shared-network triangulation
         run: node loterias-ai/casino/jackpots/winfall-shared-network-triangulation-v1.mjs
       - name: Validate fail-closed evidence
@@ -41,6 +49,8 @@ jobs:
           import fs from 'node:fs';
           const p='loterias-ai/casino/jackpots/evidence/winfall-shared-network-triangulation-v1.json';
           const x=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(x?.hypothesis?.resolvedBotemaniaSlug!=='tiki-templo') throw new Error('wrong shared Tiki target');
+          if(x?.guards?.correctTikiTemploSlugFrozenBeforeRun!==true||x?.guards?.laIslaDeTikiNeverUsedAsSharedPartner!==true) throw new Error('shared-target guards missing');
           if(x?.decision?.exactLiveIdVerified!==false) throw new Error('discovery run must never verify exact identity');
           if(x?.decision?.economicPromotionAllowed!==false||x?.decision?.realMoneyAllowed!==false) throw new Error('economic/real-money promotion must stay false');
           if(x?.coverage?.complete!==true) throw new Error('incomplete browser coverage');
@@ -53,16 +63,19 @@ jobs:
         run: |
           set -euo pipefail
           FILE=loterias-ai/casino/jackpots/evidence/winfall-shared-network-triangulation-v1.json
+          AUDIT=loterias-ai/casino/jackpots/evidence/winfall-shared-target-audit-v1.json
           cp "$FILE" /tmp/winfall-shared-network-triangulation-v1.json
+          cp "$AUDIT" /tmp/winfall-shared-target-audit-v1.json
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git fetch origin main
           git reset --hard origin/main
           mkdir -p "$(dirname "$FILE")"
           cp /tmp/winfall-shared-network-triangulation-v1.json "$FILE"
-          git add "$FILE"
+          cp /tmp/winfall-shared-target-audit-v1.json "$AUDIT"
+          git add "$FILE" "$AUDIT"
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'data(casino): refresh Winfall shared-network triangulation'
+          git commit -m 'data(casino): refresh corrected Winfall shared-network triangulation'
           for attempt in 1 2 3; do
             if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
             sleep $((attempt*2))
