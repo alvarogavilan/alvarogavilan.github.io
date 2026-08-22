@@ -1,0 +1,105 @@
+{
+  "version": "red-tiger-timed-drop-candidate-v1",
+  "date": "2026-08-22",
+  "candidate": "Red Tiger Daily Drop / 10 Minute Drop",
+  "objective": "Determine whether the late-time increase in player-level jackpot win probability can raise conservative total RTP above 100% in a Spain-licensed configuration.",
+  "status": "HIGH_PRIORITY_RESEARCH_CANDIDATE_NOT_PLAYABLE",
+  "spainPresence": {
+    "verified": true,
+    "scope": "Red Tiger Daily Drop feature is advertised by Spain-facing licensed operators; exact participating game/configuration still requires binding.",
+    "sources": [
+      {
+        "authority": "Gran Madrid Casino Online",
+        "url": "https://www.casinogranmadridonline.es/slots/red-tiger",
+        "fact": "The Red Tiger catalogue page explicitly lists Daily Drop Jackpots as a Red Tiger feature available to users."
+      },
+      {
+        "authority": "Yaass Casino Spain",
+        "url": "https://www.yaasscasino.es/slots",
+        "fact": "The Spain-facing slot catalogue describes Red Tiger Daily Drop Jackpots as guaranteed awards distributed before a specified time each day."
+      }
+    ],
+    "exactSpainGameParticipationVerified": false,
+    "exactSpainJackpotConfigurationVerified": false
+  },
+  "supplierNetworkEvidence": {
+    "authority": "Evolution / Red Tiger",
+    "url": "https://www.evolution.com/brands/red-tiger",
+    "facts": [
+      "Red Tiger created the Daily Drop Jackpots Network.",
+      "The network distributes hourly and daily jackpots across participating games."
+    ]
+  },
+  "mechanismComparator": {
+    "sourceClass": "SPANISH_LANGUAGE_GAME_RULES_NON_SPAIN_CONFIGURATION",
+    "game": "Fortune House",
+    "url": "https://zamba-prod-strapi.s3.eu-central-1.amazonaws.com/Red_Tiger_Fortune_House_2e108a9eb5.pdf",
+    "facts": [
+      "The timed jackpot is guaranteed to pay before a set date/time.",
+      "Winning odds increase as the guaranteed latest payout time approaches.",
+      "The rules state odds increase up to 100% when the guaranteed latest payout time is reached.",
+      "A jackpot can be triggered and won by one spin and one player only.",
+      "The configuration contains Daily time, Progressive, and 10 Minute Drop time tiers.",
+      "The same rules document says RTP shown in help includes base-game RTP plus jackpot contribution.",
+      "The same configuration states 2% of stake for jackpots, but this value MUST NOT be imported into Spain without exact configuration evidence."
+    ],
+    "rtpVariantsWithJackpotPct": [91.28, 92.28, 93.28, 94.28, 95.28, 96.28, 92.18, 93.18, 94.18, 95.18, 96.18, 94.20, 95.20, 96.20, 96.09],
+    "rtpVariantsWithoutJackpotPct": [91.03, 93.13, 95.25, 96.12],
+    "spainEquivalent": false
+  },
+  "economicDecompositionComparator": {
+    "sourceClass": "OPERATOR_HELP_NON_SPAIN_CONFIGURATION",
+    "authority": "theScore Bet game help",
+    "url": "https://thescorebethelp.zendesk.com/hc/en-us/articles/13873573585293-Fortune-House",
+    "game": "Fortune House",
+    "baseGameRtpPct": 90.28,
+    "jackpotsRtpPct": 6.0,
+    "totalRtpPct": 96.28,
+    "derivedScreen": {
+      "jackpotRtpNeededFor100PctTotalPct": 9.72,
+      "requiredUpliftVsAverageSixPctJackpotBlock": 1.62,
+      "interpretation": "In this comparator only, a player-level late-time jackpot return above 9.72% would make total RTP exceed 100%; this is a screening target, not evidence that Spain or any current live state reaches it."
+    },
+    "spainEquivalent": false
+  },
+  "conservativeProbabilityScreens": [
+    {
+      "assumptions": "Comparator base RTP 90.28%, stake EUR 0.20, timed jackpot EUR 50, all other jackpot value ignored.",
+      "requiredPlayerWinProbabilityPerSpin": 0.0003888,
+      "approximatelyOneIn": 2572.01646090535
+    },
+    {
+      "assumptions": "Comparator base RTP 90.28%, stake EUR 0.20, timed jackpot EUR 100, all other jackpot value ignored.",
+      "requiredPlayerWinProbabilityPerSpin": 0.0001944,
+      "approximatelyOneIn": 5144.0329218107
+    },
+    {
+      "assumptions": "Comparator base RTP 90.28%, stake EUR 0.20, timed jackpot EUR 10000, all other jackpot value ignored.",
+      "requiredPlayerWinProbabilityPerSpin": 0.000001944,
+      "approximatelyOneIn": 514403.29218107
+    }
+  ],
+  "liveDataLead": {
+    "source": "CasinoTrackpot",
+    "url": "https://www.casinotrackpot.com/en/jackpot-trackers/daily-drop-jackpots/",
+    "claim": "Public page says it tracks live Red Tiger Daily/Progressive/10 Minute values and every recorded drop timestamp/amount.",
+    "use": "DISCOVERY_ONLY until feed provenance, network equivalence and timestamps are independently validated.",
+    "apiOrFeedEndpointRecovered": false
+  },
+  "exactBlockers": [
+    "Bind one currently available Spain-licensed Red Tiger game to the Daily/10 Minute network.",
+    "Recover that exact Spain game's RTP variant and base-vs-jackpot decomposition, or a conservative base RTP excluding the jackpot component.",
+    "Recover or prospectively estimate player-level win probability by time-to-deadline and stake; network drop probability alone is insufficient.",
+    "Verify exact stake weighting/eligible-stake cap in Spain.",
+    "Verify current live countdown and jackpot value from the same Spain network/configuration.",
+    "Account for network concurrency/winner ordering so qualification probability is not confused with this player's win probability."
+  ],
+  "decision": {
+    "candidatePriority": "VERY_HIGH",
+    "conservativeEvAbove100Verified": false,
+    "realMoneyAllowed": false,
+    "stakeEUR": 0,
+    "verdict": "NO_PLAY",
+    "reason": "The break-even hurdle is numerically plausible in comparator configurations and timed odds are documented to rise to 100% at the deadline, but Spain-specific player-level hazard and RTP decomposition are not yet verified."
+  }
+}
