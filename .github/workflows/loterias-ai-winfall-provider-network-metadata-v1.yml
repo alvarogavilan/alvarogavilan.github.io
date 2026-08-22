@@ -43,11 +43,13 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const x=JSON.parse(fs.readFileSync('loterias-ai/casino/jackpots/evidence/winfall-provider-network-metadata-v1.json','utf8'));
+          if(x?.scope?.resolvedBotemaniaSlug!=='tiki-templo') throw new Error('wrong Tiki shared target');
+          if(x?.scope?.targets?.includes('la-isla-de-tiki')) throw new Error('different La Isla de Tiki game leaked into Winfall targets');
           if(x?.coverage?.allComplete!==true) throw new Error('metadata coverage incomplete');
           if(x?.decision?.sharedNetworkConfigVerified!==false||x?.decision?.exactLiveIdVerified!==false) throw new Error('single metadata run cannot verify network/live identity');
           if(x?.decision?.economicPromotionAllowed!==false||x?.decision?.realMoneyAllowed!==false) throw new Error('promotion must remain false');
-          if(x?.guards?.providerIdAloneNeverIdentity!==true) throw new Error('provider-only guard missing');
-          console.log(JSON.stringify({coverage:x.coverage,providerComparison:x.providerComparison,candidates:x.comparison?.sharedStrongTargetOnlySemanticCandidates||[],decision:x.decision},null,2));
+          if(x?.guards?.providerIdAloneNeverIdentity!==true||x?.guards?.correctTikiTemploSlugFrozenBeforeRun!==true) throw new Error('identity/target guard missing');
+          console.log(JSON.stringify({scope:x.scope,coverage:x.coverage,providerComparison:x.providerComparison,candidates:x.comparison?.sharedStrongTargetOnlySemanticCandidates||[],decision:x.decision},null,2));
           NODE
       - name: Persist evidence on main only
         if: github.event_name != 'pull_request'
@@ -64,7 +66,7 @@ jobs:
           cp /tmp/winfall-provider-network-metadata-v1.json "$FILE"
           git add "$FILE"
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'data(casino): refresh Winfall provider network metadata'
+          git commit -m 'data(casino): refresh corrected Winfall provider network metadata'
           for attempt in 1 2 3; do
             if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
             sleep $((attempt*2))
