@@ -1,0 +1,26 @@
+name: Loterias AI Actions Runner Canary
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: loterias-ai-actions-runner-canary
+  cancel-in-progress: true
+
+jobs:
+  runner-canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Runner reached first repository-independent step
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "LOTTERIAS_AI_ACTIONS_RUNNER_OK=1"
+          echo "utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo "sha=${GITHUB_SHA}"
