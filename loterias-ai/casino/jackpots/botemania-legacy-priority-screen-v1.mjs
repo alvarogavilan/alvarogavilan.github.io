@@ -24,6 +24,8 @@ export function buildLegacyPriorityScreen(live,comparators,nowIso=new Date().toI
       comparatorSourceUrl:c.sourceUrl,
       historicalWinsRecorded:c.historicalWinsRecorded??null,
       currentSpainPublishedRTP:c.currentSpainPublishedRTP??null,
+      currentSpainPublishedBaseRTP:c.currentSpainPublishedBaseRTP??null,
+      currentSpainPublishedJackpotContribution:c.currentSpainPublishedJackpotContribution??null,
       crossMarketExecutionAllowed:false,
       realMoneyAllowed:false,
       stakeEUR:0
@@ -34,15 +36,24 @@ export function buildLegacyPriorityScreen(live,comparators,nowIso=new Date().toI
     if(Number.isFinite(amountEUR)&&Number.isFinite(c.historicalBreakEvenGBP)){
       row.nominalVsHistoricalBreakEvenRatio=+(amountEUR/c.historicalBreakEvenGBP).toFixed(4);
     }
+    if(Number.isFinite(c.currentSpainPublishedBaseRTP)){
+      row.baseRtpGapTo100=+(1-c.currentSpainPublishedBaseRTP).toFixed(6);
+    }
+    if(Number.isFinite(c.currentSpainPublishedJackpotContribution)&&c.currentSpainPublishedJackpotContribution>0&&Number.isFinite(row.baseRtpGapTo100)){
+      row.requiredJackpotUpliftVsPublishedContribution=+(row.baseRtpGapTo100/c.currentSpainPublishedJackpotContribution).toFixed(2);
+    }
     if(c.feedKey==='generic:diamondbonanza25BTM'){
       row.discoveryPriority='PRIORITY_1_DIAMOND_RECAPTURE_AND_SPAIN_TRIGGER_PROBABILITY';
-      row.reason='Exact Spain lineage/RTP/coin values are known and the last observed meter was numerically above the historical 25p average; this is discovery ranking only because currency/configuration differ.';
+      row.reason='Exact Spain lineage/RTP/coin values are known and the last observed meter was numerically above the historical 25p average; discovery ranking only because currency/configuration differ.';
     }else if(c.feedKey==='generic:WAGER_BET'){
       row.discoveryPriority='PRIORITY_2_UVP_EXACT_SPAIN_PAYTABLE_TRIGGER';
       row.reason='Exact optimizer exists, but current Spain paytable/trigger/counter binding remain unverified; historical break-even is comparator-only.';
     }else if(c.feedKey==='generic:tikitemple2_1'){
       row.discoveryPriority='PRIORITY_3_TIKI_POST_RESET_MONITOR';
       row.reason='Lineage is strong but coin tier/economics differ and the last observed Spain meter was near reset.';
+    }else if(c.feedKey==='generic:bouncy_bubbles_id'){
+      row.discoveryPriority='PRIORITY_4_BURBUJAS_SHARED_TIER_BINDING';
+      row.reason='Current Spain lineage and economics are known, but exact shared-tier binding/win probability are not. The base RTP gap is large relative to the published jackpot contribution, so it ranks below Diamond until a much stronger meter/trigger model exists.';
     }else{
       row.discoveryPriority='UNRANKED';
     }
@@ -50,7 +61,7 @@ export function buildLegacyPriorityScreen(live,comparators,nowIso=new Date().toI
     rows.push(row);
   }
   return{
-    version:'botemania-legacy-priority-screen-v1',
+    version:'botemania-legacy-priority-screen-v1.1',
     generatedAt:nowIso,
     sourceObservedAt:live?.observedAt||null,
     sourceFresh:fresh,
@@ -60,6 +71,7 @@ export function buildLegacyPriorityScreen(live,comparators,nowIso=new Date().toI
       nominalCrossMarketRatiosAreDiscoveryOnly:true,
       noCurrencyParityAssumption:true,
       noHistoricalEconomicsPromotion:true,
+      jackpotContributionIsNotWinProbability:true,
       staleMetersCannotTriggerPlay:true,
       exactSpainEVStillRequired:true,
       realMoneyAllowed:false,
@@ -74,5 +86,5 @@ if(import.meta.url===`file://${process.argv[1]}`){
   const out=buildLegacyPriorityScreen(live,comparators);
   fs.mkdirSync('loterias-ai/casino/jackpots/evidence',{recursive:true});
   fs.writeFileSync(outPath,JSON.stringify(out,null,2)+'\n');
-  console.log(JSON.stringify({sourceFresh:out.sourceFresh,sourceAgeMinutes:out.sourceAgeMinutes,ranked:out.ranked.map(x=>({feedKey:x.feedKey,amountEUR:x.amountEUR,priority:x.discoveryPriority,action:x.action,avgRatio:x.nominalVsHistoricalAverageRatio,breakEvenRatio:x.nominalVsHistoricalBreakEvenRatio})),guards:out.guards},null,2));
+  console.log(JSON.stringify({sourceFresh:out.sourceFresh,sourceAgeMinutes:out.sourceAgeMinutes,ranked:out.ranked.map(x=>({feedKey:x.feedKey,amountEUR:x.amountEUR,priority:x.discoveryPriority,action:x.action,avgRatio:x.nominalVsHistoricalAverageRatio,breakEvenRatio:x.nominalVsHistoricalBreakEvenRatio,requiredJackpotUplift:x.requiredJackpotUpliftVsPublishedContribution})),guards:out.guards},null,2));
 }
