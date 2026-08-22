@@ -1,0 +1,118 @@
+{
+  "version": "mhb-mechanism-taxonomy-v1",
+  "generatedAt": "2026-08-22T12:55:00Z",
+  "purpose": "Prevent LOTERIAS AI from treating every Must-Hit-By / Must-Win-By progressive as the same stochastic mechanism. Public regulatory, patent, manufacturer and independent-analysis sources show materially different implementations, so mechanism identity must be verified before converting a displayed cap into EV.",
+  "sources": [
+    {
+      "id": "west-virginia-light-and-wonder-atlas-mhb-2026",
+      "sourceClass": "REGULATORY_RULES",
+      "authority": "West Virginia Lottery Commission",
+      "url": "https://assets.ctfassets.net/nm98451qj5dg/3p3LtoocOXgX2PUt9zTKQp/5ec4281aa8f8a799de25a5c53d094d79/MICS-_Table_Games_Accessible.pdf",
+      "section": "3.2.13 Must Hit by Progressive",
+      "approvedDate": "2026-01-28",
+      "productFamily": "Light & Wonder Atlas progressive table-game system",
+      "supportedFacts": [
+        "The optional MHB progressive is an add-on to an existing Atlas progressive wager; no additional wager is required to qualify.",
+        "The meter increments from a configured increment rate and the total value of progressive wagers.",
+        "Each participating player is assigned an RNG value and qualifies when that value falls below a calculated threshold tied to the current progressive value.",
+        "If multiple players qualify at the same time, the player with the lowest random value is awarded the progressive.",
+        "The odds of the MHB award increase as the progressive value passes certain thresholds."
+      ],
+      "mechanismClass": "VALUE_DEPENDENT_HAZARD_WITH_MULTI_PLAYER_WINNER_SELECTION",
+      "exactPlayerWinProbabilityPublished": false,
+      "uniformHiddenThresholdSupported": false,
+      "confidence": "HIGH_FOR_MECHANISM_CLASS"
+    },
+    {
+      "id": "igt-must-win-by-symbol-driven-patent",
+      "sourceClass": "PATENT",
+      "authority": "US Patent publication US20240038021A1",
+      "url": "https://patents.google.com/patent/US20240038021A1/en",
+      "supportedFacts": [
+        "The patent describes mystery progressive systems in which an RNG can select a hidden award level inside a published range whose upper endpoint is the must-hit-by value.",
+        "It gives an illustrative $10,000-$20,000 range with a hidden selected level such as $17,200.",
+        "The same patent also discusses alternative game-determined/value-dependent must-win-by mechanisms."
+      ],
+      "mechanismClass": "MULTIPLE_MECHANISMS_DESCRIBED",
+      "productSpecificConfigurationVerified": false,
+      "confidence": "HIGH_FOR_EXISTENCE_OF_MECHANISM_NOT_FOR_ANY_SPECIFIC_LIVE_GAME"
+    },
+    {
+      "id": "ags-blackjack-match-stax-rack-card",
+      "sourceClass": "MANUFACTURER_MATERIAL",
+      "authority": "AGS",
+      "url": "https://playags.com/wp-content/uploads/2019/04/C130402-BlackjackMatch_RackCard_MustHit_4.2019.pdf",
+      "productFamily": "Blackjack Match / STAX Progressive",
+      "supportedFacts": [
+        "The product can feature a posted Must Hit By amount.",
+        "The MHB amount may be awarded at the end of a round to a player making the optional progressive wager.",
+        "The rack card directs the player to posted paytables for odds rather than publishing the MHB odds in the rack card itself."
+      ],
+      "mechanismClass": "MHB_PRESENT_EXACT_HAZARD_UNPUBLISHED_IN_SOURCE",
+      "exactPlayerWinProbabilityPublished": false,
+      "confidence": "HIGH_FOR_PRODUCT_FEATURE_LOW_FOR_ECONOMICS"
+    },
+    {
+      "id": "ags-river-dragons-trade-profile",
+      "sourceClass": "TRADE_PUBLICATION",
+      "authority": "Global Gaming Business Magazine",
+      "url": "https://ggbmagazine.com/wp-content/uploads/2025/02/GGB-Magazine-September-2017.pdf",
+      "productFamily": "AGS River Dragons",
+      "supportedFacts": [
+        "The profile describes two mystery Must Hit By jackpots.",
+        "The secondary resets at $200 and must hit by $500.",
+        "The top progressive resets at $4,000 and must hit by $5,000."
+      ],
+      "mechanismClass": "POSTED_RANGE_VERIFIED_BY_TRADE_SOURCE_DISTRIBUTION_NOT_VERIFIED",
+      "exactDistributionPublished": false,
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "wizard-of-odds-ainsworth-and-wms-mhb-analysis-2026",
+      "sourceClass": "INDEPENDENT_MATH_ANALYSIS",
+      "authority": "Wizard of Odds",
+      "url": "https://wizardofodds.com/games/slots/mystery-jackpot/",
+      "lastUpdated": "2026-08-03",
+      "supportedFacts": [
+        "The analysis treats many manufacturers' mystery MHB jackpots as approximately uniform hidden thresholds but explicitly warns that AGS behaves differently.",
+        "It reports a River Dragons example whose $4,000-$5,000 top jackpot has a calculated average hit level near $4,945.49, strongly inconsistent with a uniform $4,000-$5,000 hidden threshold whose mean would be $4,500."
+      ],
+      "mechanismClass": "EXTERNAL_EMPIRICAL_COMPARATOR_NOT_OPERATOR_RULE",
+      "confidence": "MEDIUM",
+      "economicPromotionAllowed": false
+    }
+  ],
+  "scientificConclusions": {
+    "mustHitByLabelAloneIdentifiesDistribution": false,
+    "uniformHiddenThresholdIsUniversal": false,
+    "valueDependentOrStagedHazardExistsInRegulatedProducts": true,
+    "qualificationProbabilityEqualsPlayerWinProbability": false,
+    "postedResetAndCapAloneAreEnoughForEV": false,
+    "requiredBeforeUniformThresholdEV": [
+      "exact game/system identity",
+      "uniform hidden threshold distribution verified for that exact configuration",
+      "crossing wager award rule verified",
+      "meter increment caused by the player's wager verified",
+      "base RTP excluding the MHB component verified"
+    ],
+    "requiredBeforeStagedHazardEV": [
+      "exact game/system identity",
+      "current stage/value-dependent WIN probability for this wager/player verified",
+      "multi-player winner-selection and concurrency effects already incorporated",
+      "eligibility rule verified",
+      "base RTP excluding the MHB component verified"
+    ]
+  },
+  "implementationImpact": {
+    "existingPowerLawScenarioEngineStatus": "RESEARCH_SCENARIO_ONLY",
+    "newMechanismSpecificModel": "loterias-ai/casino/jackpots/mhb-mechanism-model-v1.mjs",
+    "forbiddenPromotion": "Never promote a displayed MHB cap to executable EV by assuming alpha=1/uniform, by fitting an unverified alpha, or by treating a qualification threshold as the player's final win probability when winner selection is shared.",
+    "realMoneyAllowed": false
+  },
+  "decision": {
+    "verdict": "RESEARCH_ONLY",
+    "playNow": false,
+    "stakeEUR": 0,
+    "reason": "Mechanism taxonomy improved, but no exact currently-live game configuration in the repository has all distribution, eligibility, winner-selection, meter-increment and base-RTP inputs verified."
+  }
+}
