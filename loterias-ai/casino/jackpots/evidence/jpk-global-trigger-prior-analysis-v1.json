@@ -1,0 +1,37 @@
+{
+  "version": "jpk-global-trigger-prior-analysis-v1",
+  "sourceVersion": "jpk-global-public-trigger-prior-v1",
+  "tiers": {
+    "ROYAL": {
+      "n": 4,
+      "minCapFraction": 0.299143,
+      "medianCapFraction": 0.598571,
+      "maxCapFraction": 0.864,
+      "positions": [0.299143, 0.551143, 0.646, 0.864],
+      "hazardFitAllowed": false,
+      "reason": "INSUFFICIENT_SAMPLE_FOR_HAZARD_FIT"
+    },
+    "REGAL": {
+      "n": 1,
+      "minCapFraction": 0.453114,
+      "medianCapFraction": 0.453114,
+      "maxCapFraction": 0.453114,
+      "positions": [0.453114],
+      "hazardFitAllowed": false,
+      "reason": "INSUFFICIENT_SAMPLE_FOR_HAZARD_FIT"
+    }
+  },
+  "interpretation": {
+    "royalPublicSampleDemonstratesEarlyDrops": true,
+    "nearCapDeterminismRejected": true,
+    "marketEquivalenceVerified": false,
+    "economicPromotionAllowed": false,
+    "note": "Cross-market trigger positions may inform model class only. They do not set a Spain entry threshold."
+  },
+  "guards": {
+    "noSpainThresholdPromotion": true,
+    "noHazardFitUnlessTierNAtLeast20": true,
+    "realMoneyAllowed": false,
+    "stakeEUR": 0
+  }
+}
