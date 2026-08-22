@@ -1,0 +1,69 @@
+{
+  "version": "winfall-tiki-partner-disambiguation-v1",
+  "generatedAt": "2026-08-22T09:40:00.000Z",
+  "operator": "botemania-es",
+  "question": "Which exact Botemania catalog game is most strongly supported by the official Winfall phrase 'La Isla de Tiki Templo'?",
+  "publicEvidence": {
+    "winfall": {
+      "url": "https://www.botemania.es/juegos/slots-online/winfall-wishes-jackpot",
+      "officialSharedPartners": ["Wonderland", "La Isla de Tiki Templo"],
+      "resetTogetherClaim": true,
+      "resetEUR": 0,
+      "baseRtpPct": 94.85,
+      "contributionPct": 0.6
+    },
+    "tikiTemplo": {
+      "url": "https://www.botemania.es/juegos/slots-online/tiki-templo",
+      "exactCatalogTitle": "Tiki Templo",
+      "slug": "tiki-templo",
+      "progressive": true,
+      "minStakeEUR": 0.2,
+      "maxStakeEUR": 20,
+      "paylines": 20,
+      "baseRtpPctRange": [80.51, 88.21],
+      "contributionPct": 6.7,
+      "jackpotChanceProportionalToBet": true
+    },
+    "laIslaDeTikiBote": {
+      "url": "https://www.botemania.es/juegos/slots-online/la-isla-de-tiki-bote",
+      "exactCatalogTitle": "La Isla de Tiki Bote",
+      "slug": "la-isla-de-tiki-bote",
+      "progressive": true,
+      "minStakeEUR": 0.01,
+      "maxStakeEUR": 20,
+      "paylines": 20,
+      "rtpPct": 96.29,
+      "jackpotChanceProportionalToBet": true
+    },
+    "separateTikiBoteFamily": {
+      "paperWinsUrl": "https://www.botemania.es/juegos/slots-online/paper-wins-jackpot",
+      "botemanUrl": "https://www.botemania.es/juegos/slots-online/boteman",
+      "winstonesReferenceUrl": "https://www.monopolycasino.es/juegos/slots-online/winstones-bote",
+      "declaredPartners": ["La Isla de Tiki Bote", "Boteman", "Paper Wins Jackpot", "Winstones Bote"],
+      "interpretation": "Multiple operator rule pages independently place La Isla de Tiki Bote in the Boteman/Paper Wins/Winstones shared-jackpot family. This is strong structural evidence against silently treating it as the unresolved Winfall Tiki partner, while not logically proving that multi-network membership is impossible."
+    },
+    "catalogDistinction": {
+      "botemaniaCatalogContains": ["Tiki Templo", "La Isla de Tiki", "La Isla de Tiki Bote"],
+      "exactCatalogTitleLaIslaDeTikiTemploExists": false
+    }
+  },
+  "resolution": {
+    "wrongHistoricalTarget": "la-isla-de-tiki",
+    "wrongHistoricalTargetExcluded": true,
+    "laIslaDeTikiBoteStructurallyDisfavored": true,
+    "resolvedOperationalTarget": "tiki-templo",
+    "confidence": "HIGH_STRUCTURAL_DISAMBIGUATION",
+    "exactStringTitleVerified": false,
+    "exactCounterIdentityVerified": false,
+    "winfallExactLiveIdVerified": false,
+    "reason": "The operator phrase is not an exact catalog title. The non-jackpot La Isla de Tiki base is a distinct game. La Isla de Tiki Bote is a distinct progressive with independent official evidence tying it to the Boteman/Paper Wins/Winstones family. Tiki Templo is therefore the strongest operational resolution for the Winfall Tiki partner, but this does not identify a live feed counter."
+  },
+  "guards": {
+    "noSemanticPhraseEqualsExactIdentity": true,
+    "separateNetworkEvidenceDoesNotProveImpossibleMultiNetworkMembership": true,
+    "operationalTargetDoesNotEqualExactCounterIdentity": true,
+    "noEconomicPromotion": true,
+    "noBetting": true,
+    "realMoneyAllowed": false
+  }
+}
