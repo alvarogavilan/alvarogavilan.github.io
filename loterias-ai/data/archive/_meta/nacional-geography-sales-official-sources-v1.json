@@ -1,0 +1,87 @@
+{
+  "version": "nacional-geography-sales-official-sources-v1",
+  "capturedAt": "2026-08-22T10:57:00Z",
+  "purpose": "Document official SELAE public surfaces for Loteria Nacional geography, sales and prize-distribution research without inferring unavailable data.",
+  "officialOnly": true,
+  "trainingPromotionAllowed": false,
+  "realMoneyAllowed": false,
+  "sources": {
+    "sales": {
+      "provider": "SELAE",
+      "url": "https://www.loteriasyapuestas.es/es/loteria-nacional/ventas",
+      "dimensionsAdvertised": [
+        "CCAA",
+        "province"
+      ],
+      "fieldsAdvertised": [
+        "seriesSold",
+        "amount"
+      ],
+      "availabilityRule": "Persist values only when the requested draw returns explicit official rows. If SELAE says information is unavailable or returns an empty table, store unavailable; never infer or carry forward another draw."
+    },
+    "allocation": {
+      "provider": "SELAE",
+      "url": "https://www.loteriasyapuestas.es/es/loteria-nacional/consignacion",
+      "dimensionsAdvertised": [
+        "CCAA",
+        "province"
+      ],
+      "fieldsAdvertised": [
+        "seriesAllocated",
+        "amount"
+      ],
+      "availabilityRule": "Use only explicit official rows for the exact draw; no interpolation between draws."
+    },
+    "firstPrizePointsOfSale": {
+      "provider": "SELAE",
+      "urlPattern": "https://www.loteriasyapuestas.es/es/premios/primer-premio-de-loteria-nacional-del-<slug-del-sorteo>",
+      "fieldsObserved": [
+        "pointOfSaleAddress",
+        "municipality",
+        "province"
+      ],
+      "semantics": "Distribution/location evidence for the first prize only. It is not proof of total sales by location and must not be converted into sales volume or predictive weight.",
+      "verifiedExamples": [
+        {
+          "drawDate": "2026-06-27",
+          "officialPage": "https://www.loteriasyapuestas.es/es/premios/primer-premio-de-loteria-nacional-del-sorteo-de-loteria-nacional-del-27-de-junio-de-2026",
+          "observation": "Official page lists multiple related points of sale across provinces."
+        },
+        {
+          "drawDate": "2026-05-21",
+          "officialPage": "https://www.loteriasyapuestas.es/es/premios/primer-premio-de-loteria-nacional-del-sorteo-del-jueves-del-21-de-mayo-de-2026",
+          "observation": "Official page lists web and physical points of sale; online distribution must remain a separate channel category."
+        },
+        {
+          "drawDate": "2026-08-15",
+          "officialPage": "https://www.loteriasyapuestas.es/es/premios/primer-premio-de-loteria-nacional-del-sorteo-de-loteria-nacional-del-15-de-agosto-de-2026",
+          "observation": "Official page lists related points of sale in several provinces."
+        }
+      ]
+    },
+    "officialStatistics": {
+      "provider": "SELAE",
+      "url": "https://www.loteriasyapuestas.es/es/loteria-nacional/estadisticas",
+      "coverageStatement": "SELAE states the displayed statistics are calculated from draws since 2009-01-01.",
+      "useRule": "Treat as descriptive reference only; never as predictive evidence or as a substitute for canonical draw-level results."
+    }
+  },
+  "researchGates": {
+    "exactDrawRequired": true,
+    "noCrossDrawCarryForward": true,
+    "noInferenceFromUnavailable": true,
+    "distributionIsNotSales": true,
+    "onlineAndPhysicalChannelsSeparate": true,
+    "descriptiveStatisticsAreNotPrediction": true,
+    "prospectiveValidationRequiredForAnyModelClaim": true
+  },
+  "nextImplementation": {
+    "status": "READY_FOR_COLLECTOR_WHEN_ACTIONS_RECOVER",
+    "tasks": [
+      "Add exact-draw sales/allocation probe that persists explicit CCAA/province rows only when available.",
+      "Add first-prize point-of-sale extractor with municipality/province/channel normalization and provenance URL.",
+      "Build cross-era descriptive panels only after canonical result/economics joins are exact and leakage-free.",
+      "Keep all geography findings out of recommendations until tested prospectively against matched nulls."
+    ]
+  }
+}
