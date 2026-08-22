@@ -105,7 +105,13 @@ export function buildEvidence({ledger={},dossier={},divergence={}}={}){
 const isEntrypoint=Boolean(process.argv[1])&&import.meta.url===pathToFileURL(process.argv[1]).href;
 if(isEntrypoint){
   const out=buildEvidence({ledger:read(LEDGER)||{},dossier:read(DOSSIER)||{},divergence:read(DIVERGENCE)||{}});
+  const previous=read(OUT);
+  const materiallyUnchanged=previous&&JSON.stringify(previous.relationship)===JSON.stringify(out.relationship)&&JSON.stringify(previous.guards)===JSON.stringify(out.guards)&&JSON.stringify(previous.hypothesis)===JSON.stringify(out.hypothesis);
+  if(materiallyUnchanged){
+    console.log(JSON.stringify({unchanged:true,relationship:previous.relationship,guards:previous.guards},null,2));
+    process.exit(0);
+  }
   fs.mkdirSync(path.dirname(OUT),{recursive:true});
   fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
-  console.log(JSON.stringify({relationship:out.relationship,guards:out.guards},null,2));
+  console.log(JSON.stringify({unchanged:false,relationship:out.relationship,guards:out.guards},null,2));
 }
