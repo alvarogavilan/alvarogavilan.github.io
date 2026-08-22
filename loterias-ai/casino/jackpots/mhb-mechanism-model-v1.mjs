@@ -95,31 +95,37 @@ export function evaluateUniformHiddenThresholdRtp({
   };
 }
 
+// For staged/value-dependent systems the input must already be the WIN
+// probability for THIS wager/player, after any qualification threshold,
+// multi-player tie/winner-selection rule, and concurrency effect have been
+// incorporated. A raw probability that a wager merely qualifies is not
+// sufficient (e.g. a table system can have multiple qualifying players and
+// award only the lowest RNG value among them).
 export function evaluateStagedHazardRtp({
   baseRtpExcludingMhb,
   jackpotValueEUR,
   stakeEUR,
-  currentStageAwardProbabilityPerEligibleWager,
-  stageProbabilityVerified = false,
+  currentStageWinProbabilityForThisWager,
+  winProbabilityForThisWagerVerified = false,
   awardEligibilityVerified = false,
   baseRtpExcludesMhbVerified = false,
 }) {
-  const verification = { stageProbabilityVerified, awardEligibilityVerified, baseRtpExcludesMhbVerified };
+  const verification = { winProbabilityForThisWagerVerified, awardEligibilityVerified, baseRtpExcludesMhbVerified };
   const missing = Object.entries(verification).filter(([, v]) => v !== true).map(([k]) => k);
   if (missing.length) return blocked('UNVERIFIED_STAGE_INPUTS', { missingVerification: missing });
 
-  if (![baseRtpExcludingMhb, jackpotValueEUR, stakeEUR, currentStageAwardProbabilityPerEligibleWager].every(finiteNumber)
+  if (![baseRtpExcludingMhb, jackpotValueEUR, stakeEUR, currentStageWinProbabilityForThisWager].every(finiteNumber)
     || baseRtpExcludingMhb < 0 || jackpotValueEUR < 0 || stakeEUR <= 0
-    || currentStageAwardProbabilityPerEligibleWager < 0 || currentStageAwardProbabilityPerEligibleWager > 1) {
+    || currentStageWinProbabilityForThisWager < 0 || currentStageWinProbabilityForThisWager > 1) {
     return blocked('MISSING_OR_INVALID_STAGE_ECONOMIC_INPUT');
   }
 
-  const jackpotReturnMultiple = (currentStageAwardProbabilityPerEligibleWager * jackpotValueEUR) / stakeEUR;
+  const jackpotReturnMultiple = (currentStageWinProbabilityForThisWager * jackpotValueEUR) / stakeEUR;
   const totalRtp = baseRtpExcludingMhb + jackpotReturnMultiple;
   return {
     blocked: false,
     mechanism: MHB_MECHANISM.STAGED_HAZARD,
-    currentStageAwardProbabilityPerEligibleWager,
+    currentStageWinProbabilityForThisWager,
     jackpotReturnMultiple,
     totalRtp,
     totalRtpPct: totalRtp * 100,
@@ -147,11 +153,12 @@ export function mechanismRequirements(mechanism) {
     return {
       mechanism,
       required: [
-        'currentStageOrValueDependentAwardProbabilityVerified',
+        'currentStageWinProbabilityForThisWagerVerified',
+        'winnerSelectionAndConcurrencyAlreadyIncorporated',
         'awardEligibilityVerified',
         'baseRtpExcludesMhbVerified',
       ],
-      forbiddenAssumption: 'DO_NOT_SUBSTITUTE_UNIFORM_THRESHOLD_OR_POWER_LAW_FOR_UNPUBLISHED_STAGE_ODDS',
+      forbiddenAssumption: 'DO_NOT_USE_QUALIFICATION_THRESHOLD_AS_PLAYER_WIN_PROBABILITY_OR_IGNORE_MULTI_PLAYER_WINNER_SELECTION',
       realMoneyAllowed: false,
     };
   }
