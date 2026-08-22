@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {classifyTargetConfig,auditSources,EXPECTED_SHARED_TIKI_SLUG,WRONG_SHARED_TIKI_SLUG} from '../casino/jackpots/winfall-shared-target-audit-v1.mjs';
 
 assert.equal(EXPECTED_SHARED_TIKI_SLUG,'tiki-templo');
@@ -22,5 +23,12 @@ assert.equal(audit.exactLiveIdVerified,false);
 assert.equal(audit.identityPromotionAllowed,false);
 assert.equal(audit.economicPromotionAllowed,false);
 assert.equal(audit.realMoneyAllowed,false);
+
+const correctedProbe=fs.readFileSync('loterias-ai/casino/jackpots/winfall-shared-network-triangulation-v1.mjs','utf8');
+assert.match(correctedProbe,/TARGETS=\['winfall-wishes-jackpot','wonderland','tiki-templo'\]/);
+assert.doesNotMatch(correctedProbe,/TARGETS=\['winfall-wishes-jackpot','wonderland','la-isla-de-tiki'\]/);
+assert.match(correctedProbe,/correctTikiTemploSlugFrozenBeforeRun:true/);
+assert.match(correctedProbe,/singleRunNeverVerifiesIdentity:true/);
+assert.match(correctedProbe,/realMoneyAllowed:false/);
 
 console.log('winfall-shared-target-audit-v1.test.mjs: PASS');
