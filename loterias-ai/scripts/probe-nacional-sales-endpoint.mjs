@@ -117,6 +117,70 @@ function summarizeJson(json){
   };
 }
 
+function territoryKey(name){return String(name??'').trim().toLocaleLowerCase('es-ES')}
+
+function compareTerritoryLevel(salesRows,consignationRows,level){
+  const sales=new Map((salesRows||[]).map(x=>[territoryKey(x.name),x]));
+  const consignation=new Map((consignationRows||[]).map(x=>[territoryKey(x.name),x]));
+  const missingInSales=[...consignation.entries()].filter(([key])=>!sales.has(key)).map(([,x])=>x.name).sort((a,b)=>a.localeCompare(b,'es-ES'));
+  const missingInConsignation=[...sales.entries()].filter(([key])=>!consignation.has(key)).map(([,x])=>x.name).sort((a,b)=>a.localeCompare(b,'es-ES'));
+  const violations=[];
+  for(const [key,s] of sales){
+    const c=consignation.get(key);
+    if(!c)continue;
+    const seriesExcess=s.series-c.series;
+    const amountExcessEUR=s.amountEUR-c.amountEUR;
+    if(seriesExcess>EPS_SERIES||amountExcessEUR>EPS_EUR){
+      violations.push({
+        level,
+        name:s.name,
+        sales:{series:s.series,amountEUR:s.amountEUR},
+        consignation:{series:c.series,amountEUR:c.amountEUR},
+        seriesExcess,
+        amountExcessEUR
+      });
+    }
+  }
+  const exactTerritoryCoverage=missingInSales.length===0&&missingInConsignation.length===0;
+  return{level,exactTerritoryCoverage,missingInSales,missingInConsignation,violations,qualityPass:exactTerritoryCoverage&&violations.length===0};
+}
+
+function compareSalesAndConsignation(ventas,consignacion){
+  if(ventas?.dataAvailable!==true||consignacion?.dataAvailable!==true){
+    return{ready:false,qualityPass:false,reason:'BOTH_SURFACES_REQUIRED',salesMustNotExceedConsignation:true,exactTerritoryCoverageRequired:true};
+  }
+  const provinces=compareTerritoryLevel(ventas.structured?.provincias,consignacion.structured?.provincias,'province');
+  const communities=compareTerritoryLevel(ventas.structured?.comunidades,consignacion.structured?.comunidades,'community');
+  const salesSeriesTotal=ventas.structured?.provinceSeriesTotal??0;
+  const consignationSeriesTotal=consignacion.structured?.provinceSeriesTotal??0;
+  const salesAmountEUR=ventas.structured?.provinceAmountEUR??0;
+  const consignationAmountEUR=consignacion.structured?.provinceAmountEUR??0;
+  const globalSeriesExcess=salesSeriesTotal-consignationSeriesTotal;
+  const globalAmountExcessEUR=salesAmountEUR-consignationAmountEUR;
+  const globalSalesWithinConsignation=globalSeriesExcess<=EPS_SERIES&&globalAmountExcessEUR<=EPS_EUR;
+  const qualityPass=provinces.qualityPass&&communities.qualityPass&&globalSalesWithinConsignation;
+  return{
+    ready:true,
+    salesMustNotExceedConsignation:true,
+    exactTerritoryCoverageRequired:true,
+    global:{
+      salesSeriesTotal,
+      consignationSeriesTotal,
+      salesAmountEUR,
+      consignationAmountEUR,
+      globalSeriesExcess,
+      globalAmountExcessEUR,
+      globalSalesWithinConsignation,
+      seriesTolerance:EPS_SERIES,
+      amountToleranceEUR:EPS_EUR
+    },
+    provinces,
+    communities,
+    qualityPass,
+    reason:qualityPass?'SALES_WITHIN_CONSIGNATION':'SALES_CONSIGNATION_CROSS_SURFACE_FAILED'
+  };
+}
+
 async function probeSurface(kind,variableName){
   const pageUrl=`https://www.loteriasyapuestas.es/es/loteria-nacional/${kind}?drawId=${drawId}`;
   try{
@@ -157,8 +221,9 @@ const consignacion=await probeSurface('consignacion','urlConsignationLNAC');
 const geographyReady=ventas.dataAvailable===true||consignacion.dataAvailable===true;
 const bothSurfacesReady=ventas.dataAvailable===true&&consignacion.dataAvailable===true;
 const availableSurfaceQualityPass=(ventas.dataAvailable!==true||ventas.qualityPass===true)&&(consignacion.dataAvailable!==true||consignacion.qualityPass===true);
-const probeIntegrityPass=availableSurfaceQualityPass;
-const qualityPass=bothSurfacesReady&&availableSurfaceQualityPass;
+const crossSurface=compareSalesAndConsignation(ventas,consignacion);
+const probeIntegrityPass=availableSurfaceQualityPass&&(!bothSurfacesReady||crossSurface.qualityPass===true);
+const qualityPass=bothSurfacesReady&&availableSurfaceQualityPass&&crossSurface.qualityPass===true;
 
 const out={
   generatedAt:new Date().toISOString(),
@@ -173,15 +238,18 @@ const out={
   salesAndConsignationNotInterchangeable:true,
   provinceCommunityTotalsMustReconcile:true,
   malformedRowsMustFailClosed:true,
+  salesMustNotExceedConsignation:true,
+  exactTerritoryCoverageRequired:true,
   ventas,
   consignacion,
+  crossSurface,
   geographyReady,
   bothSurfacesReady,
   probeIntegrityPass,
   qualityPass,
   analysisReady:qualityPass,
   failClosedWhenSurfaceUnavailable:true,
-  readinessReason:qualityPass?'BOTH_OFFICIAL_SURFACES_RECONCILED':(!geographyReady?'NO_OFFICIAL_GEOGRAPHY_SURFACE_AVAILABLE':!bothSurfacesReady?'ONLY_ONE_OFFICIAL_SURFACE_READY':'OFFICIAL_SURFACE_QUALITY_FAILED')
+  readinessReason:qualityPass?'BOTH_OFFICIAL_SURFACES_RECONCILED_AND_SALES_WITHIN_CONSIGNATION':(!geographyReady?'NO_OFFICIAL_GEOGRAPHY_SURFACE_AVAILABLE':!bothSurfacesReady?'ONLY_ONE_OFFICIAL_SURFACE_READY':!availableSurfaceQualityPass?'OFFICIAL_SURFACE_QUALITY_FAILED':'SALES_CONSIGNATION_CROSS_SURFACE_FAILED')
 };
 
 fs.mkdirSync('loterias-ai/data/probes',{recursive:true});
@@ -191,6 +259,7 @@ console.log(JSON.stringify({
   drawId,
   ventas:{available:ventas.dataAvailable,qualityPass:ventas.qualityPass,endpoint:ventas.endpoint,provinces:ventas.structured?.provinceCount,communities:ventas.structured?.communityCount,rejectedRows:ventas.structured?.rejectedRows?.length,reconciliation:ventas.structured?.reconciliation},
   consignacion:{available:consignacion.dataAvailable,qualityPass:consignacion.qualityPass,endpoint:consignacion.endpoint,provinces:consignacion.structured?.provinceCount,communities:consignacion.structured?.communityCount,rejectedRows:consignacion.structured?.rejectedRows?.length,reconciliation:consignacion.structured?.reconciliation},
+  crossSurface:{qualityPass:crossSurface.qualityPass,reason:crossSurface.reason,global:crossSurface.global,provinceViolations:crossSurface.provinces?.violations?.length,communityViolations:crossSurface.communities?.violations?.length,missingProvinceSales:crossSurface.provinces?.missingInSales?.length,missingProvinceConsignation:crossSurface.provinces?.missingInConsignation?.length},
   geographyReady:out.geographyReady,
   bothSurfacesReady:out.bothSurfacesReady,
   probeIntegrityPass:out.probeIntegrityPass,
