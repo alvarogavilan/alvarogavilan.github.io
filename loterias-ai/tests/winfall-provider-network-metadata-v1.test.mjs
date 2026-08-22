@@ -1,5 +1,9 @@
 import assert from 'node:assert/strict';
-import {findStateObjects,extractSemanticPrimitives,compareSharedSemantic} from '../casino/jackpots/winfall-provider-network-metadata-v1.mjs';
+import {findStateObjects,extractSemanticPrimitives,compareSharedSemantic,TARGETS,CONTROLS} from '../casino/jackpots/winfall-provider-network-metadata-v1.mjs';
+
+assert.deepEqual(TARGETS,['winfall-wishes-jackpot','wonderland','tiki-templo']);
+assert.deepEqual(CONTROLS,['paper-wins-jackpot','bote-de-secretos-del-fenix']);
+assert.ok(!TARGETS.includes('la-isla-de-tiki'),'La Isla de Tiki is a different game and must never be the Winfall shared Tiki target');
 
 const html='<script>window.__APOLLO_STATE__={"cfg":{"networkId":"NET-42","note":"brace } inside string"},"other":{"providerId":"roxor-gaming"}};</script>';
 const blobs=findStateObjects(html);
