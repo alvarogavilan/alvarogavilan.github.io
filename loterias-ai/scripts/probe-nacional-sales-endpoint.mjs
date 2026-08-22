@@ -41,15 +41,25 @@ function parseEsNumber(value){
   return Number.isFinite(n)?n:null;
 }
 
-function normalizeRows(rows){
-  if(!Array.isArray(rows))return[];
-  return rows.map(x=>({
-    name:String(x?.name??'').trim(),
-    seriesRaw:x?.serie??null,
-    amountRaw:x?.total??null,
-    series:parseEsNumber(x?.serie),
-    amountEUR:parseEsNumber(x?.total)
-  })).filter(x=>x.name&&x.series!==null&&x.amountEUR!==null);
+function normalizeRows(rows,level){
+  if(!Array.isArray(rows))return{valid:[],rejected:[{level,index:null,reason:'not-an-array',raw:null}],rawCount:0};
+  const valid=[];
+  const rejected=[];
+  rows.forEach((x,index)=>{
+    const name=String(x?.name??'').trim();
+    const series=parseEsNumber(x?.serie);
+    const amountEUR=parseEsNumber(x?.total);
+    const reasons=[];
+    if(!name)reasons.push('missing-name');
+    if(series===null)reasons.push('invalid-series');
+    if(amountEUR===null)reasons.push('invalid-amount');
+    if(reasons.length){
+      rejected.push({level,index,reason:reasons.join(','),raw:{name:x?.name??null,serie:x?.serie??null,total:x?.total??null}});
+      return;
+    }
+    valid.push({name,seriesRaw:x?.serie??null,amountRaw:x?.total??null,series,amountEUR});
+  });
+  return{valid,rejected,rawCount:rows.length};
 }
 
 function duplicateNames(rows){
@@ -62,8 +72,11 @@ function duplicateNames(rows){
 }
 
 function summarizeJson(json){
-  const provincias=normalizeRows(json?.provincias);
-  const comunidades=normalizeRows(json?.comunidades);
+  const provinceParsed=normalizeRows(json?.provincias,'province');
+  const communityParsed=normalizeRows(json?.comunidades,'community');
+  const provincias=provinceParsed.valid;
+  const comunidades=communityParsed.valid;
+  const rejectedRows=[...provinceParsed.rejected,...communityParsed.rejected];
   const provinceSeriesTotal=provincias.reduce((a,x)=>a+x.series,0);
   const provinceAmountEUR=provincias.reduce((a,x)=>a+x.amountEUR,0);
   const communitySeriesTotal=comunidades.reduce((a,x)=>a+x.series,0);
@@ -76,12 +89,17 @@ function summarizeJson(json){
   const seriesDelta=provinceSeriesTotal-communitySeriesTotal;
   const amountDeltaEUR=provinceAmountEUR-communityAmountEUR;
   const totalsReconciled=Math.abs(seriesDelta)<=EPS_SERIES&&Math.abs(amountDeltaEUR)<=EPS_EUR;
-  const qualityPass=provincias.length>0&&comunidades.length>0&&negativeRows.length===0&&provinceDuplicateNames.length===0&&communityDuplicateNames.length===0&&totalsReconciled;
+  const allRowsParsed=rejectedRows.length===0&&provinceParsed.rawCount===provincias.length&&communityParsed.rawCount===comunidades.length;
+  const qualityPass=provincias.length>0&&comunidades.length>0&&allRowsParsed&&negativeRows.length===0&&provinceDuplicateNames.length===0&&communityDuplicateNames.length===0&&totalsReconciled;
   return{
     provincias,
     comunidades,
     provinceCount:provincias.length,
     communityCount:comunidades.length,
+    rawProvinceCount:provinceParsed.rawCount,
+    rawCommunityCount:communityParsed.rawCount,
+    allRowsParsed,
+    rejectedRows,
     provinceSeriesTotal,
     provinceAmountEUR,
     communitySeriesTotal,
@@ -127,7 +145,8 @@ async function probeSurface(kind,variableName){
       officialOnly:true,
       noInference:true,
       exactDrawRequired:true,
-      provinceCommunityTotalsMustReconcile:true
+      provinceCommunityTotalsMustReconcile:true,
+      malformedRowsMustFailClosed:true
     };
   }catch(e){return{kind,pageUrl,error:String(e),dataAvailable:false,qualityPass:false,officialOnly:true,noInference:true}}
 }
@@ -153,6 +172,7 @@ const out={
   prizeDistributionIsNotSales:true,
   salesAndConsignationNotInterchangeable:true,
   provinceCommunityTotalsMustReconcile:true,
+  malformedRowsMustFailClosed:true,
   ventas,
   consignacion,
   geographyReady,
@@ -169,8 +189,8 @@ fs.writeFileSync('loterias-ai/data/probes/nacional-sales-endpoint.json',JSON.str
 console.log(JSON.stringify({
   drawDate,
   drawId,
-  ventas:{available:ventas.dataAvailable,qualityPass:ventas.qualityPass,endpoint:ventas.endpoint,provinces:ventas.structured?.provinceCount,communities:ventas.structured?.communityCount,reconciliation:ventas.structured?.reconciliation},
-  consignacion:{available:consignacion.dataAvailable,qualityPass:consignacion.qualityPass,endpoint:consignacion.endpoint,provinces:consignacion.structured?.provinceCount,communities:consignacion.structured?.communityCount,reconciliation:consignacion.structured?.reconciliation},
+  ventas:{available:ventas.dataAvailable,qualityPass:ventas.qualityPass,endpoint:ventas.endpoint,provinces:ventas.structured?.provinceCount,communities:ventas.structured?.communityCount,rejectedRows:ventas.structured?.rejectedRows?.length,reconciliation:ventas.structured?.reconciliation},
+  consignacion:{available:consignacion.dataAvailable,qualityPass:consignacion.qualityPass,endpoint:consignacion.endpoint,provinces:consignacion.structured?.provinceCount,communities:consignacion.structured?.communityCount,rejectedRows:consignacion.structured?.rejectedRows?.length,reconciliation:consignacion.structured?.reconciliation},
   geographyReady:out.geographyReady,
   bothSurfacesReady:out.bothSurfacesReady,
   probeIntegrityPass:out.probeIntegrityPass,
