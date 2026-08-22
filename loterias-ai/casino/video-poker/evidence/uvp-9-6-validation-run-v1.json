@@ -1,0 +1,59 @@
+{
+  "version": "uvp-9-6-validation-run-v1",
+  "generatedAt": "2026-08-22T10:44:40.095Z",
+  "purpose": "Mandatory validation gate before trusting this solver for any other paytable: standard-strategy Monte Carlo RTP on the well-known 9/6 Jacks or Better paytable must be statistically consistent with the published exact-optimal RTP.",
+  "publishedExactOptimalRtpPct": 99.5439,
+  "publishedSource": "Widely-documented exact-optimal-strategy return for a standard 9/6 Jacks or Better paytable (9x full house, 6x flush, 4x straight, 3x trips, 2x two pair, 1x jacks-or-better, 25x quads, 50x straight flush, 800x royal flush per 1-credit bet).",
+  "simulation": {
+    "trials": 2000000,
+    "seed": 42,
+    "meanCreditsPerHand": 0.994443,
+    "rtpEstimatePct": 99.4443,
+    "standardErrorPct": 0.313,
+    "ci95Pct": {
+      "low": 98.8309,
+      "high": 100.0577
+    },
+    "categoryCounts": {
+      "JACKS_OR_BETTER": 437121,
+      "NOTHING": 1083404,
+      "THREE_OF_A_KIND": 149735,
+      "TWO_PAIR": 260089,
+      "STRAIGHT": 21294,
+      "FLUSH": 20208,
+      "FULL_HOUSE": 23162,
+      "FOUR_OF_A_KIND": 4774,
+      "STRAIGHT_FLUSH": 163,
+      "ROYAL_FLUSH": 50
+    },
+    "categoryFrequencyPct": {
+      "JACKS_OR_BETTER": 21.856,
+      "NOTHING": 54.1702,
+      "THREE_OF_A_KIND": 7.4868,
+      "TWO_PAIR": 13.0045,
+      "STRAIGHT": 1.0647,
+      "FLUSH": 1.0104,
+      "FULL_HOUSE": 1.1581,
+      "FOUR_OF_A_KIND": 0.2387,
+      "STRAIGHT_FLUSH": 0.0082,
+      "ROYAL_FLUSH": 0.0025
+    },
+    "method": "MONTE_CARLO_STANDARD_STRATEGY_REAL_SIMULATED_DRAWS",
+    "exactCombinatorialRTP": false
+  },
+  "elapsedMs": 16846,
+  "decision": {
+    "publishedValueWithinReported95PctCi": true,
+    "gapToPublishedPct": 0.0996,
+    "interpretation": "PASS: the published exact-optimal RTP falls inside this run's own 95% confidence interval. This validates the hand evaluator and the standard-strategy engine are structurally correct. The point estimate sitting slightly below the published exact-optimal value is expected: this uses a documented near-optimal simplified strategy (see jacks-or-better-strategy-v1.mjs docstring), not a from-scratch exhaustive optimal-strategy derivation.",
+    "validatedForOtherPaytables": true
+  },
+  "guards": {
+    "zeroNetwork": true,
+    "deterministicSeed": true,
+    "monteCarloNotExactCombinatorial": true,
+    "noSpainPaytableClaimed": true,
+    "economicPromotionAllowed": false,
+    "realMoneyAllowed": false
+  }
+}
