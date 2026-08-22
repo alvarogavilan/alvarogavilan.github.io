@@ -96,8 +96,8 @@
       const timer = setInterval(() => {
         attempts += 1;
         const button = document.getElementById('startBtn');
-        if (button && !button.disabled) {
-          button.click();
+        if (button && !button.disabled) button.click();
+        if (button && button.disabled) {
           clearInterval(timer);
           return;
         }
