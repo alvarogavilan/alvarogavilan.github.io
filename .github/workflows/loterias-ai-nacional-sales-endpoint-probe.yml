@@ -29,7 +29,20 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             node loterias-ai/scripts/probe-nacional-sales-endpoint.mjs
-            node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync('loterias-ai/data/probes/nacional-sales-endpoint.json','utf8'));if(!d.exactOfficialDrawDateRequired||!d.officialOnly||!d.noInference||!d.surfacesKeptSeparate)throw new Error('Nacional geography custody gates drifted');if(d.ventas?.dataAvailable===true&&(!d.ventas?.structured?.provinceCount||!d.ventas?.structured?.communityCount))throw new Error('Ventas marked available without structured geography rows');if(d.consignacion?.dataAvailable===true&&(!d.consignacion?.structured?.provinceCount||!d.consignacion?.structured?.communityCount))throw new Error('Consignacion marked available without structured geography rows');"
+            node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync('loterias-ai/data/probes/nacional-sales-endpoint.json','utf8'));if(!d.exactOfficialDrawDateRequired||!d.officialOnly||!d.noInference||!d.surfacesKeptSeparate||!d.prizeDistributionIsNotSales||!d.salesAndConsignationNotInterchangeable||!d.provinceCommunityTotalsMustReconcile||!d.malformedRowsMustFailClosed||!d.failClosedWhenSurfaceUnavailable)throw new Error('Nacional geography custody gates drifted');for(const [name,s] of [['ventas',d.ventas],['consignacion',d.consignacion]]){if(s?.dataAvailable===true){if(!s?.qualityPass||!s?.structured?.provinceCount||!s?.structured?.communityCount||s?.structured?.allRowsParsed!==true||s?.structured?.reconciliation?.totalsReconciled!==true||(s?.structured?.rejectedRows?.length??0)!==0)throw new Error(name+' marked available without complete reconciled geography');}}if(d.analysisReady===true&&(!d.bothSurfacesReady||!d.qualityPass))throw new Error('Nacional geography analysisReady drifted');"
+            node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {execFileSync} from 'node:child_process';
+          const path='loterias-ai/data/probes/nacional-sales-endpoint.json';
+          let previous=null;
+          try{previous=JSON.parse(execFileSync('git',['show',`HEAD:${path}`],{encoding:'utf8'}));}catch{}
+          const current=JSON.parse(fs.readFileSync(path,'utf8'));
+          const stable=x=>{const y=structuredClone(x);delete y.generatedAt;return y;};
+          if(previous&&JSON.stringify(stable(previous))===JSON.stringify(stable(current))){
+            fs.writeFileSync(path,JSON.stringify(previous,null,2)+'\n');
+            console.log('No semantic change in Nacional geography probe; preserving prior timestamp.');
+          }
+          NODE
             git add loterias-ai/data/probes/nacional-sales-endpoint.json
             if git diff --cached --quiet; then
               echo 'No scientific change in Nacional geography probe.'
