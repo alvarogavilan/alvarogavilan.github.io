@@ -10,7 +10,7 @@ on:
     - cron: '17 * * * *'
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: loterias-ai-actions-runner-canary
@@ -28,3 +28,70 @@ jobs:
           echo "LOTERIAS_AI_ACTIONS_RUNNER_OK=1"
           echo "utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           echo "sha=${GITHUB_SHA}"
+
+      - name: Persist recovery marker without checkout
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          GITHUB_SHA_VALUE: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          const token = process.env.GH_TOKEN;
+          const repo = process.env.REPO;
+          const path = 'loterias-ai/data/ops/actions-runner-health.json';
+          const api = `https://api.github.com/repos/${repo}/contents/${path}`;
+          const headers = {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28',
+            'User-Agent': 'loterias-ai-actions-runner-canary'
+          };
+
+          const currentRes = await fetch(api, {headers});
+          if (!currentRes.ok) throw new Error(`health GET failed: ${currentRes.status}`);
+          const current = await currentRes.json();
+          const existing = JSON.parse(Buffer.from(current.content, 'base64').toString('utf8'));
+          if (existing?.state === 'HEALTHY' && existing?.runnerReached === true) {
+            console.log('RUNNER_HEALTH_ALREADY_HEALTHY=1');
+            process.exit(0);
+          }
+
+          const recoveredAt = new Date().toISOString();
+          const next = {
+            schemaVersion: 1,
+            state: 'HEALTHY',
+            runnerReached: true,
+            recoveredAt,
+            lastObservedAt: recoveredAt,
+            evidence: {
+              workflow: 'Loterias AI Actions Runner Canary',
+              runId: Number(process.env.RUN_ID),
+              runAttempt: Number(process.env.RUN_ATTEMPT),
+              sha: process.env.GITHUB_SHA_VALUE,
+              firstRepositoryIndependentStepExecuted: true,
+              issue: 282
+            },
+            automaticRecoveryDetection: true,
+            recoveryContract: {
+              healthyWhen: 'A GitHub-hosted runner executes the repository-independent canary step.',
+              scientificProgressMayResumeOnlyAfterRunnerReached: true,
+              noFabricatedProgressWhileBlocked: true
+            }
+          };
+          const body = {
+            message: 'ops(loterias-ai): mark Actions runner recovered',
+            content: Buffer.from(`${JSON.stringify(next, null, 2)}\n`).toString('base64'),
+            sha: current.sha,
+            branch: 'main'
+          };
+          const putRes = await fetch(api, {
+            method: 'PUT', headers: {...headers, 'Content-Type': 'application/json'}, body: JSON.stringify(body)
+          });
+          if (!putRes.ok) throw new Error(`health PUT failed: ${putRes.status} ${await putRes.text()}`);
+          console.log('LOTERIAS_AI_ACTIONS_RECOVERY_MARKER_PERSISTED=1');
+          NODE
