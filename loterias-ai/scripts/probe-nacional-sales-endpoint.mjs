@@ -135,6 +135,11 @@ async function probeSurface(kind,variableName){
 const ventas=await probeSurface('ventas','urlSalesLNAC');
 await sleep(300);
 const consignacion=await probeSurface('consignacion','urlConsignationLNAC');
+const geographyReady=ventas.dataAvailable===true||consignacion.dataAvailable===true;
+const bothSurfacesReady=ventas.dataAvailable===true&&consignacion.dataAvailable===true;
+const availableSurfaceQualityPass=(ventas.dataAvailable!==true||ventas.qualityPass===true)&&(consignacion.dataAvailable!==true||consignacion.qualityPass===true);
+const probeIntegrityPass=availableSurfaceQualityPass;
+const qualityPass=bothSurfacesReady&&availableSurfaceQualityPass;
 
 const out={
   generatedAt:new Date().toISOString(),
@@ -150,9 +155,13 @@ const out={
   provinceCommunityTotalsMustReconcile:true,
   ventas,
   consignacion,
-  geographyReady:ventas.dataAvailable===true||consignacion.dataAvailable===true,
-  bothSurfacesReady:ventas.dataAvailable===true&&consignacion.dataAvailable===true,
-  qualityPass:(ventas.dataAvailable!==true||ventas.qualityPass===true)&&(consignacion.dataAvailable!==true||consignacion.qualityPass===true)
+  geographyReady,
+  bothSurfacesReady,
+  probeIntegrityPass,
+  qualityPass,
+  analysisReady:qualityPass,
+  failClosedWhenSurfaceUnavailable:true,
+  readinessReason:qualityPass?'BOTH_OFFICIAL_SURFACES_RECONCILED':(!geographyReady?'NO_OFFICIAL_GEOGRAPHY_SURFACE_AVAILABLE':!bothSurfacesReady?'ONLY_ONE_OFFICIAL_SURFACE_READY':'OFFICIAL_SURFACE_QUALITY_FAILED')
 };
 
 fs.mkdirSync('loterias-ai/data/probes',{recursive:true});
@@ -162,6 +171,10 @@ console.log(JSON.stringify({
   drawId,
   ventas:{available:ventas.dataAvailable,qualityPass:ventas.qualityPass,endpoint:ventas.endpoint,provinces:ventas.structured?.provinceCount,communities:ventas.structured?.communityCount,reconciliation:ventas.structured?.reconciliation},
   consignacion:{available:consignacion.dataAvailable,qualityPass:consignacion.qualityPass,endpoint:consignacion.endpoint,provinces:consignacion.structured?.provinceCount,communities:consignacion.structured?.communityCount,reconciliation:consignacion.structured?.reconciliation},
+  geographyReady:out.geographyReady,
   bothSurfacesReady:out.bothSurfacesReady,
+  probeIntegrityPass:out.probeIntegrityPass,
+  analysisReady:out.analysisReady,
+  readinessReason:out.readinessReason,
   qualityPass:out.qualityPass
 },null,2));
