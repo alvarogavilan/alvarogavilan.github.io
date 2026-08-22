@@ -1,0 +1,68 @@
+{
+  "version": "botemania-jpk-entry-zones-v1",
+  "generatedAt": "2026-08-22T13:43:00Z",
+  "operator": "botemania-es",
+  "game": "Fishin' Frenzy: Jackpot King",
+  "exactBinding": {
+    "feedIds": [
+      "blueprint:JACKPOTKING_ROYAL",
+      "blueprint:JACKPOTKING_REGAL",
+      "blueprint:JACKPOTKING"
+    ],
+    "royalMbwbEUR": 4078.97,
+    "regalMbwbEUR": 40789.77,
+    "mbwbVerifiedFromBotemaniaSpainInGameUi": true
+  },
+  "operatorRules": {
+    "anyStakeEligible": true,
+    "winChanceProportionalToTotalBet": true,
+    "winChanceIncreasesWithPot": true,
+    "royalRegalMustFallBeforeConfiguredValue": true,
+    "activeContributionPct": 2.32,
+    "reserveContributionPct": 0.68,
+    "baseRtpPct": 93.32
+  },
+  "frozenResearchModel": {
+    "source": "botemania-jpk-near-cap-ev-scenarios-v1.5-exact-spain-mbwb",
+    "seedHypothesisEUR": {"ROYAL": 500, "REGAL": 5000},
+    "seedVerified": false,
+    "hazardVerified": false,
+    "alphaGrid": [0.25,0.5,0.75,1,1.25,1.5,2,3,4,5,7.5,10],
+    "researchOnly": true
+  },
+  "researchWatchZonesEUR": {
+    "combinedBothTiersSameProgressForward": {
+      "royal": {"lower": 3558.95, "upper": 3754.36},
+      "regal": {"lower": 35589.52, "upper": 37543.64},
+      "meaning": "Sensitivity-screen range only; not a wager threshold."
+    },
+    "oneTierConservativeNoOtherJackpotCredit": {
+      "royal": {"lower": 3809.12, "upper": 3876.76},
+      "regal": {"lower": 38091.22, "upper": 38767.65},
+      "meaning": "Research-only one-tier screen derived from frozen sensitivity model. Exact hazard and seed remain unverified."
+    }
+  },
+  "lastPersistedReferenceOnly": {
+    "observedAt": "2026-08-21T18:06:46.573Z",
+    "ROYAL": 1760.30,
+    "REGAL": 15591.73,
+    "JACKPOT_KING": 128469.33,
+    "executionCurrent": false,
+    "reason": "STALE_REFERENCE_ONLY"
+  },
+  "resetEvidence": {
+    "cleanSingleTierCandidates": 0,
+    "minimumCleanResetsForHazardFit": 10,
+    "hazardFitReady": false,
+    "seedHypothesisNotFact": true
+  },
+  "decision": {
+    "jackpotIdentityKnown": true,
+    "exactSpainMbwbKnown": true,
+    "researchWatchZoneKnown": true,
+    "positiveEVKnown": false,
+    "realMoneyAllowed": false,
+    "stakeEUR": 0,
+    "reason": "Exact Botemania Spain caps and feed IDs are closed, but the server-side hazard law and reserve seed are not yet verified and current live meter values are not fresh."
+  }
+}
