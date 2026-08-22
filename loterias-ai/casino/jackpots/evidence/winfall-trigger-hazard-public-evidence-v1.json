@@ -1,0 +1,87 @@
+{
+  "version": "winfall-trigger-hazard-public-evidence-v1",
+  "generatedAt": "2026-08-22T01:31:00.000Z",
+  "operator": "botemania-es",
+  "game": "Winfall Wishes Jackpot",
+  "purpose": "PUBLIC_DOCUMENTATION_HAZARD_CLOSURE",
+  "operatorEvidence": {
+    "spainUrl": "https://www.botemania.es/juegos/slots-online/winfall-wishes-jackpot",
+    "baseRtpPct": 94.85,
+    "contributionPct": 0.60,
+    "minStakeEUR": 0.25,
+    "maxStakeEUR": 25,
+    "anyStakeQualifies": true,
+    "probabilityProportionalToTotalBet": true,
+    "pickBonusRequiresAtLeastThreeScatters": true,
+    "progressiveCanBeWonInPickBonus": true,
+    "sharedWith": ["same game Botemania/Monopoly Casino", "Wonderland", "Tiki Templo"],
+    "resetEUR": 0
+  },
+  "sameTitleCrossJurisdictionDiscovery": [
+    {
+      "url": "https://www.virgingames.com/uk/slots/winfall-wishes-jackpot",
+      "jurisdiction": "UK",
+      "mechanism": "3+ scatters -> Pick Bonus; progressive can trigger in Pick Bonus; higher total bet increases jackpot chance",
+      "seedGBP": 500,
+      "usableForSpainSeed": false
+    },
+    {
+      "url": "https://www.jackpotjoy.com/uk/slots/winfall-wishes-jackpot",
+      "jurisdiction": "UK",
+      "mechanism": "3+ scatters -> Pick Bonus; progressive in Pick Bonus; higher bet increases jackpot chance",
+      "seedGBP": 500,
+      "usableForSpainSeed": false
+    },
+    {
+      "url": "https://www.doublebubblebingo.com/uk/online-slots/winfall-wishes-jackpot",
+      "jurisdiction": "UK",
+      "mechanism": "progressive in Pick Bonus; chance proportional to total bet",
+      "seedGBP": 500,
+      "usableForSpainSeed": false
+    }
+  ],
+  "genericPatentDiscoveryOnly": [
+    {
+      "url": "https://patents.google.com/patent/US7654896B2/en",
+      "mechanismFamily": "random trigger range with player allocation proportional to credits bet",
+      "exactWinfallBuildLinked": false
+    },
+    {
+      "url": "https://patents.google.com/patent/WO2007030641A2/en",
+      "mechanismFamily": "random trigger value based on average credits wagered per jackpot; chance proportional to credits bet",
+      "exactWinfallBuildLinked": false
+    }
+  ],
+  "mathematicalState": {
+    "publishedProbabilityLaw": "P_JACKPOT_PER_DECISION = kPerEUR * stakeEUR",
+    "unknownParameter": "kPerEUR",
+    "progressiveReturnPerEuroFormula": "kPerEUR * currentJackpotEUR",
+    "totalRtpFormula": "0.9485 + kPerEUR * currentJackpotEUR",
+    "breakEvenFormula": "(1 - 0.9485) / kPerEUR",
+    "breakEvenJackpotEUR": null,
+    "currentPositiveEvProven": false,
+    "note": "0.60% contribution is funding evidence and must never be substituted for kPerEUR. The 4.55 percentage-point gap from base+contribution to 100% is a discovery ranking metric, not the current-state EV break-even numerator."
+  },
+  "searchClosure": {
+    "exactScatterProbabilityFound": false,
+    "exactPickBonusJackpotConditionalProbabilityFound": false,
+    "exactPerEuroHazardFound": false,
+    "exactWinfallPatentOrTechnicalManualFound": false,
+    "publicWinnerHistoryWithEnoughHitAmountsFound": false,
+    "status": "NOT_CURRENTLY_ACTIONABLE_FROM_PUBLIC_DOCUMENTATION_ALONE",
+    "reactivationCriteria": [
+      "Exact Roxor/Gamesys technical rules/config discloses jackpot probability or trigger range for the Spain-equivalent build.",
+      "A sufficiently large, configuration-compatible winner/reset history becomes available and its sampling protocol supports a preregistered hazard fit.",
+      "Exact Tiki Templo counter identity is independently verified, enabling prospective shared-network reset collection under the frozen Winfall bridge."
+    ]
+  },
+  "guards": {
+    "genericPatentNeverSetsK": true,
+    "ukSeedNeverImportedToSpain": true,
+    "contributionRateNeverEqualsHazard": true,
+    "absenceOfHazardEvidenceNeverEqualsZeroHazard": true,
+    "noBreakEvenWithoutK": true,
+    "noBetting": true,
+    "realMoneyAllowed": false
+  }
+}
