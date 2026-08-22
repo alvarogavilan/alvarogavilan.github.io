@@ -6,10 +6,19 @@ on:
     paths:
       - 'loterias-ai/casino/jackpots/ultimate-video-poker-virgin-public-page-probe-v1.mjs'
       - '.github/workflows/loterias-ai-uvp-virgin-public-page-probe-v1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/jackpots/ultimate-video-poker-virgin-public-page-probe-v1.mjs'
+      - '.github/workflows/loterias-ai-uvp-virgin-public-page-probe-v1.yml'
   workflow_dispatch:
 
+concurrency:
+  group: loterias-ai-uvp-virgin-public-page-probe-v1-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   probe:
@@ -40,3 +49,23 @@ jobs:
           name: uvp-virgin-public-page-probe-v1
           path: loterias-ai/edge-live/evidence/ultimate-video-poker-virgin-public-page-probe-v1.json
           retention-days: 7
+      - name: Persist evidence
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          cp loterias-ai/edge-live/evidence/ultimate-video-poker-virgin-public-page-probe-v1.json /tmp/uvp-virgin-public-page-probe-v1.json
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            git reset --hard origin/main
+            mkdir -p loterias-ai/edge-live/evidence
+            cp /tmp/uvp-virgin-public-page-probe-v1.json loterias-ai/edge-live/evidence/ultimate-video-poker-virgin-public-page-probe-v1.json
+            git add loterias-ai/edge-live/evidence/ultimate-video-poker-virgin-public-page-probe-v1.json
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m 'data(edge): refresh Virgin UVP public-page probe'
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
