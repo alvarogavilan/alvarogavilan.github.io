@@ -1,6 +1,6 @@
 {
-  "version": "edge-live-opportunity-registry-v1.3-tiki-alias-disproof",
-  "generatedAt": "2026-08-21T09:49:00.000Z",
+  "version": "edge-live-opportunity-registry-v1.4-winfall-shared-bridge",
+  "generatedAt": "2026-08-22T01:25:00.000Z",
   "operator": "botemania-es",
   "purpose": "STRUCTURAL_NON_PROMOTIONAL_EDGE_MONITORING",
   "mappings": [
@@ -156,6 +156,56 @@
       }
     },
     {
+      "id": "botemania-winfall-wishes-progressive",
+      "type": "SHARED_ZERO_RESET_PROGRESSIVE_RESEARCH",
+      "game": {
+        "id": "winfall-wishes-jackpot",
+        "name": "Winfall Wishes Jackpot",
+        "url": "https://www.botemania.es/juegos/slots-online/winfall-wishes-jackpot"
+      },
+      "network": "generic",
+      "feedId": "tikitemple2_1",
+      "identity": {
+        "verified": false,
+        "confidence": "CANDIDATE",
+        "evidenceClass": "OFFICIAL_SHARED_POT_RULE_PLUS_UNVERIFIED_TIKI_TEMPLO_COUNTER_CANDIDATE",
+        "bridgeEvidenceFile": "loterias-ai/casino/jackpots/evidence/winfall-tiki-network-bridge-v1.json",
+        "notes": "Botemania explicitly states that Winfall Wishes shares its progressive pot with Tiki Templo and resets those linked pots together. generic:tikitemple2_1 is monitored only as the Tiki Templo counter candidate. Exact Tiki Templo counter identity is still false, so this mapping must remain RED and may not be treated as Winfall's verified live ID."
+      },
+      "economic": {
+        "publishedBaseRtpPct": 94.85,
+        "averageJackpotContributionPct": 0.6,
+        "publishedBasePlusKnownContributionPct": 95.45,
+        "zeroResetPublished": true,
+        "breakEvenJackpotEUR": null,
+        "scoreModel": {
+          "modelType": "SHARED_ZERO_RESET_HAZARD_UNKNOWN",
+          "seed": 0,
+          "seedEvidenceClass": "BOTEMANIA_SPAIN_OPERATOR_RULE_ZERO_RESET",
+          "averageHit": null,
+          "currency": "EUR",
+          "liveCurrency": "EUR",
+          "inputsComparable": false,
+          "allowNominalResearchScore": false
+        },
+        "notes": "The Spain-facing operator rule establishes reset to 0 EUR, 0.60% contribution, any-stake eligibility and bet-proportional jackpot chance, but does not establish the exact trigger/hazard law. UK 500 GBP seed material is a different configuration and is explicitly excluded. No break-even may be computed until the exact shared counter identity and trigger economics are verified."
+      },
+      "execution": {
+        "exactStakeKnown": true,
+        "stakePerDecisionEUR": 0.25,
+        "maxTotalStakeEUR": 5,
+        "strategyVerified": false,
+        "currentAvailabilityVerified": true
+      },
+      "guards": {
+        "noPromotion": true,
+        "candidateFeedNeverEqualsVerifiedIdentity": true,
+        "sharedPotBridgeRequiresExactPartnerIdentity": true,
+        "noForeignSeedImport": true,
+        "noBettingUntilExactSharedCounterAndHazard": true
+      }
+    },
+    {
       "id": "botemania-tiki-templo-progressive",
       "type": "PROGRESSIVE_SLOT_SCORE_RESEARCH",
       "game": {
@@ -271,6 +321,7 @@
     "onlyStructuralOrRepeatableMechanisms": true,
     "noAutomaticBetting": true,
     "noCrossCurrencyHistoricalThresholdPromotion": true,
-    "scoreAloneNeverAuthorizesBetting": true
+    "scoreAloneNeverAuthorizesBetting": true,
+    "candidateFeedNeverEqualsVerifiedIdentity": true
   }
 }
