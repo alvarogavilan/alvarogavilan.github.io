@@ -5,27 +5,47 @@ on:
     paths:
       - 'loterias-ai/scripts/probe-nacional-sales-endpoint.mjs'
       - '.github/workflows/loterias-ai-nacional-sales-endpoint-probe.yml'
+concurrency:
+  group: loterias-ai-nacional-sales-endpoint-probe
+  cancel-in-progress: false
 permissions:
   contents: write
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: 22}
-      - run: node loterias-ai/scripts/probe-nacional-sales-endpoint.mjs
-      - name: Persist probe
+      - name: Recompute and persist exact-draw geography probe
+        shell: bash
         run: |
-          cp loterias-ai/data/probes/nacional-sales-endpoint.json /tmp/nacional-sales-probe.json
-          git fetch origin main
-          git reset --hard origin/main
-          mkdir -p loterias-ai/data/probes
-          cp /tmp/nacional-sales-probe.json loterias-ai/data/probes/nacional-sales-endpoint.json
+          set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add loterias-ai/data/probes/nacional-sales-endpoint.json
-          git commit -m 'data(loterias-ai): persist Nacional sales endpoint probe' || exit 0
-          git push origin HEAD:main
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            node loterias-ai/scripts/probe-nacional-sales-endpoint.mjs
+            node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const p='loterias-ai/data/probes/nacional-sales-endpoint.json';
+          const d=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(!d.exactOfficialDrawDateRequired||!d.officialOnly||!d.noInference||!d.surfacesKeptSeparate) throw new Error('Nacional geography custody gates drifted');
+          if(d.ventas?.dataAvailable===true && (!d.ventas?.structured?.provinceCount || !d.ventas?.structured?.communityCount)) throw new Error('Ventas marked available without structured geography rows');
+          if(d.consignacion?.dataAvailable===true && (!d.consignacion?.structured?.provinceCount || !d.consignacion?.structured?.communityCount)) throw new Error('Consignacion marked available without structured geography rows');
+          NODE
+            git add loterias-ai/data/probes/nacional-sales-endpoint.json
+            if git diff --cached --quiet; then
+              echo 'No scientific change in Nacional geography probe.'
+              exit 0
+            fi
+            git commit -m 'data(loterias-ai): persist exact-draw Nacional sales geography probe'
+            if git push origin HEAD:main; then exit 0; fi
+            echo "main moved during probe persistence; recomputing attempt ${attempt}/5"
+            sleep $((attempt * 2))
+          done
+          echo 'Could not persist Nacional geography probe after recomputations' >&2
+          exit 1
