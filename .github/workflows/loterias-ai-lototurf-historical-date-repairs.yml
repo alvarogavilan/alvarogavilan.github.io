@@ -1,0 +1,92 @@
+name: Loterias AI Lototurf Historical Date Repairs
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: 'Apply verified official date corrections (false = dry-run only)'
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-lototurf-historical-date-repairs
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Verify or apply official-only 2011 and 2016 date corrections
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          if [ "${{ inputs.apply }}" = "true" ]; then
+            export APPLY_OFFICIAL_DATE_CORRECTION=1
+          else
+            export APPLY_OFFICIAL_DATE_CORRECTION=0
+          fi
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+
+            node loterias-ai/scripts/repair-lototurf-2011-07-16-official-date.mjs
+            node loterias-ai/scripts/repair-lototurf-2016-07-14-official-date.mjs
+
+            if [ "$APPLY_OFFICIAL_DATE_CORRECTION" != "1" ]; then
+              echo 'Official-only dry run completed; no archive changes requested.'
+              exit 0
+            fi
+
+            node loterias-ai/scripts/build-national-archive-index.mjs
+            node loterias-ai/scripts/build-completeness-index.mjs
+
+            set +e
+            node loterias-ai/scripts/audit-national-archive.mjs
+            audit_rc=$?
+            set -e
+            node loterias-ai/scripts/build-archive-coverage-priorities.mjs
+
+            git add \
+              loterias-ai/data/archive/lototurf/2011.json \
+              loterias-ai/data/archive/lototurf/2016.json \
+              loterias-ai/data/archive/manifest.json \
+              loterias-ai/data/archive/completeness-index.json \
+              loterias-ai/data/archive/_meta/archive-audit.json \
+              loterias-ai/data/archive/_meta/archive-coverage-priorities.json
+
+            if git diff --cached --quiet; then
+              echo 'Historical date repairs already applied or produced no semantic change.'
+              if [ "$audit_rc" -ne 0 ]; then exit "$audit_rc"; fi
+              exit 0
+            fi
+
+            git commit -m 'data(lototurf): apply verified official historical date corrections'
+            if git push origin HEAD:main; then
+              if [ "$audit_rc" -ne 0 ]; then
+                echo 'Corrections persisted; archive remains fail-closed because QA still reports unresolved blockers.' >&2
+                exit "$audit_rc"
+              fi
+              exit 0
+            fi
+
+            echo "main moved during Lototurf historical repair; recomputing attempt $attempt/5"
+            sleep $((attempt * 2))
+          done
+
+          echo 'Unable to persist Lototurf historical repairs after five recomputations.' >&2
+          exit 1
