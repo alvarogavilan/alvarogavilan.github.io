@@ -1,6 +1,7 @@
 (()=>{
   const MAX_AGE_MS=2*60*60*1000;
   const $=id=>document.getElementById(id);
+  window.__LOTERIAS_AI_TODAY_EVIDENCE_FRESH__=false;
   const madridDate=()=>{
     const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Madrid',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
     const g=t=>p.find(x=>x.type===t)?.value;
@@ -15,14 +16,34 @@
       b.style.pointerEvents='none';
     });
   };
+  const unblockActions=()=>{
+    document.querySelectorAll('[data-play],.copybtn').forEach(b=>{
+      b.disabled=false;
+      b.removeAttribute('aria-disabled');
+      if(b.getAttribute('title')==='Bloqueado: evidencia operativa desfasada')b.removeAttribute('title');
+      b.style.opacity='';
+      b.style.pointerEvents='';
+    });
+  };
   const block=(message)=>{
+    window.__LOTERIAS_AI_TODAY_EVIDENCE_FRESH__=false;
     const fresh=$('freshLabel'),games=$('todayGames'),gate=$('gate');
     if(fresh){fresh.textContent='EVIDENCIA DESFASADA · NO APOSTAR';fresh.style.background='#7b2020';fresh.style.borderColor='#ffffff55';}
     if(games)games.innerHTML=`<div class="empty"><b>Datos de hoy no verificables.</b><br>${message}<br>NO APOSTAR ni copiar combinaciones hasta que el sistema publique un manifiesto vigente y estricto.</div>`;
     if(gate)gate.innerHTML='<div class="row"><div><div class="name">Decisión de dinero real</div><div class="meta">Bloqueada porque la evidencia operativa no cumple el contrato estricto de hoy.</div><span class="badge blocked">NO APOSTAR</span></div><div style="text-align:right"><div class="hitbig">0,00 €</div><div class="meta">autorizado</div></div></div>';
     blockActions();
-    window.__LOTERIAS_AI_TODAY_EVIDENCE_FRESH__=false;
   };
+  document.addEventListener('click',e=>{
+    const action=e.target?.closest?.('[data-play],.copybtn');
+    if(action&&window.__LOTERIAS_AI_TODAY_EVIDENCE_FRESH__!==true){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      blockActions();
+    }
+  },true);
+  new MutationObserver(()=>{
+    if(window.__LOTERIAS_AI_TODAY_EVIDENCE_FRESH__!==true)blockActions();
+  }).observe(document.documentElement,{childList:true,subtree:true});
   async function check(){
     try{
       const r=await fetch('../data/ui/today-manifest.json?freshness='+Date.now(),{cache:'no-store'});
@@ -37,6 +58,7 @@
         return;
       }
       window.__LOTERIAS_AI_TODAY_EVIDENCE_FRESH__=true;
+      unblockActions();
     }catch{
       block('No se puede verificar la frescura del manifiesto de hoy.');
     }
