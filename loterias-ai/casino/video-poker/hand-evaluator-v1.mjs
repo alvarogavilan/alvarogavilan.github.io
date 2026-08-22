@@ -57,19 +57,22 @@ export function evaluateHand(cards) {
   return 'NOTHING';
 }
 
-// Units, unambiguously: every number this module returns or accepts as a
-// paytable/payout value is a RETURN MULTIPLE of a single 1-credit bet -
-// dimensionless, not a currency amount (25 means "25x your 1-credit bet
-// back", not "25 EUR"). A paytable's fixed entries (FOUR_OF_A_KIND: 25,
-// etc.) already follow this convention throughout this codebase; this
-// comment exists so a future progressive/currency calculation is never
-// blended with a raw paytable multiple without first converting units
-// explicitly (see optimal-hold-engine-v1.mjs's resolveProgressiveConfig for
-// exactly that conversion: jackpotEUR / (denominationEURPerCredit *
-// creditsBetPerHand)).
+// Units, unambiguously: every number a paytable's `payouts` holds is a
+// RETURN MULTIPLE OF THE TOTAL HAND BET at that paytable's declared
+// `basisCreditsBetPerHand` - dimensionless, not a currency amount, and NOT
+// simply "per 1 credit". Video poker payouts are not always linear in
+// credits bet (the classic 9/6 Jacks-or-Better Royal Flush pays a special
+// 4000-credit bonus at 5-credit/max-coin play, not 5x its 1-credit value),
+// so a paytable's numbers only mean something together with the credit
+// basis they were declared for - a shape like
+// `{ basisCreditsBetPerHand, payouts: { royalFlushReturnMultiple, ... } }`.
+// Using a paytable at any OTHER creditsBetPerHand than its declared basis
+// is invalid; see optimal-hold-engine-v1.mjs's PAYTABLE_BET_BASIS_MISMATCH
+// guard, which enforces this once, upfront, before any EV is computed.
 export function payoutCredits(category, paytable) {
-  if (category === 'ROYAL_FLUSH') return paytable.royalFlushReturnMultiple ?? 0;
-  return paytable[category] ?? 0;
+  const payouts = paytable?.payouts;
+  if (category === 'ROYAL_FLUSH') return payouts?.royalFlushReturnMultiple ?? 0;
+  return payouts?.[category] ?? 0;
 }
 
 // The suit a royal flush was made in (null for any other category, or a
@@ -89,8 +92,8 @@ export function royalFlushSuit(cards) {
 // optimal-hold-engine-v1.mjs's resolveProgressiveConfig(), specifically so
 // this function - called once per enumerated draw, up to ~1.5M times per
 // hand - never has to branch on invalid-input handling in its hot path.
-// Shape: { jackpotReturnMultiple, totalHandBetEUR, triggerCategory,
-// triggerSuit, payoutMode } where payoutMode is 'REPLACE' (payout =
+// Shape: { jackpotReturnMultiple, totalHandBetEUR, creditsBetPerHand,
+// triggerCategory, triggerSuit, payoutMode } where payoutMode is 'REPLACE' (payout =
 // jackpotReturnMultiple only) or 'ADD_TO_BASE' (payout = the ordinary fixed
 // paytable value PLUS jackpotReturnMultiple) - resolveProgressiveConfig
 // guarantees payoutMode is always one of exactly these two values, and

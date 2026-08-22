@@ -62,7 +62,7 @@ export function simulateRTP({ paytable, trials, seed = 1 }) {
   const meanCreditsPerHand = totalCredits / trials;
   const variance = payouts.reduce((acc, x) => acc + (x - meanCreditsPerHand) ** 2, 0) / (trials - 1 || 1);
   const standardError = Math.sqrt(variance / trials);
-  const rtpEstimate = meanCreditsPerHand; // 1-credit bet convention: RTP == mean credits returned per credit bet
+  const rtpEstimate = meanCreditsPerHand; // paytable convention: RTP == mean return multiple of the total hand bet at the paytable's declared basisCreditsBetPerHand (see hand-evaluator-v1.mjs's payoutCredits docstring)
   const ci95 = { low: rtpEstimate - 1.96 * standardError, high: rtpEstimate + 1.96 * standardError };
 
   return {
@@ -92,6 +92,6 @@ export function breakEvenJackpotCredits({ baseRtpExcludingRoyalPct, royalFlushPr
   return {
     breakEvenRoyalPayoutCredits: +neededRoyalPayoutCredits.toFixed(2),
     breakEvenRoyalPayoutAmount: betCredits ? +(neededRoyalPayoutCredits * betCredits).toFixed(2) : null,
-    note: 'Credits are per-1-credit-bet convention; multiply by the actual bet size/denomination to get a currency amount. This is NOT Spain-specific - it requires the real Spain paytable and real jackpot amount to become an actionable figure.',
+    note: 'Credits are a return multiple of the total hand bet at the paytable\'s declared basisCreditsBetPerHand; multiply by that total hand bet (denomination x basis credits) to get a currency amount. This is NOT Spain-specific - it requires the real Spain paytable and real jackpot amount to become an actionable figure.',
   };
 }

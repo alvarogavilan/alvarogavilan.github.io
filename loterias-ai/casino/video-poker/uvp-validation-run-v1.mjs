@@ -60,7 +60,7 @@ const out = {
   generatedAt: startedAt,
   purpose: 'Coarse consistency check only: does the FIXED 9/6-shaped heuristic strategy\'s population-level Monte Carlo RTP land statistically near the published exact-optimal figure for that exact paytable? This is not a validation of the exact/progressive-parametric optimizer (chooseOptimalHold, see optimal-hold-engine-v1.mjs), which is validated separately and independently.',
   publishedExactOptimalRtpPct: PUBLISHED_EXACT_OPTIMAL_RTP_PCT,
-  publishedSource: 'Widely-documented exact-optimal-strategy return for a standard 9/6 Jacks or Better paytable (9x full house, 6x flush, 4x straight, 3x trips, 2x two pair, 1x jacks-or-better, 25x quads, 50x straight flush, 800x royal flush per 1-credit bet).',
+  publishedSource: 'Widely-documented exact-optimal-strategy return for a standard 9/6 Jacks or Better paytable, at its 5-credit (max-coin) basis: 9x full house, 6x flush, 4x straight, 3x trips, 2x two pair, 1x jacks-or-better, 25x quads, 50x straight flush, and 800x royal flush - all as a return multiple of the total 5-credit hand bet (i.e. royal pays 4000 credits at 5-credit play, not 800x5=4000 via linear extrapolation from a 1-credit rate; see STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE\'s own basisCreditsBetPerHand:5 declaration in jacks-or-better-strategy-v1.mjs).',
   simulation: result,
   elapsedMs,
   decision,

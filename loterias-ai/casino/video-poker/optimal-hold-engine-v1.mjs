@@ -17,12 +17,13 @@
 // heuristic.
 //
 // chooseOptimalHold() NEVER throws for invalid input - every failure mode
-// (a physically-impossible hand, an incomplete/corrupt paytable, an
-// invalid live-progressive request) returns the SAME structured "blocked"
-// shape (strategyAvailable:false, exact:false, blocked:true,
-// configurationValid:false, blockReason:'<SPECIFIC_REASON>',
-// heldIndices:null, evReturnMultiple:null), so a caller can never mistake
-// a blocked result for a usable one by accident, and every failure is
+// (a physically-impossible hand, an incomplete/corrupt paytable, an unknown
+// or mismatched credits-bet basis, an invalid live-progressive request)
+// returns the SAME structured "blocked" shape (strategyAvailable:false,
+// exact:false, blocked:true, configurationValid:false,
+// blockReason:'<SPECIFIC_REASON>', heldIndices:null, evReturnMultiple:null,
+// paytableBasisCreditsBetPerHand:null), so a caller can never mistake a
+// blocked result for a usable one by accident, and every failure is
 // testable by asserting on a return value rather than a thrown exception.
 import { buildDeck, CATEGORY_ORDER } from './hand-evaluator-v1.mjs';
 import { exactOptimalHold } from './exact-hold-ev-v1.mjs';
@@ -53,14 +54,25 @@ function isValidCard(c) {
   return !!c && Number.isInteger(c.rank) && c.rank >= 2 && c.rank <= 14 && Number.isInteger(c.suit) && c.suit >= 0 && c.suit <= 3;
 }
 
+// Strict, non-coercive numeric checks. A string like "5000" must never
+// silently pass a bare `> 0` comparison via JavaScript's implicit coercion
+// - every numeric progressive/paytable field is validated with these, never
+// with `Number(...)`, `parseFloat(...)`, or a coercive comparison.
+function isFiniteNumber(v) {
+  return typeof v === 'number' && Number.isFinite(v);
+}
+function isPositiveInteger(v) {
+  return typeof v === 'number' && Number.isInteger(v) && v > 0;
+}
+
 // progressive (optional, but if supplied it is a REQUEST to use a live
 // progressive - every field below is mandatory once an object is supplied,
 // with no silent defaults, per the standing rule that missing trigger
 // semantics must never be interpreted as "verified Royal, all suits":
-//   jackpotEUR: number,
-//   denominationEURPerCredit: number,
-//   creditsBetPerHand: number,
-//   qualifyingCreditsBetPerHand: number,       // minimum credits required to be jackpot-eligible
+//   jackpotEUR: number,                         // REQUIRED - finite, > 0, no string coercion
+//   denominationEURPerCredit: number,           // REQUIRED - finite, > 0, no string coercion
+//   creditsBetPerHand: number,                  // REQUIRED - finite integer, > 0, no string coercion
+//   qualifyingCreditsBetPerHand: number,        // REQUIRED (minimum credits to be jackpot-eligible) - finite integer, > 0; missing/null is NEVER read as "no qualifying requirement", UNKNOWN != VERIFIED
 //   triggerCategory: string,                   // REQUIRED - a real hand category, no default
 //   triggerSuitMode: 'ANY_SUIT' | 'SPECIFIC_SUIT', // REQUIRED - no default; ambiguity between "no restriction" and "unspecified" is exactly what this forbids
 //   triggerSuit: number | null,                // REQUIRED to be a valid 0-3 integer when triggerSuitMode is SPECIFIC_SUIT; REQUIRED to be null/absent when ANY_SUIT
@@ -87,8 +99,19 @@ export function resolveProgressiveConfig(progressive) {
   } = progressive;
   const invalid = (reason) => ({ applied: false, configurationValid: false, blockReason: reason, reason, effective: null });
 
-  if (!(jackpotEUR > 0) || !(denominationEURPerCredit > 0) || !(creditsBetPerHand > 0)) return invalid('INVALID_PROGRESSIVE_PARAMETERS');
-  if (qualifyingCreditsBetPerHand != null && creditsBetPerHand < qualifyingCreditsBetPerHand) return invalid('BET_DOES_NOT_QUALIFY_FOR_JACKPOT');
+  if (!isFiniteNumber(jackpotEUR) || jackpotEUR <= 0) return invalid('INVALID_PROGRESSIVE_PARAMETERS');
+  if (!isFiniteNumber(denominationEURPerCredit) || denominationEURPerCredit <= 0) return invalid('INVALID_PROGRESSIVE_PARAMETERS');
+  if (!isPositiveInteger(creditsBetPerHand)) return invalid('INVALID_PROGRESSIVE_PARAMETERS');
+  // qualifyingCreditsBetPerHand is mandatory whenever a progressive is
+  // supplied - every field in this contract is, with no silent defaults.
+  // Treating "missing" as "no qualifying requirement" would silently apply
+  // the jackpot to a bet size that might not actually qualify on the real
+  // machine (many progressives require a minimum/max-coin bet to qualify).
+  // UNKNOWN is never the same fact as VERIFIED, so a missing, null, zero,
+  // negative, non-integer, or string value here fails closed exactly like
+  // every other required field.
+  if (!isPositiveInteger(qualifyingCreditsBetPerHand)) return invalid('QUALIFYING_CREDITS_BET_MISSING_OR_INVALID');
+  if (creditsBetPerHand < qualifyingCreditsBetPerHand) return invalid('BET_DOES_NOT_QUALIFY_FOR_JACKPOT');
   // payoutMode is mandatory and must be exactly one of these two values -
   // REPLACE vs ADD_TO_BASE is a real, meaningfully different payout
   // structure between real progressive variants, and silently defaulting to
@@ -125,7 +148,7 @@ export function resolveProgressiveConfig(progressive) {
     configurationValid: true,
     blockReason: null,
     reason: 'PROGRESSIVE_APPLIED',
-    effective: { jackpotReturnMultiple, totalHandBetEUR, triggerCategory, triggerSuit: resolvedTriggerSuit, payoutMode },
+    effective: { jackpotReturnMultiple, totalHandBetEUR, creditsBetPerHand, triggerCategory, triggerSuit: resolvedTriggerSuit, payoutMode },
   };
 }
 
@@ -141,6 +164,7 @@ export function chooseOptimalHold({ hand, paytable, progressive }) {
     blockReason: reason,
     heldIndices: null,
     evReturnMultiple: null,
+    paytableBasisCreditsBetPerHand: null,
     realMoneyAllowed: false,
   });
 
@@ -150,11 +174,34 @@ export function chooseOptimalHold({ hand, paytable, progressive }) {
   if (distinctCards.size !== 5) return blocked('HAND_DUPLICATE_CARD');
 
   if (!paytable || typeof paytable !== 'object') return blocked('PAYTABLE_MISSING_OR_INVALID_TYPE');
-  for (const key of REQUIRED_PAYTABLE_KEYS) if (!(key in paytable)) return blocked('PAYTABLE_INCOMPLETE');
-  for (const value of Object.values(paytable)) if (!Number.isFinite(value) || value < 0) return blocked('PAYTABLE_INVALID_VALUE');
+  const payouts = paytable.payouts;
+  if (!payouts || typeof payouts !== 'object') return blocked('PAYTABLE_MISSING_OR_INVALID_TYPE');
+  for (const key of REQUIRED_PAYTABLE_KEYS) if (!(key in payouts)) return blocked('PAYTABLE_INCOMPLETE');
+  // Validated strictly from the nested `payouts` object only - the
+  // basisCreditsBetPerHand metadata field lives alongside it, never mixed
+  // into this loop, so a metadata field can never accidentally be read as
+  // if it were itself a payout value.
+  for (const value of Object.values(payouts)) if (!Number.isFinite(value) || value < 0) return blocked('PAYTABLE_INVALID_VALUE');
+
+  // A paytable's fixed payout numbers only mean something together with the
+  // credits-bet basis they were declared for (video poker payouts,
+  // famously the Royal Flush, are not always linear in credits bet - see
+  // hand-evaluator-v1.mjs's payoutCredits docstring). An unknown basis is
+  // exactly as untrustworthy as a missing payout: fail closed, never assume.
+  const paytableBasisCreditsBetPerHand = paytable.basisCreditsBetPerHand;
+  if (!isPositiveInteger(paytableBasisCreditsBetPerHand)) return blocked('PAYTABLE_BET_BASIS_UNKNOWN');
 
   const progressiveResolution = resolveProgressiveConfig(progressive);
   if (progressiveResolution.configurationValid === false) return blocked(progressiveResolution.blockReason);
+
+  // When a live progressive is in play, the paytable's declared basis MUST
+  // match the actual credits being bet this hand - otherwise the "exact" EV
+  // computed below would silently be for a credits-bet configuration that
+  // doesn't exist (e.g. applying a 5-credit-basis Royal payout to a
+  // 1-credit bet, or vice versa).
+  if (progressiveResolution.applied && paytableBasisCreditsBetPerHand !== progressiveResolution.effective.creditsBetPerHand) {
+    return blocked('PAYTABLE_BET_BASIS_MISMATCH');
+  }
 
   const remainingDeck = remainingDeckFor(hand);
   const best = exactOptimalHold(hand, remainingDeck, paytable, progressiveResolution.effective);
@@ -164,6 +211,10 @@ export function chooseOptimalHold({ hand, paytable, progressive }) {
     mask: best.mask,
     evReturnMultiple: best.evReturnMultiple,
     paytableUsed: paytable,
+    // Surfaced explicitly even in base-only mode (no progressive) so no
+    // caller can assume this exact result is valid for any number of
+    // credits bet - it is only exact for THIS declared basis.
+    paytableBasisCreditsBetPerHand,
     progressiveApplied: progressiveResolution.applied,
     progressiveReason: progressiveResolution.reason,
     progressiveEffective: progressiveResolution.effective,

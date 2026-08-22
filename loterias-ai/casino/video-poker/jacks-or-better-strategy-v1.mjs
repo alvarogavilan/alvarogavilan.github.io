@@ -31,17 +31,30 @@
 // and match true-optimal exactly.
 import { evaluateHand } from './hand-evaluator-v1.mjs';
 
+// The published 9/6 Jacks-or-Better paytable is NOT linear in credits bet:
+// Royal Flush pays a special 4000-credit bonus at 5-credit (max-coin) play,
+// not simply 5x its 1-credit value the way every other category scales.
+// These payout numbers are therefore only meaningful together with the
+// declared basisCreditsBetPerHand below (5): each is the real max-coin
+// payout divided by 5, i.e. a RETURN MULTIPLE OF THE TOTAL HAND BET at a
+// 5-credit basis (Royal: 4000/5=800). Using this paytable at any other
+// creditsBetPerHand is invalid - see optimal-hold-engine-v1.mjs's
+// PAYTABLE_BET_BASIS_MISMATCH guard, which enforces this before any EV is
+// ever computed against a live progressive.
 export const STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE = {
-  royalFlushReturnMultiple: 800, // per 1 credit bet; the real 4000-credit 5-coin bonus is a separate, well-known wrinkle not modelled here
-  STRAIGHT_FLUSH: 50,
-  FOUR_OF_A_KIND: 25,
-  FULL_HOUSE: 9,
-  FLUSH: 6,
-  STRAIGHT: 4,
-  THREE_OF_A_KIND: 3,
-  TWO_PAIR: 2,
-  JACKS_OR_BETTER: 1,
-  NOTHING: 0,
+  basisCreditsBetPerHand: 5,
+  payouts: {
+    royalFlushReturnMultiple: 800,
+    STRAIGHT_FLUSH: 50,
+    FOUR_OF_A_KIND: 25,
+    FULL_HOUSE: 9,
+    FLUSH: 6,
+    STRAIGHT: 4,
+    THREE_OF_A_KIND: 3,
+    TWO_PAIR: 2,
+    JACKS_OR_BETTER: 1,
+    NOTHING: 0,
+  },
 };
 
 const HIGH_RANK_MIN = 11; // Jack or better

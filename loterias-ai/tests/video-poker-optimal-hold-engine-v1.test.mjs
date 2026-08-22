@@ -7,13 +7,29 @@ import { buildDeck, evaluateHand, payoutCredits } from '../casino/video-poker/ha
 const c = (rank, suit) => ({ rank, suit });
 const sortedIdx = (a) => [...a].sort();
 
+// STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE declares basisCreditsBetPerHand:5 -
+// its numbers are the real max-coin paytable divided by 5 credits (see its
+// own module docstring). Overriding one payout category for a test must
+// replace only that key inside the nested `payouts` object, never spread
+// the top-level paytable as if it were flat (that would silently drop
+// basisCreditsBetPerHand or, worse, treat it as a stray payout value).
+const withPayouts = (overrides) => ({
+  ...STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE,
+  payouts: { ...STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE.payouts, ...overrides },
+});
+
 // A minimal, valid ANY_SUIT royal-flush progressive request - the common
-// base case reused across several tests below.
+// base case reused across several tests below. creditsBetPerHand:5 matches
+// STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE's basisCreditsBetPerHand exactly
+// (required - see PAYTABLE_BET_BASIS_MISMATCH tests further down).
+// denominationEURPerCredit:0.2 keeps totalHandBetEUR at exactly 1 (0.2*5),
+// so jackpotReturnMultiple === jackpotEUR directly, matching this suite's
+// existing EV expectations without having to recompute every threshold.
 const anyRoyalProgressive = (jackpotEUR) => ({
   jackpotEUR,
-  denominationEURPerCredit: 1,
-  creditsBetPerHand: 1,
-  qualifyingCreditsBetPerHand: 1,
+  denominationEURPerCredit: 0.2,
+  creditsBetPerHand: 5,
+  qualifyingCreditsBetPerHand: 5,
   payoutMode: 'REPLACE',
   triggerCategory: 'ROYAL_FLUSH',
   triggerSuitMode: TRIGGER_SUIT_MODE.ANY_SUIT,
@@ -59,8 +75,8 @@ const anyRoyalProgressive = (jackpotEUR) => ({
 // empirically (not asserted from theory) via this same exact engine.
 {
   const hand = [c(4, 0), c(7, 0), c(9, 0), c(13, 0), c(4, 1)]; // 4s,7s,9s,Ks + 4h
-  const lowFlushPaytable = { ...STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE, FLUSH: 1 };
-  const highFlushPaytable = { ...STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE, FLUSH: 10 };
+  const lowFlushPaytable = withPayouts({ FLUSH: 1 });
+  const highFlushPaytable = withPayouts({ FLUSH: 10 });
   const lowResult = chooseOptimalHold({ hand, paytable: lowFlushPaytable });
   const highResult = chooseOptimalHold({ hand, paytable: highFlushPaytable });
   assert.deepEqual(sortedIdx(lowResult.heldIndices), [0, 4], 'low flush payout: keep the pair of 4s');
@@ -134,6 +150,7 @@ const anyRoyalProgressive = (jackpotEUR) => ({
   assert.equal(qualified.configurationValid, true);
   assert.equal(qualified.effective.jackpotReturnMultiple, 1000);
   assert.equal(qualified.effective.totalHandBetEUR, 5);
+  assert.equal(qualified.effective.creditsBetPerHand, 5);
 }
 
 // A non-qualifying bet must fall back to the ordinary fixed payout, NOT
@@ -155,6 +172,70 @@ const anyRoyalProgressive = (jackpotEUR) => ({
   assert.equal(r.realMoneyAllowed, false);
 }
 
+// --- qualifyingCreditsBetPerHand is MANDATORY whenever a progressive is
+// supplied - the code's own contract says every field is required, but a
+// bare `!= null` check previously let it be omitted, silently treating
+// "unknown" as "no qualifying requirement". UNKNOWN != VERIFIED. ---
+{
+  const base = {
+    jackpotEUR: 5000, denominationEURPerCredit: 0.2, creditsBetPerHand: 5,
+    payoutMode: 'REPLACE', triggerCategory: 'ROYAL_FLUSH', triggerSuitMode: TRIGGER_SUIT_MODE.ANY_SUIT,
+  };
+  const cases = [
+    ['missing', {}],
+    ['null', { qualifyingCreditsBetPerHand: null }],
+    ['zero', { qualifyingCreditsBetPerHand: 0 }],
+    ['negative', { qualifyingCreditsBetPerHand: -1 }],
+    ['decimal', { qualifyingCreditsBetPerHand: 1.5 }],
+    ['string', { qualifyingCreditsBetPerHand: '5' }],
+  ];
+  for (const [label, override] of cases) {
+    const r = resolveProgressiveConfig({ ...base, ...override });
+    assert.equal(r.applied, false, `qualifyingCreditsBetPerHand ${label} must not apply`);
+    assert.equal(r.blockReason, 'QUALIFYING_CREDITS_BET_MISSING_OR_INVALID', `qualifyingCreditsBetPerHand ${label} must block with the specific reason`);
+  }
+  const valid = resolveProgressiveConfig({ ...base, qualifyingCreditsBetPerHand: 5 });
+  assert.equal(valid.applied, true);
+}
+
+// --- No numeric coercion anywhere: a string like "5000" must never
+// silently pass a bare `> 0` comparison via JavaScript's implicit
+// coercion. Every numeric progressive field is validated with
+// Number.isFinite/Number.isInteger, never Number(...)/parseFloat(...). ---
+{
+  const validBase = {
+    jackpotEUR: 5000, denominationEURPerCredit: 0.2, creditsBetPerHand: 5, qualifyingCreditsBetPerHand: 5,
+    payoutMode: 'REPLACE', triggerCategory: 'ROYAL_FLUSH', triggerSuitMode: TRIGGER_SUIT_MODE.ANY_SUIT,
+  };
+  const sanity = resolveProgressiveConfig(validBase);
+  assert.equal(sanity.applied, true, 'sanity: the valid base config must itself apply');
+
+  const jackpotString = resolveProgressiveConfig({ ...validBase, jackpotEUR: '5000' });
+  assert.equal(jackpotString.applied, false);
+  assert.equal(jackpotString.blockReason, 'INVALID_PROGRESSIVE_PARAMETERS');
+
+  const denominationString = resolveProgressiveConfig({ ...validBase, denominationEURPerCredit: '0.2' });
+  assert.equal(denominationString.applied, false);
+  assert.equal(denominationString.blockReason, 'INVALID_PROGRESSIVE_PARAMETERS');
+
+  const creditsString = resolveProgressiveConfig({ ...validBase, creditsBetPerHand: '5' });
+  assert.equal(creditsString.applied, false);
+  assert.equal(creditsString.blockReason, 'INVALID_PROGRESSIVE_PARAMETERS');
+
+  const creditsDecimal = resolveProgressiveConfig({ ...validBase, creditsBetPerHand: 5.5 });
+  assert.equal(creditsDecimal.applied, false, 'creditsBetPerHand must be an integer, not just finite');
+  assert.equal(creditsDecimal.blockReason, 'INVALID_PROGRESSIVE_PARAMETERS');
+
+  // triggerSuit under SPECIFIC_SUIT: Number.isInteger("2") is false, so a
+  // string suit is already rejected by the existing check - proven
+  // explicitly here so this stays true if the check is ever refactored.
+  const triggerSuitString = resolveProgressiveConfig({
+    ...validBase, triggerSuitMode: TRIGGER_SUIT_MODE.SPECIFIC_SUIT, triggerSuit: '2',
+  });
+  assert.equal(triggerSuitString.applied, false);
+  assert.equal(triggerSuitString.blockReason, 'TRIGGER_SUIT_MISSING_FOR_SPECIFIC_SUIT_MODE');
+}
+
 // --- payoutMode is mandatory, never silently defaulted, and REPLACE vs
 // ADD_TO_BASE must produce genuinely different, mathematically correct
 // EVs. ---
@@ -162,14 +243,14 @@ const anyRoyalProgressive = (jackpotEUR) => ({
 // An unknown/missing payoutMode must fail closed, never silently pick REPLACE.
 {
   const missing = resolveProgressiveConfig({
-    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 1,
+    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 5, qualifyingCreditsBetPerHand: 5,
     triggerCategory: 'ROYAL_FLUSH', triggerSuitMode: TRIGGER_SUIT_MODE.ANY_SUIT,
   });
   assert.equal(missing.applied, false);
   assert.equal(missing.blockReason, 'PAYOUT_MODE_MISSING_OR_UNKNOWN');
 
   const unknown = resolveProgressiveConfig({
-    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 1, payoutMode: 'DOUBLE_IT',
+    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 5, qualifyingCreditsBetPerHand: 5, payoutMode: 'DOUBLE_IT',
     triggerCategory: 'ROYAL_FLUSH', triggerSuitMode: TRIGGER_SUIT_MODE.ANY_SUIT,
   });
   assert.equal(unknown.applied, false);
@@ -182,7 +263,7 @@ const anyRoyalProgressive = (jackpotEUR) => ({
   const hand = [c(10, 0), c(11, 0), c(12, 0), c(13, 0), c(14, 0)];
   const r = chooseOptimalHold({
     hand, paytable: STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE,
-    progressive: { jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 1 },
+    progressive: { jackpotEUR: 5000, denominationEURPerCredit: 0.2, creditsBetPerHand: 5, qualifyingCreditsBetPerHand: 5 },
   });
   assert.equal(r.blocked, true);
   assert.equal(r.strategyAvailable, false);
@@ -203,7 +284,7 @@ const anyRoyalProgressive = (jackpotEUR) => ({
     progressive: { ...anyRoyalProgressive(5000), payoutMode: 'ADD_TO_BASE' },
   });
   assert.equal(replaceResult.evReturnMultiple, 5000);
-  assert.equal(addToBaseResult.evReturnMultiple, 5000 + STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE.royalFlushReturnMultiple);
+  assert.equal(addToBaseResult.evReturnMultiple, 5000 + STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE.payouts.royalFlushReturnMultiple);
   assert.notEqual(replaceResult.evReturnMultiple, addToBaseResult.evReturnMultiple);
 }
 
@@ -211,21 +292,21 @@ const anyRoyalProgressive = (jackpotEUR) => ({
 // payable hand category. ---
 {
   const missingCategory = resolveProgressiveConfig({
-    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 1, payoutMode: 'REPLACE',
+    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 5, qualifyingCreditsBetPerHand: 5, payoutMode: 'REPLACE',
     triggerSuitMode: TRIGGER_SUIT_MODE.ANY_SUIT,
   });
   assert.equal(missingCategory.applied, false);
   assert.equal(missingCategory.blockReason, 'TRIGGER_CATEGORY_MISSING_OR_UNKNOWN');
 
   const unknownCategory = resolveProgressiveConfig({
-    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 1, payoutMode: 'REPLACE',
+    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 5, qualifyingCreditsBetPerHand: 5, payoutMode: 'REPLACE',
     triggerCategory: 'FULL_HOUSE_OF_ACES', triggerSuitMode: TRIGGER_SUIT_MODE.ANY_SUIT,
   });
   assert.equal(unknownCategory.applied, false);
   assert.equal(unknownCategory.blockReason, 'TRIGGER_CATEGORY_MISSING_OR_UNKNOWN');
 
   const nothingCategory = resolveProgressiveConfig({
-    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 1, payoutMode: 'REPLACE',
+    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 5, qualifyingCreditsBetPerHand: 5, payoutMode: 'REPLACE',
     triggerCategory: 'NOTHING', triggerSuitMode: TRIGGER_SUIT_MODE.ANY_SUIT,
   });
   assert.equal(nothingCategory.applied, false, 'NOTHING can never sensibly be a jackpot trigger');
@@ -237,7 +318,10 @@ const anyRoyalProgressive = (jackpotEUR) => ({
   const hand = [c(10, 0), c(11, 0), c(12, 0), c(13, 0), c(14, 0)];
   const r = chooseOptimalHold({
     hand, paytable: STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE,
-    progressive: { jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 1, payoutMode: 'REPLACE', triggerSuitMode: TRIGGER_SUIT_MODE.ANY_SUIT },
+    progressive: {
+      jackpotEUR: 5000, denominationEURPerCredit: 0.2, creditsBetPerHand: 5, qualifyingCreditsBetPerHand: 5,
+      payoutMode: 'REPLACE', triggerSuitMode: TRIGGER_SUIT_MODE.ANY_SUIT,
+    },
   });
   assert.equal(r.blocked, true);
   assert.equal(r.blockReason, 'TRIGGER_CATEGORY_MISSING_OR_UNKNOWN');
@@ -250,7 +334,7 @@ const anyRoyalProgressive = (jackpotEUR) => ({
 // Missing triggerSuitMode -> BLOCKED.
 {
   const r = resolveProgressiveConfig({
-    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 1, payoutMode: 'REPLACE', triggerCategory: 'ROYAL_FLUSH',
+    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 5, qualifyingCreditsBetPerHand: 5, payoutMode: 'REPLACE', triggerCategory: 'ROYAL_FLUSH',
   });
   assert.equal(r.applied, false);
   assert.equal(r.blockReason, 'TRIGGER_SUIT_MODE_MISSING_OR_UNKNOWN');
@@ -258,7 +342,7 @@ const anyRoyalProgressive = (jackpotEUR) => ({
 // Unknown triggerSuitMode value -> BLOCKED.
 {
   const r = resolveProgressiveConfig({
-    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 1, payoutMode: 'REPLACE', triggerCategory: 'ROYAL_FLUSH', triggerSuitMode: 'WHATEVER_SUIT',
+    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 5, qualifyingCreditsBetPerHand: 5, payoutMode: 'REPLACE', triggerCategory: 'ROYAL_FLUSH', triggerSuitMode: 'WHATEVER_SUIT',
   });
   assert.equal(r.applied, false);
   assert.equal(r.blockReason, 'TRIGGER_SUIT_MODE_MISSING_OR_UNKNOWN');
@@ -266,7 +350,7 @@ const anyRoyalProgressive = (jackpotEUR) => ({
 // ANY_SUIT with no triggerSuit -> valid and applied.
 {
   const r = resolveProgressiveConfig({
-    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 1, payoutMode: 'REPLACE',
+    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 5, qualifyingCreditsBetPerHand: 5, payoutMode: 'REPLACE',
     triggerCategory: 'ROYAL_FLUSH', triggerSuitMode: TRIGGER_SUIT_MODE.ANY_SUIT,
   });
   assert.equal(r.applied, true);
@@ -276,7 +360,7 @@ const anyRoyalProgressive = (jackpotEUR) => ({
 // contradictory-input rejection, not silently ignored).
 {
   const r = resolveProgressiveConfig({
-    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 1, payoutMode: 'REPLACE',
+    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 5, qualifyingCreditsBetPerHand: 5, payoutMode: 'REPLACE',
     triggerCategory: 'ROYAL_FLUSH', triggerSuitMode: TRIGGER_SUIT_MODE.ANY_SUIT, triggerSuit: 2,
   });
   assert.equal(r.applied, false);
@@ -285,7 +369,7 @@ const anyRoyalProgressive = (jackpotEUR) => ({
 // SPECIFIC_SUIT with a valid suit on ROYAL_FLUSH -> valid and applied.
 {
   const r = resolveProgressiveConfig({
-    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 1, payoutMode: 'REPLACE',
+    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 5, qualifyingCreditsBetPerHand: 5, payoutMode: 'REPLACE',
     triggerCategory: 'ROYAL_FLUSH', triggerSuitMode: TRIGGER_SUIT_MODE.SPECIFIC_SUIT, triggerSuit: 2,
   });
   assert.equal(r.applied, true);
@@ -294,7 +378,7 @@ const anyRoyalProgressive = (jackpotEUR) => ({
 // SPECIFIC_SUIT without a triggerSuit -> BLOCKED.
 {
   const r = resolveProgressiveConfig({
-    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 1, payoutMode: 'REPLACE',
+    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 5, qualifyingCreditsBetPerHand: 5, payoutMode: 'REPLACE',
     triggerCategory: 'ROYAL_FLUSH', triggerSuitMode: TRIGGER_SUIT_MODE.SPECIFIC_SUIT,
   });
   assert.equal(r.applied, false);
@@ -306,7 +390,7 @@ const anyRoyalProgressive = (jackpotEUR) => ({
 // permanently unreachable.
 {
   const r = resolveProgressiveConfig({
-    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 1, payoutMode: 'REPLACE',
+    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 5, qualifyingCreditsBetPerHand: 5, payoutMode: 'REPLACE',
     triggerCategory: 'FOUR_OF_A_KIND', triggerSuitMode: TRIGGER_SUIT_MODE.SPECIFIC_SUIT, triggerSuit: 0,
   });
   assert.equal(r.applied, false);
@@ -316,7 +400,7 @@ const anyRoyalProgressive = (jackpotEUR) => ({
 // attempted at all).
 {
   const r = resolveProgressiveConfig({
-    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 1, payoutMode: 'REPLACE',
+    jackpotEUR: 5000, denominationEURPerCredit: 1, creditsBetPerHand: 5, qualifyingCreditsBetPerHand: 5, payoutMode: 'REPLACE',
     triggerCategory: 'FOUR_OF_A_KIND', triggerSuitMode: TRIGGER_SUIT_MODE.ANY_SUIT,
   });
   assert.equal(r.applied, true);
@@ -368,29 +452,27 @@ const anyRoyalProgressive = (jackpotEUR) => ({
 // and "zero" are different facts. ---
 {
   const hand = [c(10, 0), c(11, 0), c(12, 0), c(13, 0), c(14, 0)];
-  const { FLUSH: _omitted, ...incompletePaytable } = STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE;
+  const { FLUSH: _omitted, ...incompletePayouts } = STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE.payouts;
+  const incompletePaytable = { ...STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE, payouts: incompletePayouts };
   const r = chooseOptimalHold({ hand, paytable: incompletePaytable });
   assert.equal(r.blocked, true);
   assert.equal(r.blockReason, 'PAYTABLE_INCOMPLETE');
 }
 {
   const hand = [c(10, 0), c(11, 0), c(12, 0), c(13, 0), c(14, 0)];
-  const negativePaytable = { ...STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE, FLUSH: -1 };
-  const r = chooseOptimalHold({ hand, paytable: negativePaytable });
+  const r = chooseOptimalHold({ hand, paytable: withPayouts({ FLUSH: -1 }) });
   assert.equal(r.blocked, true);
   assert.equal(r.blockReason, 'PAYTABLE_INVALID_VALUE');
 }
 {
   const hand = [c(10, 0), c(11, 0), c(12, 0), c(13, 0), c(14, 0)];
-  const nanPaytable = { ...STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE, FLUSH: NaN };
-  const r = chooseOptimalHold({ hand, paytable: nanPaytable });
+  const r = chooseOptimalHold({ hand, paytable: withPayouts({ FLUSH: NaN }) });
   assert.equal(r.blocked, true);
   assert.equal(r.blockReason, 'PAYTABLE_INVALID_VALUE');
 }
 {
   const hand = [c(10, 0), c(11, 0), c(12, 0), c(13, 0), c(14, 0)];
-  const infinitePaytable = { ...STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE, FLUSH: Infinity };
-  const r = chooseOptimalHold({ hand, paytable: infinitePaytable });
+  const r = chooseOptimalHold({ hand, paytable: withPayouts({ FLUSH: Infinity }) });
   assert.equal(r.blocked, true);
   assert.equal(r.blockReason, 'PAYTABLE_INVALID_VALUE');
 }
@@ -400,22 +482,107 @@ const anyRoyalProgressive = (jackpotEUR) => ({
   assert.equal(r.blocked, true);
   assert.equal(r.blockReason, 'PAYTABLE_MISSING_OR_INVALID_TYPE');
 }
+{
+  // A paytable with no `payouts` object at all (still an object, but
+  // missing the nested structure entirely) must also fail this same way,
+  // not crash trying to read `.payouts` of undefined.
+  const hand = [c(10, 0), c(11, 0), c(12, 0), c(13, 0), c(14, 0)];
+  const r = chooseOptimalHold({ hand, paytable: { basisCreditsBetPerHand: 5 } });
+  assert.equal(r.blocked, true);
+  assert.equal(r.blockReason, 'PAYTABLE_MISSING_OR_INVALID_TYPE');
+}
 // A legitimately-zero payout (some paytables genuinely pay 0 for a category
 // that's present but worthless) must be accepted, not confused with a
 // missing key.
 {
   const hand = [c(10, 0), c(11, 0), c(12, 0), c(13, 0), c(14, 0)];
-  const zeroStraightPaytable = { ...STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE, STRAIGHT: 0 };
-  const r = chooseOptimalHold({ hand, paytable: zeroStraightPaytable });
+  const r = chooseOptimalHold({ hand, paytable: withPayouts({ STRAIGHT: 0 }) });
   assert.equal(r.blocked, false);
   assert.equal(r.strategyAvailable, true);
+}
+// The metadata field (basisCreditsBetPerHand) must never be validated as if
+// it were itself a payout value - proven by a paytable whose basis is a
+// large integer that would be nonsensical as a payout multiple, which must
+// still be accepted (the payouts themselves are all still valid).
+{
+  const hand = [c(10, 0), c(11, 0), c(12, 0), c(13, 0), c(14, 0)];
+  const r = chooseOptimalHold({ hand, paytable: { ...STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE, basisCreditsBetPerHand: 5 } });
+  assert.equal(r.blocked, false);
+}
+
+// --- Paytable credits-bet basis: a paytable's fixed payout numbers only
+// mean something together with the credits-bet basis they were declared
+// for (the classic max-coin Royal Flush bonus is not linear in credits
+// bet). A missing or mismatched basis must fail closed - never silently
+// compute an "exact" strategy for a configuration that doesn't exist. ---
+
+// Base-only (no progressive): the result must explicitly surface which
+// basis this exact strategy is valid for, so no caller can assume it holds
+// for any number of credits bet.
+{
+  const hand = [c(10, 0), c(11, 0), c(12, 0), c(13, 0), c(14, 0)];
+  const r = chooseOptimalHold({ hand, paytable: STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE });
+  assert.equal(r.paytableBasisCreditsBetPerHand, 5);
+}
+// A missing basis must BLOCK, even for a base-only (no progressive) request.
+{
+  const hand = [c(10, 0), c(11, 0), c(12, 0), c(13, 0), c(14, 0)];
+  const { basisCreditsBetPerHand: _omitted, ...noBasis } = STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE;
+  const r = chooseOptimalHold({ hand, paytable: noBasis });
+  assert.equal(r.blocked, true);
+  assert.equal(r.blockReason, 'PAYTABLE_BET_BASIS_UNKNOWN');
+}
+// A string-valued basis must also BLOCK - no coercion.
+{
+  const hand = [c(10, 0), c(11, 0), c(12, 0), c(13, 0), c(14, 0)];
+  const r = chooseOptimalHold({ hand, paytable: { ...STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE, basisCreditsBetPerHand: '5' } });
+  assert.equal(r.blocked, true);
+  assert.equal(r.blockReason, 'PAYTABLE_BET_BASIS_UNKNOWN');
+}
+// A zero/negative/decimal basis must also BLOCK.
+{
+  const hand = [c(10, 0), c(11, 0), c(12, 0), c(13, 0), c(14, 0)];
+  for (const bad of [0, -1, 2.5]) {
+    const r = chooseOptimalHold({ hand, paytable: { ...STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE, basisCreditsBetPerHand: bad } });
+    assert.equal(r.blocked, true, `basisCreditsBetPerHand=${bad} must block`);
+    assert.equal(r.blockReason, 'PAYTABLE_BET_BASIS_UNKNOWN');
+  }
+}
+
+// --- The max-coin cross-check this whole guard exists for: a 5-credit-basis
+// paytable (Royal=800, i.e. 4000/5) combined with a LIVE progressive bet of
+// only 1 credit must BLOCK - applying it would silently compute an "exact"
+// EV for a configuration that does not exist on the real machine (a
+// 1-credit bet does not pay the 5-credit max-coin Royal bonus rate). The
+// SAME paytable at creditsBetPerHand=5 (matching its declared basis) must
+// remain valid. ---
+{
+  const hand = [c(10, 0), c(11, 0), c(12, 0), c(13, 0), c(14, 0)]; // made royal flush
+  const paytable5Credit = STANDARD_9_6_JACKS_OR_BETTER_PAYTABLE; // basisCreditsBetPerHand: 5
+
+  const mismatched = chooseOptimalHold({
+    hand, paytable: paytable5Credit,
+    progressive: { ...anyRoyalProgressive(4000), creditsBetPerHand: 1, denominationEURPerCredit: 1, qualifyingCreditsBetPerHand: 1 },
+  });
+  assert.equal(mismatched.blocked, true);
+  assert.equal(mismatched.blockReason, 'PAYTABLE_BET_BASIS_MISMATCH');
+  assert.equal(mismatched.strategyAvailable, false);
+  assert.equal(mismatched.heldIndices, null);
+
+  const matched = chooseOptimalHold({
+    hand, paytable: paytable5Credit,
+    progressive: anyRoyalProgressive(4000), // creditsBetPerHand: 5, matching the paytable's basis
+  });
+  assert.equal(matched.blocked, false);
+  assert.equal(matched.strategyAvailable, true);
+  assert.equal(matched.paytableBasisCreditsBetPerHand, 5);
 }
 
 // --- Unit conversion: totalHandBetEUR = denominationEURPerCredit *
 // creditsBetPerHand; jackpotReturnMultiple = jackpotEUR / totalHandBetEUR. ---
 {
   const r = resolveProgressiveConfig({
-    jackpotEUR: 2500, denominationEURPerCredit: 0.25, creditsBetPerHand: 5,
+    jackpotEUR: 2500, denominationEURPerCredit: 0.25, creditsBetPerHand: 5, qualifyingCreditsBetPerHand: 5,
     payoutMode: 'REPLACE', triggerCategory: 'ROYAL_FLUSH', triggerSuitMode: TRIGGER_SUIT_MODE.ANY_SUIT,
   });
   assert.equal(r.applied, true);
