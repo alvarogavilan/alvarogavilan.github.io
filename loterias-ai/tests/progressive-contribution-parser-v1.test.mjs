@@ -30,4 +30,11 @@ assert.deepEqual(extractProgressiveContributionPcts(duble.rtpContexts.join(' '))
 assert.equal(Number((boteman.baseRtpPct+1.92).toFixed(2)),94.95);
 assert.equal(Number((duble.baseRtpPct+0.49).toFixed(2)),92.00);
 
+const networkMap=JSON.parse(fs.readFileSync('loterias-ai/casino/archive/evidence/botemania-progressive-network-map-v1.json','utf8'));
+const resetZeroCount=(networkMap.rows||[]).filter(row=>row.resetZero===true).length;
+assert.ok(resetZeroCount>0, 'archived network map must expose the known zero-reset family');
+const globalGateSource=fs.readFileSync('loterias-ai/casino/botemania-global-economic-gate-v1.mjs','utf8');
+assert.match(globalGateSource,/const MAP='loterias-ai\/casino\/archive\/evidence\/botemania-progressive-network-map-v1\.json'/);
+assert.doesNotMatch(globalGateSource,/const MAP='loterias-ai\/casino\/jackpots\/evidence\/botemania-progressive-network-map-v1\.json'/);
+
 console.log('progressive-contribution-parser-v1.test.mjs: PASS');
