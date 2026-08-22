@@ -1,0 +1,63 @@
+{
+  "version": "winfall-shared-target-audit-v1",
+  "generatedAt": "2026-08-22T01:10:00.000Z",
+  "operator": "botemania-es",
+  "target": "winfall-wishes-jackpot",
+  "expectedOfficialSharedTargets": [
+    "winfall-wishes-jackpot",
+    "wonderland",
+    "tiki-templo"
+  ],
+  "wrongTarget": "la-isla-de-tiki",
+  "audit": {
+    "rows": [
+      {
+        "file": "loterias-ai/casino/jackpots/winfall-shared-network-triangulation-v1.mjs",
+        "usesExpectedSharedTikiSlug": true,
+        "usesWrongSharedTikiSlug": false,
+        "hypothesisNamesTikiTemplo": true,
+        "targetMismatch": false
+      },
+      {
+        "file": "loterias-ai/casino/jackpots/winfall-passive-network-triangulation-v2.mjs",
+        "usesExpectedSharedTikiSlug": false,
+        "usesWrongSharedTikiSlug": true,
+        "hypothesisNamesTikiTemplo": true,
+        "targetMismatch": true
+      },
+      {
+        "file": "loterias-ai/casino/jackpots/winfall-provider-network-metadata-v1.mjs",
+        "usesExpectedSharedTikiSlug": false,
+        "usesWrongSharedTikiSlug": true,
+        "hypothesisNamesTikiTemplo": true,
+        "targetMismatch": true
+      }
+    ],
+    "invalidated": [
+      "loterias-ai/casino/jackpots/winfall-passive-network-triangulation-v2.mjs",
+      "loterias-ai/casino/jackpots/winfall-provider-network-metadata-v1.mjs"
+    ],
+    "negativeClosureValid": false,
+    "exactLiveIdVerified": false,
+    "identityPromotionAllowed": false,
+    "economicPromotionAllowed": false,
+    "realMoneyAllowed": false
+  },
+  "decision": {
+    "priorNegativeSharedNetworkClosureValid": false,
+    "correctedProbeRequired": true,
+    "exactLiveIdVerified": false,
+    "identityPromotionAllowed": false,
+    "economicPromotionAllowed": false,
+    "realMoneyAllowed": false,
+    "reason": "PRIOR_PROBES_USED_DIFFERENT_TIKI_GAME_THAN_THE_OPERATOR_NAMED_SHARED_PARTNER"
+  },
+  "guards": {
+    "wrongTargetNeverCountsAsNegativeEvidence": true,
+    "invalidatedNegativeNeverPromotesOrKillsIdentity": true,
+    "correctedTargetMustBeProspectivelyFrozenBeforeRerun": true,
+    "noAmountEqualityIdentityInference": true,
+    "noBetting": true,
+    "realMoneyAllowed": false
+  }
+}
