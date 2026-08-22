@@ -9,9 +9,11 @@ const apply=process.env.APPLY_OFFICIAL_DATE_CORRECTION==='1';
 
 const doc=JSON.parse(fs.readFileSync(file,'utf8'));
 const rows=doc.records||[];
-const row=rows.find(r=>r.drawDate===targetOldDate);
-if(!row) throw new Error(`missing canonical Lototurf row ${targetOldDate}`);
-if(rows.some(r=>r.drawDate===targetOfficialDate)) throw new Error(`refuse duplicate official date ${targetOfficialDate}`);
+const oldRow=rows.find(r=>r.drawDate===targetOldDate);
+const correctedRow=rows.find(r=>r.drawDate===targetOfficialDate);
+if(oldRow&&correctedRow) throw new Error(`refuse duplicate canonical dates ${targetOldDate} and ${targetOfficialDate}`);
+if(!oldRow&&!correctedRow) throw new Error(`missing Lototurf row for ${targetOldDate}/${targetOfficialDate}`);
+const row=oldRow||correctedRow;
 
 const currentMain=[...(row.result?.main||[])].map(Number).sort((a,b)=>a-b);
 const expectedMain=[...expected.main].sort((a,b)=>a-b);
@@ -32,6 +34,17 @@ const guards={
 };
 if(!Object.values(guards).every(Boolean)) throw new Error(`official page verification failed: ${JSON.stringify(guards)}`);
 
+const existingAudit=row.correctionAudit?.lototurf20110716;
+const alreadyCorrected=Boolean(
+  correctedRow &&
+  row.drawId===`lototurf-${targetOfficialDate}` &&
+  row.verification?.officialCrossCheck?.status==='MATCH' &&
+  row.verification?.officialCrossCheck?.exactDate===true &&
+  row.verification?.historicalDateCorrection?.status==='OFFICIAL_DATE_CORRECTION_VERIFIED' &&
+  existingAudit?.previous?.drawDate===targetOldDate &&
+  existingAudit?.official?.drawDate===targetOfficialDate
+);
+
 const diagnostic={
   gameId:'lototurf',
   previousDate:targetOldDate,
@@ -39,9 +52,19 @@ const diagnostic={
   officialUrl,
   expected,
   guards,
+  alreadyCorrected,
   applyRequested:apply,
-  policy:{officialOnly:true,noShiftedDatePromotion:true,preservePriorProvenance:true,economicsStillRequiredForFullResolution:true,trainingEligibleUntilEconomics:false}
+  policy:{officialOnly:true,noShiftedDatePromotion:true,preservePriorProvenance:true,economicsStillRequiredForFullResolution:true,trainingEligibleUntilEconomics:false,idempotentRepair:true}
 };
+
+if(alreadyCorrected){
+  if(row.trainingEligible!==false) throw new Error('already-corrected row must remain trainingEligible=false until official economics are resolved');
+  if(row.economicsResolution!=='PENDING_OFFICIAL_ECONOMICS') throw new Error(`unexpected economics resolution: ${row.economicsResolution}`);
+  console.log(JSON.stringify({...diagnostic,status:'ALREADY_CORRECTED_NO_SEMANTIC_CHANGE'},null,2));
+  process.exit(0);
+}
+
+if(!oldRow) throw new Error(`row at ${targetOfficialDate} is not a verified prior correction; refusing overwrite`);
 
 if(!apply){
   console.log(JSON.stringify({...diagnostic,status:'DRY_RUN_VERIFIED_OFFICIAL_DATE_CORRECTION'},null,2));
