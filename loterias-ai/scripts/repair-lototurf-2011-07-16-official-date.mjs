@@ -4,7 +4,7 @@ const file='loterias-ai/data/archive/lototurf/2011.json';
 const targetOldDate='2011-07-17';
 const targetOfficialDate='2011-07-16';
 const officialUrl='https://www.loteriasyapuestas.es/va/lototurf/resultados/lototurf-resultados-del-s-aacute-bado-16-de-julio-de-2011';
-const expected={main:[5,10,20,24,25,30],horse:2,reintegro:8};
+const expected={main:[5,10,20,24,25,30],officialDisplayMain:[10,25,30,20,24,5],horse:2,reintegro:8};
 const apply=process.env.APPLY_OFFICIAL_DATE_CORRECTION==='1';
 
 const doc=JSON.parse(fs.readFileSync(file,'utf8'));
@@ -23,9 +23,10 @@ const response=await fetch(officialUrl,{redirect:'follow',signal:AbortSignal.tim
 if(!response.ok) throw new Error(`official page HTTP ${response.status}`);
 const html=await response.text();
 const text=html.replace(/<[^>]+>/g,' ').replace(/&nbsp;|&#160;/g,' ').replace(/\s+/g,' ');
+const exactMainSequence=new RegExp(expected.officialDisplayMain.map(n=>`(^|\\D)${n}(?=\\D|$)`).join('.*?'),'i');
 const guards={
   officialDate:text.includes('16/07/2011')||/16\s+de\s+julio\s+de\s+2011/i.test(text),
-  main:expected.main.every(n=>new RegExp(`(^|\\D)${n}(\\D|$)`).test(text)),
+  exactMainSequence:exactMainSequence.test(text),
   horse:/C\s*\(\s*2\s*\)/i.test(text)||/Caballo ganador[^0-9]*2/i.test(text),
   reintegro:/R\s*\(\s*8\s*\)/i.test(text)||/Reintegro[^0-9]*8/i.test(text)
 };
