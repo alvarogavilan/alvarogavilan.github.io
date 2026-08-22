@@ -6,12 +6,22 @@
     const g=t=>p.find(x=>x.type===t)?.value;
     return `${g('year')}-${g('month')}-${g('day')}`;
   };
+  const blockActions=()=>{
+    document.querySelectorAll('[data-play],.copybtn').forEach(b=>{
+      b.disabled=true;
+      b.setAttribute('aria-disabled','true');
+      b.setAttribute('title','Bloqueado: evidencia operativa desfasada');
+      b.style.opacity='.45';
+      b.style.pointerEvents='none';
+    });
+  };
   const block=(message)=>{
     const fresh=$('freshLabel'),games=$('todayGames'),gate=$('gate');
     if(fresh){fresh.textContent='EVIDENCIA DESFASADA · NO APOSTAR';fresh.style.background='#7b2020';fresh.style.borderColor='#ffffff55';}
-    if(games)games.innerHTML=`<div class="empty"><b>Datos de hoy no verificables.</b><br>${message}<br>NO APOSTAR hasta que el sistema publique un manifiesto vigente y estricto.</div>`;
+    if(games)games.innerHTML=`<div class="empty"><b>Datos de hoy no verificables.</b><br>${message}<br>NO APOSTAR ni copiar combinaciones hasta que el sistema publique un manifiesto vigente y estricto.</div>`;
     if(gate)gate.innerHTML='<div class="row"><div><div class="name">Decisión de dinero real</div><div class="meta">Bloqueada porque la evidencia operativa no cumple el contrato estricto de hoy.</div><span class="badge blocked">NO APOSTAR</span></div><div style="text-align:right"><div class="hitbig">0,00 €</div><div class="meta">autorizado</div></div></div>';
-    document.querySelectorAll('[data-play]').forEach(b=>{b.disabled=true;b.style.opacity='.45';});
+    blockActions();
+    window.__LOTERIAS_AI_TODAY_EVIDENCE_FRESH__=false;
   };
   async function check(){
     try{
@@ -24,7 +34,9 @@
       if(!Number.isFinite(ts)||age<0||age>MAX_AGE_MS){
         const mins=Number.isFinite(age)?Math.max(0,Math.round(age/60000)):null;
         block(mins===null?'El manifiesto no tiene una hora verificable.':`Última evidencia generada hace ${mins} minutos.`);
+        return;
       }
+      window.__LOTERIAS_AI_TODAY_EVIDENCE_FRESH__=true;
     }catch{
       block('No se puede verificar la frescura del manifiesto de hoy.');
     }
