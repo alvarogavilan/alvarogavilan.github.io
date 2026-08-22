@@ -59,7 +59,24 @@ assert.equal(uniformHiddenThresholdConditionalProbability({ currentValue: 5000, 
     baseRtpExcludingMhb: 0.95,
     jackpotValueEUR: 100,
     stakeEUR: 1,
-    currentStageAwardProbabilityPerEligibleWager: 0.001,
+    currentStageWinProbabilityForThisWager: 0.001,
+  });
+  assert.equal(r.blocked, true);
+  assert.equal(r.reason, 'UNVERIFIED_STAGE_INPUTS');
+}
+
+// A legacy/raw stage-qualification flag is deliberately insufficient. The
+// model requires the player-level WIN probability after multi-player winner
+// selection/concurrency have already been incorporated.
+{
+  const r = evaluateStagedHazardRtp({
+    baseRtpExcludingMhb: 0.95,
+    jackpotValueEUR: 100,
+    stakeEUR: 1,
+    currentStageWinProbabilityForThisWager: 0.001,
+    stageProbabilityVerified: true,
+    awardEligibilityVerified: true,
+    baseRtpExcludesMhbVerified: true,
   });
   assert.equal(r.blocked, true);
   assert.equal(r.reason, 'UNVERIFIED_STAGE_INPUTS');
@@ -70,8 +87,8 @@ assert.equal(uniformHiddenThresholdConditionalProbability({ currentValue: 5000, 
     baseRtpExcludingMhb: 0.95,
     jackpotValueEUR: 100,
     stakeEUR: 1,
-    currentStageAwardProbabilityPerEligibleWager: 0.001,
-    stageProbabilityVerified: true,
+    currentStageWinProbabilityForThisWager: 0.001,
+    winProbabilityForThisWagerVerified: true,
     awardEligibilityVerified: true,
     baseRtpExcludesMhbVerified: true,
   });
@@ -82,6 +99,6 @@ assert.equal(uniformHiddenThresholdConditionalProbability({ currentValue: 5000, 
 
 assert.equal(mechanismRequirements(MHB_MECHANISM.UNKNOWN).forbiddenAssumption, 'NO_EV_WITH_UNKNOWN_MHB_MECHANISM');
 assert.equal(mechanismRequirements(MHB_MECHANISM.UNIFORM_HIDDEN_THRESHOLD).required.includes('thresholdDistributionVerified'), true);
-assert.equal(mechanismRequirements(MHB_MECHANISM.STAGED_HAZARD).required.includes('currentStageOrValueDependentAwardProbabilityVerified'), true);
+assert.equal(mechanismRequirements(MHB_MECHANISM.STAGED_HAZARD).required.includes('currentStageWinProbabilityForThisWagerVerified'), true);
 
 console.log('mhb-mechanism-model-v1.test.mjs: PASS');
