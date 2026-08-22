@@ -77,6 +77,8 @@ jobs:
         run: node loterias-ai/tests/video-poker-strategy-v1.test.mjs
       - name: Video poker Monte Carlo RTP regression guard
         run: node loterias-ai/tests/video-poker-monte-carlo-v1.test.mjs
+      - name: Video poker exact optimal-hold engine tests
+        run: node loterias-ai/tests/video-poker-optimal-hold-engine-v1.test.mjs
       - name: Validate JSON data files
         run: |
           node - <<'NODE'

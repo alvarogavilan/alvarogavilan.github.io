@@ -1,3 +1,17 @@
+// WARNING: chooseHold() below is a FIXED heuristic hard-coded to one
+// specific (9/6-shaped) payout ordering. It does NOT take a paytable or
+// progressive jackpot as input, so it CANNOT react to a different paytable
+// or to a live progressive's current amount - the exact opposite of what a
+// real progressive strategy decision needs (the optimal hold genuinely
+// changes as a progressive jackpot grows). NEVER use this function to
+// determine strategy for an actual jackpot decision. For that, use
+// chooseOptimalHold() in optimal-hold-engine-v1.mjs, which is exact and
+// genuinely parametric by paytable and by live jackpot amount. chooseHold()
+// exists only to make the population-level Monte Carlo RTP estimate in
+// monte-carlo-rtp-v1.mjs fast enough to run at scale (see that module's
+// docstring) - it is a statistical-consistency-check tool, not a strategy
+// engine for real play.
+//
 // Standard, publicly-documented hold-priority strategy for Jacks-or-Better
 // family video poker (the same family as "Jotas o Mejor" /
 // "Jotas o Mejor Progresivo"). This is NOT re-derived from a fresh

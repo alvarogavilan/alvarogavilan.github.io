@@ -1,0 +1,101 @@
+{
+  "version": "optimal-hold-engine-validation-v1",
+  "generatedAt": "2026-08-22T11:05:15.065Z",
+  "purpose": "Real, persisted proof that chooseOptimalHold() is genuinely paytable- and progressive-parametric, not a fixed heuristic - required before any claim that this engine could safely determine strategy for an actual live progressive.",
+  "demonstrationA_differentPaytables": {
+    "hand": [
+      {
+        "rank": 4,
+        "suit": 0
+      },
+      {
+        "rank": 7,
+        "suit": 0
+      },
+      {
+        "rank": 9,
+        "suit": 0
+      },
+      {
+        "rank": 13,
+        "suit": 0
+      },
+      {
+        "rank": 4,
+        "suit": 1
+      }
+    ],
+    "lowFlushPaytable": {
+      "FLUSH": 1
+    },
+    "highFlushPaytable": {
+      "FLUSH": 10
+    },
+    "lowFlushHeldIndices": [
+      0,
+      4
+    ],
+    "highFlushHeldIndices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "decisionDiffers": true
+  },
+  "demonstrationB_differentJackpotAmounts": {
+    "hand": [
+      {
+        "rank": 10,
+        "suit": 0
+      },
+      {
+        "rank": 11,
+        "suit": 0
+      },
+      {
+        "rank": 12,
+        "suit": 0
+      },
+      {
+        "rank": 13,
+        "suit": 0
+      },
+      {
+        "rank": 9,
+        "suit": 1
+      }
+    ],
+    "lowJackpotEUR": 50,
+    "highJackpotEUR": 1000,
+    "lowJackpotHeldIndices": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "highJackpotHeldIndices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "lowJackpotEvCredits": 4,
+    "highJackpotEvCredits": 23.851063829787233,
+    "decisionDiffers": true
+  },
+  "decision": {
+    "exactPerHandOptimizerValidated": true,
+    "scope": "This validates the ENGINE responds correctly to changing inputs on individual example hands via exact enumeration. It does NOT establish a global exact RTP, does NOT verify any Spain-specific paytable, and does NOT authorize real money.",
+    "globalExactRtpValidated": false,
+    "spainPaytableVerified": false,
+    "realMoneyAllowed": false
+  },
+  "guards": {
+    "zeroNetwork": true,
+    "deterministic": true,
+    "economicPromotionAllowed": false,
+    "realMoneyAllowed": false
+  }
+}

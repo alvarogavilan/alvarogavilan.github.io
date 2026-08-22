@@ -61,3 +61,31 @@ export function payoutCredits(category, paytable) {
   if (category === 'ROYAL_FLUSH') return paytable.royalFlushCredits ?? 0;
   return paytable[category] ?? 0;
 }
+
+// The suit a royal flush was made in (null for any other category, or a
+// non-flush hand). Needed for suit-gated progressive jackpots (some real
+// cabinets pay the progressive only for a specific suit's royal, with any
+// other suit's royal paying the ordinary fixed royal amount instead).
+export function royalFlushSuit(cards) {
+  return evaluateHand(cards) === 'ROYAL_FLUSH' ? cards[0].suit : null;
+}
+
+// Resolves the exact payout for a finished hand, applying a progressive
+// jackpot override when applicable. `progressive` (optional):
+//   { effectiveCredits, triggerCategory = 'ROYAL_FLUSH', triggerSuit = null }
+// `effectiveCredits` must already be computed (jackpotEUR / (denomination *
+// creditsBet)) and must already reflect an ineligible bet (qualifyingBet not
+// met) by being omitted entirely - this function never evaluates staking
+// eligibility itself, it only applies whatever override it's given.
+export function resolvePayout(cards, paytable, progressive) {
+  const category = evaluateHand(cards);
+  if (progressive && category === (progressive.triggerCategory || 'ROYAL_FLUSH')) {
+    if (progressive.triggerSuit == null || royalFlushSuit(cards) === progressive.triggerSuit) {
+      return progressive.effectiveCredits;
+    }
+    // Made the triggering category but in the wrong suit for this
+    // progressive - falls back to the ordinary fixed payout, never the
+    // jackpot amount.
+  }
+  return payoutCredits(category, paytable);
+}

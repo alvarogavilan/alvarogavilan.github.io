@@ -4,10 +4,15 @@
 // C(47,5)=1,533,939 combinations, well under a second in JS) - it is only
 // used to validate individual example hands, never run at the scale of a
 // full population sweep or a large Monte Carlo loop (see
-// jacks-or-better-strategy-v1.mjs for why that full sweep is not attempted
-// here, and monte-carlo-rtp-v1.mjs for the honestly-labeled statistical
-// alternative used at scale).
-import { evaluateHand, payoutCredits } from './hand-evaluator-v1.mjs';
+// jacks-or-better-strategy-v1.mjs for the fast heuristic used at scale, and
+// monte-carlo-rtp-v1.mjs for the honestly-labeled statistical alternative).
+//
+// Fully paytable-parametric, and optionally progressive-parametric: pass
+// `progressive` to make the exact EV react to the CURRENT jackpot amount,
+// not just a fixed base paytable - see hand-evaluator-v1.mjs's
+// resolvePayout() for the exact semantics (suit-gating, non-qualifying
+// fallback to the ordinary fixed payout).
+import { resolvePayout } from './hand-evaluator-v1.mjs';
 
 function combinations(arr, k, start, current, out) {
   if (current.length === k) { out.push(current.slice()); return; }
@@ -24,19 +29,18 @@ export function cardsKey(cards) {
 
 // heldIndices: indices (0-4) into `hand` to keep. remainingDeck: the other
 // 47 cards not in `hand`. Returns { evCredits, distinctDraws }.
-export function exactHoldEV(hand, heldIndices, remainingDeck, paytable) {
+export function exactHoldEV(hand, heldIndices, remainingDeck, paytable, progressive) {
   const held = heldIndices.map((i) => hand[i]);
   const drawCount = 5 - held.length;
   if (drawCount === 0) {
-    const category = evaluateHand(held);
-    return { evCredits: payoutCredits(category, paytable), distinctDraws: 1 };
+    return { evCredits: resolvePayout(held, paytable, progressive), distinctDraws: 1 };
   }
   const draws = [];
   combinations(remainingDeck, drawCount, 0, [], draws);
   let total = 0;
   for (const draw of draws) {
     const finalHand = [...held, ...draw];
-    total += payoutCredits(evaluateHand(finalHand), paytable);
+    total += resolvePayout(finalHand, paytable, progressive);
   }
   return { evCredits: total / draws.length, distinctDraws: draws.length };
 }
@@ -45,11 +49,11 @@ export function exactHoldEV(hand, heldIndices, remainingDeck, paytable) {
 // returns the exact-EV-optimal one. Only safe to call for a handful of
 // hands at a time (see module docstring) - each call does real combinatorial
 // work up to C(47,5).
-export function exactOptimalHold(hand, remainingDeck, paytable) {
+export function exactOptimalHold(hand, remainingDeck, paytable, progressive) {
   let best = null;
   for (let mask = 0; mask < 32; mask++) {
     const heldIndices = [0, 1, 2, 3, 4].filter((i) => (mask & (1 << i)) !== 0);
-    const { evCredits } = exactHoldEV(hand, heldIndices, remainingDeck, paytable);
+    const { evCredits } = exactHoldEV(hand, heldIndices, remainingDeck, paytable, progressive);
     if (!best || evCredits > best.evCredits) best = { mask, heldIndices, evCredits };
   }
   return best;
