@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import crypto from 'node:crypto';
+import { extractProgressiveContributionPcts } from './progressive-contribution-core-v1.mjs';
 const IN='loterias-ai/casino/archive/evidence/botemania-all-games-census-v1.json';
 const OUT='loterias-ai/casino/archive/evidence/botemania-progressive-network-map-v1.json';
 const db=JSON.parse(fs.readFileSync(IN,'utf8'));
-const UA='loterias-ai-progressive-network-map/1.1';
+const UA='loterias-ai-progressive-network-map/1.2';
 const strip=s=>String(s||'').replace(/<script[\s\S]*?<\/script>/gi,' ').replace(/<style[\s\S]*?<\/style>/gi,' ').replace(/<[^>]+>/g,' ').replace(/&nbsp;|&#160;/gi,' ').replace(/&euro;|&#8364;/gi,'€').replace(/&#39;|&#x27;/g,"'").replace(/&quot;/g,'"').replace(/&amp;/g,'&').replace(/\s+/g,' ').trim();
-const dec=s=>Number(String(s).replace(/\./g,'').replace(',','.'));
 const candidates=(db.games||[]).filter(g=>g.mechanics?.includes('PROGRESSIVE')||g.mechanics?.includes('JACKPOT')||g.jackpotKing||g.stateDependentProbability);
 const zeroPatterns=[
  /valor (?:del )?bote progresivo[^.]{0,220}(?:0\s*€|cero)/i,
@@ -20,7 +20,7 @@ async function worker(){while(true){const i=cursor++;if(i>=candidates.length)ret
  const r=await fetch(g.url,{headers:{accept:'text/html,*/*','user-agent':UA,'cache-control':'no-cache'},redirect:'follow'}),html=await r.text(),text=strip(html);
  const h1Raw=(html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)||[])[1]||null;const canonicalTitle=h1Raw?strip(h1Raw):g.title||null;
  const shareContexts=[];for(const re of [/(?:compartid[oa]|comparte)[^.]{0,700}/gi,/(?:reiniciar[aá]n?|reinici[oó]|restablece|restableci[oó]|valor inicial|parti[oó] de 0|desde 0)[^.]{0,480}/gi,/(?:contribuye|contribuci[oó]n al bote)[^.]{0,320}/gi,/(?:probabilidades?|posibilidades?)[^.]{0,350}/gi])for(const m of text.matchAll(re))shareContexts.push(m[0].slice(0,900));
- const contribution=[...text.matchAll(/(?:contribuci[oó]n al bote|contribuye al bote[^\d]{0,80})(\d+(?:[.,]\d+)?)\s*%/gi)].map(m=>dec(m[1])).filter(Number.isFinite);
+ const contribution=extractProgressiveContributionPcts(text);
  const resetZero=zeroPatterns.some(re=>re.test(text));
  const zeroResetContexts=[];if(resetZero)for(const re of [/(?:reinicia|reinici[oó]|reiniciado|restablece|restableci[oó]|parti[oó]|comienza|empieza)[^.]{0,260}0\s*€/gi,/(?:desde que|cuando)[^.]{0,180}(?:importe|valor)[^.]{0,180}0\s*€/gi])for(const m of text.matchAll(re))zeroResetContexts.push(m[0].slice(0,500));
  const anyStake=/cualquier(?:a de las)? apuestas?|cualquier jugada|cualquier giro/i.test(text);
@@ -31,4 +31,4 @@ async function worker(){while(true){const i=cursor++;if(i>=candidates.length)ret
  }catch(e){rows[i]={slug:g.slug,url:g.url,error:String(e?.message||e)};}}}
 await Promise.all(Array.from({length:6},()=>worker()));
 const clean=rows.filter(Boolean);const networkLike=clean.filter(x=>x.sharedGameNameCandidates?.length||x.contexts?.some(c=>/compartid/i.test(c)));const statePot=clean.filter(x=>x.increasesWithPot);const zeroReset=clean.filter(x=>x.resetZero);
-const out={version:'botemania-progressive-network-map-v1.1-zero-reset-and-title-fix',generatedAt:new Date().toISOString(),operator:'botemania-es',sourceCensusGeneratedAt:db.generatedAt,summary:{candidatePages:candidates.length,successful:clean.filter(x=>x.httpStatus===200).length,networkSharingDetected:networkLike.length,resetToZeroDetected:zeroReset.length,probabilityIncreasesWithPotDetected:statePot.length,proportionalToBetDetected:clean.filter(x=>x.proportionalToBet).length},rows:clean,networkLike,statePot,zeroReset,guards:{publicOperatorPagesOnly:true,noAuthentication:true,noCookies:true,noBetting:true,realMoneyAllowed:false}};fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify({summary:out.summary,zeroReset:zeroReset.map(x=>({slug:x.slug,title:x.title,contributionPct:x.contributionPct,anyStake:x.anyStake,proportionalToBet:x.proportionalToBet,contexts:x.zeroResetContexts})),statePot:statePot.map(x=>x.slug)},null,2));
+const out={version:'botemania-progressive-network-map-v1.2-contribution-parser',generatedAt:new Date().toISOString(),operator:'botemania-es',sourceCensusGeneratedAt:db.generatedAt,summary:{candidatePages:candidates.length,successful:clean.filter(x=>x.httpStatus===200).length,networkSharingDetected:networkLike.length,resetToZeroDetected:zeroReset.length,probabilityIncreasesWithPotDetected:statePot.length,proportionalToBetDetected:clean.filter(x=>x.proportionalToBet).length},rows:clean,networkLike,statePot,zeroReset,guards:{publicOperatorPagesOnly:true,noAuthentication:true,noCookies:true,noBetting:true,realMoneyAllowed:false}};fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify({summary:out.summary,zeroReset:zeroReset.map(x=>({slug:x.slug,title:x.title,contributionPct:x.contributionPct,anyStake:x.anyStake,proportionalToBet:x.proportionalToBet,contexts:x.zeroResetContexts})),statePot:statePot.map(x=>x.slug)},null,2));
