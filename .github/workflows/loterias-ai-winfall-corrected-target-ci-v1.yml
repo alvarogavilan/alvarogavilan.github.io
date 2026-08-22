@@ -1,0 +1,57 @@
+name: Loterias AI Winfall Corrected Target CI V1
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'loterias-ai/casino/jackpots/winfall-*.mjs'
+      - 'loterias-ai/casino/jackpots/evidence/winfall-*.json'
+      - 'loterias-ai/edge-live/opportunity-registry-v1.json'
+      - 'loterias-ai/tests/winfall-*.test.mjs'
+      - '.github/workflows/loterias-ai-winfall-corrected-target-ci-v1.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Syntax-check corrected Winfall modules
+        run: |
+          node --check loterias-ai/casino/jackpots/winfall-shared-network-triangulation-v1.mjs
+          node --check loterias-ai/casino/jackpots/winfall-passive-network-triangulation-v2.mjs
+          node --check loterias-ai/casino/jackpots/winfall-provider-network-metadata-v1.mjs
+          node --check loterias-ai/casino/jackpots/winfall-shared-target-audit-v1.mjs
+          node --check loterias-ai/casino/jackpots/winfall-tiki-network-bridge-v1.mjs
+      - name: Shared-target custody
+        run: node loterias-ai/tests/winfall-shared-target-audit-v1.test.mjs
+      - name: Passive-network target guard
+        run: node loterias-ai/tests/winfall-passive-network-triangulation-v2.test.mjs
+      - name: Provider metadata target guard
+        run: node loterias-ai/tests/winfall-provider-network-metadata-v1.test.mjs
+      - name: Tiki shared-pot bridge guard
+        run: node loterias-ai/tests/winfall-tiki-network-bridge-v1.test.mjs
+      - name: EDGE registry fail-closed guard
+        run: node loterias-ai/tests/winfall-edge-registry-v1.test.mjs
+      - name: EDGE multi-plan fail-closed guard
+        run: node loterias-ai/tests/winfall-edge-multiplan-v1.test.mjs
+      - name: SCORE null-without-hit-law guard
+        run: node loterias-ai/tests/winfall-score-failclosed-v1.test.mjs
+      - name: Verify no Winfall promotion opened
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const plan=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/edge-live-multi-execution-plan-v1.json','utf8'));
+          const lane=(plan.lanes||[]).find(x=>x.id==='botemania-winfall-wishes-progressive');
+          if(!lane) throw new Error('Winfall lane missing');
+          if(lane.executionReady!==false||lane.phase!=='RED'||lane.order?.action!=='DO_NOT_PLAY') throw new Error('Winfall unexpectedly promoted');
+          if(lane.evidence?.identityVerified!==false||lane.evidence?.thresholdKnown!==false) throw new Error('Winfall evidence gate unexpectedly opened');
+          console.log(JSON.stringify({phase:lane.phase,blockers:lane.blockers,evidence:lane.evidence,order:lane.order},null,2));
+          NODE
