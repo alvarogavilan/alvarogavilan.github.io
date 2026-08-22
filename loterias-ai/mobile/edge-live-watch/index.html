@@ -45,6 +45,7 @@
 <body>
   <h1>EDGE Live Watch</h1>
   <p class="subtitle">iPhone Safari watcher — reads the same public Botemania GraphQL endpoint already validated server-side. Research only. No betting, no real money, no automatic promotion of anything this page finds.</p>
+  <p class="warn" id="continuityNote">Modo continuidad iPhone: este watcher no depende de GitHub Actions. Mientras esta página permanezca abierta y visible, puede capturar y guardar evidencia local en el dispositivo.</p>
 
   <div id="status" class="status">Loading…</div>
 
@@ -87,5 +88,22 @@
   </section>
 
   <script type="module" src="./app.js"></script>
+  <script>
+    (() => {
+      const params = new URLSearchParams(location.search);
+      if (params.get('autostart') !== '1') return;
+      let attempts = 0;
+      const timer = setInterval(() => {
+        attempts += 1;
+        const button = document.getElementById('startBtn');
+        if (button && !button.disabled) button.click();
+        if (button && button.disabled) {
+          clearInterval(timer);
+          return;
+        }
+        if (attempts >= 40) clearInterval(timer);
+      }, 250);
+    })();
+  </script>
 </body>
 </html>
