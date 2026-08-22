@@ -1,0 +1,104 @@
+{
+  "version": "red-tiger-rainbow-jackpots-spain-binding-v1",
+  "generatedAt": "2026-08-22T13:18:00Z",
+  "candidate": "Rainbow Jackpots / Red Tiger Daily Drop",
+  "status": "SPAIN_GAME_IDENTITY_BOUND_TIMED_OVERLAY_NOT_YET_EXACTLY_BOUND",
+  "spainOperator": {
+    "operator": "JOKERBET.es",
+    "legalEntity": "VERAMATIC ONLINE, S.A.",
+    "dgojAuthorized": true,
+    "licenseEvidence": {
+      "url": "https://www.jokerbet.es/juego-autorizado.html",
+      "facts": [
+        "JOKERBET.es states it operates under VERAMATIC ONLINE, S.A. with Spanish Government/DGOJ licences.",
+        "The MAZ/2017/042 licence covers slots/maquinas de azar."
+      ]
+    }
+  },
+  "exactSpainGame": {
+    "title": "Rainbow Jackpots",
+    "provider": "Red Tiger",
+    "operatorUrl": "https://www.jokerbet.es/tragaperras-slots/rainbow-jackpots.html",
+    "publishedRtpPct": 95.17,
+    "minStakeEUR": 0.10,
+    "maxStakeEUR": 50,
+    "publishedMaxPrizeEUR": 50000,
+    "publishedJackpotMetadataLabel": "Temperatura Jackpot",
+    "exactGameAvailableInSpainVerified": true,
+    "activeTimedDailyDropOverlayOnThisExactSpainInstanceVerified": false,
+    "notes": "The operator page contains a jackpot-related metadata field, but the public page does not expose the exact Daily/10-Minute/Super tier configuration or current timer/value. Do not promote this signal to exact overlay binding."
+  },
+  "sameTitleTimedNetworkEvidence": {
+    "exactTitle": "Rainbow Jackpots",
+    "sources": [
+      {
+        "sourceClass": "OPERATOR_GAME_DESCRIPTION_NON_SPAIN",
+        "url": "https://www.playojo.com/slots/rainbow-jackpots/",
+        "facts": [
+          "Rainbow Jackpots includes Red Tiger progressive and timed jackpots.",
+          "The Daily Drop is a timed prize that must be won before its deadline.",
+          "Higher stake is described as increasing the probability of triggering the jackpot game."
+        ]
+      },
+      {
+        "sourceClass": "REGULATED_GAME_RULES_NON_SPAIN",
+        "url": "https://assets.lotoquebec.com/ressources/assets/v3/assets/blt8296e79a7001648c/bltc0755c2c26be18a5/6565eb6b52b29b03335c0c7d/Rainbow_Jackpots_regles_fr.pdf",
+        "facts": [
+          "The Rainbow Jackpots rules glossary explicitly contains 10 Minute Drop, Daily Drop, Super Drop, Hourly Drop and Must Drop In terms."
+        ]
+      }
+    ],
+    "sameTitleCanCarryTimedNetworkVerified": true,
+    "spainInstanceEquivalent": false
+  },
+  "rtpSemantics": {
+    "primaryRulesUrl": "https://cms.rationalcdn.com/v3/assets/blteecf9626d9a38b03/blta717f42aeddeaee7/67cab630c66031eccd20750f/RainbowJackpotsWithJackpot.pdf",
+    "primaryRule": "The Rainbow Jackpots with Jackpot rule sheet states that displayed RTP includes base-game RTP and jackpot contribution.",
+    "criticalConsequence": "The JOKERBET 95.17% headline must not be treated as base RTP and then have jackpot EV added on top. Exact base-vs-jackpot decomposition is required before live EV.",
+    "spainHeadlineRtpPct": 95.17,
+    "baseRtpExcludingJackpotsPct": null,
+    "averageJackpotRtpPct": null,
+    "exactDecompositionVerified": false
+  },
+  "externalRtpRangeDiscovery": {
+    "sourceClass": "SECONDARY_INDUSTRY_DATABASE_DISCOVERY_ONLY",
+    "url": "https://slotcatalog.com/en/slots/Rainbow-Jackpots",
+    "reportedNonJackpotRtpPct": [96.15, 95.16, 93.11, 91.08],
+    "reportedJackpotFamilies": [
+      {"baseLikePct": 93.24, "reportedJackpotAdjustmentRangePct": "1%-3%"},
+      {"baseLikePct": 91.17, "reportedJackpotAdjustmentRangePct": "1%-5%"},
+      {"baseLikePct": 90.26, "reportedJackpotAdjustmentRangePct": "1%-6%"}
+    ],
+    "possibleButUnverifiedInference": "A 95.17% total is numerically compatible with a 91.17% base-like configuration plus 4 percentage points of jackpot return if the reported adjustment is integer-percentage-point selectable. This is NOT verified and must not be used for a real-money decision.",
+    "economicPromotionAllowed": false
+  },
+  "networkMechanismComparator": {
+    "sourceClass": "OPERATOR_TERMS_NON_SPAIN",
+    "url": "https://vegas.hu/cms/documents/reszveteli_egybevetes_en.pdf",
+    "facts": [
+      "Total jackpot contribution is documented as 3% in that configuration.",
+      "For the first EUR2 of a wager, 90% of the jackpot contribution is allocated to Daily/10-Minute and 10% to Super, with Daily-vs-10-Minute dynamically allocated.",
+      "Above the first EUR2, additional jackpot contribution goes 100% to Super in that configuration.",
+      "Daily becomes hot at 21:00 CET/CEST and is guaranteed before midnight; 10 Minute Drop is guaranteed every ten minutes."
+    ],
+    "spainEquivalent": false,
+    "stakeOptimizationInferenceAllowedForSpain": false
+  },
+  "nextRequiredEvidence": [
+    "Exact public or in-game Spain rule proving Daily/10-Minute/Super overlay is active on JOKERBET Rainbow Jackpots.",
+    "Exact Spain base-game RTP excluding jackpot and average jackpot return decomposition for the 95.17% configuration.",
+    "Exact Spain contribution/eligibility weighting by stake, including whether timed-tier weighting caps at EUR2.",
+    "Fresh Spain timer and jackpot values for the same network instance.",
+    "Player-level timed-jackpot win probability/hazard near deadline, including network concurrency/winner selection."
+  ],
+  "decision": {
+    "priority": "VERY_HIGH",
+    "exactSpainGameIdentityVerified": true,
+    "exactSpainTimedOverlayVerified": false,
+    "exactSpainEconomicDecompositionVerified": false,
+    "conservativeEvAbove100Verified": false,
+    "realMoneyAllowed": false,
+    "stakeEUR": 0,
+    "verdict": "NO_PLAY"
+  }
+}
