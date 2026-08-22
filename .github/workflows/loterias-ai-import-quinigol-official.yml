@@ -22,15 +22,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Ingest large official batches
+      - name: Refresh official index and ingest large official batches
         shell: bash
         run: |
-          passes=0
-          for i in 1 2; do
-            if BATCH_LIMIT=500 node loterias-ai/scripts/import-quinigol-official-progressive.mjs; then passes=$((passes+1)); else break; fi
-            sleep 2
-          done
-          test "$passes" -ge 1
+          set -euo pipefail
+          # The persisted link index is only a cache. The first pass MUST refresh it,
+          # otherwise new SELAE jornadas can never be discovered after the cache date.
+          REFRESH_INDEX=1 BATCH_LIMIT=500 node loterias-ai/scripts/import-quinigol-official-progressive.mjs
+          sleep 2
+          # Second pass reuses the freshly rebuilt index and can consume another batch
+          # without another full pagination crawl.
+          BATCH_LIMIT=500 node loterias-ai/scripts/import-quinigol-official-progressive.mjs
       - name: Persist safely and evaluate
         shell: bash
         run: |
