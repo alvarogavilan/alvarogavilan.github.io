@@ -1,5 +1,5 @@
 {
-  "version": "legacy-global-comparator-stats-v1",
+  "version": "legacy-global-comparator-stats-v1.1",
   "purpose": "DISCOVERY_ONLY_CROSS_MARKET_COMPARATORS",
   "sources": [
     {
@@ -20,6 +20,19 @@
       "currentSpainProgressivePools": 3
     },
     {
+      "id": "progressive-jacks-or-better",
+      "feedKey": "generic:WAGER_BET",
+      "currentSpainTitle": "Ultimate Video Poker",
+      "sourceUrl": "https://www.casinolistings.com/jackpots/gamesys/progressive-jacks-or-better-jackpot",
+      "historicalMarket": "UK_GAMESYS",
+      "historicalSeedGBP": 2000,
+      "historicalWinsRecorded": 49,
+      "historicalAverageWinGBP": 13305,
+      "historicalBreakEvenGBP": 17477,
+      "historicalChancePerQualifiedHand": 0.000006222958136860988,
+      "historicalTrigger": "royal flush of spades"
+    },
+    {
       "id": "tiki-temple-5p",
       "feedKey": "generic:tikitemple2_1",
       "currentSpainTitle": "Tiki Templo",
@@ -33,17 +46,18 @@
       "currentSpainOperatorUrl": "https://www.botemania.es/juegos/slots-online/tiki-templo"
     },
     {
-      "id": "progressive-jacks-or-better",
-      "feedKey": "generic:WAGER_BET",
-      "currentSpainTitle": "Ultimate Video Poker",
-      "sourceUrl": "https://www.casinolistings.com/jackpots/gamesys/progressive-jacks-or-better-jackpot",
-      "historicalMarket": "UK_GAMESYS",
-      "historicalSeedGBP": 2000,
-      "historicalWinsRecorded": 49,
-      "historicalAverageWinGBP": 13305,
-      "historicalBreakEvenGBP": 17477,
-      "historicalChancePerQualifiedHand": 0.000006222958136860988,
-      "historicalTrigger": "royal flush of spades"
+      "id": "bouncy-bubbles",
+      "feedKey": "generic:bouncy_bubbles_id",
+      "currentSpainTitle": "Burbujas Saltarinas",
+      "sourceUrl": "https://www.virgingames.com/uk/slots/bouncy-bubbles",
+      "historicalMarket": "UK_GAMESYS_ROXOR_LINEAGE",
+      "historicalSeedGBP": 1000,
+      "historicalTrigger": "Bubble Popper Bonus; jackpot chance proportional to total bet",
+      "currentSpainOperatorUrl": "https://www.botemania.es/juegos/slots-online/burbujas-saltarinas",
+      "currentSpainPublishedBaseRTP": 0.9538,
+      "currentSpainPublishedJackpotContribution": 0.0009,
+      "currentSpainJackpotChanceProportionalToTotalBet": true,
+      "exactSpainSharedTierBindingVerified": false
     }
   ],
   "guards": {
@@ -51,6 +65,7 @@
     "currencyIsNotAssumedEquivalent": true,
     "historicalSeedIsNotSpainSeed": true,
     "historicalBreakEvenIsNotSpainBreakEven": true,
+    "jackpotContributionIsNotWinProbability": true,
     "realMoneyAllowed": false,
     "stakeEUR": 0
   }
