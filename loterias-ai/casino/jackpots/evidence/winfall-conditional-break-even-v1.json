@@ -1,0 +1,45 @@
+{
+  "version": "winfall-conditional-break-even-v1",
+  "generatedAt": "2026-08-22T14:52:00Z",
+  "operator": "botemania-es",
+  "officialSpainInputs": {
+    "game": "Winfall Wishes Jackpot",
+    "baseRtpPct": 94.85,
+    "jackpotContributionPct": 0.60,
+    "resetEUR": 0,
+    "jackpotChanceProportionalToTotalBet": true,
+    "sharedPoolGames": ["Winfall Wishes Jackpot", "Wonderland", "La Isla de Tiki Templo"],
+    "source": "https://www.botemania.es/juegos/slots-online/winfall-wishes-jackpot"
+  },
+  "prospectiveObservedCandidate": {
+    "pairedKeys": ["generic:tikitemple2_1", "generic:progressivealice1"],
+    "preDropEUR": 1208.43,
+    "postDropEUR": 2.82,
+    "observedAt": "2026-08-21T14:44:06.603Z",
+    "independentPairedResetCount": 1,
+    "exactPoolIdentityVerified": false,
+    "jackpotAwardVerified": false
+  },
+  "conditionalConstantHazardDiagnostic": {
+    "status": "RESEARCH_ONLY_CONDITIONAL_ON_UNVERIFIED_ASSUMPTIONS",
+    "derivation": "If P(jackpot|stake)=k*stake with k constant across jackpot values and the meter resets to zero while 0.60% of wagers funds the pool, hit meter amounts are exponential with mean contributionDecimal/k. Therefore breakEvenJackpot/meanHit=(1-baseRtp)/contributionDecimal.",
+    "breakEvenMultipleOfMeanHit": 8.583333333333337,
+    "singleCandidateMeanHitEUR": 1208.43,
+    "conditionalKPerEUR_MLE": 0.000004965120031776768,
+    "conditionalBreakEvenJackpotEUR_MLE": 10372.3575,
+    "interpretation": "Even under the favorable conditional model, a pool whose mean hit were near the one observed candidate would need to be around EUR 10.4k before the instantaneous total RTP reaches 100%. The observed candidate near EUR 1.2k is not an entry signal."
+  },
+  "blockingFacts": [
+    "One synchronized reset is not enough to estimate a hit distribution.",
+    "The synchronized Tiki/Alice reset does not independently prove that a jackpot award occurred.",
+    "The exact live Winfall pool identity is not yet verified.",
+    "Published proportionality to Total Bet does not alone prove k is constant across jackpot values.",
+    "No current fresh meter may be used from the stale 2026-08-21 snapshot."
+  ],
+  "decision": {
+    "winfallAtObserved1208EUR": "NO_PLAY",
+    "diamondBonanza": "NO_VERIFIED_BREAK_EVEN_FROM_PUBLIC_SPAIN_DATA",
+    "realMoneyAllowed": false,
+    "stakeEUR": 0
+  }
+}
