@@ -16,18 +16,28 @@
 //
 // Uses the exact query/headers already validated in
 // botemania-all-network-fast-meter-sample-v1.mjs. Does not invent schema.
+//
+// The preflight and actual-POST requests below are built FROM
+// graphqlBrowserRequestInit() (core-v1.mjs) - the exact same function the
+// real browser app (app.js) calls - rather than hand-duplicating its header
+// list. A prior version of this script listed
+// 'access-control-request-headers': 'content-type,venture' as a hardcoded
+// literal that silently fell out of sync when the browser init later grew
+// a 'cache-control' header: the probe kept validating a preflight that was
+// no longer what the real browser would actually send, so a real CORS
+// rejection on that extra header could have gone undetected. Deriving both
+// from the same source (via nonSafelistedRequestHeaderNames) makes that
+// divergence structurally impossible going forward.
 import fs from 'node:fs';
+import { GRAPHQL_ENDPOINT, GRAPHQL_QUERY, graphqlBrowserRequestInit, nonSafelistedRequestHeaderNames } from './core-v1.mjs';
 
-const ENDPOINT = 'https://www.botemania.es/es/graphql';
+const ENDPOINT = GRAPHQL_ENDPOINT;
 const OUT = 'loterias-ai/mobile/edge-live-watch/evidence/cors-preflight-probe-v1.json';
 // The repo is itself a GitHub Pages user site (root index.html, no CNAME),
 // so this is the real origin the PWA will be served from once merged.
 const CANDIDATE_ORIGIN = 'https://alvarogavilan.github.io';
-const QUERY = `query loadJackpots {
-  jackpots { id amount }
-  redTigerJackpots { id amount }
-  blueprintJackpots { id amount }
-}`;
+const BROWSER_HEADERS = graphqlBrowserRequestInit().headers;
+const REQUESTED_HEADER_NAMES = nonSafelistedRequestHeaderNames(BROWSER_HEADERS);
 
 function headerObjectFromFetchHeaders(h) {
   const out = {};
@@ -41,7 +51,7 @@ async function preflight() {
     headers: {
       origin: CANDIDATE_ORIGIN,
       'access-control-request-method': 'POST',
-      'access-control-request-headers': 'content-type,venture',
+      'access-control-request-headers': REQUESTED_HEADER_NAMES.join(','),
     },
     signal: AbortSignal.timeout(10000),
   });
@@ -52,17 +62,14 @@ async function actualPost() {
   const r = await fetch(ENDPOINT, {
     method: 'POST',
     headers: {
-      accept: 'application/json',
-      'content-type': 'application/json',
-      venture: 'botemania_es',
+      ...BROWSER_HEADERS,
       origin: CANDIDATE_ORIGIN,
       // Deliberately no referer set to CANDIDATE_ORIGIN's own path - a real
       // browser sets referer to the PAGE's URL, which the server cannot
       // distinguish from this. Testing the origin-gating behavior only.
-      'cache-control': 'no-cache, no-store, max-age=0',
       'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1',
     },
-    body: JSON.stringify({ operationName: 'loadJackpots', variables: {}, query: QUERY }),
+    body: JSON.stringify({ operationName: 'loadJackpots', variables: {}, query: GRAPHQL_QUERY }),
     signal: AbortSignal.timeout(10000),
   });
   const text = await r.text();
@@ -78,7 +85,11 @@ function evaluateCors(preflightResult, postResult) {
 
   const preflightOriginAllowed = acao(preflightResult?.headers) === CANDIDATE_ORIGIN || acao(preflightResult?.headers) === '*';
   const preflightMethodAllowed = acam(preflightResult?.headers).includes('post');
-  const preflightHeadersAllowed = acah(preflightResult?.headers).includes('content-type') && acah(preflightResult?.headers).includes('venture');
+  // Every header the real browser request will actually send (as derived
+  // from graphqlBrowserRequestInit() above, not a hardcoded list) must be
+  // echoed back in Access-Control-Allow-Headers - checking a stale subset
+  // would let a genuine rejection on a header added later slip through.
+  const preflightHeadersAllowed = REQUESTED_HEADER_NAMES.every((name) => acah(preflightResult?.headers).includes(name));
   const preflightPermissive = preflightResult?.ok && preflightOriginAllowed && preflightMethodAllowed && preflightHeadersAllowed;
 
   const postOriginAllowed = acao(postResult?.headers) === CANDIDATE_ORIGIN || acao(postResult?.headers) === '*';
@@ -123,6 +134,9 @@ async function run() {
     endpoint: ENDPOINT,
     candidateOrigin: CANDIDATE_ORIGIN,
     method: 'REPRODUCES_EXACT_BROWSER_PREFLIGHT_AND_ACTUAL_REQUEST_THEN_READS_ACCESS_CONTROL_HEADERS',
+    // Derived directly from graphqlBrowserRequestInit() - see the header
+    // comment above for why this must never be a hand-maintained literal.
+    requestedNonSafelistedHeaderNames: REQUESTED_HEADER_NAMES,
     preflight: preflightResult,
     preflightError,
     actualPost: postResult,
