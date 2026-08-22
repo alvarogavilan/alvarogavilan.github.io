@@ -1,8 +1,14 @@
 import {
   GRAPHQL_ENDPOINT, graphqlBrowserRequestInit, parseGraphqlBody,
-  processPoll, jpkJointCapture,
+  processPoll, jpkJointCapture, resolveObservedAt, createPollScheduler,
   PRIORITY_COUNTERS, TIKI_ALICE_FROZEN_GATE,
 } from './core-v1.mjs';
+
+// Well under the 30-60s poll cadence, so a hung request never stacks up
+// against the next scheduled cycle - createPollScheduler already prevents
+// overlap regardless, but a bounded per-request timeout keeps a single
+// stuck request from silently pinning the watcher for the full session.
+const FETCH_TIMEOUT_MS = 15000;
 import {
   openDb, addSamples, trimSamples, getAllSamples,
   addResetEvents, getAllResetEvents,
@@ -14,7 +20,6 @@ const $ = (id) => document.getElementById(id);
 const state = {
   db: null,
   polling: false,
-  pollTimer: null,
   pollSeconds: 45,
   previousState: null, // { byKey, observedAt } | null - fed straight into processPoll()
   pendingBackgroundGapSeconds: 0, // accumulated since the last successful poll, consumed and reset by each pollOnce()
@@ -80,31 +85,47 @@ function renderContaminatedEvents(events) {
 }
 
 async function pollOnce() {
-  const observedAt = new Date().toISOString();
+  // Scientific observation time = when the response was actually received
+  // and parsed, NOT when the request was sent - a slow request must never
+  // be attributed to the earlier moment (see resolveObservedAt()).
+  const requestStartedAt = new Date().toISOString();
   let body = null, fetchOk = false;
   try {
-    const r = await fetch(GRAPHQL_ENDPOINT, graphqlBrowserRequestInit());
+    const r = await fetch(GRAPHQL_ENDPOINT, { ...graphqlBrowserRequestInit(), signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
     fetchOk = r.ok;
     if (r.ok) body = await r.json();
     if (state.fetchBlocked !== false) { state.fetchBlocked = false; setStatus('WATCH ACTIVE — KEEP THIS PAGE OPEN', 'ok'); }
   } catch (e) {
+    const errorName = e?.name || 'Error';
+    state.lastError = `${errorName}: ${e?.message || e}`;
+    if (errorName === 'TimeoutError' || errorName === 'AbortError') {
+      // A single slow/hung request - not a CORS or persistent network
+      // failure. Produces no sample and no reset event; previousState is
+      // left untouched, so the wall-clock gap this creates is picked up
+      // automatically by evaluateCoverageGap() on the NEXT successful poll
+      // (which will correctly see it as a missed expected poll if enough
+      // time elapsed) - no interpolation, no guessing.
+      await addGap(state.db, { gapStartAt: requestStartedAt, gapEndAt: new Date().toISOString(), gapSeconds: FETCH_TIMEOUT_MS / 1000, reason: 'POLL_TIMEOUT' });
+      log(`Poll request timed out after ${FETCH_TIMEOUT_MS / 1000}s - no sample, no reset, coverage gap recorded.`);
+      return;
+    }
     // A cross-origin CORS rejection surfaces to fetch() as a generic
     // TypeError with no response object - but so does being offline, a DNS
     // failure, a TLS error, or a browser network policy block. A bare
     // TypeError alone cannot distinguish CORS from those, so this is
     // reported honestly as CORS_OR_NETWORK_BLOCKED, never asserted to
     // specifically be CORS.
-    state.lastError = `${e?.name || 'Error'}: ${e?.message || e}`;
     state.fetchBlocked = true;
     setStatus('DIRECT_BROWSER_FETCH_FAILED — USE_IOS_SHORTCUT_FALLBACK', 'blocked');
     log(`Direct browser fetch failed (CORS_OR_NETWORK_BLOCKED): ${state.lastError}`);
     stopWatch();
     return;
   }
+  const observedAt = resolveObservedAt({ requestStartedAt, responseReceivedAt: new Date().toISOString() });
   if (!fetchOk || !body) { log(`HTTP/response error at ${observedAt}`); return; }
 
   const { canonicalRows, currentByKey, ambiguousKeys } = parseGraphqlBody(body);
-  const sampleRows = canonicalRows.map((r) => ({ observedAt, network: r.network, id: r.id, amountEUR: r.amountEUR }));
+  const sampleRows = canonicalRows.map((r) => ({ observedAt, requestStartedAt, network: r.network, id: r.id, amountEUR: r.amountEUR }));
   await addSamples(state.db, sampleRows);
   await trimSamples(state.db);
 
@@ -113,11 +134,13 @@ async function pollOnce() {
     previousState: state.previousState,
     observedAt,
     backgroundGapSeconds: state.pendingBackgroundGapSeconds,
+    pollSeconds: state.pollSeconds,
   });
   state.pendingBackgroundGapSeconds = 0;
 
   if (!result.coverage.continuousCoverage && state.previousState) {
-    log(`Coverage gap since last poll: ${result.coverage.coverageGapSeconds.toFixed(0)}s — reset detection skipped for this pair, rebaselining.`);
+    const reason = result.coverage.missedExpectedPoll ? 'missed expected poll' : 'background gap';
+    log(`Coverage gap since last poll (${reason}): ${result.coverage.coverageGapSeconds.toFixed(0)}s — reset detection skipped for this pair, rebaselining.`);
   }
 
   if (result.resetEvents.length) {
@@ -165,6 +188,13 @@ function releaseWakeLock() {
   if (state.wakeLock) { state.wakeLock.release().catch(() => {}); state.wakeLock = null; }
 }
 
+// A fresh scheduler is created per watch session (pollSeconds is fixed for
+// the duration of a run - the input isn't live-editable while watching).
+// Scheduling the next cycle only after pollOnce() fully settles makes
+// overlapping/out-of-order polls structurally impossible - see
+// createPollScheduler()'s own docstring in core-v1.mjs.
+let scheduler = null;
+
 async function startWatch() {
   if (state.polling) return;
   state.polling = true;
@@ -173,14 +203,13 @@ async function startWatch() {
   $('startBtn').disabled = true;
   $('stopBtn').disabled = false;
   await requestWakeLock();
-  await pollOnce();
-  state.pollTimer = setInterval(pollOnce, state.pollSeconds * 1000);
+  scheduler = createPollScheduler({ runPoll: pollOnce, delayMs: state.pollSeconds * 1000 });
+  scheduler.start();
 }
 
 function stopWatch() {
   state.polling = false;
-  clearInterval(state.pollTimer);
-  state.pollTimer = null;
+  if (scheduler) { scheduler.stop(); scheduler = null; }
   releaseWakeLock();
   $('startBtn').disabled = false;
   $('stopBtn').disabled = true;

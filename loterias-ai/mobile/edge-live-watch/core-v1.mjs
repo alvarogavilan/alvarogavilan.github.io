@@ -178,23 +178,35 @@ export function evaluateTikiAlicePairedReset(resetEvents) {
   };
 }
 
-// Generous margin over the 30-60s configured poll range - anything beyond
-// this between two consecutive polls (whether from a recorded
-// visibilitychange background gap, or simply a slow/delayed poll while the
-// page stayed visible) means the watcher was not continuously observing,
-// so a drop across that interval can never be trusted as a clean reset.
-export const MAX_CONTINUOUS_GAP_SECONDS = 150;
+// The continuity threshold is DERIVED from the actually-configured poll
+// interval, not a fixed constant - a fixed 150s margin would let a 30s-cadence
+// watcher silently absorb ~4 missed scheduled polls and still call the pair
+// "continuous". Only a narrow, bounded jitter allowance (network/processing
+// delay on a SINGLE poll cycle) is tolerated; missing even one scheduled
+// poll must invalidate the pair. Capped at 10s so a large pollSeconds
+// configuration can never buy a loose allowance either.
+export function computeMaxContinuousGapSeconds(pollSeconds) {
+  if (!(pollSeconds > 0)) throw new Error('computeMaxContinuousGapSeconds requires a positive pollSeconds');
+  const jitterAllowanceSeconds = Math.min(10, pollSeconds * 0.25);
+  return pollSeconds + jitterAllowanceSeconds;
+}
 
-export function evaluateCoverageGap({ observedAt, previousObservedAt, backgroundGapSeconds }) {
-  if (!previousObservedAt) return { continuousCoverage: true, coverageGapSeconds: 0, elapsedSeconds: 0 };
+export function evaluateCoverageGap({ observedAt, previousObservedAt, backgroundGapSeconds, pollSeconds }) {
+  if (!previousObservedAt) {
+    return { continuousCoverage: true, coverageGapSeconds: 0, elapsedSeconds: 0, maxContinuousGapSeconds: null, missedExpectedPoll: false };
+  }
   const elapsedSeconds = (Date.parse(observedAt) - Date.parse(previousObservedAt)) / 1000;
   const backgroundGap = Number(backgroundGapSeconds) || 0;
+  const maxContinuousGapSeconds = computeMaxContinuousGapSeconds(pollSeconds);
   const coverageGapSeconds = Math.max(elapsedSeconds, backgroundGap);
-  const continuousCoverage = elapsedSeconds <= MAX_CONTINUOUS_GAP_SECONDS && backgroundGap === 0;
+  const missedExpectedPoll = elapsedSeconds > maxContinuousGapSeconds;
+  const continuousCoverage = !missedExpectedPoll && backgroundGap === 0;
   return {
     continuousCoverage,
     coverageGapSeconds: +coverageGapSeconds.toFixed(3),
     elapsedSeconds: +elapsedSeconds.toFixed(3),
+    maxContinuousGapSeconds,
+    missedExpectedPoll,
   };
 }
 
@@ -208,11 +220,12 @@ export function evaluateCoverageGap({ observedAt, previousObservedAt, background
 // or any counter that depends on a clean prospective window. The state is
 // always rebaselined to the current sample regardless, so continuous
 // coverage resuming on the next poll immediately restores normal detection.
-export function processPoll({ currentByKey, previousState, observedAt, backgroundGapSeconds }) {
+export function processPoll({ currentByKey, previousState, observedAt, backgroundGapSeconds, pollSeconds }) {
   const coverage = evaluateCoverageGap({
     observedAt,
     previousObservedAt: previousState?.observedAt ?? null,
     backgroundGapSeconds,
+    pollSeconds,
   });
 
   let resetEvents = [];
@@ -244,6 +257,58 @@ export function processPoll({ currentByKey, previousState, observedAt, backgroun
     contaminatedEvents,
     pairedCandidate,
     newState: { byKey: currentByKey, observedAt },
+  };
+}
+
+// The scientifically correct observation instant for a poll is when the
+// response was actually received and parsed - NOT when the request was
+// sent. A slow request (network stall, server delay) must never be
+// attributed to the earlier wall-clock moment: doing so understates the
+// true elapsed interval between observations, which would let a genuinely
+// discontinuous pair of samples slip past evaluateCoverageGap()'s check.
+// This function exists mainly to make that contract explicit and
+// regression-tested, since the fix itself is really "call this with the
+// response time, not the request time" at the app.js call site.
+export function resolveObservedAt({ requestStartedAt, responseReceivedAt }) {
+  return responseReceivedAt;
+}
+
+// A minimal, pure, self-rescheduling single-flight poll driver. Exposed
+// separately from app.js so its concurrency-safety is testable in Node
+// without a browser event loop - `setInterval(pollOnce, ms)` permits
+// overlapping calls if a fetch runs long, which can race `previousState`
+// and corrupt temporal ordering. Scheduling the NEXT cycle only after the
+// current one fully settles (success or failure) makes overlap
+// structurally impossible, not just guarded against; `inFlight` is a
+// belt-and-braces second guard that should be unreachable given that design.
+export function createPollScheduler({ runPoll, delayMs, setTimeoutFn = setTimeout, clearTimeoutFn = clearTimeout }) {
+  let timer = null;
+  let stopped = true;
+  let inFlight = false;
+
+  async function tick() {
+    if (stopped || inFlight) return;
+    inFlight = true;
+    try {
+      await runPoll();
+    } finally {
+      inFlight = false;
+      if (!stopped) timer = setTimeoutFn(tick, delayMs);
+    }
+  }
+
+  return {
+    start() {
+      if (!stopped) return;
+      stopped = false;
+      tick();
+    },
+    stop() {
+      stopped = true;
+      if (timer) clearTimeoutFn(timer);
+      timer = null;
+    },
+    isRunning: () => !stopped,
   };
 }
 
