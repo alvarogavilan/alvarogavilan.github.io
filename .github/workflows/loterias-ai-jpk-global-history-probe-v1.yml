@@ -1,0 +1,44 @@
+name: Loterias AI JPK Global History Probe V1
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/jackpots/jpk-global-history-probe-v1.mjs'
+      - 'loterias-ai/tests/jpk-global-history-probe-v1.test.mjs'
+      - '.github/workflows/loterias-ai-jpk-global-history-probe-v1.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-jpk-global-history-probe-v1
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Parse and persist global Jackpot King history surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          node loterias-ai/tests/jpk-global-history-probe-v1.test.mjs
+          node loterias-ai/casino/jackpots/jpk-global-history-probe-v1.mjs
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/casino/jackpots/evidence/jpk-global-history-probe-v1.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'data(edge): refresh Jackpot King global history probe'
+          git pull --rebase origin main
+          git push origin HEAD:main
