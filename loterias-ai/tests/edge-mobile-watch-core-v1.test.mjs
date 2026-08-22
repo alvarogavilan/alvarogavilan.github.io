@@ -13,6 +13,7 @@ import {
   createPollScheduler,
   graphqlNodeRequestInit,
   graphqlBrowserRequestInit,
+  nonSafelistedRequestHeaderNames,
 } from '../mobile/edge-live-watch/core-v1.mjs';
 
 // parseGraphqlBody: normal case
@@ -313,6 +314,36 @@ assert.throws(() => computeMaxContinuousGapSeconds(-5));
   assert.ok(!('referer' in browserInit.headers), 'browser init must never attempt to set the forbidden Referer header');
   assert.equal(browserInit.headers.venture, 'botemania_es');
   assert.equal(browserInit.body, nodeInit.body, 'the GraphQL query/body itself must stay identical between both paths');
+}
+
+// --- CORS preflight-parity fix: graphqlBrowserRequestInit() previously sent
+// a 'cache-control' header that cors-preflight-probe-v1.mjs's hardcoded
+// 'access-control-request-headers': 'content-type,venture' literal did not
+// account for - the probe was validating a preflight that was not exactly
+// what the real browser app would trigger. Fixed by (1) removing the
+// functionally-inert cache-control header from the browser path entirely,
+// and (2) having the probe derive its requested-header list from this same
+// nonSafelistedRequestHeaderNames() helper instead of a hand-written
+// literal, so the two can never silently diverge again. ---
+{
+  const browserInit = graphqlBrowserRequestInit();
+  assert.ok(!('cache-control' in browserInit.headers), 'the browser request must never send cache-control: it has no effect on an uncached POST response and only needlessly widens the CORS preflight surface');
+
+  const requested = nonSafelistedRequestHeaderNames(browserInit.headers);
+  assert.deepEqual(requested, ['content-type', 'venture'], 'this is exactly the Access-Control-Request-Headers list a real browser would send for the current graphqlBrowserRequestInit() headers');
+  assert.ok(!requested.includes('accept'), 'Accept is always CORS-safelisted regardless of value and must never appear here');
+}
+// A non-safelisted Content-Type value (anything other than the three
+// safelisted essences) must always be reported as non-safelisted...
+{
+  const names = nonSafelistedRequestHeaderNames({ accept: 'application/json', 'content-type': 'application/json' });
+  assert.deepEqual(names, ['content-type']);
+}
+// ...while a genuinely safelisted Content-Type value must not be, even with
+// a charset parameter appended (only the essence before ';' matters).
+{
+  const names = nonSafelistedRequestHeaderNames({ 'content-type': 'text/plain;charset=UTF-8', 'accept-language': 'es' });
+  assert.deepEqual(names, []);
 }
 
 console.log('edge-mobile-watch-core-v1.test.mjs: PASS');

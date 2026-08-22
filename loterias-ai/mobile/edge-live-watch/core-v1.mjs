@@ -67,6 +67,16 @@ export function graphqlNodeRequestInit() {
 // neither case does the request end up looking anything like what was
 // written here. Only the headers below are ones a browser will actually
 // send as written.
+//
+// Deliberately does NOT send `cache-control` (unlike the Node init): a POST
+// response is never stored in the browser HTTP cache regardless of
+// Cache-Control, so the header has no functional effect here - and since
+// it is not a CORS-safelisted header name, sending it would force every
+// poll to trigger a real preflight OPTIONS round-trip for zero benefit,
+// and would silently widen what cors-preflight-probe-v1.mjs must validate
+// against Access-Control-Allow-Headers. Removing it also means this
+// function's non-safelisted header set (see nonSafelistedRequestHeaderNames
+// below) stays minimal and exactly matches what the preflight probe checks.
 export function graphqlBrowserRequestInit() {
   return {
     method: 'POST',
@@ -74,10 +84,42 @@ export function graphqlBrowserRequestInit() {
       accept: 'application/json',
       'content-type': 'application/json',
       venture: 'botemania_es',
-      'cache-control': 'no-cache, no-store, max-age=0',
     },
     body: JSON.stringify({ operationName: 'loadJackpots', variables: {}, query: GRAPHQL_QUERY }),
   };
+}
+
+// CORS-safelisted request headers per the Fetch spec: these never need to
+// appear in a preflight's Access-Control-Request-Headers, and a server
+// never needs to echo them back in Access-Control-Allow-Headers. Accept,
+// Accept-Language and Content-Language are always safelisted regardless of
+// value; Content-Type is safelisted ONLY when its value's essence (ignoring
+// parameters like charset) is one of the three listed below - our requests
+// use 'application/json', which is NOT one of them, so content-type is
+// treated as non-safelisted whenever that's the value in use.
+const ALWAYS_SAFELISTED_HEADER_NAMES = new Set(['accept', 'accept-language', 'content-language']);
+const SAFELISTED_CONTENT_TYPE_ESSENCES = new Set(['application/x-www-form-urlencoded', 'multipart/form-data', 'text/plain']);
+
+// Given a headers object (as passed to fetch()), returns the sorted list of
+// header names a real browser would actually include in a CORS preflight's
+// Access-Control-Request-Headers - i.e. everything except the
+// always-safelisted headers and a safelisted-valued Content-Type. Exists so
+// cors-preflight-probe-v1.mjs can derive its preflight request FROM
+// graphqlBrowserRequestInit() directly, instead of hand-duplicating a
+// header list that can silently drift out of sync with what the real
+// browser init actually sends (the exact bug this function was added to fix).
+export function nonSafelistedRequestHeaderNames(headers) {
+  const names = [];
+  for (const key of Object.keys(headers || {})) {
+    const lower = key.toLowerCase();
+    if (ALWAYS_SAFELISTED_HEADER_NAMES.has(lower)) continue;
+    if (lower === 'content-type') {
+      const essence = String(headers[key]).split(';')[0].trim().toLowerCase();
+      if (SAFELISTED_CONTENT_TYPE_ESSENCES.has(essence)) continue;
+    }
+    names.push(lower);
+  }
+  return names.sort();
 }
 
 // Mirrors the server script's alias-collapse: equal network+id+amount rows
