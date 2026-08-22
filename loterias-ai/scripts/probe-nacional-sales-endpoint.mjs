@@ -35,9 +35,18 @@ function variable(html,name){
 }
 
 function parseEsNumber(value){
-  const s=String(value??'').trim().replace(/\s/g,'').replace(/\./g,'').replace(',','.');
-  if(!s)return null;
-  const n=Number(s);
+  if(typeof value==='number')return Number.isFinite(value)?value:null;
+  const raw=String(value??'').trim().replace(/\s/g,'');
+  if(!raw)return null;
+  let normalized;
+  if(raw.includes(',')){
+    normalized=raw.replace(/\./g,'').replace(',','.');
+  }else if(/^[-+]?\d+(?:\.\d+)?$/.test(raw)){
+    normalized=raw;
+  }else{
+    return null;
+  }
+  const n=Number(normalized);
   return Number.isFinite(n)?n:null;
 }
 
