@@ -14,11 +14,12 @@
       "supportedFacts": [
         "The optional MHB progressive is an add-on to an existing Atlas progressive wager; no additional wager is required to qualify.",
         "The meter increments from a configured increment rate and the total value of progressive wagers.",
-        "Each participating player is assigned an RNG value and wins if it falls below a calculated threshold tied to the current progressive value.",
+        "Each participating player is assigned an RNG value and qualifies when that value falls below a calculated threshold tied to the current progressive value.",
+        "If multiple players qualify at the same time, the player with the lowest random value is awarded the progressive.",
         "The odds of the MHB award increase as the progressive value passes certain thresholds."
       ],
-      "mechanismClass": "VALUE_DEPENDENT_HAZARD",
-      "exactPerWagerProbabilityPublished": false,
+      "mechanismClass": "VALUE_DEPENDENT_HAZARD_WITH_MULTI_PLAYER_WINNER_SELECTION",
+      "exactPlayerWinProbabilityPublished": false,
       "uniformHiddenThresholdSupported": false,
       "confidence": "HIGH_FOR_MECHANISM_CLASS"
     },
@@ -48,7 +49,7 @@
         "The rack card directs the player to posted paytables for odds rather than publishing the MHB odds in the rack card itself."
       ],
       "mechanismClass": "MHB_PRESENT_EXACT_HAZARD_UNPUBLISHED_IN_SOURCE",
-      "exactPerWagerProbabilityPublished": false,
+      "exactPlayerWinProbabilityPublished": false,
       "confidence": "HIGH_FOR_PRODUCT_FEATURE_LOW_FOR_ECONOMICS"
     },
     {
@@ -85,6 +86,7 @@
     "mustHitByLabelAloneIdentifiesDistribution": false,
     "uniformHiddenThresholdIsUniversal": false,
     "valueDependentOrStagedHazardExistsInRegulatedProducts": true,
+    "qualificationProbabilityEqualsPlayerWinProbability": false,
     "postedResetAndCapAloneAreEnoughForEV": false,
     "requiredBeforeUniformThresholdEV": [
       "exact game/system identity",
@@ -95,21 +97,22 @@
     ],
     "requiredBeforeStagedHazardEV": [
       "exact game/system identity",
-      "current stage/value-dependent award probability per eligible wager verified",
-      "eligibility and winner-selection rule verified",
+      "current stage/value-dependent WIN probability for this wager/player verified",
+      "multi-player winner-selection and concurrency effects already incorporated",
+      "eligibility rule verified",
       "base RTP excluding the MHB component verified"
     ]
   },
   "implementationImpact": {
     "existingPowerLawScenarioEngineStatus": "RESEARCH_SCENARIO_ONLY",
     "newMechanismSpecificModel": "loterias-ai/casino/jackpots/mhb-mechanism-model-v1.mjs",
-    "forbiddenPromotion": "Never promote a displayed MHB cap to executable EV by assuming alpha=1/uniform or any fitted alpha without exact mechanism evidence.",
+    "forbiddenPromotion": "Never promote a displayed MHB cap to executable EV by assuming alpha=1/uniform, by fitting an unverified alpha, or by treating a qualification threshold as the player's final win probability when winner selection is shared.",
     "realMoneyAllowed": false
   },
   "decision": {
     "verdict": "RESEARCH_ONLY",
     "playNow": false,
     "stakeEUR": 0,
-    "reason": "Mechanism taxonomy improved, but no exact currently-live game configuration in the repository has all distribution, eligibility, meter-increment and base-RTP inputs verified."
+    "reason": "Mechanism taxonomy improved, but no exact currently-live game configuration in the repository has all distribution, eligibility, winner-selection, meter-increment and base-RTP inputs verified."
   }
 }
