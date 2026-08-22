@@ -69,6 +69,16 @@ jobs:
         run: node loterias-ai/tests/winfall-wishes-identity-binding-v1.test.mjs
       - name: Winfall Wishes economics synthesis tests
         run: node loterias-ai/tests/winfall-economics-synthesis-v1.test.mjs
+      - name: Winfall shared-target custody tests
+        run: node loterias-ai/tests/winfall-shared-target-audit-v1.test.mjs
+      - name: Winfall passive-network target tests
+        run: node loterias-ai/tests/winfall-passive-network-triangulation-v2.test.mjs
+      - name: Winfall provider metadata target tests
+        run: node loterias-ai/tests/winfall-provider-network-metadata-v1.test.mjs
+      - name: Winfall Tiki shared-pot bridge tests
+        run: node loterias-ai/tests/winfall-tiki-network-bridge-v1.test.mjs
+      - name: Winfall EDGE registry fail-closed tests
+        run: node loterias-ai/tests/winfall-edge-registry-v1.test.mjs
       - name: Validate JSON data files
         run: |
           node - <<'NODE'
