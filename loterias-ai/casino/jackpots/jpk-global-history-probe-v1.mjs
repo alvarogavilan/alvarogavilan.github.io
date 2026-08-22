@@ -46,8 +46,15 @@ export function normalizeMoney(raw){
   const body=m[2];
   const lastComma=body.lastIndexOf(','),lastDot=body.lastIndexOf('.');
   let normalized=body;
-  if(lastComma>lastDot){normalized=body.replace(/\./g,'').replace(',','.');}
-  else normalized=body.replace(/,/g,'');
+  if(lastComma>=0&&lastDot>=0){
+    normalized=lastComma>lastDot?body.replace(/\./g,'').replace(',','.'):body.replace(/,/g,'');
+  }else if(lastComma>=0){
+    const tail=body.length-lastComma-1;
+    normalized=tail===3?body.replace(/,/g,''):body.replace(',','.');
+  }else if(lastDot>=0){
+    const tail=body.length-lastDot-1;
+    normalized=tail===3?body.replace(/\./g,''):body;
+  }
   const amount=Number(normalized);
   return Number.isFinite(amount)&&amount>0?{currency,amount}:null;
 }
