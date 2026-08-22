@@ -1,0 +1,103 @@
+{
+  "version": "ios-shortcut-request-spec-v1",
+  "purpose": "Exact, non-inventable spec for building a native iOS Shortcut that samples Botemania's public GraphQL jackpot feed without any Mac, without GitHub Actions, and without any paid app.",
+  "request": {
+    "url": "https://www.botemania.es/es/graphql",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json",
+      "Accept": "application/json",
+      "venture": "botemania_es",
+      "Origin": "https://www.botemania.es",
+      "Referer": "https://www.botemania.es/",
+      "Cache-Control": "no-cache, no-store, max-age=0"
+    },
+    "bodyType": "JSON",
+    "body": {
+      "operationName": "loadJackpots",
+      "variables": {},
+      "query": "query loadJackpots {\n  jackpots { id amount }\n  redTigerJackpots { id amount }\n  blueprintJackpots { id amount }\n}"
+    },
+    "sourceOfTruth": "Byte-identical to loterias-ai/edge-live/botemania-all-network-fast-meter-sample-v1.mjs and loterias-ai/mobile/edge-live-watch/core-v1.mjs - do not modify the query or field selection."
+  },
+  "expectedResponseShape": {
+    "data": {
+      "jackpots": [{ "id": "string", "amount": "number" }],
+      "redTigerJackpots": [{ "id": "string", "amount": "number" }],
+      "blueprintJackpots": [{ "id": "string", "amount": "number" }]
+    }
+  },
+  "networkLabelMapping": {
+    "jackpots": "generic",
+    "redTigerJackpots": "redTiger",
+    "blueprintJackpots": "blueprint"
+  },
+  "priorityCounters": [
+    "blueprint:JACKPOTKING",
+    "blueprint:JACKPOTKING_REGAL",
+    "blueprint:JACKPOTKING_ROYAL",
+    "generic:tikitemple2_1",
+    "generic:progressivealice1",
+    "generic:WAGER_BET",
+    "generic:pool1",
+    "generic:bouncy_bubbles_id",
+    "generic:classicwildsprogressive",
+    "generic:diamondbonanza25BTM",
+    "generic:DealOrNoDealStateful3"
+  ],
+  "parsingRules": {
+    "identityKey": "`${network}:${id}` (network from networkLabelMapping, id verbatim from the response)",
+    "aliasCollapse": "If the same identityKey appears more than once in a single response with the SAME amount, treat as one row (safe duplicate).",
+    "ambiguousExclusion": "If the same identityKey appears more than once in a single response with DIFFERENT amounts, exclude it entirely from reset detection for that poll - never guess which is current.",
+    "amountRounding": "Round to 2 decimals for display, keep full precision for storage."
+  },
+  "resetRules": {
+    "compareAgainst": "The previously saved snapshot for the SAME identityKey only - never a different counter, never a different network.",
+    "dropFractionFormula": "1 - (currentAmount / previousAmount)",
+    "resetThreshold": "dropFraction >= 0.20 (a drop of 20% or more)",
+    "requiredConditions": [
+      "previousAmount is a finite number > 0",
+      "currentAmount is a finite number >= 0",
+      "currentAmount < previousAmount",
+      "dropFraction >= 0.20"
+    ],
+    "neverTreatAsReset": [
+      "currentAmount >= previousAmount (growth or unchanged)",
+      "previousAmount missing (first-ever sample for this counter)",
+      "an ambiguous identityKey (see parsingRules.ambiguousExclusion)"
+    ],
+    "onReset": "Build the evidence JSON described in evidenceBundleShape below and save it as its own file, in addition to updating the rolling snapshot."
+  },
+  "evidenceBundleShape": {
+    "detectedAt": "ISO-8601 timestamp of this run",
+    "counter": "the identityKey, e.g. generic:tikitemple2_1",
+    "previousAmountEUR": "number",
+    "currentAmountEUR": "number",
+    "preWindow": "array of the last few saved snapshots for this counter before the reset, if available",
+    "postWindow": "array of snapshots for this counter captured on runs AFTER this one (append as they arrive)",
+    "source": "IOS_SHORTCUT_NATIVE",
+    "queryVersion": "loadJackpots-v1"
+  },
+  "jpkJointRule": "Every run that saves a snapshot must save JACKPOTKING, JACKPOTKING_REGAL and JACKPOTKING_ROYAL together, from the SAME response, even if only one of them changed.",
+  "tikiAliceJointRule": "Every run that saves a snapshot must save tikitemple2_1 and progressivealice1 together, from the SAME response.",
+  "tikiAliceFrozenGate": {
+    "firstPairedResetAt": "2026-08-21T14:44:06.603Z",
+    "fromEUR": 1208.43,
+    "toEUR": 2.82,
+    "independentPairedResetCount": 1,
+    "requiredForPromotion": 2,
+    "note": "This is a KNOWN prior fact, not something the Shortcut needs to reproduce. If the Shortcut detects a SECOND paired reset for both counters at the same run, with previous amounts matching within 0.01 EUR and current amounts matching within 0.01 EUR, label the evidence bundle status as PROSPECTIVE_PAIRED_RESET_CANDIDATE and route it toward tiki-alice-paired-reset-relationship-v1. Never set exactAliasVerified, exactGameIdentityVerified, winfallExactLiveIdVerified, or any EV/realMoneyAllowed field to true from the Shortcut - those require external review."
+  },
+  "storage": {
+    "location": "iCloud Drive/Shortcuts/EdgeLiveCapture/ (or Files app equivalent)",
+    "rollingSnapshotFile": "edge-live-snapshot.json",
+    "resetEvidenceFilePattern": "edge-live-reset-<counter-sanitized>-<timestamp>.json"
+  },
+  "guards": {
+    "noBetting": true,
+    "noGameLaunch": true,
+    "noAuthentication": true,
+    "realMoneyAllowed": false,
+    "economicPromotionAllowed": false
+  }
+}

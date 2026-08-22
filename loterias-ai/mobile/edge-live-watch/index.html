@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EDGE Live Watch</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#0b0f14">
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 16px; padding-bottom: 48px;
+    background: #0b0f14; color: #e6edf3;
+    font: 15px/1.4 -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  p.subtitle { color: #8b949e; margin: 0 0 16px; font-size: 13px; }
+  .status { padding: 10px 12px; border-radius: 8px; font-weight: 600; margin-bottom: 16px; background: #21262d; }
+  .status.ok { background: #0d3b23; color: #3fb950; }
+  .status.blocked { background: #3b0d0d; color: #f85149; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  button {
+    flex: 1; min-width: 120px; padding: 12px; border-radius: 8px; border: 1px solid #30363d;
+    background: #21262d; color: #e6edf3; font-size: 15px; font-weight: 600;
+  }
+  button:active { background: #30363d; }
+  button:disabled { opacity: 0.4; }
+  #startBtn { background: #1f6feb; border-color: #1f6feb; }
+  #stopBtn { background: #da3633; border-color: #da3633; }
+  label { display: block; font-size: 13px; color: #8b949e; margin-bottom: 4px; }
+  input[type=number] { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #30363d; background: #0d1117; color: #e6edf3; margin-bottom: 16px; }
+  section { margin-bottom: 20px; }
+  h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.04em; color: #8b949e; margin: 0 0 8px; }
+  .counter-row, .reset-row { font-family: ui-monospace, monospace; font-size: 13px; padding: 4px 0; border-bottom: 1px solid #21262d; }
+  .contaminated-row { color: #f0883e; }
+  #log { font-family: ui-monospace, monospace; font-size: 11px; color: #8b949e; max-height: 200px; overflow-y: auto; }
+  #log div { padding: 2px 0; border-bottom: 1px solid #161b22; }
+  #pairedCandidate { white-space: pre-wrap; font-family: ui-monospace, monospace; font-size: 11px; background: #0d1117; padding: 8px; border-radius: 6px; border: 1px solid #f0883e; }
+  .warn { color: #f0883e; font-size: 12px; }
+</style>
+</head>
+<body>
+  <h1>EDGE Live Watch</h1>
+  <p class="subtitle">iPhone Safari watcher — reads the same public Botemania GraphQL endpoint already validated server-side. Research only. No betting, no real money, no automatic promotion of anything this page finds.</p>
+
+  <div id="status" class="status">Loading…</div>
+
+  <div class="row">
+    <button id="startBtn">START WATCH</button>
+    <button id="stopBtn">STOP</button>
+  </div>
+  <label for="pollSeconds">Poll interval (30–60s)</label>
+  <input type="number" id="pollSeconds" min="30" max="60" value="45">
+  <div class="row">
+    <button id="exportBtn">EXPORT EVIDENCE</button>
+    <button id="clearBtn">CLEAR LOCAL DATA</button>
+  </div>
+  <p class="warn">iOS may suspend Safari in the background. This page never interpolates missing samples — background gaps are recorded explicitly instead.</p>
+
+  <section>
+    <h2>Current meters</h2>
+    <div id="counters"></div>
+    <p class="subtitle">Last poll: <span id="lastPoll">—</span></p>
+  </section>
+
+  <section>
+    <h2>Clean reset events (this device only)</h2>
+    <div id="resets"></div>
+  </section>
+
+  <section>
+    <h2>Contaminated (across a coverage gap — audit only, not eligible for anything)</h2>
+    <div id="contaminated"></div>
+  </section>
+
+  <section id="pairedSection">
+    <h2>Tiki/Alice paired-reset candidate</h2>
+    <pre id="pairedCandidate" hidden></pre>
+  </section>
+
+  <section>
+    <h2>Log</h2>
+    <div id="log"></div>
+  </section>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
