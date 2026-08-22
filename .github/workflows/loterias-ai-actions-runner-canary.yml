@@ -1,6 +1,10 @@
 name: Loterias AI Actions Runner Canary
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/loterias-ai-actions-runner-canary.yml'
   workflow_dispatch:
   schedule:
     - cron: '17 * * * *'
@@ -21,6 +25,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo "LOTTERIAS_AI_ACTIONS_RUNNER_OK=1"
+          echo "LOTERIAS_AI_ACTIONS_RUNNER_OK=1"
           echo "utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           echo "sha=${GITHUB_SHA}"
