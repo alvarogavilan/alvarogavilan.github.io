@@ -1,0 +1,55 @@
+{
+  "version": "diamond-bonanza-cross-market-economics-screen-v1",
+  "generatedAt": "2026-08-22T14:36:00Z",
+  "purpose": "DISCOVERY_ONLY_CROSS_MARKET_COMPARATOR",
+  "sources": {
+    "historicalGamesys": {
+      "url": "https://www.casinolistings.com/jackpots/gamesys/diamond-bonanza-25p-jackpot",
+      "seedGBP": 500,
+      "meanWinGBP": 7309,
+      "winsRecorded": 1060
+    },
+    "currentBallyComparator": {
+      "url": "https://www.ballycasino.com/jackpot-slots/diamond-bonanza",
+      "publishedRTP": 0.9501,
+      "publishedJackpotContribution": 0.0566,
+      "rtpSemanticsResolved": false
+    },
+    "currentSpain": {
+      "operator": "botemania-es",
+      "url": "https://www.botemania.es/juegos/slots-online/danza-de-los-diamantes",
+      "publishedRTP": 0.9544,
+      "feedKey": "generic:diamondbonanza25BTM",
+      "lastPersistedMeterEUR": 8032.9,
+      "lastPersistedObservedAt": "2026-08-21T18:06:46.573Z",
+      "meterFresh": false
+    }
+  },
+  "counterfactualIfHistoricalHazardTransferredToSpain": {
+    "meanJackpotGrowth": 6809,
+    "impliedTurnoverPerWin": 120300.35335689047,
+    "impliedHazardPerCurrencyUnit": 0.000008312527537083273,
+    "impliedMeanProgressiveReturn": 0.06075626376854164,
+    "inferredSpainBaseRTP": 0.8936437362314584,
+    "breakEvenMeterEUR": 12794.696113074197,
+    "lastPersistedMeterImpliedTotalRTP": 0.9604174386840947
+  },
+  "interpretation": "The EUR 12,794.70 level is not a Spain execution threshold. It is only the counterfactual break-even if the historical Gamesys 25p hazard and the 5.66% Bally contribution transferred unchanged to Botemania Spain, which is not verified.",
+  "decision": {
+    "currentSpainPositiveEvProven": false,
+    "historicalHazardEquivalentToSpain": false,
+    "contributionEquivalentToSpain": false,
+    "exactSpainTriggerProbabilityVerified": false,
+    "economicPromotionAllowed": false,
+    "realMoneyAllowed": false,
+    "stakeEUR": 0
+  },
+  "guards": {
+    "crossMarketAmountsAreNotExecutionThresholds": true,
+    "foreignSeedNeverPromoted": true,
+    "foreignContributionNeverPromoted": true,
+    "staleMeterCannotTriggerPlay": true,
+    "freshSpainMeterRequired": true,
+    "exactSpainHazardRequired": true
+  }
+}
