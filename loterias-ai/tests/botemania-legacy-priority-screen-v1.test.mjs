@@ -4,12 +4,14 @@ import {buildLegacyPriorityScreen} from '../casino/jackpots/botemania-legacy-pri
 const comparators={sources:[
   {feedKey:'generic:diamondbonanza25BTM',currentSpainTitle:'Danza de los Diamantes',sourceUrl:'diamond',historicalWinsRecorded:1060,historicalAverageWinGBP:7309,currentSpainPublishedRTP:0.9544},
   {feedKey:'generic:WAGER_BET',currentSpainTitle:'Ultimate Video Poker',sourceUrl:'uvp',historicalWinsRecorded:49,historicalAverageWinGBP:13305,historicalBreakEvenGBP:17477},
-  {feedKey:'generic:tikitemple2_1',currentSpainTitle:'Tiki Templo',sourceUrl:'tiki',historicalWinsRecorded:203,historicalAverageWinGBP:104433}
+  {feedKey:'generic:tikitemple2_1',currentSpainTitle:'Tiki Templo',sourceUrl:'tiki',historicalWinsRecorded:203,historicalAverageWinGBP:104433},
+  {feedKey:'generic:bouncy_bubbles_id',currentSpainTitle:'Burbujas Saltarinas',sourceUrl:'bouncy',currentSpainPublishedBaseRTP:0.9538,currentSpainPublishedJackpotContribution:0.0009}
 ]};
 const live={observedAt:'2026-08-22T10:00:00.000Z',currentByKey:{
   'generic:diamondbonanza25BTM':{amountEUR:8032.9},
   'generic:WAGER_BET':{amountEUR:3448.25},
-  'generic:tikitemple2_1':{amountEUR:19.66}
+  'generic:tikitemple2_1':{amountEUR:19.66},
+  'generic:bouncy_bubbles_id':{amountEUR:1953.9}
 }};
 
 const fresh=buildLegacyPriorityScreen(live,comparators,'2026-08-22T10:20:00.000Z');
@@ -18,8 +20,13 @@ assert.equal(fresh.ranked[0].feedKey,'generic:diamondbonanza25BTM');
 assert.equal(fresh.ranked[0].nominalVsHistoricalAverageRatio,1.099);
 assert.equal(fresh.ranked[1].feedKey,'generic:WAGER_BET');
 assert.equal(fresh.ranked[1].nominalVsHistoricalBreakEvenRatio,0.1973);
+assert.equal(fresh.ranked[2].feedKey,'generic:tikitemple2_1');
+assert.equal(fresh.ranked[3].feedKey,'generic:bouncy_bubbles_id');
+assert.equal(fresh.ranked[3].baseRtpGapTo100,0.0462);
+assert.equal(fresh.ranked[3].requiredJackpotUpliftVsPublishedContribution,51.33);
 assert.equal(fresh.ranked.every(x=>x.realMoneyAllowed===false),true);
 assert.equal(fresh.guards.nominalCrossMarketRatiosAreDiscoveryOnly,true);
+assert.equal(fresh.guards.jackpotContributionIsNotWinProbability,true);
 
 const stale=buildLegacyPriorityScreen(live,comparators,'2026-08-22T11:00:01.000Z');
 assert.equal(stale.sourceFresh,false);
