@@ -1,0 +1,73 @@
+name: Loterias AI Tiki Alice Paired Reset Watch V1
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/10 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/jackpots/evidence/botemania-generic-fast-reset-ledger-v1.json'
+      - 'loterias-ai/casino/jackpots/tiki-alice-paired-reset-relationship-v1.mjs'
+      - 'loterias-ai/casino/archive/evidence/botemania-winfall-economics-dossier-v1.json'
+      - 'loterias-ai/edge-live/evidence/tiki-alice-simultaneous-divergence-v1.json'
+      - '.github/workflows/loterias-ai-tiki-alice-paired-reset-watch-v1.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loterias-ai-tiki-alice-paired-reset-watch-v1
+  cancel-in-progress: false
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Deterministic paired-reset guards
+        run: node loterias-ai/tests/tiki-alice-paired-reset-relationship-v1.test.mjs
+      - name: Evaluate frozen paired-reset relationship
+        run: node loterias-ai/casino/jackpots/tiki-alice-paired-reset-relationship-v1.mjs
+      - name: Validate fail-closed relationship state
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const p='loterias-ai/casino/jackpots/evidence/tiki-alice-paired-reset-relationship-v1.json';
+          const x=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(x?.relationship?.exactAliasVerified!==false) throw new Error('exact alias may never be restored after observed divergence');
+          if(x?.relationship?.exactGameIdentityVerified!==false||x?.relationship?.winfallExactLiveIdVerified!==false) throw new Error('paired reset relationship cannot prove exact game/live identity');
+          if(x?.relationship?.economicPromotionAllowed!==false||x?.relationship?.realMoneyAllowed!==false) throw new Error('paired reset relationship must never promote economics or real money');
+          if(x?.relationship?.pairedResetCouplingVerified===true && (x?.relationship?.independentPairedResetCount||0)<2) throw new Error('coupling verified before second independent paired reset');
+          console.log(JSON.stringify(x.relationship,null,2));
+          NODE
+      - name: Persist only material relationship changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE=loterias-ai/casino/jackpots/evidence/tiki-alice-paired-reset-relationship-v1.json
+          cp "$FILE" /tmp/tiki-alice-paired-reset-relationship-v1.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git fetch origin main
+          git reset --hard origin/main
+          mkdir -p "$(dirname "$FILE")"
+          cp /tmp/tiki-alice-paired-reset-relationship-v1.json "$FILE"
+          git add "$FILE"
+          if git diff --cached --quiet; then
+            echo 'No new paired reset relationship evidence'
+            exit 0
+          fi
+          git commit -m 'data(casino): update Tiki Alice paired-reset relationship'
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt*2))
+          done
+          exit 1
