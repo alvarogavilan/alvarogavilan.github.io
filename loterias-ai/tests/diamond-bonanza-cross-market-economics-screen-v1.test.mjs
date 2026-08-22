@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {buildDiamondBonanzaCrossMarketScreen} from '../casino/jackpots/diamond-bonanza-cross-market-economics-screen-v1.mjs';
+const x=buildDiamondBonanzaCrossMarketScreen({});
+assert.ok(Math.abs(x.comparator.impliedTurnoverPerWin-120300.35335689047)<1e-9);
+assert.ok(Math.abs(x.comparator.impliedHazardPerCurrencyUnit-0.000008312527537083273)<1e-15);
+assert.ok(Math.abs(x.comparator.breakEvenMeterIfTransferHeld-12794.696113074197)<1e-9);
+assert.ok(Math.abs(x.comparator.impliedCurrentTotalRtpIfTransferHeld-0.9604174386840947)<1e-12);
+assert.equal(x.decision.currentSpainPositiveEvProven,false);
+assert.equal(x.decision.realMoneyAllowed,false);
+assert.equal(x.guards.crossMarketHazardIsComparatorOnly,true);
+assert.throws(()=>buildDiamondBonanzaCrossMarketScreen({historicalContribution:'0.0566'}),/INVALID_NUMERIC_INPUT/);
+console.log('PASS diamond-bonanza-cross-market-economics-screen-v1');
