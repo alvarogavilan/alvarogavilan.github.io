@@ -35,6 +35,7 @@
   section { margin-bottom: 20px; }
   h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.04em; color: #8b949e; margin: 0 0 8px; }
   .counter-row, .reset-row { font-family: ui-monospace, monospace; font-size: 13px; padding: 4px 0; border-bottom: 1px solid #21262d; }
+  .contaminated-row { color: #f0883e; }
   #log { font-family: ui-monospace, monospace; font-size: 11px; color: #8b949e; max-height: 200px; overflow-y: auto; }
   #log div { padding: 2px 0; border-bottom: 1px solid #161b22; }
   #pairedCandidate { white-space: pre-wrap; font-family: ui-monospace, monospace; font-size: 11px; background: #0d1117; padding: 8px; border-radius: 6px; border: 1px solid #f0883e; }
@@ -66,8 +67,13 @@
   </section>
 
   <section>
-    <h2>Reset events (this device only)</h2>
+    <h2>Clean reset events (this device only)</h2>
     <div id="resets"></div>
+  </section>
+
+  <section>
+    <h2>Contaminated (across a coverage gap — audit only, not eligible for anything)</h2>
+    <div id="contaminated"></div>
   </section>
 
   <section id="pairedSection">

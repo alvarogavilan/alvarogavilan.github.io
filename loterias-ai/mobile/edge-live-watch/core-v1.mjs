@@ -34,7 +34,14 @@ export const GRAPHQL_QUERY = `query loadJackpots {
   blueprintJackpots { id amount }
 }`;
 
-export function graphqlRequestInit() {
+// Node (server-side) request init - used by scripts that run outside a
+// browser, where `fetch()` has no restriction on which headers it can set.
+// This is what botemania-all-network-fast-meter-sample-v1.mjs and
+// cors-preflight-probe-v1.mjs use, and what a real browser's own network
+// stack automatically sends for a cross-origin request's Origin header
+// (Origin is set correctly by the browser itself for every cross-origin
+// fetch - it does NOT need to be, and cannot be, set by page JS).
+export function graphqlNodeRequestInit() {
   return {
     method: 'POST',
     headers: {
@@ -43,6 +50,30 @@ export function graphqlRequestInit() {
       venture: 'botemania_es',
       origin: 'https://www.botemania.es',
       referer: 'https://www.botemania.es/',
+      'cache-control': 'no-cache, no-store, max-age=0',
+    },
+    body: JSON.stringify({ operationName: 'loadJackpots', variables: {}, query: GRAPHQL_QUERY }),
+  };
+}
+
+// Browser-safe request init. `Origin` and `Referer` are both on the Fetch
+// spec's forbidden-header-name list - page JS cannot set or override them
+// (the browser sets Origin itself, automatically and correctly, to the
+// PAGE's real origin; Referer is governed by Referrer-Policy, not by
+// request headers). A previous version of this function copied the Node
+// script's origin/referer values into the browser path, which is not just
+// unhelpful but structurally impossible - `fetch()` either silently drops
+// those two header entries or throws, depending on the engine, and in
+// neither case does the request end up looking anything like what was
+// written here. Only the headers below are ones a browser will actually
+// send as written.
+export function graphqlBrowserRequestInit() {
+  return {
+    method: 'POST',
+    headers: {
+      accept: 'application/json',
+      'content-type': 'application/json',
+      venture: 'botemania_es',
       'cache-control': 'no-cache, no-store, max-age=0',
     },
     body: JSON.stringify({ operationName: 'loadJackpots', variables: {}, query: GRAPHQL_QUERY }),
@@ -144,6 +175,75 @@ export function evaluateTikiAlicePairedReset(resetEvents) {
     winfallExactLiveIdVerified: false,
     evEnabled: false,
     realMoneyAllowed: false,
+  };
+}
+
+// Generous margin over the 30-60s configured poll range - anything beyond
+// this between two consecutive polls (whether from a recorded
+// visibilitychange background gap, or simply a slow/delayed poll while the
+// page stayed visible) means the watcher was not continuously observing,
+// so a drop across that interval can never be trusted as a clean reset.
+export const MAX_CONTINUOUS_GAP_SECONDS = 150;
+
+export function evaluateCoverageGap({ observedAt, previousObservedAt, backgroundGapSeconds }) {
+  if (!previousObservedAt) return { continuousCoverage: true, coverageGapSeconds: 0, elapsedSeconds: 0 };
+  const elapsedSeconds = (Date.parse(observedAt) - Date.parse(previousObservedAt)) / 1000;
+  const backgroundGap = Number(backgroundGapSeconds) || 0;
+  const coverageGapSeconds = Math.max(elapsedSeconds, backgroundGap);
+  const continuousCoverage = elapsedSeconds <= MAX_CONTINUOUS_GAP_SECONDS && backgroundGap === 0;
+  return {
+    continuousCoverage,
+    coverageGapSeconds: +coverageGapSeconds.toFixed(3),
+    elapsedSeconds: +elapsedSeconds.toFixed(3),
+  };
+}
+
+// The single entry point app.js uses per poll. Fail-closed by construction:
+// reset detection (and everything downstream of it - Tiki/Alice pairing,
+// JPK clean-window eligibility, any future hazard/seed inference) only ever
+// runs when coverage was continuous since the last poll. When it wasn't,
+// any drop that occurred is still reported - as a clearly-labeled,
+// explicitly ineligible RESET_ACROSS_COVERAGE_GAP entry - for audit
+// visibility, but it structurally cannot reach resetEvents, pairedCandidate,
+// or any counter that depends on a clean prospective window. The state is
+// always rebaselined to the current sample regardless, so continuous
+// coverage resuming on the next poll immediately restores normal detection.
+export function processPoll({ currentByKey, previousState, observedAt, backgroundGapSeconds }) {
+  const coverage = evaluateCoverageGap({
+    observedAt,
+    previousObservedAt: previousState?.observedAt ?? null,
+    backgroundGapSeconds,
+  });
+
+  let resetEvents = [];
+  let contaminatedEvents = [];
+  let pairedCandidate = null;
+
+  if (previousState) {
+    const rawEvents = detectResetEvents(currentByKey, previousState.byKey, observedAt, previousState.observedAt);
+    if (coverage.continuousCoverage) {
+      resetEvents = rawEvents;
+      pairedCandidate = evaluateTikiAlicePairedReset(resetEvents);
+    } else {
+      contaminatedEvents = rawEvents.map((e) => ({
+        ...e,
+        eventType: 'RESET_ACROSS_COVERAGE_GAP',
+        continuousCoverage: false,
+        coverageGapSeconds: coverage.coverageGapSeconds,
+        eligibleForCleanReset: false,
+        eligibleForJpkCleanWindow: false,
+        eligibleForTikiAlicePairing: false,
+        eligibleForHazardInference: false,
+      }));
+    }
+  }
+
+  return {
+    coverage,
+    resetEvents,
+    contaminatedEvents,
+    pairedCandidate,
+    newState: { byKey: currentByKey, observedAt },
   };
 }
 

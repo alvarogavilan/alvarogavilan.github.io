@@ -6,6 +6,10 @@ import {
   jpkJointCapture,
   TIKI_ALICE_FROZEN_GATE,
   RESET_DROP_FRACTION_THRESHOLD,
+  processPoll,
+  evaluateCoverageGap,
+  graphqlNodeRequestInit,
+  graphqlBrowserRequestInit,
 } from '../mobile/edge-live-watch/core-v1.mjs';
 
 // parseGraphqlBody: normal case
@@ -102,5 +106,116 @@ assert.deepEqual(parseGraphqlBody({}).rows, []);
 assert.equal(RESET_DROP_FRACTION_THRESHOLD, 0.20);
 assert.equal(TIKI_ALICE_FROZEN_GATE.independentPairedResetCount, 1);
 assert.equal(TIKI_ALICE_FROZEN_GATE.requiredForPromotion, 2);
+
+// --- Gap-contamination fix: real bug caught in review. A drop compared
+// across an unobserved iOS background suspension (or any other unexplained
+// gap) must never be treated as a clean prospective reset - it must not
+// feed JPK's clean-window count, Tiki/Alice pairing, or any future
+// hazard/seed inference. ---
+
+const T0 = '2026-08-22T12:00:00.000Z';
+const T1_CONTINUOUS = '2026-08-22T12:00:45.000Z'; // 45s later, within the 30-60s poll range
+const T1_AFTER_GAP = '2026-08-22T12:20:00.000Z'; // 20 minutes later
+
+// 1. Normal continuous poll, real drop => detected as a clean reset.
+{
+  const previousState = { byKey: { 'generic:pool1': { network: 'generic', id: 'pool1', amountEUR: 100 } }, observedAt: T0 };
+  const currentByKey = { 'generic:pool1': { network: 'generic', id: 'pool1', amountEUR: 1 } };
+  const result = processPoll({ currentByKey, previousState, observedAt: T1_CONTINUOUS, backgroundGapSeconds: 0 });
+  assert.equal(result.coverage.continuousCoverage, true);
+  assert.equal(result.resetEvents.length, 1);
+  assert.equal(result.contaminatedEvents.length, 0);
+}
+
+// 2. A recorded iOS background gap plus a real drop => NOT a clean reset.
+{
+  const previousState = { byKey: { 'generic:pool1': { network: 'generic', id: 'pool1', amountEUR: 100 } }, observedAt: T0 };
+  const currentByKey = { 'generic:pool1': { network: 'generic', id: 'pool1', amountEUR: 1 } };
+  const result = processPoll({ currentByKey, previousState, observedAt: T1_AFTER_GAP, backgroundGapSeconds: 1150 });
+  assert.equal(result.coverage.continuousCoverage, false);
+  assert.equal(result.resetEvents.length, 0, 'a contaminated drop must never appear in resetEvents');
+  assert.equal(result.contaminatedEvents.length, 1);
+  assert.equal(result.contaminatedEvents[0].eventType, 'RESET_ACROSS_COVERAGE_GAP');
+  assert.equal(result.contaminatedEvents[0].eligibleForCleanReset, false);
+  assert.equal(result.contaminatedEvents[0].eligibleForJpkCleanWindow, false);
+  assert.equal(result.contaminatedEvents[0].eligibleForTikiAlicePairing, false);
+  assert.equal(result.contaminatedEvents[0].eligibleForHazardInference, false);
+}
+
+// 3. Tiki/Alice both drop identically across a gap => must NOT produce a
+// PROSPECTIVE_PAIRED_RESET_CANDIDATE, even though the amounts would
+// otherwise match the frozen gate's own pattern exactly.
+{
+  const previousState = {
+    byKey: {
+      'generic:tikitemple2_1': { network: 'generic', id: 'tikitemple2_1', amountEUR: 1208.43 },
+      'generic:progressivealice1': { network: 'generic', id: 'progressivealice1', amountEUR: 1208.43 },
+    },
+    observedAt: T0,
+  };
+  const currentByKey = {
+    'generic:tikitemple2_1': { network: 'generic', id: 'tikitemple2_1', amountEUR: 2.82 },
+    'generic:progressivealice1': { network: 'generic', id: 'progressivealice1', amountEUR: 2.82 },
+  };
+  const result = processPoll({ currentByKey, previousState, observedAt: T1_AFTER_GAP, backgroundGapSeconds: 1150 });
+  assert.equal(result.pairedCandidate, null, 'a paired candidate must never be produced across a coverage gap');
+  assert.equal(result.contaminatedEvents.length, 2);
+}
+
+// 4. A JPK tier drops across a gap => must not be usable as a clean JPK
+// reset window (i.e. it must not appear in resetEvents at all).
+{
+  const previousState = {
+    byKey: {
+      'blueprint:JACKPOTKING': { network: 'blueprint', id: 'JACKPOTKING', amountEUR: 128000 },
+      'blueprint:JACKPOTKING_REGAL': { network: 'blueprint', id: 'JACKPOTKING_REGAL', amountEUR: 15500 },
+      'blueprint:JACKPOTKING_ROYAL': { network: 'blueprint', id: 'JACKPOTKING_ROYAL', amountEUR: 3800 },
+    },
+    observedAt: T0,
+  };
+  const currentByKey = {
+    'blueprint:JACKPOTKING': { network: 'blueprint', id: 'JACKPOTKING', amountEUR: 500 },
+    'blueprint:JACKPOTKING_REGAL': { network: 'blueprint', id: 'JACKPOTKING_REGAL', amountEUR: 15550 },
+    'blueprint:JACKPOTKING_ROYAL': { network: 'blueprint', id: 'JACKPOTKING_ROYAL', amountEUR: 500 },
+  };
+  const result = processPoll({ currentByKey, previousState, observedAt: T1_AFTER_GAP, backgroundGapSeconds: 1150 });
+  assert.equal(result.resetEvents.length, 0);
+  assert.ok(result.contaminatedEvents.some((e) => e.key === 'blueprint:JACKPOTKING'));
+  assert.ok(result.contaminatedEvents.some((e) => e.key === 'blueprint:JACKPOTKING_ROYAL'));
+}
+
+// 5. After a contaminated poll, the state is always rebaselined - the very
+// next poll, if continuous, detects normally again.
+{
+  const previousState = { byKey: { 'generic:pool1': { network: 'generic', id: 'pool1', amountEUR: 100 } }, observedAt: T0 };
+  const currentByKey1 = { 'generic:pool1': { network: 'generic', id: 'pool1', amountEUR: 1 } };
+  const contaminated = processPoll({ currentByKey: currentByKey1, previousState, observedAt: T1_AFTER_GAP, backgroundGapSeconds: 1150 });
+  assert.equal(contaminated.resetEvents.length, 0);
+  assert.deepEqual(contaminated.newState, { byKey: currentByKey1, observedAt: T1_AFTER_GAP });
+
+  // Next poll, 45s later, continuous, a further real drop.
+  const nextObservedAt = '2026-08-22T12:20:45.000Z';
+  const currentByKey2 = { 'generic:pool1': { network: 'generic', id: 'pool1', amountEUR: 0.5 } };
+  const next = processPoll({ currentByKey: currentByKey2, previousState: contaminated.newState, observedAt: nextObservedAt, backgroundGapSeconds: 0 });
+  assert.equal(next.coverage.continuousCoverage, true);
+  assert.equal(next.resetEvents.length, 1, 'detection must work normally again once coverage resumes');
+}
+
+// evaluateCoverageGap: the very first sample (no previous state) is never
+// itself contaminated - there is nothing to compare it against yet.
+assert.deepEqual(evaluateCoverageGap({ observedAt: T0, previousObservedAt: null, backgroundGapSeconds: 0 }), { continuousCoverage: true, coverageGapSeconds: 0, elapsedSeconds: 0 });
+
+// --- CORS/header fix: browser-safe request init must never include
+// forbidden header names (Origin, Referer), which page JS cannot set. ---
+{
+  const nodeInit = graphqlNodeRequestInit();
+  const browserInit = graphqlBrowserRequestInit();
+  assert.ok('origin' in nodeInit.headers);
+  assert.ok('referer' in nodeInit.headers);
+  assert.ok(!('origin' in browserInit.headers), 'browser init must never attempt to set the forbidden Origin header');
+  assert.ok(!('referer' in browserInit.headers), 'browser init must never attempt to set the forbidden Referer header');
+  assert.equal(browserInit.headers.venture, 'botemania_es');
+  assert.equal(browserInit.body, nodeInit.body, 'the GraphQL query/body itself must stay identical between both paths');
+}
 
 console.log('edge-mobile-watch-core-v1.test.mjs: PASS');
