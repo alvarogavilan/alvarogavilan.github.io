@@ -1,0 +1,75 @@
+{
+  "version": "ultimate-video-poker-config-equivalence-v1",
+  "generatedAt": "2026-08-24T01:52:00+02:00",
+  "market": "ES",
+  "operator": "Botemania",
+  "status": "RESEARCH_ONLY_NO_PLAY",
+  "realMoneyAllowed": false,
+  "botemaniaCurrentProductEvidence": {
+    "game": "Ultimate Video Poker",
+    "url": "https://www.botemania.es/juegos/casino-online/ultimate-video-poker",
+    "progressiveVariantExplicitlyListed": "Jotas o Mejor Progresivo",
+    "availableVideoPokerVariants": 10,
+    "productMinimumBetEUR": 0.01,
+    "productTableLimitEUR": 125,
+    "productHandOptions": [1, 5, 10, 25],
+    "publishedRtpRangePct": [96.77, 99.54],
+    "optimalDecisionAssumptionPublished": true,
+    "exactProgressiveVariantPaytablePublishedOnOperatorPage": false,
+    "exactProgressiveVariantDenominationPublishedOnOperatorPage": false,
+    "exactProgressiveVariantQualifyingStakePublishedOnOperatorPage": false,
+    "exactProgressiveVariantRoyalProbabilityPublishedOnOperatorPage": false
+  },
+  "externalPlaytechComparator": {
+    "source": "https://wizardofodds.com/software/playtech/",
+    "game": "Jacks or Better -- Progressive",
+    "paytableCreditsPerCoin": [800, 50, 25, 7, 5, 4, 3, 2, 1],
+    "nominalNonJackpotReturnPct": 95.95,
+    "hands": 10,
+    "denomination": 0.25,
+    "reportedBreakEvenMeterCredits": 81387.41,
+    "reportedBreakEvenCurrencyAtQuarterDenomination": 20436.85,
+    "use": "EXTERNAL_MECHANISM_COMPARATOR_ONLY"
+  },
+  "equivalenceAssessment": {
+    "sameNamedProgressiveFamilyPlausible": true,
+    "exactConfigurationEquivalent": false,
+    "equivalenceStatus": "NOT_PROVEN",
+    "why": [
+      "Botemania confirms a Jacks-or-Better progressive variant inside Ultimate Video Poker but does not publish that variant's exact paytable or qualifying denomination.",
+      "The Botemania product envelope advertises selectable 1/5/10/25 hands and a 0.01 EUR product minimum, while the external comparator is specifically documented as 10 hands at 0.25 denomination; the public operator page does not prove that its progressive sub-variant inherits or matches those comparator settings.",
+      "A 7/5-shaped visual paytable or matching game name is insufficient to transfer a break-even threshold without exact royal award, denomination, hand-count/jackpot accounting and qualifying-stake fingerprint."
+    ],
+    "safeToTransfer81387CreditThresholdToSpain": false,
+    "safeToTransfer20436CurrencyThresholdToSpain": false
+  },
+  "requiredForExactSpainEV": [
+    "Exact in-game Jotas o Mejor Progresivo paytable at the jackpot-qualifying setting",
+    "Exact credit value / denomination that qualifies for the progressive jackpot",
+    "Whether the displayed progressive award is per hand or shared across the selected multi-hand wager",
+    "Exact number of simultaneously played hands at the qualifying setting",
+    "Royal Flush probability under the jackpot-optimal strategy for that exact paytable and jackpot value",
+    "Progressive reset/base award and current jackpot-to-credit conversion",
+    "Rules fingerprint proving the WAGER_BET live meter belongs to this exact Botemania progressive variant"
+  ],
+  "execution": {
+    "thresholdVerified": false,
+    "stakeVerified": false,
+    "strategyVerified": false,
+    "rulesFingerprintVerified": false,
+    "prospectiveValidationPassed": false,
+    "breakEvenRoyalCredits": null,
+    "breakEvenJackpotEUR": null,
+    "exactStakeEUR": null,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0,
+    "decision": "NO_PLAY"
+  },
+  "hardGuards": {
+    "externalThresholdIsNotExecutionSignal": true,
+    "sameNameIsNotConfigurationProof": true,
+    "productWideRtpRangeIsNotVariantRtp": true,
+    "visualPaytableShapeIsNotCompleteRulesFingerprint": true,
+    "realMoneyAllowed": false
+  }
+}
