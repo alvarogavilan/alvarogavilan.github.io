@@ -1,0 +1,42 @@
+{
+  "version": "edge-spain-current-cross-operator-rtp-v1",
+  "generatedAt": "2026-08-23T22:11:00Z",
+  "mode": "RESEARCH_ONLY",
+  "realMoneyAllowed": false,
+  "stakeEUR": 0,
+  "purpose": "Use Spain-mandated theoretical and recent actual ex-jackpot RTP disclosures as current cross-operator fingerprints without promoting cross-operator equivalence to an execution fact.",
+  "regulatoryBasis": {
+    "rule": "Spanish machine-game rules require expected mathematical return plus actual prize-return percentages for each of the preceding six months, excluding jackpot prizes, and disclosure of the participation percentage allocated to the jackpot.",
+    "source": "https://www.boe.es/biblioteca_juridica/codigos/abrir_pdf.php?fich=353_Codigo_del_Juego.pdf"
+  },
+  "bet365SpainPublicTable": {
+    "source": "https://assets.ctfassets.net/oc7v9ngssn28/1tH5LXFy6S0fG0Tm5vGNHB/ae9cbcb06462491aaee9e766b305dc99/Spanish.pdf",
+    "months": ["2026-01","2026-02","2026-03","2026-04","2026-05","2026-06"],
+    "jackpotPrizesExcluded": true,
+    "examples": [
+      {"game":"Eye Of Horus Jackpot King","theoreticalRtpPct":95.46,"actualExJackpotPct":[99.65,90.63,97.30,94.80,92.55,93.78],"sixMonthMeanPct":94.785,"botemaniaTheoreticalRtpPct":95.46,"theoreticalRtpExactCrossOperatorMatch":true},
+      {"game":"Eye of Horus Megaways Jackpot King","theoreticalRtpPct":94.50,"actualExJackpotPct":[99.66,91.70,92.07,94.68,101.57,85.49],"sixMonthMeanPct":94.195,"botemaniaTheoreticalRtpPct":94.50,"theoreticalRtpExactCrossOperatorMatch":true},
+      {"game":"Ted Jackpot King","theoreticalRtpPct":93.04,"actualExJackpotPct":[90.29,90.25,91.76,98.15,95.46,89.99],"sixMonthMeanPct":92.65,"botemaniaTheoreticalRtpPct":93.02,"theoreticalRtpExactCrossOperatorMatch":false},
+      {"game":"The Goonies Return Jackpot King","theoreticalRtpPct":93.55,"actualExJackpotPct":[89.39,84.08,93.64,89.60,96.91,91.94],"sixMonthMeanPct":90.9267,"botemaniaTheoreticalRtpPct":93.06,"theoreticalRtpExactCrossOperatorMatch":false},
+      {"game":"King Kong Cash Go Bananas JPK","theoreticalRtpPct":95.49,"actualExJackpotPct":[90.19,96.46,97.22,95.45,95.17,96.40],"sixMonthMeanPct":95.1483,"botemaniaPageDiscoveryPct":95.00,"theoreticalRtpExactCrossOperatorMatch":false}
+    ]
+  },
+  "daznBetSpain": {
+    "publicHelp": "https://ayuda.daznbet.es/hc/es/articles/9992810451869--D%C3%B3nde-puedo-encontrar-el-RTP-esperado-para-el-juego-que-estoy-jugando",
+    "publicRtpPage": "https://www.daznbet.es/es/page/rtp-de-juegos",
+    "helpStatement": "DAZN BET says expected RTP is in each game's information and links a platform RTP page with recent game results; the current public shell is JavaScript-rendered and needs a dedicated extraction pass.",
+    "status": "PUBLIC_SURFACE_IDENTIFIED_EXTRACTION_PENDING"
+  },
+  "interpretation": {
+    "strong": "Two current Blueprint Jackpot King titles have an exact theoretical RTP match between bet365 Spain and Botemania Spain, showing that operator-to-operator equality can occur for a title/configuration.",
+    "guard": "Other Blueprint Jackpot King titles differ across operators, so title identity alone is not enough to import a base RTP, contribution, reserve or hazard configuration.",
+    "use": "Treat exact theoretical-RTP matches as a configuration fingerprint clue only. Execution still requires the Botemania/DAZN BET rules and live-state identity for the exact Spanish operator being played."
+  },
+  "guards": {
+    "noCrossOperatorHazardSubstitution": true,
+    "noCrossOperatorContributionSubstitution": true,
+    "noMonthlyActualRtpAsFuturePrediction": true,
+    "monthlyActualRtpIsDescriptiveNotPredictive": true,
+    "noRealMoneyPromotion": true
+  }
+}
