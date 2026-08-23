@@ -1,0 +1,36 @@
+{
+  "version": "edge-spain-deep-research-v1",
+  "generatedAt": "2026-08-23T21:58:00Z",
+  "mode": "RESEARCH_ONLY",
+  "realMoneyAllowed": false,
+  "stakeEUR": 0,
+  "diamondBonanzaSpain": {
+    "currentBotemania": {"game":"Danza de los Diamantes","provider":"roxor-gaming","currencyRangeEUR":[0.25,1.0],"fixedPaylines":5,"progressivePotsUpTo":3,"rtpPct":95.44,"publicFeedKey":"generic:diamondbonanza25BTM","lastPersistedMeterEUR":8032.90,"source":"https://www.botemania.es/juegos/slots-online/danza-de-los-diamantes"},
+    "historicalSpain": {"publicationDate":"2010-11-21","claim":"La Danza de los Diamantes offered more than EUR 6,000 while playing from EUR 0.25.","source":"https://www.bingo.es/noticias/en-botemania-te-regalan-fantasticos-botes/","use":"HISTORICAL_SPAIN_SCALE_PRIOR_ONLY"},
+    "internationalMechanismComparator": {"baseRtpPct":95.01,"jackpotContributionPct":5.66,"fivePaylinesRequiredForJackpot":true,"source":"https://www.ballycasino.com/jackpot-slots/diamond-bonanza","use":"COUNTERFACTUAL_SENSITIVITY_ONLY"},
+    "historicalUKFamily": {"totalWins":1570,"tiers":[{"denominationGBP":0.25,"seedGBP":500,"averageHitGBP":7309,"wins":1060},{"denominationGBP":0.50,"seedGBP":1000,"averageHitGBP":14044,"wins":243},{"denominationGBP":1.00,"seedGBP":2000,"averageHitGBP":28566,"wins":267}]},
+    "counterfactualType1Screen": {
+      "formula":"SCORE=(J-S)/(A-S); RTP_current=RTP_base+c*SCORE; J_BE=S+((1-RTP_base)/c)*(A-S)",
+      "breakEvenScore":0.8816254416961141,
+      "breakEvenByHistoricalTier":[{"tier":"25p historical comparator","breakEven":6502.987632508841},{"tier":"50p historical comparator","breakEven":12499.922261484113},{"tier":"GBP1 historical comparator","breakEven":25421.261484098966}],
+      "ifLastSpainMeterWere25cEquivalent":{"meter":8032.90,"score":1.1063151710970773,"counterfactualRtp":1.0127174386840945,"interpretation":"Would be above comparator break-even, but NOT executable because Spain contribution, seed, hit probability and cross-market equivalence remain unverified."}
+    },
+    "status":"HIGHEST_PRIORITY_EQUIVALENCE_TEST",
+    "blockers":["CURRENT_SPAIN_JACKPOT_CONTRIBUTION_NOT_VERIFIED","CURRENT_SPAIN_SEED_NOT_VERIFIED","CURRENT_SPAIN_TRIGGER_PROBABILITY_NOT_VERIFIED","CURRENT_SPAIN_25C_FEED_TIER_BINDING_NOT_EXECUTION_GRADE","UK_TO_SPAIN_CONFIGURATION_EQUIVALENCE_NOT_VERIFIED"]
+  },
+  "dealOrNoDealSpainHistorical": {
+    "currentUnresolvedFeed":{"key":"generic:DealOrNoDealStateful3","lastPersistedMeterEUR":120787.94},
+    "historicalBotemania2010":{"publishedMeters":[{"stakeEUR":0.05,"approxJackpotEUR":13000},{"stakeEUR":0.10,"approxJackpotEUR":125000},{"stakeEUR":0.20,"approxJackpotEUR":490000}],"reportedWins":[{"amountEUR":108515,"timing":"September 2010"},{"amountEUR":49975,"date":"2010-09-25"}],"sources":["https://www.bingo.es/noticias/en-botemania-te-regalan-fantasticos-botes/","https://www.bingo.es/noticias/inechi-gana-108000-euros-con-el-juego-de-alla-tu-de-botemania/"]},
+    "hypothesis":"The live Gamesys-style Stateful3 feed may belong to the historical Deal or No Deal / Allá Tú lineage, but current playable title, denomination and tier are not proven.",
+    "status":"IDENTITY_RESEARCH_HIGH_VALUE"
+  },
+  "tikiTemploSpain":{"provider":"roxor-gaming","stakeRangeEUR":[0.20,20.0],"baseRtpPctRange":[80.51,88.21],"jackpotContributionPct":6.70,"anyBetQualifies":true,"probabilityProportionalToBet":true,"publicFeedKey":"generic:tikitemple2_1","source":"https://www.botemania.es/juegos/slots-online/tiki-templo","status":"STRUCTURE_STRONG_HAZARD_AND_TIER_BINDING_UNRESOLVED"},
+  "burbujasSpain":{"provider":"roxor-gaming","stakeRangeEUR":[0.10,20.0],"fixedPaylines":10,"baseRtpPct":95.38,"jackpotContributionPct":0.09,"probabilityProportionalToTotalBet":true,"publicFeedKey":"generic:bouncy_bubbles_id","source":"https://www.botemania.es/juegos/slots-online/burbujas-saltarinas","status":"IDENTITY_STRONG_THRESHOLD_UNRESOLVED"},
+  "jackpotKingSpain": {
+    "knownFacts":["Royal/Regal/Jackpot King shared across Blueprint Jackpot King titles in Botemania and Canal Bingo according to current Fishin Frenzy JPK rules","any bet qualifies on Fishin Frenzy JPK","win probability is proportional to total bet and rises with pot value","Royal and Regal must fall before their table limits","reset is funded from reserve"],
+    "configurationDiversityWarning":"Botemania Jackpot King pages disclose materially different contribution/reserve percentages by title and era. Do not infer equal hazard from equal overlay name.",
+    "priorityCandidate":{"game":"Mega Bars Fortune Wheel: Jackpot King","publishedBaseRtpPct":95.50,"publishedContributionPct":0.38,"publishedReservePct":0.11,"reason":"Highest cleanly parsed base RTP among priority Botemania JPK pages examined, conditional on same executable jackpot mechanism/hazard being verified."},
+    "secondaryCandidate":{"game":"Irish Riches Megaways: Jackpot King","publishedRtpPct":95.93,"publishedJackpotContributionPct":1.0,"publishedReservePct":1.5,"warning":"Same Spanish pool/player-level hazard is not yet proven."}
+  },
+  "guards":{"noPromotionFromCounterfactualModel":true,"noHistoricalSpainAmountAsCurrentSeed":true,"noCrossMarketCurrencySubstitution":true,"noContributionAsHazardProxy":true,"noLossChasing":true,"realMoneyAllowed":false}
+}
