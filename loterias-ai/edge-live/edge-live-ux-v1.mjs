@@ -36,6 +36,10 @@ function decorateRadar() {
   }
 }
 
+function setText(node, value) {
+  if (node && node.textContent !== value) node.textContent = value;
+}
+
 function syncInstantSignal() {
   const box = $('instantSignal');
   if (!box) return;
@@ -48,25 +52,26 @@ function syncInstantSignal() {
   let mode = 'red';
   if (decision === 'JUGAR AHORA') mode = 'green';
   else if (decision === 'PREPÁRATE') mode = 'yellow';
-  box.className = `instantSignal ${mode}`;
+  const wantedClass = `instantSignal ${mode}`;
+  if (box.className !== wantedClass) box.className = wantedClass;
   const label = $('instantDecision');
   const detail = $('instantDetail');
   const go = $('instantGo');
   if (mode === 'green') {
-    label.textContent = '🟢 JUGAR AHORA';
-    detail.textContent = `${game} · ${stake} · máx. ${spins} jugadas · caduca ${expiry}`;
-    go.textContent = 'ABRIR JUEGO →';
-    go.href = gameUrl;
+    setText(label, '🟢 JUGAR AHORA');
+    setText(detail, `${game} · ${stake} · máx. ${spins} jugadas · caduca ${expiry}`);
+    setText(go, 'ABRIR JUEGO →');
+    if (go.href !== gameUrl) go.href = gameUrl;
     go.hidden = false;
   } else if (mode === 'yellow') {
-    label.textContent = '🟡 PREPÁRATE · NO APUESTES';
-    detail.textContent = `${game} · abre el juego y espera VERDE`;
-    go.textContent = 'ABRIR SIN APOSTAR →';
-    go.href = gameUrl;
+    setText(label, '🟡 PREPÁRATE · NO APUESTES');
+    setText(detail, `${game} · abre el juego y espera VERDE`);
+    setText(go, 'ABRIR SIN APOSTAR →');
+    if (go.href !== gameUrl) go.href = gameUrl;
     go.hidden = false;
   } else {
-    label.textContent = '🔴 SIN SEÑAL · 0 €';
-    detail.textContent = 'No hay ninguna apuesta autorizada ahora. EDGE continúa vigilando.';
+    setText(label, '🔴 SIN SEÑAL · 0 €');
+    setText(detail, 'No hay ninguna apuesta autorizada ahora. EDGE continúa vigilando.');
     go.hidden = true;
   }
 }
@@ -82,7 +87,10 @@ function schedule() {
   });
 }
 
+// Observe only DOM content changes made by the scientific renderer. We do not
+// observe attributes, so this module cannot recursively trigger itself when it
+// changes signal colours, links or hidden state.
 const observer = new MutationObserver(schedule);
-observer.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['href', 'class'] });
+observer.observe(document.body, { childList: true, subtree: true, characterData: true });
 schedule();
 setInterval(syncInstantSignal, 1000);
