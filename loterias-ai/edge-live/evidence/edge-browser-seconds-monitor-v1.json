@@ -1,0 +1,47 @@
+{
+  "version": "edge-browser-seconds-monitor-v1",
+  "generatedAt": "2026-08-24T00:39:00+02:00",
+  "purpose": "Make EDGE LIVE use fresh public jackpot observations on mapped cards instead of presenting an old persisted timestamp as if it were current.",
+  "operator": "botemania-es",
+  "directFeed": {
+    "source": "https://www.botemania.es/es/graphql",
+    "operation": "loadJackpots",
+    "families": ["jackpots", "redTigerJackpots", "blueprintJackpots"],
+    "foregroundPollSeconds": 2,
+    "hiddenRequestedPollSeconds": 5,
+    "freshnessGateSeconds": 10,
+    "ambiguousDuplicateKeysRejected": true
+  },
+  "localArchive": {
+    "storage": "IndexedDB",
+    "database": "edge-live-meter-history-v1",
+    "minuteSnapshots": true,
+    "exactDropCandidates": true,
+    "persistentStorageRequestedWhenBrowserSupportsIt": true,
+    "warning": "Browser-local storage is best effort and cannot be guaranteed forever if iOS/Safari evicts site data or the user clears it. Permanent 24/7 archival requires a durable backend independent of the foreground browser."
+  },
+  "ui": {
+    "mappedCardsUseDirectAmountWhenAvailable": true,
+    "mappedCardsUseDirectObservedAtWhenAvailable": true,
+    "mappedCardsShowDirectSourceBadge": true,
+    "topStatusSeparatesDirectFromPersistedEvidence": true,
+    "jackpotKingMbwbProximityRemainsPresentationOnly": true
+  },
+  "execution": {
+    "clientExecutionContract": "fail-closed",
+    "currentRealMoneyAllowed": false,
+    "stakeEUR": 0,
+    "requiresVerifiedIdentity": true,
+    "requiresVerifiedThreshold": true,
+    "requiresVerifiedStake": true,
+    "requiresVerifiedStrategy": true,
+    "requiresVerifiedRulesFingerprint": true,
+    "requiresProspectiveValidation": true,
+    "requiresFreshUnambiguousDirectFeed": true
+  },
+  "platformConstraint": {
+    "iphoneBackgroundContinuousPollingGuaranteed": false,
+    "reason": "iOS may throttle or suspend browser/PWA JavaScript when hidden or closed; a web page cannot promise infinite second-level execution after suspension.",
+    "foregroundSecondsMonitoring": true
+  }
+}
