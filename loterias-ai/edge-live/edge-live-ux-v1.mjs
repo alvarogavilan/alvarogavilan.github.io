@@ -39,6 +39,7 @@ const $ = (id) => document.getElementById(id);
 const text = (id) => ($(id)?.textContent || '').trim();
 const finite = (v) => v !== null && v !== undefined && Number.isFinite(Number(v));
 const positive = (v) => finite(v) && Number(v) > 0;
+const money = (v) => Number(v).toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
 const contractState = {
   contract: null,
   validation: { ok: false, reason: 'CONTRACT_NOT_LOADED' },
@@ -85,6 +86,7 @@ function validateContract(c) {
   for (const k of REQUIRED_VERIFICATION_FLAGS) {
     if (c?.verification?.[k] !== true) return { ok: false, reason: `VERIFY_${k}` };
   }
+  if (typeof c?.game?.id !== 'string' || !c.game.id.trim()) return { ok: false, reason: 'GAME_ID_MISSING' };
   if (typeof c?.game?.name !== 'string' || !c.game.name.trim()) return { ok: false, reason: 'GAME_NAME_MISSING' };
   if (typeof c?.game?.url !== 'string' || !/^https:\/\/www\.botemania\.es\//.test(c.game.url)) return { ok: false, reason: 'GAME_URL_INVALID' };
   const conditions = Array.isArray(c.conditions) ? c.conditions : [];
@@ -94,9 +96,12 @@ function validateContract(c) {
     if (!['GTE', 'LTE'].includes(x?.comparator)) return { ok: false, reason: 'COMPARATOR_INVALID' };
     if (!positive(x?.thresholdEUR)) return { ok: false, reason: 'THRESHOLD_INVALID' };
   }
-  if (!positive(c?.order?.stakePerSpinEUR)) return { ok: false, reason: 'STAKE_INVALID' };
-  if (!Number.isInteger(Number(c?.order?.maxSpins)) || Number(c.order.maxSpins) <= 0) return { ok: false, reason: 'MAX_SPINS_INVALID' };
-  if (!positive(c?.order?.maxTotalStakeEUR) || Number(c.order.maxTotalStakeEUR) < Number(c.order.stakePerSpinEUR)) return { ok: false, reason: 'BUDGET_INVALID' };
+  const stake = Number(c?.order?.stakePerSpinEUR);
+  const maxSpins = Number(c?.order?.maxSpins);
+  const maxTotal = Number(c?.order?.maxTotalStakeEUR);
+  if (!positive(stake)) return { ok: false, reason: 'STAKE_INVALID' };
+  if (!Number.isInteger(maxSpins) || maxSpins <= 0) return { ok: false, reason: 'MAX_SPINS_INVALID' };
+  if (!positive(maxTotal) || maxTotal + 1e-9 < stake * maxSpins) return { ok: false, reason: 'BUDGET_INCONSISTENT' };
   const from = c?.order?.validFrom ? Date.parse(c.order.validFrom) : null;
   const until = Date.parse(c?.order?.validUntil || '');
   if (!Number.isFinite(until) || Date.now() >= until) return { ok: false, reason: 'CONTRACT_EXPIRED' };
@@ -210,13 +215,15 @@ function syncInstantSignal() {
   let expiry = text('expiry');
   let gameUrl = $('gameCard')?.href || '#';
   let source = 'PLAN';
+  let budget = text('maxTotal');
 
   if (autonomous.green) {
     mode = 'green';
     source = 'CONTRATO DIRECTO';
     game = c.game.name;
-    stake = Number(c.order.stakePerSpinEUR).toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
+    stake = money(c.order.stakePerSpinEUR);
     spins = String(c.order.maxSpins);
+    budget = money(c.order.maxTotalStakeEUR);
     expiry = new Intl.DateTimeFormat('es-ES', { timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(new Date(c.order.validUntil));
     gameUrl = c.game.url;
   } else if (planDecision === 'JUGAR AHORA') {
@@ -232,7 +239,7 @@ function syncInstantSignal() {
   const go = $('instantGo');
   if (mode === 'green') {
     setText(label, '🟢 JUGAR AHORA');
-    setText(detail, `${source} · ${game} · ${stake} · máx. ${spins} jugadas · caduca ${expiry}`);
+    setText(detail, `${source} · ${game} · ${stake} · máx. ${spins} jugadas · tope ${budget} · caduca ${expiry}`);
     setText(go, 'ABRIR JUEGO →');
     if (go.href !== gameUrl) go.href = gameUrl;
     go.hidden = false;
