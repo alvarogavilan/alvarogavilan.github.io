@@ -5,7 +5,6 @@ on:
   push:
     branches: [main]
     paths:
-      - 'loterias-ai/data/archive/**'
       - 'loterias-ai/scripts/build-archive-coverage-priorities.mjs'
       - '.github/workflows/loterias-ai-archive-coverage-priorities.yml'
 
@@ -38,15 +37,54 @@ jobs:
             git reset --hard origin/main
 
             node loterias-ai/scripts/build-national-archive-index.mjs
+            node loterias-ai/scripts/build-completeness-index.mjs
+            set +e
             node loterias-ai/scripts/audit-national-archive.mjs
+            audit_rc=$?
+            set -e
             node loterias-ai/scripts/build-archive-coverage-priorities.mjs
 
-            node --input-type=module -e "import fs from 'node:fs';const j=JSON.parse(fs.readFileSync('$EVIDENCE','utf8'));if(j?.schemaVersion!==1||!Array.isArray(j?.priorities)||j.priorities.length<1||j?.totals?.records<1||j?.totals?.validationGap<0||j.priorities.some(x=>x.validationGap<0||x.economicsGap<0||x.officialEconomicsGap<0))throw Error('coverage priority evidence failed')"
+            node --input-type=module <<'NODE'
+            import fs from 'node:fs';
+            const manifest=JSON.parse(fs.readFileSync('loterias-ai/data/archive/manifest.json','utf8'));
+            const audit=JSON.parse(fs.readFileSync('loterias-ai/data/archive/_meta/archive-audit.json','utf8'));
+            const priorities=JSON.parse(fs.readFileSync('loterias-ai/data/archive/_meta/archive-coverage-priorities.json','utf8'));
+            const records=Number(manifest.totals?.records)||0;
+            const validated=Number(manifest.totals?.validatedRecords)||0;
+            const economics=Number(manifest.totals?.economicsRecords)||0;
+            if(priorities?.schemaVersion!==1||!Array.isArray(priorities?.priorities)||priorities.priorities.length<1) throw Error('coverage priority evidence failed');
+            if(Number(priorities.totals?.records)!==records) throw Error(`priority records mismatch ${priorities.totals?.records} != ${records}`);
+            if(Number(priorities.totals?.validatedRecords)!==validated) throw Error(`priority validated mismatch ${priorities.totals?.validatedRecords} != ${validated}`);
+            if(Number(priorities.totals?.economicsRecords)!==economics) throw Error(`priority economics mismatch ${priorities.totals?.economicsRecords} != ${economics}`);
+            if(!audit?.qualityGate||typeof audit.qualityGate.pass!=='boolean') throw Error('archive audit missing explicit quality gate');
+            const manifestGames=Object.entries(manifest.games||{});
+            for(const [gameId, game] of manifestGames){
+              const audited=audit.games?.[gameId];
+              if(!audited) throw Error(`archive audit missing ${gameId}`);
+              if(Number(audited.records)!==Number(game.records)) throw Error(`archive audit records mismatch for ${gameId}`);
+            }
+            NODE
 
-            git add "$EVIDENCE"
-            git diff --cached --quiet && exit 0
-            git commit -m 'data(loterias-ai): refresh archive coverage priorities'
-            git push origin HEAD:main && exit 0
+            git add \
+              loterias-ai/data/archive/manifest.json \
+              loterias-ai/data/archive/completeness-index.json \
+              loterias-ai/data/archive/_meta/archive-audit.json \
+              "$EVIDENCE"
+            if git diff --cached --quiet; then
+              if [ "$audit_rc" -ne 0 ]; then
+                echo 'Archive QA remains fail-closed; current diagnostics already persisted.' >&2
+                exit "$audit_rc"
+              fi
+              exit 0
+            fi
+            git commit -m 'qa(loterias-ai): refresh archive coverage priorities'
+            if git push origin HEAD:main; then
+              if [ "$audit_rc" -ne 0 ]; then
+                echo 'Persisted archive diagnostics; failing because quality gate is closed.' >&2
+                exit "$audit_rc"
+              fi
+              exit 0
+            fi
             sleep $((attempt*3))
           done
 
