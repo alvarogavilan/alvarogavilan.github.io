@@ -44,11 +44,20 @@
   new MutationObserver(()=>{
     if(window.__LOTERIAS_AI_TODAY_EVIDENCE_FRESH__!==true)blockActions();
   }).observe(document.documentElement,{childList:true,subtree:true});
+  async function fetchJson(url){
+    const r=await fetch(url,{cache:'no-store'});
+    if(!r.ok)throw new Error(`${url} unavailable`);
+    return r.json();
+  }
   async function check(){
     try{
-      const r=await fetch('../data/ui/today-manifest.json?freshness='+Date.now(),{cache:'no-store'});
-      if(!r.ok)throw new Error('manifest unavailable');
-      const d=await r.json(),local=madridDate(),ts=Date.parse(d.generatedAt||''),age=Date.now()-ts;
+      const runner=await fetchJson('../data/ops/actions-runner-health.json?freshness='+Date.now());
+      if(runner?.state!=='HEALTHY'||runner?.runnerReached!==true){
+        block('La automatización de GitHub Actions no está operativa; no se puede garantizar que los datos de hoy estén actualizados.');
+        return;
+      }
+      const d=await fetchJson('../data/ui/today-manifest.json?freshness='+Date.now());
+      const local=madridDate(),ts=Date.parse(d.generatedAt||''),age=Date.now()-ts;
       if(d.today!==local){block(`El manifiesto corresponde a ${d.today||'una fecha no verificable'}, no a ${local}.`);return;}
       if(d.strictToday!==true){block('El manifiesto no confirma strictToday=true.');return;}
       if(d.staleFallbackAllowed!==false){block('El manifiesto no bloquea explícitamente el uso de fallback desfasado.');return;}
@@ -60,7 +69,7 @@
       window.__LOTERIAS_AI_TODAY_EVIDENCE_FRESH__=true;
       unblockActions();
     }catch{
-      block('No se puede verificar la frescura del manifiesto de hoy.');
+      block('No se puede verificar la salud del runner o la frescura del manifiesto de hoy.');
     }
   }
   check();
