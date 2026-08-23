@@ -1,0 +1,123 @@
+{
+  "version": "jackpot-king-shared-pool-economics-v1",
+  "generatedAt": "2026-08-24T01:39:00+02:00",
+  "market": "ES",
+  "operator": "Botemania",
+  "manufacturer": "Blueprint Gaming",
+  "status": "RESEARCH_ONLY_NO_PLAY",
+  "networkRules": {
+    "sharedAcrossBlueprintJackpotKingTitles": true,
+    "sharedAcrossBotemaniaAndCanalBingo": true,
+    "anyStakeEligible": true,
+    "winningProbabilityProportionalToTotalBet": true,
+    "winningProbabilityIncreasesWithJackpotValue": true,
+    "royalAndRegalMustBeWonBy": true,
+    "jackpotResetsToReserveAfterAward": true,
+    "potFundedByPlayerStakeContributions": true,
+    "exactHazardFunctionPublished": false
+  },
+  "verifiedOperatorPages": [
+    {
+      "game": "Mega Bars Fortune Wheel: Jackpot King",
+      "url": "https://www.botemania.es/juegos/slots-online/mega-bars-fortune-wheel-jackpot-king",
+      "baseRtp": 0.955,
+      "jackpotContribution": 0.0038,
+      "reserveContribution": 0.0011,
+      "publishedTotalComponents": 0.9599,
+      "sourceConsistency": "CONSISTENT",
+      "notes": "Operator page states shared Jackpot King network, any stake eligible, probability proportional to total bet, probability rises with pot value, and Royal/Regal fall before their specified paytable limits."
+    },
+    {
+      "game": "Fishin' Frenzy: Jackpot King",
+      "url": "https://www.botemania.es/juegos/slots-online/fishin-frenzy-jackpot-king",
+      "baseRtp": 0.9332,
+      "jackpotContribution": 0.0232,
+      "reserveContribution": 0.0068,
+      "publishedTotalComponents": 0.9632,
+      "sourceConsistency": "CONSISTENT",
+      "notes": "Operator page explicitly says the three pots are shared with other Blueprint Jackpot King games in Botemania and Canal Bingo."
+    },
+    {
+      "game": "7's Deluxe: Jackpot King",
+      "url": "https://www.botemania.es/juegos/slots-online/7s-deluxe-jackpot-king",
+      "baseRtp": 0.9451,
+      "jackpotContribution": 0.0038,
+      "reserveContribution": 0.0011,
+      "publishedTotalComponents": 0.95,
+      "sourceConsistency": "CONSISTENT"
+    },
+    {
+      "game": "Eye of Horus: Jackpot King",
+      "url": "https://www.botemania.es/juegos/slots-online/eye-of-horus-jackpot-king",
+      "baseRtp": 0.9546,
+      "jackpotContributionFooter": 0.0038,
+      "reserveContributionFooter": 0.0011,
+      "bodyContributionClaim": 0.0232,
+      "bodyReserveClaim": 0.0068,
+      "sourceConsistency": "INTERNAL_OPERATOR_PAGE_CONFLICT",
+      "notes": "The page body and RTP footer disagree on contribution percentages. Do not use contribution from this page as a hard parameter until the in-game rules/paytable fingerprint is captured."
+    },
+    {
+      "game": "Gold Frenzy: Jackpot King",
+      "url": "https://www.botemania.es/juegos/slots-online/gold-frenzy-jackpot-king",
+      "baseRtp": 0.9332,
+      "publishedAdditionalRtp": 0.005,
+      "sourceConsistency": "LEGACY_OR_COARSE_DISCLOSURE",
+      "notes": "Current page is less granular than the modern 0.38% + 0.11% disclosures and contains older reserve wording; fingerprint before use."
+    }
+  ],
+  "manufacturerRuleCorroboration": [
+    {
+      "profile": "jackpotkingdeluxe3",
+      "gameEngineID": "fishingfrenzyjk",
+      "url": "https://fileservice.blueprintgaming.com/?affiliate=&customer=Betfair_Sky&fileType=help&gameEngineID=fishingfrenzyjk&language=EN&profile=jackpotkingdeluxe3",
+      "assertions": [
+        "Jackpots can only be won during Wheel King",
+        "Jackpot resets to reserve after award",
+        "Chance of jackpot increases with jackpot value",
+        "Royal and Regal are guaranteed by Must-Be-Won-By values"
+      ]
+    },
+    {
+      "profile": "jackpotkingdeluxe3",
+      "gameEngineID": "eyeofhorusjkhigh",
+      "url": "https://fileservice.blueprintgaming.com/?affiliate=&customer=Betfair_Sky&fileType=help&gameEngineID=eyeofhorusjkhigh&language=EN&profile=jackpotkingdeluxe3",
+      "assertions": [
+        "Same Jackpot King Deluxe profile language recovered on a second title"
+      ]
+    },
+    {
+      "profile": "jackpotkingdeluxe3",
+      "gameEngineID": "tedjk",
+      "url": "https://fileservice.blueprintgaming.com/?affiliate=&customer=Betfair_Sky&fileType=help&gameEngineID=tedjk&language=EN&profile=jackpotkingdeluxe3",
+      "assertions": [
+        "Jackpots funded by stake contributions except initial seeds funded by operator"
+      ]
+    }
+  ],
+  "currentBestBaseRtpScreen": {
+    "game": "Mega Bars Fortune Wheel: Jackpot King",
+    "baseRtp": 0.955,
+    "reason": "Highest directly verified Botemania base RTP among the operator pages in this evidence pack.",
+    "notAPlaySignal": true
+  },
+  "scientificImplications": [
+    "Shared pool membership does not prove identical jackpot hazard per EUR across titles.",
+    "Contribution percentage is funding flow and must not be substituted for player-level jackpot probability.",
+    "If equal jackpot hazard per EUR were later proven for two titles on the same pool, the higher base-RTP title would strictly dominate the lower base-RTP title before operational frictions.",
+    "Operator-page inconsistencies must fail closed until an exact in-game rules/paytable fingerprint is captured.",
+    "The published statement that probability increases with pot value invalidates a naive constant or uniform hazard assumption unless separately demonstrated."
+  ],
+  "nextProofTargets": [
+    "Capture exact Spain in-game paytable/rules fingerprint for Mega Bars Fortune Wheel JPK and Eye of Horus JPK.",
+    "Prove or reject cross-title equality of jackpot hazard per EUR within the same Botemania Jackpot King pool.",
+    "Accumulate Royal/Regal reset endpoints continuously from the permanent backend and estimate empirical terminal distributions without mixing rule eras.",
+    "Keep the execution contract disabled until identity, threshold, stake, strategy, rules fingerprint and prospective validation all pass."
+  ],
+  "hardGuards": {
+    "realMoneyAllowed": false,
+    "contributionIsNotHazard": true,
+    "sharedPoolIsNotEqualHazardProof": true,
+    "operatorPageConflictFailsClosed": true
+  }
+}
