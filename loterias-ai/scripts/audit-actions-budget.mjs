@@ -88,9 +88,12 @@ for (const name of files) {
 
 const violations = workflows.filter((item) => item.overBudget);
 const exceptionWorkflows = workflows.filter((item) => item.temporaryException);
+const aggregateLimit = Number(policy.maxTotalScheduledRunsPerActiveDay);
+const aggregateBudgetConfigured = Number.isFinite(aggregateLimit) && aggregateLimit >= 0;
+const aggregateBudgetExceeded = aggregateBudgetConfigured && totalScheduledRunsPerActiveDay > aggregateLimit;
 const generatedAt = new Date().toISOString();
 const audit = {
-  version: 'actions-budget-audit-v1',
+  version: 'actions-budget-audit-v2',
   generatedAt,
   policyVersion: policy.version,
   mode: enforce ? 'ENFORCE' : 'REPORT',
@@ -98,6 +101,9 @@ const audit = {
     workflowFilesScanned: files.length,
     scheduledWorkflows: workflows.length,
     totalScheduledRunsPerActiveDay,
+    maxTotalScheduledRunsPerActiveDay: aggregateBudgetConfigured ? aggregateLimit : null,
+    aggregateBudgetExceeded,
+    aggregateBudgetHeadroom: aggregateBudgetConfigured ? aggregateLimit - totalScheduledRunsPerActiveDay : null,
     budgetViolations: violations.length,
     temporaryExceptionsInUse: exceptionWorkflows.length,
     unknownSchedules
@@ -105,6 +111,8 @@ const audit = {
   policy: {
     maxScheduledRunsPerActiveDay: policy.maxScheduledRunsPerActiveDay,
     targetScheduledRunsPerActiveDay: policy.targetScheduledRunsPerActiveDay,
+    maxTotalScheduledRunsPerActiveDay: aggregateBudgetConfigured ? aggregateLimit : null,
+    enforceAggregateScheduledBudget: policy.policy?.enforceAggregateScheduledBudget === true,
     highFrequencyResearchPollingAllowedByDefault: policy.policy?.highFrequencyResearchPollingAllowedByDefault === true
   },
   violations,
@@ -115,7 +123,9 @@ const audit = {
 fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 fs.writeFileSync(outputPath, `${JSON.stringify(audit, null, 2)}\n`);
 
-console.log(`ACTIONS_BUDGET scheduled=${workflows.length} runsPerActiveDay=${totalScheduledRunsPerActiveDay} violations=${violations.length} exceptions=${exceptionWorkflows.length}`);
+console.log(`ACTIONS_BUDGET scheduled=${workflows.length} runsPerActiveDay=${totalScheduledRunsPerActiveDay} aggregateLimit=${aggregateBudgetConfigured ? aggregateLimit : 'UNSET'} aggregateExceeded=${aggregateBudgetExceeded} violations=${violations.length} exceptions=${exceptionWorkflows.length}`);
 for (const item of violations) console.log(`OVER_BUDGET ${item.workflow} runs=${item.scheduledRunsPerActiveDay} limit=${item.limit}`);
+if (aggregateBudgetExceeded) console.log(`AGGREGATE_OVER_BUDGET runs=${totalScheduledRunsPerActiveDay} limit=${aggregateLimit}`);
 
-if (enforce && (violations.length > 0 || unknownSchedules > 0)) process.exit(1);
+const aggregateEnforced = policy.policy?.enforceAggregateScheduledBudget === true;
+if (enforce && (violations.length > 0 || unknownSchedules > 0 || (aggregateEnforced && aggregateBudgetExceeded))) process.exit(1);
