@@ -32,8 +32,11 @@ function render(){
   if(!s){p.innerHTML='<div style="font-size:9px;font-weight:1000">LAB 24/7 · INICIALIZANDO</div><div style="margin-top:5px;font-size:8px;color:#91a99e">Esperando telemetría científica del backend permanente.</div>';return;}
   const resets=(lab.science?.recentEvents||[]).filter(x=>x?.type==='RESET_OR_AWARD_CANDIDATE');
   const candidate=e?.currentBestBaseRtpScreen;
+  const trigger=e?.crossTitleTriggerFingerprint;
   const mirrors=Array.isArray(t?.stableMirrorCandidates)?t.stableMirrorCandidates:[];
   const latest=(lab.science?.recentEvents||[])[0]||null;
+  const triggerExamples=Array.isArray(trigger?.examples)?trigger.examples.map(x=>Number(x?.requiredOverlaySymbols)).filter(Number.isFinite):[];
+  const triggerRange=triggerExamples.length?`${Math.min(...triggerExamples)}–${Math.max(...triggerExamples)} overlays según título`:'pendiente';
   p.innerHTML=`
     <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><div><div style="font-size:8px;font-weight:1000;letter-spacing:.08em;color:#66eba4">LABORATORIO 24/7</div><div style="font-size:15px;font-weight:1000;margin-top:2px">Datos acumulándose aunque cierres el iPhone</div></div><span style="padding:5px 8px;border-radius:999px;background:#ff687212;border:1px solid #ff687244;color:#ff8c94;font-size:7px;font-weight:1000">INVESTIGACIÓN · 0 €</span></div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:10px">
@@ -42,7 +45,7 @@ function render(){
       <div style="padding:8px;background:#ffffff08;border-radius:10px;text-align:center"><small style="font-size:6px;color:#8fa79b">GAPS</small><b style="display:block;font-size:13px;margin-top:2px">${Number(s.gapCount||0)}</b></div>
       <div style="padding:8px;background:#ffffff08;border-radius:10px;text-align:center"><small style="font-size:6px;color:#8fa79b">RESET CAND.</small><b style="display:block;font-size:13px;margin-top:2px">${resets.length}</b></div>
     </div>
-    <div style="margin-top:9px;padding:9px;border-radius:12px;background:#29df860b;border:1px solid #29df8628;font-size:8px;line-height:1.55"><b style="color:#66eba4">JACKPOT KING · MEJOR BASE VERIFICADA EN ESTE PACK</b><br>${candidate?`${esc(candidate.game)} · base ${pct(candidate.baseRtp)}`:'Pendiente'}<br><span style="color:#9bb1a6">Pool compartido: sí · hazard igual por € entre títulos: <b style="color:#ffc857">NO DEMOSTRADO</b>. Contribución ≠ probabilidad.</span></div>
+    <div style="margin-top:9px;padding:9px;border-radius:12px;background:#29df860b;border:1px solid #29df8628;font-size:8px;line-height:1.55"><b style="color:#66eba4">JACKPOT KING · MEJOR BASE VERIFICADA EN ESTE PACK</b><br>${candidate?`${esc(candidate.game)} · base ${pct(candidate.baseRtp)}`:'Pendiente'}<br><span style="color:#9bb1a6">Pool compartido: sí · hazard igual por € entre títulos: <b style="color:#ffc857">NO DEMOSTRADO</b>. Contribución ≠ probabilidad.</span><br><span style="color:#9bb1a6">Fingerprint de entrada público: <b style="color:#ffc857">DIVERGENTE</b> · ${esc(triggerRange)}. Distinto trigger visible ≠ hazard cuantificado, pero prohíbe asumir igualdad.</span></div>
     <div style="margin-top:7px;font-size:7px;color:#8fa79b">${Number(s.metersTracked||0)} contadores caracterizados · ${mirrors.length} pares espejo sostenidos · última muestra ${time(s.lastObservedAt)}</div>
     ${eventLine(latest)}
   `;
