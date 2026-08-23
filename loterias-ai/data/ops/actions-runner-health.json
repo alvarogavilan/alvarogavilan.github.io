@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "state": "BLOCKED_BEFORE_FIRST_STEP",
   "runnerReached": false,
-  "lastObservedAt": "2026-08-23T03:00:15Z",
+  "lastObservedAt": "2026-08-23T09:02:38Z",
   "evidence": {
     "workflow": "Loterias AI CI",
     "runId": 32535625575,
-    "runAttempt": 11,
-    "jobId": 97132176796,
+    "runAttempt": 12,
+    "jobId": 97159368216,
     "jobConclusion": "failure",
     "stepsPresent": false,
     "logsPresent": false,
@@ -15,9 +15,10 @@
   },
   "automaticRecoveryDetection": true,
   "recoveryContract": {
-    "healthyWhen": "A GitHub-hosted runner executes the repository-independent canary step and all critical recovery workflows are dispatched successfully.",
-    "scientificProgressMayResumeOnlyAfterRunnerReached": true,
+    "healthyWhen": "A GitHub-hosted runner executes the repository-independent canary step and all critical recovery workflows complete successfully.",
+    "scientificProgressMayResumeOnlyAfterCriticalLanesSucceed": true,
     "appMayUnblockOnlyWhenStateHealthy": true,
-    "noFabricatedProgressWhileBlocked": true
+    "noFabricatedProgressWhileBlocked": true,
+    "recoveryTrigger": "Successful completion of Loterias AI Lightning Clean Segment V2, plus manual or canary-code-change trigger; no standalone polling cron."
   }
 }
