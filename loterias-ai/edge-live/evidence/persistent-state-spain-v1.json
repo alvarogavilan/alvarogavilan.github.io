@@ -1,0 +1,112 @@
+{
+  "version": "persistent-state-spain-v1",
+  "generatedAt": "2026-08-24T01:57:00+02:00",
+  "market": "ES",
+  "status": "RESEARCH_ONLY_NO_PLAY",
+  "realMoneyAllowed": false,
+  "objective": "Find observable, persistent and economically quantifiable game state that can be inherited by a later player. A visible accumulator alone is not an advantage-play signal.",
+  "candidates": [
+    {
+      "game": "El Tesoro Pirata Plus",
+      "currentSpainOperator": "Botemania",
+      "currentOperatorUrl": "https://www.botemania.es/juegos/slots-online/el-tesoro-pirata-plus",
+      "provider": "MGA Games",
+      "currentOperatorEvidence": {
+        "bonusCounterVisibleInRules": true,
+        "bonusSourcesDescribed": true,
+        "bonusConsumptionRequiredForUpperGame": true,
+        "accumulativeExtraSpinFeature": true,
+        "accumulativeExtraSpinTargetPieces": 8,
+        "stakeRangeEUR": [0.20, 15.00]
+      },
+      "technicalRulesComparator": {
+        "source": "https://www.paston.es/img/logos/pdf/el-tesoro-pirata-plus.pdf",
+        "exactTitleMatch": true,
+        "sameOperatorAsBotemania": false,
+        "bonusCounterEconomicStructureDocumented": true,
+        "bonusAccumulationLimit": 4000,
+        "bonusApproxConversionTextEUR": 0.80,
+        "bonusApproxConversionIsDirectCashEV": false,
+        "upperGameRequiresBalanceAndBonuses": true,
+        "interruptionRestorationDocumented": true,
+        "restoresSameRiskPointAfterDisconnect": true,
+        "bonusCounterPersistenceAcrossReconnectExplicit": false,
+        "crossPlayerInheritanceDocumented": false,
+        "configurationEquivalenceToBotemaniaProven": false
+      },
+      "scientificGates": {
+        "stateExists": true,
+        "stateValueDisplayed": true,
+        "observableBeforeFirstPaidSpin": false,
+        "persistsAfterVoluntaryExit": false,
+        "persistsAcrossReconnectSamePlayer": false,
+        "inheritedByNextPlayer": false,
+        "exactIncrementDistributionKnown": false,
+        "exactStateConditionalEVKnown": false,
+        "exactOptimalEntryThresholdKnown": false,
+        "exactStakeKnown": false,
+        "prospectiveValidationPassed": false
+      },
+      "classification": "STATEFUL_STRUCTURE_CONFIRMED_CROSS_PLAYER_UNPROVEN",
+      "priority": "HIGH",
+      "nextProof": [
+        "Capture the Botemania in-game rules/version fingerprint and initial screen before wagering.",
+        "Observe whether the bonus and eight-piece accumulator values are visible before the first paid spin.",
+        "Perform a zero-money or demo-safe exit/re-entry continuity test where available; do not wager to create a favorable state.",
+        "Determine whether state is account-scoped, session-scoped, instance-scoped or globally inherited. Cross-player inheritance must be explicitly demonstrated before any advantage-play model.",
+        "Only after inheritance is proven, derive state-conditional EV from the exact upper-game paytable and transition probabilities."
+      ]
+    },
+    {
+      "game": "La Mina de Oro",
+      "currentSpainOperator": "Botemania",
+      "currentOperatorUrl": "https://www.botemania.es/juegos/slots-online/la-mina-de-oro",
+      "provider": "MGA Games",
+      "currentOperatorEvidence": {
+        "bonusCounterVisibleInRules": true,
+        "bonusTargetForUpperGame": 200,
+        "upperGameRequiresAccumulatedBonuses": true,
+        "upperGameConsumesBonusesWithStake": true,
+        "stakeRangeEUR": [0.20, 1.00],
+        "initialGamePublishedRtpPct": 90.00
+      },
+      "scientificGates": {
+        "stateExists": true,
+        "stateValueDisplayed": true,
+        "observableBeforeFirstPaidSpin": false,
+        "persistsAfterVoluntaryExit": false,
+        "persistsAcrossReconnectSamePlayer": false,
+        "inheritedByNextPlayer": false,
+        "exactStateConditionalEVKnown": false,
+        "exactOptimalEntryThresholdKnown": false,
+        "prospectiveValidationPassed": false
+      },
+      "classification": "VISIBLE_ACCUMULATOR_PERSISTENCE_UNPROVEN",
+      "priority": "MEDIUM_HIGH"
+    }
+  ],
+  "interpretation": [
+    "These MGA titles are materially more interesting than ordinary transient bonus rounds because public rules expose accumulators that affect access to a separate upper game.",
+    "The Paston technical rules for the exact El Tesoro Pirata Plus title also document restoration behavior after interruption, proving the software contains resumable state, but they do not prove that the bonus meter itself survives voluntary exit or is inherited by another player.",
+    "The statement that one bonus is approximately EUR 0.80 is a conversion description inside the risk/bonus mechanism, not a proven marginal expected cash value of an inherited bonus.",
+    "No current evidence satisfies the required next-player inheritance gate, so no stateful advantage-play threshold exists yet."
+  ],
+  "execution": {
+    "decision": "NO_PLAY",
+    "stakeEUR": 0,
+    "thresholdVerified": false,
+    "strategyVerified": false,
+    "rulesFingerprintVerified": false,
+    "prospectiveValidationPassed": false,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "visibleMeterIsNotPersistenceProof": true,
+    "reconnectRestorationIsNotCrossPlayerInheritanceProof": true,
+    "sameTitleAcrossOperatorsIsNotConfigurationEquivalence": true,
+    "approxBonusConversionIsNotCashEV": true,
+    "noPaidStateCreationForResearch": true,
+    "realMoneyAllowed": false
+  }
+}
