@@ -17,33 +17,63 @@ concurrency:
 jobs:
   ingest:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: 22}
-      - name: Scan official sports dates
+      - name: Recompute official Elige8 archive on latest main and persist safely
+        shell: bash
         run: |
-          BATCH_LIMIT=500 node loterias-ai/scripts/import-elige8-official-progressive.mjs
-          BATCH_LIMIT=500 node loterias-ai/scripts/import-elige8-official-progressive.mjs
-      - name: Evaluate and persist safely
-        run: |
-          mkdir -p /tmp/e8
-          cp -r loterias-ai/data/archive/elige8 /tmp/e8/
-          cp loterias-ai/data/archive/_meta/elige8-official-ingestion.json /tmp/e8/ingestion.json
-          cp loterias-ai/data/archive/_meta/elige8-scan-state.json /tmp/e8/state.json
-          git fetch origin main
-          git reset --hard origin/main
-          rm -rf loterias-ai/data/archive/elige8
-          cp -r /tmp/e8/elige8 loterias-ai/data/archive/
-          cp /tmp/e8/ingestion.json loterias-ai/data/archive/_meta/elige8-official-ingestion.json
-          cp /tmp/e8/state.json loterias-ai/data/archive/_meta/elige8-scan-state.json
-          node loterias-ai/scripts/elige8-official-financial-tournament.mjs
-          node loterias-ai/scripts/build-national-archive-index.mjs
-          node loterias-ai/scripts/build-completeness-index.mjs
-          node loterias-ai/scripts/audit-national-archive.mjs
-          node loterias-ai/scripts/build-real-money-status.mjs
+          set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add loterias-ai/data/archive/elige8 loterias-ai/data/archive/_meta/elige8-official-ingestion.json loterias-ai/data/archive/_meta/elige8-scan-state.json loterias-ai/data/backtests/elige8-official-financial-tournament.json loterias-ai/data/gates
-          git commit -m 'data(loterias-ai): persist and evaluate official Elige8 archive' || exit 0
-          git push origin HEAD:main
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+
+            BATCH_LIMIT=500 node loterias-ai/scripts/import-elige8-official-progressive.mjs
+            BATCH_LIMIT=500 node loterias-ai/scripts/import-elige8-official-progressive.mjs
+            node loterias-ai/scripts/elige8-official-financial-tournament.mjs
+            node loterias-ai/scripts/build-national-archive-index.mjs
+            node loterias-ai/scripts/build-completeness-index.mjs
+
+            audit_rc=0
+            node loterias-ai/scripts/audit-national-archive.mjs || audit_rc=$?
+            node loterias-ai/scripts/build-real-money-status.mjs
+
+            git add loterias-ai/data/archive/elige8 \
+                    loterias-ai/data/archive/_meta/elige8-official-ingestion.json \
+                    loterias-ai/data/archive/_meta/elige8-scan-state.json \
+                    loterias-ai/data/archive/manifest.json \
+                    loterias-ai/data/archive/_meta/completeness-index.json \
+                    loterias-ai/data/archive/_meta/archive-audit.json \
+                    loterias-ai/data/backtests/elige8-official-financial-tournament.json \
+                    loterias-ai/data/gates
+
+            if git diff --cached --quiet; then
+              echo 'No semantic Elige8 archive changes'
+              if [ "$audit_rc" -ne 0 ]; then
+                echo 'Archive audit remains fail-closed' >&2
+                exit "$audit_rc"
+              fi
+              exit 0
+            fi
+
+            git commit -m 'data(loterias-ai): persist and evaluate official Elige8 archive'
+            if git push origin HEAD:main; then
+              if [ "$audit_rc" -ne 0 ]; then
+                echo 'Persisted Elige8/audit diagnostics before failing closed' >&2
+                exit "$audit_rc"
+              fi
+              exit 0
+            fi
+
+            echo "main moved during Elige8 refresh; recomputing from latest main (attempt ${attempt}/5)"
+            sleep $((attempt * 3))
+          done
+
+          echo 'Could not persist Elige8 refresh safely after 5 recomputations' >&2
+          exit 1
