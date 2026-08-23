@@ -25,6 +25,7 @@ const BOT_QUERY = `query loadJackpots {
   redTigerJackpots { id amount }
   blueprintJackpots { id amount }
 }`;
+const JPK_MBWB_CAPS_EUR = { ROYAL: 4078.97, REGAL: 40789.77 };
 const ALLOWED_MONITOR_PREFIXES = ['generic:', 'redTiger:', 'blueprint:'];
 const REQUIRED_VERIFICATION_FLAGS = [
   'identityVerified',
@@ -71,6 +72,38 @@ function decorateRadar() {
     top.prepend(visual);
     card.dataset.artDecorated = '1';
   }
+}
+
+function parseDisplayedEuro(value) {
+  const s = String(value || '').replace(/\s/g, '').replace(/€/g, '');
+  if (!s || s === '—') return null;
+  const normalized = s.includes(',') ? s.replace(/\./g, '').replace(',', '.') : s;
+  const n = Number(normalized.replace(/[^0-9.-]/g, ''));
+  return Number.isFinite(n) ? n : null;
+}
+
+function syncJpkCapProgress() {
+  const isJpk = text('gameSubtitle') === 'JACKPOT KING';
+  let box = $('jpkCapProgress');
+  if (!isJpk) {
+    if (box) box.remove();
+    return;
+  }
+  const royal = parseDisplayedEuro(text('potValue3'));
+  const regal = parseDisplayedEuro(text('potValue2'));
+  if (!Number.isFinite(royal) || !Number.isFinite(regal)) return;
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'jpkCapProgress';
+    box.style.cssText = 'position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#ffffff14;border-top:1px solid #ffffff18;color:#dcebe4';
+    document.querySelector('#gameCard .pots')?.insertAdjacentElement('afterend', box);
+  }
+  const cell = (name, value, cap) => {
+    const pct = value / cap * 100;
+    const remaining = Math.max(0, cap - value);
+    return `<div style="padding:10px 8px;background:#061a15e8;text-align:center"><div style="font-size:7px;font-weight:950;color:#91b4a5">${name} · % DEL MBWB</div><div style="font-size:14px;font-weight:1000;margin-top:4px">${pct.toFixed(1)}%</div><div style="font-size:7px;color:#9fb6ab;margin-top:2px">faltan ${money(remaining)} al límite</div></div>`;
+  };
+  box.innerHTML = `${cell('ROYAL', royal, JPK_MBWB_CAPS_EUR.ROYAL)}${cell('REGAL', regal, JPK_MBWB_CAPS_EUR.REGAL)}<div style="grid-column:1/-1;padding:6px 8px;background:#06140f;text-align:center;font-size:7px;color:#789083">Proximidad al límite MBWB · NO es todavía un umbral +EV</div>`;
 }
 
 function setText(node, value) {
@@ -263,6 +296,7 @@ function schedule() {
   requestAnimationFrame(() => {
     queued = false;
     decorateRadar();
+    syncJpkCapProgress();
     syncInstantSignal();
   });
 }
@@ -274,6 +308,6 @@ observer.observe(document.body, { childList: true, subtree: true, characterData:
 
 schedule();
 refreshContract();
-setInterval(syncInstantSignal, 1000);
+setInterval(() => { syncJpkCapProgress(); syncInstantSignal(); }, 1000);
 setInterval(refreshContract, 5000);
 setInterval(probeContractFeed, 2000);
