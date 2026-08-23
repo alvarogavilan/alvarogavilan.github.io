@@ -1,0 +1,60 @@
+{
+  "version": "edge-documented-advantage-play-methods-v1",
+  "generatedAt": "2026-08-23T22:18:00Z",
+  "mode": "RESEARCH_ONLY",
+  "realMoneyAllowed": false,
+  "stakeEUR": 0,
+  "purpose": "Persist documented, mathematically reproducible gambling advantage mechanisms and convert them into EDGE model requirements without treating anecdotes or cross-market formulas as current Spain execution evidence.",
+  "methods": [
+    {
+      "id": "MUST_HIT_BY_PROGRESSIVE",
+      "evidenceClass": "PUBLISHED_MATHEMATICAL_ANALYSIS_AND_DOCUMENTED_PROFESSIONAL_PLAY",
+      "sources": [
+        "https://wizardofodds.com/games/slots/mystery-jackpot/",
+        "https://wizardofodds.com/ask-the-wizard/348/",
+        "https://wizardofodds.com/newsletter/january-04-2019/"
+      ],
+      "documentedMechanism": "For a genuine MHB progressive with a known maximum, meter-rise rate and verified trigger distribution, a sufficiently high meter can make the marginal wager positive expectation.",
+      "publishedShortTermFormula": "j = m * (1 - f) / (1 - f + r)",
+      "publishedLongTermFormula": "j = m * (1 - f - r) / (1 - f + r)",
+      "variables": {"j":"breakeven jackpot","m":"must-hit-by maximum","f":"fixed-win/other return fraction under the cited model","r":"meter rise rate"},
+      "criticalWarning": "The cited formulas assume a specific trigger distribution. Wizard of Odds explicitly warns that AGS examples behave differently; EDGE must infer or verify the actual hazard rather than assume uniformity.",
+      "edgeApplication": ["Jackpot King Royal/Regal: use MBWB structure but DO NOT apply uniform trigger until distribution is verified","Search Spain technical/paytable material for reserve, meter-rise and trigger/hazard parameters","Estimate empirical normalized hit distribution only from clean same-configuration events"]
+    },
+    {
+      "id": "PROGRESSIVE_VIDEO_POKER_THRESHOLD",
+      "evidenceClass": "DOCUMENTED_PROFESSIONAL_METHOD_AND_EXACT_COMBINATORIAL_STRATEGY",
+      "sources": [
+        "https://www.americancasinoguidebook.com/video-poker/interview-with-a-professional-video-poker-player.html",
+        "https://www.readybetgo.com/video-poker/strategy/video-poker-pro-507.html"
+      ],
+      "documentedMechanism": "Professional players describe playing Jacks-or-Better progressives only when the jackpot exceeded a calculated positive-expectation threshold; published methods attributed to Stanford Wong calculated the required jackpot and optimal strategy.",
+      "edgeApplication": ["Ultimate Video Poker Spain is a high-value lane because exact paytable plus exact qualifying stake plus royal probability makes EV directly computable","Use exact optimal-hold enumeration, not historical average-hit heuristics","Require current Spain progressive paytable and jackpot trigger/coin qualification before GREEN"]
+    },
+    {
+      "id": "PERSISTENT_STATE_METER",
+      "evidenceClass": "PUBLISHED_GAME_ANALYSIS",
+      "sources": ["https://wizardofodds.com/games/slots/buffalo-link/"],
+      "documentedMechanism": "A persistent collection meter with a must-hit-by endpoint can become positive when left by a previous player sufficiently advanced toward its trigger.",
+      "edgeApplication": ["Expand Spain catalog search beyond monetary jackpots to persistent collect meters, guaranteed-state bonuses and banked features","For each candidate fingerprint whether state survives player/session change and calculate conditional EV from state"]
+    },
+    {
+      "id": "SPAIN_DGOJ_EXACT_PROBABILITY_DOCUMENTS",
+      "evidenceClass": "SIGNED_PUBLIC_REGULATORY_DOCUMENT",
+      "sources": [
+        "https://www.ordenacionjuego.es/cmis/document/alfresco/4ef9fa35-7312-4b35-8ed2-7a5deed99bb7",
+        "https://ordenacionjuego.es/cmis/document/alfresco/958f8d6c-abb9-48c6-a8e5-f3990ad2e499"
+      ],
+      "documentedMechanism": "Spanish DGOJ public technical/licensing documents can contain exact jackpot prize tables and occurrence probabilities (for example Expresso random jackpots).",
+      "edgeApplication": ["Systematically search DGOJ resolutions and attached technical documents by operator/provider/game family","Promote exact probability data over inference whenever a current-equivalent Spanish technical document is found"]
+    }
+  ],
+  "selectionPrinciple": "EDGE prioritizes exploitable state: known cap/seed, state-dependent hazard, persistent state, exact progressive paytable, or another rule that changes conditional EV. Ordinary independent RNG spin-history patterns are not an advantage method.",
+  "guards": {
+    "noPatternPredictionFromPastIndependentSpins": true,
+    "noUniformMhbAssumptionWithoutEvidence": true,
+    "noAnecdoteAsExecutionEvidence": true,
+    "noCrossMarketParameterImport": true,
+    "noPromotionWithoutCurrentSpainIdentityAndEconomics": true
+  }
+}
