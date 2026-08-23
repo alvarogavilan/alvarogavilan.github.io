@@ -1,48 +1,161 @@
 {
-  "version": "edge-spain-deep-research-v1.1-corrected",
-  "generatedAt": "2026-08-24T01:44:00+02:00",
+  "version": "edge-spain-deep-research-v1.2-diamond-denominator-scoped",
+  "generatedAt": "2026-08-24T01:43:00+02:00",
   "mode": "RESEARCH_ONLY",
   "realMoneyAllowed": false,
   "stakeEUR": 0,
   "diamondBonanzaSpain": {
-    "currentBotemania": {"game":"Danza de los Diamantes","provider":"roxor-gaming","currencyRangeEUR":[0.25,1.0],"fixedPaylines":5,"progressivePotsUpTo":3,"rtpPct":95.44,"publicFeedKey":"generic:diamondbonanza25BTM","lastPersistedMeterEUR":8032.90,"source":"https://www.botemania.es/juegos/slots-online/danza-de-los-diamantes"},
-    "historicalSpain": {"publicationDate":"2010-11-21","claim":"La Danza de los Diamantes offered more than EUR 6,000 while playing from EUR 0.25.","source":"https://www.bingo.es/noticias/en-botemania-te-regalan-fantasticos-botes/","use":"HISTORICAL_SPAIN_SCALE_PRIOR_ONLY"},
+    "currentBotemania": {
+      "game": "Danza de los Diamantes",
+      "provider": "roxor-gaming",
+      "currencyRangeEUR": [0.25, 1.0],
+      "fixedPaylines": 5,
+      "progressivePotsUpTo": 3,
+      "rtpPct": 95.44,
+      "publicFeedKey": "generic:diamondbonanza25BTM",
+      "lastPersistedMeterEUR": 8032.90,
+      "source": "https://www.botemania.es/juegos/slots-online/danza-de-los-diamantes",
+      "progressiveFundingDenominatorEvidence": "Botemania states that for jackpot slots a determined percentage of each EUR wagered is accumulated into the jackpot.",
+      "diamondSpecificContributionPctPublished": false,
+      "warning": "This establishes Spain-facing per-wager progressive funding semantics in general, but does not disclose the Diamond-specific contribution percentage or prove equivalence with another operator configuration."
+    },
+    "historicalSpain": {
+      "publicationDate": "2010-11-21",
+      "claim": "La Danza de los Diamantes offered more than EUR 6,000 while playing from EUR 0.25.",
+      "source": "https://www.bingo.es/noticias/en-botemania-te-regalan-fantasticos-botes/",
+      "use": "HISTORICAL_SPAIN_SCALE_PRIOR_ONLY"
+    },
     "internationalMechanismComparator": {
-      "publishedRtpPct":95.01,
-      "publishedJackpotContributionPct":5.66,
-      "fivePaylinesRequiredForJackpot":true,
-      "source":"https://www.ballycasino.com/jackpot-slots/diamond-bonanza",
-      "contributionDenominatorVerifiedAgainstTotalStake":false,
-      "safeToAddPublishedContributionDirectlyToRtp":false,
-      "use":"MECHANISM_COMPARATOR_ONLY",
-      "warning":"The source does not establish that 5.66% uses total spin stake as its denominator. Because jackpot eligibility requires all five lines, treating 5.66% as a total-stake additive RTP component can materially overstate expected return."
+      "publishedRtpPct": 95.01,
+      "publishedJackpotContributionPct": 5.66,
+      "fivePaylinesRequiredForJackpot": true,
+      "source": "https://www.ballycasino.com/jackpot-slots/diamond-bonanza",
+      "contributionDenominatorSupportedAsAllWagering": true,
+      "denominatorEvidenceClass": "CURRENT_OPERATOR_EXPLICIT_RETURN_RELATIVE_TO_ALL_WAGERING_PLUS_100_WAGER_EXAMPLE",
+      "safeToAddPublishedContributionDirectlyToComparatorRtp": false,
+      "safeToTransferPublishedContributionPctToBotemaniaSpain": false,
+      "use": "MECHANISM_AND_DENOMINATOR_COMPARATOR_ONLY",
+      "warning": "The Bally comparator supports interpreting its published 5.66% contribution as a funding rate referenced to all wagering. This resolves the previous denominator objection for that comparator only. Contribution is still not treated as jackpot EV/RTP or hazard: reserve/seed accounting, trigger probability and payout mechanics are not fully specified. It also does not prove that Botemania Spain uses 5.66% or the same configuration."
     },
-    "historicalUKFamily": {"totalWins":1570,"tiers":[{"denominationGBP":0.25,"seedGBP":500,"averageHitGBP":7309,"wins":1060},{"denominationGBP":0.50,"seedGBP":1000,"averageHitGBP":14044,"wins":243},{"denominationGBP":1.00,"seedGBP":2000,"averageHitGBP":28566,"wins":267}]},
+    "historicalUKFamily": {
+      "totalWins": 1570,
+      "tiers": [
+        {"denominationGBP": 0.25, "seedGBP": 500, "averageHitGBP": 7309, "wins": 1060},
+        {"denominationGBP": 0.50, "seedGBP": 1000, "averageHitGBP": 14044, "wins": 243},
+        {"denominationGBP": 1.00, "seedGBP": 2000, "averageHitGBP": 28566, "wins": 267}
+      ]
+    },
     "counterfactualType1Screen": {
-      "status":"WITHDRAWN_PENDING_CONTRIBUTION_DENOMINATOR",
-      "formula":null,
-      "breakEvenScore":null,
-      "breakEvenByHistoricalTier":[],
-      "ifLastSpainMeterWere25cEquivalent":null,
-      "reason":"The previous screen assumed the published 5.66% jackpot contribution was directly additive per EUR of total spin stake. That denominator is not verified and the game requires all five lines for jackpot eligibility. No break-even or RTP screen is scientifically valid until the contribution denominator and Spain configuration are fingerprinted.",
-      "withdrawnLegacyCalculation":{"previousMeterEUR":8032.90,"previousCounterfactualRtp":1.0127174386840945,"decisionUse":"PROHIBITED"}
+      "status": "WITHDRAWN_PENDING_SPAIN_CONFIGURATION_EQUIVALENCE",
+      "formula": null,
+      "breakEvenScore": null,
+      "breakEvenByHistoricalTier": [],
+      "ifLastSpainMeterWere25cEquivalent": null,
+      "reason": "The comparator denominator objection is now resolved for Bally's published 5.66% funding rate, but no Spanish break-even or RTP screen is valid because contribution is not a hazard/EV proxy and the Diamond-specific Botemania contribution percentage, current Spain seed, trigger probability, exact 25c feed-tier binding and UK/Bally-to-Spain configuration equivalence remain unverified.",
+      "withdrawnLegacyCalculation": {
+        "previousMeterEUR": 8032.90,
+        "previousCounterfactualRtp": 1.0127174386840945,
+        "decisionUse": "PROHIBITED"
+      }
     },
-    "status":"HIGHEST_PRIORITY_EQUIVALENCE_TEST_NO_EV_SCREEN",
-    "blockers":["CURRENT_SPAIN_JACKPOT_CONTRIBUTION_NOT_VERIFIED","CURRENT_SPAIN_SEED_NOT_VERIFIED","CURRENT_SPAIN_TRIGGER_PROBABILITY_NOT_VERIFIED","CURRENT_SPAIN_25C_FEED_TIER_BINDING_NOT_EXECUTION_GRADE","UK_TO_SPAIN_CONFIGURATION_EQUIVALENCE_NOT_VERIFIED","COMPARATOR_CONTRIBUTION_DENOMINATOR_NOT_VERIFIED"]
+    "status": "HIGHEST_PRIORITY_SPAIN_EQUIVALENCE_TEST_NO_EV_SCREEN",
+    "blockers": [
+      "CURRENT_SPAIN_DIAMOND_SPECIFIC_JACKPOT_CONTRIBUTION_NOT_VERIFIED",
+      "CURRENT_SPAIN_SEED_NOT_VERIFIED",
+      "CURRENT_SPAIN_TRIGGER_PROBABILITY_NOT_VERIFIED",
+      "CURRENT_SPAIN_25C_FEED_TIER_BINDING_NOT_EXECUTION_GRADE",
+      "UK_TO_SPAIN_CONFIGURATION_EQUIVALENCE_NOT_VERIFIED",
+      "BALLY_COMPARATOR_TO_BOTEMANIA_SPAIN_CONTRIBUTION_EQUIVALENCE_NOT_VERIFIED",
+      "JACKPOT_CONTRIBUTION_RATE_IS_NOT_EXACT_JACKPOT_EV_OR_HAZARD"
+    ]
   },
   "dealOrNoDealSpainHistorical": {
-    "currentUnresolvedFeed":{"key":"generic:DealOrNoDealStateful3","lastPersistedMeterEUR":120787.94},
-    "historicalBotemania2010":{"publishedMeters":[{"stakeEUR":0.05,"approxJackpotEUR":13000},{"stakeEUR":0.10,"approxJackpotEUR":125000},{"stakeEUR":0.20,"approxJackpotEUR":490000}],"reportedWins":[{"amountEUR":108515,"timing":"September 2010"},{"amountEUR":49975,"date":"2010-09-25"}],"sources":["https://www.bingo.es/noticias/en-botemania-te-regalan-fantasticos-botes/","https://www.bingo.es/noticias/inechi-gana-108000-euros-con-el-juego-de-alla-tu-de-botemania/"]},
-    "hypothesis":"The live Gamesys-style Stateful3 feed may belong to the historical Deal or No Deal / Allá Tú lineage, but current playable title, denomination and tier are not proven.",
-    "status":"IDENTITY_RESEARCH_HIGH_VALUE"
+    "currentUnresolvedFeed": {"key": "generic:DealOrNoDealStateful3", "lastPersistedMeterEUR": 120787.94},
+    "historicalBotemania2010": {
+      "publishedMeters": [
+        {"stakeEUR": 0.05, "approxJackpotEUR": 13000},
+        {"stakeEUR": 0.10, "approxJackpotEUR": 125000},
+        {"stakeEUR": 0.20, "approxJackpotEUR": 490000}
+      ],
+      "reportedWins": [
+        {"amountEUR": 108515, "timing": "September 2010"},
+        {"amountEUR": 49975, "date": "2010-09-25"}
+      ],
+      "sources": [
+        "https://www.bingo.es/noticias/en-botemania-te-regalan-fantasticos-botes/",
+        "https://www.bingo.es/noticias/inechi-gana-108000-euros-con-el-juego-de-alla-tu-de-botemania/"
+      ]
+    },
+    "hypothesis": "The live Gamesys-style Stateful3 feed may belong to the historical Deal or No Deal / Allá Tú lineage, but current playable title, denomination and tier are not proven.",
+    "status": "IDENTITY_RESEARCH_HIGH_VALUE"
   },
-  "tikiTemploSpain":{"provider":"roxor-gaming","stakeRangeEUR":[0.20,20.0],"baseRtpPctRange":[80.51,88.21],"jackpotContributionPct":6.70,"anyBetQualifies":true,"probabilityProportionalToBet":true,"publicFeedKey":"generic:tikitemple2_1","source":"https://www.botemania.es/juegos/slots-online/tiki-templo","status":"STRUCTURE_STRONG_HAZARD_AND_TIER_BINDING_UNRESOLVED"},
-  "burbujasSpain":{"provider":"roxor-gaming","stakeRangeEUR":[0.10,20.0],"fixedPaylines":10,"baseRtpPct":95.38,"jackpotContributionPct":0.09,"probabilityProportionalToTotalBet":true,"publicFeedKey":"generic:bouncy_bubbles_id","source":"https://www.botemania.es/juegos/slots-online/burbujas-saltarinas","status":"IDENTITY_STRONG_THRESHOLD_UNRESOLVED"},
+  "tikiTemploSpain": {
+    "provider": "roxor-gaming",
+    "stakeRangeEUR": [0.20, 20.0],
+    "baseRtpPctRange": [80.51, 88.21],
+    "jackpotContributionPct": 6.70,
+    "anyBetQualifies": true,
+    "probabilityProportionalToBet": true,
+    "publicFeedKey": "generic:tikitemple2_1",
+    "source": "https://www.botemania.es/juegos/slots-online/tiki-templo",
+    "status": "STRUCTURE_STRONG_HAZARD_AND_TIER_BINDING_UNRESOLVED"
+  },
+  "burbujasSpain": {
+    "provider": "roxor-gaming",
+    "stakeRangeEUR": [0.10, 20.0],
+    "fixedPaylines": 10,
+    "baseRtpPct": 95.38,
+    "jackpotContributionPct": 0.09,
+    "probabilityProportionalToTotalBet": true,
+    "publicFeedKey": "generic:bouncy_bubbles_id",
+    "source": "https://www.botemania.es/juegos/slots-online/burbujas-saltarinas",
+    "status": "IDENTITY_STRONG_THRESHOLD_UNRESOLVED"
+  },
   "jackpotKingSpain": {
-    "knownFacts":["Royal/Regal/Jackpot King shared across Blueprint Jackpot King titles in Botemania and Canal Bingo according to current Fishin Frenzy JPK rules","any bet qualifies on Fishin Frenzy JPK","win probability is proportional to total bet and rises with pot value","Royal and Regal must fall before their table limits","reset is funded from reserve"],
-    "configurationDiversityWarning":"Botemania Jackpot King pages disclose materially different contribution/reserve percentages by title and era. Do not infer equal hazard from equal overlay name.",
-    "priorityCandidate":{"game":"Mega Bars Fortune Wheel: Jackpot King","publishedBaseRtpPct":95.50,"publishedContributionPct":0.38,"publishedReservePct":0.11,"reason":"Highest cleanly parsed base RTP among priority Botemania JPK pages examined, conditional on same executable jackpot mechanism/hazard being verified."},
-    "secondaryCandidate":{"game":"Irish Riches Megaways: Jackpot King","publishedRtpPct":95.93,"publishedJackpotContributionPct":1.0,"publishedReservePct":1.5,"warning":"Same Spanish pool/player-level hazard is not yet proven."}
+    "knownFacts": [
+      "Royal/Regal/Jackpot King shared across Blueprint Jackpot King titles in Botemania and Canal Bingo according to current Fishin Frenzy JPK rules",
+      "any bet qualifies on Fishin Frenzy JPK",
+      "win probability is proportional to total bet and rises with pot value",
+      "Royal and Regal must fall before their table limits",
+      "reset is funded from reserve"
+    ],
+    "officialHelpMechanism": {
+      "source": "https://fileservice.blueprintgaming.com/?customer=Betfair_Sky&fileType=help&gameEngineID=dealornodeal&language=EN&profile=jackpotkingdeluxe3",
+      "facts": [
+        "During any spin the Jackpot King Deluxe bonus can be triggered by five overlay symbols across reels 1-5.",
+        "The system is available on any stake on any game plugged into Jackpot King Deluxe.",
+        "Progressive jackpots are only won during the Wheel King stage of the bonus.",
+        "A won jackpot resets to its reserve amount.",
+        "Jackpot win chances increase with jackpot value; Royal and Regal are Must-Be-Won-By.",
+        "Jackpots are funded by player-stake contributions except operator-funded initial seeds."
+      ],
+      "hazardDecompositionImplication": "Per-spin jackpot hazard is a compound mechanism involving entry into the Jackpot King Deluxe bonus and subsequent Wheel King/tier resolution. The public help does not disclose exact probabilities for these stages, so no exact hazard or EV threshold follows from these facts alone.",
+      "equalHazardAcrossGamesProven": false
+    },
+    "configurationDiversityWarning": "Botemania Jackpot King pages disclose materially different contribution/reserve percentages by title and era. Do not infer equal hazard from equal overlay name or from sharing the Jackpot King system.",
+    "priorityCandidate": {
+      "game": "Mega Bars Fortune Wheel: Jackpot King",
+      "publishedBaseRtpPct": 95.50,
+      "publishedContributionPct": 0.38,
+      "publishedReservePct": 0.11,
+      "reason": "Highest cleanly parsed base RTP among priority Botemania JPK pages examined, conditional on same executable jackpot mechanism/hazard being verified."
+    },
+    "secondaryCandidate": {
+      "game": "Irish Riches Megaways: Jackpot King",
+      "publishedRtpPct": 95.93,
+      "publishedJackpotContributionPct": 1.0,
+      "publishedReservePct": 1.5,
+      "warning": "Same Spanish pool/player-level hazard is not yet proven."
+    }
   },
-  "guards":{"noPromotionFromCounterfactualModel":true,"noHistoricalSpainAmountAsCurrentSeed":true,"noCrossMarketCurrencySubstitution":true,"noContributionAsHazardProxy":true,"noUnverifiedContributionDenominatorInRtpFormula":true,"noLossChasing":true,"realMoneyAllowed":false}
+  "guards": {
+    "noPromotionFromCounterfactualModel": true,
+    "noHistoricalSpainAmountAsCurrentSeed": true,
+    "noCrossMarketCurrencySubstitution": true,
+    "noContributionAsHazardProxy": true,
+    "noContributionAsRtpProxyWithoutPayoutEconomics": true,
+    "noComparatorContributionTransferToSpainWithoutFingerprint": true,
+    "noLossChasing": true,
+    "realMoneyAllowed": false
+  }
 }
