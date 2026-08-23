@@ -32,10 +32,10 @@
       "source": "https://www.ballycasino.com/jackpot-slots/diamond-bonanza",
       "contributionDenominatorSupportedAsAllWagering": true,
       "denominatorEvidenceClass": "CURRENT_OPERATOR_EXPLICIT_RETURN_RELATIVE_TO_ALL_WAGERING_PLUS_100_WAGER_EXAMPLE",
-      "safeToAddPublishedContributionDirectlyToComparatorRtp": true,
+      "safeToAddPublishedContributionDirectlyToComparatorRtp": false,
       "safeToTransferPublishedContributionPctToBotemaniaSpain": false,
       "use": "MECHANISM_AND_DENOMINATOR_COMPARATOR_ONLY",
-      "warning": "The Bally comparator now supports interpreting its published 5.66% contribution on an all-wagering denominator. This resolves the previous denominator objection for that comparator only. It does not prove that Botemania Spain uses 5.66%, the same seed, the same trigger probability, or the same jackpot configuration."
+      "warning": "The Bally comparator supports interpreting its published 5.66% contribution as a funding rate referenced to all wagering. This resolves the previous denominator objection for that comparator only. Contribution is still not treated as jackpot EV/RTP or hazard: reserve/seed accounting, trigger probability and payout mechanics are not fully specified. It also does not prove that Botemania Spain uses 5.66% or the same configuration."
     },
     "historicalUKFamily": {
       "totalWins": 1570,
@@ -51,7 +51,7 @@
       "breakEvenScore": null,
       "breakEvenByHistoricalTier": [],
       "ifLastSpainMeterWere25cEquivalent": null,
-      "reason": "The comparator denominator objection is now resolved for Bally's published 5.66% figure, but no Spanish break-even or RTP screen is valid because the Diamond-specific Botemania contribution percentage, current Spain seed, trigger probability, exact 25c feed-tier binding and UK/Bally-to-Spain configuration equivalence remain unverified.",
+      "reason": "The comparator denominator objection is now resolved for Bally's published 5.66% funding rate, but no Spanish break-even or RTP screen is valid because contribution is not a hazard/EV proxy and the Diamond-specific Botemania contribution percentage, current Spain seed, trigger probability, exact 25c feed-tier binding and UK/Bally-to-Spain configuration equivalence remain unverified.",
       "withdrawnLegacyCalculation": {
         "previousMeterEUR": 8032.90,
         "previousCounterfactualRtp": 1.0127174386840945,
@@ -65,7 +65,8 @@
       "CURRENT_SPAIN_TRIGGER_PROBABILITY_NOT_VERIFIED",
       "CURRENT_SPAIN_25C_FEED_TIER_BINDING_NOT_EXECUTION_GRADE",
       "UK_TO_SPAIN_CONFIGURATION_EQUIVALENCE_NOT_VERIFIED",
-      "BALLY_COMPARATOR_TO_BOTEMANIA_SPAIN_CONTRIBUTION_EQUIVALENCE_NOT_VERIFIED"
+      "BALLY_COMPARATOR_TO_BOTEMANIA_SPAIN_CONTRIBUTION_EQUIVALENCE_NOT_VERIFIED",
+      "JACKPOT_CONTRIBUTION_RATE_IS_NOT_EXACT_JACKPOT_EV_OR_HAZARD"
     ]
   },
   "dealOrNoDealSpainHistorical": {
@@ -152,6 +153,7 @@
     "noHistoricalSpainAmountAsCurrentSeed": true,
     "noCrossMarketCurrencySubstitution": true,
     "noContributionAsHazardProxy": true,
+    "noContributionAsRtpProxyWithoutPayoutEconomics": true,
     "noComparatorContributionTransferToSpainWithoutFingerprint": true,
     "noLossChasing": true,
     "realMoneyAllowed": false
