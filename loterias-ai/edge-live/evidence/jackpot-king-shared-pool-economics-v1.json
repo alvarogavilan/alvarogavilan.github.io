@@ -1,6 +1,6 @@
 {
-  "version": "jackpot-king-shared-pool-economics-v1",
-  "generatedAt": "2026-08-24T01:39:00+02:00",
+  "version": "jackpot-king-shared-pool-economics-v1.1-trigger-fingerprint",
+  "generatedAt": "2026-08-24T01:50:00+02:00",
   "market": "ES",
   "operator": "Botemania",
   "manufacturer": "Blueprint Gaming",
@@ -71,6 +71,7 @@
       "profile": "jackpotkingdeluxe3",
       "gameEngineID": "fishingfrenzyjk",
       "url": "https://fileservice.blueprintgaming.com/?affiliate=&customer=Betfair_Sky&fileType=help&gameEngineID=fishingfrenzyjk&language=EN&profile=jackpotkingdeluxe3",
+      "entryTriggerSignature": "5 Jackpot King Deluxe overlay symbols on reels 1-5",
       "assertions": [
         "Jackpots can only be won during Wheel King",
         "Jackpot resets to reserve after award",
@@ -80,21 +81,68 @@
     },
     {
       "profile": "jackpotkingdeluxe3",
+      "gameEngineID": "irishriches",
+      "url": "https://fileservice.blueprintgaming.com/?affiliate=&customer=Betfair_Sky&fileType=help&gameEngineID=irishriches&language=EN&profile=jackpotkingdeluxe3",
+      "entryTriggerSignature": "4 Jackpot King Deluxe overlay symbols in the barrels",
+      "assertions": [
+        "Same shared Jackpot King Deluxe system",
+        "Any stake eligible",
+        "Jackpot only won during Wheel King"
+      ]
+    },
+    {
+      "profile": "jackpotkingdeluxe3",
+      "gameEngineID": "sevensjklow",
+      "url": "https://fileservice.blueprintgaming.com/?affiliate=&customer=Betfair_Sky&fileType=help&gameEngineID=sevensjklow&language=EN&profile=jackpotkingdeluxe3",
+      "entryTriggerSignature": "3 Jackpot King Deluxe overlay symbols on reels 1-3",
+      "assertions": [
+        "Same shared Jackpot King Deluxe system",
+        "Any stake eligible",
+        "Jackpot only won during Wheel King"
+      ]
+    },
+    {
+      "profile": "jackpotkingdeluxe3",
+      "gameEngineID": "slotsogoldmegaways",
+      "url": "https://fileservice.blueprintgaming.com/?affiliate=&customer=PADDYPOWERBETFAIR&fileType=help&gameEngineID=slotsogoldmegaways&language=EN&profile=jackpotkingdeluxe3",
+      "entryTriggerSignature": "6 Jackpot King Deluxe overlay symbols on reels 1-6",
+      "assertions": [
+        "Same shared Jackpot King Deluxe system",
+        "Any stake eligible",
+        "Jackpot only won during Wheel King"
+      ]
+    },
+    {
+      "profile": "jackpotkingdeluxe3",
       "gameEngineID": "eyeofhorusjkhigh",
       "url": "https://fileservice.blueprintgaming.com/?affiliate=&customer=Betfair_Sky&fileType=help&gameEngineID=eyeofhorusjkhigh&language=EN&profile=jackpotkingdeluxe3",
+      "entryTriggerSignature": "Jackpot King Deluxe overlay symbols on reels 1-5; exact count not stated in recovered help excerpt",
       "assertions": [
-        "Same Jackpot King Deluxe profile language recovered on a second title"
+        "Same Jackpot King Deluxe profile language recovered on another title"
       ]
     },
     {
       "profile": "jackpotkingdeluxe3",
       "gameEngineID": "tedjk",
       "url": "https://fileservice.blueprintgaming.com/?affiliate=&customer=Betfair_Sky&fileType=help&gameEngineID=tedjk&language=EN&profile=jackpotkingdeluxe3",
+      "entryTriggerSignature": "5 Jackpot King Deluxe overlay symbols on reels 1-5",
       "assertions": [
         "Jackpots funded by stake contributions except initial seeds funded by operator"
       ]
     }
   ],
+  "crossTitleTriggerFingerprint": {
+    "status": "DIVERGENT_PUBLIC_RULE_SIGNATURES",
+    "equalEntryRuleAcrossTitles": false,
+    "equalHazardPerEURProven": false,
+    "examples": [
+      {"gameEngineID": "sevensjklow", "requiredOverlaySymbols": 3},
+      {"gameEngineID": "irishriches", "requiredOverlaySymbols": 4},
+      {"gameEngineID": "fishingfrenzyjk", "requiredOverlaySymbols": 5},
+      {"gameEngineID": "slotsogoldmegaways", "requiredOverlaySymbols": 6}
+    ],
+    "interpretation": "Official Blueprint help exposes materially different visible entry-trigger structures across titles connected to Jackpot King Deluxe. This does not by itself prove different final jackpot hazard per EUR because symbol frequencies and downstream Wheel King probabilities may compensate, but it directly rejects any assumption that a common pool/profile implies an identical entry rule or identical hazard. Cross-title dominance requires game-specific trigger and downstream probability proof."
+  },
   "currentBestBaseRtpScreen": {
     "game": "Mega Bars Fortune Wheel: Jackpot King",
     "baseRtp": 0.955,
@@ -103,14 +151,16 @@
   },
   "scientificImplications": [
     "Shared pool membership does not prove identical jackpot hazard per EUR across titles.",
+    "Official Blueprint help shows different visible Jackpot King Deluxe entry-trigger signatures across games, so equal entry rules cannot be assumed.",
     "Contribution percentage is funding flow and must not be substituted for player-level jackpot probability.",
-    "If equal jackpot hazard per EUR were later proven for two titles on the same pool, the higher base-RTP title would strictly dominate the lower base-RTP title before operational frictions.",
+    "If equal final jackpot hazard per EUR were later proven for two titles on the same pool, the higher base-RTP title would strictly dominate the lower base-RTP title before operational frictions.",
     "Operator-page inconsistencies must fail closed until an exact in-game rules/paytable fingerprint is captured.",
     "The published statement that probability increases with pot value invalidates a naive constant or uniform hazard assumption unless separately demonstrated."
   ],
   "nextProofTargets": [
     "Capture exact Spain in-game paytable/rules fingerprint for Mega Bars Fortune Wheel JPK and Eye of Horus JPK.",
-    "Prove or reject cross-title equality of jackpot hazard per EUR within the same Botemania Jackpot King pool.",
+    "Map game-specific Jackpot King Deluxe entry-trigger probabilities and downstream Wheel King/tier probabilities; do not infer them from overlay-symbol counts alone.",
+    "Prove or reject cross-title equality of final jackpot hazard per EUR within the same Botemania Jackpot King pool.",
     "Accumulate Royal/Regal reset endpoints continuously from the permanent backend and estimate empirical terminal distributions without mixing rule eras.",
     "Keep the execution contract disabled until identity, threshold, stake, strategy, rules fingerprint and prospective validation all pass."
   ],
@@ -118,6 +168,7 @@
     "realMoneyAllowed": false,
     "contributionIsNotHazard": true,
     "sharedPoolIsNotEqualHazardProof": true,
+    "differentVisibleTriggerRulesDoNotAloneQuantifyHazard": true,
     "operatorPageConflictFailsClosed": true
   }
 }
