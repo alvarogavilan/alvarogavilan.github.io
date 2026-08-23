@@ -11,6 +11,7 @@ const outputPath = path.join(repo, 'loterias-ai', 'data', 'actions-budget-audit.
 const enforce = process.argv.includes('--enforce');
 
 const policy = JSON.parse(fs.readFileSync(policyPath, 'utf8'));
+const forbiddenScheduledWorkflows = new Set(policy.forbiddenScheduledWorkflows || []);
 
 function fieldCardinality(field, max) {
   const value = field.trim();
@@ -76,24 +77,27 @@ for (const name of files) {
 
   const exception = policy.temporaryExceptions?.[relative] || null;
   const limit = Number(exception?.maxScheduledRunsPerActiveDay ?? policy.maxScheduledRunsPerActiveDay);
+  const forbiddenSchedule = forbiddenScheduledWorkflows.has(relative);
   workflows.push({
     workflow: relative,
     estimates,
     scheduledRunsPerActiveDay,
     limit,
     temporaryException: exception,
+    forbiddenSchedule,
     overBudget: scheduledRunsPerActiveDay > limit
   });
 }
 
 const violations = workflows.filter((item) => item.overBudget);
+const forbiddenScheduleViolations = workflows.filter((item) => item.forbiddenSchedule);
 const exceptionWorkflows = workflows.filter((item) => item.temporaryException);
 const aggregateLimit = Number(policy.maxTotalScheduledRunsPerActiveDay);
 const aggregateBudgetConfigured = Number.isFinite(aggregateLimit) && aggregateLimit >= 0;
 const aggregateBudgetExceeded = aggregateBudgetConfigured && totalScheduledRunsPerActiveDay > aggregateLimit;
 const generatedAt = new Date().toISOString();
 const audit = {
-  version: 'actions-budget-audit-v2',
+  version: 'actions-budget-audit-v3',
   generatedAt,
   policyVersion: policy.version,
   mode: enforce ? 'ENFORCE' : 'REPORT',
@@ -105,6 +109,7 @@ const audit = {
     aggregateBudgetExceeded,
     aggregateBudgetHeadroom: aggregateBudgetConfigured ? aggregateLimit - totalScheduledRunsPerActiveDay : null,
     budgetViolations: violations.length,
+    forbiddenScheduleViolations: forbiddenScheduleViolations.length,
     temporaryExceptionsInUse: exceptionWorkflows.length,
     unknownSchedules
   },
@@ -113,9 +118,11 @@ const audit = {
     targetScheduledRunsPerActiveDay: policy.targetScheduledRunsPerActiveDay,
     maxTotalScheduledRunsPerActiveDay: aggregateBudgetConfigured ? aggregateLimit : null,
     enforceAggregateScheduledBudget: policy.policy?.enforceAggregateScheduledBudget === true,
+    enforceForbiddenScheduledWorkflows: policy.policy?.enforceForbiddenScheduledWorkflows === true,
     highFrequencyResearchPollingAllowedByDefault: policy.policy?.highFrequencyResearchPollingAllowedByDefault === true
   },
   violations,
+  forbiddenScheduleViolations,
   temporaryExceptionsInUse: exceptionWorkflows,
   workflows
 };
@@ -123,9 +130,16 @@ const audit = {
 fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 fs.writeFileSync(outputPath, `${JSON.stringify(audit, null, 2)}\n`);
 
-console.log(`ACTIONS_BUDGET scheduled=${workflows.length} runsPerActiveDay=${totalScheduledRunsPerActiveDay} aggregateLimit=${aggregateBudgetConfigured ? aggregateLimit : 'UNSET'} aggregateExceeded=${aggregateBudgetExceeded} violations=${violations.length} exceptions=${exceptionWorkflows.length}`);
+console.log(`ACTIONS_BUDGET scheduled=${workflows.length} runsPerActiveDay=${totalScheduledRunsPerActiveDay} aggregateLimit=${aggregateBudgetConfigured ? aggregateLimit : 'UNSET'} aggregateExceeded=${aggregateBudgetExceeded} violations=${violations.length} forbiddenScheduleViolations=${forbiddenScheduleViolations.length} exceptions=${exceptionWorkflows.length}`);
 for (const item of violations) console.log(`OVER_BUDGET ${item.workflow} runs=${item.scheduledRunsPerActiveDay} limit=${item.limit}`);
+for (const item of forbiddenScheduleViolations) console.log(`FORBIDDEN_SCHEDULE ${item.workflow} runs=${item.scheduledRunsPerActiveDay}`);
 if (aggregateBudgetExceeded) console.log(`AGGREGATE_OVER_BUDGET runs=${totalScheduledRunsPerActiveDay} limit=${aggregateLimit}`);
 
 const aggregateEnforced = policy.policy?.enforceAggregateScheduledBudget === true;
-if (enforce && (violations.length > 0 || unknownSchedules > 0 || (aggregateEnforced && aggregateBudgetExceeded))) process.exit(1);
+const forbiddenEnforced = policy.policy?.enforceForbiddenScheduledWorkflows === true;
+if (enforce && (
+  violations.length > 0 ||
+  unknownSchedules > 0 ||
+  (aggregateEnforced && aggregateBudgetExceeded) ||
+  (forbiddenEnforced && forbiddenScheduleViolations.length > 0)
+)) process.exit(1);
