@@ -1,35 +1,75 @@
 name: Loterias AI Archive Economics
+
 on:
   workflow_dispatch:
   push:
+    branches: [main]
     paths:
       - 'loterias-ai/scripts/enrich-national-archive-economics.mjs'
       - '.github/workflows/loterias-ai-archive-economics.yml'
+
 permissions:
   contents: write
+
+concurrency:
+  group: loterias-ai-archive-economics
+  cancel-in-progress: false
+
 jobs:
   enrich:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Persist economics into canonical archive
-        run: node loterias-ai/scripts/enrich-national-archive-economics.mjs
-      - name: Rebuild manifest and audit
+      - name: Recompute and persist economics on latest canonical archive
+        shell: bash
         run: |
-          node loterias-ai/scripts/build-national-archive-index.mjs
-          node loterias-ai/scripts/audit-national-archive.mjs
-      - name: Persist safely
-        run: |
-          mkdir -p /tmp/archive-econ
-          cp -r loterias-ai/data/archive/* /tmp/archive-econ/
-          git fetch origin main
-          git reset --hard origin/main
-          cp -r /tmp/archive-econ/* loterias-ai/data/archive/
+          set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add loterias-ai/data/archive
-          git commit -m 'data(loterias-ai): enrich national archive economics' || exit 0
-          git push origin HEAD:main
+
+          for attempt in 1 2 3 4 5; do
+            echo "attempt=$attempt"
+            git fetch origin main
+            base="$(git rev-parse origin/main)"
+            git reset --hard "$base"
+
+            node loterias-ai/scripts/enrich-national-archive-economics.mjs
+            node loterias-ai/scripts/build-national-archive-index.mjs
+            audit_rc=0
+            node loterias-ai/scripts/audit-national-archive.mjs || audit_rc=$?
+
+            git add loterias-ai/data/archive
+            if git diff --cached --quiet; then
+              if [ "$audit_rc" -ne 0 ]; then
+                echo 'Archive audit remains red without a new diagnostic diff' >&2
+                exit "$audit_rc"
+              fi
+              echo 'NO_SEMANTIC_CHANGE'
+              exit 0
+            fi
+
+            git commit -m 'data(loterias-ai): enrich national archive economics'
+            git fetch origin main
+            if [ "$(git rev-parse origin/main)" != "$base" ]; then
+              echo 'main moved; discarding stale economics and recomputing'
+              continue
+            fi
+
+            if git push origin HEAD:main; then
+              if [ "$audit_rc" -ne 0 ]; then
+                echo 'Persisted fail-closed archive diagnostics; failing workflow' >&2
+                exit "$audit_rc"
+              fi
+              exit 0
+            fi
+            echo 'push raced; recomputing'
+          done
+
+          echo 'Unable to persist current-state archive economics after 5 attempts' >&2
+          exit 1
