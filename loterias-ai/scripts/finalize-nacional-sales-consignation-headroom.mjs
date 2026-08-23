@@ -6,6 +6,7 @@ const EPS_SERIES=1e-6;
 const EPS_EUR=0.02;
 
 function key(name){return String(name??'').trim().toLocaleLowerCase('es-ES')}
+function finiteRow(row){return !!row&&Number.isFinite(row.series)&&Number.isFinite(row.amountEUR)}
 
 function territoryHeadroom(salesRows=[],consignationRows=[],level){
   const sales=new Map(salesRows.map(x=>[key(x.name),x]));
@@ -22,6 +23,18 @@ function territoryHeadroom(salesRows=[],consignationRows=[],level){
         reason:!s?'MISSING_IN_SALES':'MISSING_IN_CONSIGNATION',
         sales:s?{series:s.series,amountEUR:s.amountEUR}:null,
         consignation:c?{series:c.series,amountEUR:c.amountEUR}:null,
+        seriesHeadroom:null,
+        amountHeadroomEUR:null
+      };
+    }
+    if(!finiteRow(s)||!finiteRow(c)){
+      return {
+        level,
+        name:s.name??c.name??k,
+        comparable:false,
+        reason:!finiteRow(s)?'INVALID_SALES_VALUES':'INVALID_CONSIGNATION_VALUES',
+        sales:{series:s.series??null,amountEUR:s.amountEUR??null},
+        consignation:{series:c.series??null,amountEUR:c.amountEUR??null},
         seriesHeadroom:null,
         amountHeadroomEUR:null
       };
@@ -45,12 +58,17 @@ const both=sales?.dataAvailable===true&&consignation?.dataAvailable===true;
 const provinceRows=territoryHeadroom(sales?.structured?.provincias,consignation?.structured?.provincias,'province');
 const communityRows=territoryHeadroom(sales?.structured?.comunidades,consignation?.structured?.comunidades,'community');
 
+const aggregateInputs={
+  soldSeries:sales?.structured?.provinceSeriesTotal??null,
+  consignedSeries:consignation?.structured?.provinceSeriesTotal??null,
+  soldAmountEUR:sales?.structured?.provinceAmountEUR??null,
+  consignedAmountEUR:consignation?.structured?.provinceAmountEUR??null
+};
+const aggregateInputsValid=both&&Object.values(aggregateInputs).every(Number.isFinite);
+
 let aggregate=null;
-if(both){
-  const soldSeries=sales.structured?.provinceSeriesTotal??null;
-  const consignedSeries=consignation.structured?.provinceSeriesTotal??null;
-  const soldEUR=sales.structured?.provinceAmountEUR??null;
-  const consignedEUR=consignation.structured?.provinceAmountEUR??null;
+if(aggregateInputsValid){
+  const {soldSeries,consignedSeries,soldAmountEUR:soldEUR,consignedAmountEUR:consignedEUR}=aggregateInputs;
   aggregate={
     soldSeries,
     consignedSeries,
@@ -73,15 +91,17 @@ const sourceAmountExcessEUR=d?.crossSurface?.global?.globalAmountExcessEUR;
 const sourceDeltasPresent=Number.isFinite(sourceSeriesExcess)&&Number.isFinite(sourceAmountExcessEUR);
 const seriesAlgebraicDelta=aggregate&&sourceDeltasPresent?aggregate.seriesHeadroom+sourceSeriesExcess:null;
 const amountAlgebraicDeltaEUR=aggregate&&sourceDeltasPresent?aggregate.amountHeadroomEUR+sourceAmountExcessEUR:null;
-const algebraicConsistencyPass=both&&sourceDeltasPresent&&Math.abs(seriesAlgebraicDelta)<=EPS_SERIES&&Math.abs(amountAlgebraicDeltaEUR)<=EPS_EUR;
+const algebraicConsistencyPass=aggregateInputsValid&&sourceDeltasPresent&&Math.abs(seriesAlgebraicDelta)<=EPS_SERIES&&Math.abs(amountAlgebraicDeltaEUR)<=EPS_EUR;
 const sourceCrossSurfacePass=!both||d?.crossSurface?.qualityPass===true;
-const headroomQualityPass=both&&aggregate?.nonNegativeWithinTolerance===true&&missingTerritories.length===0&&negativeHeadroom.length===0&&algebraicConsistencyPass&&sourceCrossSurfacePass;
+const headroomQualityPass=both&&aggregateInputsValid&&aggregate?.nonNegativeWithinTolerance===true&&missingTerritories.length===0&&negativeHeadroom.length===0&&algebraicConsistencyPass&&sourceCrossSurfacePass;
 
 d.crossSurfaceHeadroom={
   definition:'consignation-minus-sales',
   officialOnly:true,
   noInference:true,
   zeroFillMissingTerritories:false,
+  aggregateInputs,
+  aggregateInputsValid,
   aggregate,
   provinces:provinceRows,
   communities:communityRows,
@@ -104,12 +124,15 @@ d.crossSurfaceHeadroom={
 d.aggregateHeadroomPersisted=aggregate!==null;
 d.salesConsignationHeadroomRequired=true;
 d.salesConsignationHeadroomAlgebraicConsistencyRequired=true;
+d.salesConsignationFiniteInputsRequired=true;
 
 if(d.bothSurfacesReady===true){
   d.qualityPass=d.qualityPass===true&&headroomQualityPass;
   d.analysisReady=d.analysisReady===true&&headroomQualityPass;
   if(!headroomQualityPass){
-    d.readinessReason='SALES_EXCEED_CONSIGNATION_OR_CROSS_SURFACE_RECONCILIATION_FAILED';
+    d.readinessReason=!aggregateInputsValid
+      ?'NON_FINITE_SALES_OR_CONSIGNATION_TOTALS'
+      :'SALES_EXCEED_CONSIGNATION_OR_CROSS_SURFACE_RECONCILIATION_FAILED';
   }
 }
 
@@ -118,6 +141,7 @@ console.log(JSON.stringify({
   drawDate:d.drawDate,
   drawId:d.drawId,
   bothSurfacesReady:d.bothSurfacesReady,
+  aggregateInputsValid:d.crossSurfaceHeadroom.aggregateInputsValid,
   aggregateHeadroomPersisted:d.aggregateHeadroomPersisted,
   aggregate:d.crossSurfaceHeadroom.aggregate,
   missingTerritories:d.crossSurfaceHeadroom.missingTerritories.length,
