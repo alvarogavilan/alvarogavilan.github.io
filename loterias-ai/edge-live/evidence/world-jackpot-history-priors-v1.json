@@ -1,0 +1,41 @@
+{
+  "version": "world-jackpot-history-priors-v1",
+  "generatedAt": "2026-08-23T21:50:00Z",
+  "mode": "RESEARCH_ONLY",
+  "realMoneyAllowed": false,
+  "stakeEUR": 0,
+  "purpose": "Persist comparable public jackpot-history priors without importing cross-market economics into Spain execution gates.",
+  "globalTrackers": {
+    "casinoListings": {"trackingSince":"2009-06","jackpotsTracked":409,"totalWinsRecorded":254472,"source":"https://www.casinolistings.com/jackpots/progressives","use":"DISCOVERY_AND_HISTORICAL_PRIOR_ONLY"},
+    "gamesysAggregate": {"trackingSince":"2010-02","currentJackpotsTracked":11,"totalWinsRecorded":4748,"totalPaidOutGBP":207032576,"source":"https://www.casinolistings.com/jackpots/gamesys","use":"FAMILY_PRIOR_ONLY"},
+    "blueprintAggregate": {"totalWinsRecorded":1232,"source":"https://www.casinolistings.com/jackpots/blueprint-gaming","warning":"Aggregate includes Blueprint progressive families and does not mean 1232 clean Royal/Regal observations.","use":"DISCOVERY_ONLY"}
+  },
+  "diamondBonanzaHistoricalFamily": {
+    "provider":"Gamesys","market":"UK historical","trigger":"five diamonds on payline 5 while wagering maximum coins",
+    "tiers":[
+      {"denominationGBP":0.25,"seedGBP":500,"winsRecorded":1060,"averageWinGBP":7309,"biggestWinGBP":35781,"meanToSeedRatio":14.618,"source":"https://www.casinolistings.com/jackpots/gamesys/diamond-bonanza-25p-jackpot"},
+      {"denominationGBP":0.5,"seedGBP":1000,"winsRecorded":243,"averageWinGBP":14044,"biggestWinGBP":57740,"smallestWinGBP":1101,"meanToSeedRatio":14.044,"source":"https://www.casinolistings.com/jackpots/gamesys/diamond-bonanza-50p-jackpot"},
+      {"denominationGBP":1,"seedGBP":2000,"winsRecorded":267,"averageWinGBP":28566,"biggestWinGBP":123226,"smallestWinGBP":2336,"meanToSeedRatio":14.283,"source":"https://www.casinolistings.com/jackpots/gamesys/diamond-bonanza-1pound-jackpot"}
+    ],
+    "winsRecordedTotal":1570,
+    "meanToSeedRatioRange":[14.044,14.618],
+    "interpretation":"Three denomination tiers show close historical mean/seed scaling. This is a strong provider-family prior, not evidence that current Botemania Spain has the same seed, trigger probability or contribution.",
+    "spainPromotionAllowed":false,
+    "spainBlockers":["CURRENT_SPAIN_SEED_NOT_VERIFIED","CURRENT_SPAIN_TRIGGER_PROBABILITY_NOT_VERIFIED","CURRENT_SPAIN_JACKPOT_CONTRIBUTION_NOT_VERIFIED","HISTORICAL_UK_TO_CURRENT_SPAIN_CONFIGURATION_EQUIVALENCE_NOT_VERIFIED"]
+  },
+  "tikiFamilyHistoricalControls": {
+    "tikiIsland":{"provider":"Gamesys","market":"UK historical","seedGBP":20000,"winsRecorded":216,"averageWinGBP":92822,"biggestWinGBP":189429,"smallestWinGBP":21932,"meanToSeedRatio":4.6411,"source":"https://www.casinolistings.com/jackpots/gamesys/tiki-island-jackpot","warning":"Current Spain La Isla de Tiki Bote documents reset-to-zero/shared-network rules, so historical UK seed mechanics must not be imported."},
+    "tikiTemple5p":{"seedGBP":2000,"winsRecorded":203,"averageWinGBP":104433,"biggestWinGBP":396091,"smallestWinGBP":3553,"meanToSeedRatio":52.2165,"source":"https://www.casinolistings.com/jackpots/gamesys/tiki-temple-5p-jackpot"},
+    "tikiTemple10p":{"seedGBP":4000,"winsRecorded":82,"averageWinGBP":192012,"biggestWinGBP":684102,"smallestWinGBP":6163,"meanToSeedRatio":48.003,"source":"https://www.casinolistings.com/jackpots/gamesys/tiki-temple-10p-jackpot"},
+    "interpretation":"Tiki Temple 5p/10p show broadly similar historical scale after seed normalization, while Tiki Island is a different mechanism scale. Do not merge Tiki Temple and Tiki Island samples."
+  },
+  "jackpotKing": {
+    "mechanism":{"provider":"Blueprint Gaming","royalMbwbGBP":3500,"regalMbwbGBP":35000,"probabilityIncreasesWithJackpotValue":true,"resetToReserve":true,"sources":["https://fileservice.blueprintgaming.com/?customer=PADDYPOWERBETFAIR&fileType=help&gameEngineID=tedjk&language=EN&profile=jackpotkingdeluxe3","https://europeangaming.eu/portal/press-releases/2018/09/27/29102/blueprint-gaming-raises-the-bar-with-jackpot-king-deluxe/"]},
+    "cleanPublicRoyalRegalEndpoints":[{"tier":"ROYAL","amountGBP":1047,"normalizedToMbwb":0.2991428571},{"tier":"ROYAL","amountGBP":1929,"normalizedToMbwb":0.5511428571},{"tier":"ROYAL","amountGBP":2261,"normalizedToMbwb":0.646},{"tier":"ROYAL","amountGBP":3024,"normalizedToMbwb":0.864},{"tier":"REGAL","amountGBP":15859,"normalizedToMbwb":0.4531142857}],
+    "endpointSource":"https://www.casinolistings.com/jackpots/blueprint-gaming",
+    "sampleAdequateForExecution":false,
+    "blockers":["ROYAL_REGAL_ENDPOINT_SAMPLE_TOO_SMALL","PLAYER_LEVEL_HAZARD_FUNCTION_NOT_IDENTIFIED","CROSS_MARKET_HAZARD_EQUIVALENCE_NOT_VERIFIED"]
+  },
+  "videoPokerControl":{"game":"Gamesys Progressive Jacks or Better","chanceOfJackpot":"1/160689","breakEvenGBP":17477,"seedGBP":2000,"winsRecorded":49,"averageWinGBP":13305,"source":"https://www.casinolistings.com/jackpots/gamesys/progressive-jacks-or-better-jackpot","use":"KNOWN_BREAK_EVEN_CONTROL_FOR_EDGE_MODEL_VALIDATION"},
+  "guards":{"noCrossMarketCurrencySubstitution":true,"noSeedSubstitution":true,"noContributionAsHazardProxy":true,"noHistoricalMeanAsCurrentBreakEven":true,"noRealMoneyPromotionFromPriors":true}
+}
