@@ -1,0 +1,65 @@
+{
+  "version": "edge-spain-persistent-state-candidates-v1",
+  "generatedAt": "2026-08-23T22:27:00Z",
+  "mode": "DISCOVERY_ONLY",
+  "realMoneyAllowed": false,
+  "stakeEUR": 0,
+  "purpose": "Expand EDGE Spain beyond cash progressive meters into persistent/collectible state mechanisms. A visible meter is not an advantage unless state ownership/persistence and conditional EV are verified.",
+  "candidates": [
+    {
+      "game": "La Voz",
+      "operator": "Botemania",
+      "url": "https://www.botemania.es/juegos/slots-online/la-voz",
+      "stateSignals": ["visible Bonos counter", "Bonos are accumulated for Juego Superior", "upper-game access consumes accumulated state"],
+      "publishedBaseRtpByStakePct": [{"stakeEUR":0.2,"rtpPct":80},{"stakeEUR":1,"rtpPct":80},{"stakeEUR":5,"rtpPct":90},{"stakeEUR":10,"rtpPct":90},{"stakeEUR":15,"rtpPct":95}],
+      "advantageStatus": "UNPROVEN",
+      "blockers": ["STATE_PERSISTENCE_ACROSS_EXIT_REENTRY_NOT_VERIFIED","STATE_TRANSFER_OR_INHERITANCE_FROM_PRIOR_PLAYER_NOT_VERIFIED","CONDITIONAL_EV_OF_STATE_NOT_COMPUTED"]
+    },
+    {
+      "game": "La Mina de Oro",
+      "operator": "Botemania",
+      "url": "https://www.botemania.es/juegos/slots-online/la-mina-de-oro",
+      "stateSignals": ["visible Bonos counter", "200 Bonos unlock Juego Superior", "upper-game spins consume Bonos plus cash"],
+      "advantageStatus": "UNPROVEN",
+      "blockers": ["STATE_PERSISTENCE_ACROSS_EXIT_REENTRY_NOT_VERIFIED","STATE_TRANSFER_OR_INHERITANCE_FROM_PRIOR_PLAYER_NOT_VERIFIED","BONUS_COUNTER_VALUE_PER_UNIT_NOT_COMPUTED"]
+    },
+    {
+      "game": "El Tesoro de la Jungla",
+      "operator": "Botemania",
+      "url": "https://www.botemania.es/juegos/slots-online/el-tesoro-de-la-jungla",
+      "stateSignals": ["visible Bonos counter", "Juego Superior has a Gem counter", "more gems unlock more minigame options"],
+      "advantageStatus": "UNPROVEN_HIGH_INFORMATION_VALUE",
+      "blockers": ["GEM_COUNTER_PERSISTENCE_NOT_VERIFIED","ENTRY_STATE_NOT_OBSERVABLE_WITHOUT_WAGER_NOT_VERIFIED","CONDITIONAL_MINIGAME_EV_NOT_COMPUTED"]
+    },
+    {
+      "game": "El Cartel",
+      "operator": "Botemania",
+      "url": "https://www.botemania.es/juegos/slots-online/el-cartel",
+      "stateSignals": ["visible Bonos/Plata counter", "vertical-line symbols increase active lines in Juego Superior", "up to 9 active upper-game paylines"],
+      "advantageStatus": "UNPROVEN_HIGH_INFORMATION_VALUE",
+      "blockers": ["VERTICAL_LINE_STATE_PERSISTENCE_NOT_VERIFIED","STATE_COST_BASIS_NOT_KNOWN","CONDITIONAL_EV_NOT_COMPUTED"]
+    },
+    {
+      "game": "El Tesoro Pirata",
+      "operator": "Botemania",
+      "url": "https://www.botemania.es/juegos/slots-online/el-tesoro-pirata",
+      "stateSignals": ["visible Bonos counter", "upper-game access requires accumulated Bonos plus cash"],
+      "advantageStatus": "UNPROVEN",
+      "blockers": ["STATE_PERSISTENCE_ACROSS_EXIT_REENTRY_NOT_VERIFIED","CONDITIONAL_EV_NOT_COMPUTED"]
+    }
+  ],
+  "edgeResearchProtocol": [
+    "Open candidate without wagering and record all visible state counters.",
+    "Exit and re-enter without wagering to test same-account persistence.",
+    "Repeat across fresh sessions only when legal/public and without creating artificial paid state.",
+    "Do not infer prior-player inheritance from same-account persistence.",
+    "Only compute an entry threshold after the state transition probabilities and paytable are recovered.",
+    "Promote to a modeled lane only if the state can be observed before wagering and changes conditional EV in a reproducible way."
+  ],
+  "guards": {
+    "noPromotions": true,
+    "noPaidStateCreationForResearch": true,
+    "visibleMeterDoesNotEqualAdvantage": true,
+    "noRealMoneyPromotion": true
+  }
+}
