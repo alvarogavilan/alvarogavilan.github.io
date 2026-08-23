@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "state": "BLOCKED_BEFORE_FIRST_STEP",
   "runnerReached": false,
-  "lastObservedAt": "2026-08-23T02:01:27Z",
+  "lastObservedAt": "2026-08-23T03:00:15Z",
   "evidence": {
     "workflow": "Loterias AI CI",
     "runId": 32535625575,
-    "runAttempt": 10,
-    "jobId": 97092723046,
+    "runAttempt": 11,
+    "jobId": 97132176796,
     "jobConclusion": "failure",
     "stepsPresent": false,
     "logsPresent": false,
@@ -15,8 +15,9 @@
   },
   "automaticRecoveryDetection": true,
   "recoveryContract": {
-    "healthyWhen": "A GitHub-hosted runner executes the repository-independent canary step.",
+    "healthyWhen": "A GitHub-hosted runner executes the repository-independent canary step and all critical recovery workflows are dispatched successfully.",
     "scientificProgressMayResumeOnlyAfterRunnerReached": true,
+    "appMayUnblockOnlyWhenStateHealthy": true,
     "noFabricatedProgressWhileBlocked": true
   }
 }
