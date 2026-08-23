@@ -1,0 +1,85 @@
+{
+  "version": "spain-regulatory-jackpot-data-attack-v1",
+  "generatedAt": "2026-08-23T22:06:00Z",
+  "mode": "RESEARCH_ONLY",
+  "jurisdiction": "Spain",
+  "realMoneyAllowed": false,
+  "stakeEUR": 0,
+  "legalDataObligations": {
+    "operatorGameInformation": {
+      "source": "Orden HAP/1370/2014, art. 12.1.e-k",
+      "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2014-8135",
+      "requiredPerGame": [
+        "expected mathematical return calculated over one year",
+        "actual prize-return percentage over amounts wagered for each of the six preceding months, excluding jackpot prizes",
+        "minimum and maximum stake",
+        "winning combinations and assigned prizes",
+        "percentage of player participation allocated to the jackpot"
+      ],
+      "edgeValue": "MONTHLY_REAL_RETURN_EX_JACKPOT_CAN_SEPARATE_OBSERVED_BASE_RETURN_FROM_PROGRESSIVE_COMPONENT"
+    },
+    "progressiveDefinition": {
+      "source": "Orden HAP/1370/2014",
+      "fact": "A progressive jackpot is accumulated from amounts obtained from player participation.",
+      "edgeValue": "CONFIRMS_PLAYER_FUNDED_PROGRESSIVE_ECONOMY"
+    },
+    "internalControlReporting": {
+      "source": "DGOJ SCI data model / quality guide",
+      "fields": ["BoteId","BoteDesc","FechaInicio","FechaFin","SaldoInicial","IncrementoBotes","DecrementoBotes","SaldoFinal"],
+      "interpretation": "Operators report each jackpot with identity, opening balance, contributions, payouts/redirections and closing balance within the internal control system.",
+      "publicGranularityRecovered": false,
+      "edgeValue": "IF_RECOVERABLE_OR_OBTAINABLE, DIRECTLY_IDENTIFIES_POOL_FLOWS_AND_RESET_HISTORY"
+    }
+  },
+  "priorityExtractionTargets": [
+    {
+      "operator": "botemania-es",
+      "target": "six-month actual return ex-jackpot for every EDGE-relevant slot",
+      "status": "NOT_YET_RECOVERED_FROM_PUBLIC_INDEX",
+      "likelySurfaces": ["in-game information/rules UI","operator GraphQL/content APIs","game launcher/configuration payload"],
+      "noAuthenticationBypass": true
+    },
+    {
+      "operator": "botemania-es",
+      "target": "per-game percentage of stake allocated to jackpot",
+      "status": "PARTIALLY_RECOVERED_FOR_MULTIPLE_GAMES",
+      "examples": ["Fishin Frenzy JPK","Mega Bars Fortune Wheel JPK","Tiki Templo","Burbujas Saltarinas"]
+    },
+    {
+      "operator": "daznbet-es",
+      "target": "same six-month return/jackpot-allocation disclosures and any public jackpot meter source",
+      "status": "DISCOVERY",
+      "noAuthenticationBypass": true
+    },
+    {
+      "operator": "dgoj",
+      "target": "public or research-accessible jackpot microdata matching BOT/DesgloseBotes fields",
+      "status": "PUBLIC_MARKET_DATA_FOUND_ONLY_AT_AGGREGATE_LEVEL",
+      "researchRequestPortalExists": true,
+      "note": "No external request has been submitted."
+    }
+  ],
+  "modelConsequences": {
+    "ifSixMonthReturnRecovered": [
+      "compare theoretical RTP with six independent recent realized-return observations excluding jackpots",
+      "detect configuration drift or stale operator documentation",
+      "estimate a conservative base-return band without contaminating it with progressive payouts",
+      "combine with verified jackpot contribution and meter mechanics only after player-level hazard is identified"
+    ],
+    "ifBOTLikeHistoryRecovered": [
+      "reconstruct contribution flow by pool",
+      "identify reset/payout dates and amounts",
+      "estimate seed/reserve behavior",
+      "separate linked pools from superficially similar titles",
+      "fit state-dependent hazard where enough clean events exist"
+    ]
+  },
+  "guards": {
+    "noAuthenticationBypass": true,
+    "noPrivateOperatorDataClaim": true,
+    "noDgojMicrodataClaimWithoutAccess": true,
+    "noJackpotContributionAsHazardProxy": true,
+    "noRealMoneyPromotionFromRegulatoryExistence": true,
+    "realMoneyAllowed": false
+  }
+}
