@@ -1,10 +1,11 @@
 {
-  "version": "1.1.0",
-  "effectiveFrom": "2026-08-19",
+  "version": "1.2.0",
+  "effectiveFrom": "2026-08-23",
   "mode": "COST_GUARD_ACTIVE",
   "scope": ".github/workflows/loterias-ai-*.yml",
   "maxScheduledRunsPerActiveDay": 8,
   "targetScheduledRunsPerActiveDay": 4,
+  "maxTotalScheduledRunsPerActiveDay": 256,
   "principle": "GitHub Actions is reserved for external evidence acquisition, official settlement and infrequent integrity gates. Deterministic presentation and derived progress belong in the application/browser whenever persistence is not scientifically required.",
   "policy": {
     "applicationRuntimeIsPrimary": true,
@@ -12,6 +13,7 @@
     "githubActionsForManualRecovery": true,
     "githubActionsForLowFrequencyFallback": true,
     "highFrequencyResearchPollingAllowedByDefault": false,
+    "enforceAggregateScheduledBudget": true,
     "noCronForPurePresentation": true,
     "preferEventDrivenDerivedState": true
   },
@@ -45,7 +47,8 @@
     "neverReduceScientificBoundaryToSaveActions": true,
     "neverDiscardRequiredFutureEvidenceToSaveActions": true,
     "preferOneWorkflowToMultipleChainedWorkflows": true,
-    "suppressTimestampOnlyCommits": true
+    "suppressTimestampOnlyCommits": true,
+    "aggregateScheduledBudgetIsHardGate": true
   },
   "temporaryExceptions": {
     ".github/workflows/loterias-ai-lightning-clean-segment-v2.yml": {
