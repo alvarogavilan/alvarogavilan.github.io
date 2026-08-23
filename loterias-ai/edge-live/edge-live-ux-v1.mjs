@@ -1,14 +1,8 @@
 // EDGE LIVE presentation + fail-closed client execution UX.
 //
-// There are two independent ways the top banner may become GREEN:
-// 1) mirror the existing scientific renderer's already-authorized JUGAR AHORA;
-// 2) a future client execution contract that is explicitly enabled, has every
-//    scientific verification flag true, is time-valid, has exact stake limits,
-//    and whose verified threshold is satisfied by a fresh unambiguous public
-//    Botemania feed observation.
-//
-// The contract shipped by default is DISABLED and realMoneyAllowed=false.
-// This module never invents a threshold and never opens or places a bet itself.
+// The top banner becomes GREEN only by mirroring an already-authorized
+// scientific plan or by a future fully verified client execution contract.
+// The shipped contract is disabled and cannot authorize wagering.
 
 const ART_BY_NAME = new Map([
   ["Fishin' Frenzy: Jackpot King", 'https://assets.ballys.com/m/76ed09cf022ed4d0/original/es-gametiles-fishin-frenzy-jpk-fishin-frenzy-jpk-tile-25-972.webp'],
@@ -25,6 +19,8 @@ const BOT_QUERY = `query loadJackpots {
   redTigerJackpots { id amount }
   blueprintJackpots { id amount }
 }`;
+// Exact Spain MBWB caps recovered from the Botemania in-game operator UI.
+// These are maximum-drop reference values, NOT +EV entry thresholds.
 const JPK_MBWB_CAPS_EUR = { ROYAL: 4078.97, REGAL: 40789.77 };
 const ALLOWED_MONITOR_PREFIXES = ['generic:', 'redTiger:', 'blueprint:'];
 const REQUIRED_VERIFICATION_FLAGS = [
@@ -103,7 +99,8 @@ function syncJpkCapProgress() {
     const remaining = Math.max(0, cap - value);
     return `<div style="padding:10px 8px;background:#061a15e8;text-align:center"><div style="font-size:7px;font-weight:950;color:#91b4a5">${name} · % DEL MBWB</div><div style="font-size:14px;font-weight:1000;margin-top:4px">${pct.toFixed(1)}%</div><div style="font-size:7px;color:#9fb6ab;margin-top:2px">faltan ${money(remaining)} al límite</div></div>`;
   };
-  box.innerHTML = `${cell('ROYAL', royal, JPK_MBWB_CAPS_EUR.ROYAL)}${cell('REGAL', regal, JPK_MBWB_CAPS_EUR.REGAL)}<div style="grid-column:1/-1;padding:6px 8px;background:#06140f;text-align:center;font-size:7px;color:#789083">Proximidad al límite MBWB · NO es todavía un umbral +EV</div>`;
+  const html = `${cell('ROYAL', royal, JPK_MBWB_CAPS_EUR.ROYAL)}${cell('REGAL', regal, JPK_MBWB_CAPS_EUR.REGAL)}<div style="grid-column:1/-1;padding:6px 8px;background:#06140f;text-align:center;font-size:7px;color:#789083">Proximidad al límite MBWB · NO es todavía un umbral +EV</div>`;
+  if (box.innerHTML !== html) box.innerHTML = html;
 }
 
 function setText(node, value) {
@@ -164,7 +161,6 @@ async function refreshContract() {
     contractState.liveOk = false;
     contractState.liveError = String(e?.message || e);
   }
-  schedule();
 }
 
 async function probeContractFeed() {
@@ -211,7 +207,6 @@ async function probeContractFeed() {
     contractState.liveError = String(e?.message || e);
   } finally {
     contractState.probeRunning = false;
-    schedule();
   }
 }
 
@@ -289,25 +284,16 @@ function syncInstantSignal() {
   }
 }
 
-let queued = false;
-function schedule() {
-  if (queued) return;
-  queued = true;
-  requestAnimationFrame(() => {
-    queued = false;
-    decorateRadar();
-    syncJpkCapProgress();
-    syncInstantSignal();
-  });
+function syncUi() {
+  decorateRadar();
+  syncJpkCapProgress();
+  syncInstantSignal();
 }
 
-// Observe only content changes from the scientific renderer. Attribute changes
-// are deliberately excluded so the UX module cannot recursively trigger itself.
-const observer = new MutationObserver(schedule);
-observer.observe(document.body, { childList: true, subtree: true, characterData: true });
-
-schedule();
+syncUi();
 refreshContract();
-setInterval(() => { syncJpkCapProgress(); syncInstantSignal(); }, 1000);
+// Deliberately use a simple timer instead of a MutationObserver: the scientific
+// renderer refreshes frequently, and this avoids any observer/self-render loop.
+setInterval(syncUi, 1000);
 setInterval(refreshContract, 5000);
 setInterval(probeContractFeed, 2000);
