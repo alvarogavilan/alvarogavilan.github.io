@@ -6,8 +6,9 @@ on:
     paths:
       - '.github/workflows/loterias-ai-actions-runner-canary.yml'
   workflow_dispatch:
-  schedule:
-    - cron: '*/5 * * * *'
+  workflow_run:
+    workflows: ['Loterias AI Lightning Clean Segment V2']
+    types: [completed]
 
 permissions:
   contents: write
@@ -19,6 +20,7 @@ concurrency:
 
 jobs:
   runner-canary:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
