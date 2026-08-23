@@ -1,0 +1,51 @@
+{
+  "version": "client-execution-contract-v1",
+  "generatedAt": "2026-08-23T22:22:00Z",
+  "enabled": false,
+  "realMoneyAllowed": false,
+  "scientificGatePassed": false,
+  "operator": "botemania-es",
+  "game": {
+    "id": null,
+    "name": null,
+    "url": null
+  },
+  "verification": {
+    "identityVerified": false,
+    "thresholdVerified": false,
+    "stakeVerified": false,
+    "strategyVerified": false,
+    "rulesFingerprintVerified": false,
+    "prospectiveValidationPassed": false
+  },
+  "conditions": [],
+  "allConditionsRequired": true,
+  "order": {
+    "stakePerSpinEUR": null,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0,
+    "validFrom": null,
+    "validUntil": null,
+    "maxSignalAgeSeconds": 5
+  },
+  "purpose": "Fail-closed browser execution contract. It exists so a future fully verified static threshold can be evaluated against the direct public live feed without relying on Telegram or a fresh backend render. This disabled contract cannot authorize wagering.",
+  "conditionSchema": {
+    "monitorKeyExample": "generic:some_verified_id or blueprint:JACKPOTKING_ROYAL",
+    "supportedComparators": ["GTE", "LTE"],
+    "requiredFields": ["monitorKey", "comparator", "thresholdEUR"]
+  },
+  "hardGuards": {
+    "browserMustFailClosed": true,
+    "allSixVerificationFlagsRequired": true,
+    "realMoneyAllowedMustBeTrue": true,
+    "scientificGatePassedMustBeTrue": true,
+    "contractMustBeEnabled": true,
+    "futureValidUntilRequired": true,
+    "positiveExactStakeRequired": true,
+    "positiveMaxSpinsRequired": true,
+    "positiveMaxTotalStakeRequired": true,
+    "unambiguousFreshDirectFeedRequired": true,
+    "noResearchScreenCanEnableThisContract": true,
+    "noCrossMarketPriorCanEnableThisContract": true
+  }
+}
