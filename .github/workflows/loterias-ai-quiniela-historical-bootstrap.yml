@@ -6,8 +6,6 @@ on:
     workflows:
       - 'Loterias AI Quiniela Historical SELAE Cross-check'
     types: [completed]
-  schedule:
-    - cron: '1,16,31,46 * * * *'
   push:
     paths:
       - '.github/workflows/loterias-ai-quiniela-historical-bootstrap.yml'
@@ -17,8 +15,8 @@ permissions:
   contents: write
 
 concurrency:
-  # Keep scheduled maintenance from delaying the durable checkpoint that follows
-  # each primary historical run. Runs of the same trigger class remain serialized
+  # The durable checkpoint follows the primary historical run or an explicit
+  # manual/code-change trigger. Runs of the same trigger class remain serialized
   # and are never cancelled, preserving deterministic archive writes.
   group: loterias-ai-quiniela-historical-durable-fallback-${{ github.event_name }}
   cancel-in-progress: false
