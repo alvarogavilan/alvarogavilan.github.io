@@ -1,5 +1,5 @@
 {
-  "version": "1.2.0",
+  "version": "1.3.0",
   "effectiveFrom": "2026-08-23",
   "mode": "COST_GUARD_ACTIVE",
   "scope": ".github/workflows/loterias-ai-*.yml",
@@ -14,6 +14,7 @@
     "githubActionsForLowFrequencyFallback": true,
     "highFrequencyResearchPollingAllowedByDefault": false,
     "enforceAggregateScheduledBudget": true,
+    "enforceForbiddenScheduledWorkflows": true,
     "noCronForPurePresentation": true,
     "preferEventDrivenDerivedState": true
   },
@@ -24,6 +25,10 @@
     "HISTORICAL_MAINTENANCE": {"scheduledAllowed": true, "preferredCadence": "weekly or post-draw"},
     "DIAGNOSTIC": {"scheduledAllowed": false, "execution": "manual or code-change trigger"}
   },
+  "forbiddenScheduledWorkflows": [
+    ".github/workflows/loterias-ai-actions-runner-canary.yml",
+    ".github/workflows/loterias-ai-lightning-source-head-probe.yml"
+  ],
   "lightning": {
     "authoritativeV2CaptureMinutes": 10,
     "minimumAllowedScheduledMinutes": 10,
@@ -48,7 +53,8 @@
     "neverDiscardRequiredFutureEvidenceToSaveActions": true,
     "preferOneWorkflowToMultipleChainedWorkflows": true,
     "suppressTimestampOnlyCommits": true,
-    "aggregateScheduledBudgetIsHardGate": true
+    "aggregateScheduledBudgetIsHardGate": true,
+    "forbiddenScheduledWorkflowIsHardGate": true
   },
   "temporaryExceptions": {
     ".github/workflows/loterias-ai-lightning-clean-segment-v2.yml": {
