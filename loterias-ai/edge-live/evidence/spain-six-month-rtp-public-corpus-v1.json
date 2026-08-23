@@ -1,0 +1,134 @@
+{
+  "version": "spain-six-month-rtp-public-corpus-v1",
+  "generatedAt": "2026-08-24T00:58:00+02:00",
+  "mode": "RESEARCH_ONLY",
+  "realMoneyAllowed": false,
+  "stakeEUR": 0,
+  "regulatoryBasis": {
+    "rule": "Orden HAP/1370/2014, art. 9.1.e",
+    "requirement": "For each machine game, operators must make available the expected mathematical return and the actual prize return over amounts wagered for each of the preceding six months; jackpot prizes are excluded from that actual-return calculation.",
+    "source": "https://www.boe.es/buscar/doc.php?id=BOE-A-2014-8135"
+  },
+  "publicCurrentSource": {
+    "operator": "bet365-es",
+    "helpPage": "https://help.bet365.es/s/es-es/fair-payouts",
+    "pdf": "https://assets.ctfassets.net/oc7v9ngssn28/1tH5LXFy6S0fG0Tm5vGNHB/ae9cbcb06462491aaee9e766b305dc99/Spanish.pdf",
+    "period": ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"],
+    "pages": 53,
+    "jackpotExcludedFromObservedMonthlyReturn": true
+  },
+  "blueprintJackpotKingExamples": [
+    {
+      "game": "Eye Of Horus Jackpot King",
+      "minBetEUR": 0.10,
+      "maxBetEUR": 100.00,
+      "theoreticalRtpPercent": 95.46,
+      "actualReturnPercentByMonth": {
+        "2026-01": 99.65,
+        "2026-02": 90.63,
+        "2026-03": 97.30,
+        "2026-04": 94.80,
+        "2026-05": 92.55,
+        "2026-06": 93.78
+      },
+      "edgeUse": "High-value Spain cross-operator base-RTP fingerprint. Theoretical RTP matches the Botemania Spain Eye of Horus JPK figure already recovered, but this alone does not prove identical jackpot contribution, reserve, caps or hazard."
+    },
+    {
+      "game": "Eye of Horus Megaways Jackpot King",
+      "minBetEUR": 0.10,
+      "maxBetEUR": 5.00,
+      "theoreticalRtpPercent": 94.50,
+      "actualReturnPercentByMonth": {
+        "2026-01": 99.66,
+        "2026-02": 91.70,
+        "2026-03": 92.07,
+        "2026-04": 94.68,
+        "2026-05": 101.57,
+        "2026-06": 85.49
+      }
+    },
+    {
+      "game": "Ted Jackpot King",
+      "minBetEUR": 0.10,
+      "maxBetEUR": 100.00,
+      "theoreticalRtpPercent": 93.04,
+      "actualReturnPercentByMonth": {
+        "2026-01": 90.29,
+        "2026-02": 90.25,
+        "2026-03": 91.76,
+        "2026-04": 98.15,
+        "2026-05": 95.46,
+        "2026-06": 89.99
+      }
+    },
+    {
+      "game": "The Goonies Return Jackpot King",
+      "minBetEUR": 0.10,
+      "maxBetEUR": 100.00,
+      "theoreticalRtpPercent": 93.55,
+      "actualReturnPercentByMonth": {
+        "2026-01": 89.39,
+        "2026-02": 84.08,
+        "2026-03": 93.64,
+        "2026-04": 89.60,
+        "2026-05": 96.91,
+        "2026-06": 91.94
+      }
+    },
+    {
+      "game": "Bankin' Bacon Jackpot King",
+      "minBetEUR": 0.10,
+      "maxBetEUR": 20.00,
+      "theoreticalRtpPercent": 94.50,
+      "actualReturnPercentByMonth": {
+        "2026-01": 107.84,
+        "2026-02": 83.05,
+        "2026-03": 77.05,
+        "2026-04": 81.56,
+        "2026-05": 103.10,
+        "2026-06": 102.14
+      }
+    },
+    {
+      "game": "Lava Lock Jackpot King",
+      "minBetEUR": 0.30,
+      "maxBetEUR": 4.80,
+      "theoreticalRtpPercent": 94.50,
+      "actualReturnPercentByMonth": {
+        "2026-01": 94.68,
+        "2026-02": 93.58,
+        "2026-03": 90.56,
+        "2026-04": 93.69,
+        "2026-05": 90.13,
+        "2026-06": 93.54
+      }
+    }
+  ],
+  "scientificInterpretation": {
+    "usefulFor": [
+      "Current Spanish configuration fingerprinting across operators",
+      "Separating observed non-jackpot return from jackpot overlay research",
+      "Detecting configuration changes through theoretical RTP/min-max bet mismatches",
+      "Building current Spain provider/operator matrices before transferring historical priors"
+    ],
+    "notSufficientFor": [
+      "Estimating jackpot hazard from monthly RTP alone",
+      "Proving same Jackpot King pool across operators",
+      "Proving same contribution/reserve/cap configuration",
+      "Authorizing real-money play"
+    ]
+  },
+  "nextHarvestTargets": [
+    "Recover equivalent six-month RTP surfaces from Botemania, DAZN BET and other licensed Spanish operators",
+    "Join by normalized game/provider fingerprint",
+    "Compare theoretical RTP, min/max stakes and jackpot rule fingerprints",
+    "Keep jackpot-hazard evidence separate from base-game monthly returns"
+  ],
+  "guards": {
+    "jackpotPrizesExcludedFromMonthlyReturn": true,
+    "noMonthlyRtpAsShortTermPrediction": true,
+    "noCrossOperatorPoolAssumption": true,
+    "noCrossMarketHazardTransfer": true,
+    "realMoneyAllowed": false
+  }
+}
