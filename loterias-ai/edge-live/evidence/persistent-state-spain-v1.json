@@ -1,6 +1,6 @@
 {
-  "version": "persistent-state-spain-v1",
-  "generatedAt": "2026-08-24T01:57:00+02:00",
+  "version": "persistent-state-spain-v1.1-scope-refined",
+  "generatedAt": "2026-08-24T02:19:00+02:00",
   "market": "ES",
   "status": "RESEARCH_ONLY_NO_PLAY",
   "realMoneyAllowed": false,
@@ -17,7 +17,8 @@
         "bonusConsumptionRequiredForUpperGame": true,
         "accumulativeExtraSpinFeature": true,
         "accumulativeExtraSpinTargetPieces": 8,
-        "stakeRangeEUR": [0.20, 15.00]
+        "stakeRangeEUR": [0.20, 15.00],
+        "initialGameRtpByStakePct": {"0.20":80,"1":80,"5":90,"10":90,"15":95}
       },
       "technicalRulesComparator": {
         "source": "https://www.paston.es/img/logos/pdf/el-tesoro-pirata-plus.pdf",
@@ -28,33 +29,63 @@
         "bonusApproxConversionTextEUR": 0.80,
         "bonusApproxConversionIsDirectCashEV": false,
         "upperGameRequiresBalanceAndBonuses": true,
+        "upperGameStakeStructures": [
+          {"cashEUR":0.20,"bonuses":1},
+          {"cashEUR":1,"bonuses":5},
+          {"cashEUR":5,"bonuses":25},
+          {"cashEUR":10,"bonuses":50},
+          {"cashEUR":15,"bonuses":75},
+          {"cashEUR":15,"bonuses":150}
+        ],
+        "technicalStateTopology": {
+          "bonusCounter": "GLOBAL_VISIBLE_COUNTER_WITHIN_GAME_UI",
+          "bonusCounterSharedAcrossStakeSelection": "NOT_EXPLICITLY_STATED",
+          "upperGameAccumulatorPieces": 8,
+          "upperGameAccumulatorIncrementWhenSymbolOccurs": [1,3],
+          "upperGameAccumulatorIndependentPerStake": true,
+          "verticalLinesCounterSharedBetweenLowerAndUpperGame": true,
+          "verticalLinesCounterMaximum": 9,
+          "verticalLinesCounterConsumedPerUpperSpin": 1
+        },
         "interruptionRestorationDocumented": true,
         "restoresSameRiskPointAfterDisconnect": true,
+        "restoresCompletedNoPrizeSpinResultAfterReconnect": true,
+        "restorationTextExplicitlyCoversBonusCounter": false,
+        "restorationTextExplicitlyCoversPerStakeAccumulator": false,
+        "restorationTextExplicitlyCoversVerticalLinesCounter": false,
+        "restorationTextScope": "ACTIVE_ROUND_RISK_ADVANCE_RETENTION_MINIGAME_CASES_EXPLICIT; PREEXISTING_METERS_UNSPECIFIED",
         "bonusCounterPersistenceAcrossReconnectExplicit": false,
+        "perStakeAccumulatorPersistenceAcrossReconnectExplicit": false,
+        "verticalLinesPersistenceAcrossReconnectExplicit": false,
         "crossPlayerInheritanceDocumented": false,
         "configurationEquivalenceToBotemaniaProven": false
       },
       "scientificGates": {
         "stateExists": true,
+        "multipleStateVariablesConfirmed": true,
         "stateValueDisplayed": true,
+        "perStakeAccumulatorConfirmed": true,
+        "crossGameSharedCounterConfirmed": true,
         "observableBeforeFirstPaidSpin": false,
         "persistsAfterVoluntaryExit": false,
         "persistsAcrossReconnectSamePlayer": false,
         "inheritedByNextPlayer": false,
-        "exactIncrementDistributionKnown": false,
+        "exactAccumulatorSymbolProbabilityKnown": false,
+        "exactMiniGameAccessProbabilitiesKnown": false,
         "exactStateConditionalEVKnown": false,
         "exactOptimalEntryThresholdKnown": false,
         "exactStakeKnown": false,
         "prospectiveValidationPassed": false
       },
-      "classification": "STATEFUL_STRUCTURE_CONFIRMED_CROSS_PLAYER_UNPROVEN",
+      "classification": "MULTI_METER_STATEFUL_STRUCTURE_CONFIRMED_PERSISTENCE_SCOPE_UNPROVEN",
       "priority": "HIGH",
       "nextProof": [
         "Capture the Botemania in-game rules/version fingerprint and initial screen before wagering.",
-        "Observe whether the bonus and eight-piece accumulator values are visible before the first paid spin.",
-        "Perform a zero-money or demo-safe exit/re-entry continuity test where available; do not wager to create a favorable state.",
-        "Determine whether state is account-scoped, session-scoped, instance-scoped or globally inherited. Cross-player inheritance must be explicitly demonstrated before any advantage-play model.",
-        "Only after inheritance is proven, derive state-conditional EV from the exact upper-game paytable and transition probabilities."
+        "Observe whether Bonos, the per-stake eight-piece accumulator and vertical-lines counter are visible before the first paid spin.",
+        "Use demo/zero-money-safe exit and reconnect observations where available to distinguish active-round restoration from meter persistence; do not wager to create a favorable state.",
+        "Determine whether each state variable is account-scoped, session-scoped, game-instance-scoped or globally inherited.",
+        "Require explicit next-player inheritance evidence before any advantage-play classification.",
+        "Only after persistence/inheritance is proven, derive state-conditional EV from exact transition probabilities; reel drawings and qualitative random-access wording alone are insufficient."
       ]
     },
     {
@@ -86,9 +117,10 @@
     }
   ],
   "interpretation": [
-    "These MGA titles are materially more interesting than ordinary transient bonus rounds because public rules expose accumulators that affect access to a separate upper game.",
-    "The Paston technical rules for the exact El Tesoro Pirata Plus title also document restoration behavior after interruption, proving the software contains resumable state, but they do not prove that the bonus meter itself survives voluntary exit or is inherited by another player.",
+    "El Tesoro Pirata Plus has at least three economically relevant state classes in the exact-title technical rules: a Bonus counter, an eight-piece accumulator maintained independently per stake, and a vertical-lines counter shared between lower and upper games.",
+    "The restoration section proves resumable active-round state after interruption, including reconnect at the same risk point, but does not explicitly mention persistence of Bonos, per-stake accumulators or the vertical-lines counter. Active-round restoration therefore cannot be promoted to persistent-meter proof.",
     "The statement that one bonus is approximately EUR 0.80 is a conversion description inside the risk/bonus mechanism, not a proven marginal expected cash value of an inherited bonus.",
+    "The exact state-conditional EV remains unresolved because several random access/mini-game probabilities and any persistence/inheritance scope are not fully specified.",
     "No current evidence satisfies the required next-player inheritance gate, so no stateful advantage-play threshold exists yet."
   ],
   "execution": {
@@ -103,9 +135,12 @@
   },
   "hardGuards": {
     "visibleMeterIsNotPersistenceProof": true,
+    "activeRoundRestorationIsNotPersistentMeterProof": true,
     "reconnectRestorationIsNotCrossPlayerInheritanceProof": true,
+    "perStakeAccumulatorIsNotInheritanceProof": true,
     "sameTitleAcrossOperatorsIsNotConfigurationEquivalence": true,
     "approxBonusConversionIsNotCashEV": true,
+    "reelLayoutDoesNotProveUniformStopProbability": true,
     "noPaidStateCreationForResearch": true,
     "realMoneyAllowed": false
   }
