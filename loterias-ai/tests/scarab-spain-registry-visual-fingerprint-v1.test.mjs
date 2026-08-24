@@ -4,7 +4,7 @@ import fs from 'node:fs';
 const path='loterias-ai/edge-live/evidence/scarab-spain-registry-visual-fingerprint-v1.json';
 const e=JSON.parse(fs.readFileSync(path,'utf8'));
 
-assert.equal(e.version,'scarab-spain-registry-visual-fingerprint-v1');
+assert.equal(e.version,'scarab-spain-registry-visual-fingerprint-v1.1');
 assert.equal(e.status,'PARTIAL_LOCAL_PLATFORM_AND_SPANISH_REGISTRY_BRIDGE_NO_PLAY');
 assert.equal(e.realMoneyAllowed,false);
 
@@ -54,6 +54,14 @@ assert.equal(murcia.facts.homologationDate,'2019-04-23');
 assert.equal(murcia.facts.registrantIdentifier,'1EC-00001020');
 assert.equal(murcia.localTransferAllowed,false);
 
+const gal=e.galiciaIndividualMachineAuthorization;
+assert.equal(gal.procedure,'PR329A');
+assert.equal(gal.facts.typeCMachinesRequireExploitationAuthorization,true);
+assert.equal(gal.facts.authorizationIsIndividualizedForSpecificMachine,true);
+assert.equal(gal.facts.authorizationCoversCorrespondenceWithHomologatedRegisteredModel,true);
+assert.equal(gal.facts.authorizationCoversMachineOwnership,true);
+assert.equal(gal.exactCasinoLaTojaScarabAuthorizationRecovered,false);
+
 assert.equal(e.globalCabinetBridge.facts.scarabShownOnCrystalDual27In2018,true);
 assert.equal(e.globalCabinetBridge.localTransferAllowed,false);
 assert.equal(e.candidateSpanishRegistrationAliases.hypothesesOnly,true);
@@ -66,6 +74,7 @@ for(const [key,value] of Object.entries(e.closureImpact)){
   if(key==='localPlatformFamilyPhotographicallyStrengthened') continue;
   assert.equal(value,false,`closure impact ${key} must remain fail-closed`);
 }
+assert.equal(e.closureImpact.localIndividualMachineAuthorizationRecovered,false);
 assert.equal(e.realMoneyAllowed,false);
 
 console.log('scarab-spain-registry-visual-fingerprint-v1.test.mjs: PASS');
