@@ -1,0 +1,136 @@
+{
+  "version": "global-jackpot-intelligence-benchmark-v1",
+  "generatedAt": "2026-08-24T11:58:00+02:00",
+  "status": "RESEARCH_ONLY_NO_PLAY",
+  "realMoneyAllowed": false,
+  "purpose": "Benchmark EDGE against the strongest public jackpot-history, break-even and progressive-mechanics references found worldwide, then define the capability bar required to exceed them scientifically.",
+  "referenceSystems": [
+    {
+      "name": "Casino Listings Progressive Jackpots Tracker",
+      "url": "https://www.casinolistings.com/jackpots",
+      "publicScaleObserved": {
+        "trackingSince": "2009-06",
+        "jackpotsTracked": 409,
+        "winsRecordedApprox": 254479,
+        "totalPaidOutUSDApprox": 4369825364
+      },
+      "capabilities": [
+        "current jackpot value",
+        "recent jackpot graph/history",
+        "recent wins",
+        "biggest win",
+        "average win",
+        "average time between wins",
+        "time since last win",
+        "software/provider classification",
+        "cross-casino jackpot comparison",
+        "seed where known",
+        "known break-even value",
+        "current RTP where calculable",
+        "chance of jackpot where calculable"
+      ],
+      "methodologicalStrength": "Long-running broad public history and explicit break-even/RTP tables for jackpots whose qualifying event probability is known.",
+      "limitationsRelativeToEdgeGoal": [
+        "not Spain-first",
+        "does not establish Botemania feed-key identity or Spanish configuration equivalence",
+        "historical win detection can be algorithmic from significant jackpot drops before external verification",
+        "does not expose EDGE-style fail-closed execution gates",
+        "does not provide our 5-second durable canonical meter telemetry or synchronized reset-pair science"
+      ]
+    },
+    {
+      "name": "GamblersPick Jackpot Meter",
+      "url": "https://www.gamblerspick.com/guides/using-the-gamblerspick-jackpot-meter.php",
+      "capabilities": ["historical-data-based hot/cold jackpot categorization", "explicit not-enough-data state"],
+      "methodologicalStrength": "Communicates uncertainty when history is insufficient.",
+      "limitation": "Hot/cold status is not equivalent to a verified positive-EV threshold and must never be copied as an execution rule."
+    },
+    {
+      "name": "Wizard of Odds / Michael Shackleford progressive mathematics",
+      "url": "https://www.casinolistings.com/jackpots/break-even-values",
+      "capabilities": ["exact event-probability based break-even calculations for card/video-poker progressives", "current jackpot-side-bet RTP"],
+      "methodologicalStrength": "Uses known combinatorial event probabilities and exact qualifying-bet economics rather than jackpot-age folklore.",
+      "edgeAdoptionRule": "Progressive video poker/table-game thresholds should follow this exact-event-probability style only when the Spanish paytable, stake, event probability and rules fingerprint are all from the same verified configuration."
+    }
+  ],
+  "worldMechanicsEvidence": [
+    {
+      "class": "MUST_HIT_BY_RANDOM_HIDDEN_THRESHOLD",
+      "source": "https://patents.google.com/patent/US20240339000A1/en",
+      "facts": [
+        "A hidden threshold can be randomly selected within a public range after the previous jackpot.",
+        "Qualifying wagers contribute to the pool until the hidden threshold is reached.",
+        "The upper end of the range can be advertised while the exact trigger remains secret."
+      ],
+      "edgeImplication": "For true hidden-threshold MHB systems, cap proximity alone is insufficient unless the threshold distribution and contribution/eligibility mechanics are known."
+    },
+    {
+      "class": "MUST_HIT_BY_DYNAMIC_PROBABILITY",
+      "source": "https://patents.google.com/patent/US11250667B2/en",
+      "facts": [
+        "Some progressive systems increase jackpot-award probability as the meter approaches a must-hit-by value.",
+        "Dynamic paytables/probability regions can guarantee the award by the upper limit."
+      ],
+      "edgeImplication": "A universal uniform hidden-threshold model is unsafe: some MHB mechanisms are dynamically increasing-hazard rather than a single preselected monetary threshold."
+    },
+    {
+      "class": "BET_ELIGIBILITY_AND_SECONDARY_POOLS",
+      "source": "https://patents.google.com/patent/US20130252721A1/en",
+      "facts": [
+        "Jackpot eligibility can depend on minimum/max wager or wager ratio.",
+        "Different wager classes may fund different/secondary jackpot pools."
+      ],
+      "edgeImplication": "Exact qualifying stake and pool-routing semantics are mandatory; observing meter growth alone cannot prove the player's wager has the same jackpot exposure."
+    }
+  ],
+  "knownBreakEvenReferenceExamples": [
+    {"name":"Progressive Jacks or Better (Gamesys historical control)","breakEven":17477,"currency":"GBP","chance":"1 in 160689","seed":2000,"source":"https://www.casinolistings.com/jackpots/gamesys/progressive-jacks-or-better-jackpot","transferToSpain":false},
+    {"name":"Jackpot Deuces (Microgaming control)","breakEven":53982,"currency":"multi","chance":"1 in 176672","seed":5000,"source":"https://www.casinolistings.com/jackpots/microgaming/jackpot-deuces-progressive","transferToSpain":false},
+    {"name":"Roulette Royale (Microgaming control)","breakEven":760501,"currency":"multi","chance":"1 in 1874161","seed":60000,"source":"https://www.casinolistings.com/jackpots/microgaming/roulette-royale-jackpot","transferToSpain":false}
+  ],
+  "edgeWorldClassTarget": {
+    "mustHavePerMeter": [
+      "current value",
+      "first seen",
+      "last seen",
+      "observed ATH and exact ATH timestamp when available",
+      "minimum observed",
+      "full reset/win-candidate ledger",
+      "cycle maxima",
+      "cycle duration",
+      "average/median/pre-reset distribution",
+      "time since last verified award",
+      "growth velocity distribution",
+      "shared-pool/tier topology",
+      "provider/operator identity confidence",
+      "base RTP",
+      "jackpot contribution",
+      "reserve contribution",
+      "seed/reset semantics",
+      "qualifying stake",
+      "jackpot event probability or hazard model",
+      "break-even threshold",
+      "current RTP/EV if and only if scientifically computable",
+      "source provenance and market/configuration fingerprint"
+    ],
+    "edgeDifferentiators": [
+      "Spain-specific Article 8(k) disclosure mining",
+      "5-second canonical public-feed science telemetry",
+      "durable ATH and reset ledger",
+      "same-window feed-to-visible-meter identity proof",
+      "synchronized shared-pool reset detection",
+      "explicit separation of discovery, validation, holdout/prospective and execution",
+      "confidence-bound conservative thresholds",
+      "fail-closed executable contract requiring all scientific gates"
+    ],
+    "benchmarkGoal": "Match or exceed the historical breadth of long-running public trackers while adding jurisdiction-specific rules, exact configuration identity and scientifically gated execution that public jackpot comparison sites do not provide."
+  },
+  "hardGuards": {
+    "historicalAverageWinDoesNotMeanOverdue": true,
+    "athProximityDoesNotMeanPositiveEv": true,
+    "foreignBreakEvenNeverTransfersWithoutExactConfiguration": true,
+    "algorithmicDropDetectionIsNotVerifiedAward": true,
+    "mustHitByMechanismCannotBeAssumedUniformAcrossProducts": true,
+    "realMoneyAllowed": false
+  }
+}
