@@ -24,6 +24,7 @@ export function evaluateFullPrefixState({
   localPaytableVerified=false,
   localCycleSemanticsVerified=false,
   localPersistentFramesVerified=false,
+  localFixedPositionSettlementVerified=false,
   localSameBetLevelPersistenceVerified=false,
   localPayoutCapSemanticsVerified=false,
   wildPayMultipliers=SCARAB_WILD_PAY_MULTIPLIERS
@@ -42,6 +43,7 @@ export function evaluateFullPrefixState({
     localPaytableVerified&&
     localCycleSemanticsVerified&&
     localPersistentFramesVerified&&
+    localFixedPositionSettlementVerified&&
     localSameBetLevelPersistenceVerified&&
     localPayoutCapSemanticsVerified
   );
@@ -49,7 +51,7 @@ export function evaluateFullPrefixState({
     theorem:'FULL_PREFIX_REELS_DISTRIBUTION_FREE_LOWER_BOUND',
     assumptions:{
       fullPrefixMeansEveryVisibleCellInReels1ThroughKIsAlreadyGoldFramed:true,
-      framesConvertToWildBeforeFinalEvaluation:true,
+      eachFrameTransformsToWildInTheSameCellBeforeFinalEvaluation:true,
       winsEvaluateLeftToRightFromReel1:true,
       everyActivePaylineUsesExactlyOneCellPerReel:true,
       wildOnlyPayForKMatchesApplies:true,
@@ -68,6 +70,7 @@ export function evaluateFullPrefixState({
     deterministicPositive,
     deterministicBreakEvenOrBetter,
     candidateForExecutionContract,
+    localFixedPositionSettlementVerified:Boolean(localFixedPositionSettlementVerified),
     localSameBetLevelPersistenceVerified:Boolean(localSameBetLevelPersistenceVerified),
     localPayoutCapSemanticsVerified:Boolean(localPayoutCapSemanticsVerified),
     localExecutionEligible:false,
@@ -79,9 +82,7 @@ export function evaluateFullPrefixState({
 export function theoreticalEntryTable({totalBet=1}={}){
   const rows=[];
   for(let game=1;game<=9;game++){
-    for(let k=2;k<=5;k++){
-      rows.push(evaluateFullPrefixState({lastCompletedGame:game,fullPrefixReels:k,totalBet}));
-    }
+    for(let k=2;k<=5;k++) rows.push(evaluateFullPrefixState({lastCompletedGame:game,fullPrefixReels:k,totalBet}));
   }
   return rows;
 }
