@@ -3,9 +3,11 @@ name: Loterias AI Botemania MustDrop Field Probe V1
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, feat-edge-intrinsic-vp-mustdrop-v31]
     paths:
       - 'loterias-ai/casino/jackpots/botemania-double-jackpots-mustdrop-field-probe-v1.mjs'
+      - 'loterias-ai/casino/jackpots/roxor-progressive-vp-lineage-screen-v1.mjs'
+      - 'loterias-ai/tests/edge-intrinsic-progressive-vp-v31.test.mjs'
       - '.github/workflows/loterias-ai-botemania-mustdrop-field-probe-v1.yml'
   schedule:
     - cron: '17 * * * *'
@@ -14,7 +16,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: loterias-ai-botemania-mustdrop-field-probe-v1
+  group: loterias-ai-botemania-mustdrop-field-probe-v1-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -28,9 +30,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+      - name: Validate intrinsic progressive VP math
+        run: node loterias-ai/tests/edge-intrinsic-progressive-vp-v31.test.mjs
       - name: Probe known public field safely
         run: node loterias-ai/casino/jackpots/botemania-double-jackpots-mustdrop-field-probe-v1.mjs
-      - name: Persist evidence
+      - name: Upload branch probe evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: botemania-mustdrop-field-probe-v1
+          path: loterias-ai/casino/jackpots/evidence/botemania-double-jackpots-mustdrop-field-probe-v1.json
+          if-no-files-found: error
+      - name: Persist evidence on main only
+        if: github.ref == 'refs/heads/main'
         shell: bash
         run: |
           set -euo pipefail
