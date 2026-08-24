@@ -1,6 +1,6 @@
 {
-  "version": "spain-scarab-primary-regulatory-closure-v1",
-  "generatedAt": "2026-08-24T17:22:00+02:00",
+  "version": "spain-scarab-primary-regulatory-closure-v1.1",
+  "generatedAt": "2026-08-24T17:54:00+02:00",
   "market": "ES-GA",
   "status": "PRIMARY_EVIDENCE_STRENGTHENED_LOCAL_CONFIG_UNRESOLVED_NO_PLAY",
   "realMoneyAllowed": false,
@@ -38,16 +38,31 @@
       "facts": {
         "reelConfiguration": "4x5",
         "lineOptions": [40, 75],
+        "paybackOptionsPctFor40Lines": [89, 91, 93, 95, 96],
         "paybackOptionsPctFor75Lines": [85, 87, 89, 91, 93, 95, 96],
+        "maximumBetCredits40Lines": 1200,
         "maximumBetCredits75Lines": 1500,
+        "costToCoverAllPaylinesCredits40Lines": 40,
         "costToCoverAllPaylinesCredits75Lines": 75,
         "multiDenomination": true,
         "featureName": "Wild Stays Charges Then Pays",
         "tenthSpinGoldenSpotsBecomeWild": true
       },
       "exactCasinoLaTojaConfigurationIdentified": false,
-      "note": "This primary IGT technical material proves configuration variability, so no RTP/payback or credit mapping may be imported into the La Toja machine without the local model/help fingerprint."
+      "note": "Primary IGT material proves 40/75-line and RTP variability, so no RTP/payback or credit mapping may be imported into the La Toja machine without the local model/help fingerprint."
     }
+  },
+  "regulatedOperationalComparator": {
+    "source": "https://www.alc.ca/content/dam/alc/images/casino/scarab/English%20-%20How%20to%20Play%20-%20Scarab.docx.pdf",
+    "facts": {
+      "framesRememberedSeparatelyForEachBetLevel": true,
+      "framesTransformToWildOnRound10BeforeEvaluation": true,
+      "winsRequireConsecutiveReelsBeginningFarLeft": true,
+      "highestWinOnlyPerPayline": true,
+      "coincidingWinsOnDifferentPaylinesAreAdded": true,
+      "freeSpinsUseSameTotalBetAsTriggeringSpin": true
+    },
+    "localTransferAllowed": false
   },
   "independentApComparator": {
     "source": "https://wizardofodds.com/games/slots/scarab/",
@@ -62,6 +77,13 @@
       "simpleAdviceAfterGames5To9": "three wilds in first three reels"
     },
     "localStrategyTransferAllowed": false
+  },
+  "softwareFingerprintEvidence": {
+    "file": "loterias-ai/edge-live/evidence/scarab-regulatory-software-fingerprints-v1.json",
+    "multipleRegulatorPublishedScarabBuildsVerified": true,
+    "distinctGameCodeFamiliesObserved": ["J0HS", "JFJS"],
+    "casinoLaTojaBuildResolved": false,
+    "scientificMeaning": "Scarab exists in multiple regulator-published software builds, so the commercial title cannot identify the local binary or configuration."
   },
   "galiciaRegulatoryEvidence": {
     "registerProcedure": {
@@ -94,32 +116,43 @@
     },
     "publicIndexedScarabResolutionRecovered": false,
     "publicIndexedIgtCrystalResolutionRecovered": false,
-    "shortestAdministrativeProofTarget": "Recover the Galicia model-registration resolution or model record covering the IGT Crystal Scarab installation and extract the exact model/game denomination, approved price/denomination mapping and any configuration identifiers that can be cross-checked against the machine help/paytable."
+    "shortestAdministrativeProofTarget": "Recover the Galicia model-registration resolution or model record covering the IGT Crystal Scarab installation and extract exact model/game denomination, approved price/denomination mapping and configuration identifiers for cross-check against the machine help/paytable."
   },
   "scientificImplication": {
     "primaryManufacturerMechanismConfirmed": true,
     "currentSpainPhysicalExactTitleConfirmedByVenue": true,
     "previousPlayerStateMechanismConfirmedByIndependentCurrentComparator": true,
+    "sameBetLevelStateSemanticsConfirmedOutsideSpain": true,
     "configurationVariabilityConfirmedByManufacturer": true,
+    "multipleBinaryBuildsConfirmedByRegulators": true,
+    "deterministicLowerBoundEngineExists": true,
+    "deterministicLowerBoundIsLocalExecutionProof": false,
     "localConfigurationStillFundamental": true,
-    "reason": "IGT itself confirms operator-selectable denominations and multiple RTP options. Therefore title identity alone cannot justify transferring a foreign RTP or entry rule; local fingerprint remains mandatory."
+    "reason": "The deterministic theorem removes RNG/RTP assumptions only after local rules are fingerprinted. IGT confirms configurable denominations/RTP and regulators expose multiple Scarab builds, so local binary, line cost, same-bet persistence, paytable, counter semantics and payout caps remain mandatory."
   },
   "closureGates": {
     "localRegistrationRecordRecovered": false,
-    "local75PaylineConfigurationVerified": false,
+    "localSoftwareBuildOrEquivalentModelIdentifierVerified": false,
+    "local40Or75LineConfigurationVerified": false,
+    "localCostToCoverAllPaylinesVerified": false,
     "local10SpinCycleVerified": false,
+    "localCounterMeansLastCompletedGameVerified": false,
     "localGoldBorderMechanicVerified": false,
     "localPreWagerStateVisibilityVerified": false,
     "localAbandonedStateAcrossPlayerChangeVerified": false,
+    "localSameBetLevelFramePersistenceVerified": false,
     "localDenominationAndTotalBetMappingVerified": false,
+    "localLinePayScalingVerified": false,
     "localConfiguredRtpOrPaybackVerified": false,
     "localPaytableFingerprintVerified": false,
+    "localPayoutCapSemanticsVerified": false,
+    "deterministicTheoremInputsLocallyVerified": false,
     "comparatorEntryRuleValidatedAgainstLocalConfiguration": false,
     "prospectiveFrozenValidationPassed": false
   },
   "decision": {
-    "researchPriority": "P0_PHYSICAL_STATEFUL_SLOT_PRIMARY_EVIDENCE",
-    "strongestCurrentFact": "A current Spanish physical casino lists the exact Scarab title on IGT Crystal, IGT primary material confirms the 10-spin Wild Stays mechanism and selectable configurations, and a current independent mathematical source documents previous-player abandoned state and state-based entry advice.",
+    "researchPriority": "P0_PHYSICAL_STATEFUL_SLOT_DETERMINISTIC_BOUND",
+    "strongestCurrentFact": "A current Spanish physical casino lists exact Scarab on IGT Crystal; primary/regulatory evidence confirms the 10-spin persistent mechanism, 40/75-line variability and multiple software builds; and a distribution-free lower-bound theorem now exists for fully framed prefix reels once the local rules are fingerprinted.",
     "thresholdNow": null,
     "exactStakeEUR": null,
     "maxSpins": 0,
@@ -129,7 +162,10 @@
   "hardGuards": {
     "manufacturerGlobalRtpOptionsDoNotIdentifyLocalRtp": true,
     "venueFamilyBetRangeDoesNotIdentifyExactScarabStake": true,
+    "commercialTitleDoesNotIdentifyLocalBinary": true,
+    "foreignSameBetSemanticsDoNotProveLocalSameBetSemantics": true,
     "independentComparatorAdviceDoesNotAutoTransfer": true,
+    "deterministicTheoremDoesNotAutoTransferWithoutLocalFingerprint": true,
     "registrationProcedureDoesNotProveRecordContentsUntilRecordRecovered": true,
     "noWagerNeededForNextResearchStep": true,
     "executionContractRemainsSoleGreenAuthority": true,
