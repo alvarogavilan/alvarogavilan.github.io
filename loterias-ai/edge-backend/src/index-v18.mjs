@@ -29,7 +29,7 @@ export class EdgeSentinel extends V17EdgeSentinel{
       const c=cycleAgg.get(r.meter_key)||{};
       const observations=Number(r.observations||0),candidateCycles=Number(c.candidate_cycles||0),fullCycles=Number(c.full_cycles||0),verifiedAwards=Number(c.verified_awards||0);
       const linked=(EXTERNAL_REFERENCE_LINKS_BY_METER[r.meter_key]||[]).map(id=>refMap.get(id)).filter(Boolean).map(x=>({
-        referenceId:x.referenceId,family:x.family,provider:x.provider,winsRecorded:x.winsRecorded||0,trackedSince:x.trackedSince||null,sourcePublisher:x.sourcePublisher,sourceUrl:x.sourceUrl,relationToSpain:x.relationToSpain,fullRawRowsInEdge:x.fullRawRowsInEdge,transferAllowed:false
+        referenceId:x.referenceId,family:x.family,provider:x.provider,winsRecorded:x.winsRecorded||0,trackedSince:x.trackedSince||null,sourcePublisher:x.sourcePublisher,sourceUrl:x.sourceUrl,relationToSpain:x.relationToSpain,fullRawRowsInEdge:x.fullRawRowsInEdge,overlapGroup:x.overlapGroup||null,transferAllowed:false
       }));
       return {
         meterKey:r.meter_key,
@@ -49,12 +49,7 @@ export class EdgeSentinel extends V17EdgeSentinel{
         },
         externalHistoricalReferences:linked,
         evidenceDepthClass:depthClass({observations,candidateCycles,fullCycles,verifiedAwards}),
-        interpretation:{
-          telemetryRowsAreNotJackpotWins:true,
-          timingNIsFullObservedCyclesNotMeterTicks:true,
-          verifiedAwardNIsStricterThanCycleN:true,
-          externalWinsAreNotAddedToSpanishN:true
-        }
+        interpretation:{telemetryRowsAreNotJackpotWins:true,timingNIsFullObservedCyclesNotMeterTicks:true,verifiedAwardNIsStricterThanCycleN:true,externalWinsAreNotAddedToSpanishN:true}
       };
     });
   }
@@ -65,9 +60,11 @@ export class EdgeSentinel extends V17EdgeSentinel{
     const candidateCycles=all.reduce((s,r)=>s+r.directSpain.candidateCycles,0);
     const fullCycles=all.reduce((s,r)=>s+r.directSpain.fullObservedCycles,0);
     const verifiedAwards=all.reduce((s,r)=>s+r.directSpain.verifiedAwards,0);
-    const referenceWins=EXTERNAL_JACKPOT_HISTORY_REFERENCES.reduce((s,r)=>s+Number(r.winsRecorded||0),0);
+    const providerAggregates=EXTERNAL_JACKPOT_HISTORY_REFERENCES.filter(r=>r.isProviderAggregate===true);
+    const nonOverlappingAggregateWins=providerAggregates.reduce((s,r)=>s+Number(r.winsRecorded||0),0);
+    const individualReferenceWins=EXTERNAL_JACKPOT_HISTORY_REFERENCES.filter(r=>r.isProviderAggregate!==true).reduce((s,r)=>s+Number(r.winsRecorded||0),0);
     return {
-      version:'edge-jackpot-history-depth-v1',
+      version:'edge-jackpot-history-depth-v1.1-overlap-safe',
       generatedAt:new Date().toISOString(),
       rows,
       summary:{
@@ -77,7 +74,9 @@ export class EdgeSentinel extends V17EdgeSentinel{
         directFullObservedCycles:fullCycles,
         directVerifiedAwards:verifiedAwards,
         externalReferenceDatasets:EXTERNAL_JACKPOT_HISTORY_REFERENCES.length,
-        externalReferenceWinsClaimedBySources:referenceWins,
+        externalReferenceProviderAggregates:providerAggregates.length,
+        externalReferenceProviderAggregateWinsNonOverlapping:nonOverlappingAggregateWins,
+        externalIndividualSeriesWinsDeclaredOverlapping:individualReferenceWins,
         externalRawRowsFullyIngestedIntoEdge:0
       },
       externalReferences:EXTERNAL_JACKPOT_HISTORY_REFERENCES,
@@ -85,12 +84,14 @@ export class EdgeSentinel extends V17EdgeSentinel{
         meterObservation:'One timestamped jackpot-meter reading. Millions of these can still contain only a few jackpot cycles.',
         candidateCycle:'A large reset-like boundary inferred from direct telemetry. It is not automatically a jackpot award.',
         fullObservedCycle:'A cycle observed from one reset-like boundary to the next. This is the relevant n for interval/timing descriptions.',
-        verifiedAward:'A cycle boundary independently verified as an actual jackpot award. This is the strongest timing sample.',
-        externalReferenceWin:'A historical win reported by an external tracker. It never increments the Spanish sample without configuration identity proof.'
+        verifiedAward:'A cycle boundary independently verified as an actual jackpot award. This is the strongest event sample.',
+        externalReferenceWin:'A historical win reported by an external tracker. It never increments the Spanish sample without configuration identity proof.',
+        overlapRule:'Individual external series can be subsets of provider aggregates and are never arithmetically added to those aggregates.'
       },
       guards:{
         observationCountCannotMasqueradeAsWinCount:true,
         externalHistoryCannotIncreaseSpanishSampleN:true,
+        externalOverlapCannotInflateReferenceCount:true,
         foreignAverageTimeCannotPredictSpanishNextHit:true,
         configurationIdentityRequiredBeforeParameterTransfer:true,
         externalReferencesCanGenerateHypothesesOnly:true,
@@ -105,11 +106,11 @@ export class EdgeSentinel extends V17EdgeSentinel{
     const url=new URL(request.url),path=url.pathname;
     if(path==='/science/history-depth'){
       await this.ensureAlarm();try{await this.updateCycleLedger();await this.updateAthLedger();}catch{}
-      return responseJson({ok:true,service:'loterias-edge-sentinel',deploymentFingerprint:DEPLOYMENT_FINGERPRINT,deploymentCapabilities:{jackpotHistoryDepth:true,sampleSemantics:true,externalReferenceRegistry:true,executionContractFailClosed:true},research:this.historyDepthResearch(url.searchParams.get('meter')||null)});
+      return responseJson({ok:true,service:'loterias-edge-sentinel',deploymentFingerprint:DEPLOYMENT_FINGERPRINT,deploymentCapabilities:{jackpotHistoryDepth:true,sampleSemantics:true,externalReferenceRegistry:true,overlapSafeReferenceCounts:true,executionContractFailClosed:true},research:this.historyDepthResearch(url.searchParams.get('meter')||null)});
     }
     const response=await super.fetch(request);
     if(!['/','/health','/state','/science/status','/science/events','/science/jpk','/science/winfall','/science/ath','/science/cycles','/science/timing','/library/summary','/library/sources','/library/search','/library/record','/library/coverage','/library/universe'].includes(path))return response;
-    try{const body=await response.clone().json();body.deploymentFingerprint=DEPLOYMENT_FINGERPRINT;body.deploymentCapabilities={...(body.deploymentCapabilities||{}),jackpotHistoryDepth:true,externalReferenceRegistry:true};return responseJson(body,response.status);}catch{return response;}
+    try{const body=await response.clone().json();body.deploymentFingerprint=DEPLOYMENT_FINGERPRINT;body.deploymentCapabilities={...(body.deploymentCapabilities||{}),jackpotHistoryDepth:true,externalReferenceRegistry:true,overlapSafeReferenceCounts:true};return responseJson(body,response.status);}catch{return response;}
   }
 }
 
