@@ -1,0 +1,46 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+const e=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/galicia-type-c-local-fingerprint-surface-v1.json','utf8'));
+const f=e.primarySource.facts;
+
+assert.equal(e.status,'PRIMARY_REGULATORY_LOCAL_FINGERPRINT_SURFACE_IDENTIFIED_NO_PLAY');
+assert.equal(e.jurisdiction,'ES-GA');
+assert.equal(e.realMoneyAllowed,false);
+assert.equal(f.typeCPriceFixedPerModelInRegistrationResolution,true);
+assert.equal(f.typeCMaxPrizeFixedPerModelInRegistrationResolution,true);
+assert.equal(f.typeCMayUseMultiplePaylines,true);
+assert.equal(f.typeCMayBeMultidenomination,true);
+assert.equal(f.typeCFrontOrVideoMustShowNumberOfBetsPerPlay,true);
+assert.equal(f.typeCFrontOrVideoMustShowGameRules,true);
+assert.equal(f.typeCFrontOrVideoMustShowAcceptedDenominationValues,true);
+assert.equal(f.typeCFrontOrVideoMustShowWinningCombinationsAndPrizeAmounts,true);
+assert.equal(f.typeCFrontOrVideoMustShowMinimumReturnPercentage,true);
+assert.equal(f.registrationMemoryMustStatePrizePercentageAndCalculationCycle,true);
+assert.equal(f.registrationRequiresCounterDescription,true);
+assert.equal(f.technicalRegistrationDossierHasConfidentialityProtection,true);
+assert.equal(f.factoryPlateMustShowManufacturerRegistrationCode,true);
+assert.equal(f.factoryPlateMustShowGaliciaModelRegistrationCode,true);
+assert.equal(f.factoryPlateMustShowMachineSeriesAndNumber,true);
+assert.equal(f.manufacturingCertificateIncludesTypeAndModelName,true);
+assert.equal(f.manufacturingCertificateIncludesModelRegistryNumberAndMachineSerial,true);
+assert.equal(f.exploitationAuthorizationIndividualizesSpecificMachineAgainstHomologatedModel,true);
+assert.equal(f.oneExploitationAuthorizationCopyPlacedInMachine,true);
+assert.equal(f.exploitationAuthorizationCarriesHomologationDateAndModelNumber,true);
+assert.equal(f.substantialModificationIncludesPriceGameProgramOrGainPlan,true);
+assert.equal(f.substantialModificationKeepsRegistryNumberWithAlphabeticSuffix,true);
+assert.equal(e.currentLawSource.facts.registerStoresModelDenomination,true);
+assert.equal(e.currentLawSource.facts.registerStoresGeneralCharacteristics,true);
+assert.equal(e.fieldCaptureProtocol.requiresWager,false);
+assert.ok(e.fieldCaptureProtocol.minimumHighValueImages.length>=3);
+assert.equal(e.closureImpact.closesAnyScarabGateNow,false);
+assert.equal(e.closureImpact.noWagerLocalIdentifierRecoveryLegallySupported,true);
+assert.equal(e.closureImpact.registrationDossierMayNotBePubliclyRecoverableBecauseConfidential,true);
+assert.equal(e.closureImpact.realMoneyAllowed,false);
+assert.equal(e.hardGuards.legalDisclosureRequirementDoesNotProveExactLocalValuesUntilObserved,true);
+assert.equal(e.hardGuards.minimumReturnDisplayDoesNotEqualConfiguredRtpUnlessItsSemanticsAreVerified,true);
+assert.equal(e.hardGuards.modelRegistryCodeDoesNotByItselfIdentifySoftwareBuildUnlessMappedByEvidence,true);
+assert.equal(e.hardGuards.noWagerNeededForThisCaptureProtocol,true);
+assert.equal(e.hardGuards.realMoneyAllowed,false);
+
+console.log('galicia-type-c-local-fingerprint-surface-v1.test.mjs: PASS');
