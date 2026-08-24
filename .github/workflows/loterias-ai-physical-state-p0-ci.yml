@@ -1,0 +1,35 @@
+name: Loterias AI Physical State P0 CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'loterias-ai/edge-live/research-breakthroughs-v1.mjs'
+      - 'loterias-ai/edge-live/evidence/spain-igt-persistent-state-candidates-v1.json'
+      - 'loterias-ai/edge-live/evidence/spain-igt-physical-variable-state-v1.json'
+      - 'loterias-ai/tests/edge-live-research-breakthroughs-v1.test.mjs'
+      - 'loterias-ai/tests/edge-live-physical-breakthroughs-v1.test.mjs'
+      - 'loterias-ai/tests/spain-igt-physical-variable-state-v1.test.mjs'
+      - '.github/workflows/loterias-ai-physical-state-p0-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-physical-state-p0:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax
+        run: node --check loterias-ai/edge-live/research-breakthroughs-v1.mjs
+      - name: Existing breakthrough compatibility
+        run: node loterias-ai/tests/edge-live-research-breakthroughs-v1.test.mjs
+      - name: Physical evidence guards
+        run: node loterias-ai/tests/spain-igt-physical-variable-state-v1.test.mjs
+      - name: Physical breakthrough cards
+        run: node loterias-ai/tests/edge-live-physical-breakthroughs-v1.test.mjs
