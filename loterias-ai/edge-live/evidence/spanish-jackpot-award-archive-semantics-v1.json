@@ -1,0 +1,45 @@
+{
+  "version": "spanish-jackpot-award-archive-semantics-v1",
+  "jurisdiction": "ES",
+  "purpose": "Persist publicly evidenced Spanish casino jackpot awards as an internal research archive without inventing timestamps, synthetic awards, or configuration continuity.",
+  "currentLeader": {
+    "game": "Millionaire Genie",
+    "operator": "888casino-es",
+    "reconstructedIndividualAwards": 20,
+    "historicalTotalEUR": 9715090,
+    "historicalMeanEUR": 485754.5,
+    "historicalMedianEUR": 420092,
+    "historicalMinEUR": 40000,
+    "historicalMaxEUR": 1221429
+  },
+  "currentPublicEconomics": {
+    "specificGamePageGrowthRateFraction": 0.035,
+    "studioOverviewGrowthRateFraction": 0.02,
+    "growthDisclosureResolved": false,
+    "theoreticalRtp": 0.9502,
+    "exactBaseRtpExcludingProgressive": null,
+    "exactSeedEUR": null,
+    "exactHazardPerEUR": null,
+    "breakEvenJackpotEUR": null
+  },
+  "monitoring": {
+    "public888JackpotPage": true,
+    "target": "Millionaire Genie",
+    "minimumPollIntervalMs": 60000,
+    "resetCandidateMinimumAbsoluteDropEUR": 1,
+    "resetCandidateMinimumRelativeDrop": 0.2
+  },
+  "hardGuards": {
+    "publicationDateNeverInventedAsAwardTimestamp": true,
+    "monthPrecisionNeverPromotedToExactDay": true,
+    "aggregateCountsNeverExpandedIntoSyntheticAwards": true,
+    "conflictingAmountsRemainVisible": true,
+    "historicalConfigurationNotAssumedCurrent": true,
+    "currentContributionDisclosureConflictBlocksThreshold": true,
+    "conditionalHazardScreenCannotPromote": true,
+    "meterResetCandidateIsNotAwardProof": true,
+    "archiveCannotEnableRealMoney": true,
+    "executionContractRemainsSoleGreenAuthority": true,
+    "realMoneyAllowed": false
+  }
+}
