@@ -24,6 +24,7 @@ export function evaluateFullPrefixState({
   localPaytableVerified=false,
   localCycleSemanticsVerified=false,
   localPersistentFramesVerified=false,
+  localSameBetLevelPersistenceVerified=false,
   localPayoutCapSemanticsVerified=false,
   wildPayMultipliers=SCARAB_WILD_PAY_MULTIPLIERS
 }={}){
@@ -41,6 +42,7 @@ export function evaluateFullPrefixState({
     localPaytableVerified&&
     localCycleSemanticsVerified&&
     localPersistentFramesVerified&&
+    localSameBetLevelPersistenceVerified&&
     localPayoutCapSemanticsVerified
   );
   return {
@@ -52,6 +54,7 @@ export function evaluateFullPrefixState({
       everyActivePaylineUsesExactlyOneCellPerReel:true,
       wildOnlyPayForKMatchesApplies:true,
       totalBetAndLinePaysScaleTogether:true,
+      sameBetLevelIsMaintainedUntilFinalCycleSpin:true,
       localPayoutCapsDoNotReduceClaimedLowerBound:true
     },
     lastCompletedGame:Number(lastCompletedGame),
@@ -65,6 +68,7 @@ export function evaluateFullPrefixState({
     deterministicPositive,
     deterministicBreakEvenOrBetter,
     candidateForExecutionContract,
+    localSameBetLevelPersistenceVerified:Boolean(localSameBetLevelPersistenceVerified),
     localPayoutCapSemanticsVerified:Boolean(localPayoutCapSemanticsVerified),
     localExecutionEligible:false,
     executionAuthority:'EDGE_CLIENT_EXECUTION_CONTRACT_ONLY',
