@@ -28,6 +28,7 @@ assert.equal(g9r2.futureStakeToFinal,75);
 assert.equal(g9r2.guaranteedNet,75);
 assert.equal(g9r2.guaranteedNetInBetUnits,1);
 assert.equal(g9r2.deterministicPositive,true);
+assert.equal(g9r2.localPayoutCapSemanticsVerified,false);
 assert.equal(g9r2.realMoneyAllowed,false);
 
 const g8r2=evaluateFullPrefixState({lastCompletedGame:8,fullPrefixReels:2,totalBet:40});
@@ -52,7 +53,7 @@ assert.equal(g1r4.guaranteedNetInBetUnits,41);
 const g1r5=evaluateFullPrefixState({lastCompletedGame:1,fullPrefixReels:5,totalBet:1});
 assert.equal(g1r5.guaranteedNetInBetUnits,191);
 
-const localCandidate=evaluateFullPrefixState({
+const missingCapGate=evaluateFullPrefixState({
   lastCompletedGame:9,
   fullPrefixReels:2,
   totalBet:75,
@@ -61,7 +62,21 @@ const localCandidate=evaluateFullPrefixState({
   localCycleSemanticsVerified:true,
   localPersistentFramesVerified:true
 });
+assert.equal(missingCapGate.candidateForExecutionContract,false);
+assert.equal(missingCapGate.localPayoutCapSemanticsVerified,false);
+
+const localCandidate=evaluateFullPrefixState({
+  lastCompletedGame:9,
+  fullPrefixReels:2,
+  totalBet:75,
+  localFingerprintVerified:true,
+  localPaytableVerified:true,
+  localCycleSemanticsVerified:true,
+  localPersistentFramesVerified:true,
+  localPayoutCapSemanticsVerified:true
+});
 assert.equal(localCandidate.candidateForExecutionContract,true);
+assert.equal(localCandidate.localPayoutCapSemanticsVerified,true);
 assert.equal(localCandidate.localExecutionEligible,false);
 assert.equal(localCandidate.executionAuthority,'EDGE_CLIENT_EXECUTION_CONTRACT_ONLY');
 assert.equal(localCandidate.realMoneyAllowed,false);
@@ -70,6 +85,7 @@ const table=theoreticalEntryTable({totalBet:1});
 assert.equal(table.length,36);
 assert.ok(table.every(x=>x.realMoneyAllowed===false));
 assert.ok(table.every(x=>x.localExecutionEligible===false));
+assert.ok(table.every(x=>x.candidateForExecutionContract===false));
 assert.equal(table.filter(x=>x.fullPrefixReels===2&&x.deterministicPositive).length,1);
 assert.equal(table.filter(x=>x.fullPrefixReels===3&&x.deterministicPositive).length,9);
 assert.equal(table.filter(x=>x.fullPrefixReels===4&&x.deterministicPositive).length,9);
