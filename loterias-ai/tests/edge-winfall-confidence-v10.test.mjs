@@ -31,6 +31,9 @@ const priority=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/green-
 assert.match(wrangler,/"main"\s*:\s*"src\/index-v10\.mjs"/);
 assert.match(worker,/edge-sentinel-v10-winfall-confidence-20260824a/);
 assert.ok(worker.includes('conservativeBreakEvenUpper95EUR'));
+assert.ok(worker.includes('confidenceBoundComputed:ci!==null'));
+assert.ok(worker.includes('confidenceBoundVerified:false'));
+assert.ok(worker.includes('conservativeThresholdVerified:false'));
 assert.ok(worker.includes('pointEstimateCannotEnableExecution:true'));
 assert.ok(worker.includes('confidenceIntervalDoesNotRepairIdentityOrAwardAttribution:true'));
 assert.ok(worker.includes('confidenceBoundCannotEnableRealMoney:true'));
