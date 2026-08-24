@@ -1,0 +1,80 @@
+{
+  "version": "progressive-vp-exact-ev-method-v1",
+  "generatedAt": "2026-08-24T02:16:00+02:00",
+  "mode": "RESEARCH_ONLY",
+  "realMoneyAllowed": false,
+  "method": {
+    "scope": "FIXED_STRATEGY_PROGRESSIVE_VIDEO_POKER",
+    "currentRtpFormula": "baseRtpWithBaselineAward + p*(currentAward-baselineAward)/totalStakePerDecision",
+    "breakEvenFormula": "baselineAward + totalStakePerDecision*(1-baseRtpWithBaselineAward)/p",
+    "requiredInterpretation": "base RTP and event probability must belong to the same exact fixed strategy, paytable, hand-count/stake structure and rules fingerprint. If optimal strategy changes with jackpot size, recalculate the strategy-dependent probability/return rather than applying a fixed one-shot threshold."
+  },
+  "botemaniaUltimateVideoPoker": {
+    "source": "https://www.botemania.es/juegos/casino-online/ultimate-video-poker",
+    "progressiveVariant": "Jotas o Mejor Progresivo",
+    "productHandOptions": [1, 5, 10, 25],
+    "productMinimumBetEUR": 0.01,
+    "productTableLimitEUR": 125,
+    "productRtpRangePct": [96.77, 99.54],
+    "optimalDecisionAssumptionPublished": true,
+    "exactProgressivePaytable": null,
+    "exactQualifyingCoinValueEUR": null,
+    "exactQualifyingHandCount": null,
+    "exactTotalStakePerDecisionEUR": null,
+    "exactBaselineProgressiveAwardEUR": null,
+    "exactProgressiveEventProbabilityPerDecision": null,
+    "exactFixedStrategyBaseRtp": null,
+    "rulesFingerprintVerified": false,
+    "configurationIdentityVerified": false,
+    "breakEvenAwardEUR": null,
+    "thresholdVerified": false
+  },
+  "gamesysCalibrationControl": {
+    "source": "https://www.casinolistings.com/jackpots/gamesys/progressive-jacks-or-better-jackpot",
+    "game": "Progressive Jacks or Better",
+    "software": "Gamesys",
+    "progressiveEvent": "Royal Flush of Spades",
+    "handOptionsPublished": [1, 5, 10, 25, 50],
+    "publishedChanceOfWin": "1 in 160689",
+    "publishedSeedGBP": 2000,
+    "publishedBreakEvenGBP": 17477,
+    "winsRecorded": 49,
+    "averageWinGBP": 13305,
+    "use": "CALIBRATION_CONTROL_ONLY",
+    "configurationEquivalentToBotemaniaSpain": false,
+    "thresholdTransferAllowed": false
+  },
+  "playtechComparator": {
+    "source": "https://wizardofodds.com/software/playtech/",
+    "game": "Jacks or Better 10-Line Progressive",
+    "paytableFamily": "7/5",
+    "hands": 10,
+    "quarterDenomination": true,
+    "publishedBreakEvenCredits": 81387.41,
+    "publishedBreakEvenCurrency": 20436.85,
+    "use": "COMPARATOR_ONLY",
+    "configurationEquivalentToBotemaniaSpain": false,
+    "thresholdTransferAllowed": false
+  },
+  "execution": {
+    "identityVerified": false,
+    "thresholdVerified": false,
+    "stakeVerified": false,
+    "strategyVerified": false,
+    "rulesFingerprintVerified": false,
+    "prospectiveValidationPassed": false,
+    "exactStakeEUR": null,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0,
+    "decision": "NO_PLAY"
+  },
+  "hardGuards": {
+    "productWideRtpRangeCannotPopulateVariantBaseRtp": true,
+    "externalBreakEvenCannotPopulateSpainThreshold": true,
+    "eventProbabilityMustMatchExactStrategyAndConfig": true,
+    "multiHandRequiresExactTotalStakeAndAwardAccounting": true,
+    "strategyChangeRequiresRecalculation": true,
+    "researchEngineCannotEnableExecutionContract": true,
+    "realMoneyAllowed": false
+  }
+}
