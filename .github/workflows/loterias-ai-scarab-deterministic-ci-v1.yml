@@ -1,0 +1,41 @@
+name: Loterias AI Scarab Deterministic CI V1
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'loterias-ai/casino/scarab/**'
+      - 'loterias-ai/edge-live/evidence/spain-scarab-primary-regulatory-closure-v1.json'
+      - 'loterias-ai/edge-live/evidence/spain-igt-physical-variable-state-v1.json'
+      - 'loterias-ai/edge-live/research-breakthroughs-v1.mjs'
+      - 'loterias-ai/tests/scarab-full-prefix-guarantee-v1.test.mjs'
+      - 'loterias-ai/tests/spain-scarab-primary-regulatory-closure-v1.test.mjs'
+      - 'loterias-ai/tests/spain-igt-physical-variable-state-v1.test.mjs'
+      - 'loterias-ai/tests/edge-live-physical-breakthroughs-v1.test.mjs'
+      - '.github/workflows/loterias-ai-scarab-deterministic-ci-v1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-scarab-deterministic-bound:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax
+        run: |
+          node --check loterias-ai/casino/scarab/scarab-full-prefix-guarantee-v1.mjs
+          node --check loterias-ai/edge-live/research-breakthroughs-v1.mjs
+      - name: Scarab deterministic theorem
+        run: node loterias-ai/tests/scarab-full-prefix-guarantee-v1.test.mjs
+      - name: Primary and regulatory evidence guards
+        run: node loterias-ai/tests/spain-scarab-primary-regulatory-closure-v1.test.mjs
+      - name: Physical Spain evidence guards
+        run: node loterias-ai/tests/spain-igt-physical-variable-state-v1.test.mjs
+      - name: EDGE Live deterministic P0 card
+        run: node loterias-ai/tests/edge-live-physical-breakthroughs-v1.test.mjs
