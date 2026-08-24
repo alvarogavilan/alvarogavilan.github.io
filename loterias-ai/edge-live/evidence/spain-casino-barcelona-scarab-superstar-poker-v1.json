@@ -1,8 +1,8 @@
 {
-  "version": "spain-casino-barcelona-scarab-superstar-poker-v1",
-  "generatedAt": "2026-08-24T18:55:00+02:00",
+  "version": "spain-casino-barcelona-scarab-superstar-poker-v1.1",
+  "generatedAt": "2026-08-24T19:01:00+02:00",
   "market": "ES-CT",
-  "status": "PRIMARY_IGT_SPAIN_SCARAB_CHOOSER_DEPLOYMENT_CURRENT_PRESENCE_UNRESOLVED_NO_PLAY",
+  "status": "PRIMARY_IGT_SPAIN_SCARAB_CHOOSER_DEPLOYMENT_CURRENT_CATEGORY_CONFIRMED_EXACT_PACK_UNRESOLVED_NO_PLAY",
   "realMoneyAllowed": false,
   "candidate": {
     "id": "casino-barcelona-scarab-superstar-poker-ii",
@@ -28,10 +28,33 @@
         "hardwareScreenSizeInches": 23
       }
     },
+    "currentVenueCategoryEvidence": {
+      "source": "https://www.casinobarcelona.com/casino",
+      "observedAt": "2026-08-24",
+      "facts": {
+        "officialCasinoBarcelonaSource": true,
+        "physicalCasinoCurrentlyListsVideoPoker": true,
+        "physicalCasinoCurrentlyListsMultiGameVideoSlots": true,
+        "multiGameDescriptionIncludesPokerBingoKeno": true,
+        "exactIgtVideoPokerAreaNamed": false,
+        "exactSuperStarPokerIIPackNamed": false,
+        "exactScarabThemeNamed": false
+      }
+    },
+    "industryFreshnessBridge": {
+      "source": "https://www.gamblinginsider.com/magazine/1114/casino-of-the-year-2025",
+      "publishedAt": "2025-01-01",
+      "facts": {
+        "casinoBarcelonaProfiledIn2025": true,
+        "profileReferences2024IgtVideoPokerAreaAddition": true,
+        "provesExactPackStillInstalledIn2026": false
+      }
+    },
     "freshness": {
-      "currentPhysicalPresenceConfirmedIn2026": false,
+      "currentVenueStillOffersPhysicalVideoPokerIn2026": true,
+      "currentPhysicalSuperStarPokerIIPresenceConfirmedIn2026": false,
       "currentExactScarabChooserAvailabilityConfirmedIn2026": false,
-      "reason": "The recovered primary deployment announcement is from July 2024. No 2026 venue source or exact-machine capture has yet confirmed that the same game pack and Scarab chooser remain installed today."
+      "reason": "Casino Barcelona's current official physical-casino page confirms video poker and multi-game video slots are still offered, but it does not name IGT, Super Star Poker II or Scarab. Exact 2026 pack/theme presence therefore remains unresolved."
     }
   },
   "globalChooserSoftwareFingerprints": {
@@ -69,10 +92,11 @@
     "sameBetLevelPersistenceLocallyVerified": false,
     "samePayoutCapSemanticsLocallyVerified": false,
     "deterministicFullPrefixTheoremTransferAllowed": false,
-    "reason": "Scarab is explicitly present as a theme inside a multi-game chooser. A chooser-hosted theme may use a different build/configuration, so commercial-title identity alone cannot transfer the La Toja/global Scarab theorem inputs."
+    "reason": "Scarab is explicitly present in the 2024 IGT chooser pack, but chooser-hosted Scarab may use a different build/configuration. Neither the current venue category page nor the foreign chooser fingerprints establish local theorem inputs."
   },
   "localFingerprintGates": {
-    "current2026PhysicalPresenceVerified": false,
+    "current2026SuperStarPokerIIPhysicalPresenceVerified": false,
+    "current2026ExactScarabChooserAvailabilityVerified": false,
     "exactCasinoBarcelonaChooserBundleIdentifierVerified": false,
     "exactLocalScarabSoftwareOrEquivalentModelIdentifierVerified": false,
     "localScarab10SpinCycleVerified": false,
@@ -94,8 +118,8 @@
     "requiresWager": false,
     "priority": "P0_PARALLEL_FINGERPRINT_TARGET",
     "targets": [
-      "Recover a 2026 Casino Barcelona source or exact-machine image proving the IGT Video Poker Area / PeakBarTop Buddy Bar installation remains present.",
-      "Capture the Super Star Poker II chooser/help/version screen and the Scarab help/paytable without wagering.",
+      "Recover a current exact-machine or venue source naming Super Star Poker II / PeakBarTop Buddy Bar in Casino Barcelona.",
+      "Capture the Super Star Poker II chooser/help/version screen and the Scarab help/paytable without wagering where venue rules permit observation.",
       "Determine whether chooser-hosted Scarab exposes Game X of 10 and persistent gold borders before wager.",
       "Map any local program/model identifier to regulator-published Super Star Poker II or Scarab fingerprints without assuming equivalence."
     ]
@@ -109,7 +133,8 @@
     "realMoneyAllowed": false
   },
   "hardGuards": {
-    "2024LaunchDoesNotProve2026Presence": true,
+    "currentVideoPokerCategoryDoesNotProveCurrentExactIgtPack": true,
+    "2024LaunchDoesNotProve2026ExactPackPresence": true,
     "gamePackInclusionDoesNotProveExactLocalScarabMechanics": true,
     "foreignChooserFingerprintDoesNotIdentifyCasinoBarcelonaBinary": true,
     "commercialTitleDoesNotIdentifyLocalBinary": true,
