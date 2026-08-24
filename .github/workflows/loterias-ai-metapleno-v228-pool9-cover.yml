@@ -1,0 +1,34 @@
+name: Loterias AI MetaPleno v228 Pool9 Cover
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/metapleno-v228-pool9-cover
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v228-pool9-cover.mjs'
+      - '.github/workflows/loterias-ai-metapleno-v228-pool9-cover.yml'
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/metapleno-v228-pool9-cover
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run v228
+        run: node loterias-ai/scripts/meta-pleno-v228-pool9-cover.mjs
+      - name: Validate result
+        run: |
+          node -e "const x=require('./loterias-ai/data/research/meta-pleno-v228-pool9-cover.json'); if(x.realMoneyPass!==false||x.realStakeEUR!==0) process.exit(1); console.log(x.decision,x.signals)"
+      - name: Persist result
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/meta-pleno-v228-pool9-cover.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'research(loterias-ai): persist v228 pool9 cover result'
+          git push origin HEAD:research/metapleno-v228-pool9-cover
