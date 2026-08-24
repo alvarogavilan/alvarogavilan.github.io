@@ -28,6 +28,7 @@ assert.equal(g9r2.futureStakeToFinal,75);
 assert.equal(g9r2.guaranteedNet,75);
 assert.equal(g9r2.guaranteedNetInBetUnits,1);
 assert.equal(g9r2.deterministicPositive,true);
+assert.equal(g9r2.localFixedPositionSettlementVerified,false);
 assert.equal(g9r2.localSameBetLevelPersistenceVerified,false);
 assert.equal(g9r2.localPayoutCapSemanticsVerified,false);
 assert.equal(g9r2.realMoneyAllowed,false);
@@ -54,44 +55,38 @@ assert.equal(g1r4.guaranteedNetInBetUnits,41);
 const g1r5=evaluateFullPrefixState({lastCompletedGame:1,fullPrefixReels:5,totalBet:1});
 assert.equal(g1r5.guaranteedNetInBetUnits,191);
 
+const missingFixedPosition=evaluateFullPrefixState({
+  lastCompletedGame:9,fullPrefixReels:2,totalBet:75,
+  localFingerprintVerified:true,localPaytableVerified:true,localCycleSemanticsVerified:true,
+  localPersistentFramesVerified:true,localSameBetLevelPersistenceVerified:true,localPayoutCapSemanticsVerified:true
+});
+assert.equal(missingFixedPosition.candidateForExecutionContract,false);
+assert.equal(missingFixedPosition.localFixedPositionSettlementVerified,false);
+
 const missingSameBetGate=evaluateFullPrefixState({
-  lastCompletedGame:9,
-  fullPrefixReels:2,
-  totalBet:75,
-  localFingerprintVerified:true,
-  localPaytableVerified:true,
-  localCycleSemanticsVerified:true,
-  localPersistentFramesVerified:true,
-  localPayoutCapSemanticsVerified:true
+  lastCompletedGame:9,fullPrefixReels:2,totalBet:75,
+  localFingerprintVerified:true,localPaytableVerified:true,localCycleSemanticsVerified:true,
+  localPersistentFramesVerified:true,localFixedPositionSettlementVerified:true,localPayoutCapSemanticsVerified:true
 });
 assert.equal(missingSameBetGate.candidateForExecutionContract,false);
 assert.equal(missingSameBetGate.localSameBetLevelPersistenceVerified,false);
 
 const missingCapGate=evaluateFullPrefixState({
-  lastCompletedGame:9,
-  fullPrefixReels:2,
-  totalBet:75,
-  localFingerprintVerified:true,
-  localPaytableVerified:true,
-  localCycleSemanticsVerified:true,
-  localPersistentFramesVerified:true,
-  localSameBetLevelPersistenceVerified:true
+  lastCompletedGame:9,fullPrefixReels:2,totalBet:75,
+  localFingerprintVerified:true,localPaytableVerified:true,localCycleSemanticsVerified:true,
+  localPersistentFramesVerified:true,localFixedPositionSettlementVerified:true,localSameBetLevelPersistenceVerified:true
 });
 assert.equal(missingCapGate.candidateForExecutionContract,false);
 assert.equal(missingCapGate.localPayoutCapSemanticsVerified,false);
 
 const localCandidate=evaluateFullPrefixState({
-  lastCompletedGame:9,
-  fullPrefixReels:2,
-  totalBet:75,
-  localFingerprintVerified:true,
-  localPaytableVerified:true,
-  localCycleSemanticsVerified:true,
-  localPersistentFramesVerified:true,
-  localSameBetLevelPersistenceVerified:true,
-  localPayoutCapSemanticsVerified:true
+  lastCompletedGame:9,fullPrefixReels:2,totalBet:75,
+  localFingerprintVerified:true,localPaytableVerified:true,localCycleSemanticsVerified:true,
+  localPersistentFramesVerified:true,localFixedPositionSettlementVerified:true,
+  localSameBetLevelPersistenceVerified:true,localPayoutCapSemanticsVerified:true
 });
 assert.equal(localCandidate.candidateForExecutionContract,true);
+assert.equal(localCandidate.localFixedPositionSettlementVerified,true);
 assert.equal(localCandidate.localSameBetLevelPersistenceVerified,true);
 assert.equal(localCandidate.localPayoutCapSemanticsVerified,true);
 assert.equal(localCandidate.localExecutionEligible,false);
@@ -103,6 +98,7 @@ assert.equal(table.length,36);
 assert.ok(table.every(x=>x.realMoneyAllowed===false));
 assert.ok(table.every(x=>x.localExecutionEligible===false));
 assert.ok(table.every(x=>x.candidateForExecutionContract===false));
+assert.ok(table.every(x=>x.localFixedPositionSettlementVerified===false));
 assert.ok(table.every(x=>x.localSameBetLevelPersistenceVerified===false));
 assert.equal(table.filter(x=>x.fullPrefixReels===2&&x.deterministicPositive).length,1);
 assert.equal(table.filter(x=>x.fullPrefixReels===3&&x.deterministicPositive).length,9);
