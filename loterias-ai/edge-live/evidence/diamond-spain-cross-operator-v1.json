@@ -1,13 +1,15 @@
 {
-  "version": "diamond-spain-cross-operator-v1",
-  "generatedAt": "2026-08-24T02:13:00+02:00",
+  "version": "diamond-spain-cross-operator-v1.1-same-group-scoped",
+  "generatedAt": "2026-08-24T02:26:00+02:00",
   "market": "ES",
   "status": "RESEARCH_ONLY_NO_PLAY",
   "realMoneyAllowed": false,
   "gameFamily": "Diamond Bonanza / Danza de los Diamantes",
-  "operatorPages": [
+  "brandPages": [
     {
-      "operator": "Botemania",
+      "brand": "Botemania",
+      "legalOperator": "Gamesys Spain, S.A.U.",
+      "corporateGroup": "Bally's Group",
       "url": "https://www.botemania.es/juegos/slots-online/danza-de-los-diamantes",
       "coinRangeEUR": [0.25, 1.00],
       "fixedPaylines": 5,
@@ -18,7 +20,9 @@
       "triggerProbability": null
     },
     {
-      "operator": "MONOPOLY Casino España",
+      "brand": "MONOPOLY Casino España",
+      "legalOperator": "Games Spain Operations, S.A.U.",
+      "corporateGroup": "Bally's Group",
       "url": "https://www.monopolycasino.es/juegos/slots-online/danza-de-los-diamantes",
       "coinRangeEUR": [0.25, 1.00],
       "fixedPaylines": 5,
@@ -29,19 +33,33 @@
       "triggerProbability": null
     }
   ],
-  "crossOperatorFingerprint": {
+  "corporateRelationshipEvidence": {
+    "source": "https://gamesysgrouppartners.com/gsgp-terms-conditions/",
+    "separateSpanishLegalOperators": true,
+    "sameCorporateGroup": true,
+    "independentProviderConfigurationEvidence": false,
+    "interpretation": "The two Spain-facing brands are operated by different Spanish legal entities but sit within the same Gamesys/Bally corporate group. Their matching public game text is therefore useful cross-brand corroboration, not an independent replication of the underlying provider configuration or mathematics."
+  },
+  "crossBrandFingerprint": {
     "coinRangeMatches": true,
     "fixedPaylinesMatch": true,
     "publishedRtpMatches": true,
     "genericFundingLanguageMatches": true,
-    "fingerprintStrength": "STRONG_PUBLIC_SPAIN_FAMILY_CORROBORATION",
+    "fingerprintStrength": "SAME_GROUP_CROSS_BRAND_SPAIN_CORROBORATION",
+    "independentReplicationClaimAllowed": false,
     "independentBackendOrMathConfigurationProven": false,
     "sameJackpotPoolProven": false,
     "sameSeedProven": false,
     "sameContributionPctProven": false,
     "sameTriggerProbabilityProven": false,
     "sameRngOrRulesVersionProven": false,
-    "interpretation": "Two current Spain-facing operator pages independently expose the same public family signature (25c-1 EUR, five fixed paylines and 95.44% RTP). This strengthens identification of the Spain-facing game family and public rules surface, but it is not proof that the underlying jackpot pool, contribution percentage, seed, trigger law or configuration version are identical."
+    "interpretation": "Two current Spain-facing Bally/Gamesys-group brands expose the same public family signature (25c-1 EUR, five fixed paylines and 95.44% RTP). This strengthens the family-level Spain-facing fingerprint but has materially less evidential independence than two unrelated operators/providers and cannot prove shared backend, pool, contribution, seed, trigger law or rules version."
+  },
+  "regulatoryRetrievalTarget": {
+    "source": "https://www.boe.es/eli/es/o/2014/07/25/hap1370/con",
+    "article8RequiresJackpotAllocationPercentageDisclosure": true,
+    "diamondSpecificSpainContributionPct": null,
+    "interpretation": "The exact Spain-facing percentage allocated from a player's participation to the jackpot should be recovered from the current in-game/particular rules rather than estimated from same-group marketing pages or imported from a foreign comparator."
   },
   "ballyComparator": {
     "url": "https://www.ballycasino.com/jackpot-slots/diamond-bonanza",
@@ -56,6 +74,7 @@
   },
   "scientificEffect": {
     "spainFamilyFingerprintImproved": true,
+    "independentReplicationObtained": false,
     "spainContributionGateClosed": false,
     "spainSeedGateClosed": false,
     "spainTriggerGateClosed": false,
@@ -65,7 +84,8 @@
     "decision": "NO_PLAY"
   },
   "nextProofTargets": [
-    "Recover Diamond-specific contribution percentage from a current Spain in-game help/paytable or technical/certification source.",
+    "Recover Diamond-specific contribution percentage from the current Spanish in-game help/paytable or particular rules, consistent with Article 8 disclosure duties.",
+    "Seek a genuinely independent Spain-facing provider/operator/certification fingerprint rather than another Bally/Gamesys group brand.",
     "Observe a verified Spain reset to identify current seed for each denomination without importing UK values.",
     "Cross-match generic:diamondbonanza25BTM to the exact 25c in-game meter in the same observation window.",
     "Recover exact jackpot trigger probability or sufficient eligible-exposure data to estimate it prospectively.",
@@ -83,6 +103,7 @@
     "maxTotalStakeEUR": 0
   },
   "hardGuards": {
+    "sameCorporateGroupIsNotIndependentReplication": true,
     "matchingPublicRtpIsNotPoolEquivalence": true,
     "matchingRulesSurfaceIsNotTriggerEquivalence": true,
     "genericFundingLanguageDoesNotRevealContributionPct": true,
