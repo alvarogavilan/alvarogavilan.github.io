@@ -1,6 +1,6 @@
 {
-  "version": "jackpot-king-shared-pool-economics-v1.1-trigger-fingerprint",
-  "generatedAt": "2026-08-24T01:50:00+02:00",
+  "version": "jackpot-king-shared-pool-economics-v1.2-spain-trigger-conflict",
+  "generatedAt": "2026-08-24T02:03:00+02:00",
   "market": "ES",
   "operator": "Botemania",
   "manufacturer": "Blueprint Gaming",
@@ -64,6 +64,16 @@
       "publishedAdditionalRtp": 0.005,
       "sourceConsistency": "LEGACY_OR_COARSE_DISCLOSURE",
       "notes": "Current page is less granular than the modern 0.38% + 0.11% disclosures and contains older reserve wording; fingerprint before use."
+    },
+    {
+      "game": "Irish Riches Megaways: Jackpot King",
+      "url": "https://www.botemania.es/juegos/slots-online/irish-riches-megaways-jackpot-king",
+      "publishedRtp": 0.9593,
+      "jackpotContribution": 0.01,
+      "reserveContribution": 0.015,
+      "operatorEntryTriggerSignature": "5 Jackpot King symbols transversally across all reels",
+      "sourceConsistency": "OPERATOR_VS_MANUFACTURER_TRIGGER_CONFLICT",
+      "notes": "Botemania Spain describes five Jackpot King symbols across all reels to enter Jackpot Bonus, whereas Blueprint's public irishriches help profile states four Jackpot King Deluxe overlay symbols in the barrels. Do not select or compare this title using a presumed trigger fingerprint until the exact Spain in-game rules/version is captured."
     }
   ],
   "manufacturerRuleCorroboration": [
@@ -82,6 +92,8 @@
     {
       "profile": "jackpotkingdeluxe3",
       "gameEngineID": "irishriches",
+      "applicableDate": "2022-08-15",
+      "helpVersion": "3.0",
       "url": "https://fileservice.blueprintgaming.com/?affiliate=&customer=Betfair_Sky&fileType=help&gameEngineID=irishriches&language=EN&profile=jackpotkingdeluxe3",
       "entryTriggerSignature": "4 Jackpot King Deluxe overlay symbols in the barrels",
       "assertions": [
@@ -131,34 +143,55 @@
       ]
     }
   ],
+  "spainOperatorManufacturerConflicts": [
+    {
+      "game": "Irish Riches Megaways: Jackpot King",
+      "status": "UNRESOLVED_RULES_FINGERPRINT_CONFLICT",
+      "operatorSource": "https://www.botemania.es/juegos/slots-online/irish-riches-megaways-jackpot-king",
+      "manufacturerSource": "https://fileservice.blueprintgaming.com/?affiliate=&customer=Betfair_Sky&fileType=help&gameEngineID=irishriches&language=EN&profile=jackpotkingdeluxe3",
+      "operatorRequiredOverlaySymbols": 5,
+      "manufacturerRequiredOverlaySymbols": 4,
+      "possibleExplanationsNotYetDistinguished": [
+        "different game/profile/configuration",
+        "operator localisation/documentation drift",
+        "manufacturer help version drift",
+        "different interpretation of base-reel versus barrel overlay symbols"
+      ],
+      "executionImpact": "RULES_FINGERPRINT_NOT_VERIFIED",
+      "realMoneyUse": "PROHIBITED"
+    }
+  ],
   "crossTitleTriggerFingerprint": {
-    "status": "DIVERGENT_PUBLIC_RULE_SIGNATURES",
+    "status": "DIVERGENT_PUBLIC_RULE_SIGNATURES_WITH_SPAIN_SOURCE_CONFLICT",
     "equalEntryRuleAcrossTitles": false,
     "equalHazardPerEURProven": false,
     "examples": [
       {"gameEngineID": "sevensjklow", "requiredOverlaySymbols": 3},
-      {"gameEngineID": "irishriches", "requiredOverlaySymbols": 4},
+      {"gameEngineID": "irishriches", "requiredOverlaySymbols": 4, "scope": "BLUEPRINT_HELP"},
+      {"game": "Irish Riches Megaways: Jackpot King", "requiredOverlaySymbols": 5, "scope": "BOTEMANIA_ES_OPERATOR_PAGE"},
       {"gameEngineID": "fishingfrenzyjk", "requiredOverlaySymbols": 5},
       {"gameEngineID": "slotsogoldmegaways", "requiredOverlaySymbols": 6}
     ],
-    "interpretation": "Official Blueprint help exposes materially different visible entry-trigger structures across titles connected to Jackpot King Deluxe. This does not by itself prove different final jackpot hazard per EUR because symbol frequencies and downstream Wheel King probabilities may compensate, but it directly rejects any assumption that a common pool/profile implies an identical entry rule or identical hazard. Cross-title dominance requires game-specific trigger and downstream probability proof."
+    "interpretation": "Official public material exposes materially different visible entry-trigger structures across Jackpot King titles, and Irish Riches additionally has a direct Spain-operator versus Blueprint-help conflict. This does not quantify final jackpot hazard per EUR. It means neither common pool membership nor a same-name cross-source profile is sufficient to establish executable rules."
   },
   "currentBestBaseRtpScreen": {
     "game": "Mega Bars Fortune Wheel: Jackpot King",
     "baseRtp": 0.955,
-    "reason": "Highest directly verified Botemania base RTP among the operator pages in this evidence pack.",
+    "reason": "Highest directly verified clean Botemania base RTP among the operator pages in this evidence pack. Irish Riches has a higher published 95.93% figure but is excluded from the clean screen because its trigger fingerprint conflicts with Blueprint help and its RTP decomposition is not treated as equivalent to the clean base-RTP field.",
     "notAPlaySignal": true
   },
   "scientificImplications": [
     "Shared pool membership does not prove identical jackpot hazard per EUR across titles.",
     "Official Blueprint help shows different visible Jackpot King Deluxe entry-trigger signatures across games, so equal entry rules cannot be assumed.",
+    "Irish Riches demonstrates that even an exact named title can have conflicting public trigger descriptions between the Spain operator and manufacturer help, so rules fingerprints must be configuration- and version-specific.",
     "Contribution percentage is funding flow and must not be substituted for player-level jackpot probability.",
     "If equal final jackpot hazard per EUR were later proven for two titles on the same pool, the higher base-RTP title would strictly dominate the lower base-RTP title before operational frictions.",
-    "Operator-page inconsistencies must fail closed until an exact in-game rules/paytable fingerprint is captured.",
+    "Operator-page or operator-versus-manufacturer inconsistencies must fail closed until an exact in-game rules/paytable fingerprint is captured.",
     "The published statement that probability increases with pot value invalidates a naive constant or uniform hazard assumption unless separately demonstrated."
   ],
   "nextProofTargets": [
-    "Capture exact Spain in-game paytable/rules fingerprint for Mega Bars Fortune Wheel JPK and Eye of Horus JPK.",
+    "Capture exact Spain in-game paytable/rules fingerprint for Mega Bars Fortune Wheel JPK, Eye of Horus JPK and Irish Riches Megaways JPK.",
+    "Resolve Irish Riches 5-symbol Botemania versus 4-overlay Blueprint help conflict using the exact currently served in-game help/profile/version.",
     "Map game-specific Jackpot King Deluxe entry-trigger probabilities and downstream Wheel King/tier probabilities; do not infer them from overlay-symbol counts alone.",
     "Prove or reject cross-title equality of final jackpot hazard per EUR within the same Botemania Jackpot King pool.",
     "Accumulate Royal/Regal reset endpoints continuously from the permanent backend and estimate empirical terminal distributions without mixing rule eras.",
@@ -169,6 +202,8 @@
     "contributionIsNotHazard": true,
     "sharedPoolIsNotEqualHazardProof": true,
     "differentVisibleTriggerRulesDoNotAloneQuantifyHazard": true,
-    "operatorPageConflictFailsClosed": true
+    "operatorPageConflictFailsClosed": true,
+    "crossSourceTriggerConflictFailsClosed": true,
+    "sameTitleNameIsNotConfigurationProof": true
   }
 }
