@@ -31,7 +31,7 @@ export class EdgeSentinel extends V9EdgeSentinel{
       distributionAssumption:'PAIRED_PRE_DROP_JACKPOT_AMOUNTS_ARE_IID_EXPONENTIAL_UNDER_CONSTANT_HAZARD_AND_ZERO_RESET',
       exactSpainResetEUR:0,
       exactSpainContribution:WINFALL_CONTRIBUTION,
-      conservativeEntryConcept:'CURRENT_VERIFIED_WINFALL_METER_MUST_EXCEED_ONE_SIDED_95_PERCENT_UPPER_BREAK_EVEN_BOUND_BEFORE_STATISTICS_CAN SUPPORT_ENTRY',
+      conservativeEntryConcept:'CURRENT_VERIFIED_WINFALL_METER_MUST_EXCEED_ONE_SIDED_95_PERCENT_UPPER_BREAK_EVEN_BOUND_BEFORE_STATISTICS_CAN_SUPPORT_ENTRY',
       executionAuthority:false
     };
     research.conditionalConstantHazardDiagnostic={
@@ -44,7 +44,7 @@ export class EdgeSentinel extends V9EdgeSentinel{
       breakEvenJackpotTwoSided95EUR:ci?{lower:twoLower,point,upper:twoUpper}:null,
       conservativeBreakEvenUpper95EUR:conservativeUpper95,
       conservativePositiveEvStatisticalScreenPassed:false,
-      conservativePositiveEvStatisticalScreenReason:'CURRENT_EXACT_WINFALL_METER_IS_NOT_BOUND; CONFIDENCE BOUNDS ARE CONDITIONAL RESEARCH ONLY',
+      conservativePositiveEvStatisticalScreenReason:'CURRENT_EXACT_WINFALL_METER_IS_NOT_BOUND; CONFIDENCE_BOUNDS_ARE_CONDITIONAL_RESEARCH_ONLY',
       confidenceMethod:ci?.method||null
     };
     research.decision={
