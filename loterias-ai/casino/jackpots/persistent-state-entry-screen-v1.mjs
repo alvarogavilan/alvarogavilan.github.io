@@ -7,6 +7,8 @@
 // player, belongs to the exact game/denomination/cabinet configuration, and has
 // a prospectively validated conditional-EV model.
 
+const roundPct = (value) => Math.round((value + Number.EPSILON) * 1e12) / 1e12;
+
 export function persistentStateEntryScreen({
   baseRtpPct,
   stateConditionalUpliftPct = null,
@@ -30,9 +32,9 @@ export function persistentStateEntryScreen({
     return { blocked: true, reason: 'INVALID_MIN_STAKE', executable: false };
   }
 
-  const breakEvenUpliftPct = Math.max(0, 100 - baseRtpPct);
+  const breakEvenUpliftPct = roundPct(Math.max(0, 100 - baseRtpPct));
   const upliftKnown = Number.isFinite(stateConditionalUpliftPct);
-  const conditionalRtpPct = upliftKnown ? baseRtpPct + stateConditionalUpliftPct : null;
+  const conditionalRtpPct = upliftKnown ? roundPct(baseRtpPct + stateConditionalUpliftPct) : null;
 
   const gates = {
     stateVisibleBeforeWager,
@@ -49,7 +51,7 @@ export function persistentStateEntryScreen({
   const missingGates = Object.entries(gates).filter(([, value]) => value !== true).map(([key]) => key);
 
   const positiveConditionalEv = upliftKnown && conditionalRtpPct > 100;
-  const atBreakEven = upliftKnown && Math.abs(conditionalRtpPct - 100) < 1e-12;
+  const atBreakEven = upliftKnown && conditionalRtpPct === 100;
   const allGatesPassed = missingGates.length === 0;
   const executable = allGatesPassed && positiveConditionalEv;
 
