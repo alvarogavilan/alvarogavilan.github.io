@@ -1,14 +1,35 @@
 {
-  "version": "scarab-regulatory-software-fingerprints-v1",
-  "generatedAt": "2026-08-24T17:42:00+02:00",
+  "version": "scarab-regulatory-software-fingerprints-v1.1",
+  "generatedAt": "2026-08-24T17:49:00+02:00",
   "mode": "RESEARCH_ONLY_NO_PLAY",
   "realMoneyAllowed": false,
-  "objective": "Preserve regulator-published Scarab software identifiers as search fingerprints for Spain/Galicia model closure without treating any foreign build as the Casino La Toja configuration.",
+  "objective": "Preserve regulator-published Scarab software identifiers as search fingerprints for Spain/Galicia model closure without treating any foreign build or certificate as the Casino La Toja configuration.",
   "mississippiGamingCommission": {
     "sourceCurrent": "https://www.msgamingcommission.com/images/uploads/gl_p_approvedfirmware.pdf",
     "sourceHistorical": "https://www.msgamingcommission.com/images/uploads/gl_f_approvedfirmware.pdf",
     "manufacturer": "IGT",
     "builds": [
+      {
+        "gameId": "GAME020001J0HS02",
+        "title": "Scarab",
+        "sha1": "1F82DE4C7D76568A56F2DA2CCF55D3DB39DCDCC4",
+        "md5": "A8E7EB2A0B91921E9E0AE0527135C9D3",
+        "canonicalSearchFingerprintAllowed": true
+      },
+      {
+        "gameId": "GAME020001J0HS03",
+        "title": "Scarab",
+        "sha1": "F9BBD5A070EBDADF7860252EF63F6F93808F82FB",
+        "md5": "3444B12467DC77368854B37E3569C10B",
+        "canonicalSearchFingerprintAllowed": true
+      },
+      {
+        "gameId": "GAME020001J0HS04",
+        "title": "Scarab",
+        "sha1": "7685BB491C28AD16A82CBC194209D56A029F3D56",
+        "md5": "34899E2ABCF34D2028425588E6FD9B02",
+        "canonicalSearchFingerprintAllowed": true
+      },
       {
         "gameId": "GAME020001JFJS03",
         "title": "Scarab",
@@ -34,15 +55,27 @@
   "peruMincetur": {
     "officialResolutionEvidence": [
       "https://consultasenlinea.mincetur.gob.pe/DocumentosNormativos/Publico/Imagen.aspx?ITEM=A1689C8FE415B193",
-      "https://consultasenlinea.mincetur.gob.pe/DocumentosNormativos/Publico/Imagen.aspx?ITEM=5096B0FA98F58F3B"
+      "https://consultasenlinea.mincetur.gob.pe/DocumentosNormativos/Publico/Imagen.aspx?ITEM=5096B0FA98F58F3B",
+      "https://consultasenlinea.mincetur.gob.pe/DocumentosNormativos/Publico/Imagen.aspx?ITEM=4EBC3733458E37E3"
     ],
     "facts": {
       "registrationCode": "A0015914",
       "manufacturer": "INTERNATIONAL GAME TECHNOLOGY (IGT)",
       "identificationCode": "GI020001JFJS003",
-      "appearsInMultipleAuthorizedGamingRoomMemoryLists": true,
-      "officialRowsNameScarabDirectly": false
+      "officialRowsNameScarabDirectly": false,
+      "secondRegistrationCode": "A0015910",
+      "secondIdentificationCode": "GI020001J0HS003",
+      "bothIdentificationCodesAppearInAuthorizedGamingRoomMemoryLists": true
     }
+  },
+  "swissFederalGamingBoard": {
+    "source": "https://www.esbk.admin.ch/dam/en/sd-web/VATf5ziF9b2y/qualifizierte-spielbankenspiele-d-f-i.pdf",
+    "qualificationId": "LB-AGG-20181231-343",
+    "manufacturer": "IGT",
+    "title": "Scarab",
+    "certificate": "2018IGT13057LC124",
+    "directGameIdBinding": false,
+    "use": "TITLE_CERTIFICATE_SEARCH_FINGERPRINT_ONLY"
   },
   "lowerAuthorityHardwareBridge": {
     "source": "https://www.eximpedia.app/hs-code-950430-import-data/coo-macao/destination-country-philippines",
@@ -55,28 +88,43 @@
     "spainBinding": false
   },
   "identitySynthesis": {
+    "regulatorPublishedScarabBuildCountAtLeast": 5,
+    "distinctGameCodeFamiliesObserved": ["J0HS", "JFJS"],
     "jfjs03RegulatorTitleBindingVerified": true,
     "jfjs03RegulatorHashStableAcrossTwoMississippiLists": true,
+    "j0hs03RegulatorTitleBindingVerified": true,
     "gi020001jfjs003IgtManufacturerBindingVerifiedByMincetur": true,
+    "gi020001j0hs003IgtManufacturerBindingVerifiedByMincetur": true,
+    "swissScarabCertificateTitleBindingVerified": true,
     "gameIdToGiIdDirectOfficialRegulatorBridgeVerified": false,
     "hardwareCrystalDual27FortyLineBridgeExistsOnlyAtLowerAuthority": true,
     "casinoLaTojaBuildIdentified": false,
-    "galiciaModelRecordIdentified": false
+    "galiciaModelRecordIdentified": false,
+    "scientificMeaning": "Regulators expose multiple distinct Scarab binaries and at least two game-code families. Commercial title identity is therefore insufficient to infer the Casino La Toja binary, line configuration, RTP or paytable."
   },
   "nextSearchKeys": [
     "GAME020001JFJS03",
     "GI020001JFJS003",
+    "GAME020001JFJS02",
+    "GAME020001J0HS02",
+    "GAME020001J0HS03",
+    "GI020001J0HS003",
+    "GAME020001J0HS04",
     "25DBCEA2D2352D635D4DCB756243DC137D96A142",
     "FF4B81ED6897C33A385A5713AAA3F03F",
+    "2018IGT13057LC124",
     "A0015914",
+    "A0015910",
     "Scarab 40L",
     "IGT Crystal Dual 27"
   ],
   "hardGuards": {
     "foreignRegulatorBuildDoesNotIdentifySpainBuild": true,
     "matchingCommercialTitleDoesNotIdentifyBinary": true,
+    "swissTitleCertificateDoesNotIdentifyGameId": true,
     "lowerAuthorityTradeRecordCannotCloseRegulatoryIdentity": true,
     "sha1DiscrepancyMustRemainExplicit": true,
+    "multipleRegulatorBuildsRequireLocalFingerprint": true,
     "noWageringNeededForFingerprintSearch": true,
     "realMoneyAllowed": false
   }
