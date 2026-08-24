@@ -5,7 +5,7 @@ const $=id=>document.getElementById(id);
 const pct=v=>Number.isFinite(Number(v))?(Number(v)*100).toFixed(2)+'%':'—';
 const money=v=>Number.isFinite(Number(v))?Number(v).toLocaleString('es-ES',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2}):'—';
 const time=t=>{const d=new Date(t);return Number.isFinite(d.getTime())?new Intl.DateTimeFormat('es-ES',{timeZone:'Europe/Madrid',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(d):'—';};
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
 
 const lab={science:null,evidence:null,jpk:null,winfall:null,priority:null,error:null};
 async function j(url){const r=await fetch(`${url}${url.includes('?')?'&':'?'}t=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(`HTTP_${r.status}`);return r.json();}
@@ -44,9 +44,10 @@ function winfallBox(){
   const d=r?.conditionalConstantHazardDiagnostic||{};
   const exactBound=r?.currentPair?.exactWinfallLiveIdVerified===true;
   const fit=d?.eligibleForFit===true;
-  const conditional=fit&&Number.isFinite(Number(d?.breakEvenJackpotEURIfPairIsExactWinfallPoolAndCandidatesAreAwards))
-    ?` · break-even condicional ${money(d.breakEvenJackpotEURIfPairIsExactWinfallPoolAndCandidatesAreAwards)}`:'';
-  return `<div style="margin-top:7px;padding:8px;border-radius:11px;background:#7bbcff0a;border:1px solid #7bbcff22;font-size:7px;line-height:1.55"><b style="color:#9ed6ff">WINFALL · PROSPECTIVO DURABLE</b><br>Pares reset candidatos: <b>${count}/${need}</b> · binding exacto Winfall: <b style="color:#ffb3b8">${exactBound?'SÍ':'NO'}</b> · fit condicional: <b style="color:${fit?'#ffc857':'#9bb1a6'}">${fit?'DISPONIBLE':'BLOQUEADO'}</b>${conditional}<br><span style="color:#8fa79b">Pares ≠ premio · pares ≠ identidad · k constante es hipótesis · threshold condicional ≠ ejecución.</span></div>`;
+  const point=fit&&Number.isFinite(Number(d?.breakEvenJackpotEURIfPairIsExactWinfallPoolAndCandidatesAreAwards))?money(d.breakEvenJackpotEURIfPairIsExactWinfallPoolAndCandidatesAreAwards):'—';
+  const upper95=fit&&Number.isFinite(Number(d?.conservativeBreakEvenUpper95EUR))?money(d.conservativeBreakEvenUpper95EUR):'—';
+  const confidence=d?.confidenceIntervalAvailable===true;
+  return `<div style="margin-top:7px;padding:8px;border-radius:11px;background:#7bbcff0a;border:1px solid #7bbcff22;font-size:7px;line-height:1.55"><b style="color:#9ed6ff">WINFALL · PROSPECTIVO DURABLE</b><br>Pares reset candidatos: <b>${count}/${need}</b> · binding exacto Winfall: <b style="color:#ffb3b8">${exactBound?'SÍ':'NO'}</b> · fit: <b style="color:${fit?'#ffc857':'#9bb1a6'}">${fit?'DISPONIBLE':'BLOQUEADO'}</b><br>Break-even puntual: <b>${point}</b> · upper 95% conservador: <b style="color:${confidence?'#ffc857':'#9bb1a6'}">${upper95}</b><br><span style="color:#8fa79b">La media no basta · upper95 ≠ ejecución · pares ≠ premio · pares ≠ identidad · k constante/exponencial son hipótesis.</span></div>`;
 }
 
 function greenDistanceBox(){
