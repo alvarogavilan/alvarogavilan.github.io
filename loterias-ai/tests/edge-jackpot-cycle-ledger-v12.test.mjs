@@ -3,6 +3,8 @@ import fs from 'node:fs';
 
 const wrangler=fs.readFileSync('loterias-ai/edge-backend/wrangler.jsonc','utf8');
 const v12=fs.readFileSync('loterias-ai/edge-backend/src/index-v12.mjs','utf8');
+const history=fs.readFileSync('loterias-ai/edge-live/edge-history-client-v1.mjs','utf8');
+const ux=fs.readFileSync('loterias-ai/edge-live/edge-live-ux-v1.mjs','utf8');
 const e=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/jackpot-cycle-ledger-semantics-v1.json','utf8'));
 
 assert.match(wrangler,/"main"\s*:\s*"src\/index-v12\.mjs"/);
@@ -23,6 +25,14 @@ assert.ok(v12.includes('noPreV12FullCycleFabrication:true'));
 assert.ok(v12.includes('cycleStatisticsDoNotProveHazard:true'));
 assert.ok(v12.includes('cycleStatisticsCannotEnableRealMoney:true'));
 assert.ok(v12.includes('realMoneyAllowed:false'));
+
+assert.ok(ux.includes("import './edge-history-client-v1.mjs'"));
+assert.ok(history.includes('/science/ath?limit=1000'));
+assert.ok(history.includes('/science/cycles?limit=500'));
+assert.ok(history.includes('HISTORIA 24/7'));
+assert.ok(history.includes('HISTORIA ≠ EV'));
+assert.ok(history.includes('reset candidato ≠ premio'));
+assert.ok(history.includes('ciclo completo candidato ≠ jackpot ganado'));
 
 assert.equal(e.status,'RESEARCH_ONLY_NO_PLAY');
 assert.equal(e.realMoneyAllowed,false);
