@@ -1,0 +1,44 @@
+{
+  "generatedAt": "2026-08-16T09:51:45.596Z",
+  "version": "v226",
+  "gameId": "bonoloto",
+  "audits": "v225",
+  "family": "CORRELATED_CIRCULAR_MATCHED_NULL",
+  "methodology": "Reconstruct exactly the eight frozen v225 late-era pool sequences, verify the two persisted >=5 dates, then circularly shift the entire late-era truth sequence through every non-zero offset. For each shift, all eight model pool sequences remain fixed and correlated, preserving model dependence, draw count and Budget8 cost. Statistic is the number of unique dates with any >=5 hit; total model-events is secondary. This is a deterministic exhaustive circular null over the 2025+ era.",
+  "candidatePool": {
+    "frozenModels": 8,
+    "lateDraws": 591,
+    "nullShifts": 590
+  },
+  "budget": {
+    "poolSize": 8,
+    "ticketsPerModel": 28,
+    "unitCostEUR": 0.5,
+    "theoreticalCostPerModelEUR": 14,
+    "realStakeEUR": 0
+  },
+  "observed": {
+    "unique5": 2,
+    "total5": 2,
+    "full": 0,
+    "dates": [
+      "2025-08-02",
+      "2025-08-09"
+    ]
+  },
+  "null": {
+    "meanUnique5": 5.269491525423729,
+    "q90": 16,
+    "q95": 18,
+    "q99": 25,
+    "maxUnique5": 31,
+    "geObservedUnique": 342,
+    "pUnique": 0.5803722504230119,
+    "geObservedTotal": 380,
+    "pTotal": 0.6446700507614214,
+    "geAtLeastOneFull": 273,
+    "pAtLeastOneFull": 0.46362098138747887
+  },
+  "decision": "NOT_SIGNIFICANT_UNDER_CORRELATED_NULL",
+  "realMoneyPass": false
+}
