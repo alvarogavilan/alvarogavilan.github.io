@@ -4,6 +4,7 @@ import fs from 'node:fs';
 const wrangler=fs.readFileSync('loterias-ai/edge-backend/wrangler.jsonc','utf8');
 const worker=fs.readFileSync('loterias-ai/edge-backend/src/index-v15.mjs','utf8');
 const bootstrap=fs.readFileSync('loterias-ai/edge-backend/src/spain-eligibility-bootstrap-v1.mjs','utf8');
+const ui=fs.readFileSync('loterias-ai/edge-live/edge-library-client-v1.mjs','utf8');
 const policy=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/spain-operational-eligibility-policy-v1.json','utf8'));
 const contract=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/client-execution-contract-v1.json','utf8'));
 
@@ -15,6 +16,9 @@ assert.ok(worker.includes("JURISDICTION_NOT_SPAIN"));
 assert.ok(worker.includes("LOTTERY_NOT_VERIFIED_SELAE_OR_ONCE_PRODUCT"));
 assert.ok(worker.includes("ONLINE_OPERATOR_NOT_VERIFIED_FOR_SPAIN"));
 assert.ok(worker.includes("foreignLotteryHistoryRejected:true"));
+assert.ok(worker.includes("if(!o)return false"));
+assert.ok(worker.includes("if(!g)return false"));
+assert.ok(!worker.includes("o.includes(norm(v))"));
 assert.ok(bootstrap.includes("gameId:'euromillones'"));
 assert.ok(bootstrap.includes("gameId:'eurojackpot'"));
 assert.ok(bootstrap.includes("gameId:'eurodreams'"));
@@ -22,6 +26,9 @@ assert.ok(!bootstrap.toLowerCase().includes('powerball'));
 assert.ok(!bootstrap.toLowerCase().includes('mega millions'));
 assert.ok(bootstrap.includes("brand:'Botemanía'"));
 assert.ok(bootstrap.includes("brand:'Monopolycasino'"));
+assert.ok(ui.includes('BIBLIOTECA ESPAÑA EDGE'));
+assert.ok(ui.includes('SPAIN-ONLY'));
+assert.ok(ui.includes("jurisdiction:'ES'"));
 
 assert.equal(policy.jurisdiction,'ES');
 assert.equal(policy.hardGuards.foreignLotteryHistoricalBackfillExcludedFromOperationalLibrary,true);
