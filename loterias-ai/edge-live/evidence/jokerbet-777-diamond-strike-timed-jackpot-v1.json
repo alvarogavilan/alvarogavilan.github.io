@@ -1,0 +1,82 @@
+{
+  "version": "jokerbet-777-diamond-strike-timed-jackpot-v1",
+  "jurisdiction": "ES",
+  "operator": "jokerbet-es",
+  "provider": "Red Tiger",
+  "game": "777 Diamond Strike",
+  "currentCatalogVerified": true,
+  "currentCatalogUrl": "https://www.jokerbet.es/tragaperras-slots/777-diamond-strike.html",
+  "rulesUrl": "https://www.jokerbet.es/img/logos/pdf/777-diamond-strike.pdf",
+  "catalog": {
+    "minStakeEUR": 0.10,
+    "maxStakeEUR": 10.00,
+    "publishedRtp": 0.9474,
+    "publishedJackpotPresent": true,
+    "catalogSaysHigherBetRaisesJackpotChance": true
+  },
+  "timedMechanism": {
+    "mechanismTextVerifiedFromIndexedSpanishRules": true,
+    "guaranteedBeforeDateAndTime": true,
+    "winProbabilityIncreasesTowardDeadline": true,
+    "winProbabilityReachesOneAtLastGuaranteedTime": true,
+    "newTimedJackpotStartsAfterAward": true,
+    "noMaximumValueClaim": true,
+    "canAwardOnSingleSpin": true
+  },
+  "dynamicAllocation": {
+    "rawIndexedEligibilityText": "Solo €1.71 de cada apuesta son elegibles para ganar el jackpot time.",
+    "rawIndexedExcessText": "La cantidad apostada que supere €1.71 contribuyen directamente al jackpot progressive.",
+    "exactInterpretationVerified": false,
+    "exactTimedEligibleStakeEUR": null,
+    "exactProgressiveExcessRuleVerified": false
+  },
+  "indexedHistoricalState": {
+    "dailyTimedSeedLikeValueEUR": 8556.52,
+    "sourceCrawlAge": "approximately 6 months at discovery",
+    "currentValue": false,
+    "currentDeadline": null,
+    "currentTimedPotEUR": null,
+    "mustNeverBeRenderedAsCurrent": true
+  },
+  "crossOperatorControls": [
+    {
+      "operator": "Casino777-es",
+      "relationship": "same title in Spain but page says Jackpot No",
+      "configurationEquivalent": false
+    },
+    {
+      "operator": "LeoVegas-es",
+      "relationship": "same title in Spain but page says BRANDJACKPOT no",
+      "configurationEquivalent": false
+    }
+  ],
+  "decision": {
+    "mechanismClass": "TIMED_JACKPOT_CONFIRMED_MECHANISM",
+    "currentConfigurationBinding": "JOKERBET_TITLE_AND_RULES_BOUND_BUT_LIVE_JACKPOT_PANEL_UNREAD",
+    "currentDeadlineKnown": false,
+    "currentTimedPotKnown": false,
+    "exactEligibleStakeKnown": false,
+    "exactHazardCurveKnown": false,
+    "positiveEvKnown": false,
+    "realMoneyAllowed": false,
+    "priority": "VERY_HIGH"
+  },
+  "nextEvidenceTargets": [
+    "current in-game Daily timed jackpot amount",
+    "current exact deadline/timezone",
+    "exact interpretation of €1.71 dynamic allocation text",
+    "current jackpot panel identity/fingerprint",
+    "direct machine-readable panel/feed if public",
+    "prospective observed award/reset cycles"
+  ],
+  "guards": {
+    "staleIndexedPotNeverCurrent": true,
+    "sameTitleAcrossOperatorsNeverConfigurationIdentity": true,
+    "deadlineMechanismDoesNotRevealFullHazardCurve": true,
+    "hundredPercentAtDeadlineDoesNotMeanPlayerCanPlaceSpinAtDeadline": true,
+    "latencyAndOtherPlayersMatter": true,
+    "exactStakeRequiredBeforeExecution": true,
+    "currentDeadlineRequiredBeforeExecution": true,
+    "realMoneyAllowed": false
+  }
+}
