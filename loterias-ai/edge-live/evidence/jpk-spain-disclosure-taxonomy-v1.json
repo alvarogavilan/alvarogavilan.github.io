@@ -1,11 +1,11 @@
 {
-  "version": "jpk-spain-disclosure-taxonomy-v1",
-  "generatedAt": "2026-08-24T07:41:00+02:00",
+  "version": "jpk-spain-disclosure-taxonomy-v1.1-conflicts-hardened",
+  "generatedAt": "2026-08-24T08:02:00+02:00",
   "market": "ES",
   "operator": "Botemania",
   "status": "RESEARCH_ONLY_NO_PLAY",
   "realMoneyAllowed": false,
-  "purpose": "Separate base RTP, jackpot-funding flow, reserve-funding flow and visible entry rules across current Spain-facing Jackpot King pages. Funding percentages are not treated as jackpot RTP, probability or hazard unless a page explicitly states an RTP component and exact payout economics are independently verified.",
+  "purpose": "Separate base RTP, jackpot-funding flow, reserve-funding flow and visible entry rules across current Spain-facing Jackpot King pages. Any body/footer disagreement is quarantined and cannot populate a clean funding configuration.",
   "cleanDecompositions": [
     {
       "game": "Mega Bars Fortune Wheel: Jackpot King",
@@ -16,16 +16,6 @@
       "visibleEntrySymbols": 5,
       "family": "LOW_FUNDING_038_011",
       "sourceConsistency": "CLEAN_CURRENT_PAGE"
-    },
-    {
-      "game": "Mega Bars: Jackpot King",
-      "url": "https://www.botemania.es/juegos/slots-online/mega-bars-jackpot-king",
-      "baseRtp": 0.9550,
-      "jackpotFunding": 0.0086,
-      "reserveFunding": 0.0013,
-      "visibleEntrySymbols": 5,
-      "family": "MID_FUNDING_086_013",
-      "sourceConsistency": "CLEAN_PAGE_DISTINCT_FROM_FORTUNE_WHEEL"
     },
     {
       "game": "King Kong Cash Go Bananas: Jackpot King",
@@ -48,16 +38,6 @@
       "sourceConsistency": "CLEAN_CURRENT_PAGE"
     },
     {
-      "game": "The Goonies Return: Jackpot King",
-      "url": "https://www.botemania.es/juegos/slots-online/the-goonies-return-jackpot-king",
-      "baseRtp": 0.9306,
-      "jackpotFunding": 0.0038,
-      "reserveFunding": 0.0011,
-      "visibleEntrySymbols": 5,
-      "family": "LOW_FUNDING_038_011",
-      "sourceConsistency": "CLEAN_CURRENT_PAGE"
-    },
-    {
       "game": "Ted: Jackpot King",
       "url": "https://www.botemania.es/juegos/slots-online/ted-jackpot-king",
       "baseRtp": 0.9302,
@@ -69,6 +49,32 @@
     }
   ],
   "ambiguousOrLegacyDisclosures": [
+    {
+      "game": "Mega Bars: Jackpot King",
+      "url": "https://www.botemania.es/juegos/slots-online/mega-bars-jackpot-king",
+      "publishedBaseRtp": 0.9550,
+      "visibleEntrySymbols": 5,
+      "bodyJackpotFunding": 0.0232,
+      "bodyReserveFunding": 0.0068,
+      "footerJackpotFunding": 0.0086,
+      "footerReserveFunding": 0.0013,
+      "classification": "INTERNAL_OPERATOR_PAGE_FUNDING_CONFLICT",
+      "safeFundingConfiguration": null,
+      "safeForExecutionFingerprint": false
+    },
+    {
+      "game": "The Goonies Return: Jackpot King",
+      "url": "https://www.botemania.es/juegos/slots-online/the-goonies-return-jackpot-king",
+      "publishedBaseRtp": 0.9306,
+      "visibleEntrySymbols": 5,
+      "bodyJackpotFunding": 0.0232,
+      "bodyReserveFunding": 0.0068,
+      "footerJackpotFunding": 0.0038,
+      "footerReserveFunding": 0.0011,
+      "classification": "INTERNAL_OPERATOR_PAGE_FUNDING_CONFLICT",
+      "safeFundingConfiguration": null,
+      "safeForExecutionFingerprint": false
+    },
     {
       "game": "The Pig Wizard: Jackpot King",
       "url": "https://www.botemania.es/juegos/slots-online/the-pig-wizard-jackpot-king",
@@ -115,29 +121,30 @@
   ],
   "sameFamilyControlledComparison": {
     "games": ["Mega Bars: Jackpot King", "Mega Bars Fortune Wheel: Jackpot King"],
-    "sameBaseRtp": true,
+    "samePublishedBaseRtp": true,
     "baseRtp": 0.9550,
     "sameVisibleEntryCount": true,
     "visibleEntrySymbols": 5,
     "sharedJackpotKingPool": true,
-    "sameFundingProfile": false,
-    "megaBarsFunding": {"jackpot":0.0086,"reserve":0.0013},
+    "fortuneWheelFundingDisclosureInternallyConsistent": true,
+    "megaBarsFundingDisclosureInternallyConsistent": false,
+    "megaBarsBodyFunding": {"jackpot":0.0232,"reserve":0.0068},
+    "megaBarsFooterFunding": {"jackpot":0.0086,"reserve":0.0013},
     "fortuneWheelFunding": {"jackpot":0.0038,"reserve":0.0011},
-    "implication": "Same title family, same base RTP, same visible five-symbol entry structure and shared Jackpot King pool do not establish the same progressive funding configuration. They therefore cannot establish equal final jackpot hazard or equal jackpot EV per EUR."
+    "exactFundingProfileDifferenceProven": false,
+    "implication": "Even with the same family, 95.50% published base, five-symbol visible entry and shared Jackpot King pool, the Mega Bars page itself exposes incompatible funding figures. The comparison therefore proves configuration/disclosure fingerprinting is required before any cross-title economics; it does not prove a stable exact funding difference or equal hazard."
   },
   "baseRtpScreen": {
     "highestCleanBaseRtp": 0.9550,
-    "coLeaders": [
-      "Mega Bars Fortune Wheel: Jackpot King",
-      "Mega Bars: Jackpot King"
-    ],
-    "fortuneWheelPreferredAsResearchReference": true,
-    "reason": "Both expose a clean 95.50% base. Fortune Wheel has the lower 0.38%+0.11% funding profile and a more recently crawled current page, but neither is an execution candidate because game-specific hazard remains unknown.",
+    "cleanLeader": "Mega Bars Fortune Wheel: Jackpot King",
+    "excludedSameBaseConflict": "Mega Bars: Jackpot King",
+    "reason": "Fortune Wheel remains the highest cleanly decomposed 95.50% base page in this taxonomy. Mega Bars also publishes 95.50% base but its body and footer disagree on jackpot/reserve funding, so it is excluded from the clean screen.",
     "notAPlaySignal": true
   },
   "taxonomyImplications": [
     "A single Jackpot King contribution template is scientifically invalid for Botemania Spain.",
     "Funding flow and RTP contribution are distinct fields and must not be equated when the page does not explicitly equate them.",
+    "Body/footer disagreements on Mega Bars and Goonies are first-class configuration conflicts, not rounding noise.",
     "Shared pool membership cannot repair title-specific disclosure conflicts or missing hazard probabilities.",
     "Base-RTP dominance can only be used after final jackpot hazard per EUR is proven equal for the compared exact configurations.",
     "Legacy operator-funded seed/growth wording from a page cannot be generalized to the current Spain network without resolving the exact regulatory/configuration semantics."
@@ -157,7 +164,8 @@
     "fundingIsNotHazard": true,
     "fundingIsNotRtpUnlessExplicitlyProven": true,
     "samePoolIsNotEqualHazard": true,
-    "sameBaseSameTriggerSamePoolIsNotSameFunding": true,
+    "sameBaseSameTriggerSamePoolDoesNotResolveFundingConflict": true,
+    "internalBodyFooterConflictCannotPopulateCleanConfiguration": true,
     "legacyDisclosureCannotSetCurrentSeed": true,
     "ambiguousDisclosureFailsClosed": true,
     "researchCannotEnableExecution": true,
