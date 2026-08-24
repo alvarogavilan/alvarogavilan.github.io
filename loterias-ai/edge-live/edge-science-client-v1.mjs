@@ -6,7 +6,7 @@ const money=v=>Number.isFinite(Number(v))?Number(v).toLocaleString('es-ES',{styl
 const time=t=>{const d=new Date(t);return Number.isFinite(d.getTime())?new Intl.DateTimeFormat('es-ES',{timeZone:'Europe/Madrid',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(d):'—';};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-const lab={science:null,evidence:null,error:null};
+const lab={science:null,evidence:null,jpk:null,error:null};
 async function j(url){const r=await fetch(`${url}${url.includes('?')?'&':'?'}t=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(`HTTP_${r.status}`);return r.json();}
 
 function panel(){
@@ -27,6 +27,14 @@ function eventLine(e){
   return '';
 }
 
+function tierLine(label,key){
+  const tier=lab.jpk?.research?.tiers?.[key];
+  if(!tier)return `${label}: endpoint research pendiente`;
+  const n=Number(tier?.aggregateCandidates?.candidateCount||0);
+  const med=tier?.recentWindow?.beforeEUR?.median;
+  return `${label}: ${n} caídas cand. · pre-caída mediana ${money(med)} · actual ${money(tier.currentEUR)}`;
+}
+
 function render(){
   const p=panel(),s=lab.science?.science||null,t=lab.science?.telemetry||null,e=lab.evidence||null;
   if(!s){p.innerHTML='<div style="font-size:9px;font-weight:1000">LAB 24/7 · INICIALIZANDO</div><div style="margin-top:5px;font-size:8px;color:#91a99e">Esperando telemetría científica del backend permanente.</div>';return;}
@@ -40,6 +48,8 @@ function render(){
   const triggerExamples=Array.isArray(trigger?.examples)?trigger.examples.map(x=>Number(x?.requiredOverlaySymbols)).filter(Number.isFinite):[];
   const triggerRange=triggerExamples.length?`${Math.min(...triggerExamples)}–${Math.max(...triggerExamples)} overlays según título/fuente`:'pendiente';
   const conflictLine=irishConflict?`<br><span style="color:#ffb3b8">Irish Riches ES: <b>${Number(irishConflict.operatorRequiredOverlaySymbols)||'—'}</b> símbolos vs Blueprint: <b>${Number(irishConflict.manufacturerRequiredOverlaySymbols)||'—'}</b> · <b>FINGERPRINT EN CONFLICTO</b> · no ejecutable.</span>`:'';
+  const jpkResearch=lab.jpk?.research;
+  const jpkBox=jpkResearch?`<div style="margin-top:7px;padding:8px;border-radius:11px;background:#ffffff07;border:1px solid #ffffff14;font-size:7px;line-height:1.55"><b style="color:#9ed6ff">JPK · DISTRIBUCIÓN DE CAÍDAS CANDIDATAS</b><br>${esc(tierLine('ROYAL','blueprint:JACKPOTKING_ROYAL'))}<br>${esc(tierLine('REGAL','blueprint:JACKPOTKING_REGAL'))}<br>${esc(tierLine('JACKPOT KING','blueprint:JACKPOTKING'))}<br><span style="color:#8fa79b">Caída ≠ premio · endpoint ≠ MBWB · distribución ≠ hazard/EV.</span></div>`:'';
   p.innerHTML=`
     <div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><div><div style="font-size:8px;font-weight:1000;letter-spacing:.08em;color:#66eba4">LABORATORIO 24/7</div><div style="font-size:15px;font-weight:1000;margin-top:2px">Datos acumulándose aunque cierres el iPhone</div></div><span style="padding:5px 8px;border-radius:999px;background:#ff687212;border:1px solid #ff687244;color:#ff8c94;font-size:7px;font-weight:1000">INVESTIGACIÓN · 0 €</span></div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:10px">
@@ -49,16 +59,19 @@ function render(){
       <div style="padding:8px;background:#ffffff08;border-radius:10px;text-align:center"><small style="font-size:6px;color:#8fa79b">RESET CAND.</small><b style="display:block;font-size:13px;margin-top:2px">${resets.length}</b></div>
     </div>
     <div style="margin-top:9px;padding:9px;border-radius:12px;background:#29df860b;border:1px solid #29df8628;font-size:8px;line-height:1.55"><b style="color:#66eba4">JACKPOT KING · MEJOR BASE VERIFICADA EN ESTE PACK</b><br>${candidate?`${esc(candidate.game)} · base ${pct(candidate.baseRtp)}`:'Pendiente'}<br><span style="color:#9bb1a6">Pool compartido: sí · hazard igual por € entre títulos: <b style="color:#ffc857">NO DEMOSTRADO</b>. Contribución ≠ probabilidad.</span><br><span style="color:#9bb1a6">Fingerprint de entrada público: <b style="color:#ffc857">DIVERGENTE</b> · ${esc(triggerRange)}. Distinto trigger visible ≠ hazard cuantificado, pero prohíbe asumir igualdad.</span>${conflictLine}</div>
+    ${jpkBox}
     <div style="margin-top:7px;font-size:7px;color:#8fa79b">${Number(s.metersTracked||0)} contadores caracterizados · ${mirrors.length} pares espejo sostenidos · última muestra ${time(s.lastObservedAt)}</div>
     ${eventLine(latest)}
   `;
 }
 
 async function refreshScience(){try{lab.science=await j(`${BACKEND}/science/status?events=12`);lab.error=null;}catch(e){lab.error=String(e?.message||e);}render();}
+async function refreshJpk(){try{lab.jpk=await j(`${BACKEND}/science/jpk?limit=200`);}catch{lab.jpk=null;}render();}
 async function refreshEvidence(){try{lab.evidence=await j(EVIDENCE);}catch{}render();}
 
-refreshScience();refreshEvidence();render();
+refreshScience();refreshJpk();refreshEvidence();render();
 setInterval(refreshScience,5000);
+setInterval(refreshJpk,15000);
 setInterval(refreshEvidence,60000);
-window.addEventListener('online',refreshScience);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshScience();});
+window.addEventListener('online',()=>{refreshScience();refreshJpk();});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){refreshScience();refreshJpk();}});
