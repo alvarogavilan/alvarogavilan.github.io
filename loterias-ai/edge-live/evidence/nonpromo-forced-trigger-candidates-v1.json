@@ -1,0 +1,123 @@
+{
+  "version": "nonpromo-forced-trigger-candidates-v1",
+  "generatedAt": "2026-08-24T15:48:00+02:00",
+  "market": "ES",
+  "mode": "RESEARCH_ONLY_NO_PLAY",
+  "promotionsExcluded": true,
+  "realMoneyAllowed": false,
+  "objective": "Find intrinsic, observable bounded-trigger states where positive EV can be proved without assuming a hidden-trigger distribution.",
+  "theoremEngine": "loterias-ai/casino/jackpots/forced-trigger-last-increment-v1.mjs",
+  "manufacturerEvidence": [
+    {
+      "id": "egt-2-happy-hits",
+      "provider": "Euro Games Technology (EGT)",
+      "mechanism": "STANDALONE_MYSTERY_MUST_HIT_BY",
+      "primarySources": [
+        "https://argentina.egt.com/wp-content/uploads/2026/02/EGT_Catalogue_2026_Spanish.pdf",
+        "https://argentina.egt.com/en/jackpot/2-happy-hits/"
+      ],
+      "verifiedFacts": {
+        "tiers": ["Major", "Grand"],
+        "anyBetCanHit": true,
+        "mustHitByFieldExplicit": true,
+        "mustHitByMeaning": "displayed accumulated value before which each jackpot is guaranteed to award",
+        "compatibleGames": ["Fiery Horn", "Amazons Battle Grand", "Hok San Dance", "Neptune's Sirens"]
+      },
+      "spainOperationalStatus": "CURRENT_SPANISH_INSTALLATION_NOT_RESOLVED",
+      "execution": {
+        "currentMeterVerified": false,
+        "hardMaxVerifiedForTargetInstallation": false,
+        "incrementPerBetVerified": false,
+        "awardOwnershipVerified": false,
+        "concurrencyVerified": false,
+        "rulesFingerprintVerified": false,
+        "prospectiveValidationPassed": false,
+        "realMoneyAllowed": false
+      }
+    },
+    {
+      "id": "egt-premium-link-ppc",
+      "provider": "Euro Games Technology (EGT)",
+      "mechanism": "CONFIGURABLE_MYSTERY_PROGRESSIVE",
+      "primarySource": "https://support.egt.com/manuals-files/70/PPC_Setup_Program_PL_User_Manual_1_3_EN.pdf",
+      "verifiedFacts": {
+        "baseValueConfigurable": true,
+        "visibleIncrementPctRange": [0, 5],
+        "hiddenIncrementPctRange": [0, 5],
+        "jackpotLimitConfigurable": true,
+        "minTriggeringValueConfigurable": true,
+        "maxTriggeringValueConfigurable": true,
+        "triggerRangeCountMin": 1,
+        "triggerRangeCountMax": 7,
+        "hiddenTriggerDistributionVerified": false
+      },
+      "interpretation": "Min/Max trigger configuration exists, but no uniform-trigger assumption is allowed. Distribution-free execution would require a verified same-basis last-increment crossing and award/concurrency semantics for the exact installation.",
+      "realMoneyAllowed": false
+    },
+    {
+      "id": "egt-diamond-number-roulette",
+      "provider": "EGT Multiplayer",
+      "mechanism": "ROULETTE_PROGRESSIVE_RANDOM_BOUNDED_TRIGGER",
+      "primarySource": "https://support.egt.com/manuals-files/157/User%20Manual_EGT%20Roulette%20Center%20Automated_ver.1.0_21.09.2020_EN.pdf",
+      "verifiedFacts": {
+        "levels": ["Sapphire", "Diamond"],
+        "minimumAndMaximumTriggerGamesConfigurable": true,
+        "serverSelectsValueWithinLimits": true,
+        "triggerWhenAccumulatedDeductionsReachOrExceedSelectedLimit": true,
+        "onlyStraightNumberBetsWin": true,
+        "qualifyingStraightBetRangeConfigurable": true,
+        "jackpotCanSplitBetweenWinningNumberBettors": true
+      },
+      "criticalGuard": "A forced trigger game is not the same as guaranteed jackpot ownership. Coverage and split semantics must be modeled separately.",
+      "spainOperationalStatus": "EGT_SPAIN_2026_CATALOGUE_OFFERS_DIAMOND_NUMBER_COMPATIBLE_MULTIGAME; CURRENT_CASINO_INSTALLATION_NOT_RESOLVED",
+      "realMoneyAllowed": false
+    }
+  ],
+  "spainVenueEvidence": [
+    {
+      "venue": "Casino La Toja",
+      "officialSource": "https://www.casinolatoja.com/slots/maquinas-de-azar/",
+      "observedAt": "2026-08-24",
+      "publishedEquipment": [
+        {
+          "label": "EGT MYSTERY PROGRESSYVE",
+          "bet": "variable según el juego",
+          "description": "12 juegos clásicos en un solo equipo"
+        },
+        {
+          "label": "RULETA ELECTRONICA",
+          "betRangeEUR": [0.10, 50],
+          "accumulativeJackpotClaim": true,
+          "providerIdentity": null
+        }
+      ],
+      "identityClosure": {
+        "egtMysteryExactFamily": null,
+        "premiumLinkVerified": false,
+        "twoHappyHitsVerified": false,
+        "diamondNumberRouletteVerified": false,
+        "visibleCurrentMeterCaptured": false,
+        "visibleTriggerLimitsCaptured": false
+      },
+      "priority": "HIGH_CURRENT_SPAIN_PHYSICAL_FOLLOWUP",
+      "realMoneyAllowed": false
+    }
+  ],
+  "shortestProofPaths": [
+    "Identify the exact jackpot family of Casino La Toja's published EGT MYSTERY PROGRESSYVE cabinet without wagering.",
+    "Capture any player-visible current meter, Must Hit By / Min-Max trigger field, minimum qualifying bet and jackpot tier labels.",
+    "If exact 2 Happy Hits is found in Spain, verify whether the wager crossing the displayed MHB boundary owns the award and whether another linked machine can intervene.",
+    "If Diamond Number is found, capture exact trigger-progress display semantics and jackpot split rules; do not treat trigger crossing as ownership.",
+    "Only run the distribution-free last-increment theorem after the exact installation fingerprint and prospective observations are frozen."
+  ],
+  "hardGuards": {
+    "noPromotions": true,
+    "noUniformTriggerAssumption": true,
+    "manufacturerAvailabilityIsNotVenueInstallation": true,
+    "venueBrandLabelIsNotExactJackpotIdentity": true,
+    "mustHitByProximityAloneIsNotPositiveEv": true,
+    "forcedTriggerDoesNotAlwaysMeanForcedOwnership": true,
+    "noWageringForResearch": true,
+    "realMoneyAllowed": false
+  }
+}
