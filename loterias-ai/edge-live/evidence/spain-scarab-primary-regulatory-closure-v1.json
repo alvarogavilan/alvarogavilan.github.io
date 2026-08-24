@@ -1,6 +1,6 @@
 {
-  "version": "spain-scarab-primary-regulatory-closure-v1.1",
-  "generatedAt": "2026-08-24T17:54:00+02:00",
+  "version": "spain-scarab-primary-regulatory-closure-v1.2",
+  "generatedAt": "2026-08-24T18:10:00+02:00",
   "market": "ES-GA",
   "status": "PRIMARY_EVIDENCE_STRENGTHENED_LOCAL_CONFIG_UNRESOLVED_NO_PLAY",
   "realMoneyAllowed": false,
@@ -114,9 +114,20 @@
         "gamePriceIsFixedForEachModelInRegistrationResolution": true
       }
     },
+    "localMachineFingerprintSurface": {
+      "file": "loterias-ai/edge-live/evidence/galicia-type-c-local-fingerprint-surface-v1.json",
+      "facts": {
+        "factoryPlateCarriesGaliciaModelRegistrationCodeAndSerial": true,
+        "exploitationAuthorizationCopyPlacedInMachine": true,
+        "frontOrVideoMustExposeBetsDenominationsPaytableAndMinimumReturn": true,
+        "substantialProgramOrGainPlanModificationIsRegistryRelevant": true,
+        "requiresWagerToCollectTheseIdentifiers": false
+      },
+      "closesAnyGateNow": false
+    },
     "publicIndexedScarabResolutionRecovered": false,
     "publicIndexedIgtCrystalResolutionRecovered": false,
-    "shortestAdministrativeProofTarget": "Recover the Galicia model-registration resolution or model record covering the IGT Crystal Scarab installation and extract exact model/game denomination, approved price/denomination mapping and configuration identifiers for cross-check against the machine help/paytable."
+    "shortestAdministrativeProofTarget": "First recover the exact local machine model registry code, serial and homologation/model data from the legally required plate or exploitation authorization without wagering. Pair that with exact-machine front/help/paytable and idle-cycle captures for bets, denominations, paytable, displayed return and cycle state. Seek the registration resolution only for fields still unresolved; the technical dossier itself has confidentiality protection."
   },
   "scientificImplication": {
     "primaryManufacturerMechanismConfirmed": true,
@@ -127,8 +138,9 @@
     "multipleBinaryBuildsConfirmedByRegulators": true,
     "deterministicLowerBoundEngineExists": true,
     "deterministicLowerBoundIsLocalExecutionProof": false,
+    "localFingerprintSurfaceLegallyObservableWithoutWager": true,
     "localConfigurationStillFundamental": true,
-    "reason": "The deterministic theorem removes RNG/RTP assumptions only after local rules are fingerprinted. IGT confirms configurable denominations/RTP and regulators expose multiple Scarab builds, so local binary, line cost, same-bet persistence, paytable, counter semantics and payout caps remain mandatory."
+    "reason": "The deterministic theorem removes RNG/RTP assumptions only after local rules are fingerprinted. Galicia law now supplies a no-wager route to the exact local model/serial and displayed game economics, but those values have not yet been captured from the Casino La Toja Scarab machine."
   },
   "closureGates": {
     "localRegistrationRecordRecovered": false,
@@ -152,7 +164,7 @@
   },
   "decision": {
     "researchPriority": "P0_PHYSICAL_STATEFUL_SLOT_DETERMINISTIC_BOUND",
-    "strongestCurrentFact": "A current Spanish physical casino lists exact Scarab on IGT Crystal; primary/regulatory evidence confirms the 10-spin persistent mechanism, 40/75-line variability and multiple software builds; and a distribution-free lower-bound theorem now exists for fully framed prefix reels once the local rules are fingerprinted.",
+    "strongestCurrentFact": "A current Spanish physical casino lists exact Scarab on IGT Crystal; a distribution-free lower-bound theorem exists; and Galicia regulation provides a no-wager exact-machine fingerprint surface through the model/serial plate, exploitation authorization and mandatory front-screen disclosures. No local Scarab value has yet been captured.",
     "thresholdNow": null,
     "exactStakeEUR": null,
     "maxSpins": 0,
@@ -167,6 +179,8 @@
     "independentComparatorAdviceDoesNotAutoTransfer": true,
     "deterministicTheoremDoesNotAutoTransferWithoutLocalFingerprint": true,
     "registrationProcedureDoesNotProveRecordContentsUntilRecordRecovered": true,
+    "onMachineLegalDisclosureDoesNotEqualObservedLocalFingerprintUntilExactMachineCaptured": true,
+    "minimumReturnDisplayDoesNotAutomaticallyEqualConfiguredRtp": true,
     "noWagerNeededForNextResearchStep": true,
     "executionContractRemainsSoleGreenAuthority": true,
     "realMoneyAllowed": false
