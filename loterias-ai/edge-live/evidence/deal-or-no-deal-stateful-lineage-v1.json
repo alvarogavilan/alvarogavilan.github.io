@@ -1,0 +1,116 @@
+{
+  "version": "deal-or-no-deal-stateful-lineage-v1",
+  "generatedAt": "2026-08-24T02:10:00+02:00",
+  "market": "ES",
+  "operator": "Botemania",
+  "status": "RESEARCH_ONLY_NO_PLAY",
+  "realMoneyAllowed": false,
+  "currentBotemaniaFeed": {
+    "key": "generic:DealOrNoDealStateful3",
+    "semanticFamilyMatch": "DEAL_OR_NO_DEAL_GAMESYS_LINEAGE",
+    "identityVerified": false,
+    "currentPlayableGameVerified": false,
+    "currentDenominationVerified": false,
+    "currentPoolMembershipVerified": false,
+    "currentRulesFingerprintVerified": false,
+    "warning": "A legacy/stateful internal id is not proof that the currently displayed EUR counter belongs to the historical Spanish Deal or No Deal title, denomination or standalone jackpot economy."
+  },
+  "historicalSpain2010": {
+    "use": "SPAIN_SCALE_AND_LINEAGE_PRIOR_ONLY",
+    "publishedMeters": [
+      {"stakeEUR": 0.05, "approxJackpotEUR": 13000},
+      {"stakeEUR": 0.10, "approxJackpotEUR": 125000},
+      {"stakeEUR": 0.20, "approxJackpotEUR": 490000}
+    ],
+    "reportedWins": [
+      {"amountEUR": 108515, "timing": "September 2010"},
+      {"amountEUR": 49975, "date": "2010-09-25"}
+    ],
+    "sources": [
+      "https://www.bingo.es/noticias/en-botemania-te-regalan-fantasticos-botes/",
+      "https://www.bingo.es/noticias/inechi-gana-108000-euros-con-el-juego-de-alla-tu-de-botemania/"
+    ],
+    "currentTierIdentityInferenceAllowed": false
+  },
+  "historicalGamesysOriginalDond5p": {
+    "source": "https://www.casinolistings.com/jackpots/gamesys/deal-or-no-deal-5p-jackpot-jackpotjoy",
+    "software": "Gamesys",
+    "coinGBP": 0.05,
+    "seedGBP": 2000,
+    "winsRecorded": 193,
+    "averageWinGBP": 101969,
+    "biggestWinGBP": 553588,
+    "originalMechanism": [
+      "Three bonus-game symbols entered the Deal or No Deal bonus.",
+      "The jackpot required eliminating all boxes except the jackpot box."
+    ],
+    "lifecycle": {
+      "standaloneJackpotStillAvailable": false,
+      "combinedInto": "Tiki Temple 5p Jackpot",
+      "interpretation": "Historical standalone DOND economics cannot be assumed for a later DOND-labelled counter after the pool merger."
+    }
+  },
+  "mergedPoolLineage": {
+    "source5p": "https://www.casinolistings.com/jackpots/gamesys/tiki-temple-5p-jackpot",
+    "source10p": "https://www.casinolistings.com/jackpots/gamesys/tiki-temple-10p-jackpot",
+    "documentedMergerEra": 2017,
+    "gamesNamedAsAbleToWinSharedPool": ["Tiki Temple", "Deal or No Deal", "Wonderland"],
+    "fivePenceSeedGBP": 2000,
+    "fivePenceWinsRecorded": 203,
+    "fivePenceAverageWinGBP": 104433,
+    "tenPenceSeedGBP": 4000,
+    "tenPenceWinsRecorded": 82,
+    "tenPenceAverageWinGBP": 192012,
+    "guard": "Secondary sources disagree about which qualifying game offered the best RTP/value; do not import either recommendation into Spain."
+  },
+  "currentThirdPartyMirrorCorroboration": {
+    "source": "https://www.wizardofpots.com/casinos/jackpotjoy/",
+    "evidenceClass": "THIRD_PARTY_TRACKER_CORROBORATION_ONLY",
+    "observedPairs": [
+      {"denominationGBP": 0.05, "dealOrNoDealGBP": 127021, "tikiTempleGBP": 127021, "exactDisplayedMatch": true},
+      {"denominationGBP": 0.10, "dealOrNoDealGBP": 257689, "tikiTempleGBP": 257689, "exactDisplayedMatch": true},
+      {"denominationGBP": 0.20, "dealOrNoDealGBP": 58566, "tikiTempleGBP": 58566, "exactDisplayedMatch": true}
+    ],
+    "interpretation": "Exact denomination-level displayed matches are consistent with alias/shared-pool lineage and directly undermine treating a DOND-labelled tracker row as an independent standalone pot. They are not evidence about Botemania Spain's current feed identity."
+  },
+  "identityAssessment": {
+    "exactCurrentBotemaniaTitle": null,
+    "exactCurrentBotemaniaDenominationEUR": null,
+    "exactCurrentPool": null,
+    "feedToInGameAmountCrossMatch": false,
+    "nominalMagnitudeCannotIdentifyTier": true,
+    "legacyInternalIdCannotProveCurrentPlayableGame": true,
+    "mergedPoolLineageBlocksStandaloneEconomics": true,
+    "crossMarketDenominationMappingAllowed": false,
+    "historicalSpainMagnitudeMatchAllowedAsIdentityProof": false,
+    "verdict": "IDENTITY_AND_ECONOMICS_UNRESOLVED"
+  },
+  "nextProofTargets": [
+    "Recover the exact currently playable Botemania title/page or in-game launch associated with generic:DealOrNoDealStateful3.",
+    "Cross-match the live in-game EUR jackpot amount to generic:DealOrNoDealStateful3 to the cent in the same observation window.",
+    "Capture current in-game denomination, stake eligibility, jackpot rules and provider/version fingerprint.",
+    "Determine whether the current counter is standalone, denomination-specific, or shared with Tiki/Wonderland-family games in the Spain configuration.",
+    "Only after current identity and pool membership are proven, derive contribution, seed/reset and trigger economics for that exact configuration."
+  ],
+  "execution": {
+    "decision": "NO_PLAY",
+    "identityVerified": false,
+    "thresholdVerified": false,
+    "stakeVerified": false,
+    "strategyVerified": false,
+    "rulesFingerprintVerified": false,
+    "prospectiveValidationPassed": false,
+    "exactStakeEUR": null,
+    "thresholdEUR": null,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "sameMagnitudeIsNotIdentity": true,
+    "sameLegacyNameIsNotCurrentRulesProof": true,
+    "mergedHistoricalPoolIsNotStandaloneEconomics": true,
+    "thirdPartyMirrorIsNotSpainIdentityProof": true,
+    "noCrossCurrencyTierInference": true,
+    "realMoneyAllowed": false
+  }
+}
