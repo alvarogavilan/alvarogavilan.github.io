@@ -5,7 +5,7 @@ import crypto from 'node:crypto';
 const ORIGIN = 'https://www.botemania.es';
 const PAGE = `${ORIGIN}/juegos/casino-online/ultimate-video-poker`;
 const OUT = 'loterias-ai/casino/jackpots/evidence/botemania-roxor-router-callsite-v3.json';
-const UA = 'loterias-ai-roxor-router-callsite-v3/1.0';
+const UA = 'loterias-ai-roxor-router-callsite-v3/1.1';
 const headers = { 'user-agent': UA, 'cache-control': 'no-cache' };
 
 const sha256 = (s) => crypto.createHash('sha256').update(s).digest('hex');
@@ -143,33 +143,51 @@ if (navigationModuleId) {
   for (const f of fetched) {
     const mod = moduleById(f.text, navigationModuleId);
     if (!mod) continue;
-    navigationModule = {
+    const candidate = {
       file: { name: f.name, url: f.url, sha256: f.sha256 },
       ...mod,
       stateContexts: contexts(mod.bodyPreview, /isGame|state|history|location|to:/g, 900, 1800, 20),
     };
-    if (/isGame/i.test(mod.bodyPreview)) break;
+    if (!navigationModule) navigationModule = candidate;
+    if (/isGame/i.test(mod.bodyPreview) && /state/i.test(mod.bodyPreview)) {
+      navigationModule = candidate;
+      break;
+    }
   }
 }
 
 const navText = navigationModule?.bodyPreview || '';
+const navTransportsIsGameInState = /state[\s\S]{0,500}?isGame|isGame[\s\S]{0,500}?state/i.test(navText);
+const consumerReadsLocationStateIsGame = consumerHits.some(h => /\.state[\s\S]{0,500}?isGame|isGame[\s\S]{0,500}?\.state/i.test(h.context));
+const consumerFeedsGraphqlIsGame = consumerHits.some(h => /variables[\s\S]{0,1800}?isGame|isGame[\s\S]{0,1800}?variables/i.test(h.context));
 const bridgeEvidence = {
   gameTileProducerFound: !!gameTileProducer,
-  producerHasComputedGameRoute: !!gameTileProducer && /homePageUrl[\s\S]{0,1200}?categoryId[\s\S]{0,1200}?\.id/i.test(gameTileProducer.context),
+  producerHasComputedGameRoute: !!gameTileProducer && /homePageUrl[\s\S]{0,1600}?categoryId[\s\S]{0,1600}?\.id/i.test(gameTileProducer.context),
   producerPassesIsGameTrue: !!gameTileProducer && /isGame\s*:\s*!0|isGame\s*:\s*true/i.test(gameTileProducer.context),
   navigationSymbol,
   navigationModuleId,
   navigationModuleRecovered: !!navigationModule,
   navigationModuleMentionsIsGame: /isGame/i.test(navText),
   navigationModuleMentionsState: /state/i.test(navText),
-  navigationModuleMentionsLocationOrHistory: /location|history/i.test(navText),
-  consumerReadsLocationStateIsGame: consumerHits.some(h => /\.state[\s\S]{0,180}?isGame|isGame[\s\S]{0,180}?\.state/i.test(h.context)),
-  consumerFeedsGraphqlIsGame: consumerHits.some(h => /variables[\s\S]{0,1600}?isGame/i.test(h.context)),
+  navigationModuleMentionsLocationOrHistory: /location|history|Link/i.test(navText),
+  navigationTransportsIsGameInState: navTransportsIsGameInState,
+  consumerReadsLocationStateIsGame,
+  consumerFeedsGraphqlIsGame,
 };
-bridgeEvidence.endToEndRouterBridgeRecovered = bridgeEvidence.gameTileProducerFound && bridgeEvidence.producerPassesIsGameTrue && bridgeEvidence.consumerReadsLocationStateIsGame;
+bridgeEvidence.endToEndRouterBridgeRecovered = [
+  bridgeEvidence.gameTileProducerFound,
+  bridgeEvidence.producerHasComputedGameRoute,
+  bridgeEvidence.producerPassesIsGameTrue,
+  bridgeEvidence.navigationModuleRecovered,
+  bridgeEvidence.navigationModuleMentionsIsGame,
+  bridgeEvidence.navigationModuleMentionsState,
+  bridgeEvidence.navigationTransportsIsGameInState,
+  bridgeEvidence.consumerReadsLocationStateIsGame,
+  bridgeEvidence.consumerFeedsGraphqlIsGame,
+].every(Boolean);
 
 const out = {
-  version: 'botemania-roxor-router-callsite-v3',
+  version: 'botemania-roxor-router-callsite-v3.1-fail-closed',
   generatedAt: new Date().toISOString(),
   operator: 'botemania-es',
   target: { game: 'Ultimate Video Poker', providerId: 'roxor-gaming', page: PAGE },
@@ -182,8 +200,9 @@ const out = {
   navigationModule,
   bridgeEvidence,
   decision: {
-    exactGameTileRouterCallsiteRecovered: bridgeEvidence.gameTileProducerFound && bridgeEvidence.producerPassesIsGameTrue,
-    exactRouterStateConsumerRecovered: bridgeEvidence.consumerReadsLocationStateIsGame,
+    exactGameTileRouterCallsiteRecovered: bridgeEvidence.gameTileProducerFound && bridgeEvidence.producerHasComputedGameRoute && bridgeEvidence.producerPassesIsGameTrue,
+    exactRouterStateTransportRecovered: bridgeEvidence.navigationModuleRecovered && bridgeEvidence.navigationTransportsIsGameInState,
+    exactRouterStateConsumerRecovered: bridgeEvidence.consumerReadsLocationStateIsGame && bridgeEvidence.consumerFeedsGraphqlIsGame,
     endToEndRouterBridgeRecovered: bridgeEvidence.endToEndRouterBridgeRecovered,
     exactProviderSessionRequestRecovered: false,
     safeStaticFollowupOnly: true,
