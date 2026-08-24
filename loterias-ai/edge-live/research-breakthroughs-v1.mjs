@@ -3,7 +3,7 @@ const SOURCES=[
   './evidence/spain-igt-physical-variable-state-v1.json'
 ];
 
-const esc=(x)=>String(x??'').replace(/[&<>"']/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
+const esc=(x)=>String(x??'').replace(/[&<>"']/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const eur=(x)=>Number.isFinite(Number(x))?Number(x).toLocaleString('es-ES',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2}):'—';
 const pct=(x)=>Number.isFinite(Number(x))?`${Number(x).toFixed(2)}%`:'—';
 
@@ -27,7 +27,7 @@ function buildOnlineCards(data){
       crossPlayerVerified:crossPlayer,
       preWagerVisibleVerified:preWager,
       exactConfigVerified:exactConfig,
-      status:'P0 · ONLINE ESPAÑA',
+      status:'P0 · INVESTIGACIÓN',
       action:'NO_PLAY',
       sourceType:'ONLINE',
       strongFinding:'Título español actual de una familia mundial documentada de advantage play por estado persistente.',
