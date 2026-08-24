@@ -1,10 +1,10 @@
 {
-  "version": "jpk-spain-base-return-corroboration-v1",
-  "generatedAt": "2026-08-24T07:22:00+02:00",
+  "version": "jpk-spain-cross-operator-rtp-semantics-v1.1-mixed-controls",
+  "generatedAt": "2026-08-24T07:32:00+02:00",
   "market": "ES",
   "status": "RESEARCH_ONLY_NO_PLAY",
   "realMoneyAllowed": false,
-  "objective": "Corroborate the semantics of Spain-facing Jackpot King base RTP independently from jackpot contribution/hazard, using another licensed Spanish operator's regulatory RTP disclosure.",
+  "objective": "Compare exact-title Spain-facing Jackpot King RTP disclosures across licensed operators without assuming that a matching title or matching number establishes the same configuration or RTP decomposition.",
   "bet365SpainRegulatoryDisclosure": {
     "fairPayoutPage": "https://help.bet365.es/s/es-es/fair-payouts",
     "pdf": "https://assets.ctfassets.net/oc7v9ngssn28/1tH5LXFy6S0fG0Tm5vGNHB/4f56ff2803ccc4965c4620b125a85f22/Spanish.pdf",
@@ -12,18 +12,20 @@
     "regulatorySemantics": {
       "theoreticalRtpPublished": true,
       "sixMonthlyActualReturnsPublished": true,
-      "jackpotAssignedAmountsExcludedFromTheseCalculations": true,
-      "interpretation": "The bet365 Spain disclosure explicitly states that amounts allocated to jackpots are excluded from the disclosed RTP calculations. This makes its theoretical RTP an independent Spain-facing ex-jackpot/base-return comparator for exact-title matches."
+      "pageStatesJackpotAssignedAmountsExcludedFromTheseCalculations": true,
+      "semanticAmbiguityDetectedByCrossTitleControls": true,
+      "interpretation": "The fair-payout page states that amounts assigned to jackpots are excluded from the calculations. Exact-title cross-operator controls nevertheless show both exact matches and systematic mismatches, including cases where bet365's theoretical value numerically equals Botemania base plus published jackpot/reserve funding components. Therefore this wording cannot be used by itself to relabel every bet365 theoretical value as the same ex-jackpot/base component shown by Botemania. Configuration and decomposition must be resolved per title."
     }
   },
-  "exactTitleMatches": [
+  "exactTitleComparisons": [
     {
       "title": "Eye Of Horus Jackpot King",
+      "classification": "EXACT_NUMERIC_BASE_MATCH_WITH_CONTRIBUTION_CONFLICT",
       "bet365": {
         "theoreticalRtp": 0.9546,
         "minStakeEUR": 0.10,
         "maxStakeEUR": 100.00,
-        "actualReturnExJackpotByMonth": [0.9629, 0.9356, 0.9965, 0.9063, 0.9730, 0.9480]
+        "actualReturnByMonth": [0.9629, 0.9356, 0.9965, 0.9063, 0.9730, 0.9480]
       },
       "botemania": {
         "title": "Eye of Horus: Jackpot King",
@@ -41,10 +43,9 @@
       },
       "assessment": {
         "exactTitleFamilyMatch": true,
-        "exactBaseRtpMatch": true,
-        "independentSpanishOperatorCorroboration": true,
-        "baseRtpExJackpotSemanticsCorroborated": true,
-        "contributionSemanticsResolved": false,
+        "exactTheoreticalToBotemaniaBaseNumericMatch": true,
+        "independentSpanishOperatorCorroborationOfNumericValue": true,
+        "sameRtpDecompositionProven": false,
         "exactConfigurationEquivalent": false,
         "hazardEquivalent": false,
         "executionEligible": false
@@ -52,11 +53,12 @@
     },
     {
       "title": "Eye of Horus Megaways Jackpot King",
+      "classification": "EXACT_NUMERIC_BASE_MATCH",
       "bet365": {
         "theoreticalRtp": 0.9450,
         "minStakeEUR": 0.10,
         "maxStakeEUR": 5.00,
-        "actualReturnExJackpotByMonth": [0.9915, 0.9709, 0.9966, 0.9170, 0.9207, 0.9468]
+        "actualReturnByMonth": [0.9915, 0.9709, 0.9966, 0.9170, 0.9207, 0.9468]
       },
       "botemania": {
         "title": "Eye of Horus Megaways: Jackpot King",
@@ -66,31 +68,99 @@
         "entryTriggerVisible": "6 Jackpot King symbols on the reels",
         "jackpotContribution": 0.0038,
         "reserveContribution": 0.0011,
+        "publishedBasePlusFundingComponents": 0.9499,
         "contributionDisclosureConsistent": true
       },
       "assessment": {
         "exactTitleFamilyMatch": true,
-        "exactBaseRtpMatch": true,
-        "independentSpanishOperatorCorroboration": true,
-        "baseRtpExJackpotSemanticsCorroborated": true,
-        "contributionSemanticsResolvedForBotemaniaPage": true,
+        "exactTheoreticalToBotemaniaBaseNumericMatch": true,
+        "independentSpanishOperatorCorroborationOfNumericValue": true,
+        "sameRtpDecompositionProven": false,
+        "exactConfigurationEquivalent": false,
+        "hazardEquivalent": false,
+        "executionEligible": false
+      }
+    },
+    {
+      "title": "Ted Jackpot King",
+      "classification": "EXACT_TITLE_NEAR_BASE_MISMATCH",
+      "bet365": {
+        "theoreticalRtp": 0.9304,
+        "minStakeEUR": 0.10,
+        "maxStakeEUR": 100.00,
+        "actualReturnByMonth": [0.9267, 0.9176, 0.9029, 0.9025, 0.9176, 0.9815]
+      },
+      "botemania": {
+        "title": "Ted: Jackpot King",
+        "url": "https://www.botemania.es/juegos/slots-online/ted-jackpot-king",
+        "baseRtp": 0.9302,
+        "jackpotContribution": 0.0232,
+        "reserveContribution": 0.0068,
+        "publishedBasePlusFundingComponents": 0.9602
+      },
+      "assessment": {
+        "exactTitleFamilyMatch": true,
+        "exactTheoreticalToBotemaniaBaseNumericMatch": false,
+        "differenceVsBotemaniaBase": 0.0002,
+        "sameRtpDecompositionProven": false,
+        "configurationDriftOrVariantCannotBeExcluded": true,
+        "exactConfigurationEquivalent": false,
+        "hazardEquivalent": false,
+        "executionEligible": false
+      }
+    },
+    {
+      "title": "The Goonies Return Jackpot King",
+      "classification": "BET365_THEORETICAL_EQUALS_BOTEMANIA_BASE_PLUS_FUNDING_COMPONENTS",
+      "bet365": {
+        "theoreticalRtp": 0.9355,
+        "minStakeEUR": 0.10,
+        "maxStakeEUR": 100.00,
+        "actualReturnByMonth": [0.8297, 0.9006, 0.8939, 0.8408, 0.9364, 0.8960]
+      },
+      "botemania": {
+        "title": "The Goonies Return: Jackpot King",
+        "url": "https://www.botemania.es/juegos/slots-online/the-goonies-return-jackpot-king",
+        "baseRtp": 0.9306,
+        "jackpotContribution": 0.0038,
+        "reserveContribution": 0.0011,
+        "publishedBasePlusFundingComponents": 0.9355
+      },
+      "assessment": {
+        "exactTitleFamilyMatch": true,
+        "exactTheoreticalToBotemaniaBaseNumericMatch": false,
+        "bet365TheoreticalNumericallyEqualsBotemaniaBasePlusFundingComponents": true,
+        "sameRtpDecompositionProven": false,
+        "semanticEquivalenceOfThe9355FigureProven": false,
+        "configurationDriftOrDifferentDisclosureConventionCannotBeExcluded": true,
         "exactConfigurationEquivalent": false,
         "hazardEquivalent": false,
         "executionEligible": false
       }
     }
   ],
+  "matrixAssessment": {
+    "exactTitleComparisons": 4,
+    "exactNumericBaseMatches": 2,
+    "exactTitleMismatches": 2,
+    "status": "MIXED_RESULTS_REQUIRE_TITLE_SPECIFIC_CONFIGURATION_FINGERPRINT",
+    "generalCrossOperatorBaseRtpTransferAllowed": false,
+    "generalCrossOperatorRtpDecompositionTransferAllowed": false,
+    "interpretation": "The Eye titles provide useful independent numeric corroboration for those exact displayed values, but Ted and Goonies are direct negative controls against any general same-title transfer rule. The Goonies equality between bet365 theoretical RTP and Botemania base+funding components is particularly important: it makes a universal ex-jackpot interpretation unsafe until the exact configuration/disclosure convention is fingerprinted."
+  },
   "scientificImplications": [
-    "For these two exact-title Spain-facing Jackpot King games, a second licensed Spanish operator publishes the same theoretical RTP values that Botemania labels as Base, while explicitly excluding jackpot-assigned amounts from the RTP calculations.",
-    "This materially strengthens the interpretation of 95.46% and 94.50% as ex-jackpot/base-return values rather than total returns including the progressive component.",
-    "The six monthly actual returns are operator-specific realized returns excluding jackpots; they are useful for configuration-drift and activity research, not transferable expected returns for Botemania.",
-    "Matching base RTP across operators does not prove equal reel strips, trigger probabilities, downstream Wheel King probabilities, contribution rates, jackpot pool membership or final hazard per EUR.",
-    "Eye of Horus non-Megaways remains fail-closed on contribution because the current Botemania page contains a 2.32%+0.68% versus 0.38%+0.11% internal conflict."
+    "Exact-title matching across licensed Spanish operators is useful evidence but not configuration identity.",
+    "Two Eye of Horus JPK titles independently reproduce Botemania's published base numeric values, which is title-specific corroboration only.",
+    "Ted JPK differs slightly across operators, proving same title does not guarantee an identical theoretical return value.",
+    "The Goonies Return JPK bet365 theoretical value equals Botemania base plus its 0.38% jackpot and 0.11% reserve components, creating a decomposition ambiguity that forbids treating bet365 theoretical RTP as universally equivalent to Botemania base RTP.",
+    "The six monthly realized returns are operator-specific observations and cannot be transferred to Botemania or used as a future betting signal.",
+    "None of these comparisons identifies game-specific jackpot trigger frequency, Wheel King probability, tier probability or final jackpot hazard per EUR."
   ],
   "nextProofTargets": [
-    "Recover exact in-game Spanish rules/version fingerprint for Eye of Horus Jackpot King to resolve the contribution conflict.",
-    "Recover exact game-specific Jackpot King entry and downstream Wheel King/tier probabilities.",
-    "Search other licensed Spanish operators' six-month RTP disclosures for exact-title JPK matches to build a larger independent base-return/configuration matrix.",
+    "Recover exact in-game Spanish rules/version fingerprints for the four compared titles on each operator where publicly accessible.",
+    "Resolve Eye of Horus non-Megaways Botemania contribution conflict using the currently served in-game rules.",
+    "Determine whether bet365's theoretical column uses a title-specific provider RTP option or a different jackpot-component convention for Goonies/Ted.",
+    "Expand the matrix with additional exact-title JPK games and licensed Spanish operator disclosures, retaining both positive and negative controls.",
     "Do not use realized monthly return excursions as a betting signal or as evidence of future RTP."
   ],
   "execution": {
@@ -106,12 +176,15 @@
     "maxTotalStakeEUR": 0
   },
   "hardGuards": {
+    "sameTitleIsNotConfigurationEquivalence": true,
+    "sameNumericRtpIsNotDecompositionEquivalence": true,
     "sameBaseRtpIsNotConfigurationEquivalence": true,
     "realizedMonthlyReturnIsNotExpectedFutureReturn": true,
     "realizedMonthlyReturnIsNotHazard": true,
     "crossOperatorActualReturnsCannotBeTransferredToBotemania": true,
-    "baseRtpCorroborationDoesNotResolveContributionConflict": true,
-    "baseRtpCorroborationDoesNotProveEqualHazard": true,
+    "crossOperatorTheoreticalRtpCannotBeTransferredWithoutFingerprint": true,
+    "numericSumMatchDoesNotProveSemanticComponentIdentity": true,
+    "rtpComparisonDoesNotProveEqualHazard": true,
     "researchEvidenceCannotEnableExecutionContract": true,
     "realMoneyAllowed": false
   }
