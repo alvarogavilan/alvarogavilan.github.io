@@ -1,6 +1,7 @@
 import { EdgeSentinel as V18EdgeSentinel } from './index-v18.mjs';
 import { SPANISH_JACKPOT_AWARDS,SPANISH_JACKPOT_AGGREGATES,MILLIONAIRE_GENIE_CURRENT_ECONOMICS } from './spanish-jackpot-awards-v1.mjs';
 import { extractJackpotAmountNearLabel } from './888-jackpot-page-parser-v1.mjs';
+import { conditionalConstantHazardScreen } from './millionaire-genie-historical-screen-v1.mjs';
 
 export const DEPLOYMENT_FINGERPRINT='edge-sentinel-v19-spanish-jackpot-awards-20260824a';
 const EIGHT_JACKPOTS='https://www.888casino.es/jackpots/';
@@ -68,7 +69,7 @@ export class EdgeSentinel extends V18EdgeSentinel{
     const parsed=extractJackpotAmountNearLabel(text,'Millionaire Genie');
     if(!parsed||!finite(parsed.amountEUR)||parsed.amountEUR<=0||parsed.amountEUR>100000000)return {attempted:true,readable:false,httpStatus:res.status,current:this.latest888Sample(),error:'MILLIONAIRE_GENIE_AMOUNT_NOT_PARSED'};
     const previous=this.latest888Sample(),observedAt=new Date(now).toISOString(),amount=Number(parsed.amountEUR);
-    this.sql.exec(`INSERT OR IGNORE INTO spanish_public_jackpot_meter_samples(operator,game_key,observed_at_ms,observed_at,amount_eur,source_url,parser_version) VALUES ('888casino-es','Millionaire Genie',?,?,?,?,? )`,now,observedAt,amount,EIGHT_JACKPOTS,'888-jackpot-page-parser-v1');
+    this.sql.exec(`INSERT OR IGNORE INTO spanish_public_jackpot_meter_samples(operator,game_key,observed_at_ms,observed_at,amount_eur,source_url,parser_version) VALUES ('888casino-es','Millionaire Genie',?,?,?,?,?)`,now,observedAt,amount,EIGHT_JACKPOTS,'888-jackpot-page-parser-v1');
     let drop=null;
     if(previous&&previous.amountEUR>amount){const dropEUR=previous.amountEUR-amount,dropRelative=previous.amountEUR>0?dropEUR/previous.amountEUR:0;if(dropEUR>=1&&dropRelative>=0.20){drop={beforeEUR:previous.amountEUR,afterEUR:amount,dropEUR,dropRelative,awardVerified:false};try{this.insertScienceEvent({observedAtMs:now,observedAt,type:'888_MILLIONAIRE_GENIE_RESET_CANDIDATE',meterKey:'888:MillionaireGenie',beforeEUR:previous.amountEUR,afterEUR:amount,deltaEUR:amount-previous.amountEUR,metadata:{source:EIGHT_JACKPOTS,awardVerified:false,configurationIdentityCurrent:true}});}catch{}}}
     return {attempted:true,readable:true,httpStatus:res.status,current:{observedAt,amountEUR:amount,sourceUrl:EIGHT_JACKPOTS,parserVersion:'888-jackpot-page-parser-v1'},previous,dropCandidate:drop};
@@ -81,12 +82,15 @@ export class EdgeSentinel extends V18EdgeSentinel{
 
   spanishAwardsResearch({game=null,operator=null,limit=500}={}){
     const stats=this.perGameAwardStats(),strongest=stats[0]||null;
+    const mgRows=this.awardRows({game:'Millionaire Genie',operator:'888casino-es',limit:500});
+    const meter=this.meterSampleSummary();
+    const conditional=conditionalConstantHazardScreen({awardAmounts:mgRows.map(x=>x.amountEUR),contributionRates:[0.02,0.035],currentJackpotEUR:meter.current?.amountEUR??null});
     return {
       version:'edge-spanish-jackpot-award-archive-v1',generatedAt:new Date().toISOString(),jurisdiction:'ES',
       summary:{individualPublicAwardRows:Number([...this.sql.exec(`SELECT COUNT(*) AS n FROM spanish_jackpot_awards`)][0]?.n||0),gamesWithIndividualRows:stats.length,strongestIndividualSeries:strongest,aggregatesStored:SPANISH_JACKPOT_AGGREGATES.length},
       filters:{game:game||null,operator:operator||null},perGame:stats,rows:this.awardRows({game,operator,limit}),aggregates:SPANISH_JACKPOT_AGGREGATES,
-      millionaireGenie:{currentEconomics:MILLIONAIRE_GENIE_CURRENT_ECONOMICS,meterMonitor:this.meterSampleSummary(),modelStatus:{historicalAwardsUsefulForHypothesis:true,currentSpecificGrowthDisclosureFraction:0.035,currentTheoreticalRtp:0.9502,exactCurrentSeedKnown:false,exactHazardKnown:false,baseRtpExcludingProgressiveKnown:false,configurationContinuityAcross2015To2026Verified:false,breakEvenKnown:false,positiveEvProven:false}},
-      guards:{publicationDateNeverInventedAsAwardTimestamp:true,monthPrecisionNeverPromotedToExactDay:true,aggregateCountsNeverExpandedIntoSyntheticAwards:true,conflictingAmountsRemainVisible:true,historicalConfigurationNotAssumedCurrent:true,currentContributionDisclosureConflictBlocksThreshold:true,meterResetCandidateIsNotAwardProof:true,archiveCannotEnableRealMoney:true,executionContractRemainsSoleGreenAuthority:true,realMoneyAllowed:false}
+      millionaireGenie:{currentEconomics:MILLIONAIRE_GENIE_CURRENT_ECONOMICS,meterMonitor:meter,historicalConditionalScreen:conditional,modelStatus:{historicalAwardsUsefulForHypothesis:true,currentSpecificGrowthDisclosureFraction:0.035,currentTheoreticalRtp:0.9502,exactCurrentSeedKnown:false,exactHazardKnown:false,baseRtpExcludingProgressiveKnown:false,configurationContinuityAcross2015To2026Verified:false,breakEvenKnown:false,positiveEvProven:false}},
+      guards:{publicationDateNeverInventedAsAwardTimestamp:true,monthPrecisionNeverPromotedToExactDay:true,aggregateCountsNeverExpandedIntoSyntheticAwards:true,conflictingAmountsRemainVisible:true,historicalConfigurationNotAssumedCurrent:true,currentContributionDisclosureConflictBlocksThreshold:true,conditionalHazardScreenCannotPromote:true,meterResetCandidateIsNotAwardProof:true,archiveCannotEnableRealMoney:true,executionContractRemainsSoleGreenAuthority:true,realMoneyAllowed:false}
     };
   }
 
@@ -95,11 +99,11 @@ export class EdgeSentinel extends V18EdgeSentinel{
     const url=new URL(request.url),path=url.pathname;
     if(path==='/science/spanish-awards'){
       await this.ensureAlarm();let poll=null;try{poll=await this.poll888MillionaireGenie();}catch{}
-      return responseJson({ok:true,service:'loterias-edge-sentinel',deploymentFingerprint:DEPLOYMENT_FINGERPRINT,deploymentCapabilities:{spanishJackpotAwardArchive:true,public888MeterMonitor:true,awardDatePrecision:true,conflictQuarantine:true,executionContractFailClosed:true},poll,research:this.spanishAwardsResearch({game:url.searchParams.get('game')||null,operator:url.searchParams.get('operator')||null,limit:Number(url.searchParams.get('limit')||500)})});
+      return responseJson({ok:true,service:'loterias-edge-sentinel',deploymentFingerprint:DEPLOYMENT_FINGERPRINT,deploymentCapabilities:{spanishJackpotAwardArchive:true,public888MeterMonitor:true,awardDatePrecision:true,conflictQuarantine:true,conditionalHistoricalHazardScreen:true,executionContractFailClosed:true},poll,research:this.spanishAwardsResearch({game:url.searchParams.get('game')||null,operator:url.searchParams.get('operator')||null,limit:Number(url.searchParams.get('limit')||500)})});
     }
     const response=await super.fetch(request);
     if(!['/','/health','/state','/science/status','/science/events','/science/jpk','/science/winfall','/science/ath','/science/cycles','/science/timing','/science/history-depth','/library/summary','/library/sources','/library/search','/library/record','/library/coverage','/library/universe'].includes(path))return response;
-    try{const body=await response.clone().json();body.deploymentFingerprint=DEPLOYMENT_FINGERPRINT;body.deploymentCapabilities={...(body.deploymentCapabilities||{}),spanishJackpotAwardArchive:true,public888MeterMonitor:true};return responseJson(body,response.status);}catch{return response;}
+    try{const body=await response.clone().json();body.deploymentFingerprint=DEPLOYMENT_FINGERPRINT;body.deploymentCapabilities={...(body.deploymentCapabilities||{}),spanishJackpotAwardArchive:true,public888MeterMonitor:true,conditionalHistoricalHazardScreen:true};return responseJson(body,response.status);}catch{return response;}
   }
 }
 
