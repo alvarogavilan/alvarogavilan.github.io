@@ -1,0 +1,103 @@
+{
+  "version": "scarab-la-toja-zero-bet-fingerprint-protocol-v1",
+  "generatedAt": "2026-08-24T17:55:00+02:00",
+  "venue": "Casino La Toja",
+  "market": "ES-GA",
+  "targetGame": "Scarab",
+  "mode": "PASSIVE_VISUAL_RESEARCH_ONLY_NO_PLAY",
+  "realMoneyAllowed": false,
+  "objective": "Close the exact local Scarab rule/configuration fingerprint using only public or passive visual evidence before any wager, login, cash insertion or execution consideration.",
+  "alreadyPubliclyVerified": {
+    "venueCurrentlyListsIgtCrystal": true,
+    "venueCurrentlyListsExactScarabTitle": true,
+    "officialVenuePage": "https://www.casinolatoja.com/slots/maquinas-de-azar/",
+    "officialIgtCrystalImageAssetPathKnown": "https://www.casinolatoja.com/wp-content/uploads/2025/07/IGT-Crystal.png",
+    "officialImageContentsInspected": false
+  },
+  "requiredObservations": [
+    {
+      "id": "LOCAL_GAME_TITLE",
+      "question": "Does the cabinet/game selection or help screen visibly identify Scarab?",
+      "acceptedEvidence": ["official venue close-up", "passive in-person photo/video", "machine help/rules screen photographed before wagering"],
+      "status": "OPEN"
+    },
+    {
+      "id": "LOCAL_HARDWARE",
+      "question": "Which IGT cabinet/platform is physically running Scarab (Crystal Dual, Crystal Slant, other)?",
+      "acceptedEvidence": ["cabinet model marking", "operator image with unmistakable hardware", "help/diagnostic identification visible without restricted access"],
+      "status": "OPEN"
+    },
+    {
+      "id": "LOCAL_LINE_COUNT",
+      "question": "Does the active Scarab configuration use 40 or 75 paylines?",
+      "acceptedEvidence": ["PAYS/RULES screen", "PLAYING N LINES display", "official local model record"],
+      "status": "OPEN"
+    },
+    {
+      "id": "LOCAL_CYCLE",
+      "question": "Is Game X of 10 shown and do gold frames settle on the tenth cycle round before reset?",
+      "acceptedEvidence": ["rules/help screen", "passive visible game screen"],
+      "status": "OPEN"
+    },
+    {
+      "id": "LOCAL_WILD_PAYTABLE",
+      "question": "Does Wild pay 2/20/50/200 line credits for 2/3/4/5 consecutive Wilds from the left?",
+      "acceptedEvidence": ["local paytable/help screen", "local model rules document"],
+      "status": "OPEN"
+    },
+    {
+      "id": "LOCAL_LINE_SCALING",
+      "question": "Does total bet scale exactly with the active payline count/line stake as required by the lower-bound engine?",
+      "acceptedEvidence": ["simultaneous visible total bet + active line count + coin/line stake", "local official rules"],
+      "status": "OPEN"
+    },
+    {
+      "id": "LOCAL_SAME_BET_STATE",
+      "question": "Are frame positions and cycle counter remembered separately for the same bet level/denomination?",
+      "acceptedEvidence": ["local rules/help text", "passive observation without changing or placing a wager"],
+      "status": "OPEN"
+    },
+    {
+      "id": "LOCAL_ABANDONED_STATE",
+      "question": "Does a nonzero framed state remain visible to the next user after the prior player leaves/cashes out at the same bet level?",
+      "acceptedEvidence": ["passive observation across player change", "local operator/manufacturer rules explicitly describing persistence"],
+      "status": "OPEN"
+    },
+    {
+      "id": "LOCAL_PAYOUT_CAP",
+      "question": "What maximum award/transaction cap applies to this machine and does it truncate any claimed deterministic lower bound?",
+      "acceptedEvidence": ["local help/rules", "local model resolution", "casino/regulator terms"],
+      "status": "OPEN"
+    },
+    {
+      "id": "LOCAL_PAYLINE_GEOMETRY",
+      "question": "Can the exact ordered 40/75 payline row matrix be recovered?",
+      "acceptedEvidence": ["local PAYS/PAYLINES screens", "exact certified rules/par sheet bound to the local build"],
+      "status": "OPEN",
+      "note": "Needed only for partial-frame deterministic bounds; full-prefix theorem does not require exact geometry."
+    },
+    {
+      "id": "LOCAL_SOFTWARE_FINGERPRINT",
+      "question": "Can a public/help/model identifier bind La Toja to a Scarab binary/game family without entering restricted diagnostics?",
+      "acceptedEvidence": ["public model registration", "public help/about screen", "operator/regulator document"],
+      "status": "OPEN"
+    }
+  ],
+  "observationRules": {
+    "cashInsertedEUR": 0,
+    "wagersAllowed": 0,
+    "loginRequired": false,
+    "restrictedDiagnosticsAllowed": false,
+    "tamperingAllowed": false,
+    "photographyOnlyWhereVenueRulesPermit": true,
+    "doNotInterfereWithOtherPlayers": true,
+    "doNotInferHiddenConfigurationFromCommercialTitle": true
+  },
+  "promotionContract": {
+    "allRequiredLocalFieldsClosed": false,
+    "prospectivePassiveValidationPassed": false,
+    "deterministicEngineMayCreateCandidate": false,
+    "executionAuthority": "EDGE_CLIENT_EXECUTION_CONTRACT_ONLY",
+    "realMoneyAllowed": false
+  }
+}
