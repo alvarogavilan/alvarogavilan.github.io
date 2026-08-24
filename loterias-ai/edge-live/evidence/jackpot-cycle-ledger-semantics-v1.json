@@ -1,0 +1,75 @@
+{
+  "version": "edge-jackpot-cycle-ledger-semantics-v1",
+  "generatedAt": "2026-08-24T12:09:00+02:00",
+  "status": "RESEARCH_ONLY_NO_PLAY",
+  "realMoneyAllowed": false,
+  "worker": "loterias-ai/edge-backend/src/index-v12.mjs",
+  "endpoint": "/science/cycles",
+  "purpose": "Persist direct-observation jackpot meter cycles between large-drop candidate boundaries, preserving censoring and award uncertainty explicitly.",
+  "resetCandidateDefinition": {
+    "minimumAbsoluteDropEUR": 1,
+    "minimumRelativeDrop": 0.20,
+    "meaning": "Telemetry boundary candidate only. It can represent a jackpot award, reset, transfer, administrative/configuration event or another cause until independently attributed."
+  },
+  "cycleClasses": {
+    "LEFT_CENSORED_STARTED_MID_CYCLE": "The first v12 cycle for a meter begins at the first v12 observation, not necessarily at the true cycle start. Duration and start value are incomplete.",
+    "FULL_OBSERVED_BETWEEN_RESET_CANDIDATE_BOUNDARIES": "The cycle starts immediately after one observed qualifying drop and closes at the next observed qualifying drop. It is fully observed by EDGE between candidate boundaries, but neither boundary is automatically a verified jackpot award."
+  },
+  "perCycleFields": [
+    "meterKey",
+    "cycleStartedAt",
+    "cycleStartEUR",
+    "startBoundaryExact",
+    "cycleEndedAt",
+    "durationMs",
+    "observations",
+    "observedPeakEUR",
+    "peakObservedAt",
+    "observedTroughEUR",
+    "troughObservedAt",
+    "cumulativeRiseEUR",
+    "cumulativeFallEUR",
+    "maxStepRiseEUR",
+    "maxStepFallEUR",
+    "preDropEUR",
+    "postDropEUR",
+    "closingDropEUR",
+    "closingDropRelative",
+    "awardVerified",
+    "cycleCompleteness"
+  ],
+  "perMeterStatistics": [
+    "candidateCycleCount",
+    "fullObservedCandidateCycleCount",
+    "averageFullObservedPeakEUR",
+    "maximumFullObservedPeakEUR",
+    "averageFullObservedDurationMs",
+    "averageFullObservedPreDropEUR"
+  ],
+  "whyThisExceedsSimpleHistoryTrackers": [
+    "Uses the same direct canonical feed observed by EDGE rather than only externally reported wins.",
+    "Preserves every sampled cycle peak instead of assuming the immediate pre-drop value is the cycle maximum.",
+    "Marks incomplete first cycles as censored instead of fabricating a start time.",
+    "Separates candidate boundaries from verified jackpot awards.",
+    "Creates the substrate for survival/hazard and extreme-state analysis once award attribution and exposure denominators are available."
+  ],
+  "futureStatisticsAllowedOnlyWhenSupported": [
+    "Kaplan-Meier or other censored duration summaries when event semantics are appropriate",
+    "cycle-peak empirical CDF and quantiles",
+    "inter-award times only for independently verified awards",
+    "growth-rate distributions from observed meter changes",
+    "hazard estimation only with verified jackpot awards and an eligible exposure denominator"
+  ],
+  "hardGuards": {
+    "resetCandidateIsNotVerifiedAward": true,
+    "completedCycleIsNotJackpotWinProof": true,
+    "firstV12CycleIsPotentiallyLeftCensored": true,
+    "noPreV12FullCycleFabrication": true,
+    "averageCycleDoesNotMeanOverdue": true,
+    "cyclePeakProximityDoesNotMeanPositiveEv": true,
+    "cycleStatisticsCannotReplaceHazard": true,
+    "cycleStatisticsCannotReplaceVerifiedThreshold": true,
+    "executionContractRemainsSoleGreenAuthority": true,
+    "realMoneyAllowed": false
+  }
+}
