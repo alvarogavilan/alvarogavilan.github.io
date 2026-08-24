@@ -1,0 +1,509 @@
+{
+  "generatedAt": "2026-08-16T09:48:40.921Z",
+  "version": "v225",
+  "gameId": "bonoloto",
+  "family": "THIRD_ORDER_HYPERGRAPH_MOTIFS",
+  "candidatePool": {
+    "nominalConfigurations": 12,
+    "effectiveConfigurations": 12
+  },
+  "selectionPeriod": "2018-01-01..2022-12-31",
+  "postFreezePeriods": [
+    "2023-01-01..2024-12-31",
+    "2025-01-01..2026-12-31"
+  ],
+  "methodology": "Rolling third-order hypergraph model. Each historical six-number draw contributes exactly 20 unordered triples. Candidate pools are built greedily from marginal pre-draw inclusion odds plus ONLY third-order triple log-lift relative to an independence expectation; no pairwise co-occurrence term is used. Windows and third-order strength are ranked only on 2018-2022, then the top eight configurations are frozen before 2023+. This lane tests higher-order interactions not represented by pairwise co-occurrence/contextual completion.",
+  "multipleTesting": {
+    "candidatePool": 12,
+    "effectiveConfigurations": 12,
+    "selectionCriterion": "train h6, then h5, h4, meanHits; top 8 frozen",
+    "matchedNullRequiredIfSignal": true
+  },
+  "budget": {
+    "poolSize": 8,
+    "tickets": 28,
+    "unitCostEUR": 0.5,
+    "theoreticalCostEUR": 14,
+    "realStakeEUR": 0
+  },
+  "summary": {
+    "nominalConfigurations": 12,
+    "effectiveConfigurations": 12,
+    "frozen": 8,
+    "midFullModels": 0,
+    "lateFullModels": 0,
+    "repeatFullModels": 0,
+    "repeat5PlusModels": 0,
+    "uniquePostFreeze5PlusDates": [
+      "2025-08-02",
+      "2025-08-09"
+    ]
+  },
+  "leaders": [
+    {
+      "config": {
+        "id": 0,
+        "W": 128,
+        "lambda": 0.1
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 9,
+        "h5": 2,
+        "h6": 0,
+        "sum": 1549,
+        "events": [
+          {
+            "date": "2018-06-11",
+            "hits": 5,
+            "pool": [
+              1,
+              19,
+              22,
+              28,
+              31,
+              33,
+              37,
+              47
+            ],
+            "truth": [
+              22,
+              28,
+              31,
+              33,
+              36,
+              37
+            ]
+          },
+          {
+            "date": "2022-02-18",
+            "hits": 5,
+            "pool": [
+              3,
+              8,
+              16,
+              25,
+              27,
+              32,
+              39,
+              45
+            ],
+            "truth": [
+              3,
+              25,
+              30,
+              32,
+              39,
+              45
+            ]
+          }
+        ],
+        "meanHits": 1.019078947368421
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 705,
+        "events": [],
+        "meanHits": 0.9644322845417237
+      },
+      "late": {
+        "draws": 591,
+        "h4": 2,
+        "h5": 0,
+        "h6": 0,
+        "sum": 562,
+        "events": [],
+        "meanHits": 0.9509306260575296
+      },
+      "poolSequenceHash": "a94d5576"
+    },
+    {
+      "config": {
+        "id": 4,
+        "W": 256,
+        "lambda": 0.1
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 13,
+        "h5": 1,
+        "h6": 0,
+        "sum": 1568,
+        "events": [
+          {
+            "date": "2022-02-07",
+            "hits": 5,
+            "pool": [
+              6,
+              8,
+              16,
+              21,
+              27,
+              32,
+              44,
+              45
+            ],
+            "truth": [
+              6,
+              21,
+              24,
+              27,
+              44,
+              45
+            ]
+          }
+        ],
+        "meanHits": 1.0315789473684212
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 4,
+        "h5": 0,
+        "h6": 0,
+        "sum": 732,
+        "events": [],
+        "meanHits": 1.0013679890560876
+      },
+      "late": {
+        "draws": 591,
+        "h4": 2,
+        "h5": 0,
+        "h6": 0,
+        "sum": 563,
+        "events": [],
+        "meanHits": 0.9526226734348562
+      },
+      "poolSequenceHash": "0852070f"
+    },
+    {
+      "config": {
+        "id": 1,
+        "W": 128,
+        "lambda": 0.25
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 11,
+        "h5": 1,
+        "h6": 0,
+        "sum": 1568,
+        "events": [
+          {
+            "date": "2018-06-11",
+            "hits": 5,
+            "pool": [
+              1,
+              2,
+              19,
+              22,
+              28,
+              31,
+              33,
+              37
+            ],
+            "truth": [
+              22,
+              28,
+              31,
+              33,
+              36,
+              37
+            ]
+          }
+        ],
+        "meanHits": 1.0315789473684212
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 4,
+        "h5": 0,
+        "h6": 0,
+        "sum": 707,
+        "events": [],
+        "meanHits": 0.9671682626538988
+      },
+      "late": {
+        "draws": 591,
+        "h4": 1,
+        "h5": 1,
+        "h6": 0,
+        "sum": 564,
+        "events": [
+          {
+            "date": "2025-08-09",
+            "hits": 5,
+            "pool": [
+              4,
+              22,
+              23,
+              29,
+              31,
+              32,
+              43,
+              47
+            ],
+            "truth": [
+              20,
+              22,
+              31,
+              32,
+              43,
+              47
+            ]
+          }
+        ],
+        "meanHits": 0.9543147208121827
+      },
+      "poolSequenceHash": "503ce013"
+    },
+    {
+      "config": {
+        "id": 6,
+        "W": 256,
+        "lambda": 0.5
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 7,
+        "h5": 1,
+        "h6": 0,
+        "sum": 1577,
+        "events": [
+          {
+            "date": "2019-01-25",
+            "hits": 5,
+            "pool": [
+              2,
+              5,
+              10,
+              30,
+              33,
+              36,
+              46,
+              47
+            ],
+            "truth": [
+              2,
+              5,
+              32,
+              33,
+              46,
+              47
+            ]
+          }
+        ],
+        "meanHits": 1.0375
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 2,
+        "h5": 0,
+        "h6": 0,
+        "sum": 751,
+        "events": [],
+        "meanHits": 1.027359781121751
+      },
+      "late": {
+        "draws": 591,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 584,
+        "events": [],
+        "meanHits": 0.988155668358714
+      },
+      "poolSequenceHash": "b6858284"
+    },
+    {
+      "config": {
+        "id": 2,
+        "W": 128,
+        "lambda": 0.5
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 7,
+        "h5": 1,
+        "h6": 0,
+        "sum": 1530,
+        "events": [
+          {
+            "date": "2020-08-28",
+            "hits": 5,
+            "pool": [
+              4,
+              13,
+              14,
+              17,
+              20,
+              35,
+              40,
+              42
+            ],
+            "truth": [
+              7,
+              13,
+              17,
+              20,
+              35,
+              40
+            ]
+          }
+        ],
+        "meanHits": 1.006578947368421
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 4,
+        "h5": 0,
+        "h6": 0,
+        "sum": 720,
+        "events": [],
+        "meanHits": 0.9849521203830369
+      },
+      "late": {
+        "draws": 591,
+        "h4": 6,
+        "h5": 0,
+        "h6": 0,
+        "sum": 560,
+        "events": [],
+        "meanHits": 0.9475465313028765
+      },
+      "poolSequenceHash": "d8a9f2db"
+    },
+    {
+      "config": {
+        "id": 3,
+        "W": 128,
+        "lambda": 1
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 10,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1481,
+        "events": [],
+        "meanHits": 0.9743421052631579
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 2,
+        "h5": 0,
+        "h6": 0,
+        "sum": 728,
+        "events": [],
+        "meanHits": 0.9958960328317373
+      },
+      "late": {
+        "draws": 591,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 573,
+        "events": [],
+        "meanHits": 0.9695431472081218
+      },
+      "poolSequenceHash": "1251fa83"
+    },
+    {
+      "config": {
+        "id": 7,
+        "W": 256,
+        "lambda": 1
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 8,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1539,
+        "events": [],
+        "meanHits": 1.0125
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 3,
+        "h5": 0,
+        "h6": 0,
+        "sum": 735,
+        "events": [],
+        "meanHits": 1.0054719562243501
+      },
+      "late": {
+        "draws": 591,
+        "h4": 3,
+        "h5": 1,
+        "h6": 0,
+        "sum": 575,
+        "events": [
+          {
+            "date": "2025-08-02",
+            "hits": 5,
+            "pool": [
+              6,
+              20,
+              23,
+              29,
+              31,
+              37,
+              43,
+              44
+            ],
+            "truth": [
+              2,
+              6,
+              20,
+              23,
+              31,
+              37
+            ]
+          }
+        ],
+        "meanHits": 0.9729272419627749
+      },
+      "poolSequenceHash": "9d405b8c"
+    },
+    {
+      "config": {
+        "id": 9,
+        "W": 512,
+        "lambda": 0.25
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 8,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1522,
+        "events": [],
+        "meanHits": 1.0013157894736842
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 3,
+        "h5": 0,
+        "h6": 0,
+        "sum": 730,
+        "events": [],
+        "meanHits": 0.9986320109439124
+      },
+      "late": {
+        "draws": 591,
+        "h4": 3,
+        "h5": 0,
+        "h6": 0,
+        "sum": 612,
+        "events": [],
+        "meanHits": 1.0355329949238579
+      },
+      "poolSequenceHash": "3b7436a6"
+    }
+  ],
+  "decision": "NEGATIVE",
+  "realMoneyPass": false
+}
