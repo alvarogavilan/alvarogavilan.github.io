@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const spain=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/spain-progressive-intelligence-map-v1.json','utf8'));
+const ledger=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/spain-progressive-regulatory-ledger-v1.json','utf8'));
 const world=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/global-jackpot-intelligence-benchmark-v1.json','utf8'));
 
 assert.equal(spain.status,'RESEARCH_ONLY_NO_PLAY');
@@ -21,6 +22,17 @@ assert.equal(spain.hardGuards.samePoolDoesNotMeanSameHazard,true);
 assert.equal(spain.hardGuards.contributionDoesNotEqualHazard,true);
 assert.equal(spain.hardGuards.foreignConfigurationCannotFillSpainMissingInputs,true);
 assert.equal(spain.hardGuards.realMoneyAllowed,false);
+
+assert.equal(ledger.status,'RESEARCH_ONLY_NO_PLAY');
+assert.equal(ledger.section,'3.20 Botes, botes progresivos, y premios adicionales');
+assert.ok(ledger.operatorTechnicalRequirements.accountingLedgerMinimum.includes('jackpot balance at all times'));
+assert.ok(ledger.operatorTechnicalRequirements.accountingLedgerMinimum.includes('contribution to the jackpot differentiated by each game/machine type'));
+assert.ok(ledger.operatorTechnicalRequirements.accountingLedgerMinimum.includes('jackpot awards with winner, amount and time'));
+assert.ok(ledger.edgeRequiredMirrorSchema.includes('configurationFingerprint'));
+assert.ok(ledger.edgeRequiredMirrorSchema.includes('awardVerified'));
+assert.equal(ledger.hardGuards.publicReconstructionIsNotOperatorInternalLedger,true);
+assert.equal(ledger.hardGuards.samePoolContributionMustRemainGameSpecific,true);
+assert.equal(ledger.hardGuards.realMoneyAllowed,false);
 
 assert.equal(world.status,'RESEARCH_ONLY_NO_PLAY');
 assert.equal(world.realMoneyAllowed,false);
