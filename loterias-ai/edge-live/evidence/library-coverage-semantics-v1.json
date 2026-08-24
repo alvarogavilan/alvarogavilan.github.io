@@ -1,0 +1,52 @@
+{
+  "version": "edge-library-coverage-semantics-v1",
+  "generatedAt": "2026-08-24T12:23:00+02:00",
+  "status": "ACTIVE_COVERAGE_CONTROL_NO_PLAY",
+  "realMoneyAllowed": false,
+  "worker": "loterias-ai/edge-backend/src/index-v14.mjs",
+  "endpoint": "/library/coverage",
+  "purpose": "Measure historical completeness against frozen official totals/date ranges and keep unknown-total archives explicitly incomplete until a defensible denominator is established.",
+  "frozenTargets": [
+    {
+      "id": "es-selae-primitiva-historical-through-2026-08-22",
+      "expectedCount": 4179,
+      "basis": "SELAE official La Primitiva statistics updated 2026-08-22 report 4,179 total historical draws."
+    },
+    {
+      "id": "es-selae-euromillones-historical-through-2026-08-18",
+      "expectedCount": 1973,
+      "basis": "SELAE official Euromillones statistics updated 2026-08-18 report 1,973 total historical draws."
+    },
+    {
+      "id": "es-once-eurojackpot-2026-06",
+      "expectedCount": 9,
+      "basis": "ONCE official June 2026 Eurojackpot archive lists nine draws."
+    }
+  ],
+  "unknownTotalTargets": [
+    {
+      "id": "es-once-coupon-history-from-1996",
+      "knownCoverageStart": "1996",
+      "rule": "ONCE confirms historic coupon results from 1996, but total row count remains null until frozen from primary evidence."
+    },
+    {
+      "id": "es-selae-loteria-nacional-stats-from-2009",
+      "knownCoverageStart": "2009-01-01",
+      "rule": "SELAE states current Lotería Nacional statistics use all draws since 2009-01-01; exact total remains null until frozen."
+    }
+  ],
+  "searchUpgrade": {
+    "freeTextSearchIncludes": ["record UID", "game/draw", "operator", "provider", "pool/tier", "metadata", "numbers", "secondary numbers"],
+    "exactFilters": ["numbers", "secondary"],
+    "example": "/library/search?gameId=la-primitiva&numbers=5,22,30,34,45,49"
+  },
+  "hardGuards": {
+    "unknownExpectedTotalCannotBeMarkedComplete": true,
+    "observedRowsMustBeComparedInsideFrozenDateRange": true,
+    "coveragePercentageIsNotModelAccuracy": true,
+    "completeHistoryDoesNotProvePredictability": true,
+    "exactCombinationMatchIsDescriptiveNotPredictive": true,
+    "executionContractRemainsSoleGreenAuthority": true,
+    "realMoneyAllowed": false
+  }
+}
