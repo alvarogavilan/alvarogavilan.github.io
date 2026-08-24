@@ -1,0 +1,74 @@
+{
+  "version": "spain-progressive-regulatory-ledger-v1",
+  "generatedAt": "2026-08-24T11:58:00+02:00",
+  "jurisdiction": "Spain",
+  "status": "RESEARCH_ONLY_NO_PLAY",
+  "realMoneyAllowed": false,
+  "primarySource": "https://www.boe.es/buscar/doc.php?id=BOE-A-2014-10302",
+  "section": "3.20 Botes, botes progresivos, y premios adicionales",
+  "operatorTechnicalRequirements": {
+    "participantDisclosure": [
+      "Platform must clearly inform the participant when funds are being contributed to jackpots.",
+      "Platform must communicate how a participant can qualify for the jackpot.",
+      "All participants who contribute to a jackpot must be able to qualify to win it during play.",
+      "Jackpot conditions and requirements to win must be communicated to the participant."
+    ],
+    "accountingLedgerMinimum": [
+      "creation of each jackpot",
+      "periods during which each jackpot is active",
+      "configurable jackpot characteristics active at each moment",
+      "games/machines participating in or contributing to the jackpot at each moment",
+      "jackpot balance at all times",
+      "contribution to the jackpot differentiated by each game/machine type",
+      "jackpot awards with winner, amount and time",
+      "manual actions affecting jackpot balance",
+      "transfers or redirections to another jackpot",
+      "closure/deactivation time"
+    ],
+    "controlChecksAtLeastMonthly": [
+      "correct operation, balances and movements",
+      "once constituted and opened, conditions do not change until won and paid",
+      "winner-determination procedure awards only eligible winners and does not omit eligible winners",
+      "prizes are paid to listed winners",
+      "redirection mechanisms cannot postpone award indefinitely"
+    ]
+  },
+  "2024MonitoringModel": {
+    "source": "https://www.boe.es/buscar/act.php?id=BOE-A-2024-12639",
+    "fact": "Casino game records for machines of chance are generated in the operator system in real time and reported by session in the DGOJ monitoring model.",
+    "researchImplication": "Spain's regulated architecture is inherently event/accounting driven; EDGE should mirror that structure with timestamped immutable observations rather than relying on screenshots or current-value-only polling."
+  },
+  "edgeRequiredMirrorSchema": [
+    "poolId",
+    "tierId",
+    "operator",
+    "provider",
+    "gameId",
+    "meterKey",
+    "activeFrom",
+    "activeTo",
+    "configurationFingerprint",
+    "currentBalanceEUR",
+    "observedATH_EUR",
+    "observedMinEUR",
+    "contributionPctByGame",
+    "reserveContributionPctByGame",
+    "resetOrSeedEUR",
+    "awardCandidateBeforeEUR",
+    "awardCandidateAfterEUR",
+    "awardObservedAt",
+    "awardVerified",
+    "transferOrRedirectionObserved",
+    "manualActionPubliclyObservable",
+    "sourceProvenance"
+  ],
+  "importantResearchConsequence": "The operator's internal regulated records contain exactly the dimensions needed to solve many EDGE identity and history problems. Public research should reconstruct only what is legally/publicly observable and must never claim access to non-public DGOJ/operator records.",
+  "hardGuards": {
+    "publicReconstructionIsNotOperatorInternalLedger": true,
+    "regulatoryRequirementDoesNotMakeNonPublicDataAccessible": true,
+    "awardCandidateIsNotVerifiedAward": true,
+    "configurationMustBeTimeVersioned": true,
+    "samePoolContributionMustRemainGameSpecific": true,
+    "realMoneyAllowed": false
+  }
+}
