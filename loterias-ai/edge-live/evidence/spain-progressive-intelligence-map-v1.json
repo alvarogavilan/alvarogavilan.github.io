@@ -1,0 +1,101 @@
+{
+  "version": "spain-progressive-intelligence-map-v1",
+  "generatedAt": "2026-08-24T11:58:00+02:00",
+  "jurisdiction": "Spain",
+  "status": "RESEARCH_ONLY_NO_PLAY",
+  "realMoneyAllowed": false,
+  "regulatoryFoundation": {
+    "source": "https://www.boe.es/buscar/act.php?id=BOE-A-2014-8135",
+    "order": "Orden HAP/1370/2014",
+    "facts": [
+      "Article 8(e): operator publishes theoretical return and six prior monthly actual return percentages; jackpot prizes are excluded from the actual-return percentage calculation.",
+      "Article 8(k): operator must disclose the percentage of the player's participation allocated to formation of the jackpot.",
+      "Article 14: only progressive jackpots may be offered for online slot-machine games under this basic regulation; guaranteed/operator-funded jackpots are not allowed.",
+      "Game-specific rules remain authoritative for exact participation, trigger and prize mechanics."
+    ],
+    "researchImplication": "Missing contribution on an indexed marketing page is a retrieval problem, not permission to estimate. Search exact rules/in-game help because Spain requires the participation percentage allocated to the jackpot to be available."
+  },
+  "poolFamilies": [
+    {
+      "id": "gamesys-roxor-zero-reset-tiki-paper-boteman-winstones-family",
+      "poolIdentityStatus": "OPERATOR_DECLARED_SHARED_NETWORK_PARTIAL_GRAPH",
+      "resetEUR": 0,
+      "members": [
+        {"game":"Paper Wins Jackpot","baseRtpPct":93.02,"contributionPct":1.92,"source":"https://www.botemania.es/juegos/slots-online/paper-wins-jackpot"},
+        {"game":"Boteman","baseRtpPct":93.03,"contributionPct":1.92,"source":"https://www.botemania.es/juegos/slots-online/boteman"},
+        {"game":"La Isla de Tiki Trópico Dorado","baseRtpPct":95.39,"contributionPct":0.38,"source":"https://www.botemania.es/juegos/slots-online/la-isla-de-tiki-tropico-dorado"},
+        {"game":"Winstones Bote","baseRtpPct":94.81,"contributionPct":0.68,"source":"https://www.botemania.es/juegos/slots-online/winstones-bote"}
+      ],
+      "crossOperatorEvidence": [
+        "Botemania pages describe sharing across Botemania, Canal Bingo and MONOPOLY Casino for parts of this family.",
+        "MONOPOLY Casino Winstones Bote independently publishes base 94.81%, contribution 0.68%, reset to 0 and the same family linkage."
+      ],
+      "keyFinding": "Games can feed the same declared shared progressive network with materially different contribution percentages. Contribution rate therefore cannot be substituted for jackpot hazard or win probability."
+    },
+    {
+      "id": "winfall-wonderland-tiki-templo-family",
+      "poolIdentityStatus": "OPERATOR_DECLARED_SHARED_NETWORK",
+      "resetEUR": 0,
+      "members": [
+        {"game":"Winfall Wishes Jackpot","baseRtpPct":94.85,"contributionPct":0.60,"anyBetEligible":true,"probabilityProportionalToBet":true,"source":"https://www.botemania.es/juegos/slots-online/winfall-wishes-jackpot"},
+        {"game":"Wonderland","baseRtpPct":null,"contributionPct":null,"source":null},
+        {"game":"Tiki Templo / La Isla de Tiki Templo naming in shared-pool disclosure","baseRtpPct":null,"contributionPct":null,"source":"https://www.botemania.es/juegos/slots-online/winfall-wishes-jackpot"}
+      ],
+      "keyFinding": "Winfall Spain explicitly supplies zero reset, 0.60% contribution, any-stake eligibility and bet-proportional chance, but does not publish the exact jackpot hazard law."
+    },
+    {
+      "id": "phoenix-secretos-zero-reset",
+      "poolIdentityStatus": "SAME_GAME_CROSS_OPERATOR_SHARED_POOL",
+      "resetEUR": 0,
+      "members": [
+        {"game":"Bote de Secretos del Fénix","baseRtpPct":93.96,"contributionPct":0.60,"anyBetEligible":true,"probabilityProportionalToBet":true,"source":"https://www.botemania.es/juegos/slots-online/bote-de-secretos-del-fenix"}
+      ],
+      "crossOperatorEvidence": ["Botemania and MONOPOLY Casino publish the same 93.96% base, 0.60% contribution and reset-to-zero semantics."],
+      "keyFinding": "Useful clean Spain control family for validating zero-reset telemetry and operator cross-site identity without importing foreign seed assumptions."
+    },
+    {
+      "id": "bubble-progressive-family",
+      "poolIdentityStatus": "MULTI_TIER_PARTIAL_SHARED_GRAPH",
+      "members": [
+        {"game":"Burbujas Saltarinas","baseRtpPct":95.38,"contributionPct":0.09,"source":"https://www.botemania.es/juegos/slots-online/burbujas-saltarinas"},
+        {"game":"Duble Buble Bote","baseRtpPct":94.76,"contributionPct":1.26,"source":"https://www.botemania.es/juegos/slots-online/duble-buble-bote"},
+        {"game":"Duble Buble Bote Triple","baseRtpPct":91.51,"contributionPct":0.49,"source":"https://www.botemania.es/juegos/slots-online/duble-buble-bote-triple"},
+        {"game":"Duble Buble Megaways","baseRtpPct":95.33,"contributionPct":0.15,"source":"https://www.botemania.es/juegos/slots-online/duble-buble-megaways"}
+      ],
+      "tierSharing": [
+        "Duble Buble Bote Triple Grand is shared with the Grand of Duble Buble Bote.",
+        "Duble Buble Bote Triple Major is shared with Burbujas Saltarinas.",
+        "Duble Buble Bote Triple Mini is independent."
+      ],
+      "keyFinding": "A single title can expose different tier-sharing topology; network inference must be tier-specific, not game-specific only."
+    },
+    {
+      "id": "blueprint-jackpot-king-spain",
+      "poolIdentityStatus": "OPERATOR_DECLARED_SHARED_MULTI_TIER_NETWORK_WITH_CONFIGURATION_CONFLICTS",
+      "tiers": ["Royal/Real","Regal/Majestuoso","Jackpot King"],
+      "cleanReference": {"game":"Mega Bars Fortune Wheel: Jackpot King","baseRtpPct":95.50,"jackpotContributionPct":0.38,"reserveContributionPct":0.11,"source":"https://www.botemania.es/juegos/slots-online/mega-bars-fortune-wheel-jackpot-king"},
+      "examples": [
+        {"game":"7's Deluxe: Jackpot King","baseRtpPct":94.51,"jackpotContributionPct":0.38,"reserveContributionPct":0.11,"source":"https://www.botemania.es/juegos/slots-online/7s-deluxe-jackpot-king"},
+        {"game":"Eye of Horus: Jackpot King","baseRtpPct":95.46,"jackpotContributionPct":0.38,"reserveContributionPct":0.11,"source":"https://www.botemania.es/juegos/slots-online/eye-of-horus-jackpot-king"}
+      ],
+      "mustBeWonBySemantics": "Operator pages state Royal and Regal must fall before specified values shown in the paytable and that jackpot probability grows with jackpot value.",
+      "keyFinding": "Shared tiers do not prove equal game-specific final hazard. Internal page conflicts in other JPK titles remain quarantined."
+    }
+  ],
+  "highValueNationalTargets": [
+    "Recover exact contribution/trigger rules for every canonical feed meter using Spain's Article 8(k) disclosure requirement as retrieval leverage.",
+    "Build a tier-specific shared-pool graph across Botemania, MONOPOLY Casino and Canal Bingo.",
+    "Cross-match same-pool meters across operators to identify exact network IDs and distinguish operator-local from supplier-wide pools.",
+    "Backfill every observed reset with pre-drop, post-drop, timestamp, pool family, tier and source confidence.",
+    "For games claiming bet-proportional chance, estimate hazard only from verified award/exposure data; never infer it from contribution percentage."
+  ],
+  "hardGuards": {
+    "samePoolDoesNotMeanSameContribution": true,
+    "samePoolDoesNotMeanSameHazard": true,
+    "contributionDoesNotEqualHazard": true,
+    "tierTopologyMustBeExplicit": true,
+    "foreignConfigurationCannotFillSpainMissingInputs": true,
+    "missingDisclosureMustRemainNullUntilRecovered": true,
+    "realMoneyAllowed": false
+  }
+}
