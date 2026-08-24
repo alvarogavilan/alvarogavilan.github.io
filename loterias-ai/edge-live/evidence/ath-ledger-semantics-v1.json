@@ -1,0 +1,65 @@
+{
+  "version": "edge-ath-ledger-semantics-v1",
+  "generatedAt": "2026-08-24T11:55:00+02:00",
+  "status": "RESEARCH_ONLY_NO_PLAY",
+  "realMoneyAllowed": false,
+  "purpose": "Persist the maximum and minimum amount observed for every canonical jackpot meter without relying on minute/hour snapshot timing.",
+  "existingPreV11Coverage": {
+    "source": "scienceTelemetryV1.meterStats",
+    "samplingCadenceTargetMs": 5000,
+    "fieldsAlreadyPersisted": [
+      "firstSeenAt",
+      "lastSeenAt",
+      "samples",
+      "changes",
+      "drops",
+      "minEUR",
+      "maxEUR",
+      "lastEUR",
+      "largestDropEUR",
+      "largestDropRelative",
+      "largestRiseEUR"
+    ],
+    "importantLimitation": "The pre-v11 maxEUR is an exact observed maximum since EDGE science telemetry began, but its exact first ATH timestamp was not persisted. It is not evidence of the global maximum before EDGE started monitoring."
+  },
+  "v11Ledger": {
+    "worker": "loterias-ai/edge-backend/src/index-v11.mjs",
+    "endpoint": "/science/ath",
+    "table": "meter_ath",
+    "scope": "OBSERVED_SINCE_EDGE_SCIENCE_TELEMETRY",
+    "perMeterFields": [
+      "meterKey",
+      "firstSeenAt",
+      "lastSeenAt",
+      "observations",
+      "observedMinEUR",
+      "minObservedAt",
+      "minTimestampExact",
+      "observedATHSinceEdgeMonitoringEUR",
+      "athObservedAt",
+      "athTimestampExact",
+      "previousObservedATH_EUR",
+      "athUpdatesAfterV11",
+      "currentEUR",
+      "currentPctOfObservedATH",
+      "distanceBelowObservedATH_EUR"
+    ],
+    "newAthEventType": "ALL_TIME_HIGH_OBSERVED",
+    "preV11Migration": "Seed every meter from durable scienceTelemetryV1 minEUR/maxEUR. Preserve the amount but mark inherited ATH timestamp unknown until a strictly higher post-v11 observation occurs."
+  },
+  "whyUseful": [
+    "Ranks current meters by percentile/proximity to the highest state actually observed by EDGE.",
+    "Prevents short-lived peaks from being lost between minute snapshots.",
+    "Provides a durable baseline for reset-cycle studies and extreme-state frequency calculations.",
+    "Allows future per-cycle maxima and inter-record-time analysis without changing execution authority."
+  ],
+  "hardGuards": {
+    "observedAthIsNotGlobalPreMonitoringAth": true,
+    "athProximityIsNotPositiveEv": true,
+    "athCannotReplaceHazard": true,
+    "athCannotReplaceVerifiedThreshold": true,
+    "unknownPreV11AthTimestampMustStayUnknown": true,
+    "executionContractRemainsSoleGreenAuthority": true,
+    "realMoneyAllowed": false
+  }
+}
