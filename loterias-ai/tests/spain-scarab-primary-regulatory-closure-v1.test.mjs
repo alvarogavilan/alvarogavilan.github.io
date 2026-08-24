@@ -46,6 +46,12 @@ assert.equal(reg.registerProcedure.facts.registrationRequiresOperatingMemory,tru
 assert.equal(reg.registerLaw.facts.registerStoresModelDenomination,true);
 assert.equal(reg.machineRegulation.facts.gamePriceIsFixedForEachModelInRegistrationResolution,true);
 assert.equal(reg.machineRegulation.facts.multiDenominationMachinesMayBeHomologated,true);
+assert.equal(reg.localMachineFingerprintSurface.facts.factoryPlateCarriesGaliciaModelRegistrationCodeAndSerial,true);
+assert.equal(reg.localMachineFingerprintSurface.facts.exploitationAuthorizationCopyPlacedInMachine,true);
+assert.equal(reg.localMachineFingerprintSurface.facts.frontOrVideoMustExposeBetsDenominationsPaytableAndMinimumReturn,true);
+assert.equal(reg.localMachineFingerprintSurface.facts.substantialProgramOrGainPlanModificationIsRegistryRelevant,true);
+assert.equal(reg.localMachineFingerprintSurface.facts.requiresWagerToCollectTheseIdentifiers,false);
+assert.equal(reg.localMachineFingerprintSurface.closesAnyGateNow,false);
 assert.equal(reg.publicIndexedScarabResolutionRecovered,false);
 assert.equal(reg.publicIndexedIgtCrystalResolutionRecovered,false);
 
@@ -56,6 +62,7 @@ assert.equal(e.scientificImplication.configurationVariabilityConfirmedByManufact
 assert.equal(e.scientificImplication.multipleBinaryBuildsConfirmedByRegulators,true);
 assert.equal(e.scientificImplication.deterministicLowerBoundEngineExists,true);
 assert.equal(e.scientificImplication.deterministicLowerBoundIsLocalExecutionProof,false);
+assert.equal(e.scientificImplication.localFingerprintSurfaceLegallyObservableWithoutWager,true);
 assert.equal(e.scientificImplication.localConfigurationStillFundamental,true);
 
 for(const [key,value] of Object.entries(e.closureGates)){
@@ -85,6 +92,9 @@ assert.equal(e.hardGuards.foreignSameBetSemanticsDoNotProveLocalSameBetSemantics
 assert.equal(e.hardGuards.independentComparatorAdviceDoesNotAutoTransfer,true);
 assert.equal(e.hardGuards.deterministicTheoremDoesNotAutoTransferWithoutLocalFingerprint,true);
 assert.equal(e.hardGuards.registrationProcedureDoesNotProveRecordContentsUntilRecordRecovered,true);
+assert.equal(e.hardGuards.onMachineLegalDisclosureDoesNotEqualObservedLocalFingerprintUntilExactMachineCaptured,true);
+assert.equal(e.hardGuards.minimumReturnDisplayDoesNotAutomaticallyEqualConfiguredRtp,true);
+assert.equal(e.hardGuards.noWagerNeededForNextResearchStep,true);
 assert.equal(e.hardGuards.realMoneyAllowed,false);
 
 console.log('spain-scarab-primary-regulatory-closure-v1.test.mjs: PASS');
