@@ -40,7 +40,7 @@ export function screenCgmZeroDeposit({
   trancheBonusEUR=30,turnoverMultiple=40,
   gameRtp=CGM_ZERO_DEPOSIT_CURRENT.candidate.exactCgmTheoreticalRtp,
   contributionFraction=CGM_ZERO_DEPOSIT_CURRENT.generalBonusTerms.defaultContributionFraction,
-  cashoutProbability=null,
+  positiveCashoutProbability=null,
   accountEligible=false,promotionVisibleInAccount=false,
   exactGameIdentityVerified=false,exactPaytableVerified=false,exactStrategyVerified=false,
   exactBonusContributionVerified=false,minimumStakeVerified=false
@@ -54,18 +54,22 @@ export function screenCgmZeroDeposit({
   const expectedGameLossIgnoringRuinEUR=rawTurnoverEUR!==null&&rtp!==null?rawTurnoverEUR*(1-rtp):null;
   const meanBalanceAfterRequiredTurnoverIgnoringRuinEUR=bonus!==null&&expectedGameLossIgnoringRuinEUR!==null?bonus-expectedGameLossIgnoringRuinEUR:null;
   const meanSurvivalBreakEvenRtp=mult!==null&&contribution!==null?1-contribution/mult:null;
-  const p=finite(cashoutProbability)&&Number(cashoutProbability)>=0&&Number(cashoutProbability)<=1?Number(cashoutProbability):null;
+  const p=finite(positiveCashoutProbability)&&Number(positiveCashoutProbability)>=0&&Number(positiveCashoutProbability)<=1?Number(positiveCashoutProbability):null;
   const maxCashout=CGM_ZERO_DEPOSIT_CURRENT.promotion.maximumGainPerTrancheEUR;
-  const strictPositiveMonetaryEvSignFromCashoutProbability=p!==null&&p>0;
+  const strictPositiveMonetaryEvSignFromPositiveCashoutProbability=p!==null&&p>0;
   const monetaryDownsideOwnCapitalEUR=0;
   return {
     version:'cgm-zero-deposit-screen-v1',trancheBonusEUR:bonus,turnoverMultiple:mult,contributionFraction:contribution,
     requiredCreditedTurnoverEUR,rawTurnoverEUR,gameRtp:rtp,expectedGameLossIgnoringRuinEUR,meanBalanceAfterRequiredTurnoverIgnoringRuinEUR,
-    meanSurvivalBreakEvenRtp,cashoutProbability:p,maximumCashoutPerTrancheEUR:maxCashout,
+    meanSurvivalBreakEvenRtp,
+    positiveCashoutProbability:p,
+    positiveCashoutProbabilityDefinition:'P(withdrawable cash after all promotion requirements > 0)',
+    maximumCashoutPerTrancheEUR:maxCashout,
     monetaryDownsideOwnCapitalEUR,
     nonNegativeClaimValueByConstruction:true,
-    strictPositiveMonetaryEvSignFromCashoutProbability,
-    expectedCashProfitEUR:p!==null?null:null,
+    strictPositiveMonetaryEvSignFromPositiveCashoutProbability,
+    expectedCashProfitEUR:null,
+    expectedCashProfitMagnitudeRequiresTerminalCashoutDistribution:true,
     positiveEvMagnitudeQuantified:false,
     executable:false,realMoneyAllowed:false,
     blockers:[
@@ -76,7 +80,7 @@ export function screenCgmZeroDeposit({
       ...(exactStrategyVerified?[]:['OPTIMAL_STRATEGY_UNVERIFIED']),
       ...(exactBonusContributionVerified?[]:['BONUS_CONTRIBUTION_NOT_ACCOUNT_VERIFIED']),
       ...(minimumStakeVerified?[]:['MINIMUM_STAKE_UNVERIFIED']),
-      ...(p!==null?[]:['BONUS_SURVIVAL_AND_CASHOUT_PROBABILITY_UNQUANTIFIED']),
+      ...(p!==null?[]:['BONUS_SURVIVAL_AND_POSITIVE_CASHOUT_PROBABILITY_UNQUANTIFIED']),
       'PROSPECTIVE_VALIDATION_MISSING','EXECUTION_CONTRACT_FAIL_CLOSED'
     ],
     guards:{
