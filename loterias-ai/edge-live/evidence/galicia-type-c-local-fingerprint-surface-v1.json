@@ -1,10 +1,21 @@
 {
-  "version": "galicia-type-c-local-fingerprint-surface-v1",
-  "generatedAt": "2026-08-24T18:10:00+02:00",
+  "version": "galicia-type-c-local-fingerprint-surface-v1.1",
+  "generatedAt": "2026-08-24T18:24:00+02:00",
   "jurisdiction": "ES-GA",
-  "status": "PRIMARY_REGULATORY_LOCAL_FINGERPRINT_SURFACE_IDENTIFIED_NO_PLAY",
+  "status": "CURRENT_PRIMARY_REGULATORY_LOCAL_FINGERPRINT_SURFACE_IDENTIFIED_NO_PLAY",
   "realMoneyAllowed": false,
-  "primarySource": {
+  "currentRegulationStatus": {
+    "consolidatedSource": "https://www.lex.gal/normativa/detalle/7795",
+    "observedAt": "2026-08-24",
+    "decreto39_2008Status": "EN_VIGOR",
+    "law3_2023TransitionSource": "https://www.xunta.gal/dog/Publicados/2023/20230706/AnuncioC3B0-040723-0001_es.html",
+    "facts": {
+      "existingGamingRegulationsRemainInForceUnlessContraryToLaw3_2023": true,
+      "decreto39_2008Article22ExpresslyRepealed": true,
+      "historicalArticle22DetailsExcludedFromCurrentProof": true
+    }
+  },
+  "survivingPrimarySource": {
     "source": "https://www.xunta.gal/dog/Publicados/2008/20080307/AnuncioFFF6_es.html",
     "observedAt": "2026-08-24",
     "regulation": "Decreto 39/2008",
@@ -18,14 +29,6 @@
       "typeCFrontOrVideoMustShowAcceptedDenominationValues": true,
       "typeCFrontOrVideoMustShowWinningCombinationsAndPrizeAmounts": true,
       "typeCFrontOrVideoMustShowMinimumReturnPercentage": true,
-      "registrationMemoryMustStateBetPrice": true,
-      "registrationMemoryMustStateMaxPrizeAndGainPlan": true,
-      "registrationMemoryMustStatePrizePercentageAndCalculationCycle": true,
-      "registrationMemoryMustStateReturnIncreaseMechanisms": true,
-      "registrationRequiresTwoGameStorageMediaCopies": true,
-      "registrationRequiresCounterDescription": true,
-      "registrationRequiresLabCertificates": true,
-      "technicalRegistrationDossierHasConfidentialityProtection": true,
       "factoryPlateMustShowManufacturerRegistrationCode": true,
       "factoryPlateMustShowGaliciaModelRegistrationCode": true,
       "factoryPlateMustShowMachineSeriesAndNumber": true,
@@ -35,9 +38,21 @@
       "manufacturingCertificateIncludesCounterModelSeriesNumber": true,
       "exploitationAuthorizationIndividualizesSpecificMachineAgainstHomologatedModel": true,
       "oneExploitationAuthorizationCopyPlacedInMachine": true,
-      "exploitationAuthorizationCarriesHomologationDateAndModelNumber": true,
       "substantialModificationIncludesPriceGameProgramOrGainPlan": true,
       "substantialModificationKeepsRegistryNumberWithAlphabeticSuffix": true
+    }
+  },
+  "currentRegistrationProcedure": {
+    "source": "https://sede.xunta.gal/es/detalle-procedemento?codtram=PR326X&langId=es_ES",
+    "procedure": "PR326X",
+    "observedAt": "2026-08-24",
+    "facts": {
+      "typeCRegistrationProcedureCurrentlyOpen": true,
+      "requiresExteriorPhotographs": true,
+      "requiresCompleteGameDescription": true,
+      "requiresOperatingMemory": true,
+      "requiresOneGameStorageMediumCopy": true,
+      "requiresCounterTypeDescriptionAndConformityEvidence": true
     }
   },
   "currentLawSource": {
@@ -52,7 +67,7 @@
   "fieldCaptureProtocol": {
     "requiresWager": false,
     "minimumHighValueImages": [
-      "Exact-machine factory plate and/or exploitation authorization: manufacturer code, Galicia model registry code, type/model, serial and homologation date where legible.",
+      "Exact-machine factory plate and/or exploitation authorization: manufacturer code, Galicia model registry code, type/model and serial where legible.",
       "Exact-machine front/help/paytable: bets/paylines, denominations, winning combinations/prize amounts and displayed minimum return percentage where legible.",
       "Exact Scarab live idle/cycle screen before wager: Game X of 10, gold-border state and current bet level/total bet where legible."
     ],
@@ -61,14 +76,16 @@
   "closureImpact": {
     "closesAnyScarabGateNow": false,
     "noWagerLocalIdentifierRecoveryLegallySupported": true,
-    "registrationDossierMayNotBePubliclyRecoverableBecauseConfidential": true,
-    "preferredNextProof": "Recover exact-machine Galicia model code/serial from the plate or exploitation authorization, then pair it with front/help/paytable and idle-cycle captures before considering any gate closure.",
+    "currentProcedureConfirmsTechnicalFingerprintArtifactsExist": true,
+    "preferredNextProof": "Recover exact-machine Galicia model code and serial from the factory plate or exploitation authorization, then pair them with front/help/paytable and idle-cycle captures before considering any gate closure.",
     "realMoneyAllowed": false
   },
   "hardGuards": {
+    "repealedArticle22NeverUsedAsCurrentAuthority": true,
     "legalDisclosureRequirementDoesNotProveExactLocalValuesUntilObserved": true,
     "minimumReturnDisplayDoesNotEqualConfiguredRtpUnlessItsSemanticsAreVerified": true,
     "modelRegistryCodeDoesNotByItselfIdentifySoftwareBuildUnlessMappedByEvidence": true,
+    "currentProcedureDoesNotProveSubmittedTechnicalFilesArePubliclyAccessible": true,
     "noWagerNeededForThisCaptureProtocol": true,
     "realMoneyAllowed": false
   }
