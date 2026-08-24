@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import { selectJpkLiveSource, modelMatchesJpkState } from './jpk-live-source-core-v1.mjs';
+import { resolveTierHazardReadiness } from './jpk-reset-classifier-core-v2.mjs';
 
 const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'));}catch{return null}};
 const OBS='loterias-ai/casino/jackpots/evidence/botemania-jackpot-king-observer-v1.json';
@@ -27,13 +28,16 @@ const qualitativeHazardDirectionKnown=ev.decision?.qualitativeHazardDirectionKno
 
 // Hazard samples are tier-specific. Never allow an aggregate/past pooled count
 // (including legacy flow.hazard.ready) to satisfy readiness for both Royal and Regal.
-const minimumResetsPerTier=Number(reset.summary?.minimumCleanResetsPerTier||reset.summary?.minimumCleanResetsForHazardFit||10);
-const royalCleanResets=Number(reset.summary?.royal||0);
-const regalCleanResets=Number(reset.summary?.regal||0);
-const royalHazardFitReady=reset.summary?.royalHazardFitReady===true||(Number.isFinite(royalCleanResets)&&royalCleanResets>=minimumResetsPerTier);
-const regalHazardFitReady=reset.summary?.regalHazardFitReady===true||(Number.isFinite(regalCleanResets)&&regalCleanResets>=minimumResetsPerTier);
-const anyTierHazardFitReady=royalHazardFitReady||regalHazardFitReady;
-const hazardFitReady=royalHazardFitReady&&regalHazardFitReady;
+const tierReadiness=resolveTierHazardReadiness(reset.summary||{});
+const {
+  minimumCleanResetsPerTier:minimumResetsPerTier,
+  royalCleanResets,
+  regalCleanResets,
+  royalHazardFitReady,
+  regalHazardFitReady,
+  anyTierHazardFitReady,
+  hazardFitReady,
+}=tierReadiness;
 const legacyFlowHazardReadyIgnored=flow.hazard?.ready===true;
 
 const exactHazard=ev.decision?.exactHazardKnown===true;
@@ -57,7 +61,7 @@ const etaObj=hours=>Number.isFinite(hours)?{hours:+hours.toFixed(2),days:+(hours
 const jointRoyalTarget=potAt('ROYAL',jointBand),jointRegalTarget=potAt('REGAL',jointBand),royalOnlyTarget=potAt('ROYAL',royalSoloBand),regalOnlyTarget=potAt('REGAL',regalSoloBand);
 const etaJointRoyal=etaHours(pots.ROYAL,jointRoyalTarget,rate.ROYAL),etaJointRegal=etaHours(pots.REGAL,jointRegalTarget,rate.REGAL);
 const etaJoint=Number.isFinite(etaJointRoyal)&&Number.isFinite(etaJointRegal)?Math.max(etaJointRoyal,etaJointRegal):null;
-const etaRoyalOnly=etaHours(pots.ROYAL,royalOnlyTarget,rate.ROYAL),etaRegalOnly=etaHours(pots.REGAL,regalOnlyTarget,rate.REGAL);
+const etaRoyalOnly=etaHours(pots.ROYAL,royalOnlyTarget,rate.ROYAL),etaRegalOnly=etaHours(pots.REGAL,regalSoloBand,rate.REGAL);
 let reason='CURRENT_POSITIVE_EV_NOT_PROVEN';
 if(actionable)reason='SEPARATE_REAL_MONEY_AUTHORIZATION_STILL_REQUIRED';
 else if(!sourceFresh)reason='NO_FRESH_SOURCE';
