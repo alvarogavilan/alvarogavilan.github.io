@@ -46,7 +46,10 @@ assert.equal(cgm.monetaryDownsideOwnCapitalEUR,0);
 assert.equal(cgm.nonNegativeClaimValueByConstruction,true);
 assert.equal(cgm.rawTurnoverEUR,1200);
 assert.equal(cgm.meanSurvivalBreakEvenRtp,0.975);
-assert.equal(cgm.strictPositiveMonetaryEvSignFromCashoutProbability,false);
+assert.equal(cgm.strictPositiveMonetaryEvSignFromPositiveCashoutProbability,false);
+assert.equal(cgm.positiveCashoutProbabilityDefinition,'P(withdrawable cash after all promotion requirements > 0)');
+assert.equal(cgm.expectedCashProfitEUR,null);
+assert.equal(cgm.expectedCashProfitMagnitudeRequiresTerminalCashoutDistribution,true);
 assert.equal(cgm.executable,false);
 assert.equal(cgm.realMoneyAllowed,false);
 
@@ -54,11 +57,11 @@ const cgmExternal=screenCgmZeroDeposit({gameRtp:0.9955,contributionFraction:1});
 assert.ok(Math.abs(cgmExternal.expectedGameLossIgnoringRuinEUR-5.4)<1e-9);
 assert.ok(Math.abs(cgmExternal.meanBalanceAfterRequiredTurnoverIgnoringRuinEUR-24.6)<1e-9);
 assert.equal(cgmExternal.positiveEvMagnitudeQuantified,false);
-assert.equal(cgmExternal.strictPositiveMonetaryEvSignFromCashoutProbability,false);
+assert.equal(cgmExternal.strictPositiveMonetaryEvSignFromPositiveCashoutProbability,false);
 assert.equal(cgmExternalVideoPokerScenario().sameCgmConfigurationProven,false);
 
-const cgmPositiveSign=screenCgmZeroDeposit({cashoutProbability:0.01});
-assert.equal(cgmPositiveSign.strictPositiveMonetaryEvSignFromCashoutProbability,true);
+const cgmPositiveSign=screenCgmZeroDeposit({positiveCashoutProbability:0.01});
+assert.equal(cgmPositiveSign.strictPositiveMonetaryEvSignFromPositiveCashoutProbability,true);
 assert.equal(cgmPositiveSign.executable,false);
 
 assert.match(wrangler,/"main"\s*:\s*"src\/index-v27\.mjs"/);
