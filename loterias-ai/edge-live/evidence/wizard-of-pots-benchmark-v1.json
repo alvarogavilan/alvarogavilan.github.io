@@ -1,0 +1,110 @@
+{
+  "version": "wizard-of-pots-benchmark-v1",
+  "generatedAt": "2026-08-24T12:31:00+02:00",
+  "status": "RESEARCH_ONLY_NO_PLAY",
+  "realMoneyAllowed": false,
+  "reference": {
+    "name": "Wizard of POTS",
+    "homepage": "https://www.wizardofpots.com/",
+    "faq": "https://www.wizardofpots.com/faq.html",
+    "scores": "https://www.wizardofpots.com/scores.html",
+    "terms": "https://www.wizardofpots.com/terms.html"
+  },
+  "publicCapabilities": {
+    "progressiveJackpotsTracked": "1500+",
+    "softwareDevelopers": 35,
+    "casinoCoverage": "hundreds of online casinos",
+    "nominalUpdateIntervalMinutes": 5,
+    "historicalGraphYearsUpTo": 18,
+    "hasHitProbabilityCharts": true,
+    "hasEmailPushAlerts": true,
+    "hasLiveRtpEstimateForSomeGames": true,
+    "alertCanTriggerOnEstimatedRtpAbove100Pct": true,
+    "gameTypes": ["slots","video poker","casino poker","roulette","blackjack","bingo/lotto","other jackpots"]
+  },
+  "scoreMethodology": {
+    "type1Formula": "SCORE = (currentJackpot - seed) / (averageHitValue - seed) × 100%",
+    "score100Meaning": "current growth from seed equals historical average growth from seed at jackpot hit",
+    "score300Meaning": "current growth from seed is three times historical average hit growth",
+    "type1Assumption": "jackpot hit probability is independent of current jackpot value",
+    "estimatedCurrentRtpExample": "regularRtpExcludingAverageJackpotContribution + (SCORE/100) × averageJackpotContribution",
+    "dynamicScoreForSparseHistory": "when insufficient hit data, current jackpot may be hypothetically added as a hit to prevent artificially high score",
+    "sparseHistoryWarning": "terms state that with only a few hits, e.g. fewer than 10, SCORE may substantially differ from the real value"
+  },
+  "probabilityCurveTaxonomy": {
+    "sourceClaim": "Wizard of POTS constructs hit-distribution/probability charts and distinguishes jackpot types rather than treating every progressive as Type 1.",
+    "edgeInterpretation": "This is a useful world benchmark for empirical hazard-shape classification. EDGE must independently identify mechanism and censoring before fitting any curve."
+  },
+  "strengthsToMatchOrExceed": [
+    "very broad multi-provider jackpot coverage",
+    "long historical graphs",
+    "live-ish jackpot updates",
+    "normalization of current jackpot growth versus historical hits",
+    "probability/hit-distribution visualization",
+    "cross-game ranking",
+    "alerts",
+    "attempted current RTP estimates when RTP/contribution inputs are known",
+    "explicit sparse-history caveat"
+  ],
+  "scientificLimitationsForEdgeExecution": [
+    "SCORE depends on historical average hit value and seed being comparable to the current configuration.",
+    "A high SCORE is a payout-growth descriptor, not by itself a verified positive-EV threshold.",
+    "The Type 1 RTP scaling formula is valid only if the jackpot event probability is constant with jackpot size and the historical sample represents the same configuration.",
+    "Estimated RTP inherits errors from seed, contribution, base RTP, jackpot hit history and configuration changes.",
+    "A current value near or above historical average hit does not mean the jackpot is due.",
+    "A drop-detected historical hit still needs award/configuration attribution for EDGE-grade evidence.",
+    "Cross-market and cross-operator histories cannot be transferred into Spain execution without exact configuration identity."
+  ],
+  "edgeResponse": {
+    "adopt": [
+      "normalized jackpot-growth score as a research-only descriptive feature",
+      "empirical hit-distribution curves",
+      "long-horizon graph/history",
+      "multi-jackpot ranking",
+      "alerts",
+      "data-sufficiency labels",
+      "current RTP calculation only when exact inputs permit it"
+    ],
+    "improve": [
+      "5-second Spain canonical feed instead of ~5-minute update target where public feed allows",
+      "explicit left-censoring and right-censoring",
+      "candidate reset versus verified award distinction",
+      "operator+provider+market+configuration fingerprint on every statistic",
+      "tier-specific shared-pool graph",
+      "durable observed ATH with exact timestamps",
+      "full observed cycles between candidate boundaries",
+      "confidence bounds rather than point-estimate promotion",
+      "prospective frozen validation before execution",
+      "fail-closed execution contract with exact game/stake/budget/expiry"
+    ],
+    "researchOnlyScorePolicy": {
+      "name": "EDGE_GROWTH_SCORE",
+      "formulaCandidate": "(current - verifiedResetOrSeed) / (sameConfigurationVerifiedAwardMean - verifiedResetOrSeed)",
+      "allowedOnlyIf": [
+        "seed/reset belongs to same current configuration",
+        "historical awards are verified awards rather than candidate drops",
+        "configuration remained comparable over the fitted history",
+        "sample size and censoring are reported"
+      ],
+      "canEnableExecution": false,
+      "reason": "Growth normalization can prioritize research but cannot substitute for a verified hazard/EV model."
+    }
+  },
+  "measurableWorldClassBar": {
+    "coverage": "ultimately track every publicly observable Spain progressive plus high-value global controls",
+    "cadence": "target <=5 seconds for Botemania canonical feed; record actual cadence/gaps per source",
+    "history": "retain exact observed ATH, cycles, resets, configuration periods and long-horizon aggregates",
+    "identity": "no statistic may silently merge different market/operator/tier/configuration identities",
+    "uncertainty": "every threshold/model reports sample size, censoring, confidence/model assumptions and validation status",
+    "execution": "only the fail-closed execution contract can produce GREEN"
+  },
+  "hardGuards": {
+    "scoreIsNotProbabilityOfWinning": true,
+    "scoreIsNotOverdueSignal": true,
+    "scoreAloneCannotEnableRealMoney": true,
+    "estimatedRtpIsNotVerifiedRtpWithoutExactInputs": true,
+    "historicalMeanRequiresSameConfiguration": true,
+    "crossMarketHistoryCannotEnableSpainExecution": true,
+    "realMoneyAllowed": false
+  }
+}
