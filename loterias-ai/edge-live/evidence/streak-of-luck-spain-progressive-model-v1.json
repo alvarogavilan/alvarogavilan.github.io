@@ -1,6 +1,6 @@
 {
-  "version": "streak-of-luck-spain-progressive-model-v1",
-  "generatedAt": "2026-08-24T12:18:00+02:00",
+  "version": "streak-of-luck-spain-progressive-model-v1.1-triangulation",
+  "generatedAt": "2026-08-24T12:38:00+02:00",
   "status": "RESEARCH_ONLY_NO_PLAY",
   "realMoneyAllowed": false,
   "target": {
@@ -11,6 +11,7 @@
   "spainEvidence": {
     "williamHill": {
       "url": "https://casino.williamhill.es/slots/streak-of-luck",
+      "launcherPathObserved": "/wh-es/launch/streak-of-luck",
       "facts": {
         "progressiveJackpotCount": 6,
         "poolSegmentation": "one jackpot for each of six fixed bet-per-line values",
@@ -21,6 +22,7 @@
         "excludedFromStreak": ["free-spin winning results"],
         "counterReset": "non-winning result",
         "counterPersistence": "remembered separately per bet-per-line setting across bet changes and leaving/returning to the game",
+        "overTenBehavior": "if more than 10 consecutive wins occur, the counter resets but continues counting until a non-winning result",
         "concurrentTriggerSemantics": "first trigger receives current jackpot; other concurrent triggerers receive initial amount",
         "disconnectPersistence": true
       }
@@ -31,7 +33,10 @@
         "provider": "Playtech",
         "progressiveJackpotCount": 6,
         "jackpotTrigger": "10 consecutive wins",
-        "publishedRtpRangePct": [93.56,94.96]
+        "publishedRtpRangePct": [93.56,94.96],
+        "indexedJackpotSnapshotEUR": 6751.92,
+        "indexedJackpotSnapshotFreshForExecution": false,
+        "indexedJackpotTierIdentified": false
       },
       "numericObservation": "The 1.40 percentage-point RTP range width numerically equals William Hill Spain's 1.40% jackpot contribution. This is an interesting cross-operator numeric alignment only; it does not prove that the lower endpoint is base RTP or that the upper endpoint is base plus jackpot for the exact same configuration."
     }
@@ -40,6 +45,8 @@
     "source": "https://www.casinolistings.com/jackpots/playtech/streak-of-luck-40c-jackpot",
     "trackingSince": "2014-08",
     "label": "Streak of Luck 40c Jackpot",
+    "otherTierLabelsExplicitlyNamedByTracker": ["2c","4c","10c","20c"],
+    "sixthTierLabelFromTracker": null,
     "winsRecorded": 156,
     "averageWinEUR": 10088,
     "biggestWinEUR": 56280,
@@ -48,6 +55,41 @@
     "trackerWarning": "Casino Listings currently states that Playtech jackpot feed errors prevent accurate tracking.",
     "transferToSpain": false,
     "negativeControl": "Do not combine the historical '40c' label with the Spain seed formula to assert a EUR3500 seed. The tracker's recorded minimum is below that hypothetical amount and the tracker itself warns of feed errors; denomination/configuration equivalence is unproven."
+  },
+  "thirdPartyMechanicsPriors": {
+    "rtpPctReportedByMultipleCatalogs": 94.96,
+    "layoutFrequentlyReported": "5 reels × 4 rows, 50 paylines",
+    "totalBetRangeFrequentlyReported": [0.50,20.00],
+    "candidateCoinSizeRangeFromOneThirdParty": [0.01,0.40],
+    "candidateHitFrequencyPctFromSyndicatedThirdPartyData": 37.97,
+    "confidence": "LOW_TO_MEDIUM_NON_OPERATOR_PRIOR_ONLY",
+    "notSpainConfigurationProof": true
+  },
+  "conditionalCrossTierTriangulation": {
+    "purpose": "Use denomination tiers as internal controls if and only if exact current Spain tier semantics can later be matched to historical same-configuration awards.",
+    "example40cAssumptionsNotFacts": {
+      "coinEUR": 0.40,
+      "activePaylines": 50,
+      "totalStakeEUR": 20.00,
+      "seedFormulaTransferredFromCurrentSpainRules": "8750 × 0.40 = 3500 EUR",
+      "historicalAverageWinEUR": 10088,
+      "contributionRate": 0.014
+    },
+    "conditionalRenewalCalculation": {
+      "averageGrowthAboveSeedEUR": 6588,
+      "impliedAverageEligibleTurnoverEUR": 470571.4285714286,
+      "impliedAveragePaidSpinsAt20EUR": 23528.5714285714,
+      "impliedConstantPerSpinAwardProbability": 0.000042501517911354,
+      "impliedOneInSpins": 23528.5714285714
+    },
+    "naiveQPower10Control": {
+      "thirdPartySingleSpinHitFrequencyCandidate": 0.3797,
+      "qPower10": 0.00006228822732996163,
+      "oneInSpins": 16054.3981241056,
+      "ratioVsConditionalRenewalProbability": 1.4655530058920971
+    },
+    "interpretation": "The roughly 46.6% difference is not evidence for either estimate. It is a negative control showing that a naive q^10 model cannot be promoted while Bonus Dice, line configuration, denomination identity, historical feed reliability and exact state transitions remain unresolved.",
+    "promotionAllowed": false
   },
   "stateMachine": {
     "states": [0,1,2,3,4,5,6,7,8,9],
@@ -61,7 +103,7 @@
     "notYetComputable": true,
     "missingInputs": [
       "exact six Spain bet-per-line/coin denominations",
-      "exact total stake for each jackpot pool",
+      "exact active-payline rules and total stake for each jackpot pool",
       "same-configuration non-jackpot/base RTP or exact paytable/reel model",
       "transition probability from each streak state for a qualifying win/loss and Bonus Dice path",
       "exact behavior after jackpot trigger and after streak 4-9 loss/free-games transition",
@@ -82,9 +124,11 @@
   },
   "highestValueNextEvidence": [
     "Recover the six exact Spain wager/coin settings from current in-game help or a second Spain operator.",
+    "Recover exact active-payline rules for jackpot qualification and the total stake tied to each denomination.",
     "Recover exact same-configuration RTP/paytable and determine whether 93.56-94.96 is configuration range or jackpot decomposition.",
-    "Find published hit frequency/reel strips/certification data or collect zero-money/demo transition frequencies under a frozen protocol.",
-    "Bind a fresh public meter to one exact Streak of Luck denomination/pool.",
+    "Find authoritative hit frequency/reel strips/certification data or collect zero-money/demo transition frequencies under a frozen protocol.",
+    "Recover award history for multiple denomination tiers and test whether contribution/seed-implied hazard converges across tiers before any transfer.",
+    "Bind a fresh public meter to one exact Streak of Luck Spain denomination/pool.",
     "Verify whether saved streak counters are strictly account-specific and never inherited/visible to another player."
   ],
   "hardGuards": {
@@ -92,6 +136,8 @@
     "rtpRangeWidthMatchingContributionIsNotDecompositionProof": true,
     "historicalTrackerDenominationDoesNotProveSpainTier": true,
     "historicalAverageWinDoesNotMeanOverdue": true,
+    "thirdPartyHitFrequencyCannotEnableModel": true,
+    "conditionalCrossTierTriangulationCannotEnableExecution": true,
     "persistentOwnStateDoesNotCreateFreeAdvantage": true,
     "counterPersistenceDoesNotProveCrossPlayerInheritance": true,
     "realMoneyAllowed": false
