@@ -1,0 +1,30 @@
+{
+  "version": "jackpot-history-depth-semantics-v1",
+  "generatedAt": "2026-08-24T12:53:00+02:00",
+  "purpose": "Prevent meter telemetry volume from being mistaken for jackpot-event sample size and register deep external histories only as non-transferable hypothesis sources.",
+  "sampleUnits": {
+    "meterObservation": "One timestamped meter reading. This is useful for growth curves and detecting transitions, but it is not a jackpot award.",
+    "candidateCycle": "A reset-like transition inferred from direct meter telemetry. It may be an award, reset, administrative action, configuration change or other transition until verified.",
+    "fullObservedCycle": "A complete interval observed between two reset-like candidate boundaries. This is the descriptive timing sample n.",
+    "verifiedAward": "A reset/cycle boundary independently verified as an actual jackpot award. This is the strongest event sample n.",
+    "externalReferenceWin": "A dated win reported by an external tracker. It remains outside the Spain operational sample unless exact configuration identity is proven."
+  },
+  "discoveredExternalReferences": [
+    {"family":"Diamond Bonanza 25p","provider":"Gamesys","winsRecorded":1060,"trackedSince":"2010-02","scope":"FOREIGN_UK_REFERENCE","rawRowsFullyIngested":false},
+    {"family":"Progressive Jacks or Better","provider":"Gamesys","winsRecorded":49,"trackedSince":"2010-02","scope":"FOREIGN_UK_CONTROL","rawRowsFullyIngested":false},
+    {"family":"Tiki Temple 5p","provider":"Gamesys","winsRecorded":203,"scope":"FOREIGN_UK_REFERENCE","rawRowsFullyIngested":false},
+    {"family":"Gamesys progressives aggregate","provider":"Gamesys","winsRecorded":4748,"trackedSince":"2010-02","scope":"PROVIDER_AGGREGATE_REFERENCE","rawRowsFullyIngested":false},
+    {"family":"Blueprint progressives aggregate","provider":"Blueprint Gaming","winsRecorded":1232,"scope":"PROVIDER_AGGREGATE_REFERENCE","rawRowsFullyIngested":false}
+  ],
+  "hardGuards": {
+    "observationCountCannotMasqueradeAsWinCount": true,
+    "candidateResetCannotMasqueradeAsVerifiedAward": true,
+    "externalWinsCannotIncreaseSpanishSampleN": true,
+    "foreignAverageHitTimeCannotPredictSpanishNextHit": true,
+    "configurationIdentityRequiredBeforeParameterTransfer": true,
+    "externalReferencesGenerateHypothesesOnly": true,
+    "timingPatternRequiresProspectiveSpanishValidation": true,
+    "executionContractRemainsSoleGreenAuthority": true,
+    "realMoneyAllowed": false
+  }
+}
