@@ -1,16 +1,17 @@
 {
-  "version": "spain-williamhill-progressive-catalog-v1",
-  "generatedAt": "2026-08-24T12:18:00+02:00",
+  "version": "spain-williamhill-progressive-catalog-v1.1-network-families",
+  "generatedAt": "2026-08-24T12:27:00+02:00",
   "operator": "williamhill-es",
   "jurisdiction": "Spain",
   "status": "RESEARCH_ONLY_NO_PLAY",
   "realMoneyAllowed": false,
-  "purpose": "Add a second major Spain-facing operator as an independent source of exact progressive mechanics, contribution rates, trigger conditions and seed/reset semantics.",
+  "purpose": "Use a second major Spain-facing operator as an independent source of exact progressive mechanics, contribution rates, trigger conditions, seed/reset semantics and network topology.",
   "titles": [
     {
       "game": "Streak of Luck",
       "provider": "Playtech",
       "source": "https://casino.williamhill.es/slots/streak-of-luck",
+      "launcherPathObserved": "/wh-es/launch/streak-of-luck",
       "progressiveTiers": 6,
       "poolSegmentation": "one progressive jackpot per fixed bet-per-line value",
       "seedFormula": "8750 × coin value",
@@ -18,6 +19,7 @@
       "trigger": "10 consecutive winning results in main game or qualifying Bonus Dice results; free-spin wins do not count",
       "statePersistence": "consecutive-win counter is remembered separately for each bet-per-line setting when the player changes bet or exits and restored on return",
       "losingSpinBehavior": "a non-winning spin resets the consecutive-win counter; after streaks of 4-9 it awards the corresponding Lucky Free Games benefit",
+      "overTenBehavior": "operator states that after more than 10 consecutive wins the counter resets and continues counting until a non-winning result",
       "concurrencyRule": "if multiple players are attempting the jackpot, first trigger gets current full jackpot; other simultaneous triggerers receive the initial amount",
       "disconnectionRule": "unfinished round state is remembered and can be resumed without a new wager",
       "researchPriority": "HIGH_STATEFUL_PROGRESSIVE_CANDIDATE"
@@ -27,10 +29,20 @@
       "provider": null,
       "source": "https://casino.williamhill.es/slots/jackpot-bells",
       "contributionPct": 2.92,
-      "trigger": "5 Wild/bell symbols on an active winning payline",
+      "trigger": "5 Wild symbols on an active winning payline",
       "seedSemantics": "restarts from a guaranteed initial amount after a jackpot win; exact amount not recovered in current public text",
       "poolScope": "contributions from casinos offering the game",
       "researchPriority": "EXACT_SYMBOL_TRIGGER_CANDIDATE"
+    },
+    {
+      "game": "Christmas Jackpot Bells",
+      "provider": null,
+      "source": "https://casino.williamhill.es/slots/christmas-jackpot-bells",
+      "contributionPct": 2.00,
+      "trigger": "5 Wild symbols on an active winning payline",
+      "seedSemantics": "restarts from a guaranteed minimum initial amount; exact amount not recovered",
+      "poolScope": "contributions from casinos offering the game",
+      "researchPriority": "SAME_TRIGGER_DIFFERENT_CONTRIBUTION_CONTROL"
     },
     {
       "game": "Land of Gold",
@@ -53,6 +65,26 @@
       "researchPriority": "MULTI_TIER_RANDOM_TRIGGER_CONTROL"
     },
     {
+      "game": "Vikings: Empire Treasures",
+      "provider": null,
+      "source": "https://casino.williamhill.es/slots/vikings-empire-treasures",
+      "contributionPct": 0.99,
+      "tiers": ["Mini","Minor","Major","Grand"],
+      "trigger": "same Empire Treasures random activation; entry guarantees one tier",
+      "poolScope": "shared Empire Treasures network across connected games/casinos",
+      "researchPriority": "SAME_NETWORK_CROSS_TITLE_CONTROL"
+    },
+    {
+      "game": "The Queen's Curse: Empire Treasures",
+      "provider": null,
+      "source": "https://casino.williamhill.es/slots/the-queens-curse-empire-treasures",
+      "contributionPct": 0.99,
+      "tiers": ["Mini","Minor","Major","Grand"],
+      "trigger": "same Empire Treasures random activation; entry guarantees one tier",
+      "poolScope": "shared Empire Treasures network across connected games/casinos",
+      "researchPriority": "SAME_NETWORK_CROSS_TITLE_CONTROL"
+    },
+    {
       "game": "Age of the Gods: King of Olympus",
       "provider": "Playtech",
       "source": "https://casino.williamhill.es/slots/aotg-king-of-olympus",
@@ -62,6 +94,113 @@
       "trigger": "jackpot game can activate randomly after any main-game spin; any bet eligible and chance scales proportionally with bet size; entry guarantees one tier",
       "poolScope": "Age of the Gods network and described as sharing with Marvel Jackpot",
       "researchPriority": "BET_PROPORTIONAL_MULTI_TIER_CONTROL"
+    },
+    {
+      "game": "Age of the Gods: Medusa & Monsters",
+      "provider": null,
+      "source": "https://casino.williamhill.es/slots/aotg-medusa-and-monsters",
+      "contributionPct": 0.99,
+      "tiers": ["Power","Extra Power","Super Power","Ultimate Power"],
+      "trigger": "random activation on connected Age of the Gods games; entry guarantees one tier",
+      "poolScope": "shared Age of the Gods network",
+      "researchPriority": "SAME_NETWORK_CROSS_TITLE_CONTROL"
+    },
+    {
+      "game": "Age of the Gods: God of Storms",
+      "provider": "Playtech",
+      "source": "https://casino.williamhill.es/slots/age-of-the-gods-god-of-storms",
+      "contributionPct": 0.99,
+      "tiers": ["Power","Extra Power","Super Power","Ultimate Power"],
+      "trigger": "random activation on connected Age of the Gods games",
+      "poolScope": "shared Age of the Gods network",
+      "researchPriority": "SAME_NETWORK_CROSS_TITLE_CONTROL"
+    },
+    {
+      "game": "Epic Ape II",
+      "provider": "Playtech",
+      "source": "https://casino.williamhill.es/slots/epic-ape-2",
+      "network": "Jackpot Blitz",
+      "contributionPct": 0.99,
+      "tiers": ["Mini","Minor","Major","Blitz"],
+      "trigger": "random activation on a spin of any connected Jackpot Blitz game; entry guarantees one tier",
+      "poolScope": "shared across games/casinos carrying Jackpot Blitz",
+      "researchPriority": "MULTI_TIER_RANDOM_TRIGGER_CONTROL"
+    },
+    {
+      "game": "King Blitz",
+      "provider": "Playtech",
+      "source": "https://casino.williamhill.es/slots/king-blitz",
+      "network": "Jackpot Blitz",
+      "contributionPct": 0.99,
+      "tiers": ["Mini","Minor","Major","Blitz"],
+      "trigger": "random activation on any connected Jackpot Blitz spin; entry guarantees one tier",
+      "poolScope": "shared across games/casinos carrying Jackpot Blitz",
+      "researchPriority": "SAME_NETWORK_CROSS_TITLE_CONTROL"
+    },
+    {
+      "game": "Buffalo Blitz Megaways",
+      "provider": null,
+      "source": "https://casino.williamhill.es/slots/buffalo-blitz-megaways",
+      "network": "Jackpot Blitz",
+      "contributionPct": 0.99,
+      "tiers": ["Mini","Minor","Major","Blitz"],
+      "trigger": "random activation on any connected Jackpot Blitz spin; entry guarantees one tier",
+      "poolScope": "shared across games/casinos carrying Jackpot Blitz",
+      "researchPriority": "SAME_NETWORK_CROSS_TITLE_CONTROL"
+    },
+    {
+      "game": "Kingdoms Rise: Reign of Ice",
+      "provider": "Playtech",
+      "source": "https://casino.williamhill.es/slots/kingdoms-rise-reign-of-ice",
+      "network": "Kingdoms Rise",
+      "contributionPct": 0.55,
+      "tiers": ["Epic Jackpot","Power Strike Jackpot"],
+      "trigger": "can activate on any spin at any bet amount; higher bet gives higher chance",
+      "poolScope": "shared among connected Kingdoms Rise games",
+      "researchPriority": "BET_WEIGHTED_RANDOM_TRIGGER_CONTROL"
+    },
+    {
+      "game": "Hot Crown Deluxe",
+      "provider": null,
+      "source": "https://casino.williamhill.es/slots/hot-crown-deluxe",
+      "network": "Double Heat",
+      "contributionPct": 0.99,
+      "tiers": ["Mini","Grand"],
+      "trigger": "can activate on any main-game spin at any bet; higher bet increases activation chance",
+      "researchPriority": "BET_WEIGHTED_RANDOM_TRIGGER_CONTROL"
+    },
+    {
+      "game": "Roberto Carlos: Sporting Legends",
+      "provider": null,
+      "source": "https://casino.williamhill.es/slots/roberto-carlos-sporting-legends",
+      "network": "Sporting Legends",
+      "contributionPct": 1.99,
+      "tiers": ["Mini","Midi","Mega"],
+      "trigger": "random activation on any spin of a connected Sporting Legends game; entry guarantees a jackpot tier",
+      "poolScope": "shared across connected Sporting Legends games/casinos",
+      "researchPriority": "MULTI_TIER_RANDOM_TRIGGER_CONTROL"
+    },
+    {
+      "game": "Ronnie O'Sullivan: Sporting Legends",
+      "provider": null,
+      "source": "https://casino.williamhill.es/slots/ronnie-osullivan-sporting-legends",
+      "network": "Sporting Legends",
+      "contributionPct": 1.99,
+      "tiers": ["Mini","Midi","Mega"],
+      "trigger": "same Sporting Legends random activation; entry guarantees one tier",
+      "poolScope": "shared Sporting Legends network",
+      "researchPriority": "SAME_NETWORK_CROSS_TITLE_CONTROL"
+    },
+    {
+      "game": "Brian Lara: Sporting Legends",
+      "provider": null,
+      "source": "https://casino.williamhill.es/slots/brian-lara-sporting-legends",
+      "network": "Sporting Legends",
+      "contributionPct": 1.99,
+      "tiers": ["Mini","Midi","Mega"],
+      "trigger": "same Sporting Legends random activation; entry guarantees one tier",
+      "poolScope": "shared Sporting Legends network",
+      "researchPriority": "SAME_NETWORK_CROSS_TITLE_CONTROL"
     },
     {
       "game": "Leprechaun's Luck",
@@ -74,15 +213,27 @@
       "researchPriority": "DUAL_TRIGGER_PROGRESSIVE_CONTROL"
     }
   ],
+  "networkFamilies": [
+    {"network":"Empire Treasures","observedContributionPct":0.99,"tiers":4,"crossTitleCorroborated":true},
+    {"network":"Age of the Gods","observedContributionPct":0.99,"tiers":4,"crossTitleCorroborated":true},
+    {"network":"Jackpot Blitz","observedContributionPct":0.99,"tiers":4,"crossTitleCorroborated":true},
+    {"network":"Sporting Legends","observedContributionPct":1.99,"tiers":3,"crossTitleCorroborated":true},
+    {"network":"Kingdoms Rise","observedContributionPct":0.55,"tiers":2,"crossTitleCorroborated":false},
+    {"network":"Double Heat","observedContributionPct":0.99,"tiers":2,"crossTitleCorroborated":false}
+  ],
   "nationalResearchImplications": [
     "William Hill Spain exposes exact contribution and trigger semantics for titles whose other public operator pages may be much less specific.",
+    "Cross-title consistency within an explicitly named network is useful topology evidence, but game-specific jackpot hazard can still differ unless provider rules prove common hazard mechanics.",
+    "Jackpot Bells and Christmas Jackpot Bells share a visible five-Wild trigger pattern but expose materially different contribution rates (2.92% vs 2.00%), a useful negative control against title-family transfer.",
     "Cross-operator same-title corroboration can validate provider/game mechanics but cannot prove identical RTP configuration, jackpot denomination or pool identity without a configuration fingerprint.",
     "Seed formulas and stateful counters make deterministic/state-machine progressives materially easier to model than mystery jackpots if event probabilities can be recovered.",
-    "A Spain-wide catalog should preserve operator, provider, game version, tier and market separately instead of collapsing by game name."
+    "A Spain-wide catalog must preserve operator, provider, game version, network, tier and market separately instead of collapsing by game name."
   ],
   "hardGuards": {
     "operatorPageIsConfigurationSpecificEvidenceOnly": true,
     "sameTitleAcrossOperatorsDoesNotProveSamePool": true,
+    "sameNamedNetworkDoesNotAutomaticallyProveSameGameSpecificHazard": true,
+    "sameTriggerPatternDoesNotProveSameContributionOrEconomics": true,
     "contributionDoesNotEqualHazard": true,
     "statePersistenceDoesNotProveCrossPlayerInheritance": true,
     "publicRulesDoNotProveCurrentLiveMeterIdentity": true,
