@@ -44,13 +44,17 @@ assert.equal(reg.registerProcedure.facts.typeCMachinesMustBeHomologatedAndRegist
 assert.equal(reg.registerProcedure.facts.registrationRequiresCompleteGameDescription,true);
 assert.equal(reg.registerProcedure.facts.registrationRequiresOperatingMemory,true);
 assert.equal(reg.registerLaw.facts.registerStoresModelDenomination,true);
+assert.equal(reg.registerLaw.facts.decreto39_2008Article22ExpresslyRepealed,true);
 assert.equal(reg.machineRegulation.facts.gamePriceIsFixedForEachModelInRegistrationResolution,true);
 assert.equal(reg.machineRegulation.facts.multiDenominationMachinesMayBeHomologated,true);
+assert.equal(reg.machineRegulation.facts.article23TypeCDocumentationStillPresentInConsolidatedText,true);
+assert.equal(reg.machineRegulation.facts.article38FactoryMarkingStillPresentInConsolidatedText,true);
 assert.equal(reg.localMachineFingerprintSurface.facts.factoryPlateCarriesGaliciaModelRegistrationCodeAndSerial,true);
 assert.equal(reg.localMachineFingerprintSurface.facts.exploitationAuthorizationCopyPlacedInMachine,true);
 assert.equal(reg.localMachineFingerprintSurface.facts.frontOrVideoMustExposeBetsDenominationsPaytableAndMinimumReturn,true);
-assert.equal(reg.localMachineFingerprintSurface.facts.substantialProgramOrGainPlanModificationIsRegistryRelevant,true);
-assert.equal(reg.localMachineFingerprintSurface.facts.requiresWagerToCollectTheseIdentifiers,false);
+assert.equal(reg.localMachineFingerprintSurface.facts.currentRegistrationProcedureConfirmsTechnicalFingerprintArtifactsExist,true);
+assert.equal(reg.localMachineFingerprintSurface.facts.repealedArticle22ExcludedFromCurrentProof,true);
+assert.equal(reg.localMachineFingerprintSurface.facts.requiresWagerToCollectExactMachineVisualIdentifiers,false);
 assert.equal(reg.localMachineFingerprintSurface.closesAnyGateNow,false);
 assert.equal(reg.publicIndexedScarabResolutionRecovered,false);
 assert.equal(reg.publicIndexedIgtCrystalResolutionRecovered,false);
@@ -63,6 +67,7 @@ assert.equal(e.scientificImplication.multipleBinaryBuildsConfirmedByRegulators,t
 assert.equal(e.scientificImplication.deterministicLowerBoundEngineExists,true);
 assert.equal(e.scientificImplication.deterministicLowerBoundIsLocalExecutionProof,false);
 assert.equal(e.scientificImplication.localFingerprintSurfaceLegallyObservableWithoutWager,true);
+assert.equal(e.scientificImplication.repealedGaliciaArticleExcludedFromCurrentProof,true);
 assert.equal(e.scientificImplication.localConfigurationStillFundamental,true);
 
 for(const [key,value] of Object.entries(e.closureGates)){
@@ -92,8 +97,10 @@ assert.equal(e.hardGuards.foreignSameBetSemanticsDoNotProveLocalSameBetSemantics
 assert.equal(e.hardGuards.independentComparatorAdviceDoesNotAutoTransfer,true);
 assert.equal(e.hardGuards.deterministicTheoremDoesNotAutoTransferWithoutLocalFingerprint,true);
 assert.equal(e.hardGuards.registrationProcedureDoesNotProveRecordContentsUntilRecordRecovered,true);
+assert.equal(e.hardGuards.repealedArticle22NeverUsedAsCurrentAuthority,true);
 assert.equal(e.hardGuards.onMachineLegalDisclosureDoesNotEqualObservedLocalFingerprintUntilExactMachineCaptured,true);
 assert.equal(e.hardGuards.minimumReturnDisplayDoesNotAutomaticallyEqualConfiguredRtp,true);
+assert.equal(e.hardGuards.currentProcedureDoesNotProveSubmittedTechnicalFilesArePubliclyAccessible,true);
 assert.equal(e.hardGuards.noWagerNeededForNextResearchStep,true);
 assert.equal(e.hardGuards.realMoneyAllowed,false);
 
