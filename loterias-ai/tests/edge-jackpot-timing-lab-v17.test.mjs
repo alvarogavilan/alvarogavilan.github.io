@@ -1,0 +1,43 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {summarizeDurations,elapsedPercentile,quantile} from '../edge-backend/src/jackpot-timing-core-v1.mjs';
+
+const H=3600000;
+const s=summarizeDurations([1*H,2*H,3*H,4*H,5*H]);
+assert.equal(s.n,5);
+assert.equal(s.meanMs,3*H);
+assert.equal(s.medianMs,3*H);
+assert.equal(s.p10Ms,1.4*H);
+assert.equal(s.p90Ms,4.6*H);
+assert.ok(Math.abs(s.coefficientOfVariation-(Math.sqrt(2.5)/3))<1e-12);
+assert.equal(elapsedPercentile([H,2*H,3*H,4*H,5*H],3*H),0.6);
+assert.equal(quantile([],0.5),null);
+assert.equal(summarizeDurations([]).coefficientOfVariation,null);
+
+const wrangler=fs.readFileSync('loterias-ai/edge-backend/wrangler.jsonc','utf8');
+const worker=fs.readFileSync('loterias-ai/edge-backend/src/index-v17.mjs','utf8');
+const ui=fs.readFileSync('loterias-ai/edge-live/edge-timing-client-v1.mjs','utf8');
+const semantics=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/jackpot-timing-lab-semantics-v1.json','utf8'));
+const contract=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/client-execution-contract-v1.json','utf8'));
+
+assert.match(wrangler,/"main"\s*:\s*"src\/index-v17\.mjs"/);
+assert.ok(worker.includes("edge-sentinel-v17-jackpot-timing-lab-20260824a"));
+assert.ok(worker.includes("path==='/science/timing'"));
+assert.ok(worker.includes("timeZone:MADRID"));
+assert.ok(worker.includes("lowDispersionScreen:n>=10"));
+assert.ok(worker.includes("timingMechanismVerified:false"));
+assert.ok(worker.includes("nextEventPrediction:null"));
+assert.ok(worker.includes("timingEdgeProven:false"));
+assert.ok(worker.includes("clockClusteringWithoutExposureIsNotHazard:true"));
+assert.ok(worker.includes("rngHistoryDoesNotPredictNextIndependentOutcome:true"));
+assert.ok(ui.includes('TIMING LAB · JACKPOTS'));
+assert.ok(ui.includes('DESCRIPTIVO ≠ PREDICCIÓN'));
+assert.ok(ui.includes('próxima caída: NO CALCULADA'));
+assert.equal(semantics.status,'RESEARCH_ONLY_NO_PLAY');
+assert.equal(semantics.hardGuards.elapsedPercentileIsNotDueProbability,true);
+assert.equal(semantics.hardGuards.explicitTimedMechanismRequiresRuleVerification,true);
+assert.equal(semantics.hardGuards.realMoneyAllowed,false);
+assert.equal(contract.enabled,false);
+assert.equal(contract.realMoneyAllowed,false);
+assert.equal(contract.scientificGatePassed,false);
+console.log('edge-jackpot-timing-lab-v17.test.mjs: PASS');
