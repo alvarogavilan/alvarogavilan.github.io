@@ -66,6 +66,26 @@ export function classifyTierTransition({
   };
 }
 
+export function resolveTierHazardReadiness(summary = {}, fallbackMinimum = MIN_CLEAN_RESETS_PER_TIER) {
+  const configuredMinimum = Number(summary?.minimumCleanResetsPerTier ?? summary?.minimumCleanResetsForHazardFit ?? fallbackMinimum);
+  const minimumCleanResetsPerTier = Number.isFinite(configuredMinimum) && configuredMinimum > 0 ? configuredMinimum : fallbackMinimum;
+  const royalCleanResets = Number(summary?.royal ?? 0);
+  const regalCleanResets = Number(summary?.regal ?? 0);
+  const royalHazardFitReady = summary?.royalHazardFitReady === true || (Number.isFinite(royalCleanResets) && royalCleanResets >= minimumCleanResetsPerTier);
+  const regalHazardFitReady = summary?.regalHazardFitReady === true || (Number.isFinite(regalCleanResets) && regalCleanResets >= minimumCleanResetsPerTier);
+  return {
+    minimumCleanResetsPerTier,
+    royalCleanResets: Number.isFinite(royalCleanResets) ? royalCleanResets : 0,
+    regalCleanResets: Number.isFinite(regalCleanResets) ? regalCleanResets : 0,
+    royalHazardFitReady,
+    regalHazardFitReady,
+    anyTierHazardFitReady: royalHazardFitReady || regalHazardFitReady,
+    bothTiersHazardFitReady: royalHazardFitReady && regalHazardFitReady,
+    hazardFitReady: royalHazardFitReady && regalHazardFitReady,
+    noCrossTierPooling: true,
+  };
+}
+
 export function summarizeTierResets(rows, minimumCleanResetsPerTier = MIN_CLEAN_RESETS_PER_TIER) {
   const all = Array.isArray(rows) ? rows : [];
   const rawNegativeMoves = all.filter((x) => x?.rawNegativeMove === true).length;
@@ -73,22 +93,13 @@ export function summarizeTierResets(rows, minimumCleanResetsPerTier = MIN_CLEAN_
   const clean = all.filter((x) => x?.cleanSingleTierCandidate === true);
   const royal = clean.filter((x) => x?.tier === 'ROYAL').length;
   const regal = clean.filter((x) => x?.tier === 'REGAL').length;
-  const royalHazardFitReady = royal >= minimumCleanResetsPerTier;
-  const regalHazardFitReady = regal >= minimumCleanResetsPerTier;
+  const readiness = resolveTierHazardReadiness({ royal, regal, minimumCleanResetsPerTier }, minimumCleanResetsPerTier);
   return {
     rawNegativeMoves,
     materialTierDropCandidates: material.length,
     cleanSingleTierCandidates: clean.length,
     royal,
     regal,
-    minimumCleanResetsPerTier,
-    royalHazardFitReady,
-    regalHazardFitReady,
-    anyTierHazardFitReady: royalHazardFitReady || regalHazardFitReady,
-    bothTiersHazardFitReady: royalHazardFitReady && regalHazardFitReady,
-    // Legacy aggregate field is deliberately conservative: it is true only
-    // when BOTH independently modeled tiers have enough clean resets.
-    hazardFitReady: royalHazardFitReady && regalHazardFitReady,
-    noCrossTierPooling: true,
+    ...readiness,
   };
 }
