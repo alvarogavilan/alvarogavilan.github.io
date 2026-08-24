@@ -1,0 +1,83 @@
+{
+  "version": "winfall-durable-prospective-protocol-v1",
+  "generatedAt": "2026-08-24T07:55:00+02:00",
+  "operator": "botemania-es",
+  "status": "RESEARCH_ONLY_NO_PLAY",
+  "realMoneyAllowed": false,
+  "officialSpainInputs": {
+    "game": "Winfall Wishes Jackpot",
+    "url": "https://www.botemania.es/juegos/slots-online/winfall-wishes-jackpot",
+    "baseRtp": 0.9485,
+    "jackpotContribution": 0.0060,
+    "resetEUR": 0,
+    "anyBetEligible": true,
+    "probabilityProportionalToTotalBet": true,
+    "sharedPoolGames": ["Winfall Wishes Jackpot", "Wonderland", "La Isla de Tiki Templo"]
+  },
+  "frozenProtocol": {
+    "frozenAt": "2026-08-21T16:21:00.000Z",
+    "candidateKeys": ["generic:tikitemple2_1", "generic:progressivealice1"],
+    "exactAliasDisproved": true,
+    "exactWinfallLiveIdVerified": false,
+    "firstHistoricalSynchronizedReset": {
+      "observedAt": "2026-08-21T14:44:06.603Z",
+      "preDropEUR": 1208.43,
+      "postDropEUR": 2.82,
+      "role": "DISCOVERY_ANCHOR_ONLY_NOT_PROSPECTIVE_OUTCOME"
+    },
+    "minimumProspectivePairedResetsForConditionalHazardFit": 10,
+    "pairAmountToleranceEUR": 0.01,
+    "noRetuningAfterProspectiveOutcome": true
+  },
+  "durableBackend": {
+    "workerEntry": "loterias-ai/edge-backend/src/index-v9.mjs",
+    "endpoint": "/science/winfall",
+    "sourceTable": "science_events",
+    "candidateType": "RESET_OR_AWARD_CANDIDATE",
+    "pairingRule": "same observed_at_ms, exact candidate keys, pre/post amounts within EUR0.01, timestamp after frozen protocol",
+    "actionsDependencyRemovedForObservation": true,
+    "runtimeDeploymentVerifiedFromCurrentSession": false
+  },
+  "conditionalModel": {
+    "enabledOnlyAfterTenProspectivePairedCandidates": true,
+    "assumption": "P(jackpot|stake)=k*stake with k constant across jackpot values",
+    "publishedAsFact": false,
+    "meanHitEstimator": "mean paired pre-drop amount",
+    "conditionalKFormula": "jackpotContribution / meanHit",
+    "conditionalBreakEvenFormula": "(1-baseRtp)/k",
+    "currentWinfallMeterMayPopulateModel": false,
+    "reasonCurrentMeterBlocked": "Neither candidate key is verified as the exact live Winfall meter and a synchronized drop is not a verified jackpot award.",
+    "economicPromotionAllowed": false
+  },
+  "whyThisMatters": [
+    "Spain-specific seed and contribution are already known exactly for Winfall Wishes Jackpot; the missing scientific variable is the exact live-pool binding and its hazard.",
+    "The previous GitHub Actions prospective workflow currently fails before executing steps, so durable Cloudflare observation removes an operational dependency without relaxing the scientific protocol.",
+    "A synchronized pair reset is useful prospective evidence of coupling but cannot identify the triggering game or prove a jackpot award.",
+    "Ten paired candidates only permit a conditional diagnostic. They do not satisfy identity, rules-fingerprint or prospective execution gates by themselves."
+  ],
+  "execution": {
+    "decision": "NO_PLAY",
+    "identityVerified": false,
+    "thresholdVerified": false,
+    "stakeVerified": false,
+    "strategyVerified": false,
+    "rulesFingerprintVerified": false,
+    "prospectiveValidationPassed": false,
+    "stakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "discoveryAnchorCannotCountProspectively": true,
+    "exactAliasDisproofIsMonotonic": true,
+    "pairedResetIsNotGameIdentity": true,
+    "pairedResetIsNotAwardProof": true,
+    "minimumTenPairsBeforeConditionalFit": true,
+    "constantHazardIsNotPublishedFact": true,
+    "contributionIsNotHazard": true,
+    "foreignSeedCannotTransferToSpain": true,
+    "conditionalFitCannotEnableExecution": true,
+    "runtimeMustBeFingerprintVerifiedSeparately": true,
+    "realMoneyAllowed": false
+  }
+}
