@@ -11,7 +11,6 @@ assert.deepEqual(physicalCards.map(x=>x.game),['Scarab','Ocean’s Magic']);
 for(const c of physicalCards){
   assert.equal(c.action,'NO_PLAY');
   assert.equal(c.sourceType,'PHYSICAL');
-  assert.equal(c.status,'P0 · FÍSICO ESPAÑA');
   assert.equal(c.crossPlayerVerified,false);
   assert.equal(c.preWagerVisibleVerified,false);
   assert.equal(c.decisiveBlocker,'FALTA_FINGERPRINT_LOCAL_SIN_APOSTAR');
@@ -29,12 +28,23 @@ for(const c of physicalCards){
 const scarab=physicalCards.find(x=>x.game==='Scarab');
 assert.ok(scarab);
 assert.equal(scarab.globalInheritedStateDocumented,true);
-assert.match(scarab.strongFinding,/título exacto Scarab/);
+assert.equal(scarab.deterministicLowerBoundDiscovered,true);
+assert.equal(scarab.status,'P0 · COTA DETERMINISTA');
+assert.match(scarab.mechanism,/2×\/20×\/50×\/200×/);
+assert.match(scarab.strongFinding,/teorema distribution-free/);
+assert.match(cardHtml(scarab),/COTA DETERMINISTA/);
+assert.match(cardHtml(scarab),/La fórmula está demostrada/);
+
+const ocean=physicalCards.find(x=>x.game==='Ocean’s Magic');
+assert.ok(ocean);
+assert.equal(ocean.deterministicLowerBoundDiscovered,false);
+assert.equal(ocean.status,'P0 · FÍSICO ESPAÑA');
 
 const combined=buildCombinedBreakthroughCards([online,physical]);
 assert.equal(combined.length,4);
 assert.equal(combined.filter(x=>x.sourceType==='PHYSICAL').length,2);
 assert.equal(combined.filter(x=>x.sourceType==='ONLINE').length,2);
+assert.equal(combined.filter(x=>x.deterministicLowerBoundDiscovered===true).length,1);
 assert.ok(combined.every(x=>x.action==='NO_PLAY'));
 
 console.log('edge-live-physical-breakthroughs-v1.test.mjs: PASS');

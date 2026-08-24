@@ -33,18 +33,21 @@ function buildPhysicalCards(data){
   if(!data||data.realMoneyAllowed!==false||!data.venue||!Array.isArray(data.candidates))return [];
   return data.candidates.map((c)=>{
     const scarab=c?.id==='casino-la-toja-scarab-igt',local=c?.localFingerprintGates||{};
+    const deterministic=scarab&&c?.deterministicLowerBoundDiscovery?.discovered===true;
     const exactVenueTitle=scarab?c?.venueTitleExactMatch===true:c?.venueTitleExactMatchToCanonical===true;
     const globalInheritedState=scarab?c?.globalMechanismComparator?.verifiedFacts?.previousPlayerCanLeaveWildState===true:c?.globalMechanismComparator?.verifiedFacts?.bubbleStateCanBeAbandonedByPreviousPlayer===true;
     const localInheritedState=scarab?local.abandonedBordersVisibleAfterPlayerChangeVerified===true:local.bubblePersistenceVisibleAcrossPlayerChangeVerified===true;
     const preWager=scarab?local.cycleProgressVisibleBeforeWagerVerified===true:local.bubblePersistenceVisibleAcrossPlayerChangeVerified===true;
+    const localPaytable=scarab?local.exactPaytableMatchesTwoTwentyFiftyTwoHundred===true:local.exactPaytableMatchesComparator===true;
     return {
       id:String(c?.id||''),game:String(c?.game||'Juego sin nombre'),operator:String(data?.venue?.name||'Casino físico español'),url:String(data?.venue?.officialSlotsPage||''),priority:String(c?.decision?.researchPriority||'RESEARCH'),
       minBetEUR:null,maxBetEUR:null,rtpPct:null,
-      mechanism:scarab?'Scarab · estado visible en ciclo de 10 tiradas':'Ocean Magic · burbujas persistentes visibles',
-      crossPlayerVerified:localInheritedState,preWagerVisibleVerified:preWager,exactConfigVerified:exactVenueTitle&&local.exactPaytableMatchesComparator===true,globalInheritedStateDocumented:globalInheritedState,
-      status:'P0 · FÍSICO ESPAÑA',action:'NO_PLAY',sourceType:'PHYSICAL',
-      strongFinding:scarab?'Instalación física española actual del título exacto Scarab; el mecanismo global documenta estado dejado por el jugador anterior y regla de entrada por estado.':'Instalación física española actual de Ocean’s Magic en familia IGT Crystal; el comparador Ocean Magic documenta ventaja en estados de burbujas favorables.',
-      guardText:scarab?'Falta confirmar sin apostar que la configuración local conserva 75 líneas, ciclo 10/10, marcos dorados, paytable y estado abandonado antes de transferir la regla de entrada.':'Falta resolver el nombre canónico y fingerprint local completo antes de transferir cualquier estrategia Ocean Magic.',
+      mechanism:deterministic?'Scarab · cota determinista 2×/20×/50×/200× por prefijo Wild':scarab?'Scarab · estado visible en ciclo de 10 tiradas':'Ocean Magic · burbujas persistentes visibles',
+      crossPlayerVerified:localInheritedState,preWagerVisibleVerified:preWager,exactConfigVerified:exactVenueTitle&&localPaytable,globalInheritedStateDocumented:globalInheritedState,
+      deterministicLowerBoundDiscovered:deterministic,
+      status:deterministic?'P0 · COTA DETERMINISTA':'P0 · FÍSICO ESPAÑA',action:'NO_PLAY',sourceType:'PHYSICAL',
+      strongFinding:deterministic?'Scarab exacto en un casino físico español actual y un teorema distribution-free ya demuestra estados extremos donde el pago mínimo final supera todas las apuestas restantes si el paytable/ciclo local coincide.':scarab?'Instalación física española actual del título exacto Scarab; el mecanismo global documenta estado dejado por el jugador anterior y regla de entrada por estado.':'Instalación física española actual de Ocean’s Magic en familia IGT Crystal; el comparador Ocean Magic documenta ventaja en estados de burbujas favorables.',
+      guardText:deterministic?'La fórmula está demostrada, pero La Toja aún debe confirmar visualmente ciclo, paytable 2/20/50/200, escalado por línea y persistencia local antes de cualquier promoción.':scarab?'Falta confirmar sin apostar la configuración local, paytable y estado abandonado antes de transferir la regla de entrada.':'Falta resolver el nombre canónico y fingerprint local completo antes de transferir cualquier estrategia Ocean Magic.',
       decisiveBlocker:'FALTA_FINGERPRINT_LOCAL_SIN_APOSTAR'
     };
   });
@@ -74,7 +77,11 @@ export function cardHtml(c){
 
 export function renderBreakthroughs(data,{root=document.getElementById('breakthroughList'),summary=document.getElementById('breakthroughSummary')}={}){
   const cards=Array.isArray(data)?buildCombinedBreakthroughCards(data):buildBreakthroughCards(data);
-  if(summary){const physical=cards.filter(c=>c.sourceType==='PHYSICAL').length;summary.textContent=cards.length?`${cards.length} HALLAZGOS P0 EN ESPAÑA · ${physical} FÍSICOS · 0 € HASTA CERRAR FINGERPRINT LOCAL`:'Sin hallazgos P0 cargados';}
+  if(summary){
+    const physical=cards.filter(c=>c.sourceType==='PHYSICAL').length;
+    const deterministic=cards.filter(c=>c.deterministicLowerBoundDiscovered===true).length;
+    summary.textContent=cards.length?`${cards.length} HALLAZGOS P0 EN ESPAÑA · ${physical} FÍSICOS · ${deterministic} COTA DETERMINISTA · 0 € HASTA CERRAR FINGERPRINT LOCAL`:'Sin hallazgos P0 cargados';
+  }
   if(root)root.innerHTML=cards.length?cards.map(cardHtml).join(''):'<div class="breakEmpty">Sin nuevos hallazgos cargados.</div>';
   return cards;
 }

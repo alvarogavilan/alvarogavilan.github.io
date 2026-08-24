@@ -1,6 +1,6 @@
 {
-  "version": "spain-igt-physical-variable-state-v1",
-  "generatedAt": "2026-08-24T17:08:00+02:00",
+  "version": "spain-igt-physical-variable-state-v1.1-deterministic-bound",
+  "generatedAt": "2026-08-24T17:35:00+02:00",
   "market": "ES",
   "mode": "RESEARCH_ONLY_NO_PLAY",
   "realMoneyAllowed": false,
@@ -46,21 +46,70 @@
         },
         "strategyTransferToSpainAllowed": false
       },
-      "whyThisIsHighValue": "The venue publishes the exact Scarab title in a current Spanish physical IGT Crystal installation, while an independent current mathematical source documents a visible 10-spin state that can be left by the previous player and provides explicit state-based entry advice.",
+      "crossVariantStructuralEvidence": {
+        "igtOfficialBrochure": {
+          "source": "https://www.igt.com/-/media/0c5e8fdacdda47d0ab3a191975512312.ashx",
+          "lineOptions": [40, 75],
+          "costToCoverAllLinesCredits": {"40": 40, "75": 75},
+          "tenthSpinGoldenSpotsBecomeWild": true,
+          "multipleRtpOptions": true
+        },
+        "fortyLineRulesScreenshot": {
+          "source": "https://www.palasinogroup.eu/uploads/_web/pdf/Pravidla-her/herni_plan_tg_cz_2025.pdf",
+          "screenShowsTotalBetCredits": 40,
+          "screenShowsGame1Of10": true,
+          "wildPayMultipliers": {"2": 2, "3": 20, "4": 50, "5": 200}
+        },
+        "seventyFiveLineRules": {
+          "source": "https://www.alc.ca/content/dam/alc/images/casino/scarab/English%20-%20How%20to%20Play%20-%20Scarab.docx.pdf",
+          "paylines": 75,
+          "costToCoverCredits": 75,
+          "lineWinsBeginFarLeftAndAreAddedAcrossPaylines": true
+        },
+        "austrianRegulatedRules": {
+          "source": "https://www.win2day.at/fairplay/spielbedingungen/scarab-spielbedingungen",
+          "fixedPaylines": 75,
+          "totalBetMultiplier": 75,
+          "wildPayMultipliers": {"2": 2, "3": 20, "4": 50, "5": 200}
+        },
+        "whatThisProves": "The same structural cost-per-active-line relationship and 2/20/50/200 Wild pay pattern are documented in both 40-line and 75-line Scarab implementations. Therefore the full-prefix lower bound is line-count invariant when the local machine exposes the same paytable and one-credit-per-line base scaling.",
+        "whatThisDoesNotProve": "It does not prove that Casino La Toja uses either documented paytable, line count, denomination, RTP or bet mapping. Local visual fingerprint remains mandatory."
+      },
+      "deterministicLowerBoundDiscovery": {
+        "discovered": true,
+        "engine": "loterias-ai/casino/scarab/scarab-full-prefix-guarantee-v1.mjs",
+        "proofType": "DISTRIBUTION_FREE_VISIBLE_STATE_LOWER_BOUND",
+        "requiresLocalPaytableFingerprint": true,
+        "requiresLocalCycleFingerprint": true,
+        "requiresLocalPersistentFrames": true,
+        "requiresNoHiddenTriggerDistribution": true,
+        "fullPrefixReelsReturnMultiples": {"2": 2, "3": 20, "4": 50, "5": 200},
+        "examplesInBetUnits": {
+          "twoFullPrefixReelsAfterGame9": {"remainingBets": 1, "minimumFinalReturn": 2, "minimumNet": 1},
+          "threeFullPrefixReelsAfterGame1": {"remainingBets": 9, "minimumFinalReturn": 20, "minimumNet": 11},
+          "fourFullPrefixReelsAfterGame1": {"remainingBets": 9, "minimumFinalReturn": 50, "minimumNet": 41},
+          "fiveFullPrefixReelsAfterGame1": {"remainingBets": 9, "minimumFinalReturn": 200, "minimumNet": 191}
+        },
+        "localExecutionAuthority": false,
+        "candidateForExecutionContractOnly": true,
+        "realMoneyAllowed": false
+      },
+      "whyThisIsHighValue": "Casino La Toja publishes the exact Scarab title. Scarab has a visible ten-spin persistent-state mechanic, and a distribution-free lower-bound theorem now identifies extreme full-prefix states whose minimum final payout can exceed every remaining wager to the cycle end without using RTP, reel probabilities or trigger-distribution assumptions. The theorem is not transferable to La Toja until the local paytable/cycle/state fingerprint is verified.",
       "localFingerprintGates": {
-        "screenShows75PaylinesVerified": false,
+        "screenShows40Or75PaylinesVerified": false,
         "screenShows10SpinCycleVerified": false,
         "goldBorderMechanicVerified": false,
         "cycleProgressVisibleBeforeWagerVerified": false,
         "abandonedBordersVisibleAfterPlayerChangeVerified": false,
-        "exactPaytableMatchesComparator": false,
+        "exactPaytableMatchesTwoTwentyFiftyTwoHundred": false,
         "exactDenominationsVerified": false,
         "exactConfiguredRtpVerified": false,
-        "comparatorStrategyValidatedForLocalConfig": false,
+        "oneCreditPerActiveLineBaseScalingVerified": false,
+        "deterministicBoundApplicableLocally": false,
         "prospectivePassiveObservationPassed": false
       },
       "decision": {
-        "researchPriority": "P0_PHYSICAL_STATEFUL_SLOT",
+        "researchPriority": "P0_DETERMINISTIC_LOWER_BOUND_LOCAL_FINGERPRINT_REQUIRED",
         "zeroBetVisualInspectionUseful": true,
         "thresholdNow": null,
         "exactStakeEUR": null,
@@ -138,21 +187,24 @@
   "portfolioFinding": {
     "currentSpainPhysicalVenuePublishesAtLeastOneExactDocumentedVariableStateApTitle": true,
     "exactTitle": "Scarab",
+    "scarabDeterministicLowerBoundDiscovered": true,
     "secondHighConfidenceCandidate": "Ocean’s Magic / Ocean Magic",
-    "whatThisProves": "A current Spanish physical casino publicly lists Scarab by IGT, a title independently documented as a visible persistent-state game where the previous player can leave a favorable state. The same venue also lists Ocean’s Magic in its IGT Crystal family, strongly motivating an exact zero-bet title/rules fingerprint.",
-    "whatThisDoesNotProve": "It does not yet prove that the Casino La Toja configuration/paytable/RTP matches the published comparator strategy or that any state visible at the venue right now is positive EV."
+    "whatThisProves": "A current Spanish physical casino publicly lists Scarab by IGT. Cross-variant rules plus a formal lower-bound engine establish a line-count-invariant deterministic guarantee for extreme full-prefix states when the local paytable and cycle semantics match the documented Scarab structure.",
+    "whatThisDoesNotProve": "It does not yet prove that Casino La Toja uses the documented Wild paytable/scaling or that any qualifying full-prefix state is visible there now."
   },
   "shortestProofPath": [
-    "Without wagering, visually confirm Scarab shows 75 paylines, Game X of 10, gold-border persistence and the expected paytable/rules screen.",
-    "Observe whether a nonzero gold-border state remains visible after a prior player leaves and before the next wager.",
-    "Record denomination, total bet mapping and any RTP/help information exposed by the exact cabinet.",
-    "For Ocean’s Magic, first resolve the exact canonical title and confirm the 5x4 bubble mechanic before using any Ocean Magic comparator.",
-    "Freeze the local fingerprint and only then validate any state-entry rule prospectively; no real-money promotion before that validation."
+    "Without wagering, inspect Scarab help/paytable and record whether it is 40 or 75 paylines, whether Game X of 10 is visible, and whether Wild pays 2/20/50/200 for 2/3/4/5 from the left.",
+    "Record total-bet and denomination mapping and confirm the base cost is one credit per active line or an exactly proportional equivalent.",
+    "Observe whether nonzero gold frames remain visible after a prior player leaves and before the next wager at the same bet level.",
+    "If the local fingerprint matches, feed only the visible completed-game index and complete-prefix-reel count into the deterministic engine; the engine may create a candidate but cannot authorize real money.",
+    "Freeze the local fingerprint and run prospective passive validation before any execution-contract promotion."
   ],
   "hardGuards": {
     "venueTitleDoesNotProveComparatorConfiguration": true,
     "publishedBetRangeDoesNotProveExactGameStakeMapping": true,
     "foreignStrategyDoesNotAutoTransfer": true,
+    "crossVariantEvidenceDoesNotProveLocalPaytable": true,
+    "deterministicTheoremDoesNotBypassLocalFingerprint": true,
     "visibleStateMustBeObservedBeforeWager": true,
     "noWageringForFingerprintResearch": true,
     "noRealMoneyLaunch": true,
