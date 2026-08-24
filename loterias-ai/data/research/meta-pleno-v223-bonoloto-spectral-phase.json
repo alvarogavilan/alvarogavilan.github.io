@@ -1,0 +1,402 @@
+{
+  "generatedAt": "2026-08-16T09:45:08.040Z",
+  "version": "v223",
+  "gameId": "bonoloto",
+  "family": "SPECTRAL_PHASE_EXTRAPOLATION",
+  "candidatePool": {
+    "nominalConfigurations": 12,
+    "effectiveConfigurations": 12
+  },
+  "selectionPeriod": "2018-01-01..2022-12-31",
+  "postFreezePeriods": [
+    "2023-01-01..2024-12-31",
+    "2025-01-01..2026-12-31"
+  ],
+  "methodology": "For each number, reconstruct only its pre-draw binary occurrence history over 128/256 draws. Remove the local mean, project the residual onto fixed draw-period harmonics (7,14,28,56,91,182), rank harmonics by amplitude using only history available before the target draw, extrapolate their phase one draw ahead, and rank all 49 numbers by the resulting score. Hyperparameters are selected exclusively on 2018-2022; the top eight configurations are frozen before opening 2023+. This is a spectral representation distinct from Haar multiscale coefficients because it explicitly models phase at fixed non-dyadic periods.",
+  "multipleTesting": {
+    "candidatePool": 12,
+    "effectiveConfigurations": 12,
+    "selectionCriterion": "train h6, then h5, h4, meanHits; top 8 frozen",
+    "matchedNullRequiredIfSignal": true
+  },
+  "budget": {
+    "poolSize": 8,
+    "tickets": 28,
+    "unitCostEUR": 0.5,
+    "theoreticalCostEUR": 14,
+    "realStakeEUR": 0
+  },
+  "summary": {
+    "nominalConfigurations": 12,
+    "effectiveConfigurations": 12,
+    "frozen": 8,
+    "midFullModels": 0,
+    "lateFullModels": 0,
+    "repeatFullModels": 0,
+    "repeat5PlusModels": 0,
+    "uniquePostFreeze5PlusDates": [
+      "2026-07-24"
+    ]
+  },
+  "leaders": [
+    {
+      "config": {
+        "id": 5,
+        "W": 128,
+        "topK": 3,
+        "shrink": 1
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 7,
+        "h5": 1,
+        "h6": 0,
+        "sum": 1477,
+        "events": [
+          {
+            "date": "2020-05-30",
+            "hits": 5,
+            "pool": [
+              4,
+              13,
+              14,
+              18,
+              32,
+              35,
+              42,
+              46
+            ],
+            "truth": [
+              4,
+              13,
+              14,
+              35,
+              40,
+              42
+            ]
+          }
+        ],
+        "meanHits": 0.9717105263157895
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 3,
+        "h5": 0,
+        "h6": 0,
+        "sum": 717,
+        "events": [],
+        "meanHits": 0.9808481532147743
+      },
+      "late": {
+        "draws": 591,
+        "h4": 3,
+        "h5": 0,
+        "h6": 0,
+        "sum": 580,
+        "events": [],
+        "meanHits": 0.9813874788494078
+      },
+      "poolSequenceHash": "bac6b5a4"
+    },
+    {
+      "config": {
+        "id": 4,
+        "W": 128,
+        "topK": 3,
+        "shrink": 0.5
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 5,
+        "h5": 1,
+        "h6": 0,
+        "sum": 1448,
+        "events": [
+          {
+            "date": "2020-05-30",
+            "hits": 5,
+            "pool": [
+              4,
+              13,
+              14,
+              18,
+              32,
+              35,
+              42,
+              46
+            ],
+            "truth": [
+              4,
+              13,
+              14,
+              35,
+              40,
+              42
+            ]
+          }
+        ],
+        "meanHits": 0.9526315789473684
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 721,
+        "events": [],
+        "meanHits": 0.9863201094391245
+      },
+      "late": {
+        "draws": 591,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "sum": 606,
+        "events": [],
+        "meanHits": 1.0253807106598984
+      },
+      "poolSequenceHash": "dff45730"
+    },
+    {
+      "config": {
+        "id": 0,
+        "W": 128,
+        "topK": 1,
+        "shrink": 0.5
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 11,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1457,
+        "events": [],
+        "meanHits": 0.9585526315789473
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 1,
+        "h5": 0,
+        "h6": 0,
+        "sum": 710,
+        "events": [],
+        "meanHits": 0.9712722298221614
+      },
+      "late": {
+        "draws": 591,
+        "h4": 1,
+        "h5": 0,
+        "h6": 0,
+        "sum": 570,
+        "events": [],
+        "meanHits": 0.9644670050761421
+      },
+      "poolSequenceHash": "7313084c"
+    },
+    {
+      "config": {
+        "id": 9,
+        "W": 256,
+        "topK": 2,
+        "shrink": 1
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 10,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1504,
+        "events": [],
+        "meanHits": 0.9894736842105263
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 2,
+        "h5": 0,
+        "h6": 0,
+        "sum": 703,
+        "events": [],
+        "meanHits": 0.9616963064295485
+      },
+      "late": {
+        "draws": 591,
+        "h4": 1,
+        "h5": 1,
+        "h6": 0,
+        "sum": 556,
+        "events": [
+          {
+            "date": "2026-07-24",
+            "hits": 5,
+            "pool": [
+              5,
+              10,
+              15,
+              18,
+              22,
+              25,
+              26,
+              45
+            ],
+            "truth": [
+              7,
+              10,
+              18,
+              25,
+              26,
+              45
+            ]
+          }
+        ],
+        "meanHits": 0.9407783417935702
+      },
+      "poolSequenceHash": "872b2295"
+    },
+    {
+      "config": {
+        "id": 2,
+        "W": 128,
+        "topK": 2,
+        "shrink": 0.5
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 9,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1519,
+        "events": [],
+        "meanHits": 0.9993421052631579
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 3,
+        "h5": 0,
+        "h6": 0,
+        "sum": 709,
+        "events": [],
+        "meanHits": 0.9699042407660738
+      },
+      "late": {
+        "draws": 591,
+        "h4": 4,
+        "h5": 0,
+        "h6": 0,
+        "sum": 576,
+        "events": [],
+        "meanHits": 0.9746192893401016
+      },
+      "poolSequenceHash": "e55f2bd3"
+    },
+    {
+      "config": {
+        "id": 8,
+        "W": 256,
+        "topK": 2,
+        "shrink": 0.5
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 9,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1518,
+        "events": [],
+        "meanHits": 0.9986842105263158
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 4,
+        "h5": 0,
+        "h6": 0,
+        "sum": 708,
+        "events": [],
+        "meanHits": 0.9685362517099864
+      },
+      "late": {
+        "draws": 591,
+        "h4": 3,
+        "h5": 0,
+        "h6": 0,
+        "sum": 559,
+        "events": [],
+        "meanHits": 0.9458544839255499
+      },
+      "poolSequenceHash": "9f285e72"
+    },
+    {
+      "config": {
+        "id": 1,
+        "W": 128,
+        "topK": 1,
+        "shrink": 1
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 9,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1487,
+        "events": [],
+        "meanHits": 0.9782894736842105
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 6,
+        "h5": 0,
+        "h6": 0,
+        "sum": 728,
+        "events": [],
+        "meanHits": 0.9958960328317373
+      },
+      "late": {
+        "draws": 591,
+        "h4": 2,
+        "h5": 0,
+        "h6": 0,
+        "sum": 600,
+        "events": [],
+        "meanHits": 1.015228426395939
+      },
+      "poolSequenceHash": "53af8f80"
+    },
+    {
+      "config": {
+        "id": 10,
+        "W": 256,
+        "topK": 3,
+        "shrink": 0.5
+      },
+      "train": {
+        "draws": 1520,
+        "h4": 8,
+        "h5": 0,
+        "h6": 0,
+        "sum": 1469,
+        "events": [],
+        "meanHits": 0.9664473684210526
+      },
+      "mid": {
+        "draws": 731,
+        "h4": 4,
+        "h5": 0,
+        "h6": 0,
+        "sum": 740,
+        "events": [],
+        "meanHits": 1.012311901504788
+      },
+      "late": {
+        "draws": 591,
+        "h4": 1,
+        "h5": 0,
+        "h6": 0,
+        "sum": 567,
+        "events": [],
+        "meanHits": 0.9593908629441624
+      },
+      "poolSequenceHash": "0ec3f5de"
+    }
+  ],
+  "decision": "NEGATIVE",
+  "realMoneyPass": false
+}
