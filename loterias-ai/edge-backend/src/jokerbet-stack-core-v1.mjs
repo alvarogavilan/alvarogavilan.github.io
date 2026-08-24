@@ -50,7 +50,7 @@ export function buildJokerbetStackResearch(candidates=[],terms={}){
   const byGap=[...rows].sort((a,b)=>a.verifiedGapToOne-b.verifiedGapToOne||a.minStakeEUR-b.minStakeEUR);
   const operatorReady=[...rows].filter(x=>x.operatorJackpotEligibilityVerified&&x.operatorJackpotTemperature==='SUPER_HOT').sort((a,b)=>a.verifiedGapToOne-b.verifiedGapToOne);
   return {
-    version:'edge-jokerbet-stack-lab-v1',
+    version:'edge-jokerbet-stack-lab-v1.1-current-terms',
     rows,
     leaderBySmallestDeclaredGap:byGap[0]||null,
     leaderWithVerifiedSuperHotOperatorJackpot:operatorReady[0]||null,
@@ -59,7 +59,7 @@ export function buildJokerbetStackResearch(candidates=[],terms={}){
       declaredGameReturn:'Published game/provider RTP used only as a stack screen. It is not a guarantee for a finite session.',
       verifiedGapToOne:'Additional expected return that would have to be demonstrated before the stack reaches 100% under the published game RTP.',
       clubNominal:'Face-value reward ratio only. It is excluded from verified return until reward-specific conversion terms are known.',
-      cashbackOne:'A rebate on realized weekly net losses, not a constant RTP increment.',
+      cashback:'ONE/PLUS are alternative rebates on realized weekly net losses with different rollover, not constant RTP increments and never additive to each other.',
       awardScenario:'Required hit rates are algebraic targets under assumed average award values, not estimates of actual JOKERBET probabilities.'
     },
     guards:{
@@ -67,8 +67,10 @@ export function buildJokerbetStackResearch(candidates=[],terms={}){
       operatorJackpotReturnMustBeMeasured:true,
       temperatureOrderingDoesNotRevealAbsoluteProbability:true,
       clubFaceValueCannotBeAddedWithoutConversionTerms:true,
-      cashbackCannotBeAddedAsTenPercentagePoints:true,
+      cashbackCannotBeAddedAsFixedPercentagePoints:true,
+      cashbackOneAndPlusCannotBeAddedTogether:true,
       doubleCountProviderProgressiveForbidden:true,
+      estimatedOroAmountIsNotHardCap:true,
       realMoneyAllowed:false
     }
   };
