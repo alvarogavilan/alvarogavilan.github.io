@@ -34,7 +34,7 @@ export function evaluateFullPrefixState({
   const guaranteedNet=guaranteedFinalPayout-futureStakeToFinal;
   const deterministicPositive=finalReturnMultiple>remainingSpins;
   const deterministicBreakEvenOrBetter=finalReturnMultiple>=remainingSpins;
-  const localExecutionEligible=Boolean(
+  const candidateForExecutionContract=Boolean(
     deterministicPositive&&
     localFingerprintVerified&&
     localPaytableVerified&&
@@ -61,8 +61,10 @@ export function evaluateFullPrefixState({
     guaranteedNetInBetUnits:guaranteedNet/Number(totalBet),
     deterministicPositive,
     deterministicBreakEvenOrBetter,
-    localExecutionEligible,
-    realMoneyAllowed:localExecutionEligible
+    candidateForExecutionContract,
+    localExecutionEligible:false,
+    executionAuthority:'EDGE_CLIENT_EXECUTION_CONTRACT_ONLY',
+    realMoneyAllowed:false
   };
 }
 
