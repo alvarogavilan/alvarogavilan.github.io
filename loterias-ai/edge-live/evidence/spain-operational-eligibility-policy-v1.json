@@ -1,0 +1,44 @@
+{
+  "version":"spain-operational-eligibility-policy-v1",
+  "generatedAt":"2026-08-24T12:34:00+02:00",
+  "scope":"EDGE operational catalogue and historical library",
+  "jurisdiction":"ES",
+  "status":"ACTIVE_FAIL_CLOSED_POLICY",
+  "legalFoundation":[
+    {
+      "authority":"DGOJ",
+      "fact":"State-wide lotteries in Spain are reserved to SELAE and ONCE.",
+      "source":"https://www.ordenacionjuego.es/operadores-juego/informacion-operadores/licencias-juego"
+    },
+    {
+      "authority":"DGOJ",
+      "fact":"Online gambling offered in Spain requires the corresponding enabling title; players should verify the licensed operator and authorised .es domain.",
+      "source":"https://www.ordenacionjuego.es/participantes-juego/juego-ilegal"
+    }
+  ],
+  "internationalProductsPlayableInSpainExamples":[
+    {"game":"Euromillones","channel":"SELAE","eligible":true,"reason":"Officially operated in the Spanish market by SELAE."},
+    {"game":"EuroDreams","channel":"SELAE","eligible":true,"reason":"Officially operated in the Spanish market by SELAE."},
+    {"game":"Eurojackpot","channel":"ONCE","eligible":true,"reason":"Officially sold in Spain by ONCE online and authorised points of sale."}
+  ],
+  "foreignLotteryExamplesExcluded":[
+    {"game":"Powerball","eligible":false,"reason":"Not an identified SELAE/ONCE Spanish lottery product."},
+    {"game":"Mega Millions","eligible":false,"reason":"Not an identified SELAE/ONCE Spanish lottery product."},
+    {"game":"UK Lotto","eligible":false,"reason":"Not an identified SELAE/ONCE Spanish lottery product."},
+    {"game":"French LOTO","eligible":false,"reason":"Not an identified SELAE/ONCE Spanish lottery product."}
+  ],
+  "licensedOnlineOperatorExamples":[
+    {"brand":"Botemanía","operator":"GAMESYS SPAIN, S.A.","domain":"www.botemania.es","eligibleOperator":true,"gameClasses":["Máquinas de azar","Ruleta","Black Jack","Bingo","Apuestas deportivas de contrapartida","Otras apuestas de contrapartida"]},
+    {"brand":"Monopolycasino","operator":"GAMES SPAIN OPERATIONS, S.A.","domain":"www.monopolycasino.es","eligibleOperator":true,"gameClasses":["Máquinas de azar","Ruleta","Black Jack","Bingo","Apuestas deportivas de contrapartida","Otras apuestas de contrapartida"]}
+  ],
+  "hardGuards":{
+    "foreignLotteryHistoricalBackfillExcludedFromOperationalLibrary":true,
+    "spainJurisdictionRequiredForOperationalLibrary":true,
+    "lotteryMustBeOfficialSELAEOrONCEProduct":true,
+    "onlineOperatorMustBeDGOJLicensed":true,
+    "exactGameAvailabilityMustStillBeVerified":true,
+    "legalEligibilityDoesNotImplyPositiveEV":true,
+    "legalEligibilityCannotEnableExecution":true,
+    "executionContractRemainsSoleGreenAuthority":true
+  }
+}
