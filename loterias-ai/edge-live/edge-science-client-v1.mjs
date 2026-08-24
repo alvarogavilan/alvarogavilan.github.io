@@ -1,12 +1,13 @@
 const BACKEND='https://loterias-edge-sentinel.k8mwkbp68y.workers.dev';
 const EVIDENCE='./evidence/jackpot-king-shared-pool-economics-v1.json';
+const PRIORITY='./evidence/green-distance-priority-v1.json';
 const $=id=>document.getElementById(id);
 const pct=v=>Number.isFinite(Number(v))?(Number(v)*100).toFixed(2)+'%':'—';
 const money=v=>Number.isFinite(Number(v))?Number(v).toLocaleString('es-ES',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2}):'—';
 const time=t=>{const d=new Date(t);return Number.isFinite(d.getTime())?new Intl.DateTimeFormat('es-ES',{timeZone:'Europe/Madrid',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(d):'—';};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-const lab={science:null,evidence:null,jpk:null,winfall:null,error:null};
+const lab={science:null,evidence:null,jpk:null,winfall:null,priority:null,error:null};
 async function j(url){const r=await fetch(`${url}${url.includes('?')?'&':'?'}t=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(`HTTP_${r.status}`);return r.json();}
 
 function panel(){
@@ -48,6 +49,16 @@ function winfallBox(){
   return `<div style="margin-top:7px;padding:8px;border-radius:11px;background:#7bbcff0a;border:1px solid #7bbcff22;font-size:7px;line-height:1.55"><b style="color:#9ed6ff">WINFALL · PROSPECTIVO DURABLE</b><br>Pares reset candidatos: <b>${count}/${need}</b> · binding exacto Winfall: <b style="color:#ffb3b8">${exactBound?'SÍ':'NO'}</b> · fit condicional: <b style="color:${fit?'#ffc857':'#9bb1a6'}">${fit?'DISPONIBLE':'BLOQUEADO'}</b>${conditional}<br><span style="color:#8fa79b">Pares ≠ premio · pares ≠ identidad · k constante es hipótesis · threshold condicional ≠ ejecución.</span></div>`;
 }
 
+function greenDistanceBox(){
+  const rows=Array.isArray(lab.priority?.priority)?lab.priority.priority.slice(0,3):[];
+  if(!rows.length)return '';
+  const lines=rows.map(r=>{
+    const blocker=Array.isArray(r.blocking)&&r.blocking.length?r.blocking[0]:'sin blocker resumido';
+    return `<div style="margin-top:4px"><b>#${Number(r.rank)||'—'} · ${esc(r.name)}</b><br><span style="color:#9bb1a6">siguiente cierre: ${esc(blocker)}</span></div>`;
+  }).join('');
+  return `<div style="margin-top:8px;padding:9px;border-radius:12px;background:#f7c94b0b;border:1px solid #f7c94b26;font-size:7px;line-height:1.5"><div style="display:flex;justify-content:space-between;gap:8px"><b style="color:#ffd86b">CAMINO A GREEN</b><span style="color:#ff9aa2">NINGÚN THRESHOLD EJECUTABLE</span></div>${lines}<div style="margin-top:5px;color:#8fa79b">Ranking de distancia científica, no probabilidad de ganar. El contrato de ejecución sigue siendo la única autoridad.</div></div>`;
+}
+
 function render(){
   const p=panel(),s=lab.science?.science||null,t=lab.science?.telemetry||null,e=lab.evidence||null;
   if(!s){p.innerHTML='<div style="font-size:9px;font-weight:1000">LAB 24/7 · INICIALIZANDO</div><div style="margin-top:5px;font-size:8px;color:#91a99e">Esperando telemetría científica del backend permanente.</div>';return;}
@@ -71,6 +82,7 @@ function render(){
       <div style="padding:8px;background:#ffffff08;border-radius:10px;text-align:center"><small style="font-size:6px;color:#8fa79b">GAPS</small><b style="display:block;font-size:13px;margin-top:2px">${Number(s.gapCount||0)}</b></div>
       <div style="padding:8px;background:#ffffff08;border-radius:10px;text-align:center"><small style="font-size:6px;color:#8fa79b">RESET CAND.</small><b style="display:block;font-size:13px;margin-top:2px">${resets.length}</b></div>
     </div>
+    ${greenDistanceBox()}
     <div style="margin-top:9px;padding:9px;border-radius:12px;background:#29df860b;border:1px solid #29df8628;font-size:8px;line-height:1.55"><b style="color:#66eba4">JACKPOT KING · MEJOR BASE VERIFICADA EN ESTE PACK</b><br>${candidate?`${esc(candidate.game)} · base ${pct(candidate.baseRtp)}`:'Pendiente'}<br><span style="color:#9bb1a6">Pool compartido: sí · hazard igual por € entre títulos: <b style="color:#ffc857">NO DEMOSTRADO</b>. Contribución ≠ probabilidad.</span><br><span style="color:#9bb1a6">Fingerprint de entrada público: <b style="color:#ffc857">DIVERGENTE</b> · ${esc(triggerRange)}. Distinto trigger visible ≠ hazard cuantificado, pero prohíbe asumir igualdad.</span>${conflictLine}</div>
     ${jpkBox}
     ${winfallBox()}
@@ -83,11 +95,13 @@ async function refreshScience(){try{lab.science=await j(`${BACKEND}/science/stat
 async function refreshJpk(){try{lab.jpk=await j(`${BACKEND}/science/jpk?limit=200`);}catch{lab.jpk=null;}render();}
 async function refreshWinfall(){try{lab.winfall=await j(`${BACKEND}/science/winfall?limit=500`);}catch{lab.winfall=null;}render();}
 async function refreshEvidence(){try{lab.evidence=await j(EVIDENCE);}catch{}render();}
+async function refreshPriority(){try{lab.priority=await j(PRIORITY);}catch{}render();}
 
-refreshScience();refreshJpk();refreshWinfall();refreshEvidence();render();
+refreshScience();refreshJpk();refreshWinfall();refreshEvidence();refreshPriority();render();
 setInterval(refreshScience,5000);
 setInterval(refreshJpk,15000);
 setInterval(refreshWinfall,15000);
 setInterval(refreshEvidence,60000);
-window.addEventListener('online',()=>{refreshScience();refreshJpk();refreshWinfall();});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){refreshScience();refreshJpk();refreshWinfall();}});
+setInterval(refreshPriority,60000);
+window.addEventListener('online',()=>{refreshScience();refreshJpk();refreshWinfall();refreshPriority();});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){refreshScience();refreshJpk();refreshWinfall();refreshPriority();}});
