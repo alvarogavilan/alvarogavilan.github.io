@@ -1,6 +1,6 @@
 {
-  "version": "ultimate-video-poker-gamesys-lineage-comparator-v1",
-  "generatedAt": "2026-08-21T09:10:00.000Z",
+  "version": "ultimate-video-poker-gamesys-lineage-comparator-v1.1",
+  "generatedAt": "2026-08-24T14:18:00.000Z",
   "target": {
     "operator": "Botemania Spain",
     "game": "Ultimate Video Poker",
@@ -64,6 +64,46 @@
       "interpretationGuard": "Same product-suite lineage only; different variant and not Botemania configuration evidence."
     }
   ],
+  "historicalGamesysProgressiveMechanism": {
+    "provider": "Gamesys",
+    "variant": "Progressive Jacks or Better / Jacks or Better Progressive",
+    "sources": [
+      {
+        "source": "https://online.worldcasinodirectory.com/gamesys/jacks-or-better-prog",
+        "evidenceClass": "SECONDARY_HISTORICAL_GAME_RECORD"
+      },
+      {
+        "source": "https://www.casinolistings.com/jackpots/gamesys/progressive-jacks-or-better-jackpot",
+        "evidenceClass": "SECONDARY_HISTORICAL_JACKPOT_TRACKER"
+      }
+    ],
+    "mechanismFingerprint": {
+      "progressiveTrigger": "Royal Flush of Spades",
+      "nonSpadeRoyalSuits": ["Hearts", "Diamonds", "Clubs"],
+      "nonSpadeRoyalFixedPayoutX": 800,
+      "supportedHands": [1, 5, 10, 25, 50],
+      "reportedPaytableFragmentsX": {
+        "jacksOrBetter": 1,
+        "straight": 4,
+        "fourOfAKind": 25,
+        "straightFlush": 50,
+        "nonSpadeRoyal": 800
+      }
+    },
+    "historicalEconomicsDiscoveryOnly": {
+      "seedGBP": 2000,
+      "breakEvenGBP": 17477,
+      "reportedJackpotHitProbability": "1/160689"
+    },
+    "guards": {
+      "discoveryOnly": true,
+      "economicTransferAllowed": false,
+      "thresholdTransferToBotemaniaSpainAllowed": false,
+      "seedTransferToBotemaniaSpainAllowed": false,
+      "probabilityTransferToBotemaniaSpainAllowed": false,
+      "rtpTransferToBotemaniaSpainAllowed": false
+    }
+  },
   "productMechanismComparator": {
     "source": "https://www.casinomeister.com/online-casinos/reviews/virgin/",
     "evidenceClass": "SECONDARY_OPERATOR_REVIEW",
@@ -72,6 +112,17 @@
       "The reviewed Virgin implementation supported up to 50 hands at a time."
     ],
     "configurationEquivalentToBotemaniaVerified": false
+  },
+  "spanishCurrentProductComparison": {
+    "source": "https://www.botemania.es/juegos/casino-online/ultimate-video-poker",
+    "providerId": "roxor-gaming",
+    "variantExplicitlyListed": "Jotas o Mejor Progresivo",
+    "supportedHands": [1, 5, 10, 25],
+    "historicalGamesysSupportedHands": [1, 5, 10, 25, 50],
+    "exactHandSetMatch": false,
+    "exactMathematicalConfigurationMismatchProven": false,
+    "exactConfigurationEquivalenceVerified": false,
+    "interpretation": "The current Spanish product omits the historical 50-hand offering. This blocks exact configuration equivalence but does not by itself prove a different mathematical model; the difference could be a market/UI restriction."
   },
   "botemaniaObservedEvidence": {
     "historicalManualScreenPaytableShape": [1, 2, 3, 4, 5, 7, 25, 50, 800],
@@ -97,20 +148,27 @@
       "sourceFamily": "Wizard of Odds / Gtech 20/7/5 note",
       "value": "14,111 coins / 2,822 full bets",
       "reason": "This threshold belongs to the following 20/7/5 Gtech progressive table, not the 25-7-5 paytable shape observed in Botemania."
+    },
+    {
+      "sourceFamily": "Historical Gamesys Progressive Jacks or Better",
+      "value": "£17,477 break-even / £2,000 seed / 1 in 160,689",
+      "reason": "These are historical foreign Gamesys values. They are retained only as a mechanism fingerprint and may not populate Botemania Spain threshold, seed, RTP or probability inputs without exact configuration equivalence."
     }
   ],
   "closureState": {
-    "exactGamesysJacksOrBetterVariantRecordRecovered": false,
+    "exactGamesysJacksOrBetterVariantRecordRecovered": true,
+    "exactGamesysProgressiveMechanismFingerprintRecovered": true,
     "exactGamesysProgressiveJacksPaytableRecovered": false,
+    "historicalGamesysToCurrentBotemaniaHandSetExactMatch": false,
     "exactBotemaniaConfigurationEquivalentToExternalGamesysVerified": false,
     "configurationEquivalentToBotemaniaVerified": false,
     "economicPromotionAllowed": false,
     "realMoneyAllowed": false,
     "nextEvidenceTargets": [
-      "Exact Gamesys/Roxor Ultimate Video Poker Jacks or Better record/paytable",
-      "Progressive royal trigger and qualifying credits",
-      "Coin/credit denomination to EUR",
-      "Exact stake eligibility",
+      "Current Botemania/Roxor technical confirmation that the progressive trigger is Royal Flush of Spades and non-spade Royals pay 800x",
+      "Technical reproduction of the exact current Jotas o Mejor Progresivo paytable",
+      "Progressive qualifying credits and coin/credit denomination to EUR",
+      "Exact qualifying stake and hand-count jackpot semantics",
       "Provider/configuration-level RTP and fixed-strategy royal probability",
       "Local seed/reset or exact equivalent network proof"
     ]
