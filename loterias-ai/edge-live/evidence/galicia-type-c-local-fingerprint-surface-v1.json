@@ -1,34 +1,48 @@
 {
-  "version": "galicia-type-c-local-fingerprint-surface-v1.1",
-  "generatedAt": "2026-08-24T18:24:00+02:00",
+  "version": "galicia-type-c-local-fingerprint-surface-v1.2",
+  "generatedAt": "2026-08-24T18:41:00+02:00",
   "jurisdiction": "ES-GA",
   "status": "CURRENT_PRIMARY_REGULATORY_LOCAL_FINGERPRINT_SURFACE_IDENTIFIED_NO_PLAY",
   "realMoneyAllowed": false,
   "currentRegulationStatus": {
-    "consolidatedSource": "https://www.lex.gal/normativa/detalle/7795",
+    "consolidatedSource": "https://www.lex.gal/normativa/detalle/9245/",
     "observedAt": "2026-08-24",
-    "decreto39_2008Status": "EN_VIGOR",
+    "decreto39_2008Status": "EN_VIGOR_WITH_EXPRESS_PARTIAL_REPEALS",
     "law3_2023TransitionSource": "https://www.xunta.gal/dog/Publicados/2023/20230706/AnuncioC3B0-040723-0001_es.html",
     "facts": {
-      "existingGamingRegulationsRemainInForceUnlessContraryToLaw3_2023": true,
       "decreto39_2008Article22ExpresslyRepealed": true,
-      "historicalArticle22DetailsExcludedFromCurrentProof": true
+      "article21StillPresentInConsolidatedText": true,
+      "article23StillPresentInConsolidatedText": true,
+      "article38StillPresentInConsolidatedText": true,
+      "repealedArticle22ExcludedFromCurrentProof": true
     }
   },
   "survivingPrimarySource": {
-    "source": "https://www.xunta.gal/dog/Publicados/2008/20080307/AnuncioFFF6_es.html",
+    "source": "https://www.lex.gal/galilex/9245/pdf",
     "observedAt": "2026-08-24",
-    "regulation": "Decreto 39/2008",
+    "regulation": "Decreto 39/2008 consolidated",
     "facts": {
       "typeCPriceFixedPerModelInRegistrationResolution": true,
       "typeCMaxPrizeFixedPerModelInRegistrationResolution": true,
+      "typeCMinimumStatisticalReturnPctFloor": 80,
       "typeCMayUseMultiplePaylines": true,
       "typeCMayBeMultidenomination": true,
-      "typeCFrontOrVideoMustShowNumberOfBetsPerPlay": true,
       "typeCFrontOrVideoMustShowGameRules": true,
       "typeCFrontOrVideoMustShowAcceptedDenominationValues": true,
       "typeCFrontOrVideoMustShowWinningCombinationsAndPrizeAmounts": true,
       "typeCFrontOrVideoMustShowMinimumReturnPercentage": true,
+      "article21RequiresCommercialModelName": true,
+      "article21RequiresCompleteTypeCGameDescription": true,
+      "article21ProtectsTechnicalDocumentationFromThirdPartyAccess": true,
+      "article23RequiresExteriorPhotos": true,
+      "article23RequiresOperatingMemory": true,
+      "article23RequiresGameStorageMediumForTypeC": true,
+      "article23RequiresCounterDescriptionAndMetrologyEvidenceForTypeC": true,
+      "article23OperatingMemoryStatesBetPrice": true,
+      "article23OperatingMemoryStatesMaximumPrizeAndGainPlan": true,
+      "article23OperatingMemoryStatesTheoreticalPrizePercentage": true,
+      "article23OperatingMemoryStatesReturnIncreaseMechanisms": true,
+      "article23OperatingMemoryStatesOtherMechanismsOrDevices": true,
       "factoryPlateMustShowManufacturerRegistrationCode": true,
       "factoryPlateMustShowGaliciaModelRegistrationCode": true,
       "factoryPlateMustShowMachineSeriesAndNumber": true,
@@ -37,7 +51,7 @@
       "manufacturingCertificateIncludesModelRegistryNumberAndMachineSerial": true,
       "manufacturingCertificateIncludesCounterModelSeriesNumber": true,
       "exploitationAuthorizationIndividualizesSpecificMachineAgainstHomologatedModel": true,
-      "oneExploitationAuthorizationCopyPlacedInMachine": true,
+      "exploitationAuthorizationTravelsWithMachine": true,
       "substantialModificationIncludesPriceGameProgramOrGainPlan": true,
       "substantialModificationKeepsRegistryNumberWithAlphabeticSuffix": true
     }
@@ -47,11 +61,12 @@
     "procedure": "PR326X",
     "observedAt": "2026-08-24",
     "facts": {
-      "typeCRegistrationProcedureCurrentlyOpen": true,
+      "typeCRegistrationProcedureCurrent": true,
+      "requiresCommercialModelName": true,
       "requiresExteriorPhotographs": true,
       "requiresCompleteGameDescription": true,
       "requiresOperatingMemory": true,
-      "requiresOneGameStorageMediumCopy": true,
+      "requiresGameStorageMedium": true,
       "requiresCounterTypeDescriptionAndConformityEvidence": true
     }
   },
@@ -61,31 +76,35 @@
     "facts": {
       "registerStoresModelDenomination": true,
       "registerStoresGeneralCharacteristics": true,
-      "casinoGamingMaterialMustBeHomologated": true
+      "casinoGamingMaterialMustBeHomologated": true,
+      "decreto39_2008Article22ExpresslyRepealed": true
     }
   },
   "fieldCaptureProtocol": {
     "requiresWager": false,
     "minimumHighValueImages": [
-      "Exact-machine factory plate and/or exploitation authorization: manufacturer code, Galicia model registry code, type/model and serial where legible.",
-      "Exact-machine front/help/paytable: bets/paylines, denominations, winning combinations/prize amounts and displayed minimum return percentage where legible.",
-      "Exact Scarab live idle/cycle screen before wager: Game X of 10, gold-border state and current bet level/total bet where legible."
+      "Exact-machine factory marking and exploitation authorization: manufacturer code, Galicia model registry code, type/model and serial where legible.",
+      "Exact-machine front/help/paytable: denominations, winning combinations/prize amounts, displayed minimum return, line count/cost-to-cover and total-bet mapping where legible.",
+      "Exact Scarab idle/cycle screen before wager: Game X of 10, gold-border state, active bet level and total bet where legible."
     ],
-    "scientificBoundary": "A capture closes only fields legibly observed on the exact Casino La Toja Scarab machine. Title, cabinet family, foreign build, foreign RTP and foreign strategy are never transferred by inference."
+    "scientificBoundary": "A capture closes only fields legibly observed on the exact Casino La Toja Scarab machine. Legal requirements prove that fingerprint data must exist in the regulatory/machine surface; they do not prove the exact local values until captured."
   },
   "closureImpact": {
     "closesAnyScarabGateNow": false,
     "noWagerLocalIdentifierRecoveryLegallySupported": true,
-    "currentProcedureConfirmsTechnicalFingerprintArtifactsExist": true,
-    "preferredNextProof": "Recover exact-machine Galicia model code and serial from the factory plate or exploitation authorization, then pair them with front/help/paytable and idle-cycle captures before considering any gate closure.",
+    "currentRulesConfirmTechnicalFingerprintArtifactsExist": true,
+    "fullTechnicalDossierExpectedToBeThirdPartyInaccessible": true,
+    "shortestPathChangedFromPublicDossierSearchToExactMachineCapture": true,
+    "preferredNextProof": "Capture exact-machine Galicia model code and serial plus front/help/paytable and idle-cycle state without wagering. Use public administrative records only to map captured identifiers to model/build/configuration, not as the sole next step.",
     "realMoneyAllowed": false
   },
   "hardGuards": {
     "repealedArticle22NeverUsedAsCurrentAuthority": true,
+    "survivingArticle21And23MayBeUsedAsCurrentConsolidatedAuthority": true,
     "legalDisclosureRequirementDoesNotProveExactLocalValuesUntilObserved": true,
     "minimumReturnDisplayDoesNotEqualConfiguredRtpUnlessItsSemanticsAreVerified": true,
     "modelRegistryCodeDoesNotByItselfIdentifySoftwareBuildUnlessMappedByEvidence": true,
-    "currentProcedureDoesNotProveSubmittedTechnicalFilesArePubliclyAccessible": true,
+    "technicalDocumentationConfidentialityDoesNotBlockExactMachineVisualCapture": true,
     "noWagerNeededForThisCaptureProtocol": true,
     "realMoneyAllowed": false
   }
