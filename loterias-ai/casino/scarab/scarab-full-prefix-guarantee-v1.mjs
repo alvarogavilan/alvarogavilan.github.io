@@ -24,6 +24,7 @@ export function evaluateFullPrefixState({
   localPaytableVerified=false,
   localCycleSemanticsVerified=false,
   localPersistentFramesVerified=false,
+  localPayoutCapSemanticsVerified=false,
   wildPayMultipliers=SCARAB_WILD_PAY_MULTIPLIERS
 }={}){
   if(!finitePositive(totalBet)) throw new Error('totalBet must be positive');
@@ -39,7 +40,8 @@ export function evaluateFullPrefixState({
     localFingerprintVerified&&
     localPaytableVerified&&
     localCycleSemanticsVerified&&
-    localPersistentFramesVerified
+    localPersistentFramesVerified&&
+    localPayoutCapSemanticsVerified
   );
   return {
     theorem:'FULL_PREFIX_REELS_DISTRIBUTION_FREE_LOWER_BOUND',
@@ -49,7 +51,8 @@ export function evaluateFullPrefixState({
       winsEvaluateLeftToRightFromReel1:true,
       everyActivePaylineUsesExactlyOneCellPerReel:true,
       wildOnlyPayForKMatchesApplies:true,
-      totalBetAndLinePaysScaleTogether:true
+      totalBetAndLinePaysScaleTogether:true,
+      localPayoutCapsDoNotReduceClaimedLowerBound:true
     },
     lastCompletedGame:Number(lastCompletedGame),
     remainingSpins,
@@ -62,6 +65,7 @@ export function evaluateFullPrefixState({
     deterministicPositive,
     deterministicBreakEvenOrBetter,
     candidateForExecutionContract,
+    localPayoutCapSemanticsVerified:Boolean(localPayoutCapSemanticsVerified),
     localExecutionEligible:false,
     executionAuthority:'EDGE_CLIENT_EXECUTION_CONTRACT_ONLY',
     realMoneyAllowed:false
