@@ -7,8 +7,10 @@ on:
       - 'loterias-ai/casino/scarab/**'
       - 'loterias-ai/edge-live/evidence/spain-scarab-primary-regulatory-closure-v1.json'
       - 'loterias-ai/edge-live/evidence/spain-igt-physical-variable-state-v1.json'
+      - 'loterias-ai/edge-live/evidence/scarab-regulatory-software-fingerprints-v1.json'
       - 'loterias-ai/edge-live/research-breakthroughs-v1.mjs'
       - 'loterias-ai/tests/scarab-full-prefix-guarantee-v1.test.mjs'
+      - 'loterias-ai/tests/scarab-regulatory-software-fingerprints-v1.test.mjs'
       - 'loterias-ai/tests/spain-scarab-primary-regulatory-closure-v1.test.mjs'
       - 'loterias-ai/tests/spain-igt-physical-variable-state-v1.test.mjs'
       - 'loterias-ai/tests/edge-live-physical-breakthroughs-v1.test.mjs'
@@ -33,6 +35,8 @@ jobs:
           node --check loterias-ai/edge-live/research-breakthroughs-v1.mjs
       - name: Scarab deterministic theorem
         run: node loterias-ai/tests/scarab-full-prefix-guarantee-v1.test.mjs
+      - name: Regulatory software fingerprints
+        run: node loterias-ai/tests/scarab-regulatory-software-fingerprints-v1.test.mjs
       - name: Primary and regulatory evidence guards
         run: node loterias-ai/tests/spain-scarab-primary-regulatory-closure-v1.test.mjs
       - name: Physical Spain evidence guards
