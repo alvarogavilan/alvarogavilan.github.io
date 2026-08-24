@@ -3,7 +3,7 @@ import { SPAIN_RESERVED_LOTTERY_PRODUCTS,SPAIN_LICENSED_OPERATOR_DOMAINS,SPAIN_E
 
 export const DEPLOYMENT_FINGERPRINT='edge-sentinel-v15-spain-eligibility-20260824a';
 function responseJson(data,status=200){return new Response(JSON.stringify(data,null,2),{status,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store','access-control-allow-origin':'*'}});}
-const norm=v=>String(v??'').trim().toLowerCase();
+const norm=v=>String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
 
 export class EdgeSentinel extends V14EdgeSentinel{
   constructor(ctx,env){
@@ -36,10 +36,13 @@ export class EdgeSentinel extends V14EdgeSentinel{
     }
   }
 
-  lotteryEligible(gameId){return SPAIN_RESERVED_LOTTERY_PRODUCTS.some(x=>norm(x.gameId)===norm(gameId));}
+  lotteryEligible(gameId){
+    const g=norm(gameId);if(!g)return false;
+    return SPAIN_RESERVED_LOTTERY_PRODUCTS.some(x=>norm(x.gameId)===g);
+  }
   operatorEligible(operator){
-    const o=norm(operator);
-    return SPAIN_LICENSED_OPERATOR_DOMAINS.some(x=>[x.operator,x.brand,x.domain].some(v=>o===norm(v)||o.includes(norm(v))||norm(v).includes(o)));
+    const o=norm(operator);if(!o)return false;
+    return SPAIN_LICENSED_OPERATOR_DOMAINS.some(x=>[x.operator,x.brand,x.domain].some(v=>norm(v)===o));
   }
   eligibleForOperationalLibrary(r){
     if(norm(r?.jurisdiction)!=='es')return {eligible:false,reason:'JURISDICTION_NOT_SPAIN'};
