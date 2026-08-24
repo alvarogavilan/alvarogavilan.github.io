@@ -1,0 +1,26 @@
+name: Loterias AI MetaPleno v163 v164 Audit Freeze
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v163-v164-audit-freeze]
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v163-v162-conservative-null.mjs'
+      - 'loterias-ai/scripts/meta-pleno-v164-v162-prospective-freeze.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v163-v164-audit-freeze.yml'
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    permissions: {contents: write}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/meta-pleno-v163-v162-conservative-null.mjs
+      - run: node loterias-ai/scripts/meta-pleno-v164-v162-prospective-freeze.mjs
+      - name: Persist v163 v164
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v163-v162-conservative-null.json loterias-ai/data/prospective/bonoloto-v164-v162-threshold40-freeze.json
+          git diff --cached --quiet || git commit -m 'data(loterias-ai): persist v163 audit and v164 prospective freeze'
+          git push

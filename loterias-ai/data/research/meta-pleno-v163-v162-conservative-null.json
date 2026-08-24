@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-08-15T20:39:52.619Z",
+  "version": "v163",
+  "gameId": "bonoloto",
+  "source": "v162",
+  "methodology": "Conservative local threshold-family audit. For each draw an 8-number pool has exact fair-draw full6 and >=5 probabilities. To avoid assuming independence across the threshold family, per-draw probability is upper-bounded by the union bound m*p, then a Binomial(n,qUpper) tail is reported for the maximum observed count. This only corrects the v162 threshold family. It does NOT correct the much larger architecture search that led to v162, whose rank9 route was conceived after inspecting 2025; therefore it cannot promote the result to confirmatory evidence or real-money use.",
+  "thresholdModels": 17,
+  "validationDraws": 1321,
+  "observed": {
+    "maxFull6PerThreshold": 2,
+    "maxGe5PerThreshold": 2,
+    "bothEraFullModels": 1
+  },
+  "singlePoolNull": {
+    "pFull6": 0.0000020023146757651844,
+    "pGe5": 0.0001661921180885103
+  },
+  "conservativeThresholdFamilyNull": {
+    "perDrawFullUpper": 0.00003403934948800814,
+    "perDrawGe5Upper": 0.002825266007504675,
+    "expectedFullUpper": 0.04496598067365875,
+    "expectedGe5Upper": 3.732176395913676,
+    "pAtLeastObservedFullUpper": 0.0009804697173000697,
+    "pAtLeastObservedGe5Upper": 0.8870535274709982
+  },
+  "interpretation": "LOCAL_THRESHOLD_FAMILY_ONLY_GLOBAL_ARCHITECTURE_POSTHOC_CONTAMINATION_REMAINS",
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
