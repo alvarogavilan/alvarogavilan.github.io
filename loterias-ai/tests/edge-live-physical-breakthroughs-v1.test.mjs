@@ -19,6 +19,10 @@ for(const c of physicalCards){
   assert.match(html,/CASINO FÍSICO/);
   assert.match(html,/NO ES SEÑAL DE APUESTA/);
   assert.match(html,/LOCAL: POR CERRAR/);
+  assert.match(html,/RTP PUBLICADO<\/small><b>—<\/b>/);
+  assert.match(html,/APUESTA MÍN\.<\/small><b>—<\/b>/);
+  assert.doesNotMatch(html,/0,00\s*€/);
+  assert.doesNotMatch(html,/0\.00%/);
   assert.doesNotMatch(html,/JUGAR AHORA/);
 }
 
