@@ -61,7 +61,7 @@ const etaObj=hours=>Number.isFinite(hours)?{hours:+hours.toFixed(2),days:+(hours
 const jointRoyalTarget=potAt('ROYAL',jointBand),jointRegalTarget=potAt('REGAL',jointBand),royalOnlyTarget=potAt('ROYAL',royalSoloBand),regalOnlyTarget=potAt('REGAL',regalSoloBand);
 const etaJointRoyal=etaHours(pots.ROYAL,jointRoyalTarget,rate.ROYAL),etaJointRegal=etaHours(pots.REGAL,jointRegalTarget,rate.REGAL);
 const etaJoint=Number.isFinite(etaJointRoyal)&&Number.isFinite(etaJointRegal)?Math.max(etaJointRoyal,etaJointRegal):null;
-const etaRoyalOnly=etaHours(pots.ROYAL,royalOnlyTarget,rate.ROYAL),etaRegalOnly=etaHours(pots.REGAL,regalSoloBand,rate.REGAL);
+const etaRoyalOnly=etaHours(pots.ROYAL,royalOnlyTarget,rate.ROYAL),etaRegalOnly=etaHours(pots.REGAL,regalOnlyTarget,rate.REGAL);
 let reason='CURRENT_POSITIVE_EV_NOT_PROVEN';
 if(actionable)reason='SEPARATE_REAL_MONEY_AUTHORIZATION_STILL_REQUIRED';
 else if(!sourceFresh)reason='NO_FRESH_SOURCE';
