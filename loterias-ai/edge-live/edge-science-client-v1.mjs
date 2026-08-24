@@ -44,9 +44,10 @@ function winfallBox(){
   const d=r?.conditionalConstantHazardDiagnostic||{};
   const exactBound=r?.currentPair?.exactWinfallLiveIdVerified===true;
   const fit=d?.eligibleForFit===true;
-  const conditional=fit&&Number.isFinite(Number(d?.breakEvenJackpotEURIfPairIsExactWinfallPoolAndCandidatesAreAwards))
-    ?` · break-even condicional ${money(d.breakEvenJackpotEURIfPairIsExactWinfallPoolAndCandidatesAreAwards)}`:'';
-  return `<div style="margin-top:7px;padding:8px;border-radius:11px;background:#7bbcff0a;border:1px solid #7bbcff22;font-size:7px;line-height:1.55"><b style="color:#9ed6ff">WINFALL · PROSPECTIVO DURABLE</b><br>Pares reset candidatos: <b>${count}/${need}</b> · binding exacto Winfall: <b style="color:#ffb3b8">${exactBound?'SÍ':'NO'}</b> · fit condicional: <b style="color:${fit?'#ffc857':'#9bb1a6'}">${fit?'DISPONIBLE':'BLOQUEADO'}</b>${conditional}<br><span style="color:#8fa79b">Pares ≠ premio · pares ≠ identidad · k constante es hipótesis · threshold condicional ≠ ejecución.</span></div>`;
+  const point=fit&&Number.isFinite(Number(d?.breakEvenJackpotEURIfPairIsExactWinfallPoolAndCandidatesAreAwards))?money(d.breakEvenJackpotEURIfPairIsExactWinfallPoolAndCandidatesAreAwards):'—';
+  const upper95=fit&&Number.isFinite(Number(d?.conservativeBreakEvenUpper95EUR))?money(d.conservativeBreakEvenUpper95EUR):'—';
+  const confidence=d?.confidenceIntervalAvailable===true;
+  return `<div style="margin-top:7px;padding:8px;border-radius:11px;background:#7bbcff0a;border:1px solid #7bbcff22;font-size:7px;line-height:1.55"><b style="color:#9ed6ff">WINFALL · PROSPECTIVO DURABLE</b><br>Pares reset candidatos: <b>${count}/${need}</b> · binding exacto Winfall: <b style="color:#ffb3b8">${exactBound?'SÍ':'NO'}</b> · fit: <b style="color:${fit?'#ffc857':'#9bb1a6'}">${fit?'DISPONIBLE':'BLOQUEADO'}</b><br>Break-even puntual: <b>${point}</b> · upper 95% conservador: <b style="color:${confidence?'#ffc857':'#9bb1a6'}">${upper95}</b><br><span style="color:#8fa79b">La media no basta · upper95 ≠ ejecución · pares ≠ premio · pares ≠ identidad · k constante/exponencial son hipótesis.</span></div>`;
 }
 
 function greenDistanceBox(){

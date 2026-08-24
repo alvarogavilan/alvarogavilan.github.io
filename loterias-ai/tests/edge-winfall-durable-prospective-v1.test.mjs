@@ -6,7 +6,7 @@ const source=fs.readFileSync('loterias-ai/edge-backend/src/index-v9.mjs','utf8')
 const client=fs.readFileSync('loterias-ai/edge-live/edge-science-client-v1.mjs','utf8');
 const e=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/winfall-durable-prospective-protocol-v1.json','utf8'));
 
-assert.match(wrangler,/"main"\s*:\s*"src\/index-v9\.mjs"/);
+assert.match(wrangler,/"main"\s*:\s*"src\/index-v(?:9|10)\.mjs"/);
 assert.match(source,/edge-sentinel-v9-winfall-prospective-lab-20260824a/);
 assert.ok(source.includes("path==='/science/winfall'"));
 assert.ok(source.includes("generic:tikitemple2_1"));
@@ -28,9 +28,8 @@ for(const guard of [
 assert.ok(client.includes('/science/winfall?limit=500'));
 assert.ok(client.includes('WINFALL · PROSPECTIVO DURABLE'));
 assert.ok(client.includes('binding exacto Winfall'));
-assert.ok(client.includes('Pares ≠ premio'));
-assert.ok(client.includes('k constante es hipótesis'));
-assert.ok(client.includes('threshold condicional ≠ ejecución'));
+assert.ok(client.includes('upper 95% conservador'));
+assert.ok(client.includes('upper95 ≠ ejecución'));
 assert.equal(e.status,'RESEARCH_ONLY_NO_PLAY');
 assert.equal(e.realMoneyAllowed,false);
 assert.equal(e.officialSpainInputs.baseRtp,0.9485);
@@ -46,6 +45,7 @@ for(const key of ['identityVerified','thresholdVerified','stakeVerified','strate
 assert.equal(e.hardGuards.pairedResetIsNotGameIdentity,true);
 assert.equal(e.hardGuards.pairedResetIsNotAwardProof,true);
 assert.equal(e.hardGuards.minimumTenPairsBeforeConditionalFit,true);
+assert.equal(e.hardGuards.pointEstimateCannotEnableExecution,true);
 assert.equal(e.hardGuards.realMoneyAllowed,false);
 
 console.log('edge-winfall-durable-prospective-v1.test.mjs: PASS');

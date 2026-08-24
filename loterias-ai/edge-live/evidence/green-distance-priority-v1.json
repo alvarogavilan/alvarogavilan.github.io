@@ -1,6 +1,6 @@
 {
-  "version": "edge-green-distance-priority-v1",
-  "generatedAt": "2026-08-24T11:22:00+02:00",
+  "version": "edge-green-distance-priority-v1.1-winfall-confidence",
+  "generatedAt": "2026-08-24T11:39:00+02:00",
   "status": "RESEARCH_ONLY_NO_PLAY",
   "realMoneyAllowed": false,
   "purpose": "Rank active research lanes by the shortest evidence path to a defensible executable threshold. This is not a probability of profit, jackpot prediction, or permission to wager.",
@@ -32,21 +32,23 @@
       "rank": 2,
       "id": "winfall-wishes-jackpot",
       "name": "Winfall Wishes Jackpot",
-      "whyClosest": "Spain-specific base RTP, contribution, zero reset and bet-proportional eligibility are known. Worker v9 can accumulate synchronized prospective reset candidates durably; the remaining hard problem is exact live-pool binding and hazard/award attribution.",
+      "whyClosest": "Spain-specific base RTP, contribution, zero reset and bet-proportional eligibility are known. Worker v10 can accumulate synchronized prospective reset candidates and compute an exact chi-square confidence interval under the conditional exponential/constant-hazard model; point estimates are explicitly insufficient.",
       "alreadyStrong": [
         "Spain base RTP 94.85%",
         "Spain jackpot contribution 0.60%",
         "Spain reset to 0 EUR",
         "any-stake eligibility and probability proportional to total bet",
         "frozen prospective protocol",
-        "durable /science/winfall research endpoint in source"
+        "durable /science/winfall research endpoint in source",
+        "one-sided 95% conservative break-even policy implemented in v10"
       ],
       "blocking": [
-        "runtime v9 fingerprint verification",
+        "runtime v10 fingerprint verification",
         "exact Winfall live-pool binding",
         "verified jackpot-award attribution for reset candidates",
         "minimum 10 prospective paired candidates before any conditional fit",
-        "hazard model validation",
+        "constant-hazard/exponential model validation",
+        "fresh verified meter above the one-sided 95% upper break-even bound",
         "prospective execution validation"
       ],
       "thresholdNow": null,
@@ -103,6 +105,7 @@
     "highJackpotAmountIsNotPositiveEV": true,
     "mustBeWonByProximityIsNotPositiveEVByItself": true,
     "conditionalModelIsNotVerifiedThreshold": true,
+    "pointEstimateCannotEnableExecution": true,
     "noCandidateMayBypassExecutionContract": true,
     "realMoneyAllowed": false
   }
