@@ -1,5 +1,17 @@
 export const JOKERBET_STACK_CANDIDATES=[
   {
+    id:'jokerbet:codex-of-fortune',
+    game:'Codex of Fortune',provider:'NetEnt',minStakeEUR:0.20,maxStakeEUR:4,
+    pageRtp:0.98,providerProgressiveContribution:null,declaredRtpIncludingProviderContribution:null,
+    providerProgressive:null,operatorJackpotTemperature:null,operatorJackpotEligibilityVerified:false,
+    bonusBalanceAllowed:false,
+    sourceUrls:[
+      'https://www.jokerbet.es/tragaperras-slots/codex-of-fortune.html',
+      'https://www.jokerbet.es/tragaperras-slots/mayor-mas-mejor-rtp.html'
+    ],
+    notes:['Current JOKERBET high-RTP page ranks Codex of Fortune at 98.00% theoretical RTP.','The current game page explicitly says the game does not admit bonus balance, so it must not be selected for bonus-rollover optimisation.','The game page exposes the operator-jackpot temperature field but the public unauthenticated page does not resolve a temperature value; operator-jackpot eligibility/probability therefore remains unverified.']
+  },
+  {
     id:'jokerbet:cashybara-golf',
     game:'Cashybara Golf',provider:'Amusnet',minStakeEUR:0.10,maxStakeEUR:100,
     pageRtp:0.97,providerProgressiveContribution:null,declaredRtpIncludingProviderContribution:null,
@@ -70,13 +82,14 @@ export const JOKERBET_STACK_TERMS={
   },
   cashbackOne:{
     sourceUrl:'https://www.jokerbet.es/promociones/bono-cashback-semanal.html',
-    lossFraction:0.10,minWeeklyNetLossEUR:20,maxBonusEUR:500,rolloverX:1,maxConversionX:2,
+    lossFraction:0.10,minWeeklyNetLossEUR:20,maxBonusEUR:500,rolloverX:1,rolloverCasinoSlotsX:1,rolloverSportsX:1,maxConversionX:2,
     eligibleUsersOnly:true,lossContingent:true,fixedRtpIncrement:false
   },
   cashbackPlus:{
     sourceUrl:'https://www.jokerbet.es/promociones/bono-cashback-semanal.html',
-    lossFraction:0.30,minWeeklyNetLossEUR:20,maxBonusEUR:500,rolloverX:10,maxConversionX:2,
-    eligibleUsersOnly:true,lossContingent:true,fixedRtpIncrement:false
+    lossFraction:0.30,minWeeklyNetLossEUR:20,maxBonusEUR:500,rolloverX:50,rolloverCasinoSlotsX:50,rolloverSportsX:10,maxConversionX:2,
+    eligibleUsersOnly:true,lossContingent:true,fixedRtpIncrement:false,
+    note:'For the casino/slots stack, current terms require PLUS rollover x50. The x10 figure applies to sports PLUS and must not be reused for casino/slots.'
   },
   cashbackSelectionRule:'User must choose the applicable cashback route/category; ONE and PLUS are not additive to each other.'
 };
