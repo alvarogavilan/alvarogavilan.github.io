@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
-import { classifyTierTransition, summarizeTierResets } from './jpk-reset-classifier-core-v2.mjs';
+import { classifyTierTransition, resolveTierHazardReadiness, summarizeTierResets } from './jpk-reset-classifier-core-v2.mjs';
 
 const classify = (overrides = {}) => classifyTierTransition({
   tier: 'ROYAL',
@@ -67,6 +67,13 @@ const classify = (overrides = {}) => classifyTierTransition({
   assert.equal(s.anyTierHazardFitReady, true);
   assert.equal(s.hazardFitReady, false, '10 Royal resets must never make pooled JPK hazard ready');
   assert.equal(s.noCrossTierPooling, true);
+}
+
+{
+  const r = resolveTierHazardReadiness({ cleanSingleTierCandidates: 25, royal: 10, regal: 0, minimumCleanResetsForHazardFit: 10, hazardFitReady: true });
+  assert.equal(r.royalHazardFitReady, true);
+  assert.equal(r.regalHazardFitReady, false);
+  assert.equal(r.hazardFitReady, false, 'legacy pooled hazardFitReady must not override per-tier counts');
 }
 
 {
