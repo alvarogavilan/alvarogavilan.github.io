@@ -1,6 +1,6 @@
 {
-  "version": "winfall-durable-prospective-protocol-v1",
-  "generatedAt": "2026-08-24T07:55:00+02:00",
+  "version": "winfall-durable-prospective-protocol-v1.1-confidence",
+  "generatedAt": "2026-08-24T11:36:00+02:00",
   "operator": "botemania-es",
   "status": "RESEARCH_ONLY_NO_PLAY",
   "realMoneyAllowed": false,
@@ -8,7 +8,7 @@
     "game": "Winfall Wishes Jackpot",
     "url": "https://www.botemania.es/juegos/slots-online/winfall-wishes-jackpot",
     "baseRtp": 0.9485,
-    "jackpotContribution": 0.0060,
+    "jackpotContribution": 0.006,
     "resetEUR": 0,
     "anyBetEligible": true,
     "probabilityProportionalToTotalBet": true,
@@ -30,13 +30,14 @@
     "noRetuningAfterProspectiveOutcome": true
   },
   "durableBackend": {
-    "workerEntry": "loterias-ai/edge-backend/src/index-v9.mjs",
+    "workerEntry": "loterias-ai/edge-backend/src/index-v10.mjs",
     "endpoint": "/science/winfall",
     "sourceTable": "science_events",
     "candidateType": "RESET_OR_AWARD_CANDIDATE",
     "pairingRule": "same observed_at_ms, exact candidate keys, pre/post amounts within EUR0.01, timestamp after frozen protocol",
     "actionsDependencyRemovedForObservation": true,
-    "runtimeDeploymentVerifiedFromCurrentSession": false
+    "runtimeDeploymentVerifiedFromCurrentSession": false,
+    "expectedDeploymentFingerprint": "edge-sentinel-v10-winfall-confidence-20260824a"
   },
   "conditionalModel": {
     "enabledOnlyAfterTenProspectivePairedCandidates": true,
@@ -45,14 +46,23 @@
     "meanHitEstimator": "mean paired pre-drop amount",
     "conditionalKFormula": "jackpotContribution / meanHit",
     "conditionalBreakEvenFormula": "(1-baseRtp)/k",
+    "confidencePolicy": {
+      "confidenceLevel": 0.95,
+      "distributionAssumption": "paired pre-drop jackpot amounts are iid exponential if the candidate pair is the exact zero-reset Winfall pool, each paired drop is an actual jackpot award, and hazard per EUR is constant",
+      "twoSidedMeanInterval": "exact chi-square interval for an exponential mean",
+      "futureStatisticalPromotionRule": "a point estimate is never sufficient; any future statistical entry screen must use the one-sided 95% upper confidence bound for break-even",
+      "identityAndAwardAttributionStillRequired": true,
+      "executionAuthority": false
+    },
     "currentWinfallMeterMayPopulateModel": false,
     "reasonCurrentMeterBlocked": "Neither candidate key is verified as the exact live Winfall meter and a synchronized drop is not a verified jackpot award.",
     "economicPromotionAllowed": false
   },
   "whyThisMatters": [
-    "Spain-specific seed and contribution are already known exactly for Winfall Wishes Jackpot; the missing scientific variable is the exact live-pool binding and its hazard.",
+    "Spain-specific reset and contribution are known exactly for Winfall Wishes Jackpot; the missing scientific variables remain exact live-pool binding and hazard/award attribution.",
+    "Worker v10 prevents a favorable sample mean from being treated as a sufficient entry threshold by exposing exact exponential-model confidence bounds.",
+    "A future statistical screen must clear the one-sided 95% upper break-even bound, not merely the point estimate, and still cannot repair missing identity or award proof.",
     "The previous GitHub Actions prospective workflow currently fails before executing steps, so durable Cloudflare observation removes an operational dependency without relaxing the scientific protocol.",
-    "A synchronized pair reset is useful prospective evidence of coupling but cannot identify the triggering game or prove a jackpot award.",
     "Ten paired candidates only permit a conditional diagnostic. They do not satisfy identity, rules-fingerprint or prospective execution gates by themselves."
   ],
   "execution": {
@@ -74,6 +84,10 @@
     "pairedResetIsNotAwardProof": true,
     "minimumTenPairsBeforeConditionalFit": true,
     "constantHazardIsNotPublishedFact": true,
+    "exponentialHitMeterDistributionIsNotPublishedFact": true,
+    "pointEstimateCannotEnableExecution": true,
+    "oneSided95UpperBreakEvenRequiredForFutureStatisticalPromotion": true,
+    "confidenceIntervalCannotRepairIdentityOrAwardAttribution": true,
     "contributionIsNotHazard": true,
     "foreignSeedCannotTransferToSpain": true,
     "conditionalFitCannotEnableExecution": true,
