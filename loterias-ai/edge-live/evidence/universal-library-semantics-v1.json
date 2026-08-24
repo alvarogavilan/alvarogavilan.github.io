@@ -1,0 +1,71 @@
+{
+  "version": "edge-universal-library-semantics-v1",
+  "generatedAt": "2026-08-24T12:13:00+02:00",
+  "status": "ACTIVE_RESEARCH_LIBRARY_NO_PLAY",
+  "realMoneyAllowed": false,
+  "purpose": "Build an internally stored, normalized, provenance-preserving historical library for lottery draws, slot jackpots, jackpot cycles, awards, configurations and future domains so EDGE can query and test hypotheses without relying on ad-hoc web consultation.",
+  "backend": {
+    "worker": "loterias-ai/edge-backend/src/index-v13.mjs",
+    "storage": "Durable Object SQLite",
+    "endpoints": ["/library/summary", "/library/sources", "/library/search", "/library/record", "/library/import"],
+    "importSecurity": "Bearer EDGE_LIBRARY_ADMIN_TOKEN required; if no token is configured, public import is impossible.",
+    "partitionKeyExamples": [
+      "ES:LOTTERY:LA_PRIMITIVA:2026",
+      "ES:LOTTERY:EUROMILLONES:2026",
+      "ES:SLOT_JACKPOT:generic:some-meter:2026"
+    ]
+  },
+  "normalizedRecordFields": [
+    "recordUid", "domain", "recordType", "jurisdiction", "operator", "provider",
+    "gameOrDraw", "gameOrDrawId", "poolOrTier", "eventAt", "eventTimePrecision",
+    "currency", "amountValue", "numbers", "secondary", "metadata", "sourceId",
+    "sourceUrl", "sourceClass", "confidence", "sourceFingerprint", "archivePartition", "ingestedAt"
+  ],
+  "domains": {
+    "LOTTERY": ["DRAW_RESULT", "PRIZE_ALLOCATION", "JACKPOT_ADVERTISED", "RULE_CONFIGURATION"],
+    "SLOT_JACKPOT": ["OBSERVED_ATH", "RESET_OR_AWARD_CANDIDATE", "CYCLE_CLOSED_CANDIDATE", "VERIFIED_AWARD", "RULE_CONFIGURATION", "METER_SNAPSHOT"],
+    "FUTURE": ["PROMOTION", "VIDEO_POKER_PROGRESSIVE", "PERSISTENT_STATE", "ROULETTE", "OTHER_LEGAL_EDGE_MECHANISM"]
+  },
+  "timePrecision": {
+    "SECOND": "Exact or source-published timestamp to second resolution.",
+    "MINUTE": "Minute known but seconds not authoritative.",
+    "DATE_ONLY": "Official date known; no fabricated draw time is allowed.",
+    "UNKNOWN": "Temporal placement is incomplete and must remain explicit."
+  },
+  "provenanceClasses": {
+    "PRIMARY_OFFICIAL": "Official lottery/government/regulator source.",
+    "PRIMARY_OPERATOR": "Direct operator/manufacturer publication or feed.",
+    "INTERNAL_DIRECT_OBSERVATION": "EDGE direct telemetry persisted from the canonical public feed.",
+    "SECONDARY_REFERENCE": "External historical tracker, research paper or archive used only with explicit transfer guards."
+  },
+  "currentBootstrap": {
+    "spainPrimarySources": ["SELAE", "ONCE", "Botemania direct feed", "EDGE direct telemetry"],
+    "includedExamples": ["Euromillones", "La Primitiva", "Bonoloto", "Eurojackpot", "slot jackpot ATH/cycles/events"],
+    "scopeWarning": "This bootstrap starts the internal archive; it is not yet the complete historical universe. Coverage must be expanded by verified bulk backfill while preserving source and temporal precision."
+  },
+  "worldScaleDesign": {
+    "goal": "Largest auditable research library possible, not the largest pile of unverified rows.",
+    "requiredDimensions": ["country", "operator", "provider", "game", "pool", "tier", "configuration", "date/time", "currency", "stake", "combination", "award", "reset", "RTP", "contribution", "rules fingerprint", "source", "confidence"],
+    "shardingReady": true,
+    "reason": "archivePartition is mandatory so historical material can later be split across storage shards or object storage without changing the app query model."
+  },
+  "researchUse": [
+    "Exact reproducible backtests with frozen discovery/validation/holdout partitions.",
+    "Cycle and reset distribution analysis without hand-copying observations.",
+    "Lottery combination/frequency calculations using complete dated rows rather than aggregate summaries.",
+    "Configuration-change detection by comparing rules fingerprints across time.",
+    "Cross-operator and cross-market comparisons while preserving jurisdiction boundaries.",
+    "Mass hypothesis testing with explicit multiple-testing and out-of-sample controls."
+  ],
+  "hardGuards": {
+    "sourceProvenanceRequired": true,
+    "timePrecisionMustNotBeFabricated": true,
+    "candidateResetMustNotBeRelabeledAsVerifiedAward": true,
+    "foreignConfigurationMustNotFillSpainInputs": true,
+    "historicalPatternDoesNotProvePredictability": true,
+    "multipleTestingRequiresCorrectionAndHoldout": true,
+    "libraryRecordCannotEnableExecution": true,
+    "executionContractRemainsSoleGreenAuthority": true,
+    "realMoneyAllowed": false
+  }
+}
