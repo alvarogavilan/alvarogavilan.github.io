@@ -1,0 +1,53 @@
+{
+  "version": "edge-jackpot-timing-lab-semantics-v1",
+  "generatedAt": "2026-08-24T12:44:00+02:00",
+  "status": "RESEARCH_ONLY_NO_PLAY",
+  "realMoneyAllowed": false,
+  "endpoint": "/science/timing",
+  "timeZone": "Europe/Madrid",
+  "scope": "DIRECT_EDGE_OBSERVATIONS_ONLY",
+  "purpose": "Measure exact clock time and recurrence structure of every observed jackpot/reset candidate without assuming that elapsed time predicts the next independent RNG event.",
+  "perMeter": [
+    "candidateBoundaryCount",
+    "fullObservedCycleCount",
+    "verifiedAwardCount",
+    "firstCandidateAt",
+    "lastCandidateAt",
+    "elapsedSinceLastCandidateMs",
+    "elapsedPercentileAmongObservedFullCycles",
+    "mean/median/p10/p25/p75/p90 cycle duration",
+    "coefficientOfVariation",
+    "Madrid hour-of-day counts",
+    "Madrid weekday counts",
+    "current observed jackpot value"
+  ],
+  "screening": {
+    "minimumCyclesForLowDispersionScreen": 10,
+    "lowDispersionCvThreshold": 0.35,
+    "meaning": "Exploratory prioritization only. A low coefficient of variation can identify candidates worth investigating for timed/stateful mechanisms; it does not prove one."
+  },
+  "predictionPolicy": {
+    "nextEventPrediction": null,
+    "timingMechanismVerified": false,
+    "timingEdgeProven": false,
+    "requirementsBeforePrediction": [
+      "exact game/pool identity",
+      "verified award or reset semantics",
+      "sufficient prospective sample",
+      "exposure/turnover denominator when inferring hazard from clock time",
+      "explicit timed rule or reproducible out-of-sample timing dependence",
+      "frozen prospective validation"
+    ]
+  },
+  "hardGuards": {
+    "candidateBoundaryIsNotVerifiedAward": true,
+    "elapsedPercentileIsNotDueProbability": true,
+    "clockClusteringWithoutExposureIsNotHazard": true,
+    "rngHistoryDoesNotPredictNextIndependentOutcome": true,
+    "explicitTimedMechanismRequiresRuleVerification": true,
+    "prospectiveValidationRequiredBeforeTimingClaim": true,
+    "timingResearchCannotEnableRealMoney": true,
+    "executionContractRemainsSoleGreenAuthority": true,
+    "realMoneyAllowed": false
+  }
+}
