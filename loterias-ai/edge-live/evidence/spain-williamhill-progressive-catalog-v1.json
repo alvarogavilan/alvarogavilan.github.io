@@ -1,0 +1,91 @@
+{
+  "version": "spain-williamhill-progressive-catalog-v1",
+  "generatedAt": "2026-08-24T12:18:00+02:00",
+  "operator": "williamhill-es",
+  "jurisdiction": "Spain",
+  "status": "RESEARCH_ONLY_NO_PLAY",
+  "realMoneyAllowed": false,
+  "purpose": "Add a second major Spain-facing operator as an independent source of exact progressive mechanics, contribution rates, trigger conditions and seed/reset semantics.",
+  "titles": [
+    {
+      "game": "Streak of Luck",
+      "provider": "Playtech",
+      "source": "https://casino.williamhill.es/slots/streak-of-luck",
+      "progressiveTiers": 6,
+      "poolSegmentation": "one progressive jackpot per fixed bet-per-line value",
+      "seedFormula": "8750 × coin value",
+      "contributionPct": 1.40,
+      "trigger": "10 consecutive winning results in main game or qualifying Bonus Dice results; free-spin wins do not count",
+      "statePersistence": "consecutive-win counter is remembered separately for each bet-per-line setting when the player changes bet or exits and restored on return",
+      "losingSpinBehavior": "a non-winning spin resets the consecutive-win counter; after streaks of 4-9 it awards the corresponding Lucky Free Games benefit",
+      "concurrencyRule": "if multiple players are attempting the jackpot, first trigger gets current full jackpot; other simultaneous triggerers receive the initial amount",
+      "disconnectionRule": "unfinished round state is remembered and can be resumed without a new wager",
+      "researchPriority": "HIGH_STATEFUL_PROGRESSIVE_CANDIDATE"
+    },
+    {
+      "game": "Jackpot Bells",
+      "provider": null,
+      "source": "https://casino.williamhill.es/slots/jackpot-bells",
+      "contributionPct": 2.92,
+      "trigger": "5 Wild/bell symbols on an active winning payline",
+      "seedSemantics": "restarts from a guaranteed initial amount after a jackpot win; exact amount not recovered in current public text",
+      "poolScope": "contributions from casinos offering the game",
+      "researchPriority": "EXACT_SYMBOL_TRIGGER_CANDIDATE"
+    },
+    {
+      "game": "Land of Gold",
+      "provider": null,
+      "source": "https://casino.williamhill.es/slots/land-of-gold",
+      "contributionPct": 1.00,
+      "trigger": "3 Clover symbols accumulated in Golden Coins Bonus",
+      "seedSemantics": "part of contribution funds progressive value and a smaller part funds initial guaranteed amount; exact split/seed not recovered",
+      "poolScope": "common jackpot generated across casinos offering Land of Gold",
+      "researchPriority": "BONUS_TRIGGER_CANDIDATE"
+    },
+    {
+      "game": "Rulers of the World: Empire Treasures",
+      "provider": null,
+      "source": "https://casino.williamhill.es/slots/rulers-of-the-world-empire-treasures",
+      "contributionPct": 0.99,
+      "tiers": ["Mini","Minor","Major","Grand"],
+      "trigger": "jackpot feature activates randomly on any spin from participating Empire Treasures games; entry guarantees one tier",
+      "poolScope": "shared across games/casinos carrying Empire Treasures",
+      "researchPriority": "MULTI_TIER_RANDOM_TRIGGER_CONTROL"
+    },
+    {
+      "game": "Age of the Gods: King of Olympus",
+      "provider": "Playtech",
+      "source": "https://casino.williamhill.es/slots/aotg-king-of-olympus",
+      "contributionPct": 0.99,
+      "seedEUR": 0,
+      "tiers": ["Power","Extra Power","Super Power","Ultimate Power"],
+      "trigger": "jackpot game can activate randomly after any main-game spin; any bet eligible and chance scales proportionally with bet size; entry guarantees one tier",
+      "poolScope": "Age of the Gods network and described as sharing with Marvel Jackpot",
+      "researchPriority": "BET_PROPORTIONAL_MULTI_TIER_CONTROL"
+    },
+    {
+      "game": "Leprechaun's Luck",
+      "provider": null,
+      "source": "https://casino.williamhill.es/slots/leprechauns-luck",
+      "contributionPct": 1.59,
+      "trigger": "progressive can be won through either Wishing Well bonus gold at the bottom or lighting all seven Rainbow of Wealth colors",
+      "eligibility": "any spin of any bet can qualify when game conditions are met",
+      "poolScope": "accumulates across casinos offering the game",
+      "researchPriority": "DUAL_TRIGGER_PROGRESSIVE_CONTROL"
+    }
+  ],
+  "nationalResearchImplications": [
+    "William Hill Spain exposes exact contribution and trigger semantics for titles whose other public operator pages may be much less specific.",
+    "Cross-operator same-title corroboration can validate provider/game mechanics but cannot prove identical RTP configuration, jackpot denomination or pool identity without a configuration fingerprint.",
+    "Seed formulas and stateful counters make deterministic/state-machine progressives materially easier to model than mystery jackpots if event probabilities can be recovered.",
+    "A Spain-wide catalog should preserve operator, provider, game version, tier and market separately instead of collapsing by game name."
+  ],
+  "hardGuards": {
+    "operatorPageIsConfigurationSpecificEvidenceOnly": true,
+    "sameTitleAcrossOperatorsDoesNotProveSamePool": true,
+    "contributionDoesNotEqualHazard": true,
+    "statePersistenceDoesNotProveCrossPlayerInheritance": true,
+    "publicRulesDoNotProveCurrentLiveMeterIdentity": true,
+    "realMoneyAllowed": false
+  }
+}
