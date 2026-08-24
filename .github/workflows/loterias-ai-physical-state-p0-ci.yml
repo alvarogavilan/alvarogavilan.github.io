@@ -7,9 +7,11 @@ on:
       - 'loterias-ai/edge-live/research-breakthroughs-v1.mjs'
       - 'loterias-ai/edge-live/evidence/spain-igt-persistent-state-candidates-v1.json'
       - 'loterias-ai/edge-live/evidence/spain-igt-physical-variable-state-v1.json'
+      - 'loterias-ai/edge-live/evidence/spain-casino-barcelona-scarab-superstar-poker-v1.json'
       - 'loterias-ai/tests/edge-live-research-breakthroughs-v1.test.mjs'
       - 'loterias-ai/tests/edge-live-physical-breakthroughs-v1.test.mjs'
       - 'loterias-ai/tests/spain-igt-physical-variable-state-v1.test.mjs'
+      - 'loterias-ai/tests/spain-casino-barcelona-scarab-superstar-poker-v1.test.mjs'
       - '.github/workflows/loterias-ai-physical-state-p0-ci.yml'
   workflow_dispatch:
 
@@ -31,5 +33,7 @@ jobs:
         run: node loterias-ai/tests/edge-live-research-breakthroughs-v1.test.mjs
       - name: Physical evidence guards
         run: node loterias-ai/tests/spain-igt-physical-variable-state-v1.test.mjs
+      - name: Casino Barcelona Scarab chooser evidence
+        run: node loterias-ai/tests/spain-casino-barcelona-scarab-superstar-poker-v1.test.mjs
       - name: Physical breakthrough cards
         run: node loterias-ai/tests/edge-live-physical-breakthroughs-v1.test.mjs
