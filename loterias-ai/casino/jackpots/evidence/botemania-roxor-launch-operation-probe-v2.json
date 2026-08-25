@@ -1,6 +1,6 @@
 {
   "version": "botemania-roxor-launch-operation-probe-v2",
-  "generatedAt": "2026-08-21T13:03:45.159Z",
+  "generatedAt": "2026-08-25T07:01:24.530Z",
   "operator": "botemania-es",
   "target": {
     "game": "Ultimate Video Poker",
@@ -12,7 +12,7 @@
   "coverage": {
     "pageHttpStatus": 200,
     "pageBytes": 81873,
-    "pageSha256": "888d848181ad1141cb72ec4d2cb53c4cf2bd548b3e4f16e212a95ac0365461ff",
+    "pageSha256": "db911cadc8bfac86ae3bdad7d573dca4721ce849fa1695691590c1578850a70e",
     "scriptsDiscovered": 25,
     "scriptsFetchedSuccessfully": 25,
     "fetchFailureCount": 0,
@@ -51,39 +51,24 @@
       "graphqlRelevantBodyCount": 0
     },
     {
-      "url": "https://www.botemania.es/es/PostPage.a64eb9b0a09dfecc16f9.js",
+      "url": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
       "httpStatus": 200,
-      "bytes": 12952,
-      "sha256": "1f351ae150bcde2b9702e339041286c242d1e6c03e27739b7aad1a53aa7b8bb2",
-      "markerHitCount": 5,
+      "bytes": 28676,
+      "sha256": "d315fa1c2d2c3c6b01e6095667aea943718494c25731cade8301600ac11237b1",
+      "markerHitCount": 2,
       "markerHits": [
         {
-          "needle": "providerId",
-          "index": 4012,
-          "context": "globalContent,o=e.globalComponents,a=e.ConfigContxt,i=e.addGameLegalLine,l=e.resetGamesLegalLines,u=e.enableContentful,c=e.path,e=e.data,e=(null!=(e=null==e||null==(e=e.contentfulPageOrGame)?void 0:e.game)?e:{}).provider,s=u?[{slug:null==r?void 0:r.categoryId,name:(null==r?void 0:r.categoryName)||(null==r?void 0:r.categoryId)},{slug:null==r?void 0:r.subCategoryId,name:(null==r?void 0:r.subCategoryName)||(null==r?void 0:r.subCategoryId)}]:n.categories,p=\"\".concat(O.baseUrl).concat(O.homePageUrl).concat(r.categoryId,\"/\").concat(r.id),s={url:p,base:O.baseUrl,gameTitle:r.title,categories:s},f=null!=r&&r.indexed?(0,v.gameSchema)(r.title,r.categoryId,r.introduction):\"\",y=(0,v.contentfulSchema)(r.jsonld),y=u?y:[f,(0,v.default)(s)].filter(function(e){return e}),f=((0,g.useEffect)(function(){l(),r.providerId&&i(r.providerId)},[r.providerId]),null==n||null==(f=n.categories)||null==(s=f.find(function(e){return e.slug===(null==r?void 0:r.categoryId)}))?void 0:s.name),d=u?(-1!==(m=(s=(0,T.handleGameTemplate)(O.venture)).findIndex(function(e){return\"GameCarousel\"===e.type||\"GamesRow\"===e.type}))&&((d=(null==r?void 0:r.crossSellQuery)||(null==n?void 0:n.gameCrossSellQuery))?s[m].props.query=d:s.splice(m-1,2)),null!=r&&r.customRegistrationUrl&&(s=s.map(function(e){return\"CallToAction\"===e.type?A(A({},e),{},{props:A(A({},e.props),{},{href:null==r?void 0:r.customRegistrationUrl})}):e})),(0,j.default)(r.categoryId,r.categoryId,s)):(t=null==n||null==(t=n.templates)?void 0:t.find(function(e){return\"gameTemplate\"===(null==e?void 0:e.name)}),(0,j.default)(r.categoryId,f,t)),m=!!d.filter(function(e){return\"NavigationMenu\"===e.type||\"UnicornNavigationMenu\"===e.type}).length,b=r.categoryId,f=!b||null==n||null==(s=n.categories)?void 0:s.find(function(e){return e.slug===b});return g.default.createElement(h.default,{components:d,globalContent:n},g.default.createElement(I,{canonical:(0,C.absolutize)(r.canonical)||p,title:r.metaTitle,metaTags:[{name:\"description\",content:r.metaDescription||(0,C.getDefaultMetaDescription)(r.introduction)}],jsonld:y,headerLang:n.headerLang,currentPathname:c,indexed:r.indexed}),g.default.createElement(P,{venture:O.venture,gameCategory:f,customRegistrationUrl:null==r?void "
+          "needle": "contentfulGame",
+          "index": 19435,
+          "context": "-top:10px;padding:5px;min-height:52px;color:\",\";\"],function(e){return\"monopolycasino_es\"===e.venture&&\"#000000\"});n.StyledBackdrop=i,n.StyledCancelIconWrapper=s,n.StyledContentWrapper=c,n.StyledModalWindow=l,n.StyledSearchBarWrapper=r,n.StyledSearchInput=u,n.StyledSearchMessage=a},214:function(e,n,a){\"use strict\";Object.defineProperty(n,\"__esModule\",{value:!0});var t=a(531),a=a(565).gql(t.taggedTemplateLiteral([\"\\n  query loadSearchData($enableContentful: Boolean!) {\\n    globalComponents\\n\\n    games(published: true) @skip(if: $enableContentful) {\\n      id\\n      title\\n      link\\n      imageSlug\\n      categoryId\\n      subCategoryId\\n      order\\n      tags {\\n        value\\n      }\\n    }\\n\\n    contentfulGlobalSettings @include(if: $enableContentful) {\\n      searchText\\n    }\\n    contentfulGames @include(if: $enableContentful) {\\n      id\\n      title\\n      link\\n      imageSlug\\n      imageVariants\\n      categoryId\\n      subCategoryId\\n      order\\n      tags {\\n        value\\n      }\\n    }\\n  }\\n\"]));n.GET_SEARCH_DATA=a},245:function(e,n,a){\"use strict\";var d=a(531),p=a(0),t=a(5),f=a(276),b=a(194),y=a(56),g=a(277),m=a(532);function o(e){return e&&\"object\"==typeof e&&\"default\"in e?e:{default:e}}function i(e){function n(){u(!c)}var a=e.venture,t=(e=e.headerProps).rgLogo,o=e.logo,i=e.buttons,l=void 0===(l=e.showSearchIcon)||l,r=e.searchIcon,s=p.useState(!1),c=(s=d.slicedToArray(s,2))[0],u=s[1],r=(s=r||{}).name,s=s.transformBaseUrl;return x.default.createElement(b.StyledHeader,{venture:a,role:\"banner\"},c&&x.default.createElement(y,{onClose:n,cancellable:!0,venture:a,enableContentful:e.enableContentful}),x.default.createElement(h,d.extends({},t,{venture:a})),o.showLogo&&x.default.createElement(f,d.extends({venture:a},o)),x.default.createElement(\"div\",{style:{display:\"block\"},key:\"search-icon-container\"},l&&x.default.createElement(b.StyledSearchIcon,{venture:a,onClick:n,\"data-tracking\":m.sendEvent({category:\"Search\",label:\"Search Icon\",trackHoverEvent:!0})},r&&s?x.default.createElement(\"img\",{alt:r,src:s}):x.default.createElement(g,{venture:a}))),x.default.createElement(b.StyledToolbarContainer,{venture:a},x.default.createElement(v,{venture:a,buttons:i})))}var x=o(p)"
         },
         {
-          "needle": "providerId",
-          "index": 4028,
-          "context": "e.globalComponents,a=e.ConfigContxt,i=e.addGameLegalLine,l=e.resetGamesLegalLines,u=e.enableContentful,c=e.path,e=e.data,e=(null!=(e=null==e||null==(e=e.contentfulPageOrGame)?void 0:e.game)?e:{}).provider,s=u?[{slug:null==r?void 0:r.categoryId,name:(null==r?void 0:r.categoryName)||(null==r?void 0:r.categoryId)},{slug:null==r?void 0:r.subCategoryId,name:(null==r?void 0:r.subCategoryName)||(null==r?void 0:r.subCategoryId)}]:n.categories,p=\"\".concat(O.baseUrl).concat(O.homePageUrl).concat(r.categoryId,\"/\").concat(r.id),s={url:p,base:O.baseUrl,gameTitle:r.title,categories:s},f=null!=r&&r.indexed?(0,v.gameSchema)(r.title,r.categoryId,r.introduction):\"\",y=(0,v.contentfulSchema)(r.jsonld),y=u?y:[f,(0,v.default)(s)].filter(function(e){return e}),f=((0,g.useEffect)(function(){l(),r.providerId&&i(r.providerId)},[r.providerId]),null==n||null==(f=n.categories)||null==(s=f.find(function(e){return e.slug===(null==r?void 0:r.categoryId)}))?void 0:s.name),d=u?(-1!==(m=(s=(0,T.handleGameTemplate)(O.venture)).findIndex(function(e){return\"GameCarousel\"===e.type||\"GamesRow\"===e.type}))&&((d=(null==r?void 0:r.crossSellQuery)||(null==n?void 0:n.gameCrossSellQuery))?s[m].props.query=d:s.splice(m-1,2)),null!=r&&r.customRegistrationUrl&&(s=s.map(function(e){return\"CallToAction\"===e.type?A(A({},e),{},{props:A(A({},e.props),{},{href:null==r?void 0:r.customRegistrationUrl})}):e})),(0,j.default)(r.categoryId,r.categoryId,s)):(t=null==n||null==(t=n.templates)?void 0:t.find(function(e){return\"gameTemplate\"===(null==e?void 0:e.name)}),(0,j.default)(r.categoryId,f,t)),m=!!d.filter(function(e){return\"NavigationMenu\"===e.type||\"UnicornNavigationMenu\"===e.type}).length,b=r.categoryId,f=!b||null==n||null==(s=n.categories)?void 0:s.find(function(e){return e.slug===b});return g.default.createElement(h.default,{components:d,globalContent:n},g.default.createElement(I,{canonical:(0,C.absolutize)(r.canonical)||p,title:r.metaTitle,metaTags:[{name:\"description\",content:r.metaDescription||(0,C.getDefaultMetaDescription)(r.introduction)}],jsonld:y,headerLang:n.headerLang,currentPathname:c,indexed:r.indexed}),g.default.createElement(P,{venture:O.venture,gameCategory:f,customRegistrationUrl:null==r?void 0:r.customRegist"
-        },
-        {
-          "needle": "providerId",
-          "index": 4044,
-          "context": "ts,a=e.ConfigContxt,i=e.addGameLegalLine,l=e.resetGamesLegalLines,u=e.enableContentful,c=e.path,e=e.data,e=(null!=(e=null==e||null==(e=e.contentfulPageOrGame)?void 0:e.game)?e:{}).provider,s=u?[{slug:null==r?void 0:r.categoryId,name:(null==r?void 0:r.categoryName)||(null==r?void 0:r.categoryId)},{slug:null==r?void 0:r.subCategoryId,name:(null==r?void 0:r.subCategoryName)||(null==r?void 0:r.subCategoryId)}]:n.categories,p=\"\".concat(O.baseUrl).concat(O.homePageUrl).concat(r.categoryId,\"/\").concat(r.id),s={url:p,base:O.baseUrl,gameTitle:r.title,categories:s},f=null!=r&&r.indexed?(0,v.gameSchema)(r.title,r.categoryId,r.introduction):\"\",y=(0,v.contentfulSchema)(r.jsonld),y=u?y:[f,(0,v.default)(s)].filter(function(e){return e}),f=((0,g.useEffect)(function(){l(),r.providerId&&i(r.providerId)},[r.providerId]),null==n||null==(f=n.categories)||null==(s=f.find(function(e){return e.slug===(null==r?void 0:r.categoryId)}))?void 0:s.name),d=u?(-1!==(m=(s=(0,T.handleGameTemplate)(O.venture)).findIndex(function(e){return\"GameCarousel\"===e.type||\"GamesRow\"===e.type}))&&((d=(null==r?void 0:r.crossSellQuery)||(null==n?void 0:n.gameCrossSellQuery))?s[m].props.query=d:s.splice(m-1,2)),null!=r&&r.customRegistrationUrl&&(s=s.map(function(e){return\"CallToAction\"===e.type?A(A({},e),{},{props:A(A({},e.props),{},{href:null==r?void 0:r.customRegistrationUrl})}):e})),(0,j.default)(r.categoryId,r.categoryId,s)):(t=null==n||null==(t=n.templates)?void 0:t.find(function(e){return\"gameTemplate\"===(null==e?void 0:e.name)}),(0,j.default)(r.categoryId,f,t)),m=!!d.filter(function(e){return\"NavigationMenu\"===e.type||\"UnicornNavigationMenu\"===e.type}).length,b=r.categoryId,f=!b||null==n||null==(s=n.categories)?void 0:s.find(function(e){return e.slug===b});return g.default.createElement(h.default,{components:d,globalContent:n},g.default.createElement(I,{canonical:(0,C.absolutize)(r.canonical)||p,title:r.metaTitle,metaTags:[{name:\"description\",content:r.metaDescription||(0,C.getDefaultMetaDescription)(r.introduction)}],jsonld:y,headerLang:n.headerLang,currentPathname:c,indexed:r.indexed}),g.default.createElement(P,{venture:O.venture,gameCategory:f,customRegistrationUrl:null==r?void 0:r.customRegistrationUrl,global"
-        },
-        {
-          "needle": "pageOrGame",
-          "index": 3391,
-          "context": "uireSync:function e(t){var r=this.resolve(t);return n(r)},resolve:function e(){return 13}}),I=(0,r.default)({resolved:{},chunkName:function(){return\"albatross-common-components-dist-components-MetaTags\"},isReady:function(e){e=this.resolve(e);return!0===this.resolved[e]&&!!n.m[e]},importAsync:function(){return n.e(86).then(n.t.bind(null,20,7))},requireAsync:function(e){var t=this,r=this.resolve(e);return this.resolved[r]=!1,this.importAsync(e).then(function(e){return t.resolved[r]=!0,e})},requireSync:function e(t){var r=this.resolve(t);return n(r)},resolve:function e(){return 20}}),f=function(e){var t,r=e.game,n=e.globalContent,o=e.globalComponents,a=e.ConfigContxt,i=e.addGameLegalLine,l=e.resetGamesLegalLines,u=e.enableContentful,c=e.path,e=e.data,e=(null!=(e=null==e||null==(e=e.contentfulPageOrGame)?void 0:e.game)?e:{}).provider,s=u?[{slug:null==r?void 0:r.categoryId,name:(null==r?void 0:r.categoryName)||(null==r?void 0:r.categoryId)},{slug:null==r?void 0:r.subCategoryId,name:(null==r?void 0:r.subCategoryName)||(null==r?void 0:r.subCategoryId)}]:n.categories,p=\"\".concat(O.baseUrl).concat(O.homePageUrl).concat(r.categoryId,\"/\").concat(r.id),s={url:p,base:O.baseUrl,gameTitle:r.title,categories:s},f=null!=r&&r.indexed?(0,v.gameSchema)(r.title,r.categoryId,r.introduction):\"\",y=(0,v.contentfulSchema)(r.jsonld),y=u?y:[f,(0,v.default)(s)].filter(function(e){return e}),f=((0,g.useEffect)(function(){l(),r.providerId&&i(r.providerId)},[r.providerId]),null==n||null==(f=n.categories)||null==(s=f.find(function(e){return e.slug===(null==r?void 0:r.categoryId)}))?void 0:s.name),d=u?(-1!==(m=(s=(0,T.handleGameTemplate)(O.venture)).findIndex(function(e){return\"GameCarousel\"===e.type||\"GamesRow\"===e.type}))&&((d=(null==r?void 0:r.crossSellQuery)||(null==n?void 0:n.gameCrossSellQuery))?s[m].props.query=d:s.splice(m-1,2)),null!=r&&r.customRegistrationUrl&&(s=s.map(function(e){return\"CallToAction\"===e.type?A(A({},e),{},{props:A(A({},e.props),{},{href:null==r?void 0:r.customRegistrationUrl})}):e})),(0,j.default)(r.categoryId,r.categoryId,s)):(t=null==n||null==(t=n.templates)?void 0:t.find(function(e){return\"gameTemplate\"===(null==e?void 0:e.name)}),(0,j.default)(r.categoryId,f,t)),m=!!d.filte"
-        },
-        {
-          "needle": "gameFeatures",
-          "index": 10334,
-          "context": "to spread non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.\")}()}function o(e,t){(null==t||t>e.length)&&(t=e.length);for(var r=0,n=new Array(t);r<t;r++)n[r]=e[r];return n}Object.defineProperty(t,\"__esModule\",{value:!0});function a(e){var r=[];return e.forEach(function(e){0===r.length?r=n(e):e.forEach(function(t){var e=r.findIndex(function(e){return e.type===t.type});-1!==e?r[e].props=t.props:r=[].concat(n(r),[t])})}),r}var i=[{type:\"NavigationMenu\",props:null},{type:\"GameHero\",props:null},{type:\"GameHeroTickerOverlay\",props:null},{type:\"ZeroBanner\",props:{ctaButtonText:\"Join Now\"}},{type:\"Hypertext\",props:null},{type:\"NavigationBreadcrumb\",props:{showBreadcrumb:!(t.handleGameTemplate=void 0)}},{type:\"Introduction\",props:null},{type:\"GameFeatures\",props:null},{type:\"GameContent\",props:null}],l=[{type:\"CallToAction\",props:{text:\"Join Now\",href:\"/onboarding/register\"}}],u=[{type:\"SubTitle\",props:{title:\"More games we think you'll like\"}},{type:\"GameCarousel\",props:{listId:\"PopularGamesToTry\",query:{tags:[\"404\"]}}}],c=[{type:\"Spacer\",props:{size:\"35\"}},{type:\"SubTitle\",props:{title:\"More epic games worth playing\"}},{type:\"GameCarousel\",props:{listId:\"TopGames\",query:{tags:\"priority-1\",sort:\"added\",limit:5}}},{type:\"Spacer\",props:{size:\"35\"}},{type:\"Hypertext\",props:null}],s=[{type:\"ZeroBanner\",props:{ctaButtonText:\"REGÍSTRATE\"}},{type:\"CallToAction\",props:{text:\"REGÍSTRATE\",href:\"/register\"}}],p=[{type:\"CallToAction\",props:{text:\"Join Now\",href:\"https://on.${baseUrl}/onboarding/register\"}}],f=[{type:\"GameHero\",props:{enableStateModal:!0}},{type:\"ZeroBanner\",props:{ctaButtonText:\"Join Now\",enableStateModal:!0}},{type:\"CallToAction\",props:{text:\"Join Now\",href:\"https://play.ballybet.com/account/registration\"}}],y=[{type:\"CallToAction\",props:{text:\"Join Now\",href:\"https://play.ballybet.ca/account/registration\"}}],d=[{type:\"CallToAction\",props:{text:\"Join Now\",href:\"https://www.rainbowrichescasino.com/registration/account?chID=RRCSEO100FS50BINGO\"}}],m=[{type:\"CallToAction\",props:{text:\"Join Now\",href:\"https://play.monopolycasino.com/onboarding/register\"}}],b=[{type:\"CallToAction\",props:{text:\"Join Now\",href:\"https://play.mono"
+          "needle": "contentfulGame",
+          "index": 24959,
+          "context": "ture:r(o).default.string},e.exports=c},56:function(e,n,a){\"use strict\";var f=a(531),b=a(0),y=a(532),s=a(0),t=a(563),o=a(5),g=a(211),i=a(212),m=a(213),x=a(214),v=a(31);function l(e){return e&&\"object\"==typeof e&&\"default\"in e?e:{default:e}}function h(e){var n=e.venture,a=e.input,t=e.results,o=e.defaultResults,e=e.enableContentful;return\"\"!==a?0<t.length?k.default.createElement(i,{venture:n,results:t,enableContentful:e}):k.default.createElement(m.StyledSearchMessage,{\"data-testid\":\"no-result-message\",venture:n},\"No results found.\"):k.default.createElement(i,{venture:n,results:o,enableContentful:e})}function c(e){var n=e.venture,a=e.open,t=e.onClose,e=e.enableContentful,o=(i=v.useQuery(x.GET_SEARCH_DATA,{variables:{enableContentful:e}})).data,i=i.loading,l=[],o=(l=e?null!=(s=null==o?void 0:o.contentfulGames)?s:[]:null!=(s=null==o||null==(s=o.games)?void 0:s.filter(function(e){return\"blog\"!==e.categoryId}))?s:[],e?null==o||null==(s=o.contentfulGlobalSettings)?void 0:s.searchText:null==o||null==(s=o.globalComponents)||null==(s=s.components)||null==(s=s.SearchBar)?void 0:s.defaultSearchMessage),r=b.useRef(),s=b.useState(\"\"),c=(s=f.slicedToArray(s,2))[0],u=s[1],s=b.useState([]),d=(s=f.slicedToArray(s,2))[0],p=s[1],s=w.default.filter(\"\",l.filter(function(e){return null==(e=e.tags)?void 0:e.find(function(e){return\"featured\"===e.value})}).sort(function(e,n){return e.order-n.order}),{extract:function(e){return e.id}});return k.default.createElement(m.StyledBackdrop,{onClick:function(e){e.target===r.current&&t()},ref:r,open:a,\"data-tracking\":y.sendEvent({category:\"Search\",label:\"Search Overlay\",action:\"Dismiss\"})},k.default.createElement(m.StyledModalWindow,{open:a},k.default.createElement(m.StyledContentWrapper,null,k.default.createElement(m.StyledSearchBarWrapper,null,k.default.createElement(m.StyledSearchInput,{\"data-testid\":\"search-input\",type:\"text\",placeholder:null!=(a=S[n])?a:\"type here...\",value:c,onChange:function(e){var e=e.target.value,n=w.default.filter(e.replace(/ /g,\"\"),l,{extract:function(e){return e.id}});p(n),u(e)},autoFocus:!0}),k.default.createElement(m.StyledCancelIconWrapper,{\"data-testid\":\"search-close\",\"data-tracking\":y.sendEvent({category:\"Search\",label:\"Search Ov"
         }
       ],
-      "graphqlRelevantBodyCount": 0
+      "graphqlRelevantBodyCount": 1
     },
     {
       "url": "https://www.botemania.es/es/client.6ceb4c121205f4b30b65.js",
@@ -220,44 +205,6 @@
       "graphqlRelevantBodyCount": 0
     },
     {
-      "url": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-BlueprintJackpots~albatross-common-components-di~2cd87592.7691cc781c870c9ae157.js",
-      "httpStatus": 200,
-      "bytes": 36410,
-      "sha256": "0e30195ca06e41c46ad8f20c07a55d2773554d9b69fb81fa60e62ad627adebdc",
-      "markerHitCount": 0,
-      "markerHits": [],
-      "graphqlRelevantBodyCount": 0
-    },
-    {
-      "url": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
-      "httpStatus": 200,
-      "bytes": 19454,
-      "sha256": "4bd6d5476b461426cdfbe729a719ca99234a87a336ef6063149c6eb630e9d8ff",
-      "markerHitCount": 0,
-      "markerHits": [],
-      "graphqlRelevantBodyCount": 0
-    },
-    {
-      "url": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-      "httpStatus": 200,
-      "bytes": 28676,
-      "sha256": "d315fa1c2d2c3c6b01e6095667aea943718494c25731cade8301600ac11237b1",
-      "markerHitCount": 2,
-      "markerHits": [
-        {
-          "needle": "contentfulGame",
-          "index": 19435,
-          "context": "-top:10px;padding:5px;min-height:52px;color:\",\";\"],function(e){return\"monopolycasino_es\"===e.venture&&\"#000000\"});n.StyledBackdrop=i,n.StyledCancelIconWrapper=s,n.StyledContentWrapper=c,n.StyledModalWindow=l,n.StyledSearchBarWrapper=r,n.StyledSearchInput=u,n.StyledSearchMessage=a},214:function(e,n,a){\"use strict\";Object.defineProperty(n,\"__esModule\",{value:!0});var t=a(531),a=a(565).gql(t.taggedTemplateLiteral([\"\\n  query loadSearchData($enableContentful: Boolean!) {\\n    globalComponents\\n\\n    games(published: true) @skip(if: $enableContentful) {\\n      id\\n      title\\n      link\\n      imageSlug\\n      categoryId\\n      subCategoryId\\n      order\\n      tags {\\n        value\\n      }\\n    }\\n\\n    contentfulGlobalSettings @include(if: $enableContentful) {\\n      searchText\\n    }\\n    contentfulGames @include(if: $enableContentful) {\\n      id\\n      title\\n      link\\n      imageSlug\\n      imageVariants\\n      categoryId\\n      subCategoryId\\n      order\\n      tags {\\n        value\\n      }\\n    }\\n  }\\n\"]));n.GET_SEARCH_DATA=a},245:function(e,n,a){\"use strict\";var d=a(531),p=a(0),t=a(5),f=a(276),b=a(194),y=a(56),g=a(277),m=a(532);function o(e){return e&&\"object\"==typeof e&&\"default\"in e?e:{default:e}}function i(e){function n(){u(!c)}var a=e.venture,t=(e=e.headerProps).rgLogo,o=e.logo,i=e.buttons,l=void 0===(l=e.showSearchIcon)||l,r=e.searchIcon,s=p.useState(!1),c=(s=d.slicedToArray(s,2))[0],u=s[1],r=(s=r||{}).name,s=s.transformBaseUrl;return x.default.createElement(b.StyledHeader,{venture:a,role:\"banner\"},c&&x.default.createElement(y,{onClose:n,cancellable:!0,venture:a,enableContentful:e.enableContentful}),x.default.createElement(h,d.extends({},t,{venture:a})),o.showLogo&&x.default.createElement(f,d.extends({venture:a},o)),x.default.createElement(\"div\",{style:{display:\"block\"},key:\"search-icon-container\"},l&&x.default.createElement(b.StyledSearchIcon,{venture:a,onClick:n,\"data-tracking\":m.sendEvent({category:\"Search\",label:\"Search Icon\",trackHoverEvent:!0})},r&&s?x.default.createElement(\"img\",{alt:r,src:s}):x.default.createElement(g,{venture:a}))),x.default.createElement(b.StyledToolbarContainer,{venture:a},x.default.createElement(v,{venture:a,buttons:i})))}var x=o(p)"
-        },
-        {
-          "needle": "contentfulGame",
-          "index": 24959,
-          "context": "ture:r(o).default.string},e.exports=c},56:function(e,n,a){\"use strict\";var f=a(531),b=a(0),y=a(532),s=a(0),t=a(563),o=a(5),g=a(211),i=a(212),m=a(213),x=a(214),v=a(31);function l(e){return e&&\"object\"==typeof e&&\"default\"in e?e:{default:e}}function h(e){var n=e.venture,a=e.input,t=e.results,o=e.defaultResults,e=e.enableContentful;return\"\"!==a?0<t.length?k.default.createElement(i,{venture:n,results:t,enableContentful:e}):k.default.createElement(m.StyledSearchMessage,{\"data-testid\":\"no-result-message\",venture:n},\"No results found.\"):k.default.createElement(i,{venture:n,results:o,enableContentful:e})}function c(e){var n=e.venture,a=e.open,t=e.onClose,e=e.enableContentful,o=(i=v.useQuery(x.GET_SEARCH_DATA,{variables:{enableContentful:e}})).data,i=i.loading,l=[],o=(l=e?null!=(s=null==o?void 0:o.contentfulGames)?s:[]:null!=(s=null==o||null==(s=o.games)?void 0:s.filter(function(e){return\"blog\"!==e.categoryId}))?s:[],e?null==o||null==(s=o.contentfulGlobalSettings)?void 0:s.searchText:null==o||null==(s=o.globalComponents)||null==(s=s.components)||null==(s=s.SearchBar)?void 0:s.defaultSearchMessage),r=b.useRef(),s=b.useState(\"\"),c=(s=f.slicedToArray(s,2))[0],u=s[1],s=b.useState([]),d=(s=f.slicedToArray(s,2))[0],p=s[1],s=w.default.filter(\"\",l.filter(function(e){return null==(e=e.tags)?void 0:e.find(function(e){return\"featured\"===e.value})}).sort(function(e,n){return e.order-n.order}),{extract:function(e){return e.id}});return k.default.createElement(m.StyledBackdrop,{onClick:function(e){e.target===r.current&&t()},ref:r,open:a,\"data-tracking\":y.sendEvent({category:\"Search\",label:\"Search Overlay\",action:\"Dismiss\"})},k.default.createElement(m.StyledModalWindow,{open:a},k.default.createElement(m.StyledContentWrapper,null,k.default.createElement(m.StyledSearchBarWrapper,null,k.default.createElement(m.StyledSearchInput,{\"data-testid\":\"search-input\",type:\"text\",placeholder:null!=(a=S[n])?a:\"type here...\",value:c,onChange:function(e){var e=e.target.value,n=w.default.filter(e.replace(/ /g,\"\"),l,{extract:function(e){return e.id}});p(n),u(e)},autoFocus:!0}),k.default.createElement(m.StyledCancelIconWrapper,{\"data-testid\":\"search-close\",\"data-tracking\":y.sendEvent({category:\"Search\",label:\"Search Ov"
-        }
-      ],
-      "graphqlRelevantBodyCount": 1
-    },
-    {
       "url": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~dd9005c3.a4dd069942aca88b297d.js",
       "httpStatus": 200,
       "bytes": 21687,
@@ -267,19 +214,10 @@
       "graphqlRelevantBodyCount": 0
     },
     {
-      "url": "https://www.botemania.es/es/albatross-common-components-dist-components-GameHero.f1ecc65aece023c25be2.js",
+      "url": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-BlueprintJackpots~albatross-common-components-di~2cd87592.7691cc781c870c9ae157.js",
       "httpStatus": 200,
-      "bytes": 26023,
-      "sha256": "5f51881e9ce54d2cce22027d1f641a1889c569fc96910e0329ee4ea9085832e1",
-      "markerHitCount": 0,
-      "markerHits": [],
-      "graphqlRelevantBodyCount": 0
-    },
-    {
-      "url": "https://www.botemania.es/es/albatross-common-components-dist-components-UnicornNavigationMenu.e7411c14add5b5bb8dd5.js",
-      "httpStatus": 200,
-      "bytes": 16853,
-      "sha256": "18c54edc1de9d7d000a98aeccd7141446f7f2103eea30145ab1bb564e5526b97",
+      "bytes": 36410,
+      "sha256": "0e30195ca06e41c46ad8f20c07a55d2773554d9b69fb81fa60e62ad627adebdc",
       "markerHitCount": 0,
       "markerHits": [],
       "graphqlRelevantBodyCount": 0
@@ -294,28 +232,10 @@
       "graphqlRelevantBodyCount": 0
     },
     {
-      "url": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-GameHeroTickerOverlay.41c6976252983820f3fb.js",
+      "url": "https://www.botemania.es/es/albatross-common-components-dist-components-UnicornNavigationMenu.e7411c14add5b5bb8dd5.js",
       "httpStatus": 200,
-      "bytes": 18500,
-      "sha256": "16582f830177693f691a26f3e1ab5f551b56ccbba6bbfe9d168faddc48214210",
-      "markerHitCount": 0,
-      "markerHits": [],
-      "graphqlRelevantBodyCount": 0
-    },
-    {
-      "url": "https://www.botemania.es/es/albatross-common-components-dist-components-Hypertext.db113dcb4a189c22e18f.js",
-      "httpStatus": 200,
-      "bytes": 17493,
-      "sha256": "c826812b99bcfbc23866c50151d1dfe4acb7ed2bc76ecbb6eb42ea59fd612232",
-      "markerHitCount": 0,
-      "markerHits": [],
-      "graphqlRelevantBodyCount": 0
-    },
-    {
-      "url": "https://www.botemania.es/es/albatross-common-components-dist-components-ZeroBanner.063e5bedbc48fe6d73bb.js",
-      "httpStatus": 200,
-      "bytes": 29591,
-      "sha256": "f6f1906eef022b154e58819885d46c2ede35a09ec8ef2870f146b9c8287cb407",
+      "bytes": 16853,
+      "sha256": "18c54edc1de9d7d000a98aeccd7141446f7f2103eea30145ab1bb564e5526b97",
       "markerHitCount": 0,
       "markerHits": [],
       "graphqlRelevantBodyCount": 0
@@ -330,6 +250,24 @@
       "graphqlRelevantBodyCount": 0
     },
     {
+      "url": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
+      "httpStatus": 200,
+      "bytes": 19454,
+      "sha256": "4bd6d5476b461426cdfbe729a719ca99234a87a336ef6063149c6eb630e9d8ff",
+      "markerHitCount": 0,
+      "markerHits": [],
+      "graphqlRelevantBodyCount": 0
+    },
+    {
+      "url": "https://www.botemania.es/es/albatross-common-components-dist-components-Hypertext.db113dcb4a189c22e18f.js",
+      "httpStatus": 200,
+      "bytes": 17493,
+      "sha256": "c826812b99bcfbc23866c50151d1dfe4acb7ed2bc76ecbb6eb42ea59fd612232",
+      "markerHitCount": 0,
+      "markerHits": [],
+      "graphqlRelevantBodyCount": 0
+    },
+    {
       "url": "https://www.botemania.es/es/albatross-common-components-dist-components-NavigationBreadcrumb.79ed57db143b70efbbab.js",
       "httpStatus": 200,
       "bytes": 18766,
@@ -339,10 +277,99 @@
       "graphqlRelevantBodyCount": 0
     },
     {
-      "url": "https://www.botemania.es/es/albatross-common-components-dist-components-Introduction.35ca0871d52b076a14f0.js",
+      "url": "https://www.botemania.es/es/PostPage.a64eb9b0a09dfecc16f9.js",
       "httpStatus": 200,
-      "bytes": 20395,
-      "sha256": "9e8fe3e650572928be28465120bb4023e7da38dbaa59148c5a3313a58ed0f396",
+      "bytes": 12952,
+      "sha256": "1f351ae150bcde2b9702e339041286c242d1e6c03e27739b7aad1a53aa7b8bb2",
+      "markerHitCount": 5,
+      "markerHits": [
+        {
+          "needle": "providerId",
+          "index": 4012,
+          "context": "globalContent,o=e.globalComponents,a=e.ConfigContxt,i=e.addGameLegalLine,l=e.resetGamesLegalLines,u=e.enableContentful,c=e.path,e=e.data,e=(null!=(e=null==e||null==(e=e.contentfulPageOrGame)?void 0:e.game)?e:{}).provider,s=u?[{slug:null==r?void 0:r.categoryId,name:(null==r?void 0:r.categoryName)||(null==r?void 0:r.categoryId)},{slug:null==r?void 0:r.subCategoryId,name:(null==r?void 0:r.subCategoryName)||(null==r?void 0:r.subCategoryId)}]:n.categories,p=\"\".concat(O.baseUrl).concat(O.homePageUrl).concat(r.categoryId,\"/\").concat(r.id),s={url:p,base:O.baseUrl,gameTitle:r.title,categories:s},f=null!=r&&r.indexed?(0,v.gameSchema)(r.title,r.categoryId,r.introduction):\"\",y=(0,v.contentfulSchema)(r.jsonld),y=u?y:[f,(0,v.default)(s)].filter(function(e){return e}),f=((0,g.useEffect)(function(){l(),r.providerId&&i(r.providerId)},[r.providerId]),null==n||null==(f=n.categories)||null==(s=f.find(function(e){return e.slug===(null==r?void 0:r.categoryId)}))?void 0:s.name),d=u?(-1!==(m=(s=(0,T.handleGameTemplate)(O.venture)).findIndex(function(e){return\"GameCarousel\"===e.type||\"GamesRow\"===e.type}))&&((d=(null==r?void 0:r.crossSellQuery)||(null==n?void 0:n.gameCrossSellQuery))?s[m].props.query=d:s.splice(m-1,2)),null!=r&&r.customRegistrationUrl&&(s=s.map(function(e){return\"CallToAction\"===e.type?A(A({},e),{},{props:A(A({},e.props),{},{href:null==r?void 0:r.customRegistrationUrl})}):e})),(0,j.default)(r.categoryId,r.categoryId,s)):(t=null==n||null==(t=n.templates)?void 0:t.find(function(e){return\"gameTemplate\"===(null==e?void 0:e.name)}),(0,j.default)(r.categoryId,f,t)),m=!!d.filter(function(e){return\"NavigationMenu\"===e.type||\"UnicornNavigationMenu\"===e.type}).length,b=r.categoryId,f=!b||null==n||null==(s=n.categories)?void 0:s.find(function(e){return e.slug===b});return g.default.createElement(h.default,{components:d,globalContent:n},g.default.createElement(I,{canonical:(0,C.absolutize)(r.canonical)||p,title:r.metaTitle,metaTags:[{name:\"description\",content:r.metaDescription||(0,C.getDefaultMetaDescription)(r.introduction)}],jsonld:y,headerLang:n.headerLang,currentPathname:c,indexed:r.indexed}),g.default.createElement(P,{venture:O.venture,gameCategory:f,customRegistrationUrl:null==r?void "
+        },
+        {
+          "needle": "providerId",
+          "index": 4028,
+          "context": "e.globalComponents,a=e.ConfigContxt,i=e.addGameLegalLine,l=e.resetGamesLegalLines,u=e.enableContentful,c=e.path,e=e.data,e=(null!=(e=null==e||null==(e=e.contentfulPageOrGame)?void 0:e.game)?e:{}).provider,s=u?[{slug:null==r?void 0:r.categoryId,name:(null==r?void 0:r.categoryName)||(null==r?void 0:r.categoryId)},{slug:null==r?void 0:r.subCategoryId,name:(null==r?void 0:r.subCategoryName)||(null==r?void 0:r.subCategoryId)}]:n.categories,p=\"\".concat(O.baseUrl).concat(O.homePageUrl).concat(r.categoryId,\"/\").concat(r.id),s={url:p,base:O.baseUrl,gameTitle:r.title,categories:s},f=null!=r&&r.indexed?(0,v.gameSchema)(r.title,r.categoryId,r.introduction):\"\",y=(0,v.contentfulSchema)(r.jsonld),y=u?y:[f,(0,v.default)(s)].filter(function(e){return e}),f=((0,g.useEffect)(function(){l(),r.providerId&&i(r.providerId)},[r.providerId]),null==n||null==(f=n.categories)||null==(s=f.find(function(e){return e.slug===(null==r?void 0:r.categoryId)}))?void 0:s.name),d=u?(-1!==(m=(s=(0,T.handleGameTemplate)(O.venture)).findIndex(function(e){return\"GameCarousel\"===e.type||\"GamesRow\"===e.type}))&&((d=(null==r?void 0:r.crossSellQuery)||(null==n?void 0:n.gameCrossSellQuery))?s[m].props.query=d:s.splice(m-1,2)),null!=r&&r.customRegistrationUrl&&(s=s.map(function(e){return\"CallToAction\"===e.type?A(A({},e),{},{props:A(A({},e.props),{},{href:null==r?void 0:r.customRegistrationUrl})}):e})),(0,j.default)(r.categoryId,r.categoryId,s)):(t=null==n||null==(t=n.templates)?void 0:t.find(function(e){return\"gameTemplate\"===(null==e?void 0:e.name)}),(0,j.default)(r.categoryId,f,t)),m=!!d.filter(function(e){return\"NavigationMenu\"===e.type||\"UnicornNavigationMenu\"===e.type}).length,b=r.categoryId,f=!b||null==n||null==(s=n.categories)?void 0:s.find(function(e){return e.slug===b});return g.default.createElement(h.default,{components:d,globalContent:n},g.default.createElement(I,{canonical:(0,C.absolutize)(r.canonical)||p,title:r.metaTitle,metaTags:[{name:\"description\",content:r.metaDescription||(0,C.getDefaultMetaDescription)(r.introduction)}],jsonld:y,headerLang:n.headerLang,currentPathname:c,indexed:r.indexed}),g.default.createElement(P,{venture:O.venture,gameCategory:f,customRegistrationUrl:null==r?void 0:r.customRegist"
+        },
+        {
+          "needle": "providerId",
+          "index": 4044,
+          "context": "ts,a=e.ConfigContxt,i=e.addGameLegalLine,l=e.resetGamesLegalLines,u=e.enableContentful,c=e.path,e=e.data,e=(null!=(e=null==e||null==(e=e.contentfulPageOrGame)?void 0:e.game)?e:{}).provider,s=u?[{slug:null==r?void 0:r.categoryId,name:(null==r?void 0:r.categoryName)||(null==r?void 0:r.categoryId)},{slug:null==r?void 0:r.subCategoryId,name:(null==r?void 0:r.subCategoryName)||(null==r?void 0:r.subCategoryId)}]:n.categories,p=\"\".concat(O.baseUrl).concat(O.homePageUrl).concat(r.categoryId,\"/\").concat(r.id),s={url:p,base:O.baseUrl,gameTitle:r.title,categories:s},f=null!=r&&r.indexed?(0,v.gameSchema)(r.title,r.categoryId,r.introduction):\"\",y=(0,v.contentfulSchema)(r.jsonld),y=u?y:[f,(0,v.default)(s)].filter(function(e){return e}),f=((0,g.useEffect)(function(){l(),r.providerId&&i(r.providerId)},[r.providerId]),null==n||null==(f=n.categories)||null==(s=f.find(function(e){return e.slug===(null==r?void 0:r.categoryId)}))?void 0:s.name),d=u?(-1!==(m=(s=(0,T.handleGameTemplate)(O.venture)).findIndex(function(e){return\"GameCarousel\"===e.type||\"GamesRow\"===e.type}))&&((d=(null==r?void 0:r.crossSellQuery)||(null==n?void 0:n.gameCrossSellQuery))?s[m].props.query=d:s.splice(m-1,2)),null!=r&&r.customRegistrationUrl&&(s=s.map(function(e){return\"CallToAction\"===e.type?A(A({},e),{},{props:A(A({},e.props),{},{href:null==r?void 0:r.customRegistrationUrl})}):e})),(0,j.default)(r.categoryId,r.categoryId,s)):(t=null==n||null==(t=n.templates)?void 0:t.find(function(e){return\"gameTemplate\"===(null==e?void 0:e.name)}),(0,j.default)(r.categoryId,f,t)),m=!!d.filter(function(e){return\"NavigationMenu\"===e.type||\"UnicornNavigationMenu\"===e.type}).length,b=r.categoryId,f=!b||null==n||null==(s=n.categories)?void 0:s.find(function(e){return e.slug===b});return g.default.createElement(h.default,{components:d,globalContent:n},g.default.createElement(I,{canonical:(0,C.absolutize)(r.canonical)||p,title:r.metaTitle,metaTags:[{name:\"description\",content:r.metaDescription||(0,C.getDefaultMetaDescription)(r.introduction)}],jsonld:y,headerLang:n.headerLang,currentPathname:c,indexed:r.indexed}),g.default.createElement(P,{venture:O.venture,gameCategory:f,customRegistrationUrl:null==r?void 0:r.customRegistrationUrl,global"
+        },
+        {
+          "needle": "pageOrGame",
+          "index": 3391,
+          "context": "uireSync:function e(t){var r=this.resolve(t);return n(r)},resolve:function e(){return 13}}),I=(0,r.default)({resolved:{},chunkName:function(){return\"albatross-common-components-dist-components-MetaTags\"},isReady:function(e){e=this.resolve(e);return!0===this.resolved[e]&&!!n.m[e]},importAsync:function(){return n.e(86).then(n.t.bind(null,20,7))},requireAsync:function(e){var t=this,r=this.resolve(e);return this.resolved[r]=!1,this.importAsync(e).then(function(e){return t.resolved[r]=!0,e})},requireSync:function e(t){var r=this.resolve(t);return n(r)},resolve:function e(){return 20}}),f=function(e){var t,r=e.game,n=e.globalContent,o=e.globalComponents,a=e.ConfigContxt,i=e.addGameLegalLine,l=e.resetGamesLegalLines,u=e.enableContentful,c=e.path,e=e.data,e=(null!=(e=null==e||null==(e=e.contentfulPageOrGame)?void 0:e.game)?e:{}).provider,s=u?[{slug:null==r?void 0:r.categoryId,name:(null==r?void 0:r.categoryName)||(null==r?void 0:r.categoryId)},{slug:null==r?void 0:r.subCategoryId,name:(null==r?void 0:r.subCategoryName)||(null==r?void 0:r.subCategoryId)}]:n.categories,p=\"\".concat(O.baseUrl).concat(O.homePageUrl).concat(r.categoryId,\"/\").concat(r.id),s={url:p,base:O.baseUrl,gameTitle:r.title,categories:s},f=null!=r&&r.indexed?(0,v.gameSchema)(r.title,r.categoryId,r.introduction):\"\",y=(0,v.contentfulSchema)(r.jsonld),y=u?y:[f,(0,v.default)(s)].filter(function(e){return e}),f=((0,g.useEffect)(function(){l(),r.providerId&&i(r.providerId)},[r.providerId]),null==n||null==(f=n.categories)||null==(s=f.find(function(e){return e.slug===(null==r?void 0:r.categoryId)}))?void 0:s.name),d=u?(-1!==(m=(s=(0,T.handleGameTemplate)(O.venture)).findIndex(function(e){return\"GameCarousel\"===e.type||\"GamesRow\"===e.type}))&&((d=(null==r?void 0:r.crossSellQuery)||(null==n?void 0:n.gameCrossSellQuery))?s[m].props.query=d:s.splice(m-1,2)),null!=r&&r.customRegistrationUrl&&(s=s.map(function(e){return\"CallToAction\"===e.type?A(A({},e),{},{props:A(A({},e.props),{},{href:null==r?void 0:r.customRegistrationUrl})}):e})),(0,j.default)(r.categoryId,r.categoryId,s)):(t=null==n||null==(t=n.templates)?void 0:t.find(function(e){return\"gameTemplate\"===(null==e?void 0:e.name)}),(0,j.default)(r.categoryId,f,t)),m=!!d.filte"
+        },
+        {
+          "needle": "gameFeatures",
+          "index": 10334,
+          "context": "to spread non-iterable instance.\\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.\")}()}function o(e,t){(null==t||t>e.length)&&(t=e.length);for(var r=0,n=new Array(t);r<t;r++)n[r]=e[r];return n}Object.defineProperty(t,\"__esModule\",{value:!0});function a(e){var r=[];return e.forEach(function(e){0===r.length?r=n(e):e.forEach(function(t){var e=r.findIndex(function(e){return e.type===t.type});-1!==e?r[e].props=t.props:r=[].concat(n(r),[t])})}),r}var i=[{type:\"NavigationMenu\",props:null},{type:\"GameHero\",props:null},{type:\"GameHeroTickerOverlay\",props:null},{type:\"ZeroBanner\",props:{ctaButtonText:\"Join Now\"}},{type:\"Hypertext\",props:null},{type:\"NavigationBreadcrumb\",props:{showBreadcrumb:!(t.handleGameTemplate=void 0)}},{type:\"Introduction\",props:null},{type:\"GameFeatures\",props:null},{type:\"GameContent\",props:null}],l=[{type:\"CallToAction\",props:{text:\"Join Now\",href:\"/onboarding/register\"}}],u=[{type:\"SubTitle\",props:{title:\"More games we think you'll like\"}},{type:\"GameCarousel\",props:{listId:\"PopularGamesToTry\",query:{tags:[\"404\"]}}}],c=[{type:\"Spacer\",props:{size:\"35\"}},{type:\"SubTitle\",props:{title:\"More epic games worth playing\"}},{type:\"GameCarousel\",props:{listId:\"TopGames\",query:{tags:\"priority-1\",sort:\"added\",limit:5}}},{type:\"Spacer\",props:{size:\"35\"}},{type:\"Hypertext\",props:null}],s=[{type:\"ZeroBanner\",props:{ctaButtonText:\"REGÍSTRATE\"}},{type:\"CallToAction\",props:{text:\"REGÍSTRATE\",href:\"/register\"}}],p=[{type:\"CallToAction\",props:{text:\"Join Now\",href:\"https://on.${baseUrl}/onboarding/register\"}}],f=[{type:\"GameHero\",props:{enableStateModal:!0}},{type:\"ZeroBanner\",props:{ctaButtonText:\"Join Now\",enableStateModal:!0}},{type:\"CallToAction\",props:{text:\"Join Now\",href:\"https://play.ballybet.com/account/registration\"}}],y=[{type:\"CallToAction\",props:{text:\"Join Now\",href:\"https://play.ballybet.ca/account/registration\"}}],d=[{type:\"CallToAction\",props:{text:\"Join Now\",href:\"https://www.rainbowrichescasino.com/registration/account?chID=RRCSEO100FS50BINGO\"}}],m=[{type:\"CallToAction\",props:{text:\"Join Now\",href:\"https://play.monopolycasino.com/onboarding/register\"}}],b=[{type:\"CallToAction\",props:{text:\"Join Now\",href:\"https://play.mono"
+        }
+      ],
+      "graphqlRelevantBodyCount": 0
+    },
+    {
+      "url": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DoubleJackpots~albatross-common-components-dist-~41ab7bd8.95eb8962c34c1a9b9d38.js",
+      "httpStatus": 200,
+      "bytes": 120522,
+      "sha256": "e0a90693897c3521381c6b8dcda2042f3a43d250e83108ec1b014c94b3b522bf",
+      "markerHitCount": 0,
+      "markerHits": [],
+      "graphqlRelevantBodyCount": 0
+    },
+    {
+      "url": "https://www.botemania.es/es/albatross-common-components-dist-components-ZeroBanner.063e5bedbc48fe6d73bb.js",
+      "httpStatus": 200,
+      "bytes": 29591,
+      "sha256": "f6f1906eef022b154e58819885d46c2ede35a09ec8ef2870f146b9c8287cb407",
+      "markerHitCount": 0,
+      "markerHits": [],
+      "graphqlRelevantBodyCount": 0
+    },
+    {
+      "url": "https://www.botemania.es/es/albatross-common-components-dist-components-GameHero.f1ecc65aece023c25be2.js",
+      "httpStatus": 200,
+      "bytes": 26023,
+      "sha256": "5f51881e9ce54d2cce22027d1f641a1889c569fc96910e0329ee4ea9085832e1",
+      "markerHitCount": 0,
+      "markerHits": [],
+      "graphqlRelevantBodyCount": 0
+    },
+    {
+      "url": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-GameHeroTickerOverlay.41c6976252983820f3fb.js",
+      "httpStatus": 200,
+      "bytes": 18500,
+      "sha256": "16582f830177693f691a26f3e1ab5f551b56ccbba6bbfe9d168faddc48214210",
+      "markerHitCount": 0,
+      "markerHits": [],
+      "graphqlRelevantBodyCount": 0
+    },
+    {
+      "url": "https://www.botemania.es/es/albatross-common-components-dist-components-Cookie.4e36c2b7c8c6f6d328f4.js",
+      "httpStatus": 200,
+      "bytes": 10687,
+      "sha256": "5a50d342383e4db2d723f008cb6885c83d05c1297f66e1795bf549a8b3757c9f",
+      "markerHitCount": 0,
+      "markerHits": [],
+      "graphqlRelevantBodyCount": 0
+    },
+    {
+      "url": "https://www.botemania.es/es/RedirectModal.bba62f78e09432fb30d7.js",
+      "httpStatus": 200,
+      "bytes": 6033,
+      "sha256": "365497d594263246aefd72e5f2d62a1ff69a1e2ab7206cf4f8d5fb0237159a5e",
+      "markerHitCount": 0,
+      "markerHits": [],
+      "graphqlRelevantBodyCount": 0
+    },
+    {
+      "url": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-Footer~albatross-common-components-dist-componen~9bd675eb.2e83d502a127318ef7c1.js",
+      "httpStatus": 200,
+      "bytes": 18068,
+      "sha256": "c82640ec85464388a48b915dde5d377aaefcaceba2398dd59ca9464c45710278",
       "markerHitCount": 0,
       "markerHits": [],
       "graphqlRelevantBodyCount": 0
@@ -378,10 +405,19 @@
       "graphqlRelevantBodyCount": 0
     },
     {
-      "url": "https://www.botemania.es/es/albatross-common-components-dist-components-GameContent.254ee9e3a7e18ccf49cd.js",
+      "url": "https://www.botemania.es/es/albatross-common-components-dist-components-Footer-Footer.7041d3a8e60b29205e38.js",
       "httpStatus": 200,
-      "bytes": 12901,
-      "sha256": "1d6ae8d013af78bcbdf1f2bed03bea3642fc712e5d89f53c9c7acd4e829b9386",
+      "bytes": 23415,
+      "sha256": "547928aea0c4b7098cdbd8b22f4cda8004de49b0b1940a2cca02ebe02fff7636",
+      "markerHitCount": 0,
+      "markerHits": [],
+      "graphqlRelevantBodyCount": 0
+    },
+    {
+      "url": "https://www.botemania.es/es/albatross-common-components-dist-components-Introduction.35ca0871d52b076a14f0.js",
+      "httpStatus": 200,
+      "bytes": 20395,
+      "sha256": "9e8fe3e650572928be28465120bb4023e7da38dbaa59148c5a3313a58ed0f396",
       "markerHitCount": 0,
       "markerHits": [],
       "graphqlRelevantBodyCount": 0
@@ -396,46 +432,10 @@
       "graphqlRelevantBodyCount": 0
     },
     {
-      "url": "https://www.botemania.es/es/albatross-common-components-dist-components-Cookie.4e36c2b7c8c6f6d328f4.js",
+      "url": "https://www.botemania.es/es/albatross-common-components-dist-components-GameContent.254ee9e3a7e18ccf49cd.js",
       "httpStatus": 200,
-      "bytes": 10687,
-      "sha256": "5a50d342383e4db2d723f008cb6885c83d05c1297f66e1795bf549a8b3757c9f",
-      "markerHitCount": 0,
-      "markerHits": [],
-      "graphqlRelevantBodyCount": 0
-    },
-    {
-      "url": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-Footer~albatross-common-components-dist-componen~9bd675eb.2e83d502a127318ef7c1.js",
-      "httpStatus": 200,
-      "bytes": 18068,
-      "sha256": "c82640ec85464388a48b915dde5d377aaefcaceba2398dd59ca9464c45710278",
-      "markerHitCount": 0,
-      "markerHits": [],
-      "graphqlRelevantBodyCount": 0
-    },
-    {
-      "url": "https://www.botemania.es/es/RedirectModal.bba62f78e09432fb30d7.js",
-      "httpStatus": 200,
-      "bytes": 6033,
-      "sha256": "365497d594263246aefd72e5f2d62a1ff69a1e2ab7206cf4f8d5fb0237159a5e",
-      "markerHitCount": 0,
-      "markerHits": [],
-      "graphqlRelevantBodyCount": 0
-    },
-    {
-      "url": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DoubleJackpots~albatross-common-components-dist-~41ab7bd8.95eb8962c34c1a9b9d38.js",
-      "httpStatus": 200,
-      "bytes": 120522,
-      "sha256": "e0a90693897c3521381c6b8dcda2042f3a43d250e83108ec1b014c94b3b522bf",
-      "markerHitCount": 0,
-      "markerHits": [],
-      "graphqlRelevantBodyCount": 0
-    },
-    {
-      "url": "https://www.botemania.es/es/albatross-common-components-dist-components-Footer-Footer.7041d3a8e60b29205e38.js",
-      "httpStatus": 200,
-      "bytes": 23415,
-      "sha256": "547928aea0c4b7098cdbd8b22f4cda8004de49b0b1940a2cca02ebe02fff7636",
+      "bytes": 12901,
+      "sha256": "1d6ae8d013af78bcbdf1f2bed03bea3642fc712e5d89f53c9c7acd4e829b9386",
       "markerHitCount": 0,
       "markerHits": [],
       "graphqlRelevantBodyCount": 0
@@ -444,6 +444,18 @@
   "extracted": {
     "graphqlRelevantOperationCount": 9,
     "graphqlRelevantOperations": [
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
+        "type": "query",
+        "name": "loadSearchData",
+        "hasGame": false,
+        "hasLaunch": false,
+        "hasPlay": false,
+        "hasSession": false,
+        "hasProvider": false,
+        "hasIframe": false,
+        "body": "query loadSearchData($enableContentful: Boolean!) {\\n    globalComponents\\n\\n    games(published: true) @skip(if: $enableContentful) {\\n      id\\n      title\\n      link\\n      imageSlug\\n      categoryId\\n      subCategoryId\\n      order\\n      tags {\\n        value\\n      }"
+      },
       {
         "scriptUrl": "https://www.botemania.es/es/client.6ceb4c121205f4b30b65.js",
         "type": "query",
@@ -539,18 +551,6 @@
         "hasProvider": false,
         "hasIframe": false,
         "body": "query loadPageOrGame($path: String, $enableContentful: Boolean!) {\\n  pageOrGame(path: $path) @skip (if: $enableContentful) {\\n    page {\\n      components {\\n        type\\n        props\\n      }"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-        "type": "query",
-        "name": "loadSearchData",
-        "hasGame": false,
-        "hasLaunch": false,
-        "hasPlay": false,
-        "hasSession": false,
-        "hasProvider": false,
-        "hasIframe": false,
-        "body": "query loadSearchData($enableContentful: Boolean!) {\\n    globalComponents\\n\\n    games(published: true) @skip(if: $enableContentful) {\\n      id\\n      title\\n      link\\n      imageSlug\\n      categoryId\\n      subCategoryId\\n      order\\n      tags {\\n        value\\n      }"
       }
     ],
     "launchLikeOperationCount": 0,
@@ -562,28 +562,88 @@
     "navigationCandidateCount": 236,
     "navigationCandidates": [
       {
-        "scriptUrl": "https://www.botemania.es/es/PostPage.a64eb9b0a09dfecc16f9.js",
-        "value": "More epic games worth playing"
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
+        "value": "}}},searchIconDisplay:{ballybetaz:"
       },
       {
-        "scriptUrl": "https://www.botemania.es/es/PostPage.a64eb9b0a09dfecc16f9.js",
-        "value": "https://play.ballybet.com/account/registration"
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
+        "value": ";line-height:35px;box-sizing:border-box;overflow:hidden;white-space:nowrap;display:flex;align-items:center;justify-content:center;width:auto;font-family:"
       },
       {
-        "scriptUrl": "https://www.botemania.es/es/PostPage.a64eb9b0a09dfecc16f9.js",
-        "value": "https://play.ballybet.ca/account/registration"
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
+        "value": "display:flex;gap:16px;z-index:1000;width:100%;"
       },
       {
-        "scriptUrl": "https://www.botemania.es/es/PostPage.a64eb9b0a09dfecc16f9.js",
-        "value": "https://play.monopolycasino.com/onboarding/register"
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
+        "value": "display:flex;align-items:center;height:100%;"
       },
       {
-        "scriptUrl": "https://www.botemania.es/es/PostPage.a64eb9b0a09dfecc16f9.js",
-        "value": "https://play.monopolycasinous.com/account/registration"
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
+        "value": "display:inline-flex;left:50%;transform:translateX(-50%);height:100%;position:absolute;top:0;@media (max-width:"
       },
       {
-        "scriptUrl": "https://www.botemania.es/es/PostPage.a64eb9b0a09dfecc16f9.js",
-        "value": "https://www.virgingames.com/registration/account"
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
+        "value": "}),d=a.default.picture.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
+        "value": "display:flex;align-items:center;"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
+        "value": ";padding:0px 12px;left:0;position:fixed;right:0;top:0;z-index:100;transition:top 350ms ease-in-out;display:inline-flex;justify-content:flex-end;align-items:center;h1{margin:0px;}@media (max-width:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
+        "value": "display:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
+        "value": "display:flex;padding:0px 12px;@media (max-width:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
+        "value": "))))))}var d=c(t),t=c(o),o=c(i),p=t.default.li.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
+        "value": "]),f=t.default.div.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
+        "value": ".concat(a.ballybetca.primary.default)},y=t.default.img.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
+        "value": "],function(e){e=e.venture;return b[e]}),g=t.default.div.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
+        "value": "list-style:none;width:100%;display:flex;flex-direction:column;background-color:white;max-height:70vh;overflow-y:scroll;margin:10px 0 0 0;padding:0 0 10px 0;"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
+        "value": "])}),l=a.default.div.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
+        "value": "])}),r=a.default.div.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
+        "value": "]),s=a.default.div.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
+        "value": "]),c=a.default.div.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
+        "value": "]),u=a.default.input.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
+        "value": "]),a=a.default.div.withConfig({displayName:"
       },
       {
         "scriptUrl": "https://www.botemania.es/es/client.6ceb4c121205f4b30b65.js",
@@ -762,154 +822,6 @@
         "value": "https://play.google.com/"
       },
       {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
-        "value": "display:flex;font-family:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
-        "value": "],function(e){var e=e.venture;return null==(e=i[e].tertiary)?void 0:e.name},a.ballybetaz.white),s=t.default.div.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
-        "value": "]),p=t.default.div.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
-        "value": "display:flex;align-items:center;cursor:pointer;"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
-        "value": "padding:0px 16px;font-style:normal;font-weight:400;font-size:12px;line-height:14px;cursor:pointer;height:32px;display:flex;align-items:center;margin:0;color:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
-        "value": "in e?e:{default:e}}var t=i(o),r=[359,444,600,960,1280],l=t.default.div.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
-        "value": ";}.nav-bar::-webkit-scrollbar{display:none;}.nav-bar{-ms-overflow-style:none;scrollbar-width:none;}"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
-        "value": ":a.top[n]},function(e){var n=e.venture;return(e.isNewNav?a.background.newNavBGColor:a.background)[n]},function(e){return a.borderTop[e.venture]},function(e){return a.borderBottom[e.venture]},r[3],function(e){return a.top.breakpoints[3][e.venture]}),s=t.default.ul.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
-        "value": "],function(e){var n=e.venture;return(e.isNewNav?a.activeFontColor.newNavActiveFontColor:a.activeFontColor)[n]},function(e){return a.activeFontWeight[e.venture]||700},function(e){var n=e.isDropdown,t=e.venture,e=e.isNewNav;return!n&&!e&&a.activeBoxShadow[t]}),c=t.default.li.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
-        "value": ";a{display:inline-block;padding:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
-        "value": ";}&:before{display:block;content:attr(title);font-weight:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
-        "value": "display:inline-block;padding:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
-        "value": "}&:before{display:block;content:attr(title);height:0;overflow:hidden;visibility:hidden;}"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
-        "value": "position:absolute;right:24px;top:50%;width:1rem;height:1rem;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;&:after{content:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
-        "value": "}),f=t.default.div.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
-        "value": "]),t=t.default.span.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-        "value": "}}},searchIconDisplay:{ballybetaz:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-        "value": ";line-height:35px;box-sizing:border-box;overflow:hidden;white-space:nowrap;display:flex;align-items:center;justify-content:center;width:auto;font-family:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-        "value": "display:flex;gap:16px;z-index:1000;width:100%;"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-        "value": "display:flex;align-items:center;height:100%;"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-        "value": "display:inline-flex;left:50%;transform:translateX(-50%);height:100%;position:absolute;top:0;@media (max-width:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-        "value": "}),d=a.default.picture.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-        "value": "display:flex;align-items:center;"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-        "value": ";padding:0px 12px;left:0;position:fixed;right:0;top:0;z-index:100;transition:top 350ms ease-in-out;display:inline-flex;justify-content:flex-end;align-items:center;h1{margin:0px;}@media (max-width:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-        "value": "display:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-        "value": "display:flex;padding:0px 12px;@media (max-width:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-        "value": "))))))}var d=c(t),t=c(o),o=c(i),p=t.default.li.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-        "value": "]),f=t.default.div.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-        "value": ".concat(a.ballybetca.primary.default)},y=t.default.img.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-        "value": "],function(e){e=e.venture;return b[e]}),g=t.default.div.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-        "value": "list-style:none;width:100%;display:flex;flex-direction:column;background-color:white;max-height:70vh;overflow-y:scroll;margin:10px 0 0 0;padding:0 0 10px 0;"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-        "value": "])}),l=a.default.div.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-        "value": "])}),r=a.default.div.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-        "value": "]),s=a.default.div.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-        "value": "]),c=a.default.div.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-        "value": "]),u=a.default.input.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~4d376b99.4f1c94ba5309954266ab.js",
-        "value": "]),a=a.default.div.withConfig({displayName:"
-      },
-      {
         "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~dd9005c3.a4dd069942aca88b297d.js",
         "value": "px){max-height:700px;}display:flex;flex-direction:column;position:relative;"
       },
@@ -982,52 +894,84 @@
         "value": "display:flex;justify-content:center;align-items:center;white-space:nowrap;box-sizing:border-box;cursor:pointer;gap:8px;padding:"
       },
       {
-        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-Hypertext.db113dcb4a189c22e18f.js",
-        "value": ")},n.getTileTypeFromUrl=b,n.imageExtension=l,n.isGameInfoValid=function(e){var t=/[^<p/>br&nsp;h2]/;return!!(e=e.replace(/\\n/gi,"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-GameHero.f1ecc65aece023c25be2.js",
-        "value": ",value:function(){return a.default.createElement(C,e,a.default.createElement(n,this.props))}}]),r;function r(){p(this,r);var e,t=m(this,(r.__proto__||Object.getPrototypeOf(r)).call(this));return t.displayName="
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-Footer-Footer.7041d3a8e60b29205e38.js",
-        "value": "+((e=n).displayName||e.name||"
+        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-DynamicHeader.a40947458d9fd1dfe57a.js",
+        "value": ")},n.getTileTypeFromUrl=y,n.imageExtension=c,n.isGameInfoValid=function(t){var e=/[^<p/>br&nsp;h2]/;return!!(t=t.replace(/\\n/gi,"
       },
       {
         "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-UnicornNavigationMenu.e7411c14add5b5bb8dd5.js",
         "value": ")},r.getTileTypeFromUrl=m,r.imageExtension=l,r.isGameInfoValid=function(e){var t=/[^<p/>br&nsp;h2]/;return!!(e=e.replace(/\\n/gi,"
       },
       {
-        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-DynamicHeader.a40947458d9fd1dfe57a.js",
-        "value": ")},n.getTileTypeFromUrl=y,n.imageExtension=c,n.isGameInfoValid=function(t){var e=/[^<p/>br&nsp;h2]/;return!!(t=t.replace(/\\n/gi,"
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
+        "value": "display:flex;font-family:"
       },
       {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-GameHeroTickerOverlay.41c6976252983820f3fb.js",
-        "value": ")},n.getTileTypeFromUrl=b,n.imageExtension=l,n.isGameInfoValid=function(t){var e=/[^<p/>br&nsp;h2]/;return!!(t=t.replace(/\\n/gi,"
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
+        "value": "],function(e){var e=e.venture;return null==(e=i[e].tertiary)?void 0:e.name},a.ballybetaz.white),s=t.default.div.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
+        "value": "]),p=t.default.div.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
+        "value": "display:flex;align-items:center;cursor:pointer;"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
+        "value": "padding:0px 16px;font-style:normal;font-weight:400;font-size:12px;line-height:14px;cursor:pointer;height:32px;display:flex;align-items:center;margin:0;color:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
+        "value": "in e?e:{default:e}}var t=i(o),r=[359,444,600,960,1280],l=t.default.div.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
+        "value": ";}.nav-bar::-webkit-scrollbar{display:none;}.nav-bar{-ms-overflow-style:none;scrollbar-width:none;}"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
+        "value": ":a.top[n]},function(e){var n=e.venture;return(e.isNewNav?a.background.newNavBGColor:a.background)[n]},function(e){return a.borderTop[e.venture]},function(e){return a.borderBottom[e.venture]},r[3],function(e){return a.top.breakpoints[3][e.venture]}),s=t.default.ul.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
+        "value": "],function(e){var n=e.venture;return(e.isNewNav?a.activeFontColor.newNavActiveFontColor:a.activeFontColor)[n]},function(e){return a.activeFontWeight[e.venture]||700},function(e){var n=e.isDropdown,t=e.venture,e=e.isNewNav;return!n&&!e&&a.activeBoxShadow[t]}),c=t.default.li.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
+        "value": ";a{display:inline-block;padding:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
+        "value": ";}&:before{display:block;content:attr(title);font-weight:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
+        "value": "display:inline-block;padding:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
+        "value": "}&:before{display:block;content:attr(title);height:0;overflow:hidden;visibility:hidden;}"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
+        "value": "position:absolute;right:24px;top:50%;width:1rem;height:1rem;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;&:after{content:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
+        "value": "}),f=t.default.div.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DynamicHeader~albatross-common-components-dist-c~7aed2bc7.c377462d2386344f7fb1.js",
+        "value": "]),t=t.default.span.withConfig({displayName:"
       },
       {
         "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-Hypertext.db113dcb4a189c22e18f.js",
         "value": ",{value:!0});n=r(n(150)).default.div.withConfig({displayName:"
       },
       {
-        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-ZeroBanner.063e5bedbc48fe6d73bb.js",
-        "value": "in e?e:{default:e}}var r=i(n),c=r.default.section.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-ZeroBanner.063e5bedbc48fe6d73bb.js",
-        "value": "])}),u=r.default.div.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-ZeroBanner.063e5bedbc48fe6d73bb.js",
-        "value": "]),f=r.default.div.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-ZeroBanner.063e5bedbc48fe6d73bb.js",
-        "value": "display:inline-block;margin-top:6px;color:#ffffff;margin-bottom:6px;font-size:24px;font-weight:normal;font-family:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-ZeroBanner.063e5bedbc48fe6d73bb.js",
-        "value": ")},r.getTileTypeFromUrl=y,r.imageExtension=f,r.isGameInfoValid=function(e){var t=/[^<p/>br&nsp;h2]/;return!!(e=e.replace(/\\n/gi,"
+        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-GameHero.f1ecc65aece023c25be2.js",
+        "value": ")},n.getTileTypeFromUrl=b,n.imageExtension=l,n.isGameInfoValid=function(e){var t=/[^<p/>br&nsp;h2]/;return!!(e=e.replace(/\\n/gi,"
       },
       {
         "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-NavigationBreadcrumb.79ed57db143b70efbbab.js",
@@ -1054,108 +998,28 @@
         "value": "+a:i+a,e=o?null:l.toTitleCase(t,!0),i=o?p.default.createElement(c,{venture:r}):l.toTitleCase(t,!0);return p.default.createElement(f.MobileBreadcrumb,{venture:r,title:e},p.default.createElement(d,{venture:r}),p.default.createElement(u.Link,{to:n,style:{display:o&&"
       },
       {
-        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-Introduction.35ca0871d52b076a14f0.js",
-        "value": ")},n.getTileTypeFromUrl=b,n.imageExtension=u,n.isGameInfoValid=function(e){var t=/[^<p/>br&nsp;h2]/;return!!(e=e.replace(/\\n/gi,"
+        "scriptUrl": "https://www.botemania.es/es/PostPage.a64eb9b0a09dfecc16f9.js",
+        "value": "More epic games worth playing"
       },
       {
-        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-GameFeatures.90120bf398d43eea8f67.js",
-        "value": "height:100%;padding:5px 5px 0px 5px;display:flex;align-items:center;justify-content:center;width:100%;max-width:1290px;margin:0 auto;color:#ffffff;padding:0;h1,h2,h3,h4,h5,p{color:#ffffff;font-size:14px;text-align:center;}"
+        "scriptUrl": "https://www.botemania.es/es/PostPage.a64eb9b0a09dfecc16f9.js",
+        "value": "https://play.ballybet.com/account/registration"
       },
       {
-        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-GameFeatures.90120bf398d43eea8f67.js",
-        "value": ",null,t.value))}var o=i(a),n=i(u);f.propTypes={feature:n.default.object,venture:n.default.string},f.displayName="
+        "scriptUrl": "https://www.botemania.es/es/PostPage.a64eb9b0a09dfecc16f9.js",
+        "value": "https://play.ballybet.ca/account/registration"
       },
       {
-        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-GameContent.254ee9e3a7e18ccf49cd.js",
-        "value": ";}tbody tr:not(:first-child) td p{margin:0;text-align:center;color:inherit;font-size:14px;line-height:20px;font-weight:400;}@media (max-width:640px){display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:normal;tbody{display:table;width:100%;}}}"
+        "scriptUrl": "https://www.botemania.es/es/PostPage.a64eb9b0a09dfecc16f9.js",
+        "value": "https://play.monopolycasino.com/onboarding/register"
       },
       {
-        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-GameContent.254ee9e3a7e18ccf49cd.js",
-        "value": ",null,i.dataRows))}var d=l(a),t=l(n),s=l(r).default.table.withConfig({displayName:"
+        "scriptUrl": "https://www.botemania.es/es/PostPage.a64eb9b0a09dfecc16f9.js",
+        "value": "https://play.monopolycasinous.com/account/registration"
       },
       {
-        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-CallToAction.e54f5985ad3dcc2c669e.js",
-        "value": ",{value:!0});t=o(t(150)).default.section.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-CallToAction.e54f5985ad3dcc2c669e.js",
-        "value": "],t=n(t).default.img.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-CallToAction.e54f5985ad3dcc2c669e.js",
-        "value": ")},t.getTileTypeFromUrl=m,t.imageExtension=f,t.isGameInfoValid=function(e){var r=/[^<p/>br&nsp;h2]/;return!!(e=e.replace(/\\n/gi,"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-Cookie.4e36c2b7c8c6f6d328f4.js",
-        "value": ",{value:!0});var r=n(r(150)),o=r.default.section.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-Cookie.4e36c2b7c8c6f6d328f4.js",
-        "value": "]),i=r.default.div.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-Cookie.4e36c2b7c8c6f6d328f4.js",
-        "value": "]),r=r.default.button.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-Footer~albatross-common-components-dist-componen~9bd675eb.2e83d502a127318ef7c1.js",
-        "value": "margin:0 auto;display:flex;align-items:center;flex-wrap:wrap;justify-content:center;li{list-style:none;padding:5px;margin:0px 10px;vertical-align:top;display:inline-block;}"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-Footer~albatross-common-components-dist-componen~9bd675eb.2e83d502a127318ef7c1.js",
-        "value": "display:inline-block;text-align:center;ul{text-align:center;list-style:none;padding:0;}padding-bottom:0px;"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-Footer~albatross-common-components-dist-componen~9bd675eb.2e83d502a127318ef7c1.js",
-        "value": "font-family:sans-serif;margin-bottom:0px;li{display:inline-flex;margin-bottom:12px;vertical-align:top;}a{font-size:18px;font-weight:lighter;color:#6e6f72;margin-left:48px;margin-right:48px;display:inline-flex;}"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-Footer~albatross-common-components-dist-componen~9bd675eb.2e83d502a127318ef7c1.js",
-        "value": "padding-top:36px;padding-bottom:122px;color:#6e6f72;text-align:center;a{display:inline-flex;color:#999999;cursor:pointer;text-decoration:underline;&:hover{color:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-Footer~albatross-common-components-dist-componen~9bd675eb.2e83d502a127318ef7c1.js",
-        "value": "],function(e){return r.theme.hoverColours[e.venture]},function(e){return m}),c=o.default.div.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-Footer~albatross-common-components-dist-componen~9bd675eb.2e83d502a127318ef7c1.js",
-        "value": "]),s=o.default.div.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-Footer~albatross-common-components-dist-componen~9bd675eb.2e83d502a127318ef7c1.js",
-        "value": "],p,function(){return g}),u=o.default.div.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-Footer~albatross-common-components-dist-componen~9bd675eb.2e83d502a127318ef7c1.js",
-        "value": "]),f=o.default.a.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-Footer~albatross-common-components-dist-componen~9bd675eb.2e83d502a127318ef7c1.js",
-        "value": "]),o=(o.default.div.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-Footer~albatross-common-components-dist-componen~9bd675eb.2e83d502a127318ef7c1.js",
-        "value": "],function(e){return y}),o.default.a.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/RedirectModal.bba62f78e09432fb30d7.js",
-        "value": ";display:flex;justify-content:center;z-index:9999999999;flex-direction:column;"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/RedirectModal.bba62f78e09432fb30d7.js",
-        "value": "flex:0 0 auto;padding:8px;display:block;text-align:center;"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/RedirectModal.bba62f78e09432fb30d7.js",
-        "value": "border-radius:16px;display:inline-block;word-break:break-word;background-color:white;padding:16px;box-shadow:0px 1px 6px 0px #00000040;"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/RedirectModal.bba62f78e09432fb30d7.js",
-        "value": "in e?e:{default:e}}var o=r(n),n=o.default.div.withConfig({displayName:"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/RedirectModal.bba62f78e09432fb30d7.js",
-        "value": "display:flex;justify-content:center;align-items:center;padding:8px 0px;"
+        "scriptUrl": "https://www.botemania.es/es/PostPage.a64eb9b0a09dfecc16f9.js",
+        "value": "https://www.virgingames.com/registration/account"
       },
       {
         "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-DoubleJackpots~albatross-common-components-dist-~41ab7bd8.95eb8962c34c1a9b9d38.js",
@@ -1498,30 +1362,154 @@
         "value": ",{style:o.playIcon,className:"
       },
       {
+        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-ZeroBanner.063e5bedbc48fe6d73bb.js",
+        "value": "in e?e:{default:e}}var r=i(n),c=r.default.section.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-ZeroBanner.063e5bedbc48fe6d73bb.js",
+        "value": "])}),u=r.default.div.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-ZeroBanner.063e5bedbc48fe6d73bb.js",
+        "value": "]),f=r.default.div.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-ZeroBanner.063e5bedbc48fe6d73bb.js",
+        "value": "display:inline-block;margin-top:6px;color:#ffffff;margin-bottom:6px;font-size:24px;font-weight:normal;font-family:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-ZeroBanner.063e5bedbc48fe6d73bb.js",
+        "value": ")},r.getTileTypeFromUrl=y,r.imageExtension=f,r.isGameInfoValid=function(e){var t=/[^<p/>br&nsp;h2]/;return!!(e=e.replace(/\\n/gi,"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-GameHero.f1ecc65aece023c25be2.js",
+        "value": ",value:function(){return a.default.createElement(C,e,a.default.createElement(n,this.props))}}]),r;function r(){p(this,r);var e,t=m(this,(r.__proto__||Object.getPrototypeOf(r)).call(this));return t.displayName="
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-Footer-Footer.7041d3a8e60b29205e38.js",
+        "value": "+((e=n).displayName||e.name||"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-GameHeroTickerOverlay.41c6976252983820f3fb.js",
+        "value": ")},n.getTileTypeFromUrl=b,n.imageExtension=l,n.isGameInfoValid=function(t){var e=/[^<p/>br&nsp;h2]/;return!!(t=t.replace(/\\n/gi,"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-Cookie.4e36c2b7c8c6f6d328f4.js",
+        "value": ",{value:!0});var r=n(r(150)),o=r.default.section.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-Cookie.4e36c2b7c8c6f6d328f4.js",
+        "value": "]),i=r.default.div.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-Cookie.4e36c2b7c8c6f6d328f4.js",
+        "value": "]),r=r.default.button.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/RedirectModal.bba62f78e09432fb30d7.js",
+        "value": ";display:flex;justify-content:center;z-index:9999999999;flex-direction:column;"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/RedirectModal.bba62f78e09432fb30d7.js",
+        "value": "flex:0 0 auto;padding:8px;display:block;text-align:center;"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/RedirectModal.bba62f78e09432fb30d7.js",
+        "value": "border-radius:16px;display:inline-block;word-break:break-word;background-color:white;padding:16px;box-shadow:0px 1px 6px 0px #00000040;"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/RedirectModal.bba62f78e09432fb30d7.js",
+        "value": "in e?e:{default:e}}var o=r(n),n=o.default.div.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/RedirectModal.bba62f78e09432fb30d7.js",
+        "value": "display:flex;justify-content:center;align-items:center;padding:8px 0px;"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-Footer~albatross-common-components-dist-componen~9bd675eb.2e83d502a127318ef7c1.js",
+        "value": "margin:0 auto;display:flex;align-items:center;flex-wrap:wrap;justify-content:center;li{list-style:none;padding:5px;margin:0px 10px;vertical-align:top;display:inline-block;}"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-Footer~albatross-common-components-dist-componen~9bd675eb.2e83d502a127318ef7c1.js",
+        "value": "display:inline-block;text-align:center;ul{text-align:center;list-style:none;padding:0;}padding-bottom:0px;"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-Footer~albatross-common-components-dist-componen~9bd675eb.2e83d502a127318ef7c1.js",
+        "value": "font-family:sans-serif;margin-bottom:0px;li{display:inline-flex;margin-bottom:12px;vertical-align:top;}a{font-size:18px;font-weight:lighter;color:#6e6f72;margin-left:48px;margin-right:48px;display:inline-flex;}"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-Footer~albatross-common-components-dist-componen~9bd675eb.2e83d502a127318ef7c1.js",
+        "value": "padding-top:36px;padding-bottom:122px;color:#6e6f72;text-align:center;a{display:inline-flex;color:#999999;cursor:pointer;text-decoration:underline;&:hover{color:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-Footer~albatross-common-components-dist-componen~9bd675eb.2e83d502a127318ef7c1.js",
+        "value": "],function(e){return r.theme.hoverColours[e.venture]},function(e){return m}),c=o.default.div.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-Footer~albatross-common-components-dist-componen~9bd675eb.2e83d502a127318ef7c1.js",
+        "value": "]),s=o.default.div.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-Footer~albatross-common-components-dist-componen~9bd675eb.2e83d502a127318ef7c1.js",
+        "value": "],p,function(){return g}),u=o.default.div.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-Footer~albatross-common-components-dist-componen~9bd675eb.2e83d502a127318ef7c1.js",
+        "value": "]),f=o.default.a.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-Footer~albatross-common-components-dist-componen~9bd675eb.2e83d502a127318ef7c1.js",
+        "value": "]),o=(o.default.div.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/vendors~albatross-common-components-dist-components-Footer~albatross-common-components-dist-componen~9bd675eb.2e83d502a127318ef7c1.js",
+        "value": "],function(e){return y}),o.default.a.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-GameFeatures.90120bf398d43eea8f67.js",
+        "value": "height:100%;padding:5px 5px 0px 5px;display:flex;align-items:center;justify-content:center;width:100%;max-width:1290px;margin:0 auto;color:#ffffff;padding:0;h1,h2,h3,h4,h5,p{color:#ffffff;font-size:14px;text-align:center;}"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-GameFeatures.90120bf398d43eea8f67.js",
+        "value": ",null,t.value))}var o=i(a),n=i(u);f.propTypes={feature:n.default.object,venture:n.default.string},f.displayName="
+      },
+      {
         "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-Footer-Footer.7041d3a8e60b29205e38.js",
         "value": ")},n.getTileTypeFromUrl=m,n.imageExtension=l,n.isGameInfoValid=function(e){var t=/[^<p/>br&nsp;h2]/;return!!(e=e.replace(/\\n/gi,"
       },
       {
         "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-Footer-Footer.7041d3a8e60b29205e38.js",
         "value": ",value:function(){return a.default.createElement(D,e,a.default.createElement(n,this.props))}}]),r;function r(){p(this,r);var e,t=y(this,(r.__proto__||Object.getPrototypeOf(r)).call(this));return t.displayName="
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-Introduction.35ca0871d52b076a14f0.js",
+        "value": ")},n.getTileTypeFromUrl=b,n.imageExtension=u,n.isGameInfoValid=function(e){var t=/[^<p/>br&nsp;h2]/;return!!(e=e.replace(/\\n/gi,"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-CallToAction.e54f5985ad3dcc2c669e.js",
+        "value": ",{value:!0});t=o(t(150)).default.section.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-CallToAction.e54f5985ad3dcc2c669e.js",
+        "value": "],t=n(t).default.img.withConfig({displayName:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-CallToAction.e54f5985ad3dcc2c669e.js",
+        "value": ")},t.getTileTypeFromUrl=m,t.imageExtension=f,t.isGameInfoValid=function(e){var r=/[^<p/>br&nsp;h2]/;return!!(e=e.replace(/\\n/gi,"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-GameContent.254ee9e3a7e18ccf49cd.js",
+        "value": ";}tbody tr:not(:first-child) td p{margin:0;text-align:center;color:inherit;font-size:14px;line-height:20px;font-weight:400;}@media (max-width:640px){display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:normal;tbody{display:table;width:100%;}}}"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/albatross-common-components-dist-components-GameContent.254ee9e3a7e18ccf49cd.js",
+        "value": ",null,i.dataRows))}var d=l(a),t=l(n),s=l(r).default.table.withConfig({displayName:"
       }
     ],
     "exactProviderNavigationCandidateCount": 0,
     "exactProviderNavigationCandidates": [],
     "exactLaunchPathCandidateCount": 11,
     "exactLaunchPathCandidates": [
-      {
-        "scriptUrl": "https://www.botemania.es/es/PostPage.a64eb9b0a09dfecc16f9.js",
-        "value": "More epic games worth playing"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/PostPage.a64eb9b0a09dfecc16f9.js",
-        "value": "https://play.monopolycasino.com/onboarding/register"
-      },
-      {
-        "scriptUrl": "https://www.botemania.es/es/PostPage.a64eb9b0a09dfecc16f9.js",
-        "value": "https://play.monopolycasinous.com/account/registration"
-      },
       {
         "scriptUrl": "https://www.botemania.es/es/client.6ceb4c121205f4b30b65.js",
         "value": ",pixelSupport:!1,bingoCommetDId:2,launchDate:null},virgingames:{key:"
@@ -1553,6 +1541,18 @@
       {
         "scriptUrl": "https://www.botemania.es/es/client.6ceb4c121205f4b30b65.js",
         "value": ",pixelSupport:!1,bingoCommetDId:null,launchDate:null},monopolycasinoca:{key:"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/PostPage.a64eb9b0a09dfecc16f9.js",
+        "value": "More epic games worth playing"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/PostPage.a64eb9b0a09dfecc16f9.js",
+        "value": "https://play.monopolycasino.com/onboarding/register"
+      },
+      {
+        "scriptUrl": "https://www.botemania.es/es/PostPage.a64eb9b0a09dfecc16f9.js",
+        "value": "https://play.monopolycasinous.com/account/registration"
       }
     ]
   },
