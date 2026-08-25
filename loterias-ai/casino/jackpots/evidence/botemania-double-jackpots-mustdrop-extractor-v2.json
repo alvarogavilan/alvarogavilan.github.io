@@ -1,7 +1,37 @@
 {
-  "version": "botemania-double-jackpots-mustdrop-extractor-v2",
-  "generatedAt": "2026-08-21T17:03:21.952Z",
+  "version": "botemania-double-jackpots-mustdrop-extractor-v2.1-live-field-probe",
+  "generatedAt": "2026-08-25T07:22:22.268Z",
   "operator": "botemania-es",
+  "liveFieldProbe": {
+    "endpoint": "https://www.botemania.es/es/graphql",
+    "targetIds": [
+      "Daily",
+      "Quick Hit",
+      "Hourly"
+    ],
+    "querySource": "PUBLIC_UI_CONSUMER_FIELD_INFERENCE",
+    "mustDropQuery": "query loadJackpots { redTigerJackpots { id amount mustDropWithin } }",
+    "baseFallbackQuery": "query loadJackpots { redTigerJackpots { id amount } }",
+    "fieldAccepted": false,
+    "enrichedResponse": {
+      "httpStatus": 400,
+      "ok": false,
+      "bytes": 121,
+      "errors": [
+        "Cannot query field \"mustDropWithin\" on type \"ProgressivesType\"."
+      ],
+      "rowCount": 0
+    },
+    "fallbackResponse": {
+      "httpStatus": 200,
+      "ok": true,
+      "bytes": 33,
+      "errors": [],
+      "rowCount": 0
+    },
+    "liveRows": [],
+    "targetRows": []
+  },
   "chunks": [
     {
       "name": "albatross-common-components-dist-components-DoubleJackpots-MustDropWithin",
@@ -331,6 +361,10 @@
   "objectLiteralCandidateCount": 0,
   "objectLiteralCandidates": [],
   "decision": {
+    "mustDropWithinGraphqlFieldAccepted": false,
+    "exactTargetRowsRecovered": false,
+    "exactMustDropDeadlineRecovered": false,
+    "exactDeadlineIds": [],
     "settingsChunkHadNeedleMatches": true,
     "settingsChunkHadObjectLiteralCandidates": false,
     "exactMustDropLimitsRecovered": false,
@@ -340,11 +374,13 @@
   },
   "guards": {
     "publicStaticBundlesOnly": true,
+    "graphqlFieldInferredFromPublicUiConsumer": true,
     "noGraphqlIntrospection": true,
     "noMutation": true,
     "noAuthentication": true,
     "noCookies": true,
     "noAutoPromotionFromHeuristicScan": true,
+    "noAutoPromotionFromDeadlineFieldAlone": true,
     "noBetting": true,
     "realMoneyAllowed": false
   }
