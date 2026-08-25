@@ -1,6 +1,6 @@
 {
-  "version": "ultimate-video-poker-config-equivalence-v1",
-  "generatedAt": "2026-08-24T01:52:00+02:00",
+  "version": "ultimate-video-poker-config-equivalence-v2-manual-facts-propagated",
+  "generatedAt": "2026-08-25T10:22:00.000Z",
   "market": "ES",
   "operator": "Botemania",
   "status": "RESEARCH_ONLY_NO_PLAY",
@@ -8,6 +8,7 @@
   "botemaniaCurrentProductEvidence": {
     "game": "Ultimate Video Poker",
     "url": "https://www.botemania.es/juegos/casino-online/ultimate-video-poker",
+    "providerId": "roxor-gaming",
     "progressiveVariantExplicitlyListed": "Jotas o Mejor Progresivo",
     "availableVideoPokerVariants": 10,
     "productMinimumBetEUR": 0.01,
@@ -20,41 +21,83 @@
     "exactProgressiveVariantQualifyingStakePublishedOnOperatorPage": false,
     "exactProgressiveVariantRoyalProbabilityPublishedOnOperatorPage": false
   },
-  "externalPlaytechComparator": {
-    "source": "https://wizardofodds.com/software/playtech/",
-    "game": "Jacks or Better -- Progressive",
-    "paytableCreditsPerCoin": [800, 50, 25, 7, 5, 4, 3, 2, 1],
-    "nominalNonJackpotReturnPct": 95.95,
-    "hands": 10,
-    "denomination": 0.25,
-    "reportedBreakEvenMeterCredits": 81387.41,
-    "reportedBreakEvenCurrencyAtQuarterDenomination": 20436.85,
-    "use": "EXTERNAL_MECHANISM_COMPARATOR_ONLY"
+  "currentManualNoBetEvidence": {
+    "identityVerified": true,
+    "identityConfidence": "VERY_HIGH",
+    "identityMethod": "SIMULTANEOUS_IN_GAME_AMOUNT_TO_PUBLIC_FEED_EXACT_CENT_MATCH",
+    "monitorKey": "generic:WAGER_BET",
+    "latestFreshFeedJackpotEUR": 3457.7,
+    "dynamicMovementVerified": true,
+    "visibleMinimumStakePerHandEUR": 2.5,
+    "visibleMinimumStakeVerified": true,
+    "visiblePaytableVerified": true,
+    "visiblePaytable": {
+      "jacksOrBetter": 1,
+      "twoPair": 2,
+      "threeOfAKind": 3,
+      "straight": 4,
+      "flush": 5,
+      "fullHouse": 7,
+      "fourOfAKind": 25,
+      "straightFlush": 50,
+      "ordinaryRoyalFlush": 800,
+      "separateJackpotRow": "¡Bote!"
+    },
+    "qualifyingStakeForJackpotVerified": false,
+    "exactJackpotTriggerVerified": false,
+    "note": "The EUR 2.50 value is the current visible minimum per hand, not proof that this wager qualifies for the progressive jackpot."
+  },
+  "externalGamesysLineageComparator": {
+    "source": "https://www.casinolistings.com/jackpots/gamesys/progressive-jacks-or-better-jackpot",
+    "game": "Progressive Jacks or Better",
+    "documentedProgressiveTrigger": "ROYAL_FLUSH_OF_SPADES",
+    "otherRoyalSuitsPay": "800x bet",
+    "publishedSeedGBP": 2000,
+    "publishedChanceOfWin": "1 in 160689",
+    "publishedBreakEvenGBP": 17477,
+    "use": "LINEAGE_AND_SOLVER_CALIBRATION_ONLY",
+    "configurationEquivalentToBotemaniaSpain": false,
+    "thresholdTransferAllowed": false
+  },
+  "exactSolverCalibrationUnderUnverifiedGamesysLikeAssumption": {
+    "assumption": "7/5 paytable, ordinary Royal x800, only Royal Flush of Spades receives the displayed progressive, single-hand EUR accounting at the visible EUR 2.50 hand wager",
+    "assumptionVerifiedForSpain": false,
+    "solver": "EXHAUSTIVE_ALL_2598960_INITIAL_HANDS_WITH_JACKPOT_AWARE_OPTIMAL_HOLDS",
+    "atCurrentJackpotEUR3457_70": {
+      "rtpPct": 96.5567385998,
+      "progressiveHitProbability": 0.000007569126,
+      "approximatelyOneIn": 132115.657
+    },
+    "optimalBreakEvenJackpotEUR": 14114.943947680396,
+    "fixedNormalStrategyCalibrationBreakEvenEUR": 17477.48155,
+    "publishedHistoricalComparatorBreakEvenGBP": 17477,
+    "interpretation": "The fixed-strategy reproduction closely matches the published historical Gamesys threshold, validating the solver implementation for that assumed family. It does NOT validate that Botemania Spain uses the same jackpot trigger or qualifying-stake rules."
   },
   "equivalenceAssessment": {
     "sameNamedProgressiveFamilyPlausible": true,
     "exactConfigurationEquivalent": false,
     "equivalenceStatus": "NOT_PROVEN",
-    "why": [
-      "Botemania confirms a Jacks-or-Better progressive variant inside Ultimate Video Poker but does not publish that variant's exact paytable or qualifying denomination.",
-      "The Botemania product envelope advertises selectable 1/5/10/25 hands and a 0.01 EUR product minimum, while the external comparator is specifically documented as 10 hands at 0.25 denomination; the public operator page does not prove that its progressive sub-variant inherits or matches those comparator settings.",
-      "A 7/5-shaped visual paytable or matching game name is insufficient to transfer a break-even threshold without exact royal award, denomination, hand-count/jackpot accounting and qualifying-stake fingerprint."
-    ],
     "safeToTransfer81387CreditThresholdToSpain": false,
-    "safeToTransfer20436CurrencyThresholdToSpain": false
+    "safeToTransfer20436CurrencyThresholdToSpain": false,
+    "safeToTransferGamesysSpadesTriggerToSpain": false,
+    "progressSincePreviousVersion": [
+      "Live WAGER_BET identity is verified by exact-cent same-session cross-match.",
+      "Current dynamic movement of WAGER_BET has been observed.",
+      "Visible 7/5 paytable and ordinary Royal x800 are verified manually without wagering.",
+      "Visible minimum stake of EUR 2.50 per hand is verified manually without wagering.",
+      "The remaining uncertainty is now concentrated in the exact jackpot trigger and jackpot-qualifying stake semantics, after which the exact solver can produce the Spain threshold."
+    ]
   },
   "requiredForExactSpainEV": [
-    "Exact in-game Jotas o Mejor Progresivo paytable at the jackpot-qualifying setting",
-    "Exact credit value / denomination that qualifies for the progressive jackpot",
-    "Whether the displayed progressive award is per hand or shared across the selected multi-hand wager",
-    "Exact number of simultaneously played hands at the qualifying setting",
-    "Royal Flush probability under the jackpot-optimal strategy for that exact paytable and jackpot value",
-    "Progressive reset/base award and current jackpot-to-credit conversion",
-    "Rules fingerprint proving the WAGER_BET live meter belongs to this exact Botemania progressive variant"
+    "Exact in-game rule identifying which final hand triggers ¡Bote! (all Royals versus a specific suit/other condition).",
+    "Exact rule establishing which coin value, number of coins and hand-count setting qualify for ¡Bote!.",
+    "Once those two facts are frozen, rerun the exhaustive jackpot-optimal solver under the exact Spain rule and convert the result to EUR using the verified qualifying stake."
   ],
   "execution": {
     "thresholdVerified": false,
     "stakeVerified": false,
+    "visibleMinimumStakeVerified": true,
+    "visibleMinimumStakePerHandEUR": 2.5,
     "strategyVerified": false,
     "rulesFingerprintVerified": false,
     "prospectiveValidationPassed": false,
@@ -69,7 +112,9 @@
     "externalThresholdIsNotExecutionSignal": true,
     "sameNameIsNotConfigurationProof": true,
     "productWideRtpRangeIsNotVariantRtp": true,
-    "visualPaytableShapeIsNotCompleteRulesFingerprint": true,
+    "manualVisibleMinimumDoesNotEqualQualifyingStake": true,
+    "historicalSpadesTriggerCannotPopulateSpainTrigger": true,
+    "solverAssumptionCannotEnableExecution": true,
     "realMoneyAllowed": false
   }
 }

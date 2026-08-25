@@ -1,0 +1,79 @@
+{
+  "version": "joker-flip-spanish-mechanism-v1",
+  "generatedAt": "2026-08-25T10:22:00.000Z",
+  "mode": "SPANISH_MECHANISM_RESOLUTION_NO_PLAY",
+  "primarySpanishSource": {
+    "operator": "Jokerbet Spain",
+    "game": "King's Mystery",
+    "url": "https://www.jokerbet.es/img/logos/pdf/kings-mystery.pdf",
+    "documentUpdated": "2025-03-26",
+    "sourceClass": "SPANISH_OPERATOR_GAME_RULES"
+  },
+  "mechanism": {
+    "network": "Joker Flip / Great Blue progressive network",
+    "tiers": ["JOKER", "KING", "QUEEN", "JACK"],
+    "trigger": "RANDOM_ON_ANY_MAIN_GAME_SPIN_INCLUDING_NON_WINNING_SPINS",
+    "anyBetEligible": true,
+    "largerBetRaisesEntryProbability": true,
+    "entryGuaranteesOneTierWin": true,
+    "multipleJackpotsSameEntry": false,
+    "jackpotGame": "12-card collection; collect three matching-suit cards, with automatic resolution if the timer expires",
+    "contributionRatePct": 1.98,
+    "publishedRtpPct": 95.45,
+    "rtpWording": "The Spanish rules state RTP 95.45% and a 1.98% jackpot contribution; progressive prizes are excluded from the RTP calculation wording. Do not reinterpret this as a complete state-dependent current RTP without exact hazard and tier allocation."
+  },
+  "currentSpainComparatorHeadlines": {
+    "pafSpain": {
+      "observedCrawlRecency": "approximately 1 day at research time",
+      "sharedHeadlineExamplesEUR": 3766,
+      "games": ["King's Mystery", "81 Gold Cascade", "Roving Clover"],
+      "interpretation": "Same displayed amount across multiple Joker Flip-family games is evidence of a shared network headline, not proof of which tier it represents."
+    },
+    "speedybetSpain": {
+      "observedCrawlRecency": "approximately 3 days at research time",
+      "sharedHeadlineExamplesEUR": 3630,
+      "games": ["King's Mystery", "81 Gold Cascade", "Roving Clover"],
+      "interpretation": "Same displayed amount across multiple games is compatible with a shared progressive network but does not bind the headline to KING/JOKER/QUEEN/JACK."
+    }
+  },
+  "externalSeedComparatorOnly": {
+    "reportedFamilySeeds": {
+      "JACK": 20,
+      "QUEEN": 200,
+      "KING": 2000,
+      "JOKER": 40000
+    },
+    "currencyOrBuildTransferAllowed": false,
+    "tierBindingFromMagnitudeAllowed": false
+  },
+  "economicClosure": {
+    "contributionKnown": true,
+    "eligibilityQualitativelyKnown": true,
+    "exactPerSpinTriggerHazardKnown": false,
+    "tierConditionalProbabilitiesKnown": false,
+    "speedybetHeadlineTierBindingKnown": false,
+    "pafHeadlineTierBindingKnown": false,
+    "localSeedOrResetVectorVerified": false,
+    "breakEvenStateComputable": false,
+    "status": "MECHANISM_CLOSED_HAZARD_AND_TIER_BINDING_OPEN"
+  },
+  "nextDecisiveEvidence": [
+    "Exact provider/Spanish rule disclosing trigger probability as a function of stake and tier allocation, or a sufficiently large verified local exposure/hit dataset.",
+    "Exact Speedybet/Paf in-game four-tier meter screen cross-matched to the lobby headline at the same time.",
+    "Verified local post-hit/reset vector for all four tiers."
+  ],
+  "execution": {
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0,
+    "decision": "NO_PLAY"
+  },
+  "hardGuards": {
+    "contributionRateAloneDoesNotDetermineHitProbability": true,
+    "headlineAmountDoesNotDetermineTier": true,
+    "pafDoesNotProveSpeedybetBuild": true,
+    "foreignSeedDoesNotPopulateSpainSeed": true,
+    "monthlyRealizedRtpDoesNotPopulateTheoreticalStateRtp": true
+  }
+}

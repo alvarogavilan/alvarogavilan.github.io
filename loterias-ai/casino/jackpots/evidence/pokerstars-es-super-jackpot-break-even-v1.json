@@ -1,0 +1,92 @@
+{
+  "version": "pokerstars-es-super-jackpot-break-even-v1",
+  "generatedAt": "2026-08-25T10:22:00.000Z",
+  "mode": "MECHANISM_RESOLVED_COMPARATOR_ONLY",
+  "market": "ES",
+  "operator": "PokerStars Spain",
+  "operatorScope": "TECHNICAL_COMPARATOR_NOT_EDGE_EXECUTION_OPERATOR",
+  "sources": {
+    "primarySpainRules": "https://www.pokerstars.es/casino/how-to-play/videopoker/",
+    "breakEvenReference": "https://www.casinocitytimes.com/john-grochowski/article/the-break-even-point-in-video-poker-64547",
+    "basePaytableMathReference": "https://wizardofodds.com/games/video-poker/tables/jacks-or-better/"
+  },
+  "games": ["Super Jackpot 25", "Super Jackpot 100"],
+  "spainPrimaryMechanism": {
+    "documentedAvailableInRulesCatalog": true,
+    "availabilityCaveat": "PokerStars states that not every listed game is necessarily available at all times and features may vary by location.",
+    "baseGame": "8/5 Jacks or Better",
+    "deckCards": 52,
+    "reshuffleAfterEachGame": true,
+    "maxCoinsPerHand": 5,
+    "progressiveTrigger": "ROYAL_FLUSH_AT_MAXIMUM_FIVE_COINS",
+    "progressiveAwardSemantics": "At five coins, a Royal Flush pays the special jackpot amount displayed on screen instead of a fixed coin award.",
+    "paytableAtFiveCoins": {
+      "royalFlush": "SPECIAL_JACKPOT",
+      "straightFlush": 250,
+      "fourOfAKind": 125,
+      "fullHouse": 40,
+      "flush": 25,
+      "straight": 20,
+      "threeOfAKind": 15,
+      "twoPair": 10,
+      "jacksOrBetter": 5
+    },
+    "publishedRtpRangePct": [96.06, 98.30],
+    "superJackpot100Relationship": "PokerStars describes Super Jackpot 100 as exactly the same game as Super Jackpot 25 but with higher fixed coin values."
+  },
+  "exactEconomicResultInCoinUnits": {
+    "strategy": "JACKPOT_OPTIMAL_8_5_JACKS_OR_BETTER",
+    "breakEvenRoyalAwardCoins": 8666,
+    "interpretation": "Independent progressive-video-poker analysis states that expert-play 8/5 Jacks or Better reaches 100% expected return at a Royal award of 8,666 coins. This applies to the documented all-Royal max-coin mechanism in coin units, not yet to a EUR amount.",
+    "crossCheck": {
+      "standardEightFiveRtpAt4000CreditRoyal": 0.97298434,
+      "source": "Wizard of Odds 8/5 Jacks or Better exact return table"
+    },
+    "eurConversionFormula": "breakEvenJackpotEUR = 8666 * exactCoinValueEUR",
+    "qualifyingStakeFormula": "qualifyingStakePerHandEUR = 5 * exactCoinValueEUR"
+  },
+  "unresolvedSpainExecutionInputs": {
+    "currentLobbyAvailabilityVerified": false,
+    "exactCoinValueEUR": null,
+    "exactCoinValueVerified": false,
+    "currentDisplayedJackpotEUR": null,
+    "currentDisplayedJackpotFresh": false,
+    "currentAboveBreakEven": null
+  },
+  "nonExecutableIllustrations": [
+    {
+      "ifCoinValueEUR": 0.25,
+      "breakEvenJackpotEUR": 2166.5,
+      "qualifyingStakePerHandEUR": 1.25,
+      "status": "ILLUSTRATION_ONLY_NOT_SPAIN_DENOMINATION_EVIDENCE"
+    },
+    {
+      "ifCoinValueEUR": 1,
+      "breakEvenJackpotEUR": 8666,
+      "qualifyingStakePerHandEUR": 5,
+      "status": "ILLUSTRATION_ONLY_NOT_SPAIN_DENOMINATION_EVIDENCE"
+    }
+  ],
+  "scientificValue": {
+    "mechanismClosed": true,
+    "breakEvenFormulaClosed": true,
+    "breakEvenCoinThresholdClosed": true,
+    "provesOnlineProgressiveFamilyCanCross100PctWhenMeterExceedsThreshold": true,
+    "doesNotProveCurrentSpainPositiveEv": true
+  },
+  "execution": {
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0,
+    "decision": "COMPARATOR_ONLY_NO_PLAY"
+  },
+  "hardGuards": {
+    "title25DoesNotProveQuarterEuroDenomination": true,
+    "title100DoesNotProveOneEuroDenomination": true,
+    "foreignOrGlobalMeterCannotPopulateSpainMeter": true,
+    "rulesCatalogDoesNotProveCurrentLobbyAvailability": true,
+    "coinThresholdCannotBeConvertedToEURWithoutExactSpainCoinValue": true,
+    "noPromotionOutsideApprovedOperatorScope": true
+  }
+}
