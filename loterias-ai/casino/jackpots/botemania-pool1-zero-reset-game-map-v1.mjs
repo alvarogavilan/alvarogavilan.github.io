@@ -5,13 +5,13 @@ import crypto from 'node:crypto';
 const ORIGIN='https://www.botemania.es';
 const GRAPHQL=`${ORIGIN}/es/graphql`;
 const OUT='loterias-ai/casino/jackpots/evidence/botemania-pool1-zero-reset-game-map-v1.json';
-const UA='loterias-ai-pool1-zero-reset-game-map/1.1';
+const UA='loterias-ai-pool1-zero-reset-game-map/1.2';
 const FEED_QUERY='query loadJackpots { jackpots { id amount } }';
 const TARGET_ID='pool1';
 const TARGETS=[
   {slug:'winfall-wishes-jackpot',networkHint:'WINFALL_WONDERLAND_TIKI_SHARED_ZERO_RESET'},
   {slug:'wonderland',networkHint:'WINFALL_WONDERLAND_TIKI_SHARED_ZERO_RESET'},
-  {slug:'la-isla-de-tiki',networkHint:'WINFALL_WONDERLAND_TIKI_SHARED_ZERO_RESET'},
+  {slug:'tiki-templo',networkHint:'WINFALL_WONDERLAND_TIKI_SHARED_ZERO_RESET'},
   {slug:'boteman',networkHint:'BOTEMAN_PAPER_TIKI_BOTE_WINSTONES_SHARED_ZERO_RESET'},
   {slug:'paper-wins-jackpot',networkHint:'BOTEMAN_PAPER_TIKI_BOTE_WINSTONES_SHARED_ZERO_RESET'},
   {slug:'la-isla-de-tiki-bote',networkHint:'BOTEMAN_PAPER_TIKI_BOTE_WINSTONES_SHARED_ZERO_RESET'},
@@ -96,7 +96,8 @@ const poolUniqueAfter=afterPool.length===1;
 const poolCurrentEUR=poolUniqueAfter?afterPool[0]:poolUniqueBefore?beforePool[0]:null;
 
 const out={
-  version:'botemania-pool1-zero-reset-game-map-v1.1-null-safe',generatedAt:new Date().toISOString(),operator:'botemania-es',target:{network:'generic',id:TARGET_ID},
+  version:'botemania-pool1-zero-reset-game-map-v1.2-tiki-target-and-shared-pool-guard',generatedAt:new Date().toISOString(),operator:'botemania-es',target:{network:'generic',id:TARGET_ID},
+  targetResolution:{winfallTikiOperationalSlug:'tiki-templo',historicalWrongSlugExcluded:'la-isla-de-tiki',exactCounterIdentityVerified:false},
   liveWindow:{before:{httpStatus:before.httpStatus,targetDistinctAmountsEUR:beforePool,uniqueIdentityInSnapshot:poolUniqueBefore},after:{httpStatus:after.httpStatus,targetDistinctAmountsEUR:afterPool,uniqueIdentityInSnapshot:poolUniqueAfter},currentPool1EUR:poolCurrentEUR},
   games,
   evidence:{exactGraphqlIdMatches,exactGraphqlAmountMatches,literalPageMatches,amountPageMatches},
@@ -105,10 +106,12 @@ const out={
     exactGameMapping:exactGraphqlIdMatches.length===1?exactGraphqlIdMatches[0]:null,
     candidateDiscoveryOnly:[...new Set([...exactGraphqlAmountMatches.map(x=>x.slug),...literalPageMatches,...amountPageMatches.map(x=>x.slug)])],
     noMatchMeansPublicKnownFieldsExhaustedForTheseTargets:exactGraphqlIdMatches.length===0&&exactGraphqlAmountMatches.length===0&&literalPageMatches.length===0&&amountPageMatches.length===0,
+    simpleExposureFromJackpotDivGameContributionAllowed:false,
+    requiresVerifiedPoolTopologyAndContributionMixForExposure:true,
     economicPromotionAllowed:false,realMoneyAllowed:false,
-    note:'Only an exact jackpot.id=pool1 response can directly verify a game mapping in this probe. Same-cent amounts or page literals are discovery evidence only because shared assets, duplicated values and sequential meter movement can create false associations. Null/empty GraphQL jackpot shells are discarded, never converted to zero.'
+    note:'Only an exact jackpot.id=pool1 response can directly verify a game mapping in this probe. Same-cent amounts or page literals are discovery evidence only because shared assets, duplicated values and sequential meter movement can create false associations. Null/empty GraphQL jackpot shells are discarded, never converted to zero. For a shared zero-reset pool, jackpot / one game contribution rate must not be interpreted as total wager exposure unless the exact current pool topology and contribution mix are independently verified; current Botemania rules document shared contributors with heterogeneous rates.'
   },
-  guards:{targetedKnownGamesOnly:true,publicNoAuthOnly:true,noCookies:true,noIntrospection:true,noMutation:true,noGameLaunch:true,noBetting:true,nullGraphqlJackpotNotEvidence:true,nullNeverCoercedToZero:true,emptyJackpotIdNotEvidence:true,amountMatchDiscoveryOnly:true,pageLiteralDiscoveryOnly:true,noSharedNetworkHintAsIdentityProof:true,noEconomicPromotion:true,realMoneyAllowed:false}
+  guards:{targetedKnownGamesOnly:true,correctedWinfallTikiOperationalTarget:true,historicalLaIslaDeTikiTargetExcluded:true,publicNoAuthOnly:true,noCookies:true,noIntrospection:true,noMutation:true,noGameLaunch:true,noBetting:true,nullGraphqlJackpotNotEvidence:true,nullNeverCoercedToZero:true,emptyJackpotIdNotEvidence:true,amountMatchDiscoveryOnly:true,pageLiteralDiscoveryOnly:true,noSharedNetworkHintAsIdentityProof:true,noPerGameContributionAsSharedPoolVolume:true,noEconomicPromotion:true,realMoneyAllowed:false}
 };
 fs.mkdirSync('loterias-ai/casino/jackpots/evidence',{recursive:true});
 fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
