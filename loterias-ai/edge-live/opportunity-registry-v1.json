@@ -1,6 +1,6 @@
 {
-  "version": "edge-live-opportunity-registry-v1.4-winfall-shared-bridge",
-  "generatedAt": "2026-08-22T01:25:00.000Z",
+  "version": "edge-live-opportunity-registry-v1.5-uvp-manual-stake",
+  "generatedAt": "2026-08-25T10:11:00.000Z",
   "operator": "botemania-es",
   "purpose": "STRUCTURAL_NON_PROMOTIONAL_EDGE_MONITORING",
   "mappings": [
@@ -22,7 +22,7 @@
         "screenJackpotEUR": 3448.25,
         "feedJackpotEUR": 3448.25,
         "paytableObserved": "7/5-shaped Jacks or Better Progressive",
-        "notes": "User-visible in-game jackpot matched the public generic WAGER_BET feed exactly to the cent during the same live session. This verifies the counter mapping only. The paytable shape is historical manual-screen evidence, not a technically reproduced configuration."
+        "notes": "User-visible in-game jackpot matched the public generic WAGER_BET feed exactly to the cent during the same live session. This verifies the counter mapping only. Current manual screen evidence also verifies the visible 7/5-shaped paytable and a minimum stake of EUR 2.50 per hand; it does not verify the exact jackpot trigger or qualifying-stake semantics."
       },
       "economic": {
         "publishedRtpRangePct": [96.77, 99.54],
@@ -35,26 +35,42 @@
         "breakEvenJackpotEUR": null,
         "creditValueEUR": null,
         "creditValueVerified": false,
-        "paytableVerified": false,
+        "paytableVerified": true,
+        "paytableEvidenceClass": "CURRENT_USER_MANUAL_SCREEN",
+        "visiblePaytable": {
+          "jacksOrBetter": 1,
+          "twoPair": 2,
+          "threeOfAKind": 3,
+          "straight": 4,
+          "flush": 5,
+          "fullHouse": 7,
+          "fourOfAKind": 25,
+          "straightFlush": 50,
+          "ordinaryRoyalFlush": 800,
+          "separateJackpotRowVisible": true
+        },
         "qualifyingStakeVerified": false,
         "removedUnverifiedInputs": [
           "publishedBaseRtpPctApprox=95.95",
           "breakEvenRoyalCredits=81387"
         ],
         "thresholdEvidenceClass": "NOT_VERIFIED_FOR_EXACT_BOTEMANIA_CONFIGURATION",
-        "notes": "Botemania publicly states only a 96.77%-99.54% range across its Video Poker games and says rules vary by game. The manual screenshot suggests a 7/5-shaped Jacks or Better progressive table, but exact paytable, progressive trigger, qualifying credits, denomination, fixed-strategy Royal probability, base RTP and reset/seed remain unverified. Break-even must be recalculated from the same exact verified strategy/configuration."
+        "notes": "Botemania publicly states only a 96.77%-99.54% range across its Video Poker games and says rules vary by game. Current manual screen evidence verifies the visible 7/5-shaped paytable, ordinary Royal x800, a separate jackpot row and EUR 2.50 minimum per hand. The exact jackpot trigger, qualifying-stake semantics, exact progressive RTP contribution and exact Spain break-even remain unverified. Break-even must be recalculated from the same exact verified strategy/configuration."
       },
       "execution": {
-        "exactStakeKnown": false,
-        "stakePerDecisionEUR": null,
-        "maxTotalStakeEUR": 5,
+        "exactStakeKnown": true,
+        "stakePerDecisionEUR": 2.5,
+        "stakeEvidenceClass": "CURRENT_USER_MANUAL_SCREEN_MINIMUM_PER_HAND",
+        "stakeMeaning": "MINIMUM_VISIBLE_STAKE_FOR_ONE_HAND_NOT_YET_PROVEN_JACKPOT_QUALIFYING_STAKE",
+        "maxTotalStakeEUR": 2.5,
         "strategyVerified": false
       },
       "guards": {
         "noPromotion": true,
         "noExternalThresholdAsSpanishThreshold": true,
         "noThresholdCurrencyAssumption": true,
-        "noBettingUntilExactPaytableTriggerCreditValueStakeAndStrategy": true
+        "exactStakeKnownDoesNotImplyJackpotEligibility": true,
+        "noBettingUntilExactTriggerEligibilityThresholdAndStrategy": true
       }
     },
     {
