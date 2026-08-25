@@ -21,7 +21,7 @@ const pct=x=>Number.isFinite(Number(x))?(Number(x)*100).toFixed(3)+'%':'—';
 const secAge=t=>{const n=Date.parse(t||'');return Number.isFinite(n)?Math.max(0,Math.floor((Date.now()-n)/1000)):null;};
 const time=t=>{const d=new Date(t);return Number.isFinite(d.getTime())?new Intl.DateTimeFormat('es-ES',{timeZone:'Europe/Madrid',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(d):'—';};
 const clock=()=>new Intl.DateTimeFormat('es-ES',{timeZone:'Europe/Madrid',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(new Date());
-const escapeHtml=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const escapeHtml=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
 const blockerLabel={
   STRUCTURAL_VALIDATION_NOT_PASSED:'La estructura prospectiva todavía no está validada.',
   ECONOMIC_GATE_NOT_PASSED:'El estado económico actual no demuestra expectativa no negativa.',
@@ -94,8 +94,11 @@ function renderMeters(lane){
 }
 function render(){
   const p=state.plan||{},l=state.live||{},ph=phase(),ready=ph==='GREEN',prepare=ph==='YELLOW',lane=selectedLane(),game=selectedGame();
-  const gameUrl=game?.url||DEFAULT_GAME_URL;
-  $('gameCard').href=gameUrl;$('inspectGame').href=gameUrl;renderArtwork();renderMeters(lane);
+  const gameUrl=game?.url||DEFAULT_GAME_URL,showGameHero=ready||prepare;
+  const gameCard=$('gameCard'),inspectGame=$('inspectGame');
+  gameCard.hidden=!showGameHero;gameCard.setAttribute('aria-hidden',showGameHero?'false':'true');
+  if(inspectGame)inspectGame.hidden=!showGameHero;
+  if(showGameHero){gameCard.href=gameUrl;if(inspectGame)inspectGame.href=gameUrl;renderArtwork();renderMeters(lane);}
   $('gameProvider').textContent=`BOTEMANIA · ${String(lane?.type||'EDGE').replaceAll('_',' ')}`;
   $('gameTitle').textContent=game?.name||'EDGE LIVE';
   $('gameSubtitle').textContent=lane?.id==='botemania-jackpot-king'?'JACKPOT KING':'MONITOR ESTRUCTURAL';
@@ -182,7 +185,7 @@ async function directProbe(){
     const key={JACKPOTKING:'JACKPOT_KING',JACKPOTKING_REGAL:'REGAL',JACKPOTKING_ROYAL:'ROYAL'},pots={};
     for(const x of rows.filter(x=>x.network==='blueprint')){const k=key[String(x.id)],n=Number(x.amountEUR);if(k&&Number.isFinite(n)&&n>0)pots[k]=n;}
     state.directPots=Object.keys(pots).length===3?pots:null;state.directAt=new Date().toISOString();state.directOk=rows.length>0;state.directRows=rows.length;state.directCanonicalRows=Object.keys(directByKey).length;state.directAmbiguousKeys=ambiguous.length;
-    $('gameCard').classList.add('flash');setTimeout(()=>$('gameCard').classList.remove('flash'),520);render();
+    if(!$('gameCard').hidden){$('gameCard').classList.add('flash');setTimeout(()=>$('gameCard').classList.remove('flash'),520);}render();
   }catch{state.directOk=false;render();}
 }
 $('playButton').addEventListener('click',()=>{if(phase()!=='RED')window.open(selectedGame()?.url||DEFAULT_GAME_URL,'_blank','noopener');});
