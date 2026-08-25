@@ -1,7 +1,7 @@
 {
   "gameId": "bonoloto",
   "year": 2026,
-  "verificationLevel": "SECONDARY_VALIDATED",
+  "verificationLevel": "OFFICIAL_SELAE_VALIDATED",
   "records": [
     {
       "drawId": "bonoloto-2026-01-01",
@@ -28104,56 +28104,37 @@
           2,
           8,
           19,
+          21,
           27,
-          38,
-          42
+          38
         ],
         "secondary": [],
         "complementary": 10,
         "reintegro": 2
       },
       "source": {
-        "official": false,
-        "provider": "Lotoideas public CSV",
-        "sourceUrl": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQALTRaLDFfhXOAQmeONPqmFKm9yOiQ4W97rhWgR41BZ7czFsjK5YktD6fnETKHGB9YUnyQ4XBSbhZx/pub?gid=0&output=csv&single=true",
-        "retrievedAt": "2026-08-25T07:09:11.699Z"
+        "official": true,
+        "provider": "SELAE",
+        "sourceUrl": "https://www.loteriasyapuestas.es/es/bonoloto/escrutinios/bonoloto-premios-y-ganadores-del-21-de-agosto-de-2026.formatoRSS",
+        "retrievedAt": "2026-08-25T23:36:41.105Z",
+        "feed": "https://www.loteriasyapuestas.es/es/bonoloto/resultados/.formatoRSS",
+        "archivePreviousSource": {
+          "official": false,
+          "provider": "Lotoideas public CSV",
+          "sourceUrl": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQALTRaLDFfhXOAQmeONPqmFKm9yOiQ4W97rhWgR41BZ7czFsjK5YktD6fnETKHGB9YUnyQ4XBSbhZx/pub?gid=0&output=csv&single=true",
+          "retrievedAt": "2026-08-25T07:09:11.699Z"
+        }
       },
       "verification": {
         "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
-          "csv-shape",
+          "official-rss-item",
+          "official-detail-page",
+          "six-unique-main",
           "ranges",
-          "unique-main",
-          "official-fechav3-exact-date",
-          "official-main-cross-check",
-          "official-complementary-cross-check",
-          "official-reintegro-cross-check"
-        ],
-        "officialCrossCheck": {
-          "provider": "SELAE",
-          "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=20260821",
-          "checkedAt": "2026-08-25T07:32:58.181Z",
-          "officialDrawId": "1320101233",
-          "exactDate": true,
-          "fields": {
-            "main": true,
-            "complementary": true,
-            "reintegro": true
-          },
-          "complete": true,
-          "officialResult": {
-            "main": [
-              2,
-              8,
-              19,
-              27,
-              38,
-              42
-            ],
-            "complementary": 10,
-            "reintegro": 2
-          }
-        }
+          "complementary-not-in-main",
+          "reintegro-range"
+        ]
       },
       "economics": {
         "ticketCost": 0.5,
@@ -28187,55 +28168,36 @@
           16,
           18,
           19,
-          32,
-          43
+          22,
+          32
         ],
         "secondary": [],
         "complementary": 8,
         "reintegro": 1
       },
       "source": {
-        "official": false,
-        "provider": "Lotoideas public CSV",
-        "sourceUrl": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQALTRaLDFfhXOAQmeONPqmFKm9yOiQ4W97rhWgR41BZ7czFsjK5YktD6fnETKHGB9YUnyQ4XBSbhZx/pub?gid=0&output=csv&single=true",
-        "retrievedAt": "2026-08-25T07:09:11.699Z"
+        "official": true,
+        "provider": "SELAE",
+        "sourceUrl": "https://www.loteriasyapuestas.es/es/bonoloto/escrutinios/bonoloto-premios-y-ganadores-del-22-de-agosto-de-2026.formatoRSS",
+        "retrievedAt": "2026-08-25T23:36:41.105Z",
+        "feed": "https://www.loteriasyapuestas.es/es/bonoloto/resultados/.formatoRSS",
+        "archivePreviousSource": {
+          "official": false,
+          "provider": "Lotoideas public CSV",
+          "sourceUrl": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQALTRaLDFfhXOAQmeONPqmFKm9yOiQ4W97rhWgR41BZ7czFsjK5YktD6fnETKHGB9YUnyQ4XBSbhZx/pub?gid=0&output=csv&single=true",
+          "retrievedAt": "2026-08-25T07:09:11.699Z"
+        }
       },
       "verification": {
         "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
-          "csv-shape",
+          "official-rss-item",
+          "official-detail-page",
+          "six-unique-main",
           "ranges",
-          "unique-main",
-          "official-fechav3-exact-date",
-          "official-main-cross-check",
-          "official-complementary-cross-check",
-          "official-reintegro-cross-check"
-        ],
-        "officialCrossCheck": {
-          "provider": "SELAE",
-          "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=20260822",
-          "checkedAt": "2026-08-25T07:32:58.181Z",
-          "officialDrawId": "1320201234",
-          "exactDate": true,
-          "fields": {
-            "main": true,
-            "complementary": true,
-            "reintegro": true
-          },
-          "complete": true,
-          "officialResult": {
-            "main": [
-              6,
-              16,
-              18,
-              19,
-              32,
-              43
-            ],
-            "complementary": 8,
-            "reintegro": 1
-          }
-        }
+          "complementary-not-in-main",
+          "reintegro-range"
+        ]
       },
       "economics": {
         "ticketCost": 0.5,
@@ -28268,56 +28230,37 @@
           6,
           8,
           17,
+          23,
           33,
-          36,
-          46
+          36
         ],
         "secondary": [],
         "complementary": 32,
         "reintegro": 6
       },
       "source": {
-        "official": false,
-        "provider": "Lotoideas public CSV",
-        "sourceUrl": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQALTRaLDFfhXOAQmeONPqmFKm9yOiQ4W97rhWgR41BZ7czFsjK5YktD6fnETKHGB9YUnyQ4XBSbhZx/pub?gid=0&output=csv&single=true",
-        "retrievedAt": "2026-08-25T07:09:11.699Z"
+        "official": true,
+        "provider": "SELAE",
+        "sourceUrl": "https://www.loteriasyapuestas.es/es/bonoloto/escrutinios/bonoloto-premios-y-ganadores-del-23-de-agosto-de-2026.formatoRSS",
+        "retrievedAt": "2026-08-25T23:36:41.105Z",
+        "feed": "https://www.loteriasyapuestas.es/es/bonoloto/resultados/.formatoRSS",
+        "archivePreviousSource": {
+          "official": false,
+          "provider": "Lotoideas public CSV",
+          "sourceUrl": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQALTRaLDFfhXOAQmeONPqmFKm9yOiQ4W97rhWgR41BZ7czFsjK5YktD6fnETKHGB9YUnyQ4XBSbhZx/pub?gid=0&output=csv&single=true",
+          "retrievedAt": "2026-08-25T07:09:11.699Z"
+        }
       },
       "verification": {
         "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
-          "csv-shape",
+          "official-rss-item",
+          "official-detail-page",
+          "six-unique-main",
           "ranges",
-          "unique-main",
-          "official-fechav3-exact-date",
-          "official-main-cross-check",
-          "official-complementary-cross-check",
-          "official-reintegro-cross-check"
-        ],
-        "officialCrossCheck": {
-          "provider": "SELAE",
-          "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=20260823",
-          "checkedAt": "2026-08-25T07:32:58.181Z",
-          "officialDrawId": "1320301235",
-          "exactDate": true,
-          "fields": {
-            "main": true,
-            "complementary": true,
-            "reintegro": true
-          },
-          "complete": true,
-          "officialResult": {
-            "main": [
-              6,
-              8,
-              17,
-              33,
-              36,
-              46
-            ],
-            "complementary": 32,
-            "reintegro": 6
-          }
-        }
+          "complementary-not-in-main",
+          "reintegro-range"
+        ]
       },
       "economics": {
         "ticketCost": 0.5,
@@ -28340,6 +28283,82 @@
           "status": "SOURCE_PARSED_PENDING_CROSS_CHECK"
         }
       }
+    },
+    {
+      "drawId": "bonoloto-2026-08-24",
+      "gameId": "bonoloto",
+      "drawDate": "2026-08-24",
+      "result": {
+        "main": [
+          15,
+          18,
+          21,
+          24,
+          28,
+          30
+        ],
+        "secondary": [],
+        "complementary": 14,
+        "reintegro": 8
+      },
+      "source": {
+        "official": true,
+        "provider": "SELAE",
+        "sourceUrl": "https://www.loteriasyapuestas.es/es/bonoloto/escrutinios/bonoloto-premios-y-ganadores-del-24-de-agosto-de-2026.formatoRSS",
+        "retrievedAt": "2026-08-25T23:36:41.105Z",
+        "feed": "https://www.loteriasyapuestas.es/es/bonoloto/resultados/.formatoRSS",
+        "archivePreviousSource": null
+      },
+      "verification": {
+        "status": "OFFICIAL_SELAE_VALIDATED",
+        "checks": [
+          "official-rss-item",
+          "official-detail-page",
+          "six-unique-main",
+          "ranges",
+          "complementary-not-in-main",
+          "reintegro-range"
+        ]
+      },
+      "economics": null
+    },
+    {
+      "drawId": "bonoloto-2026-08-25",
+      "gameId": "bonoloto",
+      "drawDate": "2026-08-25",
+      "result": {
+        "main": [
+          5,
+          10,
+          17,
+          22,
+          25,
+          27
+        ],
+        "secondary": [],
+        "complementary": 20,
+        "reintegro": 7
+      },
+      "source": {
+        "official": true,
+        "provider": "SELAE",
+        "sourceUrl": "https://www.loteriasyapuestas.es/es/bonoloto/escrutinios/bonoloto-premios-y-ganadores-del-25-de-agosto-de-2026.formatoRSS",
+        "retrievedAt": "2026-08-25T23:36:41.105Z",
+        "feed": "https://www.loteriasyapuestas.es/es/bonoloto/resultados/.formatoRSS",
+        "archivePreviousSource": null
+      },
+      "verification": {
+        "status": "OFFICIAL_SELAE_VALIDATED",
+        "checks": [
+          "official-rss-item",
+          "official-detail-page",
+          "six-unique-main",
+          "ranges",
+          "complementary-not-in-main",
+          "reintegro-range"
+        ]
+      },
+      "economics": null
     }
   ]
 }
