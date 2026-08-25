@@ -52,7 +52,11 @@ assert.equal(observed.positiveEvForTargetAccountProven,false);
 assert.equal(observed.executable,false);
 assert.equal(observed.realMoneyAllowed,false);
 
-assert.match(wrangler,/"main"\s*:\s*"src\/index-v29\.mjs"/);
+// v29 is preserved as an immutable historical snapshot - it is no longer
+// the deployed entry point (see index-v30.mjs and
+// edge-non-promo-only-v30.test.mjs: NON_PROMO_ONLY retires this whole
+// research direction at the actual deployed entry), so this file no longer
+// asserts wrangler.jsonc points here.
 assert.ok(worker.includes("import { EdgeSentinel as V28EdgeSentinel } from './index-v28.mjs'"));
 assert.ok(worker.includes('edge-sentinel-v29-playuzu-current-account-evidence-20260824a'));
 assert.ok(worker.includes("path==='/science/playuzu-welcome'||path==='/science/playuzu-current-account'"));
