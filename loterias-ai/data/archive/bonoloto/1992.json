@@ -8957,12 +8957,41 @@
         }
       },
       "verification": {
-        "status": "SECONDARY_VALIDATED",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "csv-shape",
           "ranges",
-          "unique-main"
-        ]
+          "unique-main",
+          "official-fechav3-exact-date",
+          "official-main-cross-check",
+          "official-complementary-cross-check",
+          "official-reintegro-cross-check"
+        ],
+        "officialCrossCheck": {
+          "provider": "SELAE",
+          "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920621",
+          "checkedAt": "2026-08-25T18:15:45.427Z",
+          "officialDrawId": "72201001",
+          "exactDate": true,
+          "fields": {
+            "main": true,
+            "complementary": true,
+            "reintegro": true
+          },
+          "complete": true,
+          "officialResult": {
+            "main": [
+              21,
+              29,
+              32,
+              37,
+              39,
+              43
+            ],
+            "complementary": 44,
+            "reintegro": 2
+          }
+        }
       },
       "economics": {
         "currency": "EUR",
@@ -9049,12 +9078,51 @@
         }
       },
       "verification": {
-        "status": "SECONDARY_VALIDATED",
+        "status": "OFFICIAL_CONFLICT_QUARANTINED",
         "checks": [
           "csv-shape",
           "ranges",
-          "unique-main"
-        ]
+          "unique-main",
+          "official-selae-conflict-quarantined"
+        ],
+        "officialCrossCheck": {
+          "provider": "SELAE",
+          "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920622",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
+          "exactDate": true,
+          "fields": {
+            "main": true,
+            "complementary": true,
+            "reintegro": false
+          },
+          "complete": false,
+          "conflictReason": "OFFICIAL_RESULT_COMPONENT_MISMATCH",
+          "storedResult": {
+            "main": [
+              2,
+              10,
+              12,
+              23,
+              32,
+              35
+            ],
+            "complementary": 29,
+            "reintegro": 0
+          },
+          "officialResult": {
+            "main": [
+              2,
+              10,
+              12,
+              23,
+              32,
+              35
+            ],
+            "complementary": 29,
+            "reintegro": 2,
+            "raw": "2 - 10 - 12 - 23 - 32 - 35 C(29) R(2)"
+          }
+        }
       },
       "economics": {
         "currency": "EUR",
@@ -9109,7 +9177,8 @@
       "official": {
         "drawId": "72301002",
         "drawNumber": null
-      }
+      },
+      "trainingEligible": false
     },
     {
       "drawId": "bonoloto-1992-06-23",
@@ -9141,12 +9210,51 @@
         }
       },
       "verification": {
-        "status": "SECONDARY_VALIDATED",
+        "status": "OFFICIAL_CONFLICT_QUARANTINED",
         "checks": [
           "csv-shape",
           "ranges",
-          "unique-main"
-        ]
+          "unique-main",
+          "official-selae-conflict-quarantined"
+        ],
+        "officialCrossCheck": {
+          "provider": "SELAE",
+          "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920623",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
+          "exactDate": true,
+          "fields": {
+            "main": true,
+            "complementary": true,
+            "reintegro": false
+          },
+          "complete": false,
+          "conflictReason": "OFFICIAL_RESULT_COMPONENT_MISMATCH",
+          "storedResult": {
+            "main": [
+              6,
+              8,
+              23,
+              24,
+              31,
+              47
+            ],
+            "complementary": 30,
+            "reintegro": 0
+          },
+          "officialResult": {
+            "main": [
+              6,
+              8,
+              23,
+              24,
+              31,
+              47
+            ],
+            "complementary": 30,
+            "reintegro": 2,
+            "raw": "6 - 8 - 23 - 24 - 31 - 47 C(30) R(2)"
+          }
+        }
       },
       "economics": {
         "currency": "EUR",
@@ -9201,7 +9309,8 @@
       "official": {
         "drawId": "72401003",
         "drawNumber": null
-      }
+      },
+      "trainingEligible": false
     },
     {
       "drawId": "bonoloto-1992-06-24",
@@ -9233,12 +9342,51 @@
         }
       },
       "verification": {
-        "status": "SECONDARY_VALIDATED",
+        "status": "OFFICIAL_CONFLICT_QUARANTINED",
         "checks": [
           "csv-shape",
           "ranges",
-          "unique-main"
-        ]
+          "unique-main",
+          "official-selae-conflict-quarantined"
+        ],
+        "officialCrossCheck": {
+          "provider": "SELAE",
+          "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920624",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
+          "exactDate": true,
+          "fields": {
+            "main": true,
+            "complementary": true,
+            "reintegro": false
+          },
+          "complete": false,
+          "conflictReason": "OFFICIAL_RESULT_COMPONENT_MISMATCH",
+          "storedResult": {
+            "main": [
+              18,
+              22,
+              39,
+              42,
+              43,
+              46
+            ],
+            "complementary": 20,
+            "reintegro": 0
+          },
+          "officialResult": {
+            "main": [
+              18,
+              22,
+              39,
+              42,
+              43,
+              46
+            ],
+            "complementary": 20,
+            "reintegro": 2,
+            "raw": "18 - 22 - 39 - 42 - 43 - 46 C(20) R(2)"
+          }
+        }
       },
       "economics": {
         "currency": "EUR",
@@ -9293,7 +9441,8 @@
       "official": {
         "drawId": "72501004",
         "drawNumber": null
-      }
+      },
+      "trainingEligible": false
     },
     {
       "drawId": "bonoloto-1992-06-28",
@@ -9325,12 +9474,41 @@
         }
       },
       "verification": {
-        "status": "SECONDARY_VALIDATED",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "csv-shape",
           "ranges",
-          "unique-main"
-        ]
+          "unique-main",
+          "official-fechav3-exact-date",
+          "official-main-cross-check",
+          "official-complementary-cross-check",
+          "official-reintegro-cross-check"
+        ],
+        "officialCrossCheck": {
+          "provider": "SELAE",
+          "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920628",
+          "checkedAt": "2026-08-25T18:15:45.427Z",
+          "officialDrawId": "72901001",
+          "exactDate": true,
+          "fields": {
+            "main": true,
+            "complementary": true,
+            "reintegro": true
+          },
+          "complete": true,
+          "officialResult": {
+            "main": [
+              27,
+              30,
+              41,
+              42,
+              43,
+              45
+            ],
+            "complementary": 16,
+            "reintegro": 2
+          }
+        }
       },
       "economics": {
         "currency": "EUR",
@@ -9417,12 +9595,51 @@
         }
       },
       "verification": {
-        "status": "SECONDARY_VALIDATED",
+        "status": "OFFICIAL_CONFLICT_QUARANTINED",
         "checks": [
           "csv-shape",
           "ranges",
-          "unique-main"
-        ]
+          "unique-main",
+          "official-selae-conflict-quarantined"
+        ],
+        "officialCrossCheck": {
+          "provider": "SELAE",
+          "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920629",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
+          "exactDate": true,
+          "fields": {
+            "main": true,
+            "complementary": true,
+            "reintegro": false
+          },
+          "complete": false,
+          "conflictReason": "OFFICIAL_RESULT_COMPONENT_MISMATCH",
+          "storedResult": {
+            "main": [
+              9,
+              10,
+              14,
+              17,
+              39,
+              41
+            ],
+            "complementary": 18,
+            "reintegro": 0
+          },
+          "officialResult": {
+            "main": [
+              9,
+              10,
+              14,
+              17,
+              39,
+              41
+            ],
+            "complementary": 18,
+            "reintegro": 2,
+            "raw": "9 - 10 - 14 - 17 - 39 - 41 C(18) R(2)"
+          }
+        }
       },
       "economics": {
         "currency": "EUR",
@@ -9477,7 +9694,8 @@
       "official": {
         "drawId": "73001002",
         "drawNumber": null
-      }
+      },
+      "trainingEligible": false
     },
     {
       "drawId": "bonoloto-1992-06-30",
@@ -9509,12 +9727,51 @@
         }
       },
       "verification": {
-        "status": "SECONDARY_VALIDATED",
+        "status": "OFFICIAL_CONFLICT_QUARANTINED",
         "checks": [
           "csv-shape",
           "ranges",
-          "unique-main"
-        ]
+          "unique-main",
+          "official-selae-conflict-quarantined"
+        ],
+        "officialCrossCheck": {
+          "provider": "SELAE",
+          "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920630",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
+          "exactDate": true,
+          "fields": {
+            "main": true,
+            "complementary": true,
+            "reintegro": false
+          },
+          "complete": false,
+          "conflictReason": "OFFICIAL_RESULT_COMPONENT_MISMATCH",
+          "storedResult": {
+            "main": [
+              1,
+              7,
+              17,
+              20,
+              35,
+              42
+            ],
+            "complementary": 14,
+            "reintegro": 0
+          },
+          "officialResult": {
+            "main": [
+              1,
+              7,
+              17,
+              20,
+              35,
+              42
+            ],
+            "complementary": 14,
+            "reintegro": 2,
+            "raw": "1 - 7 - 17 - 20 - 35 - 42 C(14) R(2)"
+          }
+        }
       },
       "economics": {
         "currency": "EUR",
@@ -9569,7 +9826,8 @@
       "official": {
         "drawId": "73101003",
         "drawNumber": null
-      }
+      },
+      "trainingEligible": false
     },
     {
       "drawId": "bonoloto-1992-07-01",
@@ -9601,12 +9859,51 @@
         }
       },
       "verification": {
-        "status": "SECONDARY_VALIDATED",
+        "status": "OFFICIAL_CONFLICT_QUARANTINED",
         "checks": [
           "csv-shape",
           "ranges",
-          "unique-main"
-        ]
+          "unique-main",
+          "official-selae-conflict-quarantined"
+        ],
+        "officialCrossCheck": {
+          "provider": "SELAE",
+          "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920701",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
+          "exactDate": true,
+          "fields": {
+            "main": true,
+            "complementary": true,
+            "reintegro": false
+          },
+          "complete": false,
+          "conflictReason": "OFFICIAL_RESULT_COMPONENT_MISMATCH",
+          "storedResult": {
+            "main": [
+              3,
+              9,
+              16,
+              21,
+              24,
+              46
+            ],
+            "complementary": 17,
+            "reintegro": 0
+          },
+          "officialResult": {
+            "main": [
+              3,
+              9,
+              16,
+              21,
+              24,
+              46
+            ],
+            "complementary": 17,
+            "reintegro": 2,
+            "raw": "3 - 9 - 16 - 21 - 24 - 46 C(17) R(2)"
+          }
+        }
       },
       "economics": {
         "currency": "EUR",
@@ -9661,7 +9958,8 @@
       "official": {
         "drawId": "73201004",
         "drawNumber": null
-      }
+      },
+      "trainingEligible": false
     },
     {
       "drawId": "bonoloto-1992-07-05",
@@ -9693,12 +9991,41 @@
         }
       },
       "verification": {
-        "status": "SECONDARY_VALIDATED",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "csv-shape",
           "ranges",
-          "unique-main"
-        ]
+          "unique-main",
+          "official-fechav3-exact-date",
+          "official-main-cross-check",
+          "official-complementary-cross-check",
+          "official-reintegro-cross-check"
+        ],
+        "officialCrossCheck": {
+          "provider": "SELAE",
+          "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920705",
+          "checkedAt": "2026-08-25T18:15:45.427Z",
+          "officialDrawId": "73601001",
+          "exactDate": true,
+          "fields": {
+            "main": true,
+            "complementary": true,
+            "reintegro": true
+          },
+          "complete": true,
+          "officialResult": {
+            "main": [
+              2,
+              6,
+              9,
+              14,
+              23,
+              32
+            ],
+            "complementary": 38,
+            "reintegro": 6
+          }
+        }
       },
       "economics": {
         "currency": "EUR",
@@ -9785,12 +10112,51 @@
         }
       },
       "verification": {
-        "status": "SECONDARY_VALIDATED",
+        "status": "OFFICIAL_CONFLICT_QUARANTINED",
         "checks": [
           "csv-shape",
           "ranges",
-          "unique-main"
-        ]
+          "unique-main",
+          "official-selae-conflict-quarantined"
+        ],
+        "officialCrossCheck": {
+          "provider": "SELAE",
+          "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920706",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
+          "exactDate": true,
+          "fields": {
+            "main": true,
+            "complementary": true,
+            "reintegro": false
+          },
+          "complete": false,
+          "conflictReason": "OFFICIAL_RESULT_COMPONENT_MISMATCH",
+          "storedResult": {
+            "main": [
+              7,
+              12,
+              15,
+              17,
+              25,
+              41
+            ],
+            "complementary": 22,
+            "reintegro": 0
+          },
+          "officialResult": {
+            "main": [
+              7,
+              12,
+              15,
+              17,
+              25,
+              41
+            ],
+            "complementary": 22,
+            "reintegro": 6,
+            "raw": "7 - 12 - 15 - 17 - 25 - 41 C(22) R(6)"
+          }
+        }
       },
       "economics": {
         "currency": "EUR",
@@ -9845,7 +10211,8 @@
       "official": {
         "drawId": "73701002",
         "drawNumber": null
-      }
+      },
+      "trainingEligible": false
     },
     {
       "drawId": "bonoloto-1992-07-07",
@@ -9877,12 +10244,51 @@
         }
       },
       "verification": {
-        "status": "SECONDARY_VALIDATED",
+        "status": "OFFICIAL_CONFLICT_QUARANTINED",
         "checks": [
           "csv-shape",
           "ranges",
-          "unique-main"
-        ]
+          "unique-main",
+          "official-selae-conflict-quarantined"
+        ],
+        "officialCrossCheck": {
+          "provider": "SELAE",
+          "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920707",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
+          "exactDate": true,
+          "fields": {
+            "main": true,
+            "complementary": true,
+            "reintegro": false
+          },
+          "complete": false,
+          "conflictReason": "OFFICIAL_RESULT_COMPONENT_MISMATCH",
+          "storedResult": {
+            "main": [
+              7,
+              10,
+              19,
+              37,
+              38,
+              41
+            ],
+            "complementary": 16,
+            "reintegro": 0
+          },
+          "officialResult": {
+            "main": [
+              7,
+              10,
+              19,
+              37,
+              38,
+              41
+            ],
+            "complementary": 16,
+            "reintegro": 6,
+            "raw": "7 - 10 - 19 - 37 - 38 - 41 C(16) R(6)"
+          }
+        }
       },
       "economics": {
         "currency": "EUR",
@@ -9937,7 +10343,8 @@
       "official": {
         "drawId": "73801003",
         "drawNumber": null
-      }
+      },
+      "trainingEligible": false
     },
     {
       "drawId": "bonoloto-1992-07-08",
@@ -9969,12 +10376,51 @@
         }
       },
       "verification": {
-        "status": "SECONDARY_VALIDATED",
+        "status": "OFFICIAL_CONFLICT_QUARANTINED",
         "checks": [
           "csv-shape",
           "ranges",
-          "unique-main"
-        ]
+          "unique-main",
+          "official-selae-conflict-quarantined"
+        ],
+        "officialCrossCheck": {
+          "provider": "SELAE",
+          "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920708",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
+          "exactDate": true,
+          "fields": {
+            "main": true,
+            "complementary": true,
+            "reintegro": false
+          },
+          "complete": false,
+          "conflictReason": "OFFICIAL_RESULT_COMPONENT_MISMATCH",
+          "storedResult": {
+            "main": [
+              18,
+              19,
+              23,
+              30,
+              33,
+              36
+            ],
+            "complementary": 11,
+            "reintegro": 0
+          },
+          "officialResult": {
+            "main": [
+              18,
+              19,
+              23,
+              30,
+              33,
+              36
+            ],
+            "complementary": 11,
+            "reintegro": 6,
+            "raw": "18 - 19 - 23 - 30 - 33 - 36 C(11) R(6)"
+          }
+        }
       },
       "economics": {
         "currency": "EUR",
@@ -10029,7 +10475,8 @@
       "official": {
         "drawId": "73901004",
         "drawNumber": null
-      }
+      },
+      "trainingEligible": false
     },
     {
       "drawId": "bonoloto-1992-07-12",
@@ -10061,12 +10508,41 @@
         }
       },
       "verification": {
-        "status": "SECONDARY_VALIDATED",
+        "status": "OFFICIAL_SELAE_VALIDATED",
         "checks": [
           "csv-shape",
           "ranges",
-          "unique-main"
-        ]
+          "unique-main",
+          "official-fechav3-exact-date",
+          "official-main-cross-check",
+          "official-complementary-cross-check",
+          "official-reintegro-cross-check"
+        ],
+        "officialCrossCheck": {
+          "provider": "SELAE",
+          "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920712",
+          "checkedAt": "2026-08-25T18:15:45.427Z",
+          "officialDrawId": "74301001",
+          "exactDate": true,
+          "fields": {
+            "main": true,
+            "complementary": true,
+            "reintegro": true
+          },
+          "complete": true,
+          "officialResult": {
+            "main": [
+              12,
+              21,
+              28,
+              32,
+              42,
+              49
+            ],
+            "complementary": 36,
+            "reintegro": 1
+          }
+        }
       },
       "economics": {
         "currency": "EUR",
@@ -10153,12 +10629,51 @@
         }
       },
       "verification": {
-        "status": "SECONDARY_VALIDATED",
+        "status": "OFFICIAL_CONFLICT_QUARANTINED",
         "checks": [
           "csv-shape",
           "ranges",
-          "unique-main"
-        ]
+          "unique-main",
+          "official-selae-conflict-quarantined"
+        ],
+        "officialCrossCheck": {
+          "provider": "SELAE",
+          "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920713",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
+          "exactDate": true,
+          "fields": {
+            "main": true,
+            "complementary": true,
+            "reintegro": false
+          },
+          "complete": false,
+          "conflictReason": "OFFICIAL_RESULT_COMPONENT_MISMATCH",
+          "storedResult": {
+            "main": [
+              11,
+              14,
+              31,
+              43,
+              45,
+              49
+            ],
+            "complementary": 32,
+            "reintegro": 0
+          },
+          "officialResult": {
+            "main": [
+              11,
+              14,
+              31,
+              43,
+              45,
+              49
+            ],
+            "complementary": 32,
+            "reintegro": 1,
+            "raw": "11 - 14 - 31 - 43 - 45 - 49 C(32) R(1)"
+          }
+        }
       },
       "economics": {
         "currency": "EUR",
@@ -10213,7 +10728,8 @@
       "official": {
         "drawId": "74401002",
         "drawNumber": null
-      }
+      },
+      "trainingEligible": false
     },
     {
       "drawId": "bonoloto-1992-07-14",
@@ -10245,12 +10761,51 @@
         }
       },
       "verification": {
-        "status": "SECONDARY_VALIDATED",
+        "status": "OFFICIAL_CONFLICT_QUARANTINED",
         "checks": [
           "csv-shape",
           "ranges",
-          "unique-main"
-        ]
+          "unique-main",
+          "official-selae-conflict-quarantined"
+        ],
+        "officialCrossCheck": {
+          "provider": "SELAE",
+          "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920714",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
+          "exactDate": true,
+          "fields": {
+            "main": true,
+            "complementary": true,
+            "reintegro": false
+          },
+          "complete": false,
+          "conflictReason": "OFFICIAL_RESULT_COMPONENT_MISMATCH",
+          "storedResult": {
+            "main": [
+              10,
+              11,
+              21,
+              27,
+              28,
+              47
+            ],
+            "complementary": 36,
+            "reintegro": 0
+          },
+          "officialResult": {
+            "main": [
+              10,
+              11,
+              21,
+              27,
+              28,
+              47
+            ],
+            "complementary": 36,
+            "reintegro": 1,
+            "raw": "10 - 11 - 21 - 27 - 28 - 47 C(36) R(1)"
+          }
+        }
       },
       "economics": {
         "currency": "EUR",
@@ -10305,7 +10860,8 @@
       "official": {
         "drawId": "74501003",
         "drawNumber": null
-      }
+      },
+      "trainingEligible": false
     },
     {
       "drawId": "bonoloto-1992-07-15",
@@ -10337,12 +10893,51 @@
         }
       },
       "verification": {
-        "status": "SECONDARY_VALIDATED",
+        "status": "OFFICIAL_CONFLICT_QUARANTINED",
         "checks": [
           "csv-shape",
           "ranges",
-          "unique-main"
-        ]
+          "unique-main",
+          "official-selae-conflict-quarantined"
+        ],
+        "officialCrossCheck": {
+          "provider": "SELAE",
+          "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920715",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
+          "exactDate": true,
+          "fields": {
+            "main": true,
+            "complementary": true,
+            "reintegro": false
+          },
+          "complete": false,
+          "conflictReason": "OFFICIAL_RESULT_COMPONENT_MISMATCH",
+          "storedResult": {
+            "main": [
+              6,
+              8,
+              11,
+              17,
+              20,
+              33
+            ],
+            "complementary": 47,
+            "reintegro": 0
+          },
+          "officialResult": {
+            "main": [
+              6,
+              8,
+              11,
+              17,
+              20,
+              33
+            ],
+            "complementary": 47,
+            "reintegro": 1,
+            "raw": "6 - 8 - 11 - 17 - 20 - 33 C(47) R(1)"
+          }
+        }
       },
       "economics": {
         "currency": "EUR",
@@ -10397,7 +10992,8 @@
       "official": {
         "drawId": "74601004",
         "drawNumber": null
-      }
+      },
+      "trainingEligible": false
     },
     {
       "drawId": "bonoloto-1992-07-19",
@@ -11528,7 +12124,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920803",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -11660,7 +12256,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920804",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -11792,7 +12388,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920805",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -12045,7 +12641,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920810",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -12177,7 +12773,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920811",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -12309,7 +12905,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920812",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -13046,7 +13642,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920824",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -13178,7 +13774,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920825",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -13310,7 +13906,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920826",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -13563,7 +14159,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920831",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -13695,7 +14291,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920901",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -13827,7 +14423,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920902",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -14080,7 +14676,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920907",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -14212,7 +14808,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920908",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -14344,7 +14940,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920909",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -14597,7 +15193,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920914",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -14729,7 +15325,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920915",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -14861,7 +15457,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920916",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -15114,7 +15710,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920921",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -15246,7 +15842,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920922",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -15378,7 +15974,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920923",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -15631,7 +16227,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920928",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -15763,7 +16359,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920929",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -15895,7 +16491,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19920930",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -16148,7 +16744,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921005",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -16280,7 +16876,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921006",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -16412,7 +17008,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921007",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -16665,7 +17261,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921012",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -16797,7 +17393,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921013",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -16929,7 +17525,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921014",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -17182,7 +17778,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921019",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -17314,7 +17910,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921020",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -17446,7 +18042,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921021",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -17699,7 +18295,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921026",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -17831,7 +18427,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921027",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -17963,7 +18559,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921028",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -18216,7 +18812,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921102",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -18348,7 +18944,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921103",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -18480,7 +19076,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921104",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -18733,7 +19329,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921109",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -18865,7 +19461,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921110",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -18997,7 +19593,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921111",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -19734,7 +20330,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921123",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -19866,7 +20462,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921124",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -19998,7 +20594,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921125",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -20251,7 +20847,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921130",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -20383,7 +20979,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921201",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -20515,7 +21111,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921202",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -20768,7 +21364,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921207",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -20900,7 +21496,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921208",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -21032,7 +21628,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921209",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -21285,7 +21881,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921214",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -21417,7 +22013,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921215",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -21549,7 +22145,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921216",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -21802,7 +22398,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921221",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -21934,7 +22530,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921222",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -22066,7 +22662,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921223",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -22319,7 +22915,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921228",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -22451,7 +23047,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921229",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
@@ -22583,7 +23179,7 @@
         "officialCrossCheck": {
           "provider": "SELAE",
           "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=BONO&fecha_sorteo=19921230",
-          "checkedAt": "2026-08-25T17:17:54.990Z",
+          "checkedAt": "2026-08-25T18:16:07.721Z",
           "exactDate": true,
           "fields": {
             "main": true,
