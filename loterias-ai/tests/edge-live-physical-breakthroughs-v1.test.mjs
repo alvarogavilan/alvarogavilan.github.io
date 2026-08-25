@@ -5,46 +5,29 @@ import {buildBreakthroughCards,buildCombinedBreakthroughCards,cardHtml} from '..
 const online=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/spain-igt-persistent-state-candidates-v1.json','utf8'));
 const physical=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/spain-igt-physical-variable-state-v1.json','utf8'));
 
-const physicalCards=buildBreakthroughCards(physical);
-assert.equal(physicalCards.length,2);
-assert.deepEqual(physicalCards.map(x=>x.game),['Scarab','Ocean’s Magic']);
-for(const c of physicalCards){
-  assert.equal(c.action,'NO_PLAY');
-  assert.equal(c.sourceType,'PHYSICAL');
-  assert.equal(c.crossPlayerVerified,false);
-  assert.equal(c.preWagerVisibleVerified,false);
-  assert.equal(c.decisiveBlocker,'FALTA_FINGERPRINT_LOCAL_SIN_APOSTAR');
-  const html=cardHtml(c);
-  assert.match(html,/CASINO FÍSICO/);
-  assert.match(html,/NO ES SEÑAL DE APUESTA/);
-  assert.match(html,/LOCAL: POR CERRAR/);
-  assert.match(html,/RTP PUBLICADO<\/small><b>—<\/b>/);
-  assert.match(html,/APUESTA MÍN\.<\/small><b>—<\/b>/);
-  assert.doesNotMatch(html,/0,00\s*€/);
-  assert.doesNotMatch(html,/0\.00%/);
-  assert.doesNotMatch(html,/JUGAR AHORA/);
-}
-
-const scarab=physicalCards.find(x=>x.game==='Scarab');
-assert.ok(scarab);
-assert.equal(scarab.globalInheritedStateDocumented,true);
-assert.equal(scarab.deterministicLowerBoundDiscovered,true);
-assert.equal(scarab.status,'P0 · COTA DETERMINISTA');
-assert.match(scarab.mechanism,/2×\/20×\/50×\/200×/);
-assert.match(scarab.strongFinding,/teorema distribution-free/);
-assert.match(cardHtml(scarab),/COTA DETERMINISTA/);
-assert.match(cardHtml(scarab),/La fórmula está demostrada/);
-
-const ocean=physicalCards.find(x=>x.game==='Ocean’s Magic');
-assert.ok(ocean);
-assert.equal(ocean.deterministicLowerBoundDiscovered,false);
-assert.equal(ocean.status,'P0 · FÍSICO ESPAÑA');
-
+assert.deepEqual(buildBreakthroughCards(physical),[]);
 const combined=buildCombinedBreakthroughCards([online,physical]);
-assert.equal(combined.length,4);
-assert.equal(combined.filter(x=>x.sourceType==='PHYSICAL').length,2);
-assert.equal(combined.filter(x=>x.sourceType==='ONLINE').length,2);
-assert.equal(combined.filter(x=>x.deterministicLowerBoundDiscovered===true).length,1);
+assert.equal(combined.length,2);
+assert.ok(combined.every(x=>x.sourceType==='ONLINE'));
+assert.ok(combined.every(x=>x.promotion===false));
 assert.ok(combined.every(x=>x.action==='NO_PLAY'));
+
+const promoDataset={realMoneyAllowed:false,sourceType:'ONLINE',promotion:true,operator:{name:'Promo'},candidates:[{id:'x',game:'Bono'}]};
+assert.deepEqual(buildBreakthroughCards(promoDataset),[]);
+
+const promoCandidate={...online,candidates:[{...online.candidates[0],promotion:true},online.candidates[1]]};
+assert.deepEqual(buildBreakthroughCards(promoCandidate).map(x=>x.game),['Regal Riches']);
+
+const physicalTaggedCandidate={...online,candidates:[{...online.candidates[0],sourceType:'PHYSICAL'},online.candidates[1]]};
+assert.deepEqual(buildBreakthroughCards(physicalTaggedCandidate).map(x=>x.game),['Regal Riches']);
+
+assert.equal(cardHtml({sourceType:'PHYSICAL',game:'Scarab'}),'');
+assert.equal(cardHtml({sourceType:'ONLINE',promotion:true,game:'Promo'}),'');
+
+const source=fs.readFileSync('loterias-ai/edge-live/research-breakthroughs-v1.mjs','utf8');
+assert.doesNotMatch(source,/spain-igt-physical-variable-state-v1\.json/);
+assert.doesNotMatch(source,/function buildPhysicalCards/);
+assert.doesNotMatch(source,/CASINO FÍSICO/);
+assert.match(source,/0 FÍSICOS · 0 PROMOS/);
 
 console.log('edge-live-physical-breakthroughs-v1.test.mjs: PASS');
