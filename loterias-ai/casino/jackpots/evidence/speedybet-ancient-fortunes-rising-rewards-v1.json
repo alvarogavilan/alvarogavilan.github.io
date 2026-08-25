@@ -1,0 +1,120 @@
+{
+  "version": "speedybet-ancient-fortunes-rising-rewards-v1",
+  "generatedAt": "2026-08-25T10:40:00.000Z",
+  "mode": "ONLINE_SPAIN_MECHANISM_RESEARCH_NO_PLAY",
+  "target": {
+    "operator": "speedybet-es",
+    "game": "Ancient Fortunes Minotaur Rising",
+    "currentListingSource": "https://www.speedybet.es/hold-and-win",
+    "currentListingObserved": true,
+    "listedBetRangeEUR": [0.10, 25],
+    "exactSpeedybetRtpVerified": false,
+    "currentFiveMeterValuesVerified": false
+  },
+  "spanishConfigurationComparators": [
+    {
+      "operator": "Casino777 Spain",
+      "source": "https://static.casino777.es/docs/rtp-desktop-202607.html",
+      "theoreticalRtpPct": 94.03,
+      "betRangeEUR": [0.10, 25],
+      "sameExactTitle": true,
+      "sameBetRangeAsSpeedybet": true,
+      "transferToSpeedybetAllowed": false
+    },
+    {
+      "operator": "Jokerbet Spain",
+      "source": "https://www.jokerbet.es/tragaperras-slots/ancient-fortunes-minotaur-rising.html",
+      "provider": "GAMES GLOBAL",
+      "theoreticalRtpPct": 94.01,
+      "betRangeEUR": [0.10, 5],
+      "sameExactTitle": true,
+      "transferToSpeedybetAllowed": false
+    },
+    {
+      "operator": "Goldenpark Spain",
+      "source": "https://www.goldenpark.es/tragaperras-online/ancient-fortunes-minotaur-rising",
+      "provider": "Games Global",
+      "theoreticalRtpPct": 94.01,
+      "betRangeEUR": [0.10, 5],
+      "sameExactTitle": true,
+      "transferToSpeedybetAllowed": false
+    }
+  ],
+  "formalRulesComparator": {
+    "source": "https://www.pokerstars.it/content/dam/new-dam/italy/website/documenti/slot/Ancient%20Fortunes%20Minotaur%20Rising.pdf",
+    "sourceClass": "FORMAL_OPERATOR_GAME_RULES_DIFFERENT_JURISDICTION",
+    "theoreticalRtpPct": 94.03,
+    "reels": [
+      {"reel":1,"tier":"GREEN","startXBet":15,"incrementXBet":0.4,"mustHitByXBet":25},
+      {"reel":2,"tier":"RED","startXBet":300,"incrementXBet":1,"mustHitByXBet":500},
+      {"reel":3,"tier":"GOLD","startXBet":600,"incrementXBet":1,"mustHitByXBet":1000},
+      {"reel":4,"tier":"BLUE","startXBet":60,"incrementXBet":1,"mustHitByXBet":100},
+      {"reel":5,"tier":"PURPLE","startXBet":5,"incrementXBet":0.4,"mustHitByXBet":15}
+    ],
+    "betScaling": true,
+    "tokenMechanism": "One or more Jackpot Activation tokens on a reel increase that reel's associated jackpot and can award it.",
+    "awardAtMaximum": "The jackpot is awarded automatically when the maximum is reached through the jackpot event progression.",
+    "resetAfterAward": true,
+    "exactTriggerProbabilityPublished": false
+  },
+  "providerPatent": {
+    "publication": "US20250329217A1",
+    "title": "Method and system for configuring a computing system with multiple jackpot state computer-implemented game",
+    "applicant": "Games Global Operations Limited",
+    "filed": "2024-04-22",
+    "published": "2025-10-23",
+    "source": "https://patents.justia.com/patent/20250329217",
+    "explicitTechnologyTerm": "rising rewards style jackpots",
+    "coreEconomicEquation": "jackpotRTP = p_trigger * jackpotValue",
+    "constantRtpConstruction": "If jackpot value grows by factor x, trigger probability can be divided by x so the jackpot RTP remains unchanged.",
+    "perSpinDynamicHazard": true,
+    "incrementProbabilityAlsoStateDependent": true,
+    "finalStateRule": "The capped value cannot be reached without the jackpot being awarded; at the penultimate state increment-only probability is zero.",
+    "workedExample": {
+      "rangeXBet": [5,15],
+      "incrementXBet": 0.5,
+      "jackpotComponentRtpPct": 5,
+      "statesThatCanTrigger": 20,
+      "triggerProbabilityFormula": "p_t(n) = jackpotComponentRTP / currentJackpotValue",
+      "deploymentMatchToMinotaur": false,
+      "mismatchReason": "Minotaur's purple tier uses the same 5x-to-15x range but formal rules specify 0.4x increments, while the patent worked example uses 0.5x. The table is therefore a mathematical family example, not evidence of Minotaur's exact control table."
+    }
+  },
+  "conditionalTheorem": {
+    "statement": "If the deployed Minotaur Rising Rewards implementation uses the patent's constant-jackpot-RTP construction, jackpot meter height alone cannot increase expected return: p(v)*v is constant by design.",
+    "proof": "For jackpot component RTP q and current value v, p(v)=q/v. Therefore EV_jackpot(v)=p(v)*v=q for every state. Increasing v lowers p in exact inverse proportion and does not change the jackpot component's RTP.",
+    "consequence": "A strategy that plays solely because a meter is near Must Hit By is not scientifically justified unless the deployed hazard function is shown to deviate from the constant-RTP construction or another state-dependent component creates positive EV.",
+    "exactDeploymentBindingVerified": false
+  },
+  "economicAssessment": {
+    "mechanismSeedCapIncrementClosed": true,
+    "betScalingClosed": true,
+    "providerFamilyConstantRtpMechanismDocumented": true,
+    "speedyExactRtpClosed": false,
+    "speedyCurrentMeterStateClosed": false,
+    "speedyExactHazardClosed": false,
+    "highMeterAdvantageProven": false,
+    "positiveEvProven": false,
+    "status": "HIGH_METER_AP_HYPOTHESIS_MATERIALLY_FALSIFIED_PENDING_DEPLOYMENT_BINDING"
+  },
+  "nextDecisiveEvidence": [
+    "Capture or recover Speedybet's exact current five Rising Rewards meter values without wagering.",
+    "Recover an exact Speedybet/provider rules or configuration fingerprint for the deployed RTP/hazard table.",
+    "Test whether the deployed trigger probability follows the provider patent's inverse-value constant-RTP rule or a different state-dependent schedule."
+  ],
+  "execution": {
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0,
+    "decision": "NO_PLAY"
+  },
+  "hardGuards": {
+    "sameTitleAcrossSpainDoesNotProveSameRtpConfig": true,
+    "sameBetRangeDoesNotProveSameBinary": true,
+    "patentEmbodimentDoesNotProveDeployment": true,
+    "mustHitByDoesNotByItselfImplyPositiveEv": true,
+    "nearCapDoesNotByItselfAuthorizePlay": true,
+    "noForeignRtpTransfer": true
+  }
+}
