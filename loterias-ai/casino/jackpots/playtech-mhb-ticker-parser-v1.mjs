@@ -6,6 +6,9 @@ const TARGETS = Object.freeze({
   'krjp-1': {network:'KINGDOMS_RISE', tier:'EPIC', guarantee:'NONE'},
   'krjp-2': {network:'KINGDOMS_RISE', tier:'POWER_STRIKE', guarantee:'AMOUNT'},
   'krjp-3': {network:'KINGDOMS_RISE', tier:'DAILY_STRIKE', guarantee:'TIME'},
+  'sljp-1': {network:'SPORTING_LEGENDS', tier:'DAILY', guarantee:'TIME', providerScope:'GLOBAL'},
+  'sljp-2': {network:'SPORTING_LEGENDS', tier:'WEEKLY', guarantee:'TIME', providerScope:'GLOBAL'},
+  'sljp-3': {network:'SPORTING_LEGENDS', tier:'MEGA', guarantee:'NONE', providerScope:'GLOBAL'},
 });
 
 function attrs(src='') {
@@ -84,7 +87,7 @@ export function parsePlaytechMhbTickerXml(xml,{
     }
   }
   return {
-    version:'playtech-mhb-ticker-parser-v1.4-protocol-scope-safe',
+    version:'playtech-mhb-ticker-parser-v1.5-sporting-legends',
     filters:{currency:wantedCurrency,casino:wantedCasino,local:wantedLocal,instanceCode:wantedInstanceCode},
     requestCasino,
     rows:out,

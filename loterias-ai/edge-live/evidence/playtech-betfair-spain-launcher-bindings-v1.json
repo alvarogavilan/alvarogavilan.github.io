@@ -1,6 +1,6 @@
 {
-  "version": "playtech-betfair-spain-launcher-bindings-v1.1-gods-and-giants",
-  "generatedAt": "2026-08-26T08:38:00Z",
+  "version": "playtech-betfair-spain-launcher-bindings-v1.2-parser-v1.5",
+  "generatedAt": "2026-08-26T10:30:00Z",
   "mode": "CURRENT_SPAIN_PUBLIC_LAUNCHER_BINDING_NO_PLAY",
   "market": "ES",
   "operator": "Betfair Spain",
@@ -17,13 +17,7 @@
       "modeObserved": "real",
       "currentTierNamesOnPublicPage": ["DAILY_STRIKE", "POWER_STRIKE", "EPIC"],
       "whatThisProves": "Current Betfair Spain public launcher binding for the exact Kingdoms Rise title and current public presence of all three named jackpot tiers.",
-      "whatThisDoesNotProve": [
-        "Underlying Playtech IMS casino name.",
-        "Ticker host.",
-        "Local/global jackpot topology.",
-        "Ticker instanceCode.",
-        "Current tier-specific amount or guaranteed-hit timestamp/amount."
-      ]
+      "whatThisDoesNotProve": ["Underlying Playtech IMS casino name.","Ticker host.","Local/global jackpot topology.","Ticker instanceCode.","Current tier-specific amount or guaranteed-hit timestamp/amount."]
     },
     {
       "network": "AGE_OF_GODS_NORSE",
@@ -38,13 +32,7 @@
       "onePlayComparatorUrl": "https://oneplaycasino.es/juegos/age-of-the-gods-norse-king-of-asgard",
       "sameTitleImsEquivalencePromoted": false,
       "whatThisProves": "Current Betfair Spain launcher binding for the exact Norse King of Asgard title. Separately, OnePlay publishes the Playtech/Ash IMS code for its own Spanish deployment.",
-      "whatThisDoesNotProve": [
-        "That Betfair's internal IMS game code equals OnePlay's gpas_aogkasgard_pop.",
-        "Which Norse lower tiers are active on Betfair.",
-        "Underlying Playtech IMS casino name.",
-        "Ticker host.",
-        "Current Daily value or guaranteedHitTime."
-      ]
+      "whatThisDoesNotProve": ["That Betfair's internal IMS game code equals OnePlay's gpas_aogkasgard_pop.","Which Norse lower tiers are active on Betfair.","Underlying Playtech IMS casino name.","Ticker host.","Current Daily value or guaranteedHitTime."]
     },
     {
       "network": "AGE_OF_GODS_NORSE",
@@ -63,13 +51,22 @@
       "dailyActiveOnBetfairFromThisPage": false,
       "providerLinkedGameCodeComparator": "gpas_aoggagiants_pop",
       "whatThisProves": "Betfair Spain currently catalogs Gods and Giants and exposes an exact public launcher gameId for the title. The page's historical rules show a Betfair configuration with Ultimate, Extra and Instant, not Daily.",
-      "whatThisDoesNotProve": [
-        "That Betfair's current active tier set is unchanged from the historical rules text.",
-        "That the headline jackpot is any specific Norse tier.",
-        "Underlying Playtech IMS casino name.",
-        "Ticker host.",
-        "Current aognjp-2 Daily state."
-      ]
+      "whatThisDoesNotProve": ["That Betfair's current active tier set is unchanged from the historical rules text.","That the headline jackpot is any specific Norse tier.","Underlying Playtech IMS casino name.","Ticker host.","Current aognjp-2 Daily state."]
+    },
+    {
+      "network": "SPORTING_LEGENDS",
+      "title": "AP McCoy Sporting Legends",
+      "publicGamePage": "https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn",
+      "launcherHost": "https://launcher.betfair.es/",
+      "launcherGameId": "ap-mccoy-sporting-legends-cptn",
+      "launchProduct": "casino",
+      "dataChannel": "casino",
+      "modeObserved": "real",
+      "providerDailyCode": "sljp-1",
+      "providerWeeklyCode": "sljp-2",
+      "providerMegaCode": "sljp-3",
+      "whatThisProves": "Current Betfair Spain launcher identity for AP McCoy plus provider-code readiness for Sporting Legends tiers.",
+      "whatThisDoesNotProve": ["Betfair Spain ticker host.","Betfair Spain IMS casino name.","That a third-party global Sporting amount is the exact current Betfair Spain state.","Current guaranteedHitTime.","Player-specific hazard."]
     }
   ],
   "tickerRecoveryState": {
@@ -78,25 +75,24 @@
     "newJackpotXmlEndpointRecoveredForBetfairSpain": false,
     "exactImsCasinoNameRecovered": false,
     "currentAognjp2EurGlobalRowRecovered": false,
+    "currentSljp1EurGlobalRowRecovered": false,
     "currentGuaranteedHitTimeRecovered": false,
     "instanceCode": "OPTIONAL_UNLESS_PRESENT_OR_NEEDED_TO_DISAMBIGUATE"
   },
   "parserReadiness": {
-    "parserVersion": "playtech-mhb-ticker-parser-v1.4-protocol-scope-safe",
+    "parserVersion": "playtech-mhb-ticker-parser-v1.5-sporting-legends",
     "exactCurrencyFilter": true,
     "exactCasinoFilter": true,
     "exactLocalGlobalFilter": true,
     "instanceCodeOptionalByTickerSpec": true,
     "exactInstanceCodeFilterWhenPresent": true,
-    "providerDocumentedGlobalScopeGuard": true
+    "providerDocumentedGlobalScopeGuard": true,
+    "sportingLegendsSljp1DailySupported": true,
+    "sportingLegendsSljp2WeeklySupported": true,
+    "sportingLegendsSljp3MegaSupported": true,
+    "sportingLegendsTimeGuaranteeFailsClosed": true
   },
-  "execution": {
-    "decision": "NO_PLAY",
-    "realMoneyAllowed": false,
-    "realStakeEUR": 0,
-    "maxSpins": 0,
-    "maxTotalStakeEUR": 0
-  },
+  "execution": {"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
   "hardGuards": {
     "onlineOnly": true,
     "nonPromoOnly": true,
@@ -105,7 +101,8 @@
     "headlineJackpotDoesNotBindLowerTier": true,
     "historicalTierSetDoesNotProveCurrentTierSet": true,
     "foreignOrComparatorTickerHostNeverTransferred": true,
+    "thirdPartyGlobalAmountDoesNotBindBetfairSpain": true,
     "noWagerProbe": true
   },
-  "nextDecisiveEvidence": "Recover a current Spanish same-network Playtech ticker/casino binding and parse EUR aognjp-2 with exact IMS casino plus local=0; instanceCode is only required if present or needed to disambiguate."
+  "nextDecisiveEvidence": "Recover a current Betfair Spain same-deployment Playtech ticker/casino binding and parse the target EUR global row with exact IMS casino plus local=0 and required guarantee fields."
 }

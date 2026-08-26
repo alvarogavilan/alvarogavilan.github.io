@@ -1,6 +1,6 @@
 {
-  "version": "betfair-spain-sporting-legends-ap-mccoy-p0-v1",
-  "generatedAt": "2026-08-26T12:20:00+02:00",
+  "version": "betfair-spain-sporting-legends-ap-mccoy-p0-v1.1-global-candidate-observer",
+  "generatedAt": "2026-08-26T12:45:00+02:00",
   "mode": "SPAIN_ONLINE_TIMED_JACKPOT_P0_NO_PLAY",
   "market": "ES",
   "operator": "Betfair Spain",
@@ -61,11 +61,49 @@
     "megaGuaranteedHitTimeAttributeExpected": false,
     "localScopeInExamples": 0,
     "licenseeMustUseOwnInstanceNamesAndTickerUrls": true,
+    "parserVersionReady": "playtech-mhb-ticker-parser-v1.5-sporting-legends",
+    "parserSupportsSljpDailyWeeklyMega": true,
+    "parserRejectsLocal1ForProviderGlobalSporting": true,
+    "parserFailsClosedWhenTimedTierMissingGuaranteedHitTime": true,
     "betfairSpainTickerHostRecovered": false,
     "betfairSpainImsCasinoRecovered": false,
     "currentBetfairSpainSljp1RowRecovered": false,
     "currentBetfairSpainDailyAmountRecovered": false,
     "currentBetfairSpainGuaranteedHitTimeRecovered": false
+  },
+  "globalCandidateSnapshot": {
+    "observedDate": "2026-08-26",
+    "scope": "THIRD_PARTY_GLOBAL_CANDIDATE_NOT_BETFAIR_SPAIN_BINDING",
+    "dailyEURRounded": 123,
+    "weeklyEURRounded": 1138,
+    "megaEURRounded": 220292,
+    "crossSourceRoundedMatch": true,
+    "sources": [
+      {
+        "name": "Casino Listings Playtech Progressive Jackpots",
+        "url": "https://www.casinolistings.com/jackpots/playtech",
+        "crawledFreshness": "today",
+        "dailyEURRounded": 123,
+        "weeklyEURRounded": 1138,
+        "megaEURRounded": 220292
+      },
+      {
+        "name": "JackpotScout Playtech",
+        "url": "https://jackpotscout.net/providers/playtech",
+        "crawledFreshness": "2 days",
+        "dailyEURRounded": 123,
+        "weeklyEURRounded": 1138,
+        "megaEURRounded": 220292
+      }
+    ],
+    "globalFeedAppearsLive": true,
+    "betfairSpainBindingVerified": false,
+    "exactTickerHostRecovered": false,
+    "exactImsCasinoRecovered": false,
+    "guaranteedHitTimeRecovered": false,
+    "sameSessionCentMatchAgainstBetfairSpain": false,
+    "usableForExecution": false,
+    "scientificUse": "Candidate global state for passive cycle/reset observation and future exact-binding cross-check only."
   },
   "economicScreen": {
     "bestPublishedNonJackpotRtpCandidatePct": 97.17,
@@ -79,6 +117,7 @@
     "dailyWeeklyTimedMechanicVerified": true,
     "providerSljpCodesVerified": true,
     "jackpotRtpIndependencePublished": true,
+    "globalCandidateStateObserved": true,
     "exactBetfairSpainTickerImsBindingVerified": false,
     "currentDailyAmountVerified": false,
     "currentGuaranteedHitTimeVerified": false,
@@ -90,6 +129,7 @@
   "nextDecisiveEvidence": [
     "Recover Betfair Spain's same-deployment Sporting Legends ticker URL and IMS casino identity without login or wager.",
     "Parse current EUR local=0 sljp-1 amount plus guaranteedHitTime in the same observation window as the Spanish AP McCoy deployment.",
+    "Use the global candidate snapshot only for passive reset/cycle detection until a same-session Betfair Spain binding exists.",
     "Determine the exact stake-to-player-trigger probability rule or a rigorous lower bound from provider/operator evidence; contribution rate alone is not player hazard.",
     "Observe a full Daily cycle/reset prospectively and test the published first-bet-after-deadline rule passively.",
     "Only promote GREEN if a conservative player-specific lower-bound EV exceeds 100% after all execution gates."
@@ -108,6 +148,7 @@
     "noWagerProbe": true,
     "staleHeadlineSnapshotCannotDriveExecution": true,
     "foreignTickerCannotPopulateSpainState": true,
+    "thirdPartyGlobalCandidateCannotPopulateSpainState": true,
     "contributionRateIsNotPlayerHazard": true,
     "higherStakeQualitativeRuleIsNotExactProbability": true,
     "rtpAbove100RequiresCurrentPlayerSpecificJackpotEvProof": true
