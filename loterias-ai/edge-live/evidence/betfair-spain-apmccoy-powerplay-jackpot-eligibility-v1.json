@@ -1,0 +1,75 @@
+{
+  "version": "betfair-spain-apmccoy-powerplay-jackpot-eligibility-v1",
+  "generatedAt": "2026-08-26T18:58:00+02:00",
+  "market": "ES",
+  "operator": "Betfair Spain",
+  "provider": "Playtech",
+  "game": "AP McCoy Sporting Legends™",
+  "gameId": "ap-mccoy-sporting-legends-cptn",
+  "sourceType": "ONLINE",
+  "promotion": false,
+  "sources": [
+    {
+      "class": "PLAYTECH_PRIMARY_RELEASE",
+      "url": "https://www.playtech.com/ap-mccoy-brings-playtech-power-play-to-sporting-legends-series/",
+      "published": "2019-03-06",
+      "facts": [
+        "AP McCoy is the first Sporting Legends title with Playtech Power Play.",
+        "Accumulator and Accumulator Plus are five-spin bundles.",
+        "Every Sporting Legends jackpot can be triggered on any spin and for any stake."
+      ]
+    },
+    {
+      "class": "CURRENT_BETFAIR_SPAIN_EXACT_GAME_RULES",
+      "url": "https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn",
+      "observed": "2026-08-26",
+      "facts": [
+        "Accumulator costs 10 times selected total bet and has five spins.",
+        "Accumulator Plus costs 20 times selected total bet and has five initial spins plus a Super Spin.",
+        "Daily, Weekly and Mega jackpots can be triggered during Playtech Power Play.",
+        "Any bet size is eligible and a larger bet has a greater chance to trigger a jackpot."
+      ]
+    }
+  ],
+  "closedSemantics": {
+    "powerPlayExistsInExactBetfairSpainBuild": true,
+    "sportingJackpotsCanTriggerDuringPowerPlayInExactBetfairSpainBuild": true,
+    "providerDescribesPowerPlayAsFiveSpinBundle": true,
+    "providerStatesJackpotsCanTriggerOnAnySpin": true,
+    "initialFivePowerPlaySpinsAreJackpotEligibleProviderLevelInference": true,
+    "inferenceRequiresNoTransferFromAnotherOperator": true
+  },
+  "stillUnknown": {
+    "exactJackpotStakeWeightingDuringPowerPlayVerified": false,
+    "wholePurchase10x20xIsHazardWeightVerified": false,
+    "selectedTotalBetPerInternalSpinIsHazardWeightVerified": false,
+    "eachInternalSpinHasEqualHazardWeightVerified": false,
+    "superSpinJackpotEligibilityVerified": false,
+    "superSpinIndependentHazardWeightVerified": false,
+    "exactPlayerTriggerFunctionVerified": false
+  },
+  "scientificConsequence": "The question of whether Sporting Legends jackpots can occur inside Power Play is closed for the exact Betfair Spain AP McCoy rules, and Playtech primary launch material strongly supports eligibility on the five internal spins. This does not identify the stake weight used by the jackpot trigger engine. Therefore the 97.17% Accumulator Plus ceiling remains non-executable for jackpot EV math.",
+  "economicGuard": {
+    "accumulatorPlusPublishedMaxRtpPct": 97.17,
+    "nominalAdditionalReturnHurdlePct": 2.83,
+    "nominalHurdleUsableForExecution": false,
+    "reason": "POWER_PLAY_JACKPOT_STAKE_WEIGHTING_UNVERIFIED"
+  },
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "providerEligibilityEvidenceCannotInventBetfairTickerState": true,
+    "anySpinDoesNotMeanEqualProbabilityPerSpin": true,
+    "fiveSpinBundleDoesNotMeanFiveTimesHazard": true,
+    "costMultipleDoesNotEqualJackpotHazardWeight": true,
+    "superSpinEligibilityCannotBeAssumed": true,
+    "noWagerProbe": true
+  }
+}
