@@ -4,13 +4,15 @@ import {analyzeBetfairSportingWebtickersRequestSemantics} from '../edge-backend/
 const config='{"jackpotsCasino":"bf_es","liveEndpointUrl":"https://webtickers.malmegas.com/webtickers"}';
 const initial={request:{method:'GET',url:'https://launcher.betfair.es/initialResources/es_ES_desktop',headers:[]},response:{status:200,content:{mimeType:'application/json',text:config}}};
 const launcher={request:{method:'GET',url:'https://launcher.betfair.es/?RPBucket=casino&dataChannel=casino&gameId=ap-mccoy-sporting-legends-cptn&launchProduct=casino&mode=real&returnURL=https%3A%2F%2Fcasino.betfair.es%2Fjuego%2Fap-mccoy-sporting-legends-cptn&switchedToPopup=true',headers:[]},response:{status:200,content:{text:''}}};
+const otherLauncher={request:{method:'GET',url:'https://launcher.betfair.es/?RPBucket=casino&dataChannel=casino&gameId=another-playtech-game-cptn&launchProduct=casino&mode=real',headers:[]},response:{status:200,content:{text:''}}};
+const otherInitial={request:{method:'GET',url:'https://launcher.betfair.es/initialResources/es_ES_desktop?newer=1',headers:[]},response:{status:200,content:{mimeType:'application/json',text:'{"jackpotsCasino":"other_es","liveEndpointUrl":"https://other.example/webtickers"}'}}};
 
 const post={
   request:{method:'POST',url:'https://webtickers.malmegas.com/webtickers?token=QUERY_SECRET',headers:[{name:'Content-Type',value:'application/json'}],postData:{mimeType:'application/json',text:'{"info":1,"casino":"bf_es","game":"sljp-1","currency":"eur","local":0,"token":"BODY_SECRET"}'}},
   response:{status:200,content:{mimeType:'application/json',text:'{"ok":true,"token":"RESPONSE_SECRET"}'}},
 };
 let r=analyzeBetfairSportingWebtickersRequestSemantics({log:{entries:[initial,post]}},{sourceName:'request-post.har'});
-assert.equal(r.version,'betfair-sporting-webtickers-request-semantics-v1.2-exact-game-provenance');
+assert.equal(r.version,'betfair-sporting-webtickers-request-semantics-v1.3-session-provenance');
 assert.equal(r.exactConfiguredWebtickersTrafficObserved,true);
 assert.equal(r.providerDocumentedExactDailyRequestObserved,true);
 assert.equal(r.providerDocumentedExactDailyRequestMatchCount,1);
@@ -29,6 +31,7 @@ assert.equal(m.ambiguityDetected,false);
 assert.equal(m.providerDocumentedGameRequestComplete,true);
 assert.equal(m.exactSportingDailyScopeObserved,true);
 assert.equal(m.exactApMcCoyRealLauncherBindingObserved,false);
+assert.equal(m.exactApMcCoySessionProvenanceVerified,false);
 assert.equal(r.directPublicModernProbeAllowed,false);
 assert.equal(r.usableForOverduePair,false);
 assert.equal(r.execution.decision,'NO_PLAY');
@@ -42,8 +45,40 @@ assert.equal(exactGame.providerDocumentedExactDailyRequestObserved,true);
 assert.equal(exactGame.exactApMcCoyRealLauncherBindingObserved,true);
 assert.equal(exactGame.exactApMcCoyProviderDocumentedDailyRequestObserved,true);
 assert.equal(exactGame.exactApMcCoyProviderDocumentedDailyRequestMatchCount,1);
-assert.equal(exactGame.requestSemanticObservations.find(x=>x.requestContractSemanticsSupportedByProviderSpec)?.exactApMcCoyRealLauncherBindingObserved,true);
+const exactObservation=exactGame.requestSemanticObservations.find(x=>x.requestContractSemanticsSupportedByProviderSpec);
+assert.equal(exactObservation?.exactApMcCoyRealLauncherBindingObserved,true);
+assert.equal(exactObservation?.latestPrecedingRealCasinoLauncherIsExactApMcCoy,true);
+assert.equal(exactObservation?.latestPostLaunchInitialResourcesBindingVerified,true);
+assert.equal(exactObservation?.exactApMcCoySessionProvenanceVerified,true);
+assert.equal(exactObservation?.launcherEntryIndex,0);
+assert.equal(exactObservation?.initialResourcesEntryIndex,1);
 assert.equal(JSON.stringify(exactGame).includes('returnURL='),false);
+
+// A stale AP McCoy launcher in Preserve log cannot lend provenance after another real casino game is launched.
+const staleLauncher=analyzeBetfairSportingWebtickersRequestSemantics({log:{entries:[launcher,initial,otherLauncher,post]}},{sourceName:'stale-launcher.har'});
+assert.equal(staleLauncher.exactApMcCoyRealLauncherBindingObserved,true);
+assert.equal(staleLauncher.providerDocumentedExactDailyRequestObserved,true);
+assert.equal(staleLauncher.exactApMcCoyProviderDocumentedDailyRequestObserved,false);
+assert.equal(staleLauncher.exactApMcCoyProviderDocumentedDailyRequestMatchCount,0);
+const staleObservation=staleLauncher.requestSemanticObservations.find(x=>x.requestContractSemanticsSupportedByProviderSpec);
+assert.equal(staleObservation?.latestPrecedingRealCasinoLauncherIsExactApMcCoy,false);
+assert.equal(staleObservation?.exactApMcCoySessionProvenanceVerified,false);
+assert.equal(staleLauncher.hardGuards.staleExactLauncherCannotEstablishApMcCoyRequestProvenance,true);
+
+// Config captured before the exact launcher cannot establish current AP McCoy session provenance.
+const stalePrelaunchConfig=analyzeBetfairSportingWebtickersRequestSemantics({log:{entries:[initial,launcher,post]}},{sourceName:'stale-prelaunch-config.har'});
+assert.equal(stalePrelaunchConfig.providerDocumentedExactDailyRequestObserved,true);
+assert.equal(stalePrelaunchConfig.exactApMcCoyProviderDocumentedDailyRequestObserved,false);
+assert.equal(stalePrelaunchConfig.requestSemanticObservations[0].latestPrecedingRealCasinoLauncherIsExactApMcCoy,true);
+assert.equal(stalePrelaunchConfig.requestSemanticObservations[0].latestPostLaunchInitialResourcesBindingVerified,false);
+assert.equal(stalePrelaunchConfig.hardGuards.staleOrSupersededConfigCannotEstablishApMcCoyRequestProvenance,true);
+
+// A newer post-launch initialResources supersedes an older matching config.
+const supersededConfig=analyzeBetfairSportingWebtickersRequestSemantics({log:{entries:[launcher,initial,otherInitial,post]}},{sourceName:'superseded-config.har'});
+assert.equal(supersededConfig.providerDocumentedExactDailyRequestObserved,true);
+assert.equal(supersededConfig.exactApMcCoyProviderDocumentedDailyRequestObserved,false);
+assert.equal(supersededConfig.requestSemanticObservations.find(x=>x.requestContractSemanticsSupportedByProviderSpec)?.initialResourcesEntryIndex,2);
+assert.equal(supersededConfig.requestSemanticObservations.find(x=>x.requestContractSemanticsSupportedByProviderSpec)?.exactApMcCoySessionProvenanceVerified,false);
 
 // info=2 is not the documented direct game-based request contract for an exact Daily lookup.
 const info2={...post,request:{...post.request,postData:{mimeType:'application/json',text:'{"info":2,"casino":"bf_es","game":"sljp-1","currency":"EUR","local":0}'}}};
@@ -91,6 +126,7 @@ assert.equal(m.currencyEur,true);
 assert.equal(m.localGlobal,true);
 assert.equal(m.ambiguityDetected,false);
 assert.equal(m.exactApMcCoyRealLauncherBindingObserved,true);
+assert.equal(m.exactApMcCoySessionProvenanceVerified,true);
 serialized=JSON.stringify(r);
 for(const secret of ['WS_QUERY_SECRET','WS_HEADER_SECRET','WS_SEND_SECRET','WS_RECEIVE_SECRET'])assert.equal(serialized.includes(secret),false);
 for(const observation of r.requestSemanticObservations){
