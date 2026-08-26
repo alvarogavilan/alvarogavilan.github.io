@@ -2,12 +2,18 @@ import {analyzeBetfairSportingHar} from './betfair-sporting-har-discovery-v1.mjs
 import {analyzeBetfairSportingWebtickersRequestSemantics} from './betfair-sporting-webtickers-request-semantics-v1.mjs';
 import {analyzeBetfairSportingStructuredWebtickersRows} from './betfair-sporting-webtickers-structured-row-v1.mjs';
 
+const EXACT_GAME_ID='ap-mccoy-sporting-legends-cptn';
 const clean=v=>String(v??'').trim();
 const lower=v=>clean(v).toLowerCase();
 
 function compatibleTransport(request,row){
   if(row?.payloadKind==='websocket-receive')return String(request?.source||'').startsWith('websocket-send:');
   return request?.source==='http-request';
+}
+function latestPrecedingLauncher(bindings,entryIndex){
+  if(!Number.isInteger(entryIndex))return null;
+  const preceding=(bindings||[]).filter(l=>Number.isInteger(l?.index)&&l.index<entryIndex).sort((a,b)=>b.index-a.index);
+  return preceding[0]||null;
 }
 function safeRequest(r){
   return {
@@ -46,7 +52,7 @@ function safeRow(c){
 }
 function fail(reason,extra={}){
   return {
-    version:'betfair-sporting-webtickers-correlated-session-v1.1-launcher-order-attested',
+    version:'betfair-sporting-webtickers-correlated-session-v1.2-latest-launcher-attested',
     mode:'OFFLINE_PASSIVE_EXACT_GAME_REQUEST_RESPONSE_CORRELATION_NO_PLAY',
     valid:false,reason,
     exactApMcCoyRealLauncherBindingObserved:false,
@@ -68,16 +74,18 @@ export function analyzeBetfairSportingCorrelatedWebtickersSession(har,{sourceNam
   try{requests=analyzeBetfairSportingWebtickersRequestSemantics(obj,{sourceName});}catch{return fail('REQUEST_SEMANTICS_FAILED',{sourceName});}
   try{rows=analyzeBetfairSportingStructuredWebtickersRows(obj,{sourceName});}catch{return fail('STRUCTURED_ROW_DISCOVERY_FAILED',{sourceName});}
 
-  const launcherBindings=discovery?.discovery?.exactApMcCoyRealLauncherBindings||[];
-  const exactGame=launcherBindings.length>0;
+  const allLauncherBindings=discovery?.discovery?.betfairRealCasinoLauncherBindings||[];
+  const exactLauncherBindings=discovery?.discovery?.exactApMcCoyRealLauncherBindings||[];
+  const exactGame=exactLauncherBindings.length>0;
   const requestMatches=(requests?.requestSemanticObservations||[]).filter(r=>r?.requestContractSemanticsSupportedByProviderSpec===true&&r?.ambiguityDetected!==true);
   const rowCandidates=rows?.structuredSljp1RowCandidates||[];
   const correlated=[];
-  let ambiguousCorrelationCount=0,launcherOrderRejectedCount=0;
+  let ambiguousCorrelationCount=0,launcherOrderRejectedCount=0,staleExactLauncherRejectedCount=0;
 
   for(const row of rowCandidates){
-    const launcherPrecedesRow=launcherBindings.some(l=>Number.isInteger(l?.index)&&Number.isInteger(row?.entryIndex)&&l.index<row.entryIndex);
-    if(!launcherPrecedesRow){launcherOrderRejectedCount++;continue;}
+    const latestLauncher=latestPrecedingLauncher(allLauncherBindings,row?.entryIndex);
+    if(!latestLauncher){launcherOrderRejectedCount++;continue;}
+    if(latestLauncher.gameId!==EXACT_GAME_ID){staleExactLauncherRejectedCount++;continue;}
     const matches=requestMatches.filter(req=>
       req.entryIndex===row.entryIndex&&
       compatibleTransport(req,row)&&
@@ -89,6 +97,8 @@ export function analyzeBetfairSportingCorrelatedWebtickersSession(har,{sourceNam
       entryIndex:row.entryIndex,
       exactApMcCoyRealLauncherBindingObserved:true,
       exactApMcCoyRealLauncherPrecedesCorrelatedEntry:true,
+      latestPrecedingRealCasinoLauncherIsExactApMcCoy:true,
+      launcherEntryIndex:latestLauncher.index,
       sameEntryRequestResponseCorrelation:true,
       compatibleTransportCorrelation:true,
       expectedBetfairImsCasino:row.expectedBetfairImsCasino||null,
@@ -102,22 +112,24 @@ export function analyzeBetfairSportingCorrelatedWebtickersSession(har,{sourceNam
   }
 
   return {
-    version:'betfair-sporting-webtickers-correlated-session-v1.1-launcher-order-attested',
+    version:'betfair-sporting-webtickers-correlated-session-v1.2-latest-launcher-attested',
     mode:'OFFLINE_PASSIVE_EXACT_GAME_REQUEST_RESPONSE_CORRELATION_NO_PLAY',
     sourceName,
     valid:true,
     exactApMcCoyRealLauncherBindingObserved:exactGame,
-    exactApMcCoyRealLauncherBindingCount:launcherBindings.length,
+    exactApMcCoyRealLauncherBindingCount:exactLauncherBindings.length,
+    betfairRealCasinoLauncherBindingCount:allLauncherBindings.length,
     requestSemanticMatchCount:requestMatches.length,
     structuredSljp1RowCandidateCount:rowCandidates.length,
     correlatedExactDailyCandidateCount:correlated.length,
     correlatedExactDailyCandidates:correlated,
     ambiguousCorrelationCount,
     launcherOrderRejectedCount,
+    staleExactLauncherRejectedCount,
     exactModernResponseSemanticsVerified:false,
     usableForOverduePair:false,
-    scientificUse:'Requires the exact AP McCoy real-money launcher to occur earlier in the same HAR than the correlated webtickers entry, plus a provider-documented sljp-1 EUR local=0 request semantic match and a co-located structured sljp-1 response row on that same network entry with compatible HTTP or WebSocket direction. This closes generic-HAR, later-unrelated-launcher, cross-entry and cross-transport correlation ambiguity but deliberately does not promote the modern response schema to server truth or overdue execution evidence.',
+    scientificUse:'Requires the latest Betfair real-money casino launcher preceding the correlated webtickers entry to be the exact AP McCoy game, plus a provider-documented sljp-1 EUR local=0 request semantic match and a co-located structured sljp-1 response row on that same network entry with compatible HTTP or WebSocket direction. This prevents a stale AP McCoy launcher left in a Preserve-log HAR from lending provenance after a later different-game launcher. It still does not promote the modern response schema to server truth or overdue execution evidence.',
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,exactApMcCoyRealLauncherRequired:true,exactLauncherMustPrecedeCorrelatedEntry:true,sameEntryCorrelationRequired:true,compatibleTransportDirectionRequired:true,exactConfiguredBetfairCasinoRequired:true,ambiguousMultipleRequestMatchesRejected:true,modernResponseSemanticsCannotBeGuessed:true,correlationCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,exactApMcCoyRealLauncherRequired:true,latestPrecedingRealCasinoLauncherMustBeExactApMcCoy:true,staleExactLauncherCannotAuthorizeLaterDifferentGameTraffic:true,sameEntryCorrelationRequired:true,compatibleTransportDirectionRequired:true,exactConfiguredBetfairCasinoRequired:true,ambiguousMultipleRequestMatchesRejected:true,modernResponseSemanticsCannotBeGuessed:true,correlationCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
