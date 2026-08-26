@@ -4,7 +4,7 @@ import {analyzeBet365BobbySportingHar} from '../edge-backend/src/bet365-bobby-sp
 const target={
   startedDateTime:'2026-08-26T20:00:00.000Z',
   request:{method:'GET',url:'https://casino.bet365.es/launch?gameCode=gpas_bgeorge_pop&token=LAUNCH_SECRET',headers:[{name:'Authorization',value:'Bearer HEADER_SECRET'}]},
-  response:{status:200,content:{mimeType:'application/json',text:'{"title":"Bobby George: Sporting Legends","gameCode":"gpas_bgeorge_pop","token":"BODY_SECRET"}'}},
+  response:{status:200,content:{mimeType:'application/json',text:'{"title":"Bobby George: Sporting Legends","gameCode":"gpas_bgeorge_pop","minBet":0.10,"maxBet":25,"baseCost":10,"baseCostMultiplier":1,"betValues":[0.1,0.2,0.5],"token":"BODY_SECRET"}'}},
 };
 const daily={
   startedDateTime:'2026-08-26T20:00:01.000Z',
@@ -14,7 +14,7 @@ const daily={
 
 let r=analyzeBet365BobbySportingHar({log:{entries:[target,daily]}},{sourceName:'bobby.har'});
 assert.equal(r.valid,true);
-assert.equal(r.version,'bet365-bobby-sporting-har-discovery-v1.1-ambiguous-provenance-guard');
+assert.equal(r.version,'bet365-bobby-sporting-har-discovery-v1.2-stake-candidates');
 assert.equal(r.exactTargetMarkerObserved,true);
 assert.equal(r.exactTargetDailyTickerCandidateObserved,true);
 assert.equal(r.exactTargetDailyTickerCandidateCount,1);
@@ -26,6 +26,17 @@ assert.deepEqual(r.candidates[0].currencyCandidates,['EUR']);
 assert.deepEqual(r.candidates[0].localCandidates,['0']);
 assert.deepEqual(r.candidates[0].gameCandidates,['sljp-1']);
 assert.deepEqual(r.candidates[0].instanceCodeCandidates,['es1']);
+assert.equal(r.stakeMenuCandidateObserved,true);
+assert.ok(r.stakeMenuCandidateCount>=5);
+assert.deepEqual(r.observedStakeKeys,['basecost','basecostmultiplier','betvalues','maxbet','minbet']);
+assert.deepEqual(r.stakeMenuCandidates.find(x=>x.normalizedKey==='minbet')?.numericValues,[0.1]);
+assert.deepEqual(r.stakeMenuCandidates.find(x=>x.normalizedKey==='maxbet')?.numericValues,[25]);
+assert.deepEqual(r.stakeMenuCandidates.find(x=>x.normalizedKey==='basecost')?.numericValues,[10]);
+assert.deepEqual(r.stakeMenuCandidates.find(x=>x.normalizedKey==='basecostmultiplier')?.numericValues,[1]);
+assert.deepEqual(r.stakeMenuCandidates.find(x=>x.normalizedKey==='betvalues')?.numericValues,[0.1,0.2,0.5]);
+assert.equal(r.servedStakeMenuSemanticsVerified,false);
+assert.equal(r.servedTenCentTotalStakeVerified,false);
+assert.equal(r.tenCentJackpotEligibilityVerified,false);
 assert.equal(r.servedBet365SessionBindingVerified,false);
 assert.equal(r.usableForOverduePair,false);
 assert.equal(r.execution.decision,'NO_PLAY');
@@ -38,33 +49,37 @@ assert.equal(serialized.includes('?game='),false);
 const otherSporting={
   startedDateTime:'2026-08-26T20:00:00.500Z',
   request:{method:'GET',url:'https://casino.bet365.es/launch?gameCode=gpas_slblara_pop',headers:[]},
-  response:{status:200,content:{mimeType:'application/json',text:'{"gameCode":"gpas_slblara_pop"}'}},
+  response:{status:200,content:{mimeType:'application/json',text:'{"gameCode":"gpas_slblara_pop","minBet":0.01}'}},
 };
 r=analyzeBet365BobbySportingHar({log:{entries:[target,otherSporting,daily]}},{sourceName:'stale-bobby.har'});
 assert.equal(r.exactTargetMarkerObserved,true);
 assert.equal(r.exactTargetDailyTickerCandidateObserved,false);
 assert.equal(r.candidates[0].conflictingLatestSportingMarker,true);
 assert.deepEqual(r.candidates[0].latestSportingMarkerCodes,['gpas_slblara_pop']);
+assert.equal(r.stakeMenuCandidates.some(x=>x.numericValues.includes(0.01)),false);
 
 const ambiguous={
   startedDateTime:'2026-08-26T20:00:00.700Z',
   request:{method:'POST',url:'https://casino.bet365.es/session',headers:[],postData:{mimeType:'application/json',text:'{"games":["gpas_bgeorge_pop","gpas_slblara_pop"]}'}},
-  response:{status:200,content:{text:''}},
+  response:{status:200,content:{mimeType:'application/json',text:'{"minBet":0.01}'}},
 };
 r=analyzeBet365BobbySportingHar({log:{entries:[ambiguous,daily]}},{sourceName:'ambiguous.har'});
 assert.equal(r.exactTargetMarkerObserved,true);
 assert.equal(r.exactTargetDailyTickerCandidateObserved,false);
 assert.equal(r.candidates[0].conflictingLatestSportingMarker,true);
 assert.deepEqual(new Set(r.candidates[0].latestSportingMarkerCodes),new Set(['gpas_slblara_pop','gpas_bgeorge_pop']));
+assert.equal(r.stakeMenuCandidateObserved,false);
 
 r=analyzeBet365BobbySportingHar({log:{entries:[daily]}},{sourceName:'no-target.har'});
 assert.equal(r.exactTargetMarkerObserved,false);
 assert.equal(r.exactTargetDailyTickerCandidateObserved,false);
+assert.equal(r.stakeMenuCandidateObserved,false);
 
 const weekly={...daily,request:{...daily.request,url:'https://ticker.example/webtickers?game=sljp-2&casino=bet365_es'}};
 r=analyzeBet365BobbySportingHar({log:{entries:[target,weekly]}},{sourceName:'weekly-only.har'});
 assert.equal(r.dailyTickerCandidateCount,0);
 assert.equal(r.exactTargetDailyTickerCandidateObserved,false);
+assert.equal(r.stakeMenuCandidateObserved,true);
 
 const hostileDaily={...daily,request:{...daily.request,url:'https://ticker.example/webtickers?game=sljp-1&casino=BearerSUPERSECRET&currency=EUR&local=0'}};
 r=analyzeBet365BobbySportingHar({log:{entries:[target,hostileDaily]}},{sourceName:'routing-redaction.har'});
