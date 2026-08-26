@@ -1,6 +1,6 @@
 {
-  "version": "betfair-spain-sporting-legends-overdue-first-bet-p0-v1.1-following-day-race",
-  "generatedAt": "2026-08-26T13:12:00+02:00",
+  "version": "betfair-spain-sporting-legends-overdue-first-bet-p0-v1.2-guaranteed-hit-boundary",
+  "generatedAt": "2026-08-26T13:28:00+02:00",
   "mode": "SPAIN_ONLINE_FOLLOWING_DAY_FIRST_BET_RESEARCH_NO_PLAY",
   "market": "ES",
   "operator": "Betfair Spain",
@@ -16,19 +16,30 @@
     "providerRuleCorroborated": true,
     "providerRuleUrl": "https://clientzone.betconstruct.com/media/download/801cbj/Bobby%20George%E2%84%A2%20Sporting%20Legends%E2%84%A2.pdf",
     "semanticCorrectionVerified": true,
-    "semanticCorrection": "FOLLOWING_DAY_NOT_IMMEDIATELY_AFTER_DEADLINE",
-    "scientificConsequence": "Only if the exact Betfair Spain sljp-1 Daily survives unawarded into a separately verified following-day boundary does the ordinary random jackpot hazard cease to be decisive for that tier. The remaining uncertainty is the race to submit the first eligible network bet."
+    "semanticCorrection": "FOLLOWING_DAY_BOUNDARY_IS_THE_VERIFIED_DAILY_GUARANTEED_HIT_TIME",
+    "scientificConsequence": "For a correctly bound Daily sljp-1 row, the provider protocol can supply the day boundary through guaranteedHitTime. If the same Daily remains unawarded immediately beyond that verified boundary, the normal random jackpot hazard is no longer decisive for that overdue tier; the remaining uncertainty is the race to place the first eligible network bet."
+  },
+  "providerBoundaryEvidence": {
+    "officialPlaytechLaunchUrl": "https://www.playtech.com/playtech-launches-spectacular-sporting-legends-games-suite/",
+    "dailyMustBeWonByEndOfDay": true,
+    "weeklyMustBeWonByEndOfWeek": true,
+    "playtechTickerReferenceUrl": "https://clientzone.betconstruct.com/media/download/801cbj/Bobby%20George%E2%84%A2%20Sporting%20Legends%E2%84%A2.pdf",
+    "dailyExampleGuaranteedHitTime": 1513123200,
+    "dailyExampleGuaranteedHitTimeUtc": "2017-12-13T00:00:00Z",
+    "weeklyExampleGuaranteedHitTime": 1513555200,
+    "weeklyExampleGuaranteedHitTimeUtc": "2017-12-18T00:00:00Z",
+    "examplesFallOnPeriodBoundaryAtUtcMidnight": true,
+    "guaranteedHitTimeIsUnixUtcPerProviderSpec": true,
+    "providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified": true,
+    "importantLimit": "Provider examples verify boundary semantics. They do not supply Betfair Spain's current guaranteedHitTime; that value must come from the exact current Betfair ticker row."
   },
   "clockSemantics": {
-    "dailyMustBeWonByEndOfDayPublishedByPlaytech": true,
     "betfairEarlyDailyRetriggerCutoffLondon": "21:00",
-    "earlyRetriggerCutoffIsFollowingDayBoundary": false,
     "earlyRetriggerCutoffIsExecutableDeadline": false,
-    "onlyCurrentTickerGuaranteedHitTimeMayDefineExecutableDeadline": true,
+    "onlyCurrentTickerGuaranteedHitTimeMayDefineCurrentExecutableBoundary": true,
     "currentTickerGuaranteedHitTimeRecovered": false,
-    "followingDayBoundaryTimezonePublishedPrecisely": false,
-    "followingDayStartEpochSecondsVerified": false,
-    "followingDayBoundaryCannotBeInferredFromRetriggerCutoff": true
+    "separateFollowingDayTimezoneGuessRequired": false,
+    "currentFollowingDayStartEpochSecondsKnown": false
   },
   "tickerProtocolProof": {
     "sljp1GuaranteedHitTimeDocumented": true,
@@ -38,17 +49,19 @@
     "parserPath": "loterias-ai/casino/jackpots/playtech-mhb-ticker-parser-v1.mjs",
     "parserVersionRequired": "playtech-mhb-ticker-parser-v1.6-win-count-timestamps",
     "followingDayDetectorPath": "loterias-ai/casino/jackpots/sporting-legends-overdue-first-bet-v1.mjs",
+    "detectorVersionRequired": "sporting-legends-overdue-first-bet-v1.2-guaranteed-hit-boundary",
     "raceBoundPath": "loterias-ai/casino/jackpots/sporting-legends-race-bound-v1.mjs"
   },
   "stateProofRequired": {
     "exactBetfairSpainTickerImsBindingVerified": false,
-    "beforeDeadlineSljp1SnapshotVerified": false,
-    "afterVerifiedFollowingDayBoundarySljp1SnapshotVerified": false,
-    "sameBindingAcrossObservationWindowVerified": false,
-    "sameGuaranteedHitTimeAcrossObservationWindowVerified": false,
-    "winCountUnchangedAcrossObservationWindowVerified": false,
-    "dailyAmountNonDecreasingAcrossObservationWindowVerified": false,
-    "postFollowingDayFeedFreshEnoughVerified": false,
+    "currentGuaranteedHitTimeExactVerified": false,
+    "beforeGuaranteedHitSljp1SnapshotVerified": false,
+    "afterGuaranteedHitSljp1SnapshotVerified": false,
+    "sameBindingAcrossGuaranteedHitVerified": false,
+    "sameGuaranteedHitTimeAcrossPairVerified": false,
+    "winCountUnchangedAcrossGuaranteedHitVerified": false,
+    "dailyAmountNonDecreasingAcrossGuaranteedHitVerified": false,
+    "postBoundaryFeedFreshEnoughVerified": false,
     "followingDayUnawardedStateVerified": false
   },
   "economicRoute": {
@@ -68,6 +81,7 @@
   },
   "raceBound": {
     "candidateModel": "STATIONARY_POISSON_COMPETING_ELIGIBLE_BET_ARRIVALS",
+    "zeroEligibleArrivalWindowSecondsCanBeObservedAs": "fresh_after_gamedata_timestamp - exact_current_guaranteedHitTime, only when unchanged winc and no reset prove the Daily survived",
     "oneSidedRateUpperBound": "lambda_upper=-ln(1-confidence)/zeroArrivalWindowSeconds",
     "firstBetProbabilityLowerBound": "exp(-lambda_upper*measuredActionLatencySeconds)",
     "stationarityMayBeAssumedNow": false,
@@ -90,21 +104,22 @@
     "tickerProtocolGuaranteedHitTimeVerified": true,
     "tickerProtocolWinCountAndTimestampVerified": true,
     "parserV16Ready": true,
+    "providerGuaranteedHitTimeBoundarySemanticsVerified": true,
     "exactBetfairSpainTickerImsBindingVerified": false,
-    "followingDayBoundaryVerified": false,
-    "bridgingSameBindingPairVerified": false,
+    "currentGuaranteedHitTimeExactVerified": false,
+    "crossGuaranteedHitSameBindingPairVerified": false,
     "followingDayUnawardedStateVerified": false,
     "currentDailyAmountExactVerified": false,
     "stakeAtDecisionExactVerified": false,
-    "postFollowingDayFeedFreshEnoughVerified": false,
+    "postBoundaryFeedFreshEnoughVerified": false,
     "measuredActionLatencyVerified": false,
     "raceModelProspectivelyValidated": false,
     "firstBetProbabilityLowerBoundAboveBreakEven": false,
     "prospectiveDryRunCycleVerified": false
   },
   "gateProgress": {
-    "closed": 6,
-    "total": 17,
+    "closed": 7,
+    "total": 18,
     "note": "Separate conditional route. This is not a percentage distance to real-money GREEN."
   },
   "execution": {
@@ -120,8 +135,8 @@
     "noLoginProbe": true,
     "noWagerProbe": true,
     "noRaceAutomation": true,
-    "followingDayCannotBeReinterpretedAsImmediatelyAfterDeadline": true,
-    "timezoneBoundaryCannotBeInvented": true,
+    "followingDayCannotBeReinterpretedWithoutProviderBoundaryEvidence": true,
+    "providerExampleTimestampCannotPopulateCurrentBetfairGuaranteedHitTime": true,
     "earlyRetriggerCutoffCannotSubstituteForGuaranteedHitTime": true,
     "thirdPartyGlobalAmountCannotBindBetfairSpain": true,
     "amountWinsCannotBeUsedAsWinCount": true,
@@ -132,8 +147,8 @@
   },
   "nextDecisiveEvidence": [
     "Recover the exact Betfair Spain Playtech ticker hostname and IMS casino identity.",
-    "Determine from provider/operator evidence the exact boundary meant by following day; do not assume a timezone or midnight.",
-    "Capture the same exact sljp-1 EUR local=0 binding before guaranteedHitTime and after the verified following-day boundary with unchanged winc, unchanged guaranteedHitTime and no reset.",
+    "Parse the exact current Betfair Spain sljp-1 EUR local=0 amount, gamedata timestamp, winc and guaranteedHitTime.",
+    "Capture the same binding on both sides of that exact guaranteedHitTime and require unchanged winc, unchanged guaranteedHitTime, nondecreasing amount and fresh timestamp to prove the Daily survived into the following-day state.",
     "Measure end-to-end decision/action latency without wagering and prospectively validate a competing-bet arrival model from repeated passive cycles.",
     "Compare a conservative first-bet race probability lower bound with the exact break-even probability using the observed stake and exact Daily amount."
   ]

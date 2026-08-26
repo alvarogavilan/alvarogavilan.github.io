@@ -3,15 +3,12 @@ import {evaluateSportingLegendsOverdueFirstBet} from '../casino/jackpots/sportin
 
 const base={code:'sljp-1',requestCasino:'betfair-es-ims',instanceCode:null,local:0,currency:'EUR',guaranteedHitTime:2000,winCount:42,amount:100};
 const before={...base,gameTimestamp:1990};
-const afterFollowingDay={...base,gameTimestamp:3005,amount:100.02};
+const after={...base,gameTimestamp:2005,amount:100.02};
 const common={
-  before,
-  after:afterFollowingDay,
-  nowEpochSeconds:3010,
+  before,after,nowEpochSeconds:2010,
   exactBetfairSpainTickerImsBindingVerified:true,
   betfairFirstBetFollowingDayRuleVerified:true,
-  followingDayStartEpochSeconds:3000,
-  followingDayBoundaryVerified:true,
+  providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified:true,
   stakeEUR:0.25,
 };
 
@@ -19,35 +16,32 @@ let r=evaluateSportingLegendsOverdueFirstBet(common);
 assert.equal(r.valid,true);
 assert.equal(r.followingDayUnawardedVerified,true);
 assert.equal(r.nextEligibleNetworkBetGuaranteedJackpot,true);
+assert.equal(r.followingDayStartEpochSeconds,2000);
+assert.equal(r.zeroEligibleArrivalWindowSeconds,5);
 assert.ok(Math.abs(r.breakEvenFirstBetProbability-(((1-0.9303)*0.25)/100.02))<1e-12);
 assert.equal(r.conditionalPositiveEvScreenPassed,false);
 assert.equal(r.decision,'NO_PLAY');
 assert.equal(r.guards.realMoneyAllowed,false);
-assert.equal(r.guards.publishedRuleMeansFollowingDayNotImmediatelyAfterDeadline,true);
 
 r=evaluateSportingLegendsOverdueFirstBet({...common,firstBetProbabilityLowerBound:0.001,raceModelProspectivelyValidated:true});
 assert.equal(r.conditionalPositiveEvScreenPassed,true);
 assert.equal(r.reason,'CONDITIONAL_RACE_EV_SCREEN_PASSED_EXECUTION_STILL_GUARDED');
 assert.equal(r.decision,'NO_PLAY');
 
-const immediateAfterDeadline=evaluateSportingLegendsOverdueFirstBet({...common,after:{...base,gameTimestamp:2005,amount:100.01},nowEpochSeconds:2010});
-assert.equal(immediateAfterDeadline.valid,false);
-assert.equal(immediateAfterDeadline.reason,'SNAPSHOTS_DO_NOT_BRIDGE_DEADLINE_AND_FOLLOWING_DAY');
+const noBoundarySemantics=evaluateSportingLegendsOverdueFirstBet({...common,providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified:false});
+assert.equal(noBoundarySemantics.valid,false);
+assert.equal(noBoundarySemantics.reason,'GUARANTEED_HIT_TIME_BOUNDARY_SEMANTICS_NOT_VERIFIED');
 
-const legacySemanticFlagOnly=evaluateSportingLegendsOverdueFirstBet({
-  before,after:afterFollowingDay,nowEpochSeconds:3010,
+const legacyOnly=evaluateSportingLegendsOverdueFirstBet({
+  before,after,nowEpochSeconds:2010,
   exactBetfairSpainTickerImsBindingVerified:true,
   betfairFirstBetAfterDeadlineRuleVerified:true,
-  followingDayStartEpochSeconds:3000,followingDayBoundaryVerified:true,
+  providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified:true,
 });
-assert.equal(legacySemanticFlagOnly.valid,false);
-assert.equal(legacySemanticFlagOnly.reason,'BETFAIR_FOLLOWING_DAY_FIRST_BET_RULE_NOT_VERIFIED');
+assert.equal(legacyOnly.valid,false);
+assert.equal(legacyOnly.reason,'BETFAIR_FOLLOWING_DAY_FIRST_BET_RULE_NOT_VERIFIED');
 
-const noBoundary=evaluateSportingLegendsOverdueFirstBet({...common,followingDayBoundaryVerified:false});
-assert.equal(noBoundary.valid,false);
-assert.equal(noBoundary.reason,'FOLLOWING_DAY_BOUNDARY_NOT_VERIFIED');
-
-const won=evaluateSportingLegendsOverdueFirstBet({...common,after:{...afterFollowingDay,winCount:43,amount:30}});
+const won=evaluateSportingLegendsOverdueFirstBet({...common,after:{...after,winCount:43,amount:30}});
 assert.equal(won.valid,false);
 assert.equal(won.reason,'JACKPOT_WIN_COUNT_CHANGED');
 
@@ -55,7 +49,7 @@ const noBinding=evaluateSportingLegendsOverdueFirstBet({...common,exactBetfairSp
 assert.equal(noBinding.valid,false);
 assert.equal(noBinding.reason,'BETFAIR_SPAIN_TICKER_IMS_NOT_VERIFIED');
 
-const stale=evaluateSportingLegendsOverdueFirstBet({...common,nowEpochSeconds:4000});
+const stale=evaluateSportingLegendsOverdueFirstBet({...common,nowEpochSeconds:3000});
 assert.equal(stale.valid,false);
 assert.equal(stale.reason,'FEED_TOO_STALE');
 
