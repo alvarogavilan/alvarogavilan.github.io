@@ -1,6 +1,7 @@
 const SOURCES=[
   './evidence/spain-igt-persistent-state-candidates-v1.json',
-  './evidence/aotgn-spain-live-deployment-targets-v1.json'
+  './evidence/aotgn-spain-live-deployment-targets-v1.json',
+  './evidence/betfair-spain-sporting-legends-ap-mccoy-p0-v1.json'
 ];
 
 export const ONLINE_ONLY=true;
@@ -63,29 +64,14 @@ function norseGateSummary(data){
   const deploymentClosed=d.currentSpanishJackpotCategoryPresenceVerified===true&&d.exactAognjp2LinkedTitleCurrentlyInJackpotCategory===true&&d.dailyTierPublishedForSameOperatorTitle===true&&d.dailyDeploymentConfiguredEvidenceStrong===true;
   const providerIdentity=t.aognjp2ToBookOfDwarvesProviderBindingVerified===true||d.providerCodeBindingAognjp2ToBookOfDwarvesVerified===true;
   const exactTickerIms=t.exactSpanishTickerImsBindingVerified===true||s.exactSpanishTickerImsBindingVerified===true||(s.exactTickerHostRecovered===true&&s.exactImsCasinoRecovered===true);
-  const configuration=[
-    s.currentPublicPageVerified===true,
-    s.dailyMechanicPublishedOnCurrentPage===true,
-    s.spanishInteroperatorPlaytechNetworkVerified===true,
-    deploymentClosed
-  ];
+  const configuration=[s.currentPublicPageVerified===true,s.dailyMechanicPublishedOnCurrentPage===true,s.spanishInteroperatorPlaytechNetworkVerified===true,deploymentClosed];
   const identity=[providerIdentity,exactTickerIms];
-  const live=[
-    (s.sameSessionDailyActiveVerified===true)||(s.dailyActiveNowVerified===true),
-    (s.currentDailyAmountRecovered===true)||hasNumber(s.currentDailyJackpotEUR),
-    (s.currentGuaranteedHitTimeRecovered===true)||hasNumber(s.guaranteedHitTime)
-  ];
-  return {
-    configurationClosed:configuration.filter(Boolean).length,configurationTotal:configuration.length,
-    identityClosed:identity.filter(Boolean).length,identityTotal:identity.length,
-    liveClosed:live.filter(Boolean).length,liveTotal:live.length,
-    closed:[...configuration,...identity,...live].filter(Boolean).length,total:configuration.length+identity.length+live.length,
-    deploymentClosed,providerIdentity
-  };
+  const live=[(s.sameSessionDailyActiveVerified===true)||(s.dailyActiveNowVerified===true),(s.currentDailyAmountRecovered===true)||hasNumber(s.currentDailyJackpotEUR),(s.currentGuaranteedHitTimeRecovered===true)||hasNumber(s.guaranteedHitTime)];
+  return {configurationClosed:configuration.filter(Boolean).length,configurationTotal:configuration.length,identityClosed:identity.filter(Boolean).length,identityTotal:identity.length,liveClosed:live.filter(Boolean).length,liveTotal:live.length,closed:[...configuration,...identity,...live].filter(Boolean).length,total:configuration.length+identity.length+live.length,deploymentClosed,providerIdentity};
 }
 
 function buildNorseCards(data){
-  if(!data||upper(data.market)!=='ES'||upper(data.provider)!=='PLAYTECH'||data?.execution?.realMoneyAllowed!==false)return [];
+  if(!data||upper(data.market)!=='ES'||upper(data.provider)!=='PLAYTECH'||data?.execution?.realMoneyAllowed!==false||!data?.p0Strategy)return [];
   const s=data?.p0Strategy?.stateObservationGate;
   const d=data?.p0Strategy?.currentDeploymentConfigurationGate;
   const gs=norseGateSummary(data);
@@ -94,76 +80,60 @@ function buildNorseCards(data){
     kind:'NORSE_P0',id:'playtech-norse-daily-spain-p0',game:'Age of the Gods Norse · Daily P0',operator:`${String(s.operator||'JOKERBET')} + ${String(d?.operator||'PartyCasino')}`,
     url:'https://www.jokerbet.es/tragaperras-slots/age-of-the-gods-norse-gods-and-giants.html',priority:'P0',status:'P0 · INVESTIGACIÓN',action:'NO_PLAY',sourceType:'ONLINE',promotion:false,
     mechanism:'Playtech Norse Daily · configuración, identidad y estado LIVE separados',closedGates:gs.closed,totalGates:gs.total,
-    configurationClosed:gs.configurationClosed,configurationTotal:gs.configurationTotal,
-    identityClosed:gs.identityClosed,identityTotal:gs.identityTotal,
-    liveClosed:gs.liveClosed,liveTotal:gs.liveTotal,
-    spanishNetworkVerified:s.spanishInteroperatorPlaytechNetworkVerified===true,dailyPublished:s.dailyMechanicPublishedOnCurrentPage===true,dailyConfiguredDeploymentVerified:gs.deploymentClosed,
-    providerDailyIdentityVerified:gs.providerIdentity,sameSessionDailyVerified:(s.sameSessionDailyActiveVerified===true)||(s.dailyActiveNowVerified===true),
+    configurationClosed:gs.configurationClosed,configurationTotal:gs.configurationTotal,identityClosed:gs.identityClosed,identityTotal:gs.identityTotal,liveClosed:gs.liveClosed,liveTotal:gs.liveTotal,
+    spanishNetworkVerified:s.spanishInteroperatorPlaytechNetworkVerified===true,dailyPublished:s.dailyMechanicPublishedOnCurrentPage===true,dailyConfiguredDeploymentVerified:gs.deploymentClosed,providerDailyIdentityVerified:gs.providerIdentity,sameSessionDailyVerified:(s.sameSessionDailyActiveVerified===true)||(s.dailyActiveNowVerified===true),
     strongFinding:'JOKERBET aporta mecánica Daily y red española; PartyCasino aporta despliegue español actual de Book of Dwarves; la referencia Playtech vincula Book of Dwarves (gpas_gogold_pop) con aognjp-2 Daily.',
     guardText:'La identidad de proveedor no es estado LIVE: faltan ticker+IMS español exactos, Daily same-session, importe y guaranteedHitTime actuales antes de cualquier ejecución.',
     decisiveBlocker:'FALTA_TICKER_IMS_Y_ESTADO_DAILY_ESPANOL'
   }];
 }
 
-const operationalCardsOnly=(cards)=>(Array.isArray(cards)?cards:[]).filter((c)=>c?.sourceType==='ONLINE'&&!isExplicitPromo(c));
+function buildSportingCards(data){
+  if(!data||!String(data.version||'').startsWith('betfair-spain-sporting-legends-ap-mccoy-p0')||upper(data.market)!=='ES'||upper(data.sourceType)!=='ONLINE'||isExplicitPromo(data)||data?.execution?.realMoneyAllowed!==false)return [];
+  const g=data.gates||{};
+  const gateKeys=['currentSpanishGamePageVerified','exactSpanishLauncherBindingVerified','dailyWeeklyTimedMechanicVerified','providerSljpCodesVerified','jackpotRtpIndependencePublished','exactBetfairSpainTickerImsBindingVerified','currentDailyAmountVerified','currentGuaranteedHitTimeVerified','sameSessionDailyActiveVerified','exactStakeToPlayerHazardVerified','prospectiveDailyCycleObserved','firstBetAfterDeadlinePreWagerKnowableVerified'];
+  const closed=gateKeys.filter(k=>g[k]===true).length;
+  const total=gateKeys.length;
+  return [{
+    kind:'SPORTING_P0',id:'betfair-ap-mccoy-sporting-legends-p0',game:String(data.game||'AP McCoy Sporting Legends'),operator:String(data.operator||'Betfair Spain'),url:String(data?.currentSpanishGamePage?.url||''),priority:'P0',status:'P0 · INVESTIGACIÓN',action:'NO_PLAY',sourceType:'ONLINE',promotion:false,
+    mechanism:'Sporting Legends Daily · must-win-by temporal · jackpot financiado fuera del RTP base',closedGates:closed,totalGates:total,
+    bestBaseRtpPct:hasNumber(data?.economicScreen?.bestPublishedNonJackpotRtpCandidatePct)?Number(data.economicScreen.bestPublishedNonJackpotRtpCandidatePct):null,
+    breakEvenAdditionalPct:hasNumber(data?.economicScreen?.breakEvenAdditionalJackpotReturnPct)?Number(data.economicScreen.breakEvenAdditionalJackpotReturnPct):null,
+    launcherVerified:g.exactSpanishLauncherBindingVerified===true,timedMechanicVerified:g.dailyWeeklyTimedMechanicVerified===true,tickerVerified:g.exactBetfairSpainTickerImsBindingVerified===true,currentDailyAmountVerified:g.currentDailyAmountVerified===true,currentDeadlineVerified:g.currentGuaranteedHitTimeVerified===true,hazardVerified:g.exactStakeToPlayerHazardVerified===true,
+    strongFinding:'Betfair España publica Daily/Weekly temporizados, cualquier apuesta elegible, más stake = más probabilidad y jackpots financiados por el operador sin reducir el RTP del juego.',
+    guardText:'El umbral 2,83% es solo break-even. Faltan ticker/IMS español, importe/deadline Daily actuales y una función o cota inferior rigurosa de probabilidad por apuesta antes de demostrar +EV.',
+    decisiveBlocker:'FALTA_ESTADO_SLJP1_Y_HAZARD_JUGADOR'
+  }];
+}
 
-export function buildBreakthroughCards(data){return operationalCardsOnly([...buildOnlineCards(data),...buildNorseCards(data)]);}
+const operationalCardsOnly=(cards)=>(Array.isArray(cards)?cards:[]).filter((c)=>c?.sourceType==='ONLINE'&&!isExplicitPromo(c));
+export function buildBreakthroughCards(data){return operationalCardsOnly([...buildOnlineCards(data),...buildNorseCards(data),...buildSportingCards(data)]);}
 export function buildCombinedBreakthroughCards(datasets){return operationalCardsOnly((Array.isArray(datasets)?datasets:[]).flatMap(buildBreakthroughCards));}
 
 function igtCardHtml(c){
   const link=c.url?`<a href="${esc(c.url)}" target="_blank" rel="noopener">Abrir ficha oficial →</a>`:'Ficha oficial no disponible';
   const inheritedLabel=c.crossPlayerVerified?'VERIFICADO':'POR CERRAR';
-  return `<article class="breakCard">
-    <div class="breakTop"><div><div class="breakProvider">${esc(c.operator)} · ONLINE · ESPAÑA</div><div class="breakTitle">${esc(c.game)}</div></div><span class="breakBadge">${esc(c.status)}</span></div>
-    <div class="breakMechanism">⚡ ${esc(c.mechanism)}</div>
-    <div class="breakGrid">
-      <div><small>RTP PUBLICADO</small><b>${pct(c.rtpPct)}</b></div>
-      <div><small>APUESTA MÍN.</small><b>${eur(c.minBetEUR)}</b></div>
-      <div><small>ESTADO ENTRE JUGADORES</small><b>${inheritedLabel}</b></div>
-      <div><small>VISIBLE ANTES DE APOSTAR</small><b>${c.preWagerVisibleVerified?'VERIFICADO':'POR CERRAR'}</b></div>
-    </div>
-    <div class="breakGood">HALLAZGO REAL: ${esc(c.strongFinding||'candidato P0 español de estado persistente.')}</div>
-    <div class="breakGuard">🔴 NO ES SEÑAL DE APUESTA · ${esc(c.guardText||'Faltan gates locales antes de cualquier ejecución.')}</div>
-    <div class="breakLink">${link}</div>
-  </article>`;
+  return `<article class="breakCard"><div class="breakTop"><div><div class="breakProvider">${esc(c.operator)} · ONLINE · ESPAÑA</div><div class="breakTitle">${esc(c.game)}</div></div><span class="breakBadge">${esc(c.status)}</span></div><div class="breakMechanism">⚡ ${esc(c.mechanism)}</div><div class="breakGrid"><div><small>RTP PUBLICADO</small><b>${pct(c.rtpPct)}</b></div><div><small>APUESTA MÍN.</small><b>${eur(c.minBetEUR)}</b></div><div><small>ESTADO ENTRE JUGADORES</small><b>${inheritedLabel}</b></div><div><small>VISIBLE ANTES DE APOSTAR</small><b>${c.preWagerVisibleVerified?'VERIFICADO':'POR CERRAR'}</b></div></div><div class="breakGood">HALLAZGO REAL: ${esc(c.strongFinding||'candidato P0 español de estado persistente.')}</div><div class="breakGuard">🔴 NO ES SEÑAL DE APUESTA · ${esc(c.guardText||'Faltan gates locales antes de cualquier ejecución.')}</div><div class="breakLink">${link}</div></article>`;
 }
 
 function norseCardHtml(c){
   const link=c.url?`<a href="${esc(c.url)}" target="_blank" rel="noopener">Abrir ficha española →</a>`:'Ficha española no disponible';
-  return `<article class="breakCard">
-    <div class="breakTop"><div><div class="breakProvider">${esc(c.operator)} · ONLINE · ESPAÑA</div><div class="breakTitle">${esc(c.game)}</div></div><span class="breakBadge">${esc(c.status)}</span></div>
-    <div class="breakMechanism">⚡ ${esc(c.mechanism)}</div>
-    <div class="breakGrid">
-      <div><small>CONFIG / DESPLIEGUE</small><b>${Number(c.configurationClosed)||0}/${Number(c.configurationTotal)||4}</b></div>
-      <div><small>IDENTIDAD</small><b>${Number(c.identityClosed)||0}/${Number(c.identityTotal)||2}</b></div>
-      <div><small>ESTADO LIVE</small><b>${Number(c.liveClosed)||0}/${Number(c.liveTotal)||3}</b></div>
-      <div><small>DINERO REAL</small><b>0 € · NO_PLAY</b></div>
-    </div>
-    <div class="breakGood">HALLAZGO REAL: ${esc(c.strongFinding)}</div>
-    <div class="breakGuard">🔴 NO ES SEÑAL DE APUESTA · ${esc(c.guardText)}</div>
-    <div class="breakLink">${link}</div>
-  </article>`;
+  return `<article class="breakCard"><div class="breakTop"><div><div class="breakProvider">${esc(c.operator)} · ONLINE · ESPAÑA</div><div class="breakTitle">${esc(c.game)}</div></div><span class="breakBadge">${esc(c.status)}</span></div><div class="breakMechanism">⚡ ${esc(c.mechanism)}</div><div class="breakGrid"><div><small>CONFIG / DESPLIEGUE</small><b>${Number(c.configurationClosed)||0}/${Number(c.configurationTotal)||4}</b></div><div><small>IDENTIDAD</small><b>${Number(c.identityClosed)||0}/${Number(c.identityTotal)||2}</b></div><div><small>ESTADO LIVE</small><b>${Number(c.liveClosed)||0}/${Number(c.liveTotal)||3}</b></div><div><small>DINERO REAL</small><b>0 € · NO_PLAY</b></div></div><div class="breakGood">HALLAZGO REAL: ${esc(c.strongFinding)}</div><div class="breakGuard">🔴 NO ES SEÑAL DE APUESTA · ${esc(c.guardText)}</div><div class="breakLink">${link}</div></article>`;
 }
 
-export function cardHtml(c){
-  if(!c||c.sourceType!=='ONLINE'||isExplicitPromo(c))return '';
-  return c.kind==='NORSE_P0'?norseCardHtml(c):igtCardHtml(c);
+function sportingCardHtml(c){
+  const link=c.url?`<a href="${esc(c.url)}" target="_blank" rel="noopener">Abrir ficha Betfair España →</a>`:'Ficha española no disponible';
+  return `<article class="breakCard"><div class="breakTop"><div><div class="breakProvider">${esc(c.operator)} · ONLINE · ESPAÑA</div><div class="breakTitle">${esc(c.game)}</div></div><span class="breakBadge">${esc(c.status)}</span></div><div class="breakMechanism">⚡ ${esc(c.mechanism)}</div><div class="breakGrid"><div><small>GATES P0</small><b>${Number(c.closedGates)||0}/${Number(c.totalGates)||12}</b></div><div><small>RTP BASE MÁX. PUBLICADO</small><b>${pct(c.bestBaseRtpPct)}</b></div><div><small>UPLIFT PARA 100%</small><b>${pct(c.breakEvenAdditionalPct)}</b></div><div><small>TICKER + HAZARD</small><b>${c.tickerVerified&&c.hazardVerified?'VERIFICADO':'POR CERRAR'}</b></div></div><div class="breakGood">HALLAZGO REAL: ${esc(c.strongFinding)}</div><div class="breakGuard">🔴 NO ES SEÑAL DE APUESTA · ${esc(c.guardText)}</div><div class="breakLink">${link}</div></article>`;
 }
+
+export function cardHtml(c){if(!c||c.sourceType!=='ONLINE'||isExplicitPromo(c))return '';if(c.kind==='NORSE_P0')return norseCardHtml(c);if(c.kind==='SPORTING_P0')return sportingCardHtml(c);return igtCardHtml(c);}
 
 export function renderBreakthroughs(data,{root=document.getElementById('breakthroughList'),summary=document.getElementById('breakthroughSummary')}={}){
   const cards=operationalCardsOnly(Array.isArray(data)?buildCombinedBreakthroughCards(data):buildBreakthroughCards(data));
-  if(summary){
-    summary.textContent=cards.length?`${cards.length} HALLAZGOS P0 ONLINE EN ESPAÑA · 0 FÍSICOS · 0 PROMOS · 0 € HASTA CERRAR GATES LOCALES`:'Sin hallazgos P0 online cargados';
-  }
+  if(summary)summary.textContent=cards.length?`${cards.length} HALLAZGOS P0 ONLINE EN ESPAÑA · 0 FÍSICOS · 0 PROMOS · 0 € HASTA CERRAR GATES LOCALES`:'Sin hallazgos P0 online cargados';
   if(root)root.innerHTML=cards.length?cards.map(cardHtml).filter(Boolean).join(''):'<div class="breakEmpty">Sin nuevos hallazgos online cargados.</div>';
   return cards;
 }
 
-async function load(){
-  try{
-    const datasets=(await Promise.all(SOURCES.map(async(source)=>{try{const r=await fetch(`${source}?t=${Date.now()}`,{cache:'no-store'});if(!r.ok)return null;return await r.json();}catch{return null;}}))).filter(Boolean);
-    renderBreakthroughs(datasets);
-  }catch{renderBreakthroughs(null);}
-}
-
+async function load(){try{const datasets=(await Promise.all(SOURCES.map(async(source)=>{try{const r=await fetch(`${source}?t=${Date.now()}`,{cache:'no-store'});if(!r.ok)return null;return await r.json();}catch{return null;}}))).filter(Boolean);renderBreakthroughs(datasets);}catch{renderBreakthroughs(null);}}
 if(typeof document!=='undefined')load();
