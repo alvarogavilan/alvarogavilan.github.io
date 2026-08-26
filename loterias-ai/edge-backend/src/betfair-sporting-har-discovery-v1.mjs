@@ -5,12 +5,12 @@ const uniq=a=>[...new Set(a.filter(Boolean))];
 const clean=s=>String(s??'').replace(/\u0000/g,'').trim();
 
 function maybeDecode(s){
-  let v=clean(s);
+  let v=clean(s).replace(/\\u0026/gi,'&').replace(/\\\//g,'/');
   for(let i=0;i<2;i++){
     try{
       const d=decodeURIComponent(v.replace(/\+/g,' '));
       if(d===v)break;
-      v=d;
+      v=d.replace(/\\u0026/gi,'&').replace(/\\\//g,'/');
     }catch{break;}
   }
   return v;
@@ -47,7 +47,7 @@ function textParts(entry){
 function paramsFromUrl(url){
   const out={};
   try{
-    const u=new URL(url);
+    const u=new URL(maybeDecode(url));
     for(const [k,v] of u.searchParams){
       if(!out[k])out[k]=[];
       out[k].push(maybeDecode(v));
@@ -63,8 +63,9 @@ function fieldCandidates(text){
   for(const name of names){
     const vals=[];
     const attr=new RegExp(`\\b${name}\\s*=\\s*["']([^"']+)["']`,'ig');
-    const json=new RegExp(`["']${name}["']\\s*[:=]\\s*["']?([^"'\\s,;}<>&]+)`,'ig');
-    for(const re of [attr,json]) for(const m of s.matchAll(re)) vals.push(clean(m[1]));
+    const quotedKey=new RegExp(`["']${name}["']\\s*[:=]\\s*["']?([^"'\\s,;}<>&]+)`,'ig');
+    const bareKey=new RegExp(`\\b${name}\\b\\s*[:=]\\s*["']([^"']+)["']`,'ig');
+    for(const re of [attr,quotedKey,bareKey]) for(const m of s.matchAll(re)) vals.push(maybeDecode(m[1]));
     if(vals.length)fields[name]=uniq(vals);
   }
   return fields;
@@ -77,13 +78,13 @@ function mergeFields(dst,src){
 
 function betfairInitialResourcesUrl(url){
   try{
-    const u=new URL(url),h=u.hostname.toLowerCase();
+    const u=new URL(maybeDecode(url)),h=u.hostname.toLowerCase();
     return u.protocol==='https:'&&(h==='betfair.es'||h.endsWith('.betfair.es'))&&/\/initialresources(?:\/|$)/i.test(u.pathname);
   }catch{return false;}
 }
 
 function sameEndpoint(a,b){
-  try{const x=new URL(a),y=new URL(b);return x.protocol==='https:'&&y.protocol==='https:'&&x.origin===y.origin&&x.pathname===y.pathname;}catch{return false;}
+  try{const x=new URL(maybeDecode(a)),y=new URL(maybeDecode(b));return x.protocol==='https:'&&y.protocol==='https:'&&x.origin===y.origin&&x.pathname===y.pathname;}catch{return false;}
 }
 
 export function analyzeBetfairSportingHar(har,{sourceName='capture.har'}={}){
@@ -97,7 +98,7 @@ export function analyzeBetfairSportingHar(har,{sourceName='capture.har'}={}){
     const parts=textParts(entry);
     const joined=parts.map(([,v])=>v).join('\n');
     if(!KEY_RE.test(maybeDecode(joined)))return;
-    const requestUrl=String(entry?.request?.url||'');
+    const requestUrl=maybeDecode(String(entry?.request?.url||''));
     const responseText=decodeHarContent(entry?.response?.content);
     const decoded=maybeDecode(joined);
     const fields={};
@@ -108,7 +109,7 @@ export function analyzeBetfairSportingHar(har,{sourceName='capture.har'}={}){
       for(const v of vals) mergeFields(fields,fieldCandidates(v));
     }
     mergeFields(allFields,fields);
-    const urls=uniq([requestUrl,...(decoded.match(URL_RE)||[])]).filter(u=>KEY_RE.test(maybeDecode(u))||/playtech|betfair|malmegas/i.test(u));
+    const urls=uniq([requestUrl,...(decoded.match(URL_RE)||[])]).map(maybeDecode).filter(u=>KEY_RE.test(u)||/playtech|betfair|malmegas/i.test(u));
     allUrls.push(...urls);
     relevant.push({
       index,
@@ -164,7 +165,7 @@ export function analyzeBetfairSportingHar(har,{sourceName='capture.har'}={}){
   const tickerUrlCandidates=uniq(allUrls.filter(u=>/new_jackpotxml\.php|webtickers/i.test(maybeDecode(u))));
 
   return {
-    version:'betfair-sporting-har-discovery-v1.2-base64-content',
+    version:'betfair-sporting-har-discovery-v1.3-escaped-config-support',
     mode:'OFFLINE_PASSIVE_HAR_DISCOVERY_NO_PLAY',
     sourceName,
     entryCount:entries.length,
@@ -182,7 +183,7 @@ export function analyzeBetfairSportingHar(har,{sourceName='capture.har'}={}){
       currentDailyAmountExactVerified:false,
       currentGuaranteedHitTimeExactVerified:false,
     },
-    scientificUse:'Offline HAR discovery only. Base64-encoded HAR response bodies are decoded before analysis. pairedServerEvidence requires a Betfair-owned initialResources response that co-locates jackpotsCasino with its configured ticker endpoint plus an exact endpoint-matching sljp-1 HAR response. It is shaped for the server-binding validator, but execution remains blocked until that validator, freshness, same-cycle continuity, deadline and unawarded state all pass.',
+    scientificUse:'Offline HAR discovery only. Base64 HAR bodies, escaped JSON URLs and unquoted config keys are normalized before analysis. pairedServerEvidence requires a Betfair-owned initialResources response that co-locates jackpotsCasino with its configured ticker endpoint plus an exact endpoint-matching sljp-1 HAR response. It is shaped for the server-binding validator, but execution remains blocked until that validator, freshness, same-cycle continuity, deadline and unawarded state all pass.',
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
     hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,noCredentials:true,noCookiesEmitted:true,noWagerProbe:true,noAutomaticBetting:true,harEvidenceCannotAuthorizeGreen:true,coLocatedBetfairInitialResourcesRequired:true,configuredEndpointMatchRequired:true},
   };
