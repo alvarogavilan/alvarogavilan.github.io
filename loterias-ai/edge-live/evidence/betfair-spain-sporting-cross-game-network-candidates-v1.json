@@ -1,0 +1,95 @@
+{
+  "version": "betfair-spain-sporting-cross-game-network-candidates-v1",
+  "generatedAt": "2026-08-26T22:10:00+02:00",
+  "status": "PROVIDER_SHARED_SUITE_CONFIRMED_BETFAIR_EXACT_NETWORK_BINDING_PENDING",
+  "scope": {
+    "market": "ES",
+    "operator": "Betfair Spain",
+    "provider": "Playtech",
+    "onlineOnly": true,
+    "nonPromoOnly": true
+  },
+  "providerEvidence": {
+    "playtechSportingLegendsSuiteSharedJackpotStructureConfirmed": true,
+    "officialPressRelease": "https://www.playtech.com/ap-mccoy-brings-playtech-power-play-to-sporting-legends-series/",
+    "officialSuiteLaunchRelease": "https://www.playtech.com/playtech-launches-spectacular-sporting-legends-games-suite/",
+    "official2018ResultsPdf": "https://www.investors.playtech.com/~/media/Files/P/Playtech-IR-V2/documents/results-and-presentations/2018/full-year-results-21-02-2019.pdf",
+    "documentedProviderLevelClaims": [
+      "Sporting Legends is a suite whose games offer Daily, Weekly and Mega jackpots.",
+      "Playtech described a unique jackpot structure behind the Sporting Legends suite.",
+      "Playtech's 2018 results described a Sporting Legends progressive jackpot suite rolled out across Frankie Dettori, Ronnie O'Sullivan and Football Stars games.",
+      "Provider-suite evidence does not by itself prove that two current Betfair Spain launcher sessions share one exact IMS casino or ticker endpoint."
+    ]
+  },
+  "betfairSpainCurrentCandidates": [
+    {
+      "title": "AP McCoy Sporting Legends™",
+      "gameId": "ap-mccoy-sporting-legends-cptn",
+      "page": "https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn",
+      "launcherHost": "launcher.betfair.es",
+      "provider": "Playtech",
+      "publishedRtpPctRange": [93.03, 97.17],
+      "dailyWeeklyMegaRulesPublishedOnBetfairPage": true
+    },
+    {
+      "title": "Ronnie O'Sullivan: Sporting Legends™",
+      "gameId": "ronnie-osullivan-sporting-legends-cptn",
+      "page": "https://casino.betfair.es/juego/ronnie-osullivan-sporting-legends-cptn",
+      "launcherHost": "launcher.betfair.es",
+      "provider": "Playtech",
+      "publishedHeadlineRtpPct": 95.06,
+      "threeJackpotsPublishedOnBetfairPage": true
+    },
+    {
+      "title": "Frankie Dettori Sporting Legends™",
+      "gameId": "frankie-dettori-sporting-legends-cptn",
+      "page": "https://casino.betfair.es/juego/frankie-dettori-sporting-legends-cptn",
+      "launcherHost": "launcher.betfair.es",
+      "provider": "Playtech",
+      "publishedHeadlineRtpPct": 95.01,
+      "jackpotPublishedOnBetfairPage": true
+    },
+    {
+      "title": "Roberto Carlos: Sporting Legends",
+      "gameId": "roberto-carlos-sl-cptn",
+      "page": "https://casino.betfair.es/juego/roberto-carlos-sl-cptn",
+      "launcherHost": "launcher.betfair.es",
+      "provider": "Playtech",
+      "publishedRtpPctRange": [93.60, 95.60],
+      "publishedMinimumBetCoins": 0.30,
+      "dailyWeeklyMegaPublishedOnBetfairPage": true
+    }
+  ],
+  "exactBetfairNetworkProofContract": {
+    "validatorPath": "loterias-ai/casino/jackpots/betfair-sporting-cross-game-network-validator-v1.mjs",
+    "allRequired": [
+      "two distinct exact Betfair Spain real-money launcher gameIds",
+      "each HAR has its own latest post-launch Betfair initialResources binding",
+      "each HAR independently passes exact sljp-1 server validation",
+      "same concrete Betfair IMS casino",
+      "same exact configured ticker endpoint",
+      "same sljp-1 EUR local=0 global scope",
+      "same guaranteedHitTime",
+      "same win count",
+      "same request execInterval",
+      "forward server timestamp",
+      "nondecreasing amount",
+      "bounded cross-game capture skew"
+    ],
+    "exactSharedSljp1NetworkBindingVerifiedNow": false,
+    "crossGameExecutionEquivalentVerifiedNow": false
+  },
+  "importantNonInferences": [
+    "Same Sporting Legends brand does not prove same current Betfair Spain pool.",
+    "Same provider does not prove same current Betfair Spain configuration.",
+    "Similar or increasing public headline jackpot amounts are clues only and cannot prove ticker identity.",
+    "A shared sljp-1 network would not prove equal RTP, equal minimum stake, equal per-euro jackpot hazard or equal optimal execution game."
+  ],
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  }
+}
