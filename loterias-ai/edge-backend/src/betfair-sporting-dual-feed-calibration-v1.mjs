@@ -4,10 +4,11 @@ import {analyzeBetfairSportingCorrelatedWebtickersSession} from './betfair-sport
 const finite=v=>{if(v===null||v===undefined||v===''||typeof v==='boolean')return null;const n=Number(v);return Number.isFinite(n)?n:null;};
 const lower=v=>String(v??'').trim().toLowerCase();
 const isoEpoch=v=>{const ms=Date.parse(String(v||''));return Number.isFinite(ms)?ms/1000:null;};
+const safeEndpoint=v=>{try{const u=new URL(String(v||''));return ['https:','wss:'].includes(u.protocol)?`${u.origin}${u.pathname}`:null;}catch{return null;}};
 
 function fail(reason,extra={}){
   return {
-    version:'betfair-sporting-dual-feed-calibration-v1',
+    version:'betfair-sporting-dual-feed-calibration-v1.1-scope-attested',
     mode:'OFFLINE_PASSIVE_LEGACY_XML_VS_MODERN_WEBTICKERS_CALIBRATION_NO_PLAY',
     valid:false,reason,
     calibrationCandidate:false,
@@ -50,7 +51,8 @@ export function analyzeBetfairSportingDualFeedCalibrationSample(har,{sourceName=
 
   const sameLauncherEntry=legacy.launcherEntryIndex===candidate.launcherEntryIndex;
   const sameInitialResourcesEntry=legacy.configEntryIndex===candidate.initialResourcesEntryIndex;
-  const sameCasino=lower(legacy.expectedBetfairImsCasino)===lower(candidate.expectedBetfairImsCasino)&&!!lower(legacy.expectedBetfairImsCasino);
+  const expectedBetfairImsCasino=String(legacy.expectedBetfairImsCasino||'').trim()||null;
+  const sameCasino=lower(expectedBetfairImsCasino)===lower(candidate.expectedBetfairImsCasino)&&!!lower(expectedBetfairImsCasino);
   if(!sameLauncherEntry||!sameInitialResourcesEntry||!sameCasino){
     return fail('DUAL_FEEDS_NOT_FROM_SAME_ATTESTED_AP_MCCOY_SESSION',{sourceName,legacy,modern,sameLauncherEntry,sameInitialResourcesEntry,sameCasino});
   }
@@ -61,19 +63,25 @@ export function analyzeBetfairSportingDualFeedCalibrationSample(har,{sourceName=
   const legacyCapture=finite(legacy.captureEpochSeconds);
   const modernCapture=isoEpoch(candidate?.responseRow?.startedDateTime||candidate?.request?.startedDateTime);
   if(legacyCapture===null||modernCapture===null)return fail('DUAL_FEED_CAPTURE_TIME_MISSING',{sourceName,legacy,modern});
+  const legacyTickerEndpoint=safeEndpoint(legacy.tickerEndpoint);
+  const modernTickerEndpoint=safeEndpoint(candidate.configuredEndpoint||candidate?.responseRow?.configuredEndpoint||candidate?.request?.endpoint);
+  if(!legacyTickerEndpoint||!modernTickerEndpoint)return fail('DUAL_FEED_ENDPOINT_SCOPE_MISSING',{sourceName,legacy,modern});
   const captureSkewSeconds=Math.abs(modernCapture-legacyCapture);
   const captureSkewWithinPolicy=captureSkewSeconds<=maxSkew;
   const exactStateVectorMatch=exactVectorEqual(legacyVector,modernVector);
   const calibrationCandidate=captureSkewWithinPolicy&&exactStateVectorMatch;
 
   return {
-    version:'betfair-sporting-dual-feed-calibration-v1',
+    version:'betfair-sporting-dual-feed-calibration-v1.1-scope-attested',
     mode:'OFFLINE_PASSIVE_LEGACY_XML_VS_MODERN_WEBTICKERS_CALIBRATION_NO_PLAY',
     valid:true,
     sourceName,
     sameLauncherEntry,
     sameInitialResourcesEntry,
     sameBetfairImsCasino:sameCasino,
+    expectedBetfairImsCasino,
+    legacyTickerEndpoint,
+    modernTickerEndpoint,
     legacyCaptureEpochSeconds:legacyCapture,
     modernCaptureEpochSeconds:modernCapture,
     captureSkewSeconds,
@@ -86,9 +94,9 @@ export function analyzeBetfairSportingDualFeedCalibrationSample(har,{sourceName=
     empiricalModernResponseMappingVerified:false,
     exactModernResponseSemanticsVerified:false,
     usableForOverduePair:false,
-    scientificUse:'A calibration candidate requires an independently validated legacy Playtech XML sljp-1 snapshot and an exact-session modern webtickers correlated row in the same AP McCoy HAR. Both must share the same launcher, same post-launch Betfair initialResources entry and IMS casino, occur within the capture-skew policy, and match the complete state vector exactly: game, EUR, local=0, amount, guaranteedHitTime, timestamp and winc. One matching sample is evidence for cross-feed consistency only; it cannot by itself establish stable modern response semantics or authorize overdue execution.',
+    scientificUse:'A calibration candidate requires an independently validated legacy Playtech XML sljp-1 snapshot and an exact-session modern webtickers correlated row in the same AP McCoy HAR. Both must share the same launcher, post-launch Betfair initialResources entry and IMS casino, retain explicit legacy and modern endpoint scope, occur within the capture-skew policy, and match the complete state vector exactly: game, EUR, local=0, amount, guaranteedHitTime, timestamp and winc. One matching sample is cross-feed consistency evidence only and cannot establish stable modern response semantics or authorize overdue execution.',
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,legacyXmlMustPassExactServerValidator:true,modernCandidateMustPassExactSessionCorrelation:true,sameLauncherAndInitialResourcesRequiredAcrossFeeds:true,sameBetfairImsCasinoRequired:true,completeStateVectorRequired:true,exactStateVectorEqualityRequired:true,boundedCaptureSkewRequired:true,singleCalibrationSampleCannotVerifyModernSemantics:true,dualFeedCalibrationCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,legacyXmlMustPassExactServerValidator:true,modernCandidateMustPassExactSessionCorrelation:true,sameLauncherAndInitialResourcesRequiredAcrossFeeds:true,sameBetfairImsCasinoRequired:true,legacyAndModernEndpointScopePreserved:true,completeStateVectorRequired:true,exactStateVectorEqualityRequired:true,boundedCaptureSkewRequired:true,singleCalibrationSampleCannotVerifyModernSemantics:true,dualFeedCalibrationCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
 
@@ -102,14 +110,21 @@ export function evaluateBetfairSportingDualFeedCalibrationSeries(samples,{minExa
   const timestamps=new Set(exact.map(x=>x?.legacyStateVector?.gameTimestamp).filter(v=>finite(v)!==null));
   const amounts=new Set(exact.map(x=>x?.legacyStateVector?.amount).filter(v=>finite(v)!==null));
   const ghts=new Set(exact.map(x=>x?.legacyStateVector?.guaranteedHitTime).filter(v=>finite(v)!==null));
-  const sessionKeys=new Set(exact.map(x=>`${x.sameBetfairImsCasino}|${x.legacyStateVector?.game||''}|${x.legacyStateVector?.currency||''}|${x.legacyStateVector?.local}`));
+  const scopeKeys=new Set(exact.map(x=>[
+    lower(x.expectedBetfairImsCasino),
+    x.legacyTickerEndpoint||'',
+    x.modernTickerEndpoint||'',
+    x.legacyStateVector?.game||'',
+    x.legacyStateVector?.currency||'',
+    x.legacyStateVector?.local,
+  ].join('|')));
   const enoughSamples=exact.length>=minSamples;
   const enoughDistinctTimestamps=timestamps.size>=minTs;
   const enoughDistinctAmounts=amounts.size>=minAmounts;
-  const oneLogicalScope=sessionKeys.size===1;
+  const oneLogicalScope=scopeKeys.size===1&&exact.length>0;
   const empiricalModernResponseMappingVerified=enoughSamples&&enoughDistinctTimestamps&&enoughDistinctAmounts&&oneLogicalScope;
   return {
-    version:'betfair-sporting-dual-feed-calibration-series-v1',
+    version:'betfair-sporting-dual-feed-calibration-series-v1.1-scope-attested',
     mode:'OFFLINE_PASSIVE_EMPIRICAL_MODERN_RESPONSE_MAPPING_CALIBRATION_NO_PLAY',
     valid:true,
     sampleCount:list.length,
@@ -117,14 +132,14 @@ export function evaluateBetfairSportingDualFeedCalibrationSeries(samples,{minExa
     distinctServerTimestampCount:timestamps.size,
     distinctAmountCount:amounts.size,
     distinctGuaranteedHitTimeCount:ghts.size,
-    logicalScopeCount:sessionKeys.size,
+    logicalScopeCount:scopeKeys.size,
     policy:{minExactSamples:minSamples,minDistinctServerTimestamps:minTs,minDistinctAmounts:minAmounts},
     enoughSamples,enoughDistinctTimestamps,enoughDistinctAmounts,oneLogicalScope,
     empiricalModernResponseMappingVerified,
     exactModernResponseSemanticsVerified:false,
     usableForOverduePair:false,
-    scientificUse:'Multiple exact dual-feed matches across changing server timestamps and jackpot amounts can cross-validate that the observed modern fields track the provider-documented legacy XML state vector in the captured AP McCoy scope. This is an empirical mapping calibration, not independent documentation of the modern schema. Therefore exactModernResponseSemanticsVerified remains false and the result cannot enter the overdue execution gate without an explicit, separately reviewed promotion standard.',
+    scientificUse:'Multiple exact dual-feed matches across changing server timestamps and jackpot amounts can cross-validate that observed modern fields track the provider-documented legacy XML vector only when every accepted sample belongs to one exact IMS and one stable legacy/modern endpoint scope. This remains empirical mapping calibration, not independent documentation of the modern schema. exactModernResponseSemanticsVerified stays false and the result cannot enter the overdue execution gate without a separately reviewed promotion standard.',
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,multipleExactDualFeedSamplesRequired:true,stateVariationRequired:true,oneLogicalScopeRequired:true,empiricalCalibrationDoesNotEqualDocumentedSemantics:true,noAutomaticPromotionToOverdueGate:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,multipleExactDualFeedSamplesRequired:true,stateVariationRequired:true,oneExactImsAndEndpointScopeRequired:true,empiricalCalibrationDoesNotEqualDocumentedSemantics:true,noAutomaticPromotionToOverdueGate:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
