@@ -13,7 +13,7 @@ function betfairInitialResourcesSource(url){
 
 function fail(reason,extra={}){
   return {
-    version:'betfair-sporting-live-ticker-probe-v1.1-routing-query-preserved',
+    version:'betfair-sporting-live-ticker-probe-v1.2-equivalent-binding-collapse',
     observedAt:new Date().toISOString(),
     mode:'PUBLIC_PASSIVE_LIVE_TICKER_NO_PLAY',
     valid:false,
@@ -23,7 +23,7 @@ function fail(reason,extra={}){
     currentDailyAmountExactVerified:false,
     currentGuaranteedHitTimeExactVerified:false,
     decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,publicGetOnly:true,noLoginProbe:true,noCookies:true,noCredentials:true,noPost:true,noWagerProbe:true,noAutomaticBetting:true,singleSnapshotCannotAuthorizeGreen:true,configuredNewJackpotXmlEndpointOnly:true,arbitraryUrlInputDisabled:true,betfairInitialResourcesSourceReverified:true,configuredRoutingQueryPreserved:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,publicGetOnly:true,noLoginProbe:true,noCookies:true,noCredentials:true,noPost:true,noWagerProbe:true,noAutomaticBetting:true,singleSnapshotCannotAuthorizeGreen:true,configuredNewJackpotXmlEndpointOnly:true,arbitraryUrlInputDisabled:true,betfairInitialResourcesSourceReverified:true,configuredRoutingQueryPreserved:true,equivalentBindingCollapseRequiresIdenticalExactRequestUrl:true},
     ...extra,
   };
 }
@@ -51,6 +51,18 @@ export function buildExactSportingTickerUrl(configBinding){
   }catch{return null;}
 }
 
+function groupEquivalentExactBindings(bindings){
+  const groups=new Map();
+  for(const binding of Array.isArray(bindings)?bindings:[]){
+    const exactUrl=buildExactSportingTickerUrl(binding);
+    if(!exactUrl)continue;
+    const key=exactUrl;
+    if(!groups.has(key))groups.set(key,{exactUrl,bindings:[]});
+    groups.get(key).bindings.push(binding);
+  }
+  return [...groups.values()];
+}
+
 async function fetchText(fetchImpl,url){
   try{
     const r=await fetchImpl(url,{method:'GET',redirect:'follow',headers:{accept:'application/xml,text/xml;q=0.9,*/*;q=0.2','accept-language':'es-ES,es;q=0.9,en;q=0.5'}});
@@ -71,13 +83,15 @@ export async function runBetfairSportingLiveTickerProbe({
   let configProbe;
   try{configProbe=await configProbeRunner();}catch(error){return fail('PUBLIC_CONFIG_PROBE_FAILED',{error:String(error?.message||error)});}
   const allBindings=Array.isArray(configProbe?.discovery?.coLocatedBetfairConfigBindings)?configProbe.discovery.coLocatedBetfairConfigBindings:[];
-  const exactXmlBindings=allBindings.filter(b=>buildExactSportingTickerUrl(b));
-  if(exactXmlBindings.length!==1)return fail(exactXmlBindings.length?'AMBIGUOUS_EXACT_XML_BINDING':'EXACT_XML_BINDING_NOT_FOUND',{configProbe,bindingCount:exactXmlBindings.length});
+  const bindingGroups=groupEquivalentExactBindings(allBindings);
+  if(bindingGroups.length!==1)return fail(bindingGroups.length?'AMBIGUOUS_EXACT_XML_BINDING':'EXACT_XML_BINDING_NOT_FOUND',{configProbe,bindingCount:bindingGroups.reduce((n,g)=>n+g.bindings.length,0),distinctExactRequestCount:bindingGroups.length});
 
-  const configBinding=exactXmlBindings[0];
-  const tickerRequestUrl=buildExactSportingTickerUrl(configBinding);
+  const bindingGroup=bindingGroups[0];
+  const configBinding=bindingGroup.bindings[0];
+  const tickerRequestUrl=bindingGroup.exactUrl;
+  const equivalentConfigSources=[...new Set(bindingGroup.bindings.map(b=>b.sourceUrl).filter(Boolean))];
   const tickerFetch=await fetchText(fetchImpl,tickerRequestUrl);
-  if(!tickerFetch.ok||!tickerFetch.text)return fail('TICKER_FETCH_FAILED',{configProbe,configBinding,tickerFetch});
+  if(!tickerFetch.ok||!tickerFetch.text)return fail('TICKER_FETCH_FAILED',{configProbe,configBinding,equivalentConfigSources,tickerFetch});
 
   const validation=validateBetfairSportingServerSnapshot({
     configBinding,
@@ -86,16 +100,17 @@ export async function runBetfairSportingLiveTickerProbe({
     nowEpochSeconds:now,
     maxFeedAgeIntervals:maxIntervals,
   });
-  if(validation.valid!==true)return fail('SERVER_SNAPSHOT_VALIDATION_FAILED',{configProbe,configBinding,tickerFetch,validation});
+  if(validation.valid!==true)return fail('SERVER_SNAPSHOT_VALIDATION_FAILED',{configProbe,configBinding,equivalentConfigSources,tickerFetch,validation});
 
   return {
-    version:'betfair-sporting-live-ticker-probe-v1.1-routing-query-preserved',
+    version:'betfair-sporting-live-ticker-probe-v1.2-equivalent-binding-collapse',
     observedAt:new Date(now*1000).toISOString(),
     mode:'PUBLIC_PASSIVE_LIVE_TICKER_NO_PLAY',
     valid:true,
     reason:'EXACT_BETFAIR_SPORTING_SERVER_BINDING_AND_FRESH_SLJP1_SNAPSHOT_VERIFIED',
     configProbeSummary:{version:configProbe?.version||null,observedAt:configProbe?.observedAt||null},
     configBinding,
+    bindingProvenance:{equivalentConfigSourceCount:equivalentConfigSources.length,equivalentConfigSources,distinctExactRequestCount:1},
     tickerFetch:{ok:tickerFetch.ok,status:tickerFetch.status,requestedUrl:tickerFetch.requestedUrl,finalUrl:tickerFetch.finalUrl,contentType:tickerFetch.contentType,truncated:tickerFetch.truncated},
     validation,
     snapshot:validation.snapshot,
@@ -105,6 +120,6 @@ export async function runBetfairSportingLiveTickerProbe({
     currentGuaranteedHitTimeExactVerified:true,
     currentSnapshotCannotProveOverdueByItself:true,
     decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,publicGetOnly:true,noLoginProbe:true,noCookies:true,noCredentials:true,noPost:true,noWagerProbe:true,noAutomaticBetting:true,singleSnapshotCannotAuthorizeGreen:true,configuredNewJackpotXmlEndpointOnly:true,arbitraryUrlInputDisabled:true,exactSljp1EurLocal0Query:true,betfairInitialResourcesSourceReverified:true,configuredRoutingQueryPreserved:true,configuredProtocolFieldsOverriddenExactly:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,publicGetOnly:true,noLoginProbe:true,noCookies:true,noCredentials:true,noPost:true,noWagerProbe:true,noAutomaticBetting:true,singleSnapshotCannotAuthorizeGreen:true,configuredNewJackpotXmlEndpointOnly:true,arbitraryUrlInputDisabled:true,exactSljp1EurLocal0Query:true,betfairInitialResourcesSourceReverified:true,configuredRoutingQueryPreserved:true,configuredProtocolFieldsOverriddenExactly:true,equivalentBindingCollapseRequiresIdenticalExactRequestUrl:true,distinctExactRequestsRemainAmbiguous:true},
   };
 }
