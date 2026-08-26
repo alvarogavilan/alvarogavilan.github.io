@@ -31,8 +31,20 @@ function decodeHarContent(content){
 function endpointShape(url){
   try{const u=new URL(maybeDecode(url));return `${u.origin}${u.pathname}`;}catch{return null;}
 }
-function sameEndpoint(a,b){
-  const x=endpointShape(a),y=endpointShape(b);return !!x&&x===y;
+function normalizedPort(u){
+  if(u.port)return u.port;
+  return ['https:','wss:'].includes(u.protocol)?'443':'';
+}
+function configuredTransportMatch(configured,requestUrl,entry){
+  try{
+    const a=new URL(maybeDecode(configured)),b=new URL(maybeDecode(requestUrl));
+    if(a.origin===b.origin&&a.pathname===b.pathname)return {matched:true,webSocketTransportUpgrade:false};
+    const hasWsFrames=Array.isArray(entry?._webSocketMessages)&&entry._webSocketMessages.length>0;
+    const httpsToWss=a.protocol==='https:'&&b.protocol==='wss:'&&
+      a.hostname.toLowerCase()===b.hostname.toLowerCase()&&normalizedPort(a)===normalizedPort(b)&&a.pathname===b.pathname;
+    if(httpsToWss&&hasWsFrames)return {matched:true,webSocketTransportUpgrade:true};
+  }catch{}
+  return {matched:false,webSocketTransportUpgrade:false};
 }
 function isModernBinding(b){
   if(!b||b.sameDocument!==true||b.sourceBetfairOwned!==true||b.sourceInitialResources!==true)return false;
@@ -106,19 +118,49 @@ function headerFingerprint(headers){
   return out;
 }
 
-function responseFingerprint(response){
+function mergeSafeValues(dst,src){
+  for(const [k,vals] of Object.entries(src||{}))dst[k]=uniq([...(dst[k]||[]),...(vals||[])]);
+}
+function webSocketFingerprint(entry){
+  const messages=Array.isArray(entry?._webSocketMessages)?entry._webSocketMessages:[];
+  const fieldNames=[],safeProtocolValues={},directions=[],opcodes=[];
+  for(const msg of messages){
+    directions.push(msg?.type==='send'?'send':'receive');
+    if(msg?.opcode!==undefined&&msg?.opcode!==null)opcodes.push(String(msg.opcode));
+    if(!msg?.data)continue;
+    const fp=postDataFingerprint({text:String(msg.data),mimeType:'application/json'});
+    fieldNames.push(...(fp.fieldNames||[]));
+    mergeSafeValues(safeProtocolValues,fp.safeProtocolValues);
+  }
+  return {
+    present:messages.length>0,
+    messageCount:messages.length,
+    directions:uniq(directions).sort(),
+    opcodes:uniq(opcodes).sort(),
+    fieldNames:uniq(fieldNames).slice(0,120),
+    safeProtocolValues,
+    valuesRedacted:true,
+  };
+}
+function responseFingerprint(response,entry){
   const body=decodeHarContent(response?.content),jsonKeys=[],xmlTags=[];
-  let parsed=null;
-  try{parsed=JSON.parse(body);}catch{}
-  if(parsed&&typeof parsed==='object')flattenJson(parsed,'',jsonKeys,{});
-  for(const m of body.matchAll(/<\/?([A-Za-z_][A-Za-z0-9_.:-]*)\b/g)){xmlTags.push(m[1]);if(xmlTags.length>=120)break;}
+  const received=(Array.isArray(entry?._webSocketMessages)?entry._webSocketMessages:[])
+    .filter(m=>m?.type!=='send'&&m?.data).map(m=>String(m.data));
+  const combined=[body,...received].filter(Boolean).join('\n');
+  for(const candidate of [body,...received]){
+    let parsed=null;
+    try{parsed=JSON.parse(candidate);}catch{}
+    if(parsed&&typeof parsed==='object')flattenJson(parsed,'',jsonKeys,{});
+  }
+  for(const m of combined.matchAll(/<\/?([A-Za-z_][A-Za-z0-9_.:-]*)\b/g)){xmlTags.push(m[1]);if(xmlTags.length>=120)break;}
   return {
     status:Number.isFinite(response?.status)?response.status:null,
     mimeType:response?.content?.mimeType||null,
     bodyLength:body.length,
-    markers:{sljp1:/\bsljp-1\b/i.test(body),guaranteedHitTime:/\bguaranteedHitTime\b/i.test(body),jackpot:/\bjackpot/i.test(body)},
+    markers:{sljp1:/\bsljp-1\b/i.test(combined),guaranteedHitTime:/\bguaranteedHitTime\b/i.test(combined),jackpot:/\bjackpot/i.test(combined)},
     jsonKeyPaths:uniq(jsonKeys).slice(0,120),
     xmlTags:uniq(xmlTags).slice(0,120),
+    webSocketReceiveFrameCount:received.length,
     bodyValuesRedacted:true,
   };
 }
@@ -133,19 +175,21 @@ export function analyzeBetfairSportingWebtickersProtocolHar(har,{sourceName='cap
   for(const b of bindings){
     entries.forEach((entry,index)=>{
       const requestUrl=String(entry?.request?.url||'');
-      if(!sameEndpoint(b.tickerUrl,requestUrl))return;
+      const transportMatch=configuredTransportMatch(b.tickerUrl,requestUrl,entry);
+      if(!transportMatch.matched)return;
       traffic.push({
         configBinding:{sourceUrl:b.sourceUrl,jackpotsCasino:b.jackpotsCasino,tickerEndpoint:endpointShape(b.tickerUrl),instanceCode:b.instanceCode||null},
         entryIndex:index,
         startedDateTime:entry?.startedDateTime||null,
-        exactConfiguredEndpointMatch:true,
-        request:{method:entry?.request?.method||null,endpoint:endpointShape(requestUrl),query:queryFingerprint(requestUrl),headers:headerFingerprint(entry?.request?.headers),postData:postDataFingerprint(entry?.request?.postData)},
-        response:responseFingerprint(entry?.response),
+        exactConfiguredEndpointMatch:transportMatch.webSocketTransportUpgrade!==true,
+        configuredWebSocketTransportUpgradeObserved:transportMatch.webSocketTransportUpgrade===true,
+        request:{method:entry?.request?.method||null,endpoint:endpointShape(requestUrl),query:queryFingerprint(requestUrl),headers:headerFingerprint(entry?.request?.headers),postData:postDataFingerprint(entry?.request?.postData),webSocket:webSocketFingerprint(entry)},
+        response:responseFingerprint(entry?.response,entry),
       });
     });
   }
   return {
-    version:'betfair-sporting-webtickers-har-protocol-v1',
+    version:'betfair-sporting-webtickers-har-protocol-v1.1-websocket-transport',
     mode:'OFFLINE_PASSIVE_MODERN_WEBTICKERS_PROTOCOL_DISCOVERY_NO_PLAY',
     sourceName,
     modernBetfairConfigBindingCount:bindings.length,
@@ -154,12 +198,12 @@ export function analyzeBetfairSportingWebtickersProtocolHar(har,{sourceName='cap
     protocolFingerprints:traffic,
     exactModernRequestContractVerified:false,
     directPublicModernProbeAllowed:false,
-    scientificUse:'A matching HAR entry proves only that the exact browser session contacted the endpoint configured by Betfair initialResources. Query/body/header values that can carry credentials or session state are never emitted. Safe casino/game/currency/scope fields and structural key names are retained to recover the client protocol without guessing. A direct modern probe remains blocked until the exact request contract is independently closed.',
+    scientificUse:'A matching HAR entry proves only that the exact browser session contacted the endpoint configured by Betfair initialResources. An HTTPS-configured endpoint may also match an observed WSS connection only when host, effective port and path are identical and the HAR actually contains WebSocket frames; this is recorded explicitly as a transport upgrade, never silently treated as an exact HTTPS request. Query/body/header/frame values that can carry credentials or session state are never emitted. Safe casino/game/currency/scope fields and structural key names are retained to recover the client protocol without guessing. A direct modern probe remains blocked until the exact request contract is independently closed.',
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,noCredentialsEmitted:true,noCookiesEmitted:true,noAuthorizationEmitted:true,sensitiveValuesRedacted:true,exactBetfairInitialResourcesBindingRequired:true,configuredEndpointMatchRequired:true,modernProtocolCannotBeGuessed:true,harEvidenceCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,noCredentialsEmitted:true,noCookiesEmitted:true,noAuthorizationEmitted:true,sensitiveValuesRedacted:true,exactBetfairInitialResourcesBindingRequired:true,configuredEndpointMatchRequired:true,webSocketUpgradeRequiresSameHostPortPathAndObservedFrames:true,modernProtocolCannotBeGuessed:true,harEvidenceCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
 
 function fail(reason,extra={}){
-  return {version:'betfair-sporting-webtickers-har-protocol-v1',mode:'OFFLINE_PASSIVE_MODERN_WEBTICKERS_PROTOCOL_DISCOVERY_NO_PLAY',valid:false,reason,exactModernWebtickersTrafficObserved:false,exactModernRequestContractVerified:false,directPublicModernProbeAllowed:false,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},hardGuards:{noCredentialsEmitted:true,noCookiesEmitted:true,sensitiveValuesRedacted:true,harEvidenceCannotAuthorizeGreen:true},...extra};
+  return {version:'betfair-sporting-webtickers-har-protocol-v1.1-websocket-transport',mode:'OFFLINE_PASSIVE_MODERN_WEBTICKERS_PROTOCOL_DISCOVERY_NO_PLAY',valid:false,reason,exactModernWebtickersTrafficObserved:false,exactModernRequestContractVerified:false,directPublicModernProbeAllowed:false,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},hardGuards:{noCredentialsEmitted:true,noCookiesEmitted:true,sensitiveValuesRedacted:true,harEvidenceCannotAuthorizeGreen:true},...extra};
 }
