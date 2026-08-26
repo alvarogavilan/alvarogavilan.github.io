@@ -47,6 +47,39 @@ const wrongCasino={...post,response:{status:200,content:{mimeType:'application/j
 r=analyzeBetfairSportingStructuredWebtickersRows({log:{entries:[initial,wrongCasino]}});
 assert.equal(r.structuredSljp1RowCandidateCount,0);
 
+// Conflicting request casino evidence cannot count as an exact Betfair request binding.
+const conflictingRequestCasino={...post,request:{...post.request,url:'https://webtickers.malmegas.com/webtickers?casino=other_es'}};
+r=analyzeBetfairSportingStructuredWebtickersRows({log:{entries:[initial,conflictingRequestCasino]}},{sourceName:'structured-conflicting-request.har'});
+assert.equal(r.structuredSljp1RowCandidateCount,1);
+assert.equal(r.structuredSljp1RowCandidates[0].requestCasinoMatchesConfiguredBinding,false);
+assert.equal(r.hardGuards.conflictingRequestCasinoEvidenceRejected,true);
+assert.equal(r.structuredSljp1RowCandidates[0].usableForOverduePair,false);
+
+// Conflicting aliases/state values in one row fail closed instead of selecting the first match.
+const conflictingGameAlias={...post,response:{status:200,content:{mimeType:'application/json',text:JSON.stringify({game:'sljp-1',gameCode:'sljp-2',currency:'EUR',local:0,timestamp:2199,winc:42,amount:123.45,guaranteedHitTime:2200})}}};
+r=analyzeBetfairSportingStructuredWebtickersRows({log:{entries:[initial,conflictingGameAlias]}});
+assert.equal(r.structuredSljp1RowCandidateCount,0);
+
+const conflictingAmount={...post,response:{status:200,content:{mimeType:'application/json',text:JSON.stringify({game:'sljp-1',currency:'EUR',local:0,timestamp:2199,winc:42,amount:123.45,jackpot:{amount:124.56,guaranteedHitTime:2200}})}}};
+r=analyzeBetfairSportingStructuredWebtickersRows({log:{entries:[initial,conflictingAmount]}});
+assert.equal(r.structuredSljp1RowCandidateCount,0);
+
+const conflictingTimestamp={...post,response:{status:200,content:{mimeType:'application/json',text:JSON.stringify({game:'sljp-1',currency:'EUR',local:0,timestamp:2199,gameTimestamp:2198,winc:42,amount:123.45,guaranteedHitTime:2200})}}};
+r=analyzeBetfairSportingStructuredWebtickersRows({log:{entries:[initial,conflictingTimestamp]}});
+assert.equal(r.structuredSljp1RowCandidateCount,0);
+
+const conflictingWinCount={...post,response:{status:200,content:{mimeType:'application/json',text:JSON.stringify({game:'sljp-1',currency:'EUR',local:0,timestamp:2199,winc:42,winCount:43,amount:123.45,guaranteedHitTime:2200})}}};
+r=analyzeBetfairSportingStructuredWebtickersRows({log:{entries:[initial,conflictingWinCount]}});
+assert.equal(r.structuredSljp1RowCandidateCount,0);
+assert.equal(r.hardGuards.conflictingCoLocatedStateValuesRejected,true);
+
+// Empty optional instanceCode is absence, not an ambiguity.
+const emptyInstance={...post,response:{status:200,content:{mimeType:'application/json',text:JSON.stringify({game:'sljp-1',currency:'EUR',local:0,timestamp:2199,winc:42,amount:123.45,guaranteedHitTime:2200,instanceCode:''})}}};
+r=analyzeBetfairSportingStructuredWebtickersRows({log:{entries:[initial,emptyInstance]}});
+assert.equal(r.structuredSljp1RowCandidateCount,1);
+assert.equal(r.structuredSljp1RowCandidates[0].row.instanceCode,null);
+assert.equal(r.hardGuards.emptyOptionalInstanceCodeAllowed,true);
+
 // Same structured-row rule applies to a real observed WSS transport upgrade.
 const ws={
   startedDateTime:'2026-08-26T18:00:02Z',
