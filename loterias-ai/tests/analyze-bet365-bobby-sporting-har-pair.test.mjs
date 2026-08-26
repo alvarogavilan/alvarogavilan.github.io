@@ -1,0 +1,53 @@
+import assert from 'node:assert/strict';
+import {analyzeSafeBet365BobbyHarPairText} from '../scripts/analyze-bet365-bobby-sporting-har-pair.mjs';
+
+const target=()=>({startedDateTime:'2026-08-26T19:59:50.000Z',request:{method:'GET',url:'https://casino.bet365.es/launch?gameCode=gpas_bgeorge_pop&token=LAUNCH_SECRET',headers:[{name:'Authorization',value:'Bearer HEADER_SECRET'}]},response:{status:200,content:{mimeType:'application/json',text:'{"title":"Bobby George: Sporting Legends","gameCode":"gpas_bgeorge_pop","token":"BODY_SECRET"}'}}});
+const xml=({timestamp,amount=1234.56,winc=17,ght=1787774400})=>`<request currency="eur" startTimestamp="1787774380" execInterval="10" game="sljp-1" casino="bet365_es" info="1"><gamedata timestamp="${timestamp}" local="0" winc="${winc}" gamegroup="sljp" game="sljp-1"><amount-list><amount sign="€" instancecode="es1" currency="eur" guaranteedHitTime="${ght}">${amount}</amount></amount-list></gamedata></request>`;
+const har=({capture,timestamp,amount})=>JSON.stringify({log:{entries:[target(),{startedDateTime:capture,request:{method:'GET',url:'https://ticker.example/new_jackpotxml.php?info=1&game=sljp-1&casino=bet365_es&currency=EUR&local=0&instanceCode=es1&token=QUERY_SECRET',headers:[{name:'Cookie',value:'SESSION=COOKIE_SECRET'}]},response:{status:200,content:{mimeType:'application/xml',text:xml({timestamp,amount})}}}]}});
+
+const before=har({capture:'2026-08-26T19:59:59.000Z',timestamp:1787774398,amount:1234.56});
+const after=har({capture:'2026-08-26T20:00:05.000Z',timestamp:1787774402,amount:1234.57});
+const r=analyzeSafeBet365BobbyHarPairText(before,after,{beforeSourceName:'before-private.har',afterSourceName:'after-private.har'});
+assert.equal(r.ok,true);
+assert.equal(r.version,'bet365-bobby-safe-har-pair-cli-v1');
+assert.equal(r.pairValid,true);
+assert.equal(r.candidateFollowingDayUnawardedStateObserved,true);
+assert.equal(r.deadlineEpochSeconds,1787774400);
+assert.equal(r.beforeLeadSeconds,2);
+assert.equal(r.afterLagSeconds,2);
+assert.equal(r.sameTickerEndpoint,true);
+assert.equal(r.sameRequestCasino,true);
+assert.equal(r.sameInstanceCode,true);
+assert.equal(r.sameGuaranteedHitTime,true);
+assert.equal(r.winCountUnchanged,true);
+assert.equal(r.jackpotNondecreasing,true);
+assert.equal(r.providerFirstBetFollowingDayRuleDocumented,true);
+assert.equal(r.providerAnyBetAnySizeJackpotEligibilityDocumented,true);
+assert.equal(r.bet365LicenseeBindingVerified,false);
+assert.equal(r.exactBet365TickerEndpointOwnershipVerified,false);
+assert.equal(r.operatorRuleAdoptionVerified,false);
+assert.equal(r.servedTenCentTotalStakeVerified,false);
+assert.equal(r.tenCentJackpotEligibilityVerified,false);
+assert.equal(r.usableForExecution,false);
+assert.equal(r.execution.decision,'NO_PLAY');
+assert.equal(r.execution.realMoneyAllowed,false);
+assert.equal(r.execution.realStakeEUR,0);
+assert.equal(r.execution.maxSpins,0);
+assert.equal(r.execution.maxTotalStakeEUR,0);
+const serialized=JSON.stringify(r);
+for(const secret of ['LAUNCH_SECRET','HEADER_SECRET','BODY_SECRET','QUERY_SECRET','COOKIE_SECRET'])assert.equal(serialized.includes(secret),false);
+assert.equal(serialized.includes('<request'),false);
+assert.equal(serialized.includes('?info='),false);
+assert.equal(serialized.includes('Authorization'),false);
+assert.equal(serialized.includes('Cookie'),false);
+
+const badBefore=analyzeSafeBet365BobbyHarPairText('{bad',after);
+assert.equal(badBefore.ok,false);
+assert.equal(badBefore.reason,'BEFORE_HAR_PARSE_FAILED');
+assert.equal(badBefore.execution.decision,'NO_PLAY');
+const badAfter=analyzeSafeBet365BobbyHarPairText(before,'{bad');
+assert.equal(badAfter.ok,false);
+assert.equal(badAfter.reason,'AFTER_HAR_PARSE_FAILED');
+assert.equal(badAfter.execution.maxSpins,0);
+
+console.log('analyze-bet365-bobby-sporting-har-pair.test.mjs: PASS');
