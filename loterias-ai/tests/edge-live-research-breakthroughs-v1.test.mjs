@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {buildBreakthroughCards,cardHtml,ONLINE_ONLY,NON_PROMO_ONLY} from '../edge-live/research-breakthroughs-v1.mjs';
+import {buildBreakthroughCards,buildCombinedBreakthroughCards,cardHtml,ONLINE_ONLY,NON_PROMO_ONLY} from '../edge-live/research-breakthroughs-v1.mjs';
 
 const evidence=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/spain-igt-persistent-state-candidates-v1.json','utf8'));
+const norse=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/aotgn-spain-live-deployment-targets-v1.json','utf8'));
 const cards=buildBreakthroughCards(evidence);
 
 assert.equal(ONLINE_ONLY,true);
@@ -28,4 +29,23 @@ for(const c of cards){
 
 assert.equal(cards.find(x=>x.game==='Ocean Magic')?.rtpPct,92.18);
 assert.equal(cards.find(x=>x.game==='Regal Riches')?.rtpPct,94);
+
+const combined=buildCombinedBreakthroughCards([evidence,norse]);
+assert.equal(combined.length,3);
+const norseCard=combined.find(x=>x.kind==='NORSE_P0');
+assert.ok(norseCard);
+assert.equal(norseCard.action,'NO_PLAY');
+assert.equal(norseCard.sourceType,'ONLINE');
+assert.equal(norseCard.promotion,false);
+assert.equal(norseCard.closedGates,3);
+assert.equal(norseCard.totalGates,8);
+assert.equal(norseCard.spanishNetworkVerified,true);
+assert.equal(norseCard.sameSessionDailyVerified,false);
+const norseHtml=cardHtml(norseCard);
+assert.match(norseHtml,/GATES IDENTIDAD\/ESTADO/);
+assert.match(norseHtml,/3\/8/);
+assert.match(norseHtml,/RED ESPAÑA/);
+assert.match(norseHtml,/NO ES SEÑAL DE APUESTA/);
+assert.doesNotMatch(norseHtml,/JUGAR AHORA/);
+
 console.log('edge-live-research-breakthroughs-v1.test.mjs: PASS');
