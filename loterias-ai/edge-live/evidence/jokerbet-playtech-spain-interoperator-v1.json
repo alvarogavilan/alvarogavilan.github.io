@@ -1,7 +1,7 @@
 {
-  "version": "jokerbet-playtech-spain-interoperator-v1.1-daily-public-availability",
+  "version": "jokerbet-playtech-spain-interoperator-v1.2-binding-corrected",
   "generatedAt": "2026-08-26T08:10:00Z",
-  "updatedAt": "2026-08-26T08:36:00Z",
+  "updatedAt": "2026-08-26T08:42:00Z",
   "mode": "SPAIN_INTEROPERATOR_NETWORK_BINDING_NO_PLAY",
   "market": "ES",
   "operator": "JOKERBET",
@@ -10,7 +10,9 @@
   "target": {
     "game": "Age of the Gods Norse: Gods and Giants",
     "playtechGameCode": "gpas_aoggagiants_pop",
-    "dailyJackpotCode": "aognjp-2"
+    "norseGroupCode": "aognjp",
+    "dailyNetworkCode": "aognjp-2",
+    "directGameToAognjp2BindingVerified": false
   },
   "deploymentEvidence": {
     "sourceClass": "JOKERBET_COMMUNIQUE_VIA_INFOPLAY",
@@ -25,6 +27,14 @@
     "aognjp2ProviderClassification": "GLOBAL_JACKPOT_CODE",
     "aognjp2Meaning": "AGE_OF_GODS_NORSE_DAILY_TIME_GUARANTEE",
     "godsAndGiantsArchitectureLinkedToNorseJackpotGroup": true,
+    "providerTableDirectAognjp2BindingToGodsAndGiants": false,
+    "providerTableLayoutCaveat": "Text extraction wraps table columns. The Gods and Giants game code appears across the Extra/Daily row boundary and must not be treated as a direct aognjp-2 binding without table-layout confirmation.",
+    "bookOfDwarvesDirectDailyControl": {
+      "game": "Age of the Gods Norse: Book of Dwarves",
+      "gameCode": "gpas_gogold_pop",
+      "onePlaySpainPublishesSameImsCode": true,
+      "playtechTablePlacesGameInDailyRow": true
+    },
     "marketSegmentationRequired": true,
     "globalCodeDoesNotAuthorizeForeignStateTransfer": true
   },
@@ -40,18 +50,20 @@
     "dailySameSessionLiveStateVerified": false,
     "currentDailyAmountVerified": false,
     "currentDailyGuaranteedHitTimeVerified": false,
-    "note": "Public operator page is strong deployment evidence but is not a same-session ticker observation; it cannot establish the current Daily amount, deadline or rollover state."
+    "note": "Public operator page is strong Spanish deployment evidence but is not a same-session ticker observation and does not by itself bind Gods and Giants to aognjp-2 in Playtech's ticker table."
   },
   "excludedConfounder": {
     "name": "JOKERBET Temperatura Jackpot / Oro-Plata-Bronce",
     "type": "OPERATOR_PROMOTION",
     "excluded": true,
-    "reason": "NON_PROMO_ONLY; awards promotional bonus/rollover and is not evidence of Playtech aognjp-2 state."
+    "reason": "NON_PROMO_ONLY; awards promotional bonus/rollover and is not evidence of Playtech aognjp state."
   },
   "scientificConsequence": {
     "genericJokerbetLocalPoolUncertaintyReduced": true,
     "spanishNetworkStateCanBeSoughtAcrossProvenSameNetworkParticipants": true,
     "dailyDeploymentAvailabilityEvidenceStrengthened": true,
+    "directGodsGiantsToAognjp2BindingOpen": true,
+    "bookOfDwarvesIsCleanerDirectAognjp2Control": true,
     "sameSessionDailyStateStillRequired": true,
     "sameProviderDoesNotProveSameMarketNetwork": true,
     "currentSpanishTickerRowStillRequired": true,
@@ -81,6 +93,7 @@
     "nonPromoOnly": true,
     "noForeignTickerStateTransfer": true,
     "noHeadlineToDailyBinding": true,
+    "noWrappedTableColumnInference": true,
     "publicAvailabilityIsNotSameSessionState": true,
     "noWagerProbe": true,
     "noRaceAutomation": true
