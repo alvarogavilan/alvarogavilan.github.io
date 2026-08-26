@@ -1,5 +1,6 @@
 const SOURCES=[
-  './evidence/spain-igt-persistent-state-candidates-v1.json'
+  './evidence/spain-igt-persistent-state-candidates-v1.json',
+  './evidence/aotgn-spain-live-deployment-targets-v1.json'
 ];
 
 export const ONLINE_ONLY=true;
@@ -41,7 +42,7 @@ function buildOnlineCards(data){
       const preWager=s.abandonedStateVisibleBeforeWagerVerified===true;
       const exactConfig=(c?.identityEvidence?.exactIgtIdentityVerifiedOnEnRachaPage===true)||(c?.identityEvidence?.currentEnRachaExactTitleVerified===true&&c?.identityEvidence?.identityConfidence==='EXACT_CONFIGURATION_VERIFIED');
       return {
-        id:String(c?.id||''),game:String(c?.game||'Juego sin nombre'),operator:String(data?.operator?.name||'Operador español'),url:String(c?.currentSpainOperatorPage||''),priority:String(c?.decision?.researchPriority||'RESEARCH'),
+        kind:'IGT_PERSISTENT',id:String(c?.id||''),game:String(c?.game||'Juego sin nombre'),operator:String(data?.operator?.name||'Operador español'),url:String(c?.currentSpainOperatorPage||''),priority:String(c?.decision?.researchPriority||'RESEARCH'),
         minBetEUR:hasNumber(c?.currentSpainEconomics?.minimumBetEUR)?Number(c.currentSpainEconomics.minimumBetEUR):null,
         maxBetEUR:hasNumber(c?.currentSpainEconomics?.maximumBetEUR)?Number(c.currentSpainEconomics.maximumBetEUR):null,
         rtpPct:hasNumber(c?.currentSpainEconomics?.theoreticalRtpPct)?Number(c.currentSpainEconomics.theoreticalRtpPct):null,
@@ -54,13 +55,45 @@ function buildOnlineCards(data){
     });
 }
 
+function norseGateSummary(data){
+  const s=data?.p0Strategy?.stateObservationGate;
+  if(!s)return null;
+  const gates=[
+    s.currentPublicPageVerified===true,
+    s.dailyMechanicPublishedOnCurrentPage===true,
+    s.spanishInteroperatorPlaytechNetworkVerified===true,
+    s.directGameToAognjp2BindingVerified===true,
+    (s.sameSessionDailyActiveVerified===true)||(s.dailyActiveNowVerified===true),
+    (s.currentDailyAmountRecovered===true)||hasNumber(s.currentDailyJackpotEUR),
+    (s.currentGuaranteedHitTimeRecovered===true)||hasNumber(s.guaranteedHitTime),
+    (s.exactSpanishTickerImsBindingVerified===true)||(s.exactTickerHostRecovered===true&&s.exactImsCasinoRecovered===true)
+  ];
+  return {closed:gates.filter(Boolean).length,total:gates.length};
+}
+
+function buildNorseCards(data){
+  if(!data||upper(data.market)!=='ES'||upper(data.provider)!=='PLAYTECH'||data?.execution?.realMoneyAllowed!==false)return [];
+  const s=data?.p0Strategy?.stateObservationGate;
+  const gs=norseGateSummary(data);
+  if(!s||!gs)return [];
+  return [{
+    kind:'NORSE_P0',id:'playtech-norse-daily-spain-p0',game:String(s.game||'Age of the Gods Norse'),operator:String(s.operator||'Operador español'),
+    url:'https://www.jokerbet.es/tragaperras-slots/age-of-the-gods-norse-gods-and-giants.html',priority:'P0',status:'P0 · INVESTIGACIÓN',action:'NO_PLAY',sourceType:'ONLINE',promotion:false,
+    mechanism:'Playtech Norse Daily · red española interoperador',closedGates:gs.closed,totalGates:gs.total,
+    spanishNetworkVerified:s.spanishInteroperatorPlaytechNetworkVerified===true,dailyPublished:s.dailyMechanicPublishedOnCurrentPage===true,
+    directTickerBindingVerified:s.directGameToAognjp2BindingVerified===true,sameSessionDailyVerified:(s.sameSessionDailyActiveVerified===true)||(s.dailyActiveNowVerified===true),
+    strongFinding:'Ficha española actual con mecánica Daily publicada y red Playtech interoperador España verificada.',
+    guardText:'Faltan binding directo aognjp-2, Daily same-session, importe/deadline actuales y ticker+IMS español antes de cualquier ejecución.',
+    decisiveBlocker:'FALTA_ESTADO_DAILY_Y_BINDING_TICKER_ESPANOL'
+  }];
+}
+
 const operationalCardsOnly=(cards)=>(Array.isArray(cards)?cards:[]).filter((c)=>c?.sourceType==='ONLINE'&&!isExplicitPromo(c));
 
-export function buildBreakthroughCards(data){return operationalCardsOnly(buildOnlineCards(data));}
+export function buildBreakthroughCards(data){return operationalCardsOnly([...buildOnlineCards(data),...buildNorseCards(data)]);}
 export function buildCombinedBreakthroughCards(datasets){return operationalCardsOnly((Array.isArray(datasets)?datasets:[]).flatMap(buildBreakthroughCards));}
 
-export function cardHtml(c){
-  if(!c||c.sourceType!=='ONLINE'||isExplicitPromo(c))return '';
+function igtCardHtml(c){
   const link=c.url?`<a href="${esc(c.url)}" target="_blank" rel="noopener">Abrir ficha oficial →</a>`:'Ficha oficial no disponible';
   const inheritedLabel=c.crossPlayerVerified?'VERIFICADO':'POR CERRAR';
   return `<article class="breakCard">
@@ -78,10 +111,32 @@ export function cardHtml(c){
   </article>`;
 }
 
+function norseCardHtml(c){
+  const link=c.url?`<a href="${esc(c.url)}" target="_blank" rel="noopener">Abrir ficha oficial →</a>`:'Ficha oficial no disponible';
+  return `<article class="breakCard">
+    <div class="breakTop"><div><div class="breakProvider">${esc(c.operator)} · ONLINE · ESPAÑA</div><div class="breakTitle">${esc(c.game)}</div></div><span class="breakBadge">${esc(c.status)}</span></div>
+    <div class="breakMechanism">⚡ ${esc(c.mechanism)}</div>
+    <div class="breakGrid">
+      <div><small>GATES IDENTIDAD/ESTADO</small><b>${Number(c.closedGates)||0}/${Number(c.totalGates)||8}</b></div>
+      <div><small>RED ESPAÑA</small><b>${c.spanishNetworkVerified?'VERIFICADA':'POR CERRAR'}</b></div>
+      <div><small>DAILY PUBLICADO</small><b>${c.dailyPublished?'VERIFICADO':'POR CERRAR'}</b></div>
+      <div><small>DAILY SAME-SESSION</small><b>${c.sameSessionDailyVerified?'VERIFICADO':'POR CERRAR'}</b></div>
+    </div>
+    <div class="breakGood">HALLAZGO REAL: ${esc(c.strongFinding)}</div>
+    <div class="breakGuard">🔴 NO ES SEÑAL DE APUESTA · ${esc(c.guardText)}</div>
+    <div class="breakLink">${link}</div>
+  </article>`;
+}
+
+export function cardHtml(c){
+  if(!c||c.sourceType!=='ONLINE'||isExplicitPromo(c))return '';
+  return c.kind==='NORSE_P0'?norseCardHtml(c):igtCardHtml(c);
+}
+
 export function renderBreakthroughs(data,{root=document.getElementById('breakthroughList'),summary=document.getElementById('breakthroughSummary')}={}){
   const cards=operationalCardsOnly(Array.isArray(data)?buildCombinedBreakthroughCards(data):buildBreakthroughCards(data));
   if(summary){
-    summary.textContent=cards.length?`${cards.length} HALLAZGOS P0 ONLINE EN ESPAÑA · 0 FÍSICOS · 0 PROMOS · 0 € HASTA CERRAR FINGERPRINT LOCAL`:'Sin hallazgos P0 online cargados';
+    summary.textContent=cards.length?`${cards.length} HALLAZGOS P0 ONLINE EN ESPAÑA · 0 FÍSICOS · 0 PROMOS · 0 € HASTA CERRAR GATES LOCALES`:'Sin hallazgos P0 online cargados';
   }
   if(root)root.innerHTML=cards.length?cards.map(cardHtml).filter(Boolean).join(''):'<div class="breakEmpty">Sin nuevos hallazgos online cargados.</div>';
   return cards;
