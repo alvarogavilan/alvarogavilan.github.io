@@ -17,6 +17,20 @@ assert.equal(u.searchParams.get('currency'),'eur');
 assert.equal(u.searchParams.get('local'),'0');
 assert.equal(buildExactSportingTickerUrl({...binding,tickerUrl:'https://example.playtech.com/webtickers'}),null);
 assert.equal(buildExactSportingTickerUrl({...binding,sourceBetfairOwned:false}),null);
+assert.equal(buildExactSportingTickerUrl({...binding,sourceUrl:'https://evil.example/initialResources/es_ES_desktop'}),null);
+assert.equal(buildExactSportingTickerUrl({...binding,tickerUrl:'https://user:pass@example.playtech.com/new_jackpotxml.php'}),null);
+
+const routed=buildExactSportingTickerUrl({...binding,tickerUrl:'https://example.playtech.com/new_jackpotxml.php?route=es-prod&casino=wrong&game=wrong&instanceCode=stale#frag'});
+const routedUrl=new URL(routed);
+assert.equal(routedUrl.searchParams.get('route'),'es-prod');
+assert.equal(routedUrl.searchParams.get('casino'),'betfair_es');
+assert.equal(routedUrl.searchParams.get('game'),'sljp-1');
+assert.equal(routedUrl.searchParams.get('currency'),'eur');
+assert.equal(routedUrl.searchParams.get('local'),'0');
+assert.equal(routedUrl.searchParams.has('instanceCode'),false);
+assert.equal(routedUrl.hash,'');
+const withInstance=buildExactSportingTickerUrl({...binding,instanceCode:'ims-a',tickerUrl:'https://example.playtech.com/new_jackpotxml.php?route=es-prod'});
+assert.equal(new URL(withInstance).searchParams.get('instanceCode'),'ims-a');
 
 const xml=`<request currency="eur" startTimestamp="1990" execInterval="10" game="sljp-1" casino="betfair_es" info="1"><gamedata timestamp="2005" local="0" winc="42" gamegroup="sljp" game="sljp-1"><amount-list><amount pos="0" step="0.01" wins="1000" currency="eur" guaranteedHitTime="2100">123.45</amount></amount-list></gamedata></request>`;
 let requested=null;
@@ -39,6 +53,7 @@ assert.equal(r.decision,'NO_PLAY');
 assert.equal(r.realMoneyAllowed,false);
 assert.equal(r.maxSpins,0);
 assert.equal(r.currentSnapshotCannotProveOverdueByItself,true);
+assert.equal(r.hardGuards.configuredRoutingQueryPreserved,true);
 assert.equal(new URL(requested).searchParams.get('casino'),'betfair_es');
 
 r=await runBetfairSportingLiveTickerProbe({configProbeRunner:async()=>({discovery:{coLocatedBetfairConfigBindings:[binding,{...binding,jackpotsCasino:'other'}]}}),fetchImpl,nowEpochSeconds:2010});
