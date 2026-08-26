@@ -1,0 +1,75 @@
+import assert from 'node:assert/strict';
+import {analyzeBetfairSportingDualFeedCalibrationSample,evaluateBetfairSportingDualFeedCalibrationSeries} from '../edge-backend/src/betfair-sporting-dual-feed-calibration-v1.mjs';
+
+const launcher=()=>({request:{method:'GET',url:'https://launcher.betfair.es/?RPBucket=casino&dataChannel=casino&gameId=ap-mccoy-sporting-legends-cptn&launchProduct=casino&mode=real',headers:[]},response:{status:200,content:{text:'launcher'}}});
+const initial=()=>({request:{method:'GET',url:'https://launcher.betfair.es/initialResources/es_ES_desktop',headers:[]},response:{status:200,content:{mimeType:'application/json',text:JSON.stringify({jackpotsCasino:'bf_es',jackpotsCasinoUrl:'https://legacy.example/new_jackpotxml.php',liveEndpointUrl:'https://webtickers.malmegas.com/webtickers'})}}});
+const legacy=(timestamp,amount,winc=7,ght=1100)=>({
+  startedDateTime:new Date(timestamp*1000).toISOString(),
+  request:{method:'GET',url:'https://legacy.example/new_jackpotxml.php?info=1&casino=bf_es&game=sljp-1&currency=eur&local=0',headers:[]},
+  response:{status:200,content:{mimeType:'text/xml',text:`<request casino="bf_es" currency="eur" game="sljp-1" info="1" startTimestamp="${timestamp-10}" execInterval="10"><gamedata game="sljp-1" gamegroup="sljp" local="0" timestamp="${timestamp}" winc="${winc}"><amount currency="EUR" guaranteedHitTime="${ght}" step="0.01" wins="1000">${amount}</amount></gamedata></request>`}},
+});
+const modern=(timestamp,amount,winc=7,ght=1100,captureOffset=1)=>({
+  startedDateTime:new Date((timestamp+captureOffset)*1000).toISOString(),
+  request:{method:'POST',url:'https://webtickers.malmegas.com/webtickers?info=1&casino=bf_es&game=sljp-1&currency=EUR&local=0',headers:[],postData:{mimeType:'application/json',text:'{}'}},
+  response:{status:200,content:{mimeType:'application/json',text:JSON.stringify({game:'sljp-1',currency:'EUR',local:0,timestamp,winc,amount,guaranteedHitTime:ght})}},
+});
+const har=(timestamp,amount,modernAmount=amount)=>({log:{entries:[launcher(),initial(),legacy(timestamp,amount),modern(timestamp,modernAmount)]}});
+
+let r=analyzeBetfairSportingDualFeedCalibrationSample(har(1000,123.45),{sourceName:'dual-1.har',maxCaptureSkewSeconds:2});
+assert.equal(r.valid,true);
+assert.equal(r.sameLauncherEntry,true);
+assert.equal(r.sameInitialResourcesEntry,true);
+assert.equal(r.sameBetfairImsCasino,true);
+assert.equal(r.captureSkewSeconds,1);
+assert.equal(r.captureSkewWithinPolicy,true);
+assert.deepEqual(r.legacyStateVector,r.modernStateVector);
+assert.equal(r.exactStateVectorMatch,true);
+assert.equal(r.calibrationCandidate,true);
+assert.equal(r.empiricalModernResponseMappingVerified,false);
+assert.equal(r.exactModernResponseSemanticsVerified,false);
+assert.equal(r.usableForOverduePair,false);
+assert.equal(r.execution.decision,'NO_PLAY');
+assert.equal(r.execution.realMoneyAllowed,false);
+assert.equal(r.execution.maxSpins,0);
+
+// A near-simultaneous modern row with any state-field mismatch is not a calibration candidate.
+r=analyzeBetfairSportingDualFeedCalibrationSample(har(1000,123.45,123.46),{sourceName:'mismatch.har',maxCaptureSkewSeconds:2});
+assert.equal(r.valid,true);
+assert.equal(r.captureSkewWithinPolicy,true);
+assert.equal(r.exactStateVectorMatch,false);
+assert.equal(r.calibrationCandidate,false);
+assert.equal(r.execution.realMoneyAllowed,false);
+
+// Exact state equality outside the capture-skew policy also fails closed.
+const skewed={log:{entries:[launcher(),initial(),legacy(1000,123.45),modern(1000,123.45,7,1100,10)]}};
+r=analyzeBetfairSportingDualFeedCalibrationSample(skewed,{sourceName:'skewed.har',maxCaptureSkewSeconds:2});
+assert.equal(r.valid,true);
+assert.equal(r.exactStateVectorMatch,true);
+assert.equal(r.captureSkewWithinPolicy,false);
+assert.equal(r.calibrationCandidate,false);
+assert.equal(r.execution.maxTotalStakeEUR,0);
+
+const samples=[
+  analyzeBetfairSportingDualFeedCalibrationSample(har(1000,123.45),{maxCaptureSkewSeconds:2}),
+  analyzeBetfairSportingDualFeedCalibrationSample(har(1010,123.55),{maxCaptureSkewSeconds:2}),
+  analyzeBetfairSportingDualFeedCalibrationSample(har(1020,123.65),{maxCaptureSkewSeconds:2}),
+];
+const series=evaluateBetfairSportingDualFeedCalibrationSeries(samples);
+assert.equal(series.valid,true);
+assert.equal(series.exactCalibrationSampleCount,3);
+assert.equal(series.distinctServerTimestampCount,3);
+assert.equal(series.distinctAmountCount,3);
+assert.equal(series.oneLogicalScope,true);
+assert.equal(series.empiricalModernResponseMappingVerified,true);
+assert.equal(series.exactModernResponseSemanticsVerified,false);
+assert.equal(series.usableForOverduePair,false);
+assert.equal(series.execution.decision,'NO_PLAY');
+assert.equal(series.execution.realMoneyAllowed,false);
+assert.equal(series.hardGuards.noAutomaticPromotionToOverdueGate,true);
+
+const insufficient=evaluateBetfairSportingDualFeedCalibrationSeries(samples.slice(0,2));
+assert.equal(insufficient.empiricalModernResponseMappingVerified,false);
+assert.equal(insufficient.exactModernResponseSemanticsVerified,false);
+assert.equal(insufficient.execution.maxSpins,0);
+
+console.log('betfair-sporting-dual-feed-calibration-v1.test.mjs: PASS');
