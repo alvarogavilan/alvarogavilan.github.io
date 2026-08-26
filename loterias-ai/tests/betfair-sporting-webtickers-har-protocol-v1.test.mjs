@@ -1,15 +1,15 @@
 import assert from 'node:assert/strict';
 import {analyzeBetfairSportingWebtickersProtocolHar} from '../edge-backend/src/betfair-sporting-webtickers-har-protocol-v1.mjs';
 
-const config='{"jackpotsCasino":"bf_es","liveEndpointUrl":"https://webtickers.malmegas.com/webtickers"}';
+const config='{"jackpotsCasino":"bf_es","liveEndpointUrl":"https://webtickers.malmegas.com/webtickers?configured=CONFIGURED_SECRET"}';
 const har={log:{entries:[
-  {startedDateTime:'2026-08-26T18:00:00Z',request:{method:'GET',url:'https://launcher.betfair.es/initialResources/es_ES_desktop',headers:[]},response:{status:200,content:{mimeType:'application/json',text:config}}},
+  {startedDateTime:'2026-08-26T18:00:00Z',request:{method:'GET',url:'https://launcher.betfair.es/initialResources/es_ES_desktop?cacheBust=CONFIG_SOURCE_SECRET',headers:[]},response:{status:200,content:{mimeType:'application/json',text:config}}},
   {startedDateTime:'2026-08-26T18:00:01Z',request:{method:'POST',url:'https://webtickers.malmegas.com/webtickers?casino=bf_es&route=es-prod&token=QUERY_SECRET',headers:[{name:'Content-Type',value:'application/json'},{name:'Authorization',value:'Bearer HEADER_SECRET'},{name:'Cookie',value:'sid=COOKIE_SECRET'}],postData:{mimeType:'application/json',text:'{"casino":"bf_es","game":"sljp-1","currency":"eur","local":0,"vipLevel":"guest","token":"BODY_SECRET","nested":{"instanceCode":"ims-a"}}'}},response:{status:200,content:{mimeType:'application/json',text:'{"game":"sljp-1","guaranteedHitTime":2100,"token":"RESPONSE_SECRET","jackpot":{"amount":123.45}}'}}},
   {request:{method:'POST',url:'https://evil.example/webtickers?casino=fake',postData:{mimeType:'application/json',text:'{"game":"sljp-1"}'},headers:[]},response:{status:200,content:{text:'{"game":"sljp-1"}'}}}
 ]}};
 
 const r=analyzeBetfairSportingWebtickersProtocolHar(har,{sourceName:'betfair-modern.har'});
-assert.equal(r.version,'betfair-sporting-webtickers-har-protocol-v1.1-websocket-transport');
+assert.equal(r.version,'betfair-sporting-webtickers-har-protocol-v1.2-source-url-redaction');
 assert.equal(r.modernBetfairConfigBindingCount,1);
 assert.equal(r.exactConfiguredWebtickersTrafficCount,1);
 assert.equal(r.exactModernWebtickersTrafficObserved,true);
@@ -20,6 +20,8 @@ assert.equal(r.execution.realMoneyAllowed,false);
 assert.equal(r.execution.maxSpins,0);
 const p=r.protocolFingerprints[0];
 assert.equal(p.configBinding.jackpotsCasino,'bf_es');
+assert.equal(p.configBinding.sourceUrl,'https://launcher.betfair.es/initialResources/es_ES_desktop');
+assert.equal(p.configBinding.tickerEndpoint,'https://webtickers.malmegas.com/webtickers');
 assert.equal(p.request.method,'POST');
 assert.equal(p.request.endpoint,'https://webtickers.malmegas.com/webtickers');
 assert.equal(p.configuredWebSocketTransportUpgradeObserved,false);
@@ -37,9 +39,10 @@ assert.equal(Object.hasOwn(p.request.postData.safeProtocolValues,'token'),false)
 assert.equal(p.response.markers.sljp1,true);
 assert.equal(p.response.markers.guaranteedHitTime,true);
 const serialized=JSON.stringify(r);
-for(const secret of ['QUERY_SECRET','HEADER_SECRET','COOKIE_SECRET','BODY_SECRET','RESPONSE_SECRET'])assert.equal(serialized.includes(secret),false);
+for(const secret of ['CONFIG_SOURCE_SECRET','CONFIGURED_SECRET','QUERY_SECRET','HEADER_SECRET','COOKIE_SECRET','BODY_SECRET','RESPONSE_SECRET'])assert.equal(serialized.includes(secret),false);
 assert.equal(serialized.includes('evil.example'),false);
 assert.equal(r.hardGuards.sensitiveValuesRedacted,true);
+assert.equal(r.hardGuards.endpointQueriesAndFragmentsNeverEmitted,true);
 
 const wsHar={log:{entries:[
   har.log.entries[0],
@@ -70,7 +73,7 @@ assert.equal(wp.response.webSocketReceiveFrameCount,1);
 assert.equal(wp.response.markers.sljp1,true);
 assert.equal(wp.response.markers.guaranteedHitTime,true);
 const wsSerialized=JSON.stringify(w);
-for(const secret of ['WS_QUERY_SECRET','WS_HEADER_SECRET','WS_SEND_SECRET','WS_RECEIVE_SECRET'])assert.equal(wsSerialized.includes(secret),false);
+for(const secret of ['CONFIG_SOURCE_SECRET','CONFIGURED_SECRET','WS_QUERY_SECRET','WS_HEADER_SECRET','WS_SEND_SECRET','WS_RECEIVE_SECRET'])assert.equal(wsSerialized.includes(secret),false);
 assert.equal(w.hardGuards.webSocketUpgradeRequiresSameHostPortPathAndObservedFrames,true);
 
 const wsWithoutFrames={log:{entries:[
