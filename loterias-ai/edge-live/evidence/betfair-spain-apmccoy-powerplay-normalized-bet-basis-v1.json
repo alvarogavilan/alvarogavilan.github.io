@@ -1,0 +1,62 @@
+{
+  "version": "betfair-spain-apmccoy-powerplay-normalized-bet-basis-v1",
+  "generatedAt": "2026-08-26T19:08:00+02:00",
+  "market": "ES",
+  "operator": "Betfair Spain",
+  "provider": "Playtech",
+  "game": "AP McCoy Sporting Legends™",
+  "gameId": "ap-mccoy-sporting-legends-cptn",
+  "sourceType": "ONLINE",
+  "promotion": false,
+  "source": {
+    "class": "CURRENT_BETFAIR_SPAIN_EXACT_GAME_RULES",
+    "url": "https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn",
+    "observed": "2026-08-26",
+    "facts": [
+      "Accumulator costs 10 times the selected total bet and contains five spins.",
+      "Accumulator Plus costs 20 times the selected total bet and contains five initial spins plus one extra Super Spin.",
+      "For the Bonus Wheel cash-prize rule, a main-game trigger pays up to 1000 times the triggering selected total bet, while a trigger during Playtech Power Play uses 1000 times the Playtech Power Play wager divided by 5."
+    ]
+  },
+  "closedSemantics": {
+    "powerPlayPurchaseMultipliersPublished": true,
+    "accumulatorPurchaseMultiple": 10,
+    "accumulatorPlusPurchaseMultiple": 20,
+    "initialPowerPlaySpinCount": 5,
+    "accumulatorPlusHasExtraSuperSpin": true,
+    "bonusWheelCashPrizeUsesPowerPlayPurchaseDividedByFive": true,
+    "bonusWheelRuleDefinesFiveSpinNormalizedWagerBasis": true,
+    "accumulatorNormalizedFormulaMultipleOfSelectedTotalBet": 2,
+    "accumulatorPlusNormalizedFormulaMultipleOfSelectedTotalBet": 4
+  },
+  "stillUnknown": {
+    "jackpotTriggerUsesSameNormalizedWagerBasis": false,
+    "jackpotHazardWeightPerInitialPowerPlaySpinVerified": false,
+    "wholePurchaseJackpotHazardWeightVerified": false,
+    "superSpinJackpotEligibilityVerified": false,
+    "superSpinJackpotHazardWeightVerified": false,
+    "exactPlayerTriggerFunctionVerified": false
+  },
+  "scientificConsequence": "The exact Betfair Spain rules prove that at least one Power Play payout subsystem does not treat the 10x/20x purchase as an indivisible wager: the Bonus Wheel cash-prize formula normalizes the purchase by the five initial spins. This materially narrows the internal wager-basis possibilities, but it does not prove that the Sporting Legends jackpot trigger engine uses the same normalization. Jackpot hazard weighting therefore remains fail-closed.",
+  "economicGuard": {
+    "accumulatorPlusPublishedMaxRtpPct": 97.17,
+    "nominalAdditionalReturnHurdlePct": 2.83,
+    "nominalHurdleUsableForExecution": false,
+    "reason": "BONUS_WHEEL_WAGER_NORMALIZATION_DOES_NOT_PROVE_JACKPOT_HAZARD_WEIGHTING"
+  },
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "bonusWheelFormulaCannotBeTransferredToJackpotHazard": true,
+    "purchaseDividedByFiveDoesNotMeanEqualJackpotHazardPerSpin": true,
+    "superSpinCannotBeAssignedOneFifthWeight": true,
+    "noWagerProbe": true
+  }
+}
