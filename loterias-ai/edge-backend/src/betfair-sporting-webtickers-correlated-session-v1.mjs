@@ -59,6 +59,11 @@ function safeRequest(r){
     instanceCodeConsistent:r.instanceCodeConsistent===true,
     ambiguityDetected:r.ambiguityDetected===true,
     requestContractSemanticsSupportedByProviderSpec:r.requestContractSemanticsSupportedByProviderSpec===true,
+    exactApMcCoySessionProvenanceVerified:r.exactApMcCoySessionProvenanceVerified===true,
+    latestPrecedingRealCasinoLauncherIsExactApMcCoy:r.latestPrecedingRealCasinoLauncherIsExactApMcCoy===true,
+    latestPostLaunchInitialResourcesBindingVerified:r.latestPostLaunchInitialResourcesBindingVerified===true,
+    launcherEntryIndex:Number.isInteger(r.launcherEntryIndex)?r.launcherEntryIndex:null,
+    initialResourcesEntryIndex:Number.isInteger(r.initialResourcesEntryIndex)?r.initialResourcesEntryIndex:null,
   };
 }
 function safeRow(c){
@@ -79,7 +84,7 @@ function safeRow(c){
 }
 function fail(reason,extra={}){
   return {
-    version:'betfair-sporting-webtickers-correlated-session-v1.3-session-config-attested',
+    version:'betfair-sporting-webtickers-correlated-session-v1.4-independent-request-provenance',
     mode:'OFFLINE_PASSIVE_EXACT_GAME_REQUEST_RESPONSE_CORRELATION_NO_PLAY',
     valid:false,reason,
     exactApMcCoyRealLauncherBindingObserved:false,
@@ -104,7 +109,11 @@ export function analyzeBetfairSportingCorrelatedWebtickersSession(har,{sourceNam
   const allLauncherBindings=discovery?.discovery?.betfairRealCasinoLauncherBindings||[];
   const exactLauncherBindings=discovery?.discovery?.exactApMcCoyRealLauncherBindings||[];
   const exactGame=exactLauncherBindings.length>0;
-  const requestMatches=(requests?.requestSemanticObservations||[]).filter(r=>r?.requestContractSemanticsSupportedByProviderSpec===true&&r?.ambiguityDetected!==true);
+  const requestMatches=(requests?.requestSemanticObservations||[]).filter(r=>
+    r?.requestContractSemanticsSupportedByProviderSpec===true&&
+    r?.ambiguityDetected!==true&&
+    r?.exactApMcCoySessionProvenanceVerified===true
+  );
   const rowCandidates=rows?.structuredSljp1RowCandidates||[];
   const correlated=[];
   let ambiguousCorrelationCount=0,launcherOrderRejectedCount=0,staleExactLauncherRejectedCount=0,sessionConfigRejectedCount=0;
@@ -122,6 +131,8 @@ export function analyzeBetfairSportingCorrelatedWebtickersSession(har,{sourceNam
       req.entryIndex===row.entryIndex&&
       compatibleTransport(req,row)&&
       lower(req.expectedBetfairImsCasino)===lower(row.expectedBetfairImsCasino)&&
+      req.launcherEntryIndex===latestLauncher.index&&
+      req.initialResourcesEntryIndex===sessionConfig.sourceEntryIndex&&
       row.requestCasinoMatchesConfiguredBinding===true
     );
     if(matches.length!==1){if(matches.length>1)ambiguousCorrelationCount++;continue;}
@@ -133,6 +144,7 @@ export function analyzeBetfairSportingCorrelatedWebtickersSession(har,{sourceNam
       launcherEntryIndex:latestLauncher.index,
       latestPostLaunchBetfairInitialResourcesBindingVerified:true,
       initialResourcesEntryIndex:sessionConfig.sourceEntryIndex,
+      independentRequestSessionProvenanceVerified:true,
       sameEntryRequestResponseCorrelation:true,
       compatibleTransportCorrelation:true,
       expectedBetfairImsCasino:row.expectedBetfairImsCasino||null,
@@ -147,14 +159,14 @@ export function analyzeBetfairSportingCorrelatedWebtickersSession(har,{sourceNam
   }
 
   return {
-    version:'betfair-sporting-webtickers-correlated-session-v1.3-session-config-attested',
+    version:'betfair-sporting-webtickers-correlated-session-v1.4-independent-request-provenance',
     mode:'OFFLINE_PASSIVE_EXACT_GAME_REQUEST_RESPONSE_CORRELATION_NO_PLAY',
     sourceName,
     valid:true,
     exactApMcCoyRealLauncherBindingObserved:exactGame,
     exactApMcCoyRealLauncherBindingCount:exactLauncherBindings.length,
     betfairRealCasinoLauncherBindingCount:allLauncherBindings.length,
-    requestSemanticMatchCount:requestMatches.length,
+    exactSessionRequestSemanticMatchCount:requestMatches.length,
     structuredSljp1RowCandidateCount:rowCandidates.length,
     correlatedExactDailyCandidateCount:correlated.length,
     correlatedExactDailyCandidates:correlated,
@@ -164,8 +176,8 @@ export function analyzeBetfairSportingCorrelatedWebtickersSession(har,{sourceNam
     sessionConfigRejectedCount,
     exactModernResponseSemanticsVerified:false,
     usableForOverduePair:false,
-    scientificUse:'Requires the latest Betfair real-money casino launcher preceding the webtickers entry to be AP McCoy and the latest Betfair initialResources observed after that launcher and before the ticker to resolve uniquely to the same casino and configured endpoint used by the correlated request/response. This prevents stale launcher or stale pre-launch configuration in Preserve-log HARs from lending provenance. The request and structured sljp-1 response must still correlate on one compatible HTTP/WebSocket entry. Modern response schema semantics remain unverified and cannot authorize execution.',
+    scientificUse:'Requires independent agreement between the request-semantics analyzer and the correlation layer on the exact AP McCoy launcher and latest post-launch Betfair initialResources entry, then correlates that documented sljp-1 EUR local=0 request to a co-located structured response on the same compatible HTTP/WebSocket entry. Stale launcher/config provenance or disagreement between analyzers fails closed. Modern response schema semantics remain unverified and cannot authorize execution.',
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,exactApMcCoyRealLauncherRequired:true,latestPrecedingRealCasinoLauncherMustBeExactApMcCoy:true,staleExactLauncherCannotAuthorizeLaterDifferentGameTraffic:true,latestPostLaunchBetfairInitialResourcesMustMatchTickerBinding:true,stalePreLaunchConfigCannotAuthorizeTicker:true,ambiguousLatestSessionConfigRejected:true,sameEntryCorrelationRequired:true,compatibleTransportDirectionRequired:true,exactConfiguredBetfairCasinoRequired:true,ambiguousMultipleRequestMatchesRejected:true,modernResponseSemanticsCannotBeGuessed:true,correlationCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,exactApMcCoyRealLauncherRequired:true,latestPrecedingRealCasinoLauncherMustBeExactApMcCoy:true,staleExactLauncherCannotAuthorizeLaterDifferentGameTraffic:true,latestPostLaunchBetfairInitialResourcesMustMatchTickerBinding:true,stalePreLaunchConfigCannotAuthorizeTicker:true,ambiguousLatestSessionConfigRejected:true,independentRequestSessionProvenanceMustAgree:true,sameLauncherAndInitialResourcesIndicesRequiredAcrossAnalyzers:true,sameEntryCorrelationRequired:true,compatibleTransportDirectionRequired:true,exactConfiguredBetfairCasinoRequired:true,ambiguousMultipleRequestMatchesRejected:true,modernResponseSemanticsCannotBeGuessed:true,correlationCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
