@@ -1,5 +1,5 @@
 {
-  "version": "bet365-spain-bobby-george-sporting-overdue-candidate-v1",
+  "version": "bet365-spain-bobby-george-sporting-overdue-candidate-v1.1-global-sljp-link",
   "generatedAtDate": "2026-08-26",
   "status": "STRONG_EXACT_TITLE_TIMED_LOW_STAKE_CANDIDATE_SERVED_BINDING_NOT_YET_VERIFIED",
   "target": {
@@ -33,10 +33,7 @@
     "baseCostDefinedAsMinimumSizeBetByPlaytech": true,
     "baseCostMultiplierOneGbpExample": 0.10,
     "providerRtpPct": 96.5,
-    "providerRtpBreakdown": {
-      "baseComponentPct": 94.5,
-      "jackpotComponentPct": 2.0
-    },
+    "providerRtpBreakdown": {"baseComponentPct": 94.5,"jackpotComponentPct": 2.0},
     "dailyTickerCode": "sljp-1",
     "weeklyTickerCode": "sljp-2",
     "megaTickerCode": "sljp-3",
@@ -51,36 +48,40 @@
     "firstBetFollowingDayRuleDocumented": true,
     "licenseeSpecificInstanceAndTickerUrlsRequired": true
   },
+  "providerGlobalJackpotSystemEvidence": {
+    "source": "https://www.scribd.com/document/957977470/Game-Codes-for-the-Jackpot-Ticker-System",
+    "documentClass": "PLAYTECH_JACKPOT_TICKER_GAME_CODES_PUBLIC_MIRROR",
+    "sportingLegendsGroupCode": "sljp",
+    "dailyCode": "sljp-1",
+    "weeklyCode": "sljp-2",
+    "megaCode": "sljp-3",
+    "bobbyGeorgeExactLinkedGameCode": "gpas_bgeorge_pop",
+    "apMcCoyLinkedGameCode": "tonymc",
+    "brianLaraLinkedGameCode": "gpas_slblara_pop",
+    "frankBrunoLinkedGameCode": "gpas_slfbruno_pop",
+    "ronnieOsullivanLinkedGameCode": "roos",
+    "robertoCarlosLinkedVariantsPresent": true,
+    "providerLevelGlobalGroupMembershipVerified": true,
+    "bet365CurrentInstanceMembershipVerified": false,
+    "mayPopulateBet365ImsOrTicker": false
+  },
   "exactTitleCrossSourceMatch": {
     "sameExactTitleAcrossBet365CurrentTableAndProviderManual": true,
     "spanishOnlineOperatorCurrentlyPublishesTenCentMinimum": true,
     "providerExactTitleHasTimedSljpArchitecture": true,
     "providerExactTitleHasFirstBetFollowingDayMechanic": true,
+    "providerGlobalTickerGuideAlsoLinksExactBobbyCodeToSljp": true,
     "materialUncertaintyReduced": [
       "whether a Spanish online operator currently lists a 0.10 minimum on this exact title",
       "whether this exact Playtech title belongs to the sljp Daily/Weekly timed family",
-      "whether this exact title carries the first-bet-following-day rule at provider level"
+      "whether this exact title carries the first-bet-following-day rule at provider level",
+      "whether the exact Bobby provider code is listed among the Sporting Legends sljp linked-game family"
     ]
   },
   "conservativeEconomicsResearchOnly": {
-    "betfairApMcCoyComparison": {
-      "stakeEUR": 0.25,
-      "conservativeUnverifiedBaseRtpPct": 93.03,
-      "expectedBaseLossPerSpinEUR": 0.017425
-    },
-    "bobbyGeorgeConservativeProviderBaseComponent": {
-      "stakeEUR": 0.10,
-      "baseRtpPct": 94.5,
-      "expectedBaseLossPerSpinEUR": 0.0055,
-      "baseLossReductionFactorVersusApMcCoy": 3.168181818181817
-    },
-    "bobbyGeorgeUsingBet365HeadlineRtpIllustrationOnly": {
-      "stakeEUR": 0.10,
-      "headlineRtpPct": 96.49,
-      "expectedLossPerSpinEUR": 0.00351,
-      "lossReductionFactorVersusApMcCoy": 4.964387464387457,
-      "mayDriveExecution": false
-    },
+    "betfairApMcCoyComparison": {"stakeEUR":0.25,"conservativeUnverifiedBaseRtpPct":93.03,"expectedBaseLossPerSpinEUR":0.017425},
+    "bobbyGeorgeConservativeProviderBaseComponent": {"stakeEUR":0.10,"baseRtpPct":94.5,"expectedBaseLossPerSpinEUR":0.0055,"baseLossReductionFactorVersusApMcCoy":3.168181818181817},
+    "bobbyGeorgeUsingBet365HeadlineRtpIllustrationOnly": {"stakeEUR":0.10,"headlineRtpPct":96.49,"expectedLossPerSpinEUR":0.00351,"lossReductionFactorVersusApMcCoy":4.964387464387457,"mayDriveExecution":false},
     "important": "The 96.49% bet365 headline RTP is not accepted as execution base RTP because the exact-title provider manual separately presents 96.5% as 94.5% plus a 2% jackpot component. Until served configuration semantics are independently resolved, any future execution model must use a conservative separately reviewed base component rather than the headline number."
   },
   "notYetVerified": {
@@ -97,7 +98,13 @@
     "currentFollowingDayUnawardedState": false,
     "raceProbabilityExecutionEvidence": false
   },
-  "scientificConclusion": "This is a materially stronger candidate than a cross-title or cross-operator analogy: a current official bet365 Spain table publishes a 0.10 EUR minimum for Bobby George Sporting Legends, while an exact-title Playtech technical document identifies Bobby George as gpas_bgeorge_pop with jackpot code sljp, Daily sljp-1, Weekly sljp-2, Mega sljp-3, guaranteedHitTime timing semantics and the first-bet-following-day rule. This does not prove bet365's current served IMS/ticker or live overdue state. Those remaining operator-specific fields must be recovered passively before any execution consideration.",
+  "scientificConclusion": "This is now supported by three independent layers: a current official bet365 Spain table publishes a 0.10 EUR minimum for Bobby George Sporting Legends; an exact-title Playtech technical document identifies Bobby as gpas_bgeorge_pop with sljp, Daily sljp-1, timed guaranteedHitTime and the first-bet-following-day rule; and a separate Playtech jackpot ticker game-code guide lists the exact Bobby code inside the Sporting Legends sljp linked-game family. None of these sources proves the current bet365 licensee-specific IMS/ticker or live overdue state, so execution remains blocked until that operator-specific binding is recovered passively.",
+  "passiveTooling": {
+    "discovery": "loterias-ai/edge-backend/src/bet365-bobby-sporting-har-discovery-v1.mjs",
+    "safeCli": "loterias-ai/scripts/analyze-bet365-bobby-sporting-har.mjs",
+    "stakeCandidateDiscoveryIncluded": true,
+    "rawHarCommitForbidden": true
+  },
   "nextDecisiveEvidence": [
     "private passive bet365 Spain Bobby George real-money session HAR",
     "exact current gpas_bgeorge_pop session binding",
@@ -108,22 +115,7 @@
     "prospective passive race evidence and measured manual latency"
   ],
   "hardGuards": {
-    "onlineOnly": true,
-    "nonPromoOnly": true,
-    "crossOperatorBindingTransferForbidden": true,
-    "providerExampleTickerCannotPopulateBet365CurrentState": true,
-    "providerBaseCostExampleCannotAloneProveBet365StakeEligibility": true,
-    "currentBet365TableCannotProveCurrentJackpotState": true,
-    "headlineRtpCannotSilentlyBecomeExecutionBaseRtp": true,
-    "noLoginProbe": true,
-    "noWagerProbe": true,
-    "noAutomaticBetting": true
+    "onlineOnly":true,"nonPromoOnly":true,"crossOperatorBindingTransferForbidden":true,"providerExampleTickerCannotPopulateBet365CurrentState":true,"providerGlobalGroupCannotPopulateBet365CurrentIms":true,"providerBaseCostExampleCannotAloneProveBet365StakeEligibility":true,"currentBet365TableCannotProveCurrentJackpotState":true,"headlineRtpCannotSilentlyBecomeExecutionBaseRtp":true,"noLoginProbe":true,"noWagerProbe":true,"noAutomaticBetting":true
   },
-  "execution": {
-    "decision": "NO_PLAY",
-    "realMoneyAllowed": false,
-    "realStakeEUR": 0,
-    "maxSpins": 0,
-    "maxTotalStakeEUR": 0
-  }
+  "execution": {"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
 }
