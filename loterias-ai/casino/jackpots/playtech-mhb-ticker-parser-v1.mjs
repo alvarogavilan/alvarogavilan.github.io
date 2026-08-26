@@ -15,21 +15,46 @@ function attrs(src='') {
 }
 function finite(v){const n=Number(v);return Number.isFinite(n)?n:null;}
 function epoch(v){const n=finite(v);return n!=null&&n>0?Math.trunc(n):null;}
+function normalizeText(v){return typeof v==='string'&&v.trim()?v.trim():null;}
+function normalizeLocal(v){
+  if(v===true||v===1||v==='1') return 1;
+  if(v===false||v===0||v==='0') return 0;
+  return null;
+}
 
-export function parsePlaytechMhbTickerXml(xml,{nowEpochSeconds=Math.floor(Date.now()/1000),currency=null}={}) {
+export function parsePlaytechMhbTickerXml(xml,{
+  nowEpochSeconds=Math.floor(Date.now()/1000),
+  currency=null,
+  casino=null,
+  local=null,
+  instanceCode=null,
+}={}) {
   const s=String(xml||'');
-  const wantedCurrency=typeof currency==='string'&&currency.trim()?currency.trim().toLowerCase():null;
+  const wantedCurrency=normalizeText(currency)?.toLowerCase()??null;
+  const wantedCasino=normalizeText(casino)?.toLowerCase()??null;
+  const wantedLocal=normalizeLocal(local);
+  const wantedInstanceCode=normalizeText(instanceCode);
   const out=[];
+  const rejected={currency:0,casino:0,local:0,instanceCode:0};
+  const requestMatch=s.match(/<request\b([^>]*)>/i);
+  const requestAttrs=requestMatch?attrs(requestMatch[1]):{};
+  const requestCasino=normalizeText(requestAttrs.casino);
+  const requestCasinoNormalized=requestCasino?.toLowerCase()??null;
   const gameRe=/<gamedata\b([^>]*)>([\s\S]*?)<\/gamedata>/gi;
   for(const gm of s.matchAll(gameRe)){
     const ga=attrs(gm[1]);
     const code=ga.game||null;
     if(!code||!TARGETS[code]) continue;
+    const rowLocal=normalizeLocal(ga.local);
     const amountRe=/<amount\b([^>]*)>([^<]*)<\/amount>/gi;
     for(const amountMatch of gm[2].matchAll(amountRe)){
       const aa=attrs(amountMatch[1]);
-      const rowCurrency=aa.currency||null;
-      if(wantedCurrency&&String(rowCurrency||'').toLowerCase()!==wantedCurrency) continue;
+      const rowCurrency=normalizeText(aa.currency);
+      const rowInstanceCode=normalizeText(aa.instancecode);
+      if(wantedCurrency&&String(rowCurrency||'').toLowerCase()!==wantedCurrency){rejected.currency++;continue;}
+      if(wantedCasino&&requestCasinoNormalized!==wantedCasino){rejected.casino++;continue;}
+      if(wantedLocal!=null&&rowLocal!==wantedLocal){rejected.local++;continue;}
+      if(wantedInstanceCode&&rowInstanceCode!==wantedInstanceCode){rejected.instanceCode++;continue;}
       const amount=finite(String(amountMatch[2]).trim());
       const guaranteedHitTime=epoch(aa.guaranteedHitTime);
       // Playtech's published XML specification historically misspells this
@@ -41,16 +66,28 @@ export function parsePlaytechMhbTickerXml(xml,{nowEpochSeconds=Math.floor(Date.n
       out.push({
         code,network:t.network,tier:t.tier,expectedGuarantee:t.guarantee,
         amount,currency:rowCurrency,sign:aa.sign||null,stepPerSecond:finite(aa.step),
-        wins:finite(aa.wins),instanceCode:aa.instancecode||null,
+        wins:finite(aa.wins),instanceCode:rowInstanceCode,
+        requestCasino,local:rowLocal,isLocal:rowLocal==null?null:rowLocal===1,
         guaranteedHitTime,guaranteedHitAmount,
         distanceToGuaranteedHitAmount,
         secondsToGuaranteedHit,
         guaranteeObserved: guaranteedHitTime!=null?'TIME':guaranteedHitAmount!=null?'AMOUNT':'NONE',
         failClosedMismatch:(t.guarantee==='TIME'&&guaranteedHitTime==null)||(t.guarantee==='AMOUNT'&&guaranteedHitAmount==null),
+        bindingObserved:{casino:requestCasino!=null,local:rowLocal!=null,instanceCode:rowInstanceCode!=null},
       });
     }
   }
-  return {version:'playtech-mhb-ticker-parser-v1.1-multicurrency',currencyFilter:wantedCurrency,rows:out,guards:{parserOnly:true,multiCurrencySafe:true,noBetting:true,realMoneyAllowed:false}};
+  return {
+    version:'playtech-mhb-ticker-parser-v1.2-topology-safe',
+    filters:{currency:wantedCurrency,casino:wantedCasino,local:wantedLocal,instanceCode:wantedInstanceCode},
+    requestCasino,
+    rows:out,
+    rejected,
+    guards:{
+      parserOnly:true,multiCurrencySafe:true,topologyMetadataPreserved:true,exactBindingFiltersSupported:true,
+      noTopologyInference:true,noBetting:true,realMoneyAllowed:false,
+    },
+  };
 }
 
 export const PLAYTECH_MHB_TARGETS = TARGETS;
