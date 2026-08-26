@@ -178,7 +178,7 @@ export function analyzeBetfairSportingWebtickersProtocolHar(har,{sourceName='cap
       const transportMatch=configuredTransportMatch(b.tickerUrl,requestUrl,entry);
       if(!transportMatch.matched)return;
       traffic.push({
-        configBinding:{sourceUrl:b.sourceUrl,jackpotsCasino:b.jackpotsCasino,tickerEndpoint:endpointShape(b.tickerUrl),instanceCode:b.instanceCode||null},
+        configBinding:{sourceUrl:endpointShape(b.sourceUrl),jackpotsCasino:b.jackpotsCasino,tickerEndpoint:endpointShape(b.tickerUrl),instanceCode:b.instanceCode||null},
         entryIndex:index,
         startedDateTime:entry?.startedDateTime||null,
         exactConfiguredEndpointMatch:transportMatch.webSocketTransportUpgrade!==true,
@@ -189,7 +189,7 @@ export function analyzeBetfairSportingWebtickersProtocolHar(har,{sourceName='cap
     });
   }
   return {
-    version:'betfair-sporting-webtickers-har-protocol-v1.1-websocket-transport',
+    version:'betfair-sporting-webtickers-har-protocol-v1.2-source-url-redaction',
     mode:'OFFLINE_PASSIVE_MODERN_WEBTICKERS_PROTOCOL_DISCOVERY_NO_PLAY',
     sourceName,
     modernBetfairConfigBindingCount:bindings.length,
@@ -198,12 +198,12 @@ export function analyzeBetfairSportingWebtickersProtocolHar(har,{sourceName='cap
     protocolFingerprints:traffic,
     exactModernRequestContractVerified:false,
     directPublicModernProbeAllowed:false,
-    scientificUse:'A matching HAR entry proves only that the exact browser session contacted the endpoint configured by Betfair initialResources. An HTTPS-configured endpoint may also match an observed WSS connection only when host, effective port and path are identical and the HAR actually contains WebSocket frames; this is recorded explicitly as a transport upgrade, never silently treated as an exact HTTPS request. Query/body/header/frame values that can carry credentials or session state are never emitted. Safe casino/game/currency/scope fields and structural key names are retained to recover the client protocol without guessing. A direct modern probe remains blocked until the exact request contract is independently closed.',
+    scientificUse:'A matching HAR entry proves only that the exact browser session contacted the endpoint configured by Betfair initialResources. An HTTPS-configured endpoint may also match an observed WSS connection only when host, effective port and path are identical and the HAR actually contains WebSocket frames; this is recorded explicitly as a transport upgrade, never silently treated as an exact HTTPS request. Betfair config-source, configured ticker and observed request endpoints are emitted without query or fragment components. Query/body/header/frame values that can carry credentials or session state are never emitted. Safe casino/game/currency/scope fields and structural key names are retained to recover the client protocol without guessing. A direct modern probe remains blocked until the exact request contract is independently closed.',
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,noCredentialsEmitted:true,noCookiesEmitted:true,noAuthorizationEmitted:true,sensitiveValuesRedacted:true,exactBetfairInitialResourcesBindingRequired:true,configuredEndpointMatchRequired:true,webSocketUpgradeRequiresSameHostPortPathAndObservedFrames:true,modernProtocolCannotBeGuessed:true,harEvidenceCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,noCredentialsEmitted:true,noCookiesEmitted:true,noAuthorizationEmitted:true,sensitiveValuesRedacted:true,endpointQueriesAndFragmentsNeverEmitted:true,exactBetfairInitialResourcesBindingRequired:true,configuredEndpointMatchRequired:true,webSocketUpgradeRequiresSameHostPortPathAndObservedFrames:true,modernProtocolCannotBeGuessed:true,harEvidenceCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
 
 function fail(reason,extra={}){
-  return {version:'betfair-sporting-webtickers-har-protocol-v1.1-websocket-transport',mode:'OFFLINE_PASSIVE_MODERN_WEBTICKERS_PROTOCOL_DISCOVERY_NO_PLAY',valid:false,reason,exactModernWebtickersTrafficObserved:false,exactModernRequestContractVerified:false,directPublicModernProbeAllowed:false,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},hardGuards:{noCredentialsEmitted:true,noCookiesEmitted:true,sensitiveValuesRedacted:true,harEvidenceCannotAuthorizeGreen:true},...extra};
+  return {version:'betfair-sporting-webtickers-har-protocol-v1.2-source-url-redaction',mode:'OFFLINE_PASSIVE_MODERN_WEBTICKERS_PROTOCOL_DISCOVERY_NO_PLAY',valid:false,reason,exactModernWebtickersTrafficObserved:false,exactModernRequestContractVerified:false,directPublicModernProbeAllowed:false,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},hardGuards:{noCredentialsEmitted:true,noCookiesEmitted:true,sensitiveValuesRedacted:true,endpointQueriesAndFragmentsNeverEmitted:true,harEvidenceCannotAuthorizeGreen:true},...extra};
 }
