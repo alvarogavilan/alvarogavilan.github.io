@@ -97,6 +97,7 @@ function safeRequestSemantics(s){
       configuredWebSocketTransportUpgradeObserved:o.configuredWebSocketTransportUpgradeObserved===true,
       expectedBetfairImsCasino:o.expectedBetfairImsCasino||null,
       expectedInstanceCode:o.expectedInstanceCode||null,
+      exactApMcCoyRealLauncherBindingObserved:o.exactApMcCoyRealLauncherBindingObserved===true,
       values,
       infoGameBased:o.infoGameBased===true,
       casinoMatches:o.casinoMatches===true,
@@ -113,10 +114,13 @@ function safeRequestSemantics(s){
   });
   return {
     version:s?.version||null,
+    exactApMcCoyRealLauncherBindingObserved:s?.exactApMcCoyRealLauncherBindingObserved===true,
     exactConfiguredWebtickersTrafficObserved:s?.exactConfiguredWebtickersTrafficObserved===true,
     requestSemanticObservationCount:observations.length,
     providerDocumentedExactDailyRequestMatchCount:s?.providerDocumentedExactDailyRequestMatchCount??0,
     providerDocumentedExactDailyRequestObserved:s?.providerDocumentedExactDailyRequestObserved===true,
+    exactApMcCoyProviderDocumentedDailyRequestMatchCount:s?.exactApMcCoyProviderDocumentedDailyRequestMatchCount??0,
+    exactApMcCoyProviderDocumentedDailyRequestObserved:s?.exactApMcCoyProviderDocumentedDailyRequestObserved===true,
     requestSemanticObservations:observations,
     exactModernTransportContractVerified:false,
     exactModernResponseSemanticsVerified:false,
@@ -151,7 +155,7 @@ export function analyzeSafeHarText(raw,{sourceName='capture.har',nowEpochSeconds
     structuredModernWebtickers:safeStructuredModern(structured),
     validatedLegacySnapshot:safeSnapshotValidation(validated),
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{offlineOnly:true,noNetwork:true,rawHarNeverEmitted:true,authorizationAndCookieValuesNeverEmitted:true,endpointQueriesAndFragmentsNeverEmitted:true,sensitiveModernValuesRedacted:true,documentedRequestSemanticsRemainDiscoveryOnly:true,ambiguousRequestRoutingFailsClosed:true,structuredModernRowsRemainDiscoveryOnly:true,modernResponseSemanticsCannotBeGuessed:true,harCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{offlineOnly:true,noNetwork:true,rawHarNeverEmitted:true,authorizationAndCookieValuesNeverEmitted:true,endpointQueriesAndFragmentsNeverEmitted:true,sensitiveModernValuesRedacted:true,documentedRequestSemanticsRemainDiscoveryOnly:true,exactApMcCoyProvenanceRequiredForExactGameRequestLabel:true,ambiguousRequestRoutingFailsClosed:true,structuredModernRowsRemainDiscoveryOnly:true,modernResponseSemanticsCannotBeGuessed:true,harCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
 
