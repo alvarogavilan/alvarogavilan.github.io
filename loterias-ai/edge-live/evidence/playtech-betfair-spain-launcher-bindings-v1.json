@@ -1,0 +1,84 @@
+{
+  "version": "playtech-betfair-spain-launcher-bindings-v1",
+  "generatedAt": "2026-08-26T04:45:00Z",
+  "mode": "CURRENT_SPAIN_PUBLIC_LAUNCHER_BINDING_NO_PLAY",
+  "market": "ES",
+  "operator": "Betfair Spain",
+  "provider": "Playtech",
+  "bindings": [
+    {
+      "network": "KINGDOMS_RISE",
+      "title": "Kingdoms Rise Forbidden Forest",
+      "publicGamePage": "https://casino.betfair.es/juego/kingdom-rise-forbidden-forest-cptn",
+      "launcherHost": "https://launcher.betfair.es/",
+      "launcherGameId": "kingdom-rise-forbidden-forest-cptn",
+      "launchProduct": "casino",
+      "dataChannel": "casino",
+      "modeObserved": "real",
+      "currentTierNamesOnPublicPage": ["DAILY_STRIKE", "POWER_STRIKE", "EPIC"],
+      "whatThisProves": "Current Betfair Spain public launcher binding for the exact Kingdoms Rise title and current public presence of all three named jackpot tiers.",
+      "whatThisDoesNotProve": [
+        "Underlying Playtech IMS casino name.",
+        "Ticker host.",
+        "Local/global jackpot topology.",
+        "Ticker instanceCode.",
+        "Current tier-specific amount or guaranteed-hit timestamp/amount."
+      ]
+    },
+    {
+      "network": "AGE_OF_GODS_NORSE",
+      "title": "Age of the Gods Norse King of Asgard",
+      "catalogPage": "https://casino.betfair.es/c/playtech",
+      "launcherHost": "https://launcher.betfair.es/",
+      "launcherGameId": "age-of-the-gods-norse-king-of-asgard-cptn",
+      "launchProduct": "casino",
+      "dataChannel": "casino",
+      "modeObserved": "real",
+      "onePlayComparatorImsCode": "gpas_aogkasgard_pop",
+      "onePlayComparatorUrl": "https://oneplaycasino.es/juegos/age-of-the-gods-norse-king-of-asgard",
+      "sameTitleImsEquivalencePromoted": false,
+      "whatThisProves": "Current Betfair Spain launcher binding for the exact Norse King of Asgard title. Separately, OnePlay publishes the Playtech/Ash IMS code for its own Spanish deployment.",
+      "whatThisDoesNotProve": [
+        "That Betfair's internal IMS game code equals OnePlay's gpas_aogkasgard_pop.",
+        "Which Norse lower tiers are active on Betfair.",
+        "Underlying Playtech IMS casino name.",
+        "Ticker host.",
+        "Local/global jackpot topology.",
+        "Ticker instanceCode.",
+        "Current Daily value or guaranteedHitTime."
+      ]
+    }
+  ],
+  "tickerRecoveryState": {
+    "jackpotsCasinoRecoveredForBetfairSpain": false,
+    "jackpotsCasinoUrlRecoveredForBetfairSpain": false,
+    "newJackpotXmlEndpointRecoveredForBetfairSpain": false,
+    "exactImsCasinoNameRecovered": false,
+    "exactTickerInstanceCodeRecovered": false,
+    "exactLocalGlobalTopologyRecovered": false
+  },
+  "parserReadiness": {
+    "mainCommit": "60ad7d0a6e399397b586f482622e326eca6a855c",
+    "exactCurrencyFilter": true,
+    "exactCasinoFilter": true,
+    "exactLocalGlobalFilter": true,
+    "exactInstanceCodeFilter": true
+  },
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "sameTitleDoesNotProveSameImsBuild": true,
+    "launcherGameIdDoesNotProveTickerCasinoIdentity": true,
+    "headlineJackpotDoesNotBindLowerTier": true,
+    "foreignOrComparatorTickerHostNeverTransferred": true,
+    "noWagerProbe": true
+  },
+  "nextDecisiveEvidence": "Recover a public same-deployment Betfair Spain Playtech IMS casino/ticker configuration, then parse EUR aognjp-2 or krjp-3 with exact casino + local/global + instanceCode binding."
+}
