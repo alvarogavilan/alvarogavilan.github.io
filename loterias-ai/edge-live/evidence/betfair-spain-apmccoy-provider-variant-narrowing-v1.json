@@ -1,0 +1,69 @@
+{
+  "version": "betfair-spain-apmccoy-provider-variant-narrowing-v1",
+  "generatedAt": "2026-08-26",
+  "mode": "SPAIN_ONLINE_PROVIDER_VARIANT_NARROWING_NO_PLAY",
+  "market": "ES",
+  "operator": "Betfair Spain",
+  "provider": "Playtech",
+  "game": "AP McCoy Sporting Legends™",
+  "sourceType": "ONLINE",
+  "promotion": false,
+  "providerReference": {
+    "url": "https://www.scribd.com/document/957977470/Game-Codes-for-the-Jackpot-Ticker-System",
+    "documentClass": "PLAYTECH_REFERENCE_DOCUMENT_PUBLIC_MIRROR",
+    "sportingDailyCode": "sljp-1",
+    "listedApMcCoyVariants": [
+      {
+        "gameCode": "tonymc",
+        "label": "AP McCoy: Sporting Legends™",
+        "explicitNonPttpLabel": false
+      },
+      {
+        "gameCode": "tmccoy",
+        "label": "AP McCoy: Sporting Legends™ [non PTPP]",
+        "explicitNonPttpLabel": true
+      }
+    ]
+  },
+  "currentBetfairSpainRules": {
+    "url": "https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn",
+    "playtechPowerPlayExplicitlyPresent": true,
+    "powerPlayModes": ["ACCUMULATOR", "ACCUMULATOR_PLUS"],
+    "publicLauncherUrlRecovered": true,
+    "publicLauncherUrl": "https://launcher.betfair.es/?RPBucket=casino&dataChannel=casino&gameId=ap-mccoy-sporting-legends-cptn&launchProduct=casino&mode=real&returnURL=https%3A%2F%2Fcasino.betfair.es%2Fjuego%2Fap-mccoy-sporting-legends-cptn&switchedToPopup=true",
+    "publicLauncherGameId": "ap-mccoy-sporting-legends-cptn",
+    "internalPlaytechGameCodeExposedByPublicLauncher": false
+  },
+  "variantNarrowing": {
+    "tmccoyNonPttpVariantExcludedForCurrentBetfairRules": true,
+    "reason": "The provider reference explicitly labels tmccoy as non PTPP, while the current Betfair Spain rules explicitly contain Playtech Power Play. Therefore the current Betfair configuration cannot be the non-PTPP tmccoy variant.",
+    "tonymcPromotedAsExactBetfairInternalCode": false,
+    "reasonNotPromoted": "The public provider table shows tonymc as the other AP McCoy entry, but the public Betfair launcher exposes only the product gameId and does not expose an internal Playtech game code. Completeness/exhaustiveness of hidden provider variants is not assumed.",
+    "exactBetfairSpainInternalGameVariantVerified": false
+  },
+  "scientificConsequence": {
+    "candidateVariantSetNarrowed": true,
+    "nonPttpVariantRemoved": true,
+    "exactInternalVariantStillOpen": true,
+    "powerPlayStakeWeightingGateStillRequired": true,
+    "exactTickerImsBindingStillRequired": true,
+    "currentSljp1StateStillRequired": true,
+    "playerHazardStillRequired": true
+  },
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "providerVariantExclusionDoesNotProveExactRemainingVariant": true,
+    "publicLauncherProductIdDoesNotEqualInternalPlaytechGameCode": true,
+    "noLoginProbe": true,
+    "noWagerProbe": true,
+    "noRealMoneyPromotionFromVariantNarrowingAlone": true
+  }
+}
