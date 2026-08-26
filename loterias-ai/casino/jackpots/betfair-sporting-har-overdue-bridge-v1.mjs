@@ -12,15 +12,26 @@ function isoEpochSeconds(v){
   const s=text(v);if(!s)return null;
   const ms=Date.parse(s);return Number.isFinite(ms)?ms/1000:null;
 }
+function betfairInitialResourcesUrl(url){
+  try{
+    const u=new URL(String(url||'')),h=u.hostname.toLowerCase();
+    return u.protocol==='https:'&&(h==='betfair.es'||h.endsWith('.betfair.es'))&&/\/initialresources(?:\/|$)/i.test(u.pathname);
+  }catch{return false;}
+}
 function latestPrecedingRealCasinoLauncher(discovery,tickerEntryIndex){
   if(!Number.isInteger(tickerEntryIndex))return null;
   const all=discovery?.discovery?.betfairRealCasinoLauncherBindings||[];
   return all.filter(x=>Number.isInteger(x?.index)&&x.index<tickerEntryIndex).sort((a,b)=>b.index-a.index)[0]||null;
 }
+function latestPostLaunchInitialResources(discovery,launcherEntryIndex,tickerEntryIndex){
+  if(!Number.isInteger(launcherEntryIndex)||!Number.isInteger(tickerEntryIndex))return null;
+  const relevant=discovery?.discovery?.relevantEntries||[];
+  return relevant.filter(r=>Number.isInteger(r?.index)&&r.index>launcherEntryIndex&&r.index<tickerEntryIndex&&betfairInitialResourcesUrl(r?.request?.url)).sort((a,b)=>b.index-a.index)[0]||null;
+}
 
 function fail(reason,extra={}){
   return {
-    version:'betfair-sporting-har-overdue-bridge-v1.4-latest-launcher-attested',
+    version:'betfair-sporting-har-overdue-bridge-v1.5-session-config-attested',
     valid:false,
     decision:'NO_PLAY',
     reason,
@@ -41,6 +52,9 @@ function fail(reason,extra={}){
       latestPrecedingRealCasinoLauncherMustBeExactApMcCoy:true,
       staleApMcCoyLauncherCannotAuthorizeLaterDifferentGameTicker:true,
       configBindingMustPrecedeTickerEntry:true,
+      configBindingMustFollowExactLauncher:true,
+      latestPostLaunchInitialResourcesMustOwnTickerBinding:true,
+      stalePreLaunchOrSupersededConfigCannotAuthorizeTicker:true,
       bothSnapshotsMustPassExactServerBindingValidator:true,
       harCaptureTimeMustAttestFreshness:true,
       callerCannotBackdateHarFreshness:true,
@@ -76,6 +90,16 @@ export function validateBetfairSportingHarSnapshot(har,{
   if(latestLauncher.gameId!==EXACT_GAME_ID){
     return fail('LATEST_REAL_CASINO_LAUNCHER_NOT_AP_MCCOY',{discovery,tickerEntryIndex,latestPrecedingRealCasinoLauncher:latestLauncher});
   }
+  if(configEntryIndex<=latestLauncher.index){
+    return fail('CONFIG_BINDING_NOT_POST_AP_MCCOY_LAUNCH',{discovery,tickerEntryIndex,configEntryIndex,launcherEntryIndex:latestLauncher.index});
+  }
+  const latestSessionConfig=latestPostLaunchInitialResources(discovery,latestLauncher.index,tickerEntryIndex);
+  if(!latestSessionConfig){
+    return fail('POST_LAUNCH_BETFAIR_INITIAL_RESOURCES_NOT_FOUND',{discovery,tickerEntryIndex,launcherEntryIndex:latestLauncher.index});
+  }
+  if(latestSessionConfig.index!==configEntryIndex){
+    return fail('PAIRED_CONFIG_IS_NOT_LATEST_POST_LAUNCH_INITIAL_RESOURCES',{discovery,tickerEntryIndex,configEntryIndex,latestPostLaunchInitialResourcesEntryIndex:latestSessionConfig.index});
+  }
   const captureEpochSeconds=isoEpochSeconds(p.startedDateTime);
   if(captureEpochSeconds===null)return fail('TICKER_HAR_CAPTURE_TIME_MISSING_OR_INVALID',{discovery});
   const suppliedNow=finite(nowEpochSeconds),maxSkew=finite(maxCaptureTimeArgumentSkewSeconds);
@@ -91,12 +115,13 @@ export function validateBetfairSportingHarSnapshot(har,{
   });
   if(validation.valid!==true)return fail('SERVER_SNAPSHOT_VALIDATION_FAILED',{discovery,validation,captureEpochSeconds});
   return {
-    version:'betfair-sporting-har-overdue-bridge-v1.4-latest-launcher-attested',
+    version:'betfair-sporting-har-overdue-bridge-v1.5-session-config-attested',
     valid:true,
     usableForOverduePair:true,
     sourceName,
     exactApMcCoyRealLauncherBindingVerified:true,
     latestPrecedingRealCasinoLauncherIsExactApMcCoy:true,
+    latestPostLaunchInitialResourcesBindingVerified:true,
     launcherEntryIndex:latestLauncher.index,
     configEntryIndex,
     tickerEntryIndex,
@@ -110,7 +135,7 @@ export function validateBetfairSportingHarSnapshot(har,{
     tickerEndpoint:validation.tickerEndpoint,
     configSourceUrl:validation.configSourceUrl,
     decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,
-    hardGuards:{harAloneCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true,exactApMcCoyRealLauncherRequiredInSameHar:true,latestPrecedingRealCasinoLauncherMustBeExactApMcCoy:true,staleApMcCoyLauncherCannotAuthorizeLaterDifferentGameTicker:true,configBindingMustPrecedeTickerEntry:true,harCaptureTimeMustAttestFreshness:true,callerCannotBackdateHarFreshness:true},
+    hardGuards:{harAloneCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true,exactApMcCoyRealLauncherRequiredInSameHar:true,latestPrecedingRealCasinoLauncherMustBeExactApMcCoy:true,staleApMcCoyLauncherCannotAuthorizeLaterDifferentGameTicker:true,configBindingMustPrecedeTickerEntry:true,configBindingMustFollowExactLauncher:true,latestPostLaunchInitialResourcesMustOwnTickerBinding:true,stalePreLaunchOrSupersededConfigCannotAuthorizeTicker:true,harCaptureTimeMustAttestFreshness:true,callerCannotBackdateHarFreshness:true},
   };
 }
 
@@ -162,11 +187,12 @@ export function evaluateBetfairSportingHarOverduePair({
   });
 
   return {
-    version:'betfair-sporting-har-overdue-bridge-v1.4-latest-launcher-attested',
+    version:'betfair-sporting-har-overdue-bridge-v1.5-session-config-attested',
     valid:finalEvaluation.valid===true,
     before,after,
     exactApMcCoyRealLauncherBindingVerifiedOnBothSnapshots:true,
     latestPrecedingRealCasinoLauncherIsExactApMcCoyOnBothSnapshots:true,
+    latestPostLaunchInitialResourcesBindingVerifiedOnBothSnapshots:true,
     finalEvaluation,
     decision:finalEvaluation.decision,
     reason:finalEvaluation.reason,
@@ -179,6 +205,7 @@ export function evaluateBetfairSportingHarOverduePair({
       harAloneCannotAuthorizeGreen:true,
       exactApMcCoyRealLauncherVerifiedOnBothSnapshots:true,
       latestPrecedingRealCasinoLauncherVerifiedOnBothSnapshots:true,
+      latestPostLaunchInitialResourcesVerifiedOnBothSnapshots:true,
       configBindingPrecedesTickerOnBothSnapshots:true,
       bothSnapshotsPassedExactServerBindingValidator:true,
       harCaptureTimeAttestedOnBothSnapshots:true,
