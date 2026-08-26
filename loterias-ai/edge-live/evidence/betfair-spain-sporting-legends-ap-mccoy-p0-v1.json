@@ -1,6 +1,6 @@
 {
-  "version": "betfair-spain-sporting-legends-ap-mccoy-p0-v1.2-powerplay-weighting-guard",
-  "generatedAt": "2026-08-26T12:21:16+02:00",
+  "version": "betfair-spain-sporting-legends-ap-mccoy-p0-v1.3-provenance-deadline-guard",
+  "generatedAt": "2026-08-26T12:40:00+02:00",
   "mode": "SPAIN_ONLINE_TIMED_JACKPOT_P0_NO_PLAY",
   "market": "ES",
   "operator": "Betfair Spain",
@@ -13,7 +13,7 @@
     "url": "https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn",
     "currentCatalogPresenceVerified": true,
     "jackpotCategoryBreadcrumbObserved": true,
-    "latestPublicCrawlFreshness": "last week",
+    "latestPublicCrawlFreshness": "3 months on directly opened rules page; newer indexed headline observed separately",
     "publishedTheoreticalRtp": {
       "mainGameMinPct": 93.03,
       "mainGameMaxPct": 95.03,
@@ -52,6 +52,24 @@
     "weeklyEarlyWinCanRetrigger": true,
     "firstBetAfterDeadlineIfNoPlayAtDueTimeRulePublished": true,
     "exactPlayerHazardFunctionPublished": false
+  },
+  "publishedDeadlineAnchor": {
+    "source": "https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn",
+    "sourceClass": "CURRENT_BETFAIR_SPAIN_GAME_RULES",
+    "dailyAnchorEuropeLondon": "21:00",
+    "dailyUsesBritishSummerTimeWhenApplicable": true,
+    "weeklyAnchorDay": "SATURDAY",
+    "weeklyAnchorEuropeLondon": "12:00",
+    "weeklyUsesBritishSummerTimeWhenApplicable": true,
+    "observedDate": "2026-08-26",
+    "observedDateDailyAnchorEuropeMadrid": "22:00",
+    "observedDateWeeklyAnchorEuropeMadrid": "13:00",
+    "dailyEarlyWinRetriggerUsesRemainingClock": true,
+    "weeklyEarlyWinRetriggerUsesRemainingClock": true,
+    "noPlayAtDueTimeThenFirstBetNextDayRulePublished": true,
+    "publishedScheduleAnchorDoesNotEqualCurrentTickerGuaranteedHitTime": true,
+    "currentGuaranteedHitTimeRecovered": false,
+    "sameSessionDailyActiveVerified": false
   },
   "powerPlaySemantics": {
     "accumulatorCostMultipleOfSelectedTotalBet": 10,
@@ -93,6 +111,13 @@
     "weeklyEURRounded": 1138,
     "megaEURRounded": 220292,
     "crossSourceRoundedMatch": true,
+    "sourceIndependenceVerified": false,
+    "crossSourceMatchCanServeAsIndependentVerification": false,
+    "currentFeedLivenessVerified": false,
+    "winHistoryFreshnessVerified": false,
+    "lastDailyWinHistoryEpochObserved": 1773878141,
+    "lastDailyWinHistoryUTC": "2026-03-18T23:55:41Z",
+    "dailyGuaranteeMakesObservedHistoryGapIncompatibleWithAssumingCompleteCurrentHistory": true,
     "sources": [
       {
         "name": "Casino Listings Playtech Progressive Jackpots",
@@ -100,7 +125,10 @@
         "crawledFreshness": "today",
         "dailyEURRounded": 123,
         "weeklyEURRounded": 1138,
-        "megaEURRounded": 220292
+        "megaEURRounded": 220292,
+        "captureTimestampVerified": false,
+        "exactValues": false,
+        "feedProvenanceVerified": false
       },
       {
         "name": "JackpotScout Playtech",
@@ -108,17 +136,21 @@
         "crawledFreshness": "2 days",
         "dailyEURRounded": 123,
         "weeklyEURRounded": 1138,
-        "megaEURRounded": 220292
+        "megaEURRounded": 220292,
+        "captureTimestampVerified": false,
+        "exactValues": false,
+        "feedProvenanceVerified": false
       }
     ],
-    "globalFeedAppearsLive": true,
+    "globalFeedAppearsLive": false,
     "betfairSpainBindingVerified": false,
     "exactTickerHostRecovered": false,
     "exactImsCasinoRecovered": false,
     "guaranteedHitTimeRecovered": false,
     "sameSessionCentMatchAgainstBetfairSpain": false,
+    "usableForNetworkFlowEstimator": false,
     "usableForExecution": false,
-    "scientificUse": "Candidate global state for passive cycle/reset observation and future exact-binding cross-check only."
+    "scientificUse": "Candidate global amount clue only. Rounded agreement is not independent verification and cannot feed flow or Spanish execution until exact capture time, exact values and feed provenance are verified."
   },
   "retrospectiveSpainRtpValidation": {
     "source": "https://casino.betfair.es/info/rtp-info",
@@ -169,9 +201,11 @@
   "nextDecisiveEvidence": [
     "Recover Betfair Spain's same-deployment Sporting Legends ticker URL and IMS casino identity without login or wager.",
     "Parse current EUR local=0 sljp-1 amount plus guaranteedHitTime in the same observation window as the Spanish AP McCoy deployment.",
+    "Use the published 21:00 Europe/London Daily anchor only for observation scheduling; never substitute it for the current ticker guaranteedHitTime.",
+    "Feed network-flow math only with exact monotonic snapshots whose capture timestamp, exact values and feed identity/provenance are verified.",
     "Determine the exact served RTP variant; until then use the minimum published RTP for conservative screening.",
     "Verify how Sporting Legends jackpot hazard weights Playtech Power Play 10x/20x purchases before using Accumulator/Accumulator Plus RTP in execution math.",
-    "Determine the exact stake-to-player-trigger probability rule or a rigorous lower bound from provider/operator evidence; contribution rate alone is not player hazard.",
+    "Determine the exact stake-to-player-trigger probability rule or a rigorous lower bound; contribution rate alone is not player hazard.",
     "Observe a full Daily cycle/reset prospectively and test the published first-bet-after-deadline rule passively.",
     "Only promote GREEN if a conservative player-specific lower-bound EV exceeds 100% after all execution gates."
   ],
@@ -190,6 +224,8 @@
     "staleOrTierUnboundHeadlineCannotDriveExecution": true,
     "foreignTickerCannotPopulateSpainState": true,
     "thirdPartyGlobalCandidateCannotPopulateSpainState": true,
+    "thirdPartyAggregatorSnapshotRequiresVerifiedCaptureProvenanceBeforeFlowEstimation": true,
+    "publishedDeadlineAnchorCannotPopulateCurrentGuaranteedHitTime": true,
     "contributionRateIsNotPlayerHazard": true,
     "higherStakeQualitativeRuleIsNotExactProbability": true,
     "sameSportingLegendsFamilyDoesNotProveSameJackpotConfiguration": true,

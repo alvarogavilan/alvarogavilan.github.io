@@ -16,8 +16,15 @@ function snapshot(x){
   const mega=finite(x.mega);
   const currency=norm(x.currency);
   const scope=norm(x.scope);
+  const feedIdentity=norm(x.feedIdentity);
   if(ts===null||daily===null||weekly===null||mega===null||!currency||!scope)return null;
-  return {epochSeconds:ts,daily,weekly,mega,currency,scope,total:daily+weekly+mega};
+  return {
+    epochSeconds:ts,daily,weekly,mega,currency,scope,total:daily+weekly+mega,
+    captureTimestampVerified:x.captureTimestampVerified===true,
+    exactValues:x.exactValues===true,
+    feedProvenanceVerified:x.feedProvenanceVerified===true,
+    feedIdentity,
+  };
 }
 
 export function estimateSportingLegendsNetworkFlow(previous,current,{
@@ -32,9 +39,21 @@ export function estimateSportingLegendsNetworkFlow(previous,current,{
     betfairSpainBindingRequiredForSpainExecution:true,
     flowDoesNotEqualPlayerHazard:true,
     noResetOrAwardMayOccurInsideWindow:true,
+    verifiedCaptureProvenanceRequired:true,
+    sameFeedIdentityRequired:true,
+    roundedAggregatorSnapshotsRejected:true,
     realMoneyAllowed:false,
   };
   if(!a||!b)return {valid:false,reason:'INCOMPLETE_SNAPSHOT',guards};
+  if(!a.captureTimestampVerified||!b.captureTimestampVerified||
+     !a.exactValues||!b.exactValues||
+     !a.feedProvenanceVerified||!b.feedProvenanceVerified||
+     !a.feedIdentity||!b.feedIdentity){
+    return {valid:false,reason:'UNVERIFIED_CAPTURE_PROVENANCE',previous:a,current:b,guards};
+  }
+  if(a.feedIdentity!==b.feedIdentity){
+    return {valid:false,reason:'FEED_IDENTITY_CHANGED',previous:a,current:b,guards};
+  }
   if(a.scope!==b.scope||a.currency!==b.currency)return {valid:false,reason:'SCOPE_OR_CURRENCY_CHANGED',previous:a,current:b,guards};
   if(expectedScope&&a.scope!==norm(expectedScope))return {valid:false,reason:'UNEXPECTED_SCOPE',previous:a,current:b,guards};
   if(expectedCurrency&&a.currency!==norm(expectedCurrency))return {valid:false,reason:'UNEXPECTED_CURRENCY',previous:a,current:b,guards};
@@ -52,6 +71,7 @@ export function estimateSportingLegendsNetworkFlow(previous,current,{
     valid:true,
     reason:'OK_RESEARCH_ONLY',
     previous:a,current:b,deltas,
+    feedIdentity:a.feedIdentity,
     seconds,hours,
     contributionFraction,
     deltaCurrentPotsEUR:deltaCurrentPots,

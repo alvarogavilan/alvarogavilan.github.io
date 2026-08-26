@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+const p='loterias-ai/edge-live/evidence/betfair-spain-sporting-legends-ap-mccoy-p0-v1.json';
+const d=JSON.parse(fs.readFileSync(p,'utf8'));
+assert.equal(d.version,'betfair-spain-sporting-legends-ap-mccoy-p0-v1.3-provenance-deadline-guard');
+assert.equal(d.globalCandidateSnapshot.crossSourceRoundedMatch,true);
+assert.equal(d.globalCandidateSnapshot.sourceIndependenceVerified,false);
+assert.equal(d.globalCandidateSnapshot.currentFeedLivenessVerified,false);
+assert.equal(d.globalCandidateSnapshot.winHistoryFreshnessVerified,false);
+assert.equal(d.globalCandidateSnapshot.lastDailyWinHistoryEpochObserved,1773878141);
+assert.equal(d.globalCandidateSnapshot.usableForNetworkFlowEstimator,false);
+assert.equal(d.publishedDeadlineAnchor.dailyAnchorEuropeLondon,'21:00');
+assert.equal(d.publishedDeadlineAnchor.currentGuaranteedHitTimeRecovered,false);
+assert.equal(d.gates.currentGuaranteedHitTimeVerified,false);
+assert.equal(d.execution.realMoneyAllowed,false);
+assert.equal(d.execution.realStakeEUR,0);
+assert.equal(d.hardGuards.thirdPartyAggregatorSnapshotRequiresVerifiedCaptureProvenanceBeforeFlowEstimation,true);
+assert.equal(d.hardGuards.publishedDeadlineAnchorCannotPopulateCurrentGuaranteedHitTime,true);
+console.log('betfair-spain-sporting-legends-ap-mccoy-provenance-v1.test.mjs: PASS');
