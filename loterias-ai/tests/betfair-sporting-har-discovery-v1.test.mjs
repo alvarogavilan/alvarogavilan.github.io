@@ -53,6 +53,18 @@ assert.equal(b.discovery.pairedServerEvidence.length,1);
 assert.equal(b.discovery.pairedServerEvidence[0].tickerXml.includes('9345.67'),true);
 assert.equal(b.discovery.relevantEntries[0].response.contentEncoding,'base64');
 
+const escapedConfig='window.initialResources={jackpotsCasino:"bf_es",jackpotsCasinoUrl:"https:\\/\\/tickers.playtech.example\\/new_jackpotxml.php?x=1\\u0026y=2"};';
+const escaped={log:{entries:[
+  {request:{method:'GET',url:'https://launcher.betfair.es/initialResources/es_ES_desktop?escaped=1',headers:[]},response:{status:200,headers:[],content:{mimeType:'application/javascript',text:escapedConfig}}},
+  har.log.entries[1],
+]}};
+const e=analyzeBetfairSportingHar(escaped,{sourceName:'escaped-session.har'});
+assert.equal(e.version,'betfair-sporting-har-discovery-v1.3-escaped-config-support');
+assert.equal(e.discovery.configBindingCandidates.length,1);
+assert.equal(e.discovery.configBindingCandidates[0].jackpotsCasino,'bf_es');
+assert.equal(e.discovery.configBindingCandidates[0].tickerUrl,'https://tickers.playtech.example/new_jackpotxml.php?x=1&y=2');
+assert.equal(e.discovery.pairedServerEvidence.length,1);
+
 const foreign={log:{entries:[
   {request:{method:'GET',url:'https://evil.example/initialResources/es_ES_desktop',headers:[]},response:{status:200,headers:[],content:{text:'{"jackpotsCasino":"fake","jackpotsCasinoUrl":"https://tickers.playtech.example/new_jackpotxml.php"}'}}},
   har.log.entries[1],
