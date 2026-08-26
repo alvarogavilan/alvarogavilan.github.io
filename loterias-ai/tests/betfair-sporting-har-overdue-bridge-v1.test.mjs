@@ -6,6 +6,11 @@ const exactLauncher=()=>({
   request:{method:'GET',url:'https://launcher.betfair.es/?RPBucket=casino&dataChannel=casino&gameId=ap-mccoy-sporting-legends-cptn&launchProduct=casino&mode=real&returnURL=https%3A%2F%2Fcasino.betfair.es%2Fjuego%2Fap-mccoy-sporting-legends-cptn&switchedToPopup=true',headers:[]},
   response:{status:200,headers:[],content:{text:''}},
 });
+const otherLauncher=()=>({
+  startedDateTime:new Date(1989.5*1000).toISOString(),
+  request:{method:'GET',url:'https://launcher.betfair.es/?RPBucket=casino&dataChannel=casino&gameId=another-playtech-game-cptn&launchProduct=casino&mode=real',headers:[]},
+  response:{status:200,headers:[],content:{text:''}},
+});
 const config=(casino='bf_es',ticker='https://tickers.playtech.example/new_jackpotxml.php',cacheBust='')=>({
   request:{method:'GET',url:`https://launcher.betfair.es/initialResources/es_ES_desktop${cacheBust?`?cacheBust=${cacheBust}`:''}`,headers:[]},
   response:{status:200,headers:[],content:{mimeType:'application/json',text:JSON.stringify({jackpotsCasino:casino,jackpotsCasinoUrl:ticker})}},
@@ -23,10 +28,30 @@ assert.equal(missingExactGame.valid,false);
 assert.equal(missingExactGame.reason,'EXACT_AP_MCCOY_REAL_LAUNCHER_BINDING_NOT_FOUND');
 assert.equal(missingExactGame.realMoneyAllowed,false);
 
+const staleExactLauncherHar={log:{entries:[exactLauncher(),config(),otherLauncher(),ticker(1990,100)]}};
+const staleExactLauncher=validateBetfairSportingHarSnapshot(staleExactLauncherHar,{sourceName:'stale-preserve-log.har'});
+assert.equal(staleExactLauncher.valid,false);
+assert.equal(staleExactLauncher.reason,'LATEST_REAL_CASINO_LAUNCHER_NOT_AP_MCCOY');
+assert.equal(staleExactLauncher.latestPrecedingRealCasinoLauncher.gameId,'another-playtech-game-cptn');
+assert.equal(staleExactLauncher.hardGuards.staleApMcCoyLauncherCannotAuthorizeLaterDifferentGameTicker,true);
+assert.equal(staleExactLauncher.realMoneyAllowed,false);
+assert.equal(staleExactLauncher.maxSpins,0);
+
+const configAfterTickerHar={log:{entries:[exactLauncher(),ticker(1990,100),config()]}};
+const configAfterTicker=validateBetfairSportingHarSnapshot(configAfterTickerHar,{sourceName:'postdated-config.har'});
+assert.equal(configAfterTicker.valid,false);
+assert.equal(configAfterTicker.reason,'CONFIG_BINDING_DOES_NOT_PRECEDE_TICKER_ENTRY');
+assert.equal(configAfterTicker.hardGuards.configBindingMustPrecedeTickerEntry,true);
+assert.equal(configAfterTicker.realMoneyAllowed,false);
+
 const one=validateBetfairSportingHarSnapshot(har(1990,100),{sourceName:'before.har'});
-assert.equal(one.version,'betfair-sporting-har-overdue-bridge-v1.3-exact-game-session-attested');
+assert.equal(one.version,'betfair-sporting-har-overdue-bridge-v1.4-latest-launcher-attested');
 assert.equal(one.valid,true);
 assert.equal(one.exactApMcCoyRealLauncherBindingVerified,true);
+assert.equal(one.latestPrecedingRealCasinoLauncherIsExactApMcCoy,true);
+assert.equal(one.launcherEntryIndex,0);
+assert.equal(one.configEntryIndex,1);
+assert.equal(one.tickerEntryIndex,2);
 assert.equal(one.captureEpochSeconds,1990);
 assert.equal(one.freshnessClockSource,'HAR_TICKER_ENTRY_STARTED_DATE_TIME');
 assert.equal(one.validation.exactBetfairSpainTickerImsBindingVerified,true);
@@ -47,21 +72,33 @@ const r=evaluateBetfairSportingHarOverduePair({
   providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified:true,
   stakeEUR:0.25,
 });
-assert.equal(r.version,'betfair-sporting-har-overdue-bridge-v1.3-exact-game-session-attested');
+assert.equal(r.version,'betfair-sporting-har-overdue-bridge-v1.4-latest-launcher-attested');
 assert.equal(r.valid,true);
 assert.equal(r.exactApMcCoyRealLauncherBindingVerifiedOnBothSnapshots,true);
+assert.equal(r.latestPrecedingRealCasinoLauncherIsExactApMcCoyOnBothSnapshots,true);
 assert.equal(r.before.captureEpochSeconds,1990);
 assert.equal(r.after.captureEpochSeconds,2005);
 assert.equal(r.finalEvaluation.followingDayUnawardedVerified,true);
 assert.equal(r.finalEvaluation.nextEligibleNetworkBetGuaranteedJackpot,true);
 assert.equal(r.finalEvaluation.exactBetfairSpainTickerImsBindingVerified,true);
 assert.equal(r.hardGuards.exactApMcCoyRealLauncherVerifiedOnBothSnapshots,true);
+assert.equal(r.hardGuards.latestPrecedingRealCasinoLauncherVerifiedOnBothSnapshots,true);
+assert.equal(r.hardGuards.configBindingPrecedesTickerOnBothSnapshots,true);
 assert.equal(r.hardGuards.benignCacheBusterQueryChangesIgnored,true);
 assert.equal(r.hardGuards.harCaptureTimeAttestedOnBothSnapshots,true);
 assert.equal(r.decision,'NO_PLAY');
 assert.equal(r.realMoneyAllowed,false);
 assert.equal(r.maxSpins,0);
 assert.equal(r.reason,'FOLLOWING_DAY_UNAWARDED_VERIFIED_RACE_GATE_OPEN');
+
+const staleAfter=evaluateBetfairSportingHarOverduePair({
+  beforeHar:har(1990,100),afterHar:staleExactLauncherHar,decisionNowEpochSeconds:2010,
+  betfairFirstBetFollowingDayRuleVerified:true,providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified:true,stakeEUR:0.25,
+});
+assert.equal(staleAfter.valid,false);
+assert.equal(staleAfter.reason,'AFTER_HAR_SNAPSHOT_INVALID');
+assert.equal(staleAfter.after.reason,'LATEST_REAL_CASINO_LAUNCHER_NOT_AP_MCCOY');
+assert.equal(staleAfter.realMoneyAllowed,false);
 
 const impossibleDecision=evaluateBetfairSportingHarOverduePair({
   beforeHar:har(1990,100),afterHar:har(2005,100.02),decisionNowEpochSeconds:2004,
