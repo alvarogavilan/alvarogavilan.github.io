@@ -1,4 +1,4 @@
-// EDGE LIVE UX loader v14: preserve the proven browser-direct monitor, use the
+// EDGE LIVE UX loader v15: preserve the proven browser-direct monitor, use the
 // permanent Cloudflare backend as primary/failover source, surface accumulated
 // 24/7 science, explicit P0 research progress, fail-closed ATH/cycle history,
 // the internal Spain-only library, explicit historical coverage, the legal Spain
@@ -16,7 +16,7 @@
 import './edge-live-ux-legacy-v1.mjs';
 import './edge-backend-client-v1.mjs';
 import './edge-science-client-v1.mjs';
-import './edge-research-progress-v1.mjs';
+import './edge-research-progress-v1.mjs?v=20260826-p0-3';
 import './edge-history-client-v1.mjs';
 import './edge-library-client-v1.mjs';
 import './edge-library-coverage-client-v1.mjs';
