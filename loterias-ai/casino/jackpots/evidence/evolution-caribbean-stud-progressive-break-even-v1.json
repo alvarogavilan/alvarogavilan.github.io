@@ -1,7 +1,7 @@
 {
-  "version": "evolution-caribbean-stud-progressive-break-even-v1",
-  "generatedAt": "2026-08-26T02:45:00.000Z",
-  "mode": "EXACT_MATH_CURRENT_GLOBAL_SIGNAL_SPAIN_GATE_OPEN",
+  "version": "evolution-caribbean-stud-progressive-break-even-v2-player-share",
+  "generatedAt": "2026-08-26T02:55:00.000Z",
+  "mode": "EXACT_MATH_CURRENT_PROVIDER_SIGNAL_SPAIN_AND_PRECOMMIT_GATE_OPEN",
   "game": "Evolution Live Caribbean Stud Poker",
   "provider": "Evolution",
   "mechanism": {
@@ -12,7 +12,8 @@
     "totalFiveCardCombinations": 2598960,
     "royalFlushProbability": 0.0000015390771693292702,
     "royalFlushOddsOneIn": 649740,
-    "jackpotAward": "100_PERCENT_OF_PROVIDER_JACKPOT_SHARED_AMONG_ALL_JACKPOT_BETTORS_IN_WINNING_ROUND",
+    "jackpotAward": "100_PERCENT_OF_PLAYER_SHARE_FOR_ROYAL_FLUSH",
+    "networkSemantics": "All players who placed the Jackpot bet in the winning game round across participating tables/casinos share the provider jackpot. Evolution displays the player's potential PLAYER SHARE in the Jackpot paytable in the player's own currency.",
     "fixedAwardsCurrencyUnits": {
       "straightFlush": 2500,
       "fourOfAKind": 250,
@@ -29,62 +30,132 @@
       "straightExcludingStraightFlush": 10200,
       "threeOfAKind": 54912
     },
-    "fixedReturnFraction": 0.31844891802875,
-    "sourceSemantics": "Evolution and current operator rules state that lower awards are fixed in the player's currency and the progressive top prize is shared among all players who placed the jackpot bet in the winning round."
+    "fixedReturnFractionExactFromCombinatorics": 0.31844891802875,
+    "operatorRuleFundingCrossCheckPct": {
+      "topProgressive": 45,
+      "nextJackpotReserve": 5,
+      "lowerFixedPrizes": 31.84
+    },
+    "publishedJackpotBetRtpPct": 81.84,
+    "publishedMainGameOptimalRtpOnAntePct": 96.30,
+    "publishedMainGameOptimalRtpOnTotalWagerPct": 98.19
   },
   "exactMath": {
-    "sideBetRtpFormula": "fixedReturnFraction + (jackpotCurrencyUnits / jackpotBettorsInWinningRound) / 649740",
-    "sideBetNetEvCurrencyFormula": "fixedReturnFraction + (jackpotCurrencyUnits / N) / 649740 - 1",
-    "pureSideBetBreakEvenJackpotPerSingleBettorCurrencyUnits": 442831,
-    "breakEvenWithNJackpotBettorsFormula": "442831 * N before mandatory-main-game cost",
-    "mandatoryAnteAdjustmentFormula": "J_BE_total = N * 649740 * (1 - fixedReturnFraction + expectedMainGameLossCurrencyPerRound)",
-    "important": "The mandatory Ante/main game cost must be added before execution. A high jackpot is not executable unless N and the exact current operator Ante/main-game expected loss are known."
+    "sideBetRtpFormula": "0.31844891802875 + playerShareCurrencyUnits / 649740",
+    "sideBetNetEvFormula": "0.31844891802875 + playerShareCurrencyUnits / 649740 - 1",
+    "pureSideBetBreakEvenPlayerShareCurrencyUnits": 442831,
+    "mainGameExpectedLossFormula": "0.037 * anteCurrencyUnits under published optimal strategy, because 96.30% RTP is relative to Ante",
+    "combinedBreakEvenPlayerShareFormula": "649740 * (1 - 0.31844891802875 + 0.037 * anteCurrencyUnits)",
+    "combinedBreakEvenPlayerShareByAnte": [
+      {"ante":0.5,"playerShareBreakEven":454851.19},
+      {"ante":1,"playerShareBreakEven":466871.38},
+      {"ante":2,"playerShareBreakEven":490911.76},
+      {"ante":5,"playerShareBreakEven":563032.90},
+      {"ante":9,"playerShareBreakEven":659194.42},
+      {"ante":9.72,"playerShareBreakEven":676503.49},
+      {"ante":10,"playerShareBreakEven":683234.80}
+    ],
+    "criticalExecutionVariable": "PLAYER_SHARE_NOT_PROVIDER_JACKPOT",
+    "reason": "The provider itself exposes the potential share after network sharing/currency conversion. EDGE must compare that displayed share directly with the Ante-adjusted threshold rather than infer a bettor count."
   },
   "currentProviderSignal": {
-    "sourceClass": "CURRENT_NON_SPAIN_OPERATOR_SAME_PROVIDER_GAME",
+    "sourceClass": "CURRENT_NON_SPAIN_OPERATOR_SAME_PROVIDER_EXACT_GAME",
     "operator": "LeoVegas UK",
     "sourceUrl": "https://www.leovegas.co.uk/game/live-caribbean-stud-poker",
     "crawledRecency": "yesterday at research time",
     "providerJackpotGBP": 676495,
     "provider": "Evolution",
     "game": "Live Caribbean Stud Poker",
-    "n1PureSideBetRtp": 1.3596269276941546,
-    "n1PureSideBetRtpPct": 135.96269276941546,
-    "n1PureSideBetNetEvGBPPerOneUnitSideBetBeforeAnte": 0.3596269276941546,
-    "n2PureSideBetRtp": 0.8390379228614523,
-    "n2PureSideBetRtpPct": 83.90379228614523,
-    "signal": "CURRENT_METER_ABOVE_EXACT_PURE_SIDE_BET_BREAK_EVEN_IF_AND_ONLY_IF_N_EQUALS_1",
+    "pureSideRtpIfPlayerShareEqualsFullJackpot": 1.3596269276941546,
+    "pureSideRtpPctIfPlayerShareEqualsFullJackpot": 135.96269276941546,
+    "combinedExpectedNetGBPAtAnte1IfPlayerShareEqualsFullJackpot": 0.3226269276941546,
+    "ante1BreakEvenPlayerShareGBP": 466871.38,
+    "distanceAboveAnte1BreakEvenIfFullShareGBP": 209623.62,
+    "fullJackpotWouldRemainPositiveThroughAnteApprox": 9.719646,
     "executionTransferToSpainAllowed": false
+  },
+  "playerShareUiEvidence": {
+    "rules": "Current Evolution-derived operator rules state that the current progressive amount and the player's potential share are displayed in the JACKPOT paytable in the player's currency.",
+    "historicalUiScreenshot": {
+      "sourceUrl": "https://www.goksites.nl/assets/cache/global/img/spellen/cover/poker/caribbean-stud-poker.d262c6b9.jpg",
+      "jackpotEUR": 540491.98,
+      "playerShareEUR": 540491.98,
+      "anteVisibleEUR": 1,
+      "totalMainBetVisibleEUR": 3,
+      "jackpotButtonUnitVisibleEUR": 1,
+      "interpretationGuard": "The screenshot proves PLAYER SHARE is a prominent UI field. It is compatible with the field being visible while the Jackpot side bet is not included in the visible total-main-bet amount, but button colour/state and total-bet accounting are not sufficient to prove pre-commit readability."
+    },
+    "preCommitPlayerShareReadableWithoutJackpotBetVerified": false,
+    "finalPlayerShareLockedBeforeCommitVerified": false,
+    "lateNetworkDilutionPossible": true,
+    "currentRulesSequence": "Ante first; optional Jackpot bet before betting closes; once accepted it contributes to the network jackpot. Potential share depends on all accepted Jackpot bets in the current network round."
+  },
+  "robustness": {
+    "doNotInferNWhenPlayerShareAvailable": true,
+    "illustrativeOnlyIfEqualShares": {
+      "ante1TotalProviderJackpotNeededToStayPositiveWithTwoEqualBettors": 933742.76,
+      "currentProviderJackpotGBP": 676495,
+      "currentSignalRobustToSecondEqualBettor": false
+    },
+    "executionRequirement": "Use the displayed final/locked PLAYER SHARE, not the headline Provider Jackpot. If Player Share can change after commitment and no conservative lower bound remains above threshold, execution stays blocked."
   },
   "spainEvidence": {
     "casinoBarcelonaGuideUrl": "https://www.casinobarcelona.es/blog/que-es-poker-caribeno/",
     "guidePublished": "2026-03-20",
     "guideFacts": [
       "CasinoBarcelona describes online Caribbean poker with mandatory Ante and optional jackpot side bet.",
-      "CasinoBarcelona also currently carries Evolution as a provider elsewhere in its online portfolio."
+      "CasinoBarcelona carries Evolution content elsewhere in its current online portfolio."
     ],
-    "exactEvolutionCaribbeanStudCurrentlyAvailableAtCasinoBarcelona": false,
-    "sameProviderJackpotMeterBoundInSpain": false,
+    "speedybetExactEvolutionCaribbeanStudCurrent": false,
+    "botemaniaExactEvolutionCaribbeanStudCurrent": false,
+    "daznBetExactEvolutionCaribbeanStudCurrent": false,
+    "casinoBarcelonaExactEvolutionCaribbeanStudCurrent": false,
+    "sameProviderPlayerShareBoundInSpain": false,
     "exactSpainAnteMinimumKnown": false,
-    "jackpotBettorCountVisibleAndVerifiedInSpain": false,
-    "note": "Editorial content plus provider availability does not prove that this exact Evolution table is currently offered in the Spanish lobby."
+    "preCommitPlayerShareReadableInSpain": false,
+    "note": "CasinoBarcelona remains the unresolved priority route because its live lobby is geoblocked to the research crawler. Editorial content/provider presence is not exact-table availability proof."
+  },
+  "siblingProgressiveControls": {
+    "purpose": "Falsification controls using two other Evolution shared poker progressives observed on the same current comparator operator.",
+    "casinoHoldemJumbo7": {
+      "topEventProbability": 0.00000023919011469662317,
+      "topEventOddsOneIn": 4180767.5,
+      "fixedReturnFraction": 0.5614170723437742,
+      "purePlayerShareBreakEven": 1833613.25,
+      "mainGameRtpOnAntePct": 97.84,
+      "combinedBreakEvenAtAnte0_5": 1878765.54,
+      "currentLeoVegasProviderJackpotGBPApprox": 1791028,
+      "decision": "NO_PLAY_BELOW_PURE_AND_COMBINED_BREAK_EVEN"
+    },
+    "texasHoldemBonusFirstFive": {
+      "topEventProbability": 0.0000015390771693292702,
+      "topEventOddsOneIn": 649740,
+      "fixedReturnFraction": 0.31844891802875,
+      "purePlayerShareBreakEven": 442831,
+      "currentLeoVegasProviderJackpotGBPApprox": 262991,
+      "decision": "NO_PLAY_BELOW_PURE_BREAK_EVEN"
+    },
+    "controlConclusion": "The same exact method rejects Jumbo 7 and First Five at current observed provider jackpots while Caribbean Stud alone clears its full-share mathematical threshold. This is a selective state signal, not a generic progressive-jackpot bias."
   },
   "economicGate": {
     "exactFiveCardProbabilityKnown": true,
     "exactJackpotPaytableKnown": true,
     "exactPureSideBetBreakEvenKnown": true,
-    "currentSameProviderGlobalMeterAboveN1PureBreakEven": true,
+    "exactAnteAdjustedBreakEvenKnown": true,
+    "mainGameOptimalExpectedLossKnown": true,
+    "playerShareFieldExistsVerified": true,
+    "currentSameProviderGlobalJackpotAboveAnte1ThresholdIfFullShare": true,
+    "siblingNegativeControlsPassed": true,
     "currentPrioritySpainOperatorAvailabilityVerified": false,
-    "currentSpainProviderMeterVerified": false,
-    "currentSpainJackpotBettorCountVerified": false,
-    "currentSpainMandatoryAnteCostVerified": false,
-    "mainGameStrategyAndExpectedLossVerifiedForExecution": false,
-    "candidateStatus": "EXTRAORDINARY_CANDIDATE_SIGNAL_NOT_EXECUTABLE"
+    "currentSpainPlayerShareVerified": false,
+    "currentSpainAnteMinimumVerified": false,
+    "preCommitOrLockedPlayerShareSafetyVerified": false,
+    "candidateStatus": "EXTRAORDINARY_EXACT_MATH_WATCH_NOT_EXECUTABLE"
   },
   "nextDecisiveEvidence": [
-    "No-bet confirmation that a priority Spanish operator currently offers Evolution Live Caribbean Stud Poker with the Progressive Jackpot side bet.",
-    "Same-session Spanish screen capture of provider jackpot amount, Jackpot bet unit, minimum Ante and visible number of Jackpot bettors/participants.",
-    "Reproduce exact optimal main-game expected loss at the deployed paytable and minimum Ante, then compute total break-even including mandatory play cost."
+    "No-wager confirmation that CasinoBarcelona.es currently offers the exact Evolution Live Caribbean Stud Poker table with Jackpot side bet.",
+    "Same-session Spanish screen showing provider, current PLAYER SHARE, Ante minimum and Jackpot unit without placing the Jackpot wager.",
+    "Verify whether PLAYER SHARE is readable and locked before Jackpot commitment; otherwise prove a conservative post-commit lower bound above the Ante-adjusted threshold."
   ],
   "execution": {
     "decision": "NO_PLAY",
@@ -95,10 +166,12 @@
   },
   "hardGuards": {
     "ukMeterDoesNotEqualSpainAvailability": true,
+    "providerJackpotIsNotPlayerShare": true,
     "sameProviderDoesNotProveSameOperatorOffering": true,
-    "n1CannotBeAssumed": true,
     "mandatoryAnteCannotBeIgnored": true,
-    "sharedJackpotRequiresActualBettorCount": true,
+    "preCommitVisibilityCannotBeInferredFromScreenshotStyling": true,
+    "potentialShareCannotBeAssumedFinalIfLateBetsRemainPossible": true,
+    "positiveExpectedValueDoesNotGuaranteeShortTermProfit": true,
     "noWagerProbe": true
   }
 }
