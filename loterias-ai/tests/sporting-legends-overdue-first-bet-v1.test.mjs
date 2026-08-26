@@ -47,6 +47,40 @@ r=evaluateSportingLegendsOverdueFirstBet({...common,raceEvidence:fakeAggregatedR
 assert.equal(r.structuredRaceEvidenceValid,false);
 assert.equal(r.decision,'NO_PLAY');
 
+// A validated race window is measured from server detection to hypothetical action completion.
+// Existing feed age consumes that same window; only the remaining budget is executable.
+const validatedRace={
+  valid:true,usableForExecution:true,method:'ONE_SIDED_CLOPPER_PEARSON_BINOMIAL',source:'VALIDATED_PASSIVE_CYCLE_LEDGER',
+  prospectiveProtocolFrozen:true,comparableCycleDefinitionVerified:true,totalDryRunCycles:1,successfulDryRunCycles:1,
+  actionLatencySeconds:7,firstBetRaceProbabilityLowerBound:0.05,
+};
+r=evaluateSportingLegendsOverdueFirstBet({
+  ...common,raceEvidence:validatedRace,currentDailyAmountExactVerified:true,stakeAtDecisionExactVerified:true,
+  measuredActionLatencyVerified:true,measuredActionLatencySeconds:2,prospectiveDryRunCycleVerified:true,
+});
+assert.equal(r.feedAgeSeconds,5);
+assert.equal(r.validatedRaceWindowSeconds,7);
+assert.equal(r.totalExposureSinceServerDetectionSeconds,7);
+assert.equal(r.raceWindowBudgetVerified,true);
+assert.equal(r.structuredRaceEvidenceValid,true);
+assert.equal(r.decision,'GREEN');
+assert.equal(r.realMoneyAllowed,true);
+assert.equal(r.maxSpins,1);
+
+r=evaluateSportingLegendsOverdueFirstBet({
+  ...common,raceEvidence:{...validatedRace,actionLatencySeconds:6},currentDailyAmountExactVerified:true,stakeAtDecisionExactVerified:true,
+  measuredActionLatencyVerified:true,measuredActionLatencySeconds:2,prospectiveDryRunCycleVerified:true,
+});
+assert.equal(r.baseStructuredRaceEvidenceValid,true);
+assert.equal(r.totalExposureSinceServerDetectionSeconds,7);
+assert.equal(r.validatedRaceWindowSeconds,6);
+assert.equal(r.raceWindowBudgetVerified,false);
+assert.equal(r.structuredRaceEvidenceValid,false);
+assert.equal(r.reason,'VALIDATED_RACE_WINDOW_EXHAUSTED');
+assert.equal(r.decision,'NO_PLAY');
+assert.equal(r.realMoneyAllowed,false);
+assert.equal(r.maxSpins,0);
+
 let bad=evaluateSportingLegendsOverdueFirstBet({...common,expectedBetfairImsCasino:null});
 assert.equal(bad.valid,false);
 assert.equal(bad.reason,'EXPECTED_BETFAIR_IMS_NOT_SUPPLIED');
