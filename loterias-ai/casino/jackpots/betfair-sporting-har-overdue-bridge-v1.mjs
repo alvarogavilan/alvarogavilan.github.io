@@ -3,6 +3,7 @@ import {validateBetfairSportingServerSnapshot} from './betfair-sporting-server-b
 import {evaluateSportingLegendsOverdueFirstBet} from './sporting-legends-overdue-first-bet-v1.mjs';
 
 const EXACT_GAME_ID='ap-mccoy-sporting-legends-cptn';
+const VERSION='betfair-sporting-har-overdue-bridge-v1.7-latest-session-poll';
 const finite=v=>{if(v===null||v===undefined||v===''||typeof v==='boolean')return null;const n=Number(v);return Number.isFinite(n)?n:null;};
 const text=v=>typeof v==='string'&&v.trim()?v.trim():null;
 function sameHttpsEndpoint(a,b){
@@ -31,7 +32,7 @@ function latestPostLaunchInitialResources(discovery,launcherEntryIndex,tickerEnt
 
 function fail(reason,extra={}){
   return {
-    version:'betfair-sporting-har-overdue-bridge-v1.6-forward-pair-time',
+    version:VERSION,
     valid:false,
     decision:'NO_PLAY',
     reason,
@@ -55,6 +56,8 @@ function fail(reason,extra={}){
       configBindingMustFollowExactLauncher:true,
       latestPostLaunchInitialResourcesMustOwnTickerBinding:true,
       stalePreLaunchOrSupersededConfigCannotAuthorizeTicker:true,
+      latestPairedTickerPollMustOwnSnapshot:true,
+      olderValidPollCannotOverrideLaterInvalidOrDifferentGamePoll:true,
       bothSnapshotsMustPassExactServerBindingValidator:true,
       harCaptureTimeMustAttestFreshness:true,
       callerCannotBackdateHarFreshness:true,
@@ -65,6 +68,31 @@ function fail(reason,extra={}){
   };
 }
 
+function assessPair(discovery,p,{nowEpochSeconds,maxFeedAgeIntervals,maxCaptureTimeArgumentSkewSeconds}){
+  const tickerEntryIndex=Number.isInteger(p?.tickerEntryIndex)?p.tickerEntryIndex:null;
+  const configEntryIndex=Number.isInteger(p?.configBinding?.sourceEntryIndex)?p.configBinding.sourceEntryIndex:null;
+  if(tickerEntryIndex===null||configEntryIndex===null||configEntryIndex>=tickerEntryIndex)return {ok:false,reason:'CONFIG_BINDING_DOES_NOT_PRECEDE_TICKER_ENTRY',extra:{tickerEntryIndex,configEntryIndex}};
+  const latestLauncher=latestPrecedingRealCasinoLauncher(discovery,tickerEntryIndex);
+  if(!latestLauncher)return {ok:false,reason:'REAL_CASINO_LAUNCHER_DOES_NOT_PRECEDE_TICKER_ENTRY',extra:{tickerEntryIndex}};
+  if(latestLauncher.gameId!==EXACT_GAME_ID)return {ok:false,reason:'LATEST_REAL_CASINO_LAUNCHER_NOT_AP_MCCOY',extra:{tickerEntryIndex,latestPrecedingRealCasinoLauncher:latestLauncher}};
+  if(configEntryIndex<=latestLauncher.index)return {ok:false,reason:'CONFIG_BINDING_NOT_POST_AP_MCCOY_LAUNCH',extra:{tickerEntryIndex,configEntryIndex,launcherEntryIndex:latestLauncher.index}};
+  const latestSessionConfig=latestPostLaunchInitialResources(discovery,latestLauncher.index,tickerEntryIndex);
+  if(!latestSessionConfig)return {ok:false,reason:'POST_LAUNCH_BETFAIR_INITIAL_RESOURCES_NOT_FOUND',extra:{tickerEntryIndex,launcherEntryIndex:latestLauncher.index}};
+  if(latestSessionConfig.index!==configEntryIndex)return {ok:false,reason:'PAIRED_CONFIG_IS_NOT_LATEST_POST_LAUNCH_INITIAL_RESOURCES',extra:{tickerEntryIndex,configEntryIndex,latestPostLaunchInitialResourcesEntryIndex:latestSessionConfig.index}};
+  const captureEpochSeconds=isoEpochSeconds(p.startedDateTime);
+  if(captureEpochSeconds===null)return {ok:false,reason:'TICKER_HAR_CAPTURE_TIME_MISSING_OR_INVALID',extra:{tickerEntryIndex}};
+  const suppliedNow=finite(nowEpochSeconds),maxSkew=finite(maxCaptureTimeArgumentSkewSeconds);
+  if(!(maxSkew>=0))return {ok:false,reason:'INVALID_CAPTURE_TIME_SKEW_POLICY',extra:{captureEpochSeconds}};
+  if(suppliedNow!==null&&Math.abs(suppliedNow-captureEpochSeconds)>maxSkew)return {ok:false,reason:'CAPTURE_TIME_ARGUMENT_MISMATCH',extra:{captureEpochSeconds,suppliedNow,maxCaptureTimeArgumentSkewSeconds:maxSkew}};
+  const validation=validateBetfairSportingServerSnapshot({configBinding:p.configBinding,tickerXml:p.tickerXml,responseUrl:p.responseUrl,nowEpochSeconds:captureEpochSeconds,maxFeedAgeIntervals});
+  if(validation.valid!==true)return {ok:false,reason:'SERVER_SNAPSHOT_VALIDATION_FAILED',extra:{validation,captureEpochSeconds}};
+  return {ok:true,p,tickerEntryIndex,configEntryIndex,latestLauncher,captureEpochSeconds,validation};
+}
+function assessedIdentity(x){
+  const s=x?.validation?.snapshot||{};
+  return JSON.stringify([x?.configEntryIndex,x?.validation?.expectedBetfairImsCasino,x?.validation?.tickerEndpoint,s.code,s.currency,s.local,s.amount,s.guaranteedHitTime,s.gameTimestamp,s.winCount,s.requestExecInterval,s.requestCasino,s.instanceCode]);
+}
+
 export function validateBetfairSportingHarSnapshot(har,{
   sourceName='capture.har',
   nowEpochSeconds=null,
@@ -73,61 +101,37 @@ export function validateBetfairSportingHarSnapshot(har,{
 }={}){
   let discovery;
   try{discovery=analyzeBetfairSportingHar(har,{sourceName});}catch(error){return fail('HAR_PARSE_FAILED',{error:String(error?.message||error)});}
-  if(discovery?.discovery?.exactApMcCoyRealLauncherBindingObserved!==true){
-    return fail('EXACT_AP_MCCOY_REAL_LAUNCHER_BINDING_NOT_FOUND',{discovery});
-  }
+  if(discovery?.discovery?.exactApMcCoyRealLauncherBindingObserved!==true)return fail('EXACT_AP_MCCOY_REAL_LAUNCHER_BINDING_NOT_FOUND',{discovery});
   const pairs=discovery?.discovery?.pairedServerEvidence||[];
-  if(pairs.length!==1)return fail(pairs.length?'AMBIGUOUS_PAIRED_SERVER_EVIDENCE':'PAIRED_SERVER_EVIDENCE_NOT_FOUND',{discovery});
-  const p=pairs[0];
-  const tickerEntryIndex=Number.isInteger(p?.tickerEntryIndex)?p.tickerEntryIndex:null;
-  const configEntryIndex=Number.isInteger(p?.configBinding?.sourceEntryIndex)?p.configBinding.sourceEntryIndex:null;
-  if(tickerEntryIndex===null||configEntryIndex===null||configEntryIndex>=tickerEntryIndex){
-    return fail('CONFIG_BINDING_DOES_NOT_PRECEDE_TICKER_ENTRY',{discovery,tickerEntryIndex,configEntryIndex});
+  if(!pairs.length)return fail('PAIRED_SERVER_EVIDENCE_NOT_FOUND',{discovery});
+  const indexed=pairs.filter(p=>Number.isInteger(p?.tickerEntryIndex));
+  if(!indexed.length)return fail('PAIRED_SERVER_EVIDENCE_MISSING_TICKER_INDEX',{discovery});
+  const latestTickerEntryIndex=Math.max(...indexed.map(p=>p.tickerEntryIndex));
+  const latestPairs=indexed.filter(p=>p.tickerEntryIndex===latestTickerEntryIndex);
+  const assessed=latestPairs.map(p=>assessPair(discovery,p,{nowEpochSeconds,maxFeedAgeIntervals,maxCaptureTimeArgumentSkewSeconds}));
+  const valid=assessed.filter(x=>x.ok===true);
+  if(!valid.length){
+    if(assessed.length===1)return fail(assessed[0].reason,{discovery,...assessed[0].extra,pairedServerEvidenceCount:pairs.length,latestPairedTickerEntryIndex:latestTickerEntryIndex});
+    return fail('LATEST_PAIRED_SERVER_EVIDENCE_NOT_SESSION_VALID',{pairedServerEvidenceCount:pairs.length,latestPairedTickerEntryIndex:latestTickerEntryIndex,pairRejections:assessed.map(x=>({reason:x.reason,tickerEntryIndex:x.extra?.tickerEntryIndex??latestTickerEntryIndex,configEntryIndex:x.extra?.configEntryIndex??null}))});
   }
-  const latestLauncher=latestPrecedingRealCasinoLauncher(discovery,tickerEntryIndex);
-  if(!latestLauncher){
-    return fail('REAL_CASINO_LAUNCHER_DOES_NOT_PRECEDE_TICKER_ENTRY',{discovery,tickerEntryIndex});
-  }
-  if(latestLauncher.gameId!==EXACT_GAME_ID){
-    return fail('LATEST_REAL_CASINO_LAUNCHER_NOT_AP_MCCOY',{discovery,tickerEntryIndex,latestPrecedingRealCasinoLauncher:latestLauncher});
-  }
-  if(configEntryIndex<=latestLauncher.index){
-    return fail('CONFIG_BINDING_NOT_POST_AP_MCCOY_LAUNCH',{discovery,tickerEntryIndex,configEntryIndex,launcherEntryIndex:latestLauncher.index});
-  }
-  const latestSessionConfig=latestPostLaunchInitialResources(discovery,latestLauncher.index,tickerEntryIndex);
-  if(!latestSessionConfig){
-    return fail('POST_LAUNCH_BETFAIR_INITIAL_RESOURCES_NOT_FOUND',{discovery,tickerEntryIndex,launcherEntryIndex:latestLauncher.index});
-  }
-  if(latestSessionConfig.index!==configEntryIndex){
-    return fail('PAIRED_CONFIG_IS_NOT_LATEST_POST_LAUNCH_INITIAL_RESOURCES',{discovery,tickerEntryIndex,configEntryIndex,latestPostLaunchInitialResourcesEntryIndex:latestSessionConfig.index});
-  }
-  const captureEpochSeconds=isoEpochSeconds(p.startedDateTime);
-  if(captureEpochSeconds===null)return fail('TICKER_HAR_CAPTURE_TIME_MISSING_OR_INVALID',{discovery});
-  const suppliedNow=finite(nowEpochSeconds),maxSkew=finite(maxCaptureTimeArgumentSkewSeconds);
-  if(!(maxSkew>=0))return fail('INVALID_CAPTURE_TIME_SKEW_POLICY',{discovery,captureEpochSeconds});
-  if(suppliedNow!==null&&Math.abs(suppliedNow-captureEpochSeconds)>maxSkew)return fail('CAPTURE_TIME_ARGUMENT_MISMATCH',{discovery,captureEpochSeconds,suppliedNow,maxCaptureTimeArgumentSkewSeconds:maxSkew});
-
-  const validation=validateBetfairSportingServerSnapshot({
-    configBinding:p.configBinding,
-    tickerXml:p.tickerXml,
-    responseUrl:p.responseUrl,
-    nowEpochSeconds:captureEpochSeconds,
-    maxFeedAgeIntervals,
-  });
-  if(validation.valid!==true)return fail('SERVER_SNAPSHOT_VALIDATION_FAILED',{discovery,validation,captureEpochSeconds});
+  const identities=new Set(valid.map(assessedIdentity));
+  if(identities.size!==1)return fail('AMBIGUOUS_LATEST_PAIRED_SERVER_EVIDENCE',{pairedServerEvidenceCount:pairs.length,latestPairedTickerEntryIndex:latestTickerEntryIndex,latestValidPairCount:valid.length});
+  const chosen=valid[0],p=chosen.p,validation=chosen.validation;
   return {
-    version:'betfair-sporting-har-overdue-bridge-v1.6-forward-pair-time',
+    version:VERSION,
     valid:true,
     usableForOverduePair:true,
     sourceName,
     exactApMcCoyRealLauncherBindingVerified:true,
     latestPrecedingRealCasinoLauncherIsExactApMcCoy:true,
     latestPostLaunchInitialResourcesBindingVerified:true,
-    launcherEntryIndex:latestLauncher.index,
-    configEntryIndex,
-    tickerEntryIndex,
+    latestPairedTickerPollSelected:true,
+    pairedServerEvidenceCount:pairs.length,
+    launcherEntryIndex:chosen.latestLauncher.index,
+    configEntryIndex:chosen.configEntryIndex,
+    tickerEntryIndex:chosen.tickerEntryIndex,
     captureStartedDateTime:p.startedDateTime,
-    captureEpochSeconds,
+    captureEpochSeconds:chosen.captureEpochSeconds,
     freshnessClockSource:'HAR_TICKER_ENTRY_STARTED_DATE_TIME',
     discovery,
     validation,
@@ -136,7 +140,7 @@ export function validateBetfairSportingHarSnapshot(har,{
     tickerEndpoint:validation.tickerEndpoint,
     configSourceUrl:validation.configSourceUrl,
     decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,
-    hardGuards:{harAloneCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true,exactApMcCoyRealLauncherRequiredInSameHar:true,latestPrecedingRealCasinoLauncherMustBeExactApMcCoy:true,staleApMcCoyLauncherCannotAuthorizeLaterDifferentGameTicker:true,configBindingMustPrecedeTickerEntry:true,configBindingMustFollowExactLauncher:true,latestPostLaunchInitialResourcesMustOwnTickerBinding:true,stalePreLaunchOrSupersededConfigCannotAuthorizeTicker:true,harCaptureTimeMustAttestFreshness:true,callerCannotBackdateHarFreshness:true},
+    hardGuards:{harAloneCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true,exactApMcCoyRealLauncherRequiredInSameHar:true,latestPrecedingRealCasinoLauncherMustBeExactApMcCoy:true,staleApMcCoyLauncherCannotAuthorizeLaterDifferentGameTicker:true,configBindingMustPrecedeTickerEntry:true,configBindingMustFollowExactLauncher:true,latestPostLaunchInitialResourcesMustOwnTickerBinding:true,stalePreLaunchOrSupersededConfigCannotAuthorizeTicker:true,latestPairedTickerPollMustOwnSnapshot:true,olderValidPollCannotOverrideLaterInvalidOrDifferentGamePoll:true,multipleNormalTickerPollsSupported:true,harCaptureTimeMustAttestFreshness:true,callerCannotBackdateHarFreshness:true},
   };
 }
 
@@ -188,12 +192,13 @@ export function evaluateBetfairSportingHarOverduePair({
   });
 
   return {
-    version:'betfair-sporting-har-overdue-bridge-v1.6-forward-pair-time',
+    version:VERSION,
     valid:finalEvaluation.valid===true,
     before,after,
     exactApMcCoyRealLauncherBindingVerifiedOnBothSnapshots:true,
     latestPrecedingRealCasinoLauncherIsExactApMcCoyOnBothSnapshots:true,
     latestPostLaunchInitialResourcesBindingVerifiedOnBothSnapshots:true,
+    latestPairedTickerPollSelectedOnBothSnapshots:true,
     captureTimeAdvanced:true,
     finalEvaluation,
     decision:finalEvaluation.decision,
@@ -208,6 +213,7 @@ export function evaluateBetfairSportingHarOverduePair({
       exactApMcCoyRealLauncherVerifiedOnBothSnapshots:true,
       latestPrecedingRealCasinoLauncherVerifiedOnBothSnapshots:true,
       latestPostLaunchInitialResourcesVerifiedOnBothSnapshots:true,
+      latestPairedTickerPollVerifiedOnBothSnapshots:true,
       configBindingPrecedesTickerOnBothSnapshots:true,
       strictForwardCaptureOrderVerified:true,
       bothSnapshotsPassedExactServerBindingValidator:true,
