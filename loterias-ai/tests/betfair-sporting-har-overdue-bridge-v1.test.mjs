@@ -66,11 +66,13 @@ assert.equal(supersededConfig.hardGuards.stalePreLaunchOrSupersededConfigCannotA
 assert.equal(supersededConfig.realMoneyAllowed,false);
 
 const one=validateBetfairSportingHarSnapshot(har(1990,100),{sourceName:'before.har'});
-assert.equal(one.version,'betfair-sporting-har-overdue-bridge-v1.6-forward-pair-time');
+assert.equal(one.version,'betfair-sporting-har-overdue-bridge-v1.7-latest-session-poll');
 assert.equal(one.valid,true);
 assert.equal(one.exactApMcCoyRealLauncherBindingVerified,true);
 assert.equal(one.latestPrecedingRealCasinoLauncherIsExactApMcCoy,true);
 assert.equal(one.latestPostLaunchInitialResourcesBindingVerified,true);
+assert.equal(one.latestPairedTickerPollSelected,true);
+assert.equal(one.pairedServerEvidenceCount,1);
 assert.equal(one.launcherEntryIndex,0);
 assert.equal(one.configEntryIndex,1);
 assert.equal(one.tickerEntryIndex,2);
@@ -80,6 +82,28 @@ assert.equal(one.validation.exactBetfairSpainTickerImsBindingVerified,true);
 assert.equal(one.snapshot.code,'sljp-1');
 assert.equal(one.snapshot.guaranteedHitTime,2000);
 assert.equal(one.decision,'NO_PLAY');
+
+// Normal clients poll the same jackpot more than once. The latest exact poll must
+// be selected rather than rejecting the HAR as ambiguous.
+const multiPollHar={log:{entries:[exactLauncher(),config(),ticker(1980,99.90),ticker(1990,100.00)]}};
+const multiPoll=validateBetfairSportingHarSnapshot(multiPollHar,{sourceName:'normal-multipoll.har'});
+assert.equal(multiPoll.valid,true);
+assert.equal(multiPoll.pairedServerEvidenceCount,2);
+assert.equal(multiPoll.latestPairedTickerPollSelected,true);
+assert.equal(multiPoll.tickerEntryIndex,3);
+assert.equal(multiPoll.captureEpochSeconds,1990);
+assert.equal(multiPoll.snapshot.amount,100);
+assert.equal(multiPoll.hardGuards.multipleNormalTickerPollsSupported,true);
+
+// An older AP McCoy poll must never override a newer poll that belongs to a later
+// different real-money launcher in the same Preserve-log HAR.
+const laterDifferentGamePollHar={log:{entries:[exactLauncher(),config(),ticker(1980,99.90),otherLauncher(),ticker(1990,100.00)]}};
+const laterDifferentGamePoll=validateBetfairSportingHarSnapshot(laterDifferentGamePollHar,{sourceName:'multipoll-later-different-game.har'});
+assert.equal(laterDifferentGamePoll.valid,false);
+assert.equal(laterDifferentGamePoll.reason,'LATEST_REAL_CASINO_LAUNCHER_NOT_AP_MCCOY');
+assert.equal(laterDifferentGamePoll.latestPairedTickerEntryIndex,4);
+assert.equal(laterDifferentGamePoll.hardGuards.olderValidPollCannotOverrideLaterInvalidOrDifferentGamePoll,true);
+assert.equal(laterDifferentGamePoll.realMoneyAllowed,false);
 
 const backdated=validateBetfairSportingHarSnapshot(har(1990,100),{sourceName:'before.har',nowEpochSeconds:1995});
 assert.equal(backdated.valid,false);
@@ -94,11 +118,12 @@ const r=evaluateBetfairSportingHarOverduePair({
   providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified:true,
   stakeEUR:0.25,
 });
-assert.equal(r.version,'betfair-sporting-har-overdue-bridge-v1.6-forward-pair-time');
+assert.equal(r.version,'betfair-sporting-har-overdue-bridge-v1.7-latest-session-poll');
 assert.equal(r.valid,true);
 assert.equal(r.exactApMcCoyRealLauncherBindingVerifiedOnBothSnapshots,true);
 assert.equal(r.latestPrecedingRealCasinoLauncherIsExactApMcCoyOnBothSnapshots,true);
 assert.equal(r.latestPostLaunchInitialResourcesBindingVerifiedOnBothSnapshots,true);
+assert.equal(r.latestPairedTickerPollSelectedOnBothSnapshots,true);
 assert.equal(r.captureTimeAdvanced,true);
 assert.equal(r.before.captureEpochSeconds,1990);
 assert.equal(r.after.captureEpochSeconds,2005);
@@ -108,6 +133,7 @@ assert.equal(r.finalEvaluation.exactBetfairSpainTickerImsBindingVerified,true);
 assert.equal(r.hardGuards.exactApMcCoyRealLauncherVerifiedOnBothSnapshots,true);
 assert.equal(r.hardGuards.latestPrecedingRealCasinoLauncherVerifiedOnBothSnapshots,true);
 assert.equal(r.hardGuards.latestPostLaunchInitialResourcesVerifiedOnBothSnapshots,true);
+assert.equal(r.hardGuards.latestPairedTickerPollVerifiedOnBothSnapshots,true);
 assert.equal(r.hardGuards.configBindingPrecedesTickerOnBothSnapshots,true);
 assert.equal(r.hardGuards.strictForwardCaptureOrderVerified,true);
 assert.equal(r.hardGuards.benignCacheBusterQueryChangesIgnored,true);
