@@ -16,7 +16,7 @@ const raw=JSON.stringify({log:{entries:[
 
 const r=analyzeSafeHarText(raw,{sourceName:'modern-ws.har',nowEpochSeconds:2200});
 assert.equal(r.ok,true);
-assert.equal(r.version,'betfair-sporting-safe-har-cli-v1.2-structured-modern');
+assert.equal(r.version,'betfair-sporting-safe-har-cli-v1.3-session-provenance-safe');
 assert.equal(r.execution.decision,'NO_PLAY');
 assert.equal(r.execution.realMoneyAllowed,false);
 assert.equal(r.modernWebtickers.version,'betfair-sporting-webtickers-har-protocol-v1.3-response-state-fingerprint');
