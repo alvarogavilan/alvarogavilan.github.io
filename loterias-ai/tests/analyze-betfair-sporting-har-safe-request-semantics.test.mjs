@@ -23,7 +23,7 @@ const r=analyzeSafeHarText(raw,{sourceName:'request-semantics.har',nowEpochSecon
 assert.equal(r.ok,true);
 assert.equal(r.version,'betfair-sporting-safe-har-cli-v1.2-structured-modern');
 assert.equal(r.legacy.exactApMcCoyRealLauncherBindingObserved,true);
-assert.equal(r.documentedRequestSemantics.version,'betfair-sporting-webtickers-request-semantics-v1.1-fail-closed-routing');
+assert.equal(r.documentedRequestSemantics.version,'betfair-sporting-webtickers-request-semantics-v1.3-session-provenance');
 assert.equal(r.documentedRequestSemantics.exactConfiguredWebtickersTrafficObserved,true);
 assert.equal(r.documentedRequestSemantics.providerDocumentedExactDailyRequestObserved,true);
 assert.equal(r.documentedRequestSemantics.providerDocumentedExactDailyRequestMatchCount,1);
