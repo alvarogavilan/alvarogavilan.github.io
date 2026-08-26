@@ -1,6 +1,7 @@
 const finite=(v)=>{if(v===null||v===undefined||v===''||typeof v==='boolean')return null;const n=Number(v);return Number.isFinite(n)?n:null;};
 const text=(v)=>typeof v==='string'&&v.trim()?v.trim():null;
 const upper=(v)=>text(v)?.toUpperCase()??null;
+const MIN_EXECUTION_RACE_CONFIDENCE=0.95;
 
 function sameBinding(a,b){
   if(!a||!b)return false;
@@ -47,12 +48,15 @@ export function evaluateSportingLegendsOverdueFirstBet({
     jackpotMustNotReset:true,
     raceProbabilityMustBeProspectivelyValidated:true,
     greenRequiresStructuredProspectiveRaceEvidence:true,
+    raceEvidenceMustCarryClosedBinomialExecutionAssumptions:true,
+    raceEvidenceMustCarryCompleteUniqueCycleLedgerIdentity:true,
+    minimumExecutionRaceConfidence:MIN_EXECUTION_RACE_CONFIDENCE,
     exactStakeAndDailyAmountRequiredForGreen:true,
     measuredLatencyAndProspectiveDryRunRequiredForGreen:true,
     feedAgeConsumesValidatedRaceWindow:true,
     greenRequiresTotalExposureWithinValidatedRaceWindow:true,
   };
-  const fail=(reason,extra={})=>({version:'sporting-legends-overdue-first-bet-v1.5-race-window-budget',decision:'NO_PLAY',valid:false,reason,realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,guards,...extra});
+  const fail=(reason,extra={})=>({version:'sporting-legends-overdue-first-bet-v1.6-race-evidence-contract',decision:'NO_PLAY',valid:false,reason,realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,guards,...extra});
   if(!before||!after)return fail('MISSING_CROSS_BOUNDARY_SNAPSHOTS');
   if(before.code!=='sljp-1'||after.code!=='sljp-1')return fail('NOT_SPORTING_DAILY');
   if(upper(before.currency)!=='EUR'||upper(after.currency)!=='EUR'||before.local!==0||after.local!==0)return fail('NOT_GLOBAL_EUR_DAILY');
@@ -105,15 +109,30 @@ export function evaluateSportingLegendsOverdueFirstBet({
   const measuredLatency=finite(measuredActionLatencySeconds);
   const validatedRaceWindowSeconds=finite(raceEvidence?.actionLatencySeconds);
   const totalExposureSinceServerDetectionSeconds=measuredLatency!==null?feedAgeSeconds+measuredLatency:null;
+  const raceConfidence=finite(raceEvidence?.confidence);
+  const raceConfidenceVerified=raceConfidence!==null&&raceConfidence>=MIN_EXECUTION_RACE_CONFIDENCE&&raceConfidence<1;
+  const raceAssumptions=raceEvidence?.assumptions;
+  const raceAssumptionEvidenceId=text(raceAssumptions?.assumptionEvidenceId);
+  const raceExecutionAssumptionsVerified=!!raceEvidence&&
+    raceEvidence.executionAssumptionsClosed===true&&
+    raceAssumptions?.binomialIidAssumptionJustified===true&&
+    raceAssumptions?.completeProspectiveCycleLedgerVerified===true&&
+    raceAssumptions?.currentCycleExchangeabilityVerified===true&&
+    !!raceAssumptionEvidenceId;
+  const declaredTotalCycles=Number(raceEvidence?.totalDryRunCycles);
+  const raceCycleIds=Array.isArray(raceEvidence?.cycleIds)?raceEvidence.cycleIds.map(text):[];
+  const raceLedgerIdentityVerified=Number.isInteger(declaredTotalCycles)&&declaredTotalCycles>=1&&
+    raceCycleIds.length===declaredTotalCycles&&raceCycleIds.every(Boolean)&&new Set(raceCycleIds).size===raceCycleIds.length;
   const baseStructuredRaceEvidenceValid=!!raceEvidence&&
     raceEvidence.valid===true&&raceEvidence.usableForExecution===true&&
     raceEvidence.method==='ONE_SIDED_CLOPPER_PEARSON_BINOMIAL'&&
     raceEvidence.source==='VALIDATED_PASSIVE_CYCLE_LEDGER'&&
     raceEvidence.prospectiveProtocolFrozen===true&&
     raceEvidence.comparableCycleDefinitionVerified===true&&
-    Number.isInteger(Number(raceEvidence.totalDryRunCycles))&&Number(raceEvidence.totalDryRunCycles)>=1&&
+    raceExecutionAssumptionsVerified&&raceConfidenceVerified&&raceLedgerIdentityVerified&&
+    Number.isInteger(declaredTotalCycles)&&declaredTotalCycles>=1&&
     Number.isInteger(Number(raceEvidence.successfulDryRunCycles))&&Number(raceEvidence.successfulDryRunCycles)>=0&&
-    Number(raceEvidence.successfulDryRunCycles)<=Number(raceEvidence.totalDryRunCycles)&&
+    Number(raceEvidence.successfulDryRunCycles)<=declaredTotalCycles&&
     measuredLatency!==null&&measuredLatency>0&&validatedRaceWindowSeconds!==null&&validatedRaceWindowSeconds>0;
   const raceWindowBudgetVerified=baseStructuredRaceEvidenceValid&&
     totalExposureSinceServerDetectionSeconds!==null&&
@@ -126,20 +145,24 @@ export function evaluateSportingLegendsOverdueFirstBet({
   const greenProbabilityGate=breakEvenFirstBetProbability!==null&&structuredPLower!==null&&structuredPLower>=0&&structuredPLower<=1&&structuredPLower>breakEvenFirstBetProbability;
   const executionGates={
     structuredProspectiveRaceEvidenceVerified:structuredRaceEvidenceValid,
+    raceExecutionAssumptionsVerified,
+    raceConfidenceVerified,
+    raceLedgerIdentityVerified,
     currentDailyAmountExactVerified:currentDailyAmountExactVerified===true,
     stakeAtDecisionExactVerified:stakeAtDecisionExactVerified===true,
     measuredActionLatencyVerified:measuredActionLatencyVerified===true&&measuredLatency!==null&&measuredLatency>0,
     raceWindowBudgetVerified,
-    prospectiveDryRunCycleVerified:prospectiveDryRunCycleVerified===true&&structuredRaceEvidenceValid&&Number(raceEvidence.totalDryRunCycles)>=1,
+    prospectiveDryRunCycleVerified:prospectiveDryRunCycleVerified===true&&structuredRaceEvidenceValid&&declaredTotalCycles>=1,
   };
   const executionGateClosed=Object.values(executionGates).every(Boolean);
   const green=greenProbabilityGate&&executionGateClosed;
   const decision=green?'GREEN':'NO_PLAY';
   const reason=green?'GREEN_OVERDUE_FIRST_BET_ALL_GATES_CLOSED':
+    raceEvidence&&!baseStructuredRaceEvidenceValid?'RACE_EVIDENCE_EXECUTION_CONTRACT_NOT_VERIFIED':
     baseStructuredRaceEvidenceValid&&!raceWindowBudgetVerified?'VALIDATED_RACE_WINDOW_EXHAUSTED':
     probabilityGate?'CONDITIONAL_RACE_EV_SCREEN_PASSED_EXECUTION_GATES_PENDING':'FOLLOWING_DAY_UNAWARDED_VERIFIED_RACE_GATE_OPEN';
   return {
-    version:'sporting-legends-overdue-first-bet-v1.5-race-window-budget',
+    version:'sporting-legends-overdue-first-bet-v1.6-race-evidence-contract',
     decision,valid:true,reason,
     followingDayUnawardedVerified,nextEligibleNetworkBetGuaranteedJackpot,
     exactBetfairSpainTickerImsBindingVerified:true,
@@ -152,6 +175,8 @@ export function evaluateSportingLegendsOverdueFirstBet({
     breakEvenFirstBetProbability,
     firstBetProbabilityLowerBound:researchPLower,
     baseStructuredRaceEvidenceValid,structuredRaceEvidenceValid,
+    raceExecutionAssumptionsVerified,raceConfidence,raceConfidenceVerified,
+    raceAssumptionEvidenceId,raceLedgerIdentityVerified,
     validatedRaceWindowSeconds,totalExposureSinceServerDetectionSeconds,raceWindowBudgetVerified,
     raceProbabilityProspectivelyValidated:researchRaceValidated,
     conditionalPositiveEvScreenPassed:probabilityGate,
