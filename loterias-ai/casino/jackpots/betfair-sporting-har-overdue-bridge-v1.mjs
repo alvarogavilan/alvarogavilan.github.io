@@ -4,10 +4,13 @@ import {evaluateSportingLegendsOverdueFirstBet} from './sporting-legends-overdue
 
 const finite=v=>{if(v===null||v===undefined||v===''||typeof v==='boolean')return null;const n=Number(v);return Number.isFinite(n)?n:null;};
 const text=v=>typeof v==='string'&&v.trim()?v.trim():null;
+function sameHttpsEndpoint(a,b){
+  try{const x=new URL(a),y=new URL(b);return x.protocol==='https:'&&y.protocol==='https:'&&x.origin===y.origin&&x.pathname===y.pathname;}catch{return false;}
+}
 
 function fail(reason,extra={}){
   return {
-    version:'betfair-sporting-har-overdue-bridge-v1',
+    version:'betfair-sporting-har-overdue-bridge-v1.1-endpoint-stability',
     valid:false,
     decision:'NO_PLAY',
     reason,
@@ -46,7 +49,7 @@ export function validateBetfairSportingHarSnapshot(har,{sourceName='capture.har'
   });
   if(validation.valid!==true)return fail('SERVER_SNAPSHOT_VALIDATION_FAILED',{discovery,validation});
   return {
-    version:'betfair-sporting-har-overdue-bridge-v1',
+    version:'betfair-sporting-har-overdue-bridge-v1.1-endpoint-stability',
     valid:true,
     usableForOverduePair:true,
     sourceName,
@@ -85,8 +88,8 @@ export function evaluateBetfairSportingHarOverduePair({
   if(after.valid!==true)return fail('AFTER_HAR_SNAPSHOT_INVALID',{before,after});
 
   if(text(before.expectedBetfairImsCasino)?.toLowerCase()!==text(after.expectedBetfairImsCasino)?.toLowerCase())return fail('IMS_CHANGED_BETWEEN_CAPTURES',{before,after});
-  if(text(before.tickerEndpoint)!==text(after.tickerEndpoint))return fail('TICKER_ENDPOINT_CHANGED_BETWEEN_CAPTURES',{before,after});
-  if(text(before.configSourceUrl)!==text(after.configSourceUrl))return fail('CONFIG_SOURCE_CHANGED_BETWEEN_CAPTURES',{before,after});
+  if(!sameHttpsEndpoint(before.tickerEndpoint,after.tickerEndpoint))return fail('TICKER_ENDPOINT_CHANGED_BETWEEN_CAPTURES',{before,after});
+  if(!sameHttpsEndpoint(before.configSourceUrl,after.configSourceUrl))return fail('CONFIG_SOURCE_ENDPOINT_CHANGED_BETWEEN_CAPTURES',{before,after});
 
   const finalEvaluation=evaluateSportingLegendsOverdueFirstBet({
     before:before.snapshot,
@@ -106,7 +109,7 @@ export function evaluateBetfairSportingHarOverduePair({
   });
 
   return {
-    version:'betfair-sporting-har-overdue-bridge-v1',
+    version:'betfair-sporting-har-overdue-bridge-v1.1-endpoint-stability',
     valid:finalEvaluation.valid===true,
     before,after,
     finalEvaluation,
@@ -120,7 +123,8 @@ export function evaluateBetfairSportingHarOverduePair({
       onlineOnly:true,nonPromoOnly:true,passiveHarOnly:true,noWagerProbe:true,noAutomaticBetting:true,
       harAloneCannotAuthorizeGreen:true,
       bothSnapshotsPassedExactServerBindingValidator:true,
-      sameImsTickerAndConfigAcrossCaptures:true,
+      sameImsTickerAndConfigEndpointsAcrossCaptures:true,
+      benignCacheBusterQueryChangesIgnored:true,
       finalGreenDelegatedOnlyToExistingOverdueEvaluator:true,
     },
   };
