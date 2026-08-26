@@ -22,17 +22,23 @@ const har=JSON.stringify({log:{entries:[
 
 const r=analyzeSafeHarText(har,{sourceName:'capture.har',nowEpochSeconds:gameTs});
 assert.equal(r.ok,true);
-assert.equal(r.version,'betfair-sporting-safe-har-cli-v1.1-endpoint-redaction');
+assert.equal(r.version,'betfair-sporting-safe-har-cli-v1.2-structured-modern');
+assert.equal(r.legacy.exactApMcCoyRealLauncherBindingObserved,true);
+assert.equal(r.legacy.exactApMcCoyRealLauncherBindingCount,1);
 assert.equal(r.legacy.configBindingCandidates.length,1);
 assert.equal(r.legacy.configBindingCandidates[0].sourceUrl,'https://launcher.betfair.es/initialResources/es_ES_desktop');
 assert.equal(r.legacy.configBindingCandidates[0].tickerUrl,'https://tickers.playtech.example/new_jackpotxml.php');
 assert.deepEqual(r.legacy.tickerUrlCandidates,['https://tickers.playtech.example/new_jackpotxml.php']);
+assert.equal(r.structuredModernWebtickers.structuredSljp1RowCandidateCount,0);
+assert.equal(r.structuredModernWebtickers.usableForOverduePair,false);
 assert.equal(r.validatedLegacySnapshot.valid,true);
+assert.equal(r.validatedLegacySnapshot.exactApMcCoyRealLauncherBindingVerified,true);
 assert.equal(r.validatedLegacySnapshot.tickerEndpoint,'https://tickers.playtech.example/new_jackpotxml.php');
 assert.equal(r.validatedLegacySnapshot.configSourceUrl,'https://launcher.betfair.es/initialResources/es_ES_desktop');
 assert.equal(r.execution.decision,'NO_PLAY');
 assert.equal(r.execution.realMoneyAllowed,false);
 assert.equal(r.hardGuards.endpointQueriesAndFragmentsNeverEmitted,true);
+assert.equal(r.hardGuards.structuredModernRowsRemainDiscoveryOnly,true);
 const serialized=JSON.stringify(r);
 for(const secret of ['secret-token','cookievalue','cacheBust=secret','configured=secret','token=hidden'])assert.equal(serialized.includes(secret),false);
 
