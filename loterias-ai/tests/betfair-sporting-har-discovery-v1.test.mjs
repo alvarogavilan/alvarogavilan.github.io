@@ -13,6 +13,7 @@ const har={log:{entries:[
 const r=analyzeBetfairSportingHar(har,{sourceName:'exact-session.har'});
 assert.equal(r.entryCount,3);
 assert.equal(r.relevantEntryCount,2);
+assert.equal(r.discovery.exactApMcCoyRealLauncherBindingObserved,false);
 assert.equal(r.discovery.exactTickerEntryCandidates.length,1);
 assert.equal(r.discovery.configBindingCandidates.length,1);
 assert.equal(r.discovery.configBindingCandidates[0].sourceUrl,'https://launcher.betfair.es/initialResources/es_ES_desktop');
@@ -30,6 +31,25 @@ assert.equal(r.discovery.exactBetfairSpainTickerImsBindingVerified,false);
 assert.equal(r.execution.decision,'NO_PLAY');
 assert.equal(r.execution.realMoneyAllowed,false);
 assert.equal(r.hardGuards.harEvidenceCannotAuthorizeGreen,true);
+
+const exactLauncher='https://launcher.betfair.es/?RPBucket=casino&dataChannel=casino&gameId=ap-mccoy-sporting-legends-cptn&launchProduct=casino&mode=real&returnURL=https%3A%2F%2Fcasino.betfair.es%2Fjuego%2Fap-mccoy-sporting-legends-cptn&switchedToPopup=true';
+const exactGame=analyzeBetfairSportingHar({log:{entries:[
+  {startedDateTime:'2026-08-26T16:59:59Z',request:{method:'GET',url:exactLauncher,headers:[]},response:{status:200,headers:[],content:{text:''}}},
+  ...har.log.entries,
+]}},{sourceName:'exact-apmccoy-session.har'});
+assert.equal(exactGame.version,'betfair-sporting-har-discovery-v1.5-exact-game-session-attestation');
+assert.equal(exactGame.discovery.exactApMcCoyRealLauncherBindingObserved,true);
+assert.equal(exactGame.discovery.exactApMcCoyRealLauncherBindings.length,1);
+assert.equal(exactGame.discovery.exactApMcCoyRealLauncherBindings[0].gameId,'ap-mccoy-sporting-legends-cptn');
+assert.equal(exactGame.discovery.exactApMcCoyRealLauncherBindings[0].mode,'real');
+assert.equal(exactGame.discovery.exactApMcCoyRealLauncherBindings[0].launcherOrigin,'https://launcher.betfair.es');
+assert.equal(JSON.stringify(exactGame.discovery.exactApMcCoyRealLauncherBindings).includes('returnURL='),false);
+
+const wrongGame=analyzeBetfairSportingHar({log:{entries:[
+  {request:{method:'GET',url:'https://launcher.betfair.es/?RPBucket=casino&dataChannel=casino&gameId=ronnie-osullivan-sporting-legends&launchProduct=casino&mode=real',headers:[]},response:{status:200,content:{text:''}}},
+  ...har.log.entries,
+]}});
+assert.equal(wrongGame.discovery.exactApMcCoyRealLauncherBindingObserved,false);
 
 const p=r.discovery.pairedServerEvidence[0];
 const v=validateBetfairSportingServerSnapshot({configBinding:p.configBinding,tickerXml:p.tickerXml,responseUrl:p.responseUrl,nowEpochSeconds:1787785205});
@@ -59,7 +79,7 @@ const escaped={log:{entries:[
   har.log.entries[1],
 ]}};
 const e=analyzeBetfairSportingHar(escaped,{sourceName:'escaped-session.har'});
-assert.equal(e.version,'betfair-sporting-har-discovery-v1.4-websocket-support');
+assert.equal(e.version,'betfair-sporting-har-discovery-v1.5-exact-game-session-attestation');
 assert.equal(e.discovery.configBindingCandidates.length,1);
 assert.equal(e.discovery.configBindingCandidates[0].jackpotsCasino,'bf_es');
 assert.equal(e.discovery.configBindingCandidates[0].tickerUrl,'https://tickers.playtech.example/new_jackpotxml.php?x=1&y=2');
@@ -74,11 +94,6 @@ assert.equal(f.discovery.configBindingCandidates.length,0);
 assert.equal(f.discovery.pairedServerEvidence.length,0);
 assert.equal(f.execution.maxSpins,0);
 
-// A live ticker could plausibly push updates over a WebSocket/SSE channel
-// instead of XML polling - Chrome DevTools HAR exports carry that traffic
-// on a non-standard entry._webSocketMessages array (send/receive frames),
-// separate from response.content. This must be scanned the same way as any
-// other text, not silently ignored.
 const wsTickerText='{"casino":"bf_es","currency":"EUR","game":"sljp-1","local":0,"winc":42,"amount":9345.67,"guaranteedHitTime":1787785300}';
 const ws={log:{entries:[
   har.log.entries[0],
