@@ -4,6 +4,11 @@ import {analyzeSafeHarText} from '../scripts/analyze-betfair-sporting-har.mjs';
 const gameTs=2005;
 const har=JSON.stringify({log:{entries:[
   {
+    startedDateTime:new Date((gameTs-2)*1000).toISOString(),
+    request:{method:'GET',url:'https://launcher.betfair.es/?RPBucket=casino&dataChannel=casino&gameId=ap-mccoy-sporting-legends-cptn&launchProduct=casino&mode=real&returnURL=https%3A%2F%2Fcasino.betfair.es%2Fjuego%2Fap-mccoy-sporting-legends-cptn&switchedToPopup=true',headers:[]},
+    response:{status:200,headers:[],content:{mimeType:'text/html',text:'launcher'}},
+  },
+  {
     startedDateTime:new Date((gameTs-1)*1000).toISOString(),
     request:{method:'GET',url:'https://launcher.betfair.es/initialResources/es_ES_desktop?cacheBust=secret',headers:[{name:'Authorization',value:'Bearer secret-token'}]},
     response:{status:200,headers:[{name:'Set-Cookie',value:'sid=cookievalue'}],content:{mimeType:'application/json',text:'{"jackpotsCasino":"bf_es","jackpotsCasinoUrl":"https://tickers.playtech.example/new_jackpotxml.php?configured=secret"}'}},
@@ -22,6 +27,7 @@ assert.equal(r.legacy.configBindingCandidates.length,1);
 assert.equal(r.legacy.configBindingCandidates[0].sourceUrl,'https://launcher.betfair.es/initialResources/es_ES_desktop');
 assert.equal(r.legacy.configBindingCandidates[0].tickerUrl,'https://tickers.playtech.example/new_jackpotxml.php');
 assert.deepEqual(r.legacy.tickerUrlCandidates,['https://tickers.playtech.example/new_jackpotxml.php']);
+assert.equal(r.validatedLegacySnapshot.valid,true);
 assert.equal(r.validatedLegacySnapshot.tickerEndpoint,'https://tickers.playtech.example/new_jackpotxml.php');
 assert.equal(r.validatedLegacySnapshot.configSourceUrl,'https://launcher.betfair.es/initialResources/es_ES_desktop');
 assert.equal(r.execution.decision,'NO_PLAY');
