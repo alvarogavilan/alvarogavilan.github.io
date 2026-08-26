@@ -10,11 +10,28 @@ function betfairInitialResourcesSource(url){
     return u.protocol==='https:'&&(h==='betfair.es'||h.endsWith('.betfair.es'))&&/\/initialresources(?:\/|$)/i.test(u.pathname);
   }catch{return false;}
 }
+function bindingShapeValid(b){return !!b&&b.sameDocument===true&&b.sourceBetfairOwned===true&&b.sourceInitialResources===true&&betfairInitialResourcesSource(b.sourceUrl)&&!!text(b.jackpotsCasino)&&!!text(b.tickerUrl);}
 function sameConfiguredEndpoint(configured,response){
   try{
     const a=new URL(configured),b=new URL(response);
     return a.protocol==='https:'&&b.protocol==='https:'&&a.origin===b.origin&&a.pathname===b.pathname;
   }catch{return false;}
+}
+
+export function buildBetfairSportingSljp1RequestUrl(configBinding){
+  if(!bindingShapeValid(configBinding))return null;
+  try{
+    const u=new URL(configBinding.tickerUrl);
+    if(u.protocol!=='https:')return null;
+    u.searchParams.set('info','1');
+    u.searchParams.set('casino',text(configBinding.jackpotsCasino));
+    u.searchParams.set('game','sljp-1');
+    u.searchParams.set('local','0');
+    u.searchParams.set('currency','eur');
+    const instanceCode=text(configBinding.instanceCode);
+    if(instanceCode)u.searchParams.set('instanceCode',instanceCode);else u.searchParams.delete('instanceCode');
+    return u.href;
+  }catch{return null;}
 }
 
 export function validateBetfairSportingServerSnapshot({
@@ -29,10 +46,9 @@ export function validateBetfairSportingServerSnapshot({
     currentSnapshotCannotProveOverdueByItself:true,
     noAutomaticWagering:true,noWagerProbe:true,realMoneyAllowed:false,
   };
-  const fail=(reason,extra={})=>({version:'betfair-sporting-server-binding-validator-v1',valid:false,usableForOverduePair:false,exactBetfairSpainTickerImsBindingVerified:false,currentSljp1RowRecovered:false,currentDailyAmountExactVerified:false,currentGuaranteedHitTimeExactVerified:false,decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,reason,guards,...extra});
+  const fail=(reason,extra={})=>({version:'betfair-sporting-server-binding-validator-v1.1-request-builder',valid:false,usableForOverduePair:false,exactBetfairSpainTickerImsBindingVerified:false,currentSljp1RowRecovered:false,currentDailyAmountExactVerified:false,currentGuaranteedHitTimeExactVerified:false,decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,reason,guards,...extra});
   const b=configBinding;
-  if(!b||b.sameDocument!==true||b.sourceBetfairOwned!==true||b.sourceInitialResources!==true)return fail('CONFIG_BINDING_NOT_COLOCATED_AND_VERIFIED');
-  if(!betfairInitialResourcesSource(b.sourceUrl))return fail('CONFIG_SOURCE_NOT_BETFAIR_INITIAL_RESOURCES');
+  if(!bindingShapeValid(b))return fail('CONFIG_BINDING_NOT_COLOCATED_AND_VERIFIED');
   const casino=text(b.jackpotsCasino),tickerUrl=text(b.tickerUrl),seenUrl=text(responseUrl);
   if(!casino||!tickerUrl||!seenUrl)return fail('INCOMPLETE_CONFIG_OR_RESPONSE_URL');
   if(!sameConfiguredEndpoint(tickerUrl,seenUrl))return fail('TICKER_RESPONSE_ENDPOINT_MISMATCH');
@@ -53,7 +69,7 @@ export function validateBetfairSportingServerSnapshot({
   if(feedAgeSeconds>maxFeedAgeSeconds)return fail('SERVER_FEED_TOO_STALE',{parsed,feedAgeSeconds,maxFeedAgeSeconds});
 
   return {
-    version:'betfair-sporting-server-binding-validator-v1',valid:true,usableForOverduePair:true,
+    version:'betfair-sporting-server-binding-validator-v1.1-request-builder',valid:true,usableForOverduePair:true,
     reason:'EXACT_BETFAIR_SPORTING_SERVER_BINDING_AND_FRESH_SLJP1_SNAPSHOT_VERIFIED',
     exactBetfairSpainTickerImsBindingVerified:true,currentSljp1RowRecovered:true,currentDailyAmountExactVerified:true,currentGuaranteedHitTimeExactVerified:true,
     configSourceUrl:b.sourceUrl,tickerEndpoint:tickerUrl,responseUrl:seenUrl,expectedBetfairImsCasino:casino,
