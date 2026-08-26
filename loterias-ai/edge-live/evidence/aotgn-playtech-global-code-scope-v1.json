@@ -1,7 +1,7 @@
 {
-  "version": "aotgn-playtech-global-code-scope-v1",
+  "version": "aotgn-playtech-global-code-scope-v1.1-instance-optional",
   "date": "2026-08-26",
-  "mode": "PROVIDER_SCOPE_BINDING_NO_PLAY",
+  "mode": "PROVIDER_SCOPE_AND_PROTOCOL_BINDING_NO_PLAY",
   "market": "ES",
   "provider": "Playtech",
   "network": "Age of the Gods Norse",
@@ -26,32 +26,47 @@
     "local0Meaning": "global progressive jackpot",
     "local1Meaning": "local progressive jackpot",
     "casinoMeaning": "IMS casino name",
-    "instanceCodeMeaning": "identification code of the jackpot instance",
-    "xmlEndpoint": "new_jackpotxml.php"
+    "instanceCodeMeaning": "optional identification code of a Kiosk jackpot instance",
+    "instanceCodeMandatory": false,
+    "xmlEndpoint": "new_jackpotxml.php",
+    "minimumGlobalCasinoRequestTemplate": "new_jackpotxml.php?info=2&casino=<IMS_CASINO>&currency=eur&local=0"
   },
   "scientificConsequence": {
     "aognjpLocal1Accepted": false,
     "aognjpLocal0ConsistentWithProviderReference": true,
     "missingLocalMetadataPromotedToGlobal": false,
+    "missingInstanceCodeAloneRejectsRow": false,
+    "nonEmptyInstanceCodeMayBeFilteredExactly": true,
     "sameTitleProvesActiveDaily": false,
     "headlineAmountMayBindDaily": false,
-    "operatorCasinoInstanceStillRequired": true,
+    "operatorCasinoStillRequired": true,
     "currentTickerRowStillRequired": true,
     "prospectiveCycleStillRequired": true
   },
   "implementation": {
     "parserPath": "loterias-ai/casino/jackpots/playtech-mhb-ticker-parser-v1.mjs",
     "testPath": "loterias-ai/tests/playtech-mhb-ticker-parser-v1.test.mjs",
-    "expectedParserVersion": "playtech-mhb-ticker-parser-v1.3-provider-scope-safe",
-    "localTestPassedBeforeCommit": true
+    "expectedParserVersion": "playtech-mhb-ticker-parser-v1.4-protocol-scope-safe",
+    "localTestPassedBeforeCommit": true,
+    "noInstanceCodeRegressionTestPassed": true
   },
   "remainingP0Gate": {
     "exactSpanishTickerHostRecovered": false,
     "exactImsCasinoNameRecovered": false,
-    "exactInstanceCodeRecovered": false,
-    "currentAognjp2EurRowRecovered": false,
+    "currentAognjp2EurGlobalRowRecovered": false,
+    "currentGuaranteedHitTimeRecovered": false,
+    "instanceCode": "CONDITIONAL_ONLY_IF_PRESENT_OR_NEEDED_TO_DISAMBIGUATE",
     "currentDailyActiveOnTargetOperatorVerified": false,
     "fullDailyResetObservedProspectively": false
+  },
+  "minimumAcceptableLiveRow": {
+    "requestCasinoMatchesTargetIms": true,
+    "game": "aognjp-2",
+    "currency": "eur",
+    "local": 0,
+    "guaranteedHitTimeRequired": true,
+    "instanceCodeRequired": false,
+    "instanceCodeIfPresentMustBePreserved": true
   },
   "execution": {
     "decision": "NO_PLAY",
@@ -64,7 +79,7 @@
     "onlineOnly": true,
     "noLoginOrWagerProbe": true,
     "noHeadlineToTierBinding": true,
-    "noOperatorInstanceInference": true,
-    "noRealMoneyPromotionFromProviderScopeAlone": true
+    "noOperatorCasinoInference": true,
+    "noRealMoneyPromotionFromProviderScopeOrProtocolAlone": true
   }
 }

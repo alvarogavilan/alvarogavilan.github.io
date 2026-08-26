@@ -21,6 +21,7 @@ assert.equal(all.rejected.providerScope,1);
 assert.equal(all.guards.multiCurrencySafe,true);
 assert.equal(all.guards.topologyMetadataPreserved,true);
 assert.equal(all.guards.providerDocumentedScopeEnforced,true);
+assert.equal(all.guards.instanceCodeOptionalByTickerSpec,true);
 assert.equal(all.requestCasino,'casino-es');
 assert.ok(all.rows.some(x=>x.code==='krjp-2'&&x.currency==='usd'&&x.amount===1800));
 assert.ok(all.rows.filter(x=>x.code.startsWith('aognjp-')).every(x=>x.providerScope==='GLOBAL'&&x.local!==1));
@@ -41,10 +42,18 @@ assert.ok(Math.abs(by['aognjp-3'].distanceToGuaranteedHitAmount-9.39)<1e-9);
 assert.ok(Math.abs(by['aognjp-7'].distanceToGuaranteedHitAmount-0.2)<1e-9);
 assert.equal(by['mrj-4'].guaranteeObserved,'NONE');
 assert.equal(by['aognjp-2'].isLocal,false);
+assert.equal(by['aognjp-2'].protocolBinding.instanceCodeOptional,true);
 
 const localOnly=parsePlaytechMhbTickerXml(xml,{currency:'eur',casino:'casino-es',local:1,instanceCode:'LOCAL-B'});
 assert.equal(localOnly.rows.length,0);
 assert.equal(localOnly.rejected.providerScope,1);
+
+const noInstanceXml=`<request casino="casino-es" info="2"><gamedata game="aognjp-2" gamegroup="aognjp" local="0"><amount-list><amount currency="eur" guaranteedHitTime="2500">430.00</amount></amount-list></gamedata></request>`;
+const noInstance=parsePlaytechMhbTickerXml(noInstanceXml,{currency:'eur',casino:'casino-es',local:0});
+assert.equal(noInstance.rows.length,1);
+assert.equal(noInstance.rows[0].instanceCode,null);
+assert.equal(noInstance.rows[0].protocolBinding.instanceCodeOptional,true);
+assert.equal(noInstance.rows[0].protocolBinding.instanceCodePresent,false);
 
 const wrongCasino=parsePlaytechMhbTickerXml(xml,{currency:'eur',casino:'other-es'});
 assert.equal(wrongCasino.rows.length,0);

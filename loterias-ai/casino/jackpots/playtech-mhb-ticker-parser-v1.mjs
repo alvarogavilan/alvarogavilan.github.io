@@ -64,8 +64,6 @@ export function parsePlaytechMhbTickerXml(xml,{
       if(wantedInstanceCode&&rowInstanceCode!==wantedInstanceCode){rejected.instanceCode++;continue;}
       const amount=finite(String(amountMatch[2]).trim());
       const guaranteedHitTime=epoch(aa.guaranteedHitTime);
-      // Playtech's published XML specification historically misspells this
-      // attribute as `guranteedHitAmount`; accept the corrected spelling too.
       const guaranteedHitAmount=finite(aa.guranteedHitAmount ?? aa.guaranteedHitAmount);
       const distanceToGuaranteedHitAmount=(amount!=null&&guaranteedHitAmount!=null)?guaranteedHitAmount-amount:null;
       const secondsToGuaranteedHit=(guaranteedHitTime!=null)?guaranteedHitTime-nowEpochSeconds:null;
@@ -81,18 +79,19 @@ export function parsePlaytechMhbTickerXml(xml,{
         failClosedMismatch:(t.guarantee==='TIME'&&guaranteedHitTime==null)||(t.guarantee==='AMOUNT'&&guaranteedHitAmount==null),
         providerScopeMismatch:false,
         bindingObserved:{casino:requestCasino!=null,local:rowLocal!=null,instanceCode:rowInstanceCode!=null},
+        protocolBinding:{instanceCodeOptional:true,instanceCodePresent:rowInstanceCode!=null},
       });
     }
   }
   return {
-    version:'playtech-mhb-ticker-parser-v1.3-provider-scope-safe',
+    version:'playtech-mhb-ticker-parser-v1.4-protocol-scope-safe',
     filters:{currency:wantedCurrency,casino:wantedCasino,local:wantedLocal,instanceCode:wantedInstanceCode},
     requestCasino,
     rows:out,
     rejected,
     guards:{
       parserOnly:true,multiCurrencySafe:true,topologyMetadataPreserved:true,exactBindingFiltersSupported:true,
-      providerDocumentedScopeEnforced:true,noTopologyInference:true,noBetting:true,realMoneyAllowed:false,
+      providerDocumentedScopeEnforced:true,instanceCodeOptionalByTickerSpec:true,noTopologyInference:true,noBetting:true,realMoneyAllowed:false,
     },
   };
 }
