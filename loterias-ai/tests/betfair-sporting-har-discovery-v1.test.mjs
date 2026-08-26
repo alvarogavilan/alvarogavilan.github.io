@@ -59,7 +59,7 @@ const escaped={log:{entries:[
   har.log.entries[1],
 ]}};
 const e=analyzeBetfairSportingHar(escaped,{sourceName:'escaped-session.har'});
-assert.equal(e.version,'betfair-sporting-har-discovery-v1.3-escaped-config-support');
+assert.equal(e.version,'betfair-sporting-har-discovery-v1.4-websocket-support');
 assert.equal(e.discovery.configBindingCandidates.length,1);
 assert.equal(e.discovery.configBindingCandidates[0].jackpotsCasino,'bf_es');
 assert.equal(e.discovery.configBindingCandidates[0].tickerUrl,'https://tickers.playtech.example/new_jackpotxml.php?x=1&y=2');
@@ -73,4 +73,27 @@ const f=analyzeBetfairSportingHar(foreign);
 assert.equal(f.discovery.configBindingCandidates.length,0);
 assert.equal(f.discovery.pairedServerEvidence.length,0);
 assert.equal(f.execution.maxSpins,0);
+
+// A live ticker could plausibly push updates over a WebSocket/SSE channel
+// instead of XML polling - Chrome DevTools HAR exports carry that traffic
+// on a non-standard entry._webSocketMessages array (send/receive frames),
+// separate from response.content. This must be scanned the same way as any
+// other text, not silently ignored.
+const wsTickerText='{"casino":"bf_es","currency":"EUR","game":"sljp-1","local":0,"winc":42,"amount":9345.67,"guaranteedHitTime":1787785300}';
+const ws={log:{entries:[
+  har.log.entries[0],
+  {request:{method:'GET',url:'wss://tickers.playtech.example/live',headers:[]},response:{status:101,headers:[],content:{text:''}},
+    _webSocketMessages:[
+      {type:'send',time:0,opcode:1,data:'{"subscribe":"sljp-1"}'},
+      {type:'receive',time:1,opcode:1,data:wsTickerText},
+    ]},
+]}};
+const w=analyzeBetfairSportingHar(ws,{sourceName:'websocket-session.har'});
+assert.equal(w.relevantEntryCount,2);
+const wsEntry=w.discovery.relevantEntries.find(x=>x.markers.webSocketMessage);
+assert.ok(wsEntry,'a WebSocket entry carrying sljp-1 data must be recognized as relevant');
+assert.equal(wsEntry.markers.sljp1,true);
+assert.ok(wsEntry.provenance.some(p=>p.startsWith('_webSocketMessages[')));
+assert.ok(w.discovery.imsCandidates.includes('bf_es'));
+
 console.log('betfair-sporting-har-discovery-v1.test.mjs: PASS');

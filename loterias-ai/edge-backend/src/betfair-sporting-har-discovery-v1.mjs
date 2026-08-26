@@ -41,6 +41,16 @@ function textParts(entry){
   const responseText=decodeHarContent(res.content);
   if(responseText)out.push(['response.content.text',responseText]);
   for(const h of res.headers||[]) if(h?.name||h?.value) out.push([`response.header.${h.name||''}`,`${h.name||''}: ${h.value||''}`]);
+  // Chrome DevTools HAR exports carry WebSocket traffic on a non-standard
+  // `_webSocketMessages` array (not inside response.content), one entry per
+  // frame - {type:'send'|'receive', time, opcode, data}. A live ticker
+  // could plausibly use a WebSocket or SSE push instead of XML polling, so
+  // this must be scanned the same way as any other text part rather than
+  // silently ignored.
+  const wsMessages=Array.isArray(entry?._webSocketMessages)?entry._webSocketMessages:[];
+  wsMessages.forEach((msg,i)=>{
+    if(msg?.data)out.push([`_webSocketMessages[${i}].${msg?.type==='send'?'send':'receive'}`,String(msg.data)]);
+  });
   return out;
 }
 
@@ -123,6 +133,7 @@ export function analyzeBetfairSportingHar(har,{sourceName='capture.har'}={}){
         tonymc:/\btonymc\b/i.test(decoded),
         guaranteedHitTime:/\bguaranteedHitTime\b/i.test(decoded),
         initialResources:/initialResources/i.test(decoded),
+        webSocketMessage:parts.some(([where])=>where.startsWith('_webSocketMessages[')),
       },
       fields,
       urls,
@@ -165,7 +176,7 @@ export function analyzeBetfairSportingHar(har,{sourceName='capture.har'}={}){
   const tickerUrlCandidates=uniq(allUrls.filter(u=>/new_jackpotxml\.php|webtickers/i.test(maybeDecode(u))));
 
   return {
-    version:'betfair-sporting-har-discovery-v1.3-escaped-config-support',
+    version:'betfair-sporting-har-discovery-v1.4-websocket-support',
     mode:'OFFLINE_PASSIVE_HAR_DISCOVERY_NO_PLAY',
     sourceName,
     entryCount:entries.length,
@@ -183,7 +194,7 @@ export function analyzeBetfairSportingHar(har,{sourceName='capture.har'}={}){
       currentDailyAmountExactVerified:false,
       currentGuaranteedHitTimeExactVerified:false,
     },
-    scientificUse:'Offline HAR discovery only. Base64 HAR bodies, escaped JSON URLs and unquoted config keys are normalized before analysis. pairedServerEvidence requires a Betfair-owned initialResources response that co-locates jackpotsCasino with its configured ticker endpoint plus an exact endpoint-matching sljp-1 HAR response. It is shaped for the server-binding validator, but execution remains blocked until that validator, freshness, same-cycle continuity, deadline and unawarded state all pass.',
+    scientificUse:'Offline HAR discovery only. Base64 HAR bodies, escaped JSON URLs, unquoted config keys, and Chrome DevTools _webSocketMessages frames (send and receive) are all normalized and scanned before analysis, in case a live ticker push uses WebSocket/SSE rather than XML polling. pairedServerEvidence requires a Betfair-owned initialResources response that co-locates jackpotsCasino with its configured ticker endpoint plus an exact endpoint-matching sljp-1 HAR response. It is shaped for the server-binding validator, but execution remains blocked until that validator, freshness, same-cycle continuity, deadline and unawarded state all pass.',
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
     hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,noCredentials:true,noCookiesEmitted:true,noWagerProbe:true,noAutomaticBetting:true,harEvidenceCannotAuthorizeGreen:true,coLocatedBetfairInitialResourcesRequired:true,configuredEndpointMatchRequired:true},
   };
