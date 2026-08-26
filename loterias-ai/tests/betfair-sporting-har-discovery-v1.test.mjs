@@ -2,9 +2,11 @@ import assert from 'node:assert/strict';
 import {analyzeBetfairSportingHar} from '../edge-backend/src/betfair-sporting-har-discovery-v1.mjs';
 import {validateBetfairSportingServerSnapshot} from '../casino/jackpots/betfair-sporting-server-binding-validator-v1.mjs';
 
+const configText='{"jackpotsCasino":"bf_es","jackpotsCasinoUrl":"https://tickers.playtech.example/new_jackpotxml.php"}';
+const tickerText='<request casino="bf_es" currency="eur" game="sljp-1" startTimestamp="1787785190" execInterval="10"/><gamedata game="sljp-1" gamegroup="sljp" local="0" timestamp="1787785200" winc="42"><amount currency="EUR" guaranteedHitTime="1787785300" step="0.01" wins="1000">9345.67</amount></gamedata>';
 const har={log:{entries:[
-  {startedDateTime:'2026-08-26T17:00:00Z',request:{method:'GET',url:'https://launcher.betfair.es/initialResources/es_ES_desktop',headers:[]},response:{status:200,headers:[],content:{mimeType:'application/json',text:'{"jackpotsCasino":"bf_es","jackpotsCasinoUrl":"https://tickers.playtech.example/new_jackpotxml.php"}'}}},
-  {startedDateTime:'2026-08-26T17:00:01Z',request:{method:'GET',url:'https://tickers.playtech.example/new_jackpotxml.php?casino=bf_es&currency=EUR&game=sljp-1&local=0&winc=0',headers:[]},response:{status:200,headers:[],content:{mimeType:'text/xml',text:'<request casino="bf_es" currency="eur" game="sljp-1" startTimestamp="1787785190" execInterval="10"/><gamedata game="sljp-1" gamegroup="sljp" local="0" timestamp="1787785200" winc="42"><amount currency="EUR" guaranteedHitTime="1787785300" step="0.01" wins="1000">9345.67</amount></gamedata>'}}},
+  {startedDateTime:'2026-08-26T17:00:00Z',request:{method:'GET',url:'https://launcher.betfair.es/initialResources/es_ES_desktop',headers:[]},response:{status:200,headers:[],content:{mimeType:'application/json',text:configText}}},
+  {startedDateTime:'2026-08-26T17:00:01Z',request:{method:'GET',url:'https://tickers.playtech.example/new_jackpotxml.php?casino=bf_es&currency=EUR&game=sljp-1&local=0&winc=0',headers:[]},response:{status:200,headers:[],content:{mimeType:'text/xml',text:tickerText}}},
   {request:{method:'GET',url:'https://example.com/ordinary',headers:[]},response:{status:200,headers:[],content:{text:'ordinary'}}}
 ]}};
 
@@ -39,6 +41,17 @@ assert.equal(v.snapshot.guaranteedHitTime,1787785300);
 assert.equal(v.snapshot.winCount,42);
 assert.equal(v.decision,'NO_PLAY');
 assert.equal(v.realMoneyAllowed,false);
+
+const b64={log:{entries:[
+  {request:{method:'GET',url:'https://launcher.betfair.es/initialResources/es_ES_desktop?cacheBust=1',headers:[]},response:{status:200,headers:[],content:{mimeType:'application/json',encoding:'base64',text:Buffer.from(configText).toString('base64')}}},
+  {request:{method:'GET',url:'https://tickers.playtech.example/new_jackpotxml.php?casino=bf_es&currency=EUR&game=sljp-1&local=0&winc=0',headers:[]},response:{status:200,headers:[],content:{mimeType:'text/xml',encoding:'base64',text:Buffer.from(tickerText).toString('base64')}}},
+]}};
+const b=analyzeBetfairSportingHar(b64,{sourceName:'base64-session.har'});
+assert.equal(b.discovery.configBindingCandidates.length,1);
+assert.equal(b.discovery.exactTickerEntryCandidates.length,1);
+assert.equal(b.discovery.pairedServerEvidence.length,1);
+assert.equal(b.discovery.pairedServerEvidence[0].tickerXml.includes('9345.67'),true);
+assert.equal(b.discovery.relevantEntries[0].response.contentEncoding,'base64');
 
 const foreign={log:{entries:[
   {request:{method:'GET',url:'https://evil.example/initialResources/es_ES_desktop',headers:[]},response:{status:200,headers:[],content:{text:'{"jackpotsCasino":"fake","jackpotsCasinoUrl":"https://tickers.playtech.example/new_jackpotxml.php"}'}}},
