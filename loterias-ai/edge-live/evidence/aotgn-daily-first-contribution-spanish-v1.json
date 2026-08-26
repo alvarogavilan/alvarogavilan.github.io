@@ -1,6 +1,6 @@
 {
-  "version": "aotgn-daily-first-contribution-spanish-v1",
-  "generatedAt": "2026-08-26T03:45:00Z",
+  "version": "aotgn-daily-first-contribution-spanish-v1.1-source-verified",
+  "generatedAt": "2026-08-26T03:58:00Z",
   "mode": "SPANISH_ONLINE_DETERMINISTIC_ROLLOVER_CANDIDATE_NO_PLAY",
   "market": "ES",
   "provider": "Playtech",
@@ -9,11 +9,26 @@
     "operator": "Casino777.es",
     "game": "Age of the Gods Norse: King of Asgard",
     "gamePage": "https://www.casino777.es/age-of-the-gods-norse-king-of-asgard",
-    "currentAvailabilityEvidence": "Casino777 Spain July 2026 RTP catalogue lists King of Asgard and other Age of the Gods Norse titles with live betting ranges.",
+    "currentAvailabilityEvidence": "Casino777 Spain current public game page is indexed and was crawled within the last week at verification time; the July 2026 RTP catalogue also lists King of Asgard.",
     "minBetEUR": 0.10,
     "maxBetEUR": 190.00,
     "publishedBaseGameRtpPct": 94.56,
     "rulesVersionOnPage": "v1.0 - 04-11-2025"
+  },
+  "primarySpanishSourceVerification": {
+    "verified": true,
+    "verifiedAt": "2026-08-26T03:58:00Z",
+    "sourceClass": "CURRENT_SPANISH_OPERATOR_GAME_RULES",
+    "url": "https://www.casino777.es/age-of-the-gods-norse-king-of-asgard",
+    "factsVerified": [
+      "Age of the Gods Norse has Ultimate, Extra, Daily and Instant jackpot rule definitions.",
+      "Ultimate is always active; the licensee can activate only two of Extra/Daily/Instant at the same time.",
+      "The Daily ticker shows jackpot value and a date/time window.",
+      "The Daily is guaranteed to be won at least once during the displayed window.",
+      "If it exceptionally survives the contributing period, the first bet/contribution of the next timed period is guaranteed to win it."
+    ],
+    "sourceQuoteSpanish": "la primera apuesta/contribución en el siguiente período cronometrado está garantizada para ganar el bote",
+    "sourceQuotePurpose": "EXACT_DETERMINISTIC_ROLLOVER_SEMANTICS_ONLY"
   },
   "spanishRuleEvidence": {
     "jackpotFamilyLevels": ["ULTIMATE", "EXTRA", "DAILY", "INSTANT"],
@@ -25,6 +40,7 @@
       "tickerShowsDateTimeWindow": true,
       "canTriggerBySpinningWithinDisplayedWindow": true,
       "guaranteedAtLeastOneWinDuringDisplayedWindow": true,
+      "deterministicRolloverClauseSourceVerified": true,
       "deterministicRolloverClause": "If the Daily jackpot does not activate while bets are contributing to it, the first bet/contribution in the next timed period is guaranteed to win the Daily jackpot."
     },
     "extra": {
@@ -53,22 +69,24 @@
   },
   "economicMeaning": {
     "deterministicConditionExistsInSpanishRules": true,
+    "deterministicConditionSourceVerified": true,
     "condition": "DAILY_ROLLOVER_WITHOUT_PRIOR_ACTIVATION_AND_FIRST_NETWORK_CONTRIBUTION_NEXT_PERIOD",
     "conditionalJackpotWinProbabilityIfConditionAndFirstContributionAreBothVerified": 1,
     "minimumPossibleQualifyingStakeEURAtCandidateGame": 0.10,
     "positiveEvNotYetProven": true,
+    "remainingProblemClass": "OBSERVABILITY_AND_NETWORK_FIRST_CONTRIBUTION_ATTAINABILITY_NOT_JACKPOT_HAZARD",
     "why": [
       "Current active jackpot set at Casino777 has not been observed in a live session; the Daily may be disabled by the licensee.",
-      "The exact Daily jackpot value and next rollover time have not been captured in a same-session Spanish screen.",
+      "The exact Daily jackpot value and next rollover time have not been captured in a same-session Spanish screen/ticker.",
       "The guarantee applies to the first contribution across the jackpot network, so practical attainability/race latency has not been demonstrated.",
       "No real-money probe is allowed to test first-contributor status."
     ]
   },
   "nextDecisiveEvidence": [
-    "No-bet same-session Casino777 screenshot proving DAILY is currently active and showing its value plus exact rollover timestamp.",
+    "Recover the current EUR aognjp-2 ticker row including amount and guaranteedHitTime, or obtain a no-bet same-session Spanish screen proving DAILY is active with its value and exact rollover timestamp.",
     "Passive observation across one rollover proving whether the Daily is paid before expiry or enters the next timed period without activation.",
-    "If a rollover-without-activation is ever observed, verify whether the operator UI/network exposes a pre-bet state sufficient to identify the first-contribution window without wagering.",
-    "Only after a prospective passive validation may a real-money execution contract be considered."
+    "If a rollover-without-activation is observed, verify whether a pre-bet state allows first-contribution status to be identified conservatively without wagering.",
+    "Only after prospective passive validation may a real-money execution contract be considered."
   ],
   "execution": {
     "decision": "NO_PLAY",
@@ -81,6 +99,7 @@
     "dailyMustBeCurrentlyActive": true,
     "operatorConfigCannotBeTransferred": true,
     "firstContributionCannotBeAssumed": true,
+    "currentTickerOrSameSessionScreenRequired": true,
     "noWagerProbe": true,
     "noAutomationToRaceNetwork": true,
     "promotionRequiresProspectivePassiveValidation": true
