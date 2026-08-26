@@ -1,0 +1,104 @@
+{
+  "version": "evolution-caribbean-stud-progressive-break-even-v1",
+  "generatedAt": "2026-08-26T02:45:00.000Z",
+  "mode": "EXACT_MATH_CURRENT_GLOBAL_SIGNAL_SPAIN_GATE_OPEN",
+  "game": "Evolution Live Caribbean Stud Poker",
+  "provider": "Evolution",
+  "mechanism": {
+    "jackpotSideBetCurrencyUnits": 1,
+    "playerHandCards": 5,
+    "deckCards": 52,
+    "royalFlushCombinations": 4,
+    "totalFiveCardCombinations": 2598960,
+    "royalFlushProbability": 0.0000015390771693292702,
+    "royalFlushOddsOneIn": 649740,
+    "jackpotAward": "100_PERCENT_OF_PROVIDER_JACKPOT_SHARED_AMONG_ALL_JACKPOT_BETTORS_IN_WINNING_ROUND",
+    "fixedAwardsCurrencyUnits": {
+      "straightFlush": 2500,
+      "fourOfAKind": 250,
+      "fullHouse": 50,
+      "flush": 25,
+      "straight": 10,
+      "threeOfAKind": 3
+    },
+    "fixedAwardCombinationCounts": {
+      "straightFlushExcludingRoyal": 36,
+      "fourOfAKind": 624,
+      "fullHouse": 3744,
+      "flushExcludingStraightFlush": 5108,
+      "straightExcludingStraightFlush": 10200,
+      "threeOfAKind": 54912
+    },
+    "fixedReturnFraction": 0.31844891802875,
+    "sourceSemantics": "Evolution and current operator rules state that lower awards are fixed in the player's currency and the progressive top prize is shared among all players who placed the jackpot bet in the winning round."
+  },
+  "exactMath": {
+    "sideBetRtpFormula": "fixedReturnFraction + (jackpotCurrencyUnits / jackpotBettorsInWinningRound) / 649740",
+    "sideBetNetEvCurrencyFormula": "fixedReturnFraction + (jackpotCurrencyUnits / N) / 649740 - 1",
+    "pureSideBetBreakEvenJackpotPerSingleBettorCurrencyUnits": 442831,
+    "breakEvenWithNJackpotBettorsFormula": "442831 * N before mandatory-main-game cost",
+    "mandatoryAnteAdjustmentFormula": "J_BE_total = N * 649740 * (1 - fixedReturnFraction + expectedMainGameLossCurrencyPerRound)",
+    "important": "The mandatory Ante/main game cost must be added before execution. A high jackpot is not executable unless N and the exact current operator Ante/main-game expected loss are known."
+  },
+  "currentProviderSignal": {
+    "sourceClass": "CURRENT_NON_SPAIN_OPERATOR_SAME_PROVIDER_GAME",
+    "operator": "LeoVegas UK",
+    "sourceUrl": "https://www.leovegas.co.uk/game/live-caribbean-stud-poker",
+    "crawledRecency": "yesterday at research time",
+    "providerJackpotGBP": 676495,
+    "provider": "Evolution",
+    "game": "Live Caribbean Stud Poker",
+    "n1PureSideBetRtp": 1.3596269276941546,
+    "n1PureSideBetRtpPct": 135.96269276941546,
+    "n1PureSideBetNetEvGBPPerOneUnitSideBetBeforeAnte": 0.3596269276941546,
+    "n2PureSideBetRtp": 0.8390379228614523,
+    "n2PureSideBetRtpPct": 83.90379228614523,
+    "signal": "CURRENT_METER_ABOVE_EXACT_PURE_SIDE_BET_BREAK_EVEN_IF_AND_ONLY_IF_N_EQUALS_1",
+    "executionTransferToSpainAllowed": false
+  },
+  "spainEvidence": {
+    "casinoBarcelonaGuideUrl": "https://www.casinobarcelona.es/blog/que-es-poker-caribeno/",
+    "guidePublished": "2026-03-20",
+    "guideFacts": [
+      "CasinoBarcelona describes online Caribbean poker with mandatory Ante and optional jackpot side bet.",
+      "CasinoBarcelona also currently carries Evolution as a provider elsewhere in its online portfolio."
+    ],
+    "exactEvolutionCaribbeanStudCurrentlyAvailableAtCasinoBarcelona": false,
+    "sameProviderJackpotMeterBoundInSpain": false,
+    "exactSpainAnteMinimumKnown": false,
+    "jackpotBettorCountVisibleAndVerifiedInSpain": false,
+    "note": "Editorial content plus provider availability does not prove that this exact Evolution table is currently offered in the Spanish lobby."
+  },
+  "economicGate": {
+    "exactFiveCardProbabilityKnown": true,
+    "exactJackpotPaytableKnown": true,
+    "exactPureSideBetBreakEvenKnown": true,
+    "currentSameProviderGlobalMeterAboveN1PureBreakEven": true,
+    "currentPrioritySpainOperatorAvailabilityVerified": false,
+    "currentSpainProviderMeterVerified": false,
+    "currentSpainJackpotBettorCountVerified": false,
+    "currentSpainMandatoryAnteCostVerified": false,
+    "mainGameStrategyAndExpectedLossVerifiedForExecution": false,
+    "candidateStatus": "EXTRAORDINARY_CANDIDATE_SIGNAL_NOT_EXECUTABLE"
+  },
+  "nextDecisiveEvidence": [
+    "No-bet confirmation that a priority Spanish operator currently offers Evolution Live Caribbean Stud Poker with the Progressive Jackpot side bet.",
+    "Same-session Spanish screen capture of provider jackpot amount, Jackpot bet unit, minimum Ante and visible number of Jackpot bettors/participants.",
+    "Reproduce exact optimal main-game expected loss at the deployed paytable and minimum Ante, then compute total break-even including mandatory play cost."
+  ],
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "ukMeterDoesNotEqualSpainAvailability": true,
+    "sameProviderDoesNotProveSameOperatorOffering": true,
+    "n1CannotBeAssumed": true,
+    "mandatoryAnteCannotBeIgnored": true,
+    "sharedJackpotRequiresActualBettorCount": true,
+    "noWagerProbe": true
+  }
+}
