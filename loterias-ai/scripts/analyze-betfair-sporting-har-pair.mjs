@@ -10,9 +10,12 @@ function finite(v){
   if(v===null||v===undefined||v===''||typeof v==='boolean')return null;
   const n=Number(v);return Number.isFinite(n)?n:null;
 }
+function safeEndpoint(v){
+  try{const u=new URL(String(v||''));return u.protocol==='https:'?`${u.origin}${u.pathname}`:null;}catch{return null;}
+}
 function fail(reason,extra={}){
   return {
-    version:'betfair-sporting-safe-har-pair-cli-v1',
+    version:'betfair-sporting-safe-har-pair-cli-v1.1-endpoint-redaction',
     ok:false,
     reason,
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
@@ -27,8 +30,8 @@ function safeSnapshot(side){
     captureEpochSeconds:side?.captureEpochSeconds??null,
     freshnessClockSource:side?.freshnessClockSource||null,
     expectedBetfairImsCasino:side?.expectedBetfairImsCasino||null,
-    tickerEndpoint:side?.tickerEndpoint||null,
-    configSourceUrl:side?.configSourceUrl||null,
+    tickerEndpoint:safeEndpoint(side?.tickerEndpoint),
+    configSourceUrl:safeEndpoint(side?.configSourceUrl),
     snapshot:side?.valid===true?{
       code:s.code||null,
       currency:s.currency||null,
@@ -115,7 +118,7 @@ export function analyzeSafeHarPairText(beforeRaw,afterRaw,{
   }catch(error){return fail('PAIR_ANALYSIS_FAILED',{error:String(error?.message||error)});}
 
   return {
-    version:'betfair-sporting-safe-har-pair-cli-v1',
+    version:'betfair-sporting-safe-har-pair-cli-v1.1-endpoint-redaction',
     ok:true,
     beforeSourceName,
     afterSourceName,
@@ -134,6 +137,7 @@ export function analyzeSafeHarPairText(beforeRaw,afterRaw,{
       noNetwork:true,
       rawHarNeverEmitted:true,
       authorizationAndCookieValuesNeverEmitted:true,
+      endpointQueriesAndFragmentsNeverEmitted:true,
       pairAnalyzerIsDiagnosticOnly:true,
       harPairCannotAuthorizeGreen:true,
       noWagerProbe:true,
