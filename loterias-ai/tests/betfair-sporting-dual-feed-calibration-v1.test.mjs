@@ -20,6 +20,9 @@ assert.equal(r.valid,true);
 assert.equal(r.sameLauncherEntry,true);
 assert.equal(r.sameInitialResourcesEntry,true);
 assert.equal(r.sameBetfairImsCasino,true);
+assert.equal(r.expectedBetfairImsCasino,'bf_es');
+assert.equal(r.legacyTickerEndpoint,'https://legacy.example/new_jackpotxml.php');
+assert.equal(r.modernTickerEndpoint,'https://webtickers.malmegas.com/webtickers');
 assert.equal(r.captureSkewSeconds,1);
 assert.equal(r.captureSkewWithinPolicy,true);
 assert.deepEqual(r.legacyStateVector,r.modernStateVector);
@@ -31,6 +34,7 @@ assert.equal(r.usableForOverduePair,false);
 assert.equal(r.execution.decision,'NO_PLAY');
 assert.equal(r.execution.realMoneyAllowed,false);
 assert.equal(r.execution.maxSpins,0);
+assert.equal(r.hardGuards.legacyAndModernEndpointScopePreserved,true);
 
 // A near-simultaneous modern row with any state-field mismatch is not a calibration candidate.
 r=analyzeBetfairSportingDualFeedCalibrationSample(har(1000,123.45,123.46),{sourceName:'mismatch.har',maxCaptureSkewSeconds:2});
@@ -59,6 +63,7 @@ assert.equal(series.valid,true);
 assert.equal(series.exactCalibrationSampleCount,3);
 assert.equal(series.distinctServerTimestampCount,3);
 assert.equal(series.distinctAmountCount,3);
+assert.equal(series.logicalScopeCount,1);
 assert.equal(series.oneLogicalScope,true);
 assert.equal(series.empiricalModernResponseMappingVerified,true);
 assert.equal(series.exactModernResponseSemanticsVerified,false);
@@ -66,6 +71,15 @@ assert.equal(series.usableForOverduePair,false);
 assert.equal(series.execution.decision,'NO_PLAY');
 assert.equal(series.execution.realMoneyAllowed,false);
 assert.equal(series.hardGuards.noAutomaticPromotionToOverdueGate,true);
+assert.equal(series.hardGuards.oneExactImsAndEndpointScopeRequired,true);
+
+const mixedScope=[...samples];
+mixedScope[2]={...mixedScope[2],expectedBetfairImsCasino:'other_es'};
+const mixed=evaluateBetfairSportingDualFeedCalibrationSeries(mixedScope);
+assert.equal(mixed.logicalScopeCount,2);
+assert.equal(mixed.oneLogicalScope,false);
+assert.equal(mixed.empiricalModernResponseMappingVerified,false);
+assert.equal(mixed.execution.realMoneyAllowed,false);
 
 const insufficient=evaluateBetfairSportingDualFeedCalibrationSeries(samples.slice(0,2));
 assert.equal(insufficient.empiricalModernResponseMappingVerified,false);
