@@ -2,6 +2,7 @@ import {analyzeBetfairSportingHar} from '../../edge-backend/src/betfair-sporting
 import {validateBetfairSportingServerSnapshot} from './betfair-sporting-server-binding-validator-v1.mjs';
 import {evaluateSportingLegendsOverdueFirstBet} from './sporting-legends-overdue-first-bet-v1.mjs';
 
+const EXACT_GAME_ID='ap-mccoy-sporting-legends-cptn';
 const finite=v=>{if(v===null||v===undefined||v===''||typeof v==='boolean')return null;const n=Number(v);return Number.isFinite(n)?n:null;};
 const text=v=>typeof v==='string'&&v.trim()?v.trim():null;
 function sameHttpsEndpoint(a,b){
@@ -11,10 +12,15 @@ function isoEpochSeconds(v){
   const s=text(v);if(!s)return null;
   const ms=Date.parse(s);return Number.isFinite(ms)?ms/1000:null;
 }
+function latestPrecedingRealCasinoLauncher(discovery,tickerEntryIndex){
+  if(!Number.isInteger(tickerEntryIndex))return null;
+  const all=discovery?.discovery?.betfairRealCasinoLauncherBindings||[];
+  return all.filter(x=>Number.isInteger(x?.index)&&x.index<tickerEntryIndex).sort((a,b)=>b.index-a.index)[0]||null;
+}
 
 function fail(reason,extra={}){
   return {
-    version:'betfair-sporting-har-overdue-bridge-v1.3-exact-game-session-attested',
+    version:'betfair-sporting-har-overdue-bridge-v1.4-latest-launcher-attested',
     valid:false,
     decision:'NO_PLAY',
     reason,
@@ -32,6 +38,9 @@ function fail(reason,extra={}){
       noAutomaticBetting:true,
       harAloneCannotAuthorizeGreen:true,
       exactApMcCoyRealLauncherRequiredInSameHar:true,
+      latestPrecedingRealCasinoLauncherMustBeExactApMcCoy:true,
+      staleApMcCoyLauncherCannotAuthorizeLaterDifferentGameTicker:true,
+      configBindingMustPrecedeTickerEntry:true,
       bothSnapshotsMustPassExactServerBindingValidator:true,
       harCaptureTimeMustAttestFreshness:true,
       callerCannotBackdateHarFreshness:true,
@@ -55,6 +64,18 @@ export function validateBetfairSportingHarSnapshot(har,{
   const pairs=discovery?.discovery?.pairedServerEvidence||[];
   if(pairs.length!==1)return fail(pairs.length?'AMBIGUOUS_PAIRED_SERVER_EVIDENCE':'PAIRED_SERVER_EVIDENCE_NOT_FOUND',{discovery});
   const p=pairs[0];
+  const tickerEntryIndex=Number.isInteger(p?.tickerEntryIndex)?p.tickerEntryIndex:null;
+  const configEntryIndex=Number.isInteger(p?.configBinding?.sourceEntryIndex)?p.configBinding.sourceEntryIndex:null;
+  if(tickerEntryIndex===null||configEntryIndex===null||configEntryIndex>=tickerEntryIndex){
+    return fail('CONFIG_BINDING_DOES_NOT_PRECEDE_TICKER_ENTRY',{discovery,tickerEntryIndex,configEntryIndex});
+  }
+  const latestLauncher=latestPrecedingRealCasinoLauncher(discovery,tickerEntryIndex);
+  if(!latestLauncher){
+    return fail('REAL_CASINO_LAUNCHER_DOES_NOT_PRECEDE_TICKER_ENTRY',{discovery,tickerEntryIndex});
+  }
+  if(latestLauncher.gameId!==EXACT_GAME_ID){
+    return fail('LATEST_REAL_CASINO_LAUNCHER_NOT_AP_MCCOY',{discovery,tickerEntryIndex,latestPrecedingRealCasinoLauncher:latestLauncher});
+  }
   const captureEpochSeconds=isoEpochSeconds(p.startedDateTime);
   if(captureEpochSeconds===null)return fail('TICKER_HAR_CAPTURE_TIME_MISSING_OR_INVALID',{discovery});
   const suppliedNow=finite(nowEpochSeconds),maxSkew=finite(maxCaptureTimeArgumentSkewSeconds);
@@ -70,11 +91,15 @@ export function validateBetfairSportingHarSnapshot(har,{
   });
   if(validation.valid!==true)return fail('SERVER_SNAPSHOT_VALIDATION_FAILED',{discovery,validation,captureEpochSeconds});
   return {
-    version:'betfair-sporting-har-overdue-bridge-v1.3-exact-game-session-attested',
+    version:'betfair-sporting-har-overdue-bridge-v1.4-latest-launcher-attested',
     valid:true,
     usableForOverduePair:true,
     sourceName,
     exactApMcCoyRealLauncherBindingVerified:true,
+    latestPrecedingRealCasinoLauncherIsExactApMcCoy:true,
+    launcherEntryIndex:latestLauncher.index,
+    configEntryIndex,
+    tickerEntryIndex,
     captureStartedDateTime:p.startedDateTime,
     captureEpochSeconds,
     freshnessClockSource:'HAR_TICKER_ENTRY_STARTED_DATE_TIME',
@@ -85,7 +110,7 @@ export function validateBetfairSportingHarSnapshot(har,{
     tickerEndpoint:validation.tickerEndpoint,
     configSourceUrl:validation.configSourceUrl,
     decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,
-    hardGuards:{harAloneCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true,exactApMcCoyRealLauncherRequiredInSameHar:true,harCaptureTimeMustAttestFreshness:true,callerCannotBackdateHarFreshness:true},
+    hardGuards:{harAloneCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true,exactApMcCoyRealLauncherRequiredInSameHar:true,latestPrecedingRealCasinoLauncherMustBeExactApMcCoy:true,staleApMcCoyLauncherCannotAuthorizeLaterDifferentGameTicker:true,configBindingMustPrecedeTickerEntry:true,harCaptureTimeMustAttestFreshness:true,callerCannotBackdateHarFreshness:true},
   };
 }
 
@@ -137,10 +162,11 @@ export function evaluateBetfairSportingHarOverduePair({
   });
 
   return {
-    version:'betfair-sporting-har-overdue-bridge-v1.3-exact-game-session-attested',
+    version:'betfair-sporting-har-overdue-bridge-v1.4-latest-launcher-attested',
     valid:finalEvaluation.valid===true,
     before,after,
     exactApMcCoyRealLauncherBindingVerifiedOnBothSnapshots:true,
+    latestPrecedingRealCasinoLauncherIsExactApMcCoyOnBothSnapshots:true,
     finalEvaluation,
     decision:finalEvaluation.decision,
     reason:finalEvaluation.reason,
@@ -152,6 +178,8 @@ export function evaluateBetfairSportingHarOverduePair({
       onlineOnly:true,nonPromoOnly:true,passiveHarOnly:true,noWagerProbe:true,noAutomaticBetting:true,
       harAloneCannotAuthorizeGreen:true,
       exactApMcCoyRealLauncherVerifiedOnBothSnapshots:true,
+      latestPrecedingRealCasinoLauncherVerifiedOnBothSnapshots:true,
+      configBindingPrecedesTickerOnBothSnapshots:true,
       bothSnapshotsPassedExactServerBindingValidator:true,
       harCaptureTimeAttestedOnBothSnapshots:true,
       sameImsTickerAndConfigEndpointsAcrossCaptures:true,
