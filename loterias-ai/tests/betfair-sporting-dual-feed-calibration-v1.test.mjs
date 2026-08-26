@@ -60,7 +60,12 @@ const samples=[
 ];
 const series=evaluateBetfairSportingDualFeedCalibrationSeries(samples);
 assert.equal(series.valid,true);
+assert.equal(series.version,'betfair-sporting-dual-feed-calibration-series-v1.2-unique-contract-samples');
+assert.equal(series.contractValidCalibrationSampleCount,3);
 assert.equal(series.exactCalibrationSampleCount,3);
+assert.equal(series.uniqueExactCalibrationSampleCount,3);
+assert.equal(series.duplicateExactCalibrationSampleCount,0);
+assert.equal(series.rejectedSampleCount,0);
 assert.equal(series.distinctServerTimestampCount,3);
 assert.equal(series.distinctAmountCount,3);
 assert.equal(series.logicalScopeCount,1);
@@ -70,8 +75,33 @@ assert.equal(series.exactModernResponseSemanticsVerified,false);
 assert.equal(series.usableForOverduePair,false);
 assert.equal(series.execution.decision,'NO_PLAY');
 assert.equal(series.execution.realMoneyAllowed,false);
+assert.equal(series.hardGuards.fullSampleContractRecomputed,true);
+assert.equal(series.hardGuards.duplicateCapturesDoNotCountTowardCalibration,true);
 assert.equal(series.hardGuards.noAutomaticPromotionToOverdueGate,true);
 assert.equal(series.hardGuards.oneExactImsAndEndpointScopeRequired,true);
+
+// Repeating one exact HAR/sample cannot manufacture the minimum calibration series.
+const repeated=evaluateBetfairSportingDualFeedCalibrationSeries([samples[0],samples[0],samples[0]]);
+assert.equal(repeated.contractValidCalibrationSampleCount,3);
+assert.equal(repeated.uniqueExactCalibrationSampleCount,1);
+assert.equal(repeated.duplicateExactCalibrationSampleCount,2);
+assert.equal(repeated.enoughSamples,false);
+assert.equal(repeated.empiricalModernResponseMappingVerified,false);
+assert.equal(repeated.execution.realMoneyAllowed,false);
+
+// Series evaluation recomputes state equality instead of trusting caller-set booleans.
+const forgedMismatch={
+  ...samples[0],
+  calibrationCandidate:true,
+  exactStateVectorMatch:true,
+  modernStateVector:{...samples[0].modernStateVector,amount:samples[0].modernStateVector.amount+1},
+};
+const forged=evaluateBetfairSportingDualFeedCalibrationSeries([forgedMismatch,samples[1],samples[2]]);
+assert.equal(forged.contractValidCalibrationSampleCount,2);
+assert.equal(forged.rejectedSampleCount,1);
+assert.equal(forged.enoughSamples,false);
+assert.equal(forged.empiricalModernResponseMappingVerified,false);
+assert.equal(forged.execution.maxSpins,0);
 
 const mixedScope=[...samples];
 mixedScope[2]={...mixedScope[2],expectedBetfairImsCasino:'other_es'};
