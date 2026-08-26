@@ -1,0 +1,79 @@
+{
+  "version": "betfair-spain-sporting-public-jackpot-sequence-v1",
+  "generatedAt": "2026-08-26T22:22:00+02:00",
+  "status": "STRONG_PUBLIC_SHARED_POOL_CLUE_NOT_EXECUTION_PROOF",
+  "scope": {
+    "market": "ES",
+    "operator": "Betfair Spain",
+    "provider": "Playtech",
+    "suite": "Sporting Legends",
+    "onlineOnly": true,
+    "nonPromoOnly": true
+  },
+  "observations": [
+    {
+      "title": "Frankie Dettori Sporting Legends™",
+      "gameId": "frankie-dettori-sporting-legends-cptn",
+      "page": "https://casino.betfair.es/juego/frankie-dettori-sporting-legends-cptn",
+      "webCrawlRelativeAgeAtObservation": "2 days ago",
+      "headlineJackpotEUR": 9309.30,
+      "publishedRtpPct": 95.01
+    },
+    {
+      "title": "Ronnie O'Sullivan: Sporting Legends™",
+      "gameId": "ronnie-osullivan-sporting-legends-cptn",
+      "page": "https://casino.betfair.es/juego/ronnie-osullivan-sporting-legends-cptn",
+      "webCrawlRelativeAgeAtObservation": "yesterday",
+      "headlineJackpotEUR": 9328.07,
+      "publishedRtpPct": 95.06
+    },
+    {
+      "title": "AP McCoy Sporting Legends™",
+      "gameId": "ap-mccoy-sporting-legends-cptn",
+      "page": "https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn",
+      "webCrawlRelativeAgeAtObservation": "today",
+      "headlineJackpotEUR": 9333.23,
+      "publishedRtpPctRange": [93.03, 97.17]
+    }
+  ],
+  "derivedPublicClue": {
+    "chronologicalHeadlineAmountsStrictlyIncreasing": true,
+    "frankieToRonnieIncreaseEUR": 18.77,
+    "ronnieToApMcCoyIncreaseEUR": 5.16,
+    "frankieToApMcCoyIncreaseEUR": 23.93,
+    "sameApproximateNinePointThreeKEuroBand": true,
+    "compatibleWithOneSharedProgressiveObservedAtDifferentTimes": true,
+    "probativeStrength": "STRONG_CLUE_ONLY",
+    "whyNotProof": [
+      "The three web crawls are not simultaneous captures.",
+      "Headline jackpot labels are not independently bound to sljp-1, sljp-2 or sljp-3 by the public page HTML.",
+      "Similar progressive values could arise from separate pools or cached presentation data.",
+      "Exact current Betfair IMS casino, ticker endpoint, guaranteedHitTime and winCount remain private-session facts."
+    ]
+  },
+  "scientificInterpretation": {
+    "newFinding": "Three distinct current Betfair Spain Sporting Legends pages expose headline jackpots in one narrow value band and the values increase in crawl-time order: 9309.30 -> 9328.07 -> 9333.23 EUR.",
+    "mostInterestingHypothesis": "The pages may be exposing the same shared Sporting Legends progressive sampled at different times.",
+    "requiredDecisiveTest": "Two near-simultaneous passive HAR captures from distinct exact Sporting Legends real-money sessions must resolve to the same concrete Betfair IMS casino, configured ticker endpoint, sljp-1 EUR local=0 state, guaranteedHitTime, winCount and request execInterval.",
+    "capturePriority": [
+      "AP McCoy Sporting Legends™",
+      "Ronnie O'Sullivan: Sporting Legends™",
+      "Frankie Dettori Sporting Legends™"
+    ]
+  },
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "publicHeadlineSequenceCannotProveExactPool": true,
+    "publicHeadlineSequenceCannotPopulateServerState": true,
+    "publicHeadlineSequenceCannotAuthorizeGreen": true,
+    "sameBrandCannotSubstituteForExactSessionBinding": true,
+    "noWagerProbe": true,
+    "noAutomaticBetting": true
+  }
+}
