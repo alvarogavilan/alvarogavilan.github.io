@@ -1,7 +1,7 @@
 {
-  "version": "betfair-spain-sporting-legends-overdue-green-contract-v1.1-validated-cycle-ledger",
-  "generatedAt": "2026-08-26T14:26:00+02:00",
-  "status": "GREEN_ENGINE_READY_LIVE_STATE_NOT_YET_VERIFIED",
+  "version": "betfair-spain-sporting-legends-overdue-green-contract-v1.2-reviewed-ledger-allowlist",
+  "generatedAt": "2026-08-26T22:03:00+02:00",
+  "status": "GREEN_ENGINE_FAIL_CLOSED_REAL_PROSPECTIVE_LEDGER_REVIEW_PENDING",
   "market": "ES",
   "operator": "Betfair Spain",
   "provider": "Playtech",
@@ -28,22 +28,27 @@
   },
   "engine": {
     "overdueEvaluatorPath": "loterias-ai/casino/jackpots/sporting-legends-overdue-first-bet-v1.mjs",
-    "overdueEvaluatorVersion": "sporting-legends-overdue-first-bet-v1.4-cadence-bound-green",
+    "overdueEvaluatorVersion": "sporting-legends-overdue-first-bet-v1.9-reviewed-race-contract",
     "passiveRaceCycleValidatorPath": "loterias-ai/casino/jackpots/sporting-legends-passive-race-cycle-v1.mjs",
     "passiveRaceCycleValidatorVersion": "sporting-legends-passive-race-cycle-v1",
     "empiricalRaceBoundPath": "loterias-ai/casino/jackpots/sporting-legends-empirical-race-bound-v1.mjs",
-    "empiricalRaceBoundVersion": "sporting-legends-empirical-race-bound-v1.1-ledger-required",
+    "empiricalRaceBoundVersion": "sporting-legends-empirical-race-bound-v1.2-explicit-binomial-assumptions",
     "empiricalRaceMethod": "ONE_SIDED_CLOPPER_PEARSON_BINOMIAL",
     "greenRouteOrchestratorPath": "loterias-ai/casino/jackpots/sporting-legends-overdue-green-route-v1.mjs",
-    "greenRouteOrchestratorVersion": "sporting-legends-overdue-green-route-v1.1-validated-ledger",
+    "greenRouteOrchestratorVersion": "sporting-legends-overdue-green-route-v1.3-reviewed-ledger-gate",
     "poissonStationarityRequiredForGreen": false,
     "prospectiveFrozenProtocolRequired": true,
     "validatedPassiveCycleLedgerRequired": true,
+    "independentProspectiveRaceLedgerReviewRequired": true,
+    "reviewCommitMustBeCodeAllowlisted": true,
+    "approvedProspectiveRaceLedgerReviewCommitCount": 0,
+    "callerCannotSelfAuthorizeReview": true,
     "rawBooleanDryRunCannotAuthorizeGreen": true,
     "aggregatedCountsCannotAuthorizeGreen": true,
     "requestExecIntervalCadenceRequired": true,
     "expectedImsConcreteValueRequired": true,
     "measuredLatencyMustNotExceedFrozenCeiling": true,
+    "callerSuppliedRtpCannotExceedExecutionFloorCapPct": 93.03,
     "greenMayAuthorizeAtMostOneManualSpin": true
   },
   "currentLiveState": {
@@ -63,6 +68,8 @@
     "frozenActionLatencyCeilingVerified": false,
     "prospectiveComparableDryRunCycleCount": 0,
     "validatedPassiveCycleLedgerVerified": false,
+    "independentProspectiveRaceLedgerReviewVerified": false,
+    "approvedProspectiveRaceLedgerReviewCommitCount": 0,
     "empiricalFirstBetProbabilityLowerBound": null,
     "exactBreakEvenFirstBetProbability": null,
     "greenNow": false
@@ -77,9 +84,11 @@
       "exact current Daily amount",
       "exact Spanish stake at decision time",
       "manual action latency measured and not greater than a ceiling frozen before observations",
-      "at least one prospectively observed passive cycle validated from before/detection/confirmation snapshots",
-      "unique cycle IDs and one unchanged frozen protocol across the execution evidence ledger",
+      "prospectively observed passive cycles validated from before/detection/confirmation snapshots under the frozen protocol",
+      "unique cycle IDs and one unchanged frozen protocol across the complete execution evidence ledger",
       "one-sided 95% Clopper-Pearson race probability lower bound from the validated cycle ledger strictly above exact break-even probability",
+      "independent review of the real prospective race-ledger artifact after observation",
+      "exact GitHub review commit SHA explicitly added to the evaluator code allowlist in a later reviewed commit",
       "final live state recheck immediately before any manual spin"
     ],
     "onPass": {
@@ -101,7 +110,7 @@
     "confidence": 0.95,
     "oneSuccessOutOfOneValidatedProspectiveCycleLowerBound": 0.05,
     "twoSuccessesOutOfTwoValidatedProspectiveCyclesLowerBound": 0.22360679774997896,
-    "importantLimit": "These values become execution-usable only when they are computed from the validated passive cycle ledger under the frozen protocol. Aggregated counts or manually asserted booleans are research-only.",
+    "importantLimit": "These values are research candidates until generated from the complete real prospective ledger and then independently reviewed. A caller-supplied raceEvidence object, even if structurally perfect, cannot authorize execution because the review commit allowlist is code-owned and currently empty.",
     "illustrativeBreakEvenOnly": {
       "baseRtpPct": 93.03,
       "stakeEUR": 0.25,
@@ -127,7 +136,11 @@
     "thirdPartyGlobalTickerCannotPopulateBetfairSpain": true,
     "providerExampleTimestampCannotPopulateCurrentGuaranteedHitTime": true,
     "historicalRtpCannotProveProspectiveEdge": true,
+    "realizedMonthlyPayoutCannotSetExecutionRtp": true,
+    "callerSuppliedHigherRtpCannotEaseGreenThreshold": true,
     "syntheticTestGreenCannotBePromotedToLiveGreen": true,
+    "syntheticStructuredRaceEvidenceCannotAuthorizeGreen": true,
+    "selfAttestedReviewCommitCannotAuthorizeGreen": true,
     "rawBooleanDryRunCannotAuthorizeGreen": true,
     "aggregatedDryRunCountsCannotAuthorizeGreen": true,
     "historicalOrWideSnapshotPairCannotProveOverdueRace": true,
@@ -135,14 +148,16 @@
     "requestExecIntervalCadenceMustBePreserved": true,
     "expectedBetfairImsMustBeConcreteAndMatchSnapshots": true,
     "oneOfOneStatisticalBoundCannotBypassExactLiveBinding": true,
+    "independentReviewedLedgerCommitRequired": true,
     "finalLiveRecheckMandatory": true
   },
   "nextDecisiveEvidence": [
-    "Recover exact Betfair Spain ticker hostname and IMS casino identity.",
+    "Recover exact Betfair Spain ticker hostname and IMS casino identity from a private passive HAR.",
     "Capture exact current sljp-1 EUR local=0 amount, winc, gamedata timestamp, request execInterval and guaranteedHitTime.",
-    "Observe a cadence-bounded same-binding overdue state across guaranteedHitTime with unchanged winc and no reset.",
+    "Observe cadence-bounded same-binding cycles across guaranteedHitTime with unchanged winc and no reset.",
     "Measure manual decision-to-submit latency without wagering and freeze a conservative latency ceiling before dry-run observations.",
-    "Complete the first comparable passive before/detection/confirmation cycle under the frozen protocol and persist it with a unique cycle ID.",
-    "Compute the validated-ledger empirical lower bound and compare it with the exact live break-even probability."
+    "Persist only sanitized prospective cycle evidence with unique IDs; keep raw HAR private and local.",
+    "Build the complete prospective race ledger and compute the validated lower bound.",
+    "Independently review that ledger, commit the reviewed artifact, then explicitly allowlist that exact review commit SHA before GREEN can ever become executable."
   ]
 }
