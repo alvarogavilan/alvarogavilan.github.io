@@ -1,0 +1,70 @@
+{
+  "version": "betfair-spain-apmccoy-visual-passive-evidence-contract-v1",
+  "generatedAt": "2026-08-26T16:00:00+02:00",
+  "status": "VISUAL_PASSIVE_LEDGER_ROUTE_READY_NO_LIVE_GREEN",
+  "market": "ES",
+  "operator": "Betfair Spain",
+  "provider": "Playtech",
+  "game": "AP McCoy Sporting Legends™",
+  "gameId": "ap-mccoy-sporting-legends-cptn",
+  "sourceType": "ONLINE",
+  "promotion": false,
+  "purpose": "Allow prospectively observed direct official-client screenshots to build race evidence when the public Playtech ticker/IMS is inaccessible, without allowing a screenshot or user-entered number to authorize real money by itself.",
+  "validator": {
+    "path": "loterias-ai/casino/jackpots/sporting-legends-visual-passive-cycle-v1.mjs",
+    "version": "sporting-legends-visual-passive-cycle-v1",
+    "outputMayBeUsedForRaceEvidence": true,
+    "outputMayAuthorizeExecutionDirectly": false
+  },
+  "requiredPerObservation": [
+    "official Betfair Spain game-client identity visible and verified",
+    "exact AP McCoy Sporting Legends game identity",
+    "Daily tier label visible",
+    "exact Daily amount visible",
+    "exact countdown value visible",
+    "exact selected stake visible",
+    "capture timestamp",
+    "distinct evidence ID and SHA-256",
+    "image evidence present",
+    "human visual review of identity and displayed values"
+  ],
+  "requiredCycle": {
+    "beforeBoundaryCountdownMustBePositive": true,
+    "detectionCountdownMustBeZero": true,
+    "confirmationCountdownMustRemainZero": true,
+    "threeDistinctScreenshotsRequired": true,
+    "stakeMustRemainUnchanged": true,
+    "detectionMustMatchBoundaryEstimatedFromBeforeCountdownWithinSeconds": 3,
+    "confirmationMustOccurAfterFrozenHypotheticalActionLatency": true,
+    "amountMustNotResetBeforeDetection": true,
+    "successDefinition": "Daily remains visually unreset through the frozen hypothetical action-latency window.",
+    "failureDefinition": "Daily visibly resets/awards before the hypothetical action window completes."
+  },
+  "executionIsolation": {
+    "currentVisualCycleMayAuthorizeItsOwnBet": false,
+    "singleScreenshotMayAuthorizeGreen": false,
+    "catalogHeadlineMaySubstituteForDailyCounter": false,
+    "manualTextEntryWithoutImageMayAuthorizeGreen": false,
+    "visualEvidenceMayInventTickerOrIms": false,
+    "finalLiveRecheckStillRequired": true,
+    "validatedPriorRaceEvidenceStillRequired": true,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "scientificConsequence": "The inaccessible public Betfair ticker no longer blocks collection of prospective race evidence. It still blocks the server-ticker execution path. Direct official-client visual evidence is a separate passive evidence mode and does not weaken the existing GREEN promotion contract.",
+  "nextDecisiveEvidence": [
+    "Capture the first exact Betfair Spain AP McCoy Daily before/detection/confirmation visual cycle with no wager.",
+    "Freeze a conservative hypothetical manual-action latency before the cycle.",
+    "Repeat comparable passive cycles with unique evidence hashes to build a prospectively valid race ledger.",
+    "Keep searching for the exact ticker/IMS because server-side state remains the preferred final live-recheck path."
+  ],
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  }
+}

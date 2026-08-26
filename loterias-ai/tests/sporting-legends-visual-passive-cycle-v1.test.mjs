@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import {validateSportingLegendsVisualPassiveCycle} from '../casino/jackpots/sporting-legends-visual-passive-cycle-v1.mjs';
+const sha=c=>c.repeat(64);
+const base={sourceClass:'BETFAIR_ES_OFFICIAL_GAME_CLIENT_SCREENSHOT',market:'ES',operator:'Betfair Spain',gameId:'ap-mccoy-sporting-legends-cptn',gameTitle:'AP McCoy Sporting Legends™',tier:'DAILY',stakeEUR:0.25,imageEvidencePresent:true,humanReviewVerified:true,exactGameIdentityVisible:true,exactDailyLabelVisible:true,exactDisplayedValuesVerified:true,officialClientIdentityVerified:true};
+const before={...base,evidenceId:'a',evidenceSha256:sha('a'),capturedAtEpochSeconds:1000,amountEUR:100,countdownSeconds:5};
+const detection={...base,evidenceId:'b',evidenceSha256:sha('b'),capturedAtEpochSeconds:1005,amountEUR:100.02,countdownSeconds:0};
+const confirmation={...base,evidenceId:'c',evidenceSha256:sha('c'),capturedAtEpochSeconds:1009,amountEUR:100.03,countdownSeconds:0};
+let r=validateSportingLegendsVisualPassiveCycle({cycleId:'cycle-1',protocolId:'p1',protocolFrozenAtEpochSeconds:900,recordedAtEpochSeconds:1010,beforeBoundary:before,detection,confirmation,actionLatencySeconds:3});
+assert.equal(r.valid,true);assert.equal(r.usableForRaceEvidence,true);assert.equal(r.usableForExecution,false);assert.equal(r.outcome,'SUCCESS');assert.equal(r.survivedHypotheticalActionWindow,true);assert.equal(r.guards.currentCycleCannotAuthorizeItsOwnRealMoneyAction,true);
+r=validateSportingLegendsVisualPassiveCycle({cycleId:'cycle-2',protocolId:'p1',protocolFrozenAtEpochSeconds:900,recordedAtEpochSeconds:1010,beforeBoundary:before,detection,confirmation:{...confirmation,amountEUR:25},actionLatencySeconds:3});
+assert.equal(r.valid,true);assert.equal(r.outcome,'FAILURE');
+r=validateSportingLegendsVisualPassiveCycle({cycleId:'cycle-3',protocolId:'p1',protocolFrozenAtEpochSeconds:900,recordedAtEpochSeconds:1010,beforeBoundary:before,detection:{...detection,exactDailyLabelVisible:false},confirmation,actionLatencySeconds:3});
+assert.equal(r.valid,false);assert.equal(r.reason,'UNVERIFIED_VISUAL_EVIDENCE');
+r=validateSportingLegendsVisualPassiveCycle({cycleId:'cycle-4',protocolId:'p1',protocolFrozenAtEpochSeconds:900,recordedAtEpochSeconds:1010,beforeBoundary:before,detection:{...detection,countdownSeconds:1},confirmation,actionLatencySeconds:3});
+assert.equal(r.valid,false);assert.equal(r.reason,'DAILY_BOUNDARY_NOT_VISUALLY_BRACKETED');
+r=validateSportingLegendsVisualPassiveCycle({cycleId:'cycle-5',protocolId:'p1',protocolFrozenAtEpochSeconds:900,recordedAtEpochSeconds:1010,beforeBoundary:before,detection:{...detection,evidenceSha256:before.evidenceSha256},confirmation,actionLatencySeconds:3});
+assert.equal(r.valid,false);assert.equal(r.reason,'DUPLICATE_SCREENSHOT_EVIDENCE');
+console.log('sporting-legends-visual-passive-cycle-v1.test.mjs: PASS');
