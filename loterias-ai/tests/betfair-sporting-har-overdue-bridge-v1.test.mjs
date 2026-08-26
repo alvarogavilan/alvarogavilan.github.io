@@ -66,7 +66,7 @@ assert.equal(supersededConfig.hardGuards.stalePreLaunchOrSupersededConfigCannotA
 assert.equal(supersededConfig.realMoneyAllowed,false);
 
 const one=validateBetfairSportingHarSnapshot(har(1990,100),{sourceName:'before.har'});
-assert.equal(one.version,'betfair-sporting-har-overdue-bridge-v1.5-session-config-attested');
+assert.equal(one.version,'betfair-sporting-har-overdue-bridge-v1.6-forward-pair-time');
 assert.equal(one.valid,true);
 assert.equal(one.exactApMcCoyRealLauncherBindingVerified,true);
 assert.equal(one.latestPrecedingRealCasinoLauncherIsExactApMcCoy,true);
@@ -94,11 +94,12 @@ const r=evaluateBetfairSportingHarOverduePair({
   providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified:true,
   stakeEUR:0.25,
 });
-assert.equal(r.version,'betfair-sporting-har-overdue-bridge-v1.5-session-config-attested');
+assert.equal(r.version,'betfair-sporting-har-overdue-bridge-v1.6-forward-pair-time');
 assert.equal(r.valid,true);
 assert.equal(r.exactApMcCoyRealLauncherBindingVerifiedOnBothSnapshots,true);
 assert.equal(r.latestPrecedingRealCasinoLauncherIsExactApMcCoyOnBothSnapshots,true);
 assert.equal(r.latestPostLaunchInitialResourcesBindingVerifiedOnBothSnapshots,true);
+assert.equal(r.captureTimeAdvanced,true);
 assert.equal(r.before.captureEpochSeconds,1990);
 assert.equal(r.after.captureEpochSeconds,2005);
 assert.equal(r.finalEvaluation.followingDayUnawardedVerified,true);
@@ -108,12 +109,27 @@ assert.equal(r.hardGuards.exactApMcCoyRealLauncherVerifiedOnBothSnapshots,true);
 assert.equal(r.hardGuards.latestPrecedingRealCasinoLauncherVerifiedOnBothSnapshots,true);
 assert.equal(r.hardGuards.latestPostLaunchInitialResourcesVerifiedOnBothSnapshots,true);
 assert.equal(r.hardGuards.configBindingPrecedesTickerOnBothSnapshots,true);
+assert.equal(r.hardGuards.strictForwardCaptureOrderVerified,true);
 assert.equal(r.hardGuards.benignCacheBusterQueryChangesIgnored,true);
 assert.equal(r.hardGuards.harCaptureTimeAttestedOnBothSnapshots,true);
 assert.equal(r.decision,'NO_PLAY');
 assert.equal(r.realMoneyAllowed,false);
 assert.equal(r.maxSpins,0);
 assert.equal(r.reason,'FOLLOWING_DAY_UNAWARDED_VERIFIED_RACE_GATE_OPEN');
+
+const equalCaptureTime=evaluateBetfairSportingHarOverduePair({
+  beforeHar:har(2005,100,42,'bf_es',2010,'before'),
+  afterHar:har(2005,100.01,42,'bf_es',2010,'after'),
+  decisionNowEpochSeconds:2011,
+  betfairFirstBetFollowingDayRuleVerified:true,
+  providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified:true,
+  stakeEUR:0.25,
+});
+assert.equal(equalCaptureTime.valid,false);
+assert.equal(equalCaptureTime.reason,'HAR_CAPTURE_ORDER_NOT_FORWARD');
+assert.equal(equalCaptureTime.hardGuards.pairCaptureTimeMustAdvanceStrictly,true);
+assert.equal(equalCaptureTime.realMoneyAllowed,false);
+assert.equal(equalCaptureTime.maxSpins,0);
 
 const staleAfter=evaluateBetfairSportingHarOverduePair({
   beforeHar:har(1990,100),afterHar:staleExactLauncherHar,decisionNowEpochSeconds:2010,
