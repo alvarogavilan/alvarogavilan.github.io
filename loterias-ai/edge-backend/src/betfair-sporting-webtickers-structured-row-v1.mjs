@@ -81,12 +81,34 @@ function walkObjects(value,path='$',out=[],depth=0){
   for(const [k,v] of Object.entries(value))if(v&&typeof v==='object')walkObjects(v,`${path}.${String(k).replace(/[^A-Za-z0-9_-]/g,'_')}`,out,depth+1);
   return out;
 }
-function requestCasinoMatches(fingerprint,bindingCasino){
+function collectCasinoValues(value,out=[],depth=0){
+  if(depth>6||out.length>=50||value===null||value===undefined)return out;
+  if(Array.isArray(value)){
+    for(const v of value.slice(0,50))collectCasinoValues(v,out,depth+1);
+    return out;
+  }
+  if(typeof value!=='object')return out;
+  for(const [k,v] of Object.entries(value)){
+    if(key(k)==='casino'&&(typeof v==='string'||typeof v==='number'))out.push(String(v).toLowerCase());
+    else if(v&&typeof v==='object')collectCasinoValues(v,out,depth+1);
+  }
+  return out;
+}
+function requestCasinoMatches(fingerprint,bindingCasino,entry){
   const expected=String(bindingCasino||'').toLowerCase();
   if(!expected)return false;
-  const sources=[fingerprint?.request?.query?.safeProtocolValues,fingerprint?.request?.postData?.safeProtocolValues,fingerprint?.request?.webSocket?.safeProtocolValues];
   const observed=[];
-  for(const src of sources)for(const v of src?.casino||[])observed.push(String(v).toLowerCase());
+  const requestSources=[fingerprint?.request?.query?.safeProtocolValues,fingerprint?.request?.postData?.safeProtocolValues];
+  for(const src of requestSources)for(const v of src?.casino||[])observed.push(String(v).toLowerCase());
+
+  // WebSocket receive frames are server responses and must never be allowed to
+  // back-fill request-side casino evidence. Only client "send" frames count.
+  const frames=Array.isArray(entry?._webSocketMessages)?entry._webSocketMessages:[];
+  for(const frame of frames){
+    if(frame?.type!=='send'||!frame?.data)continue;
+    const parsed=parseJson(String(frame.data));
+    if(parsed!==null)collectCasinoValues(parsed,observed);
+  }
   return observed.includes(expected);
 }
 
@@ -101,7 +123,7 @@ export function analyzeBetfairSportingStructuredWebtickersRows(har,{sourceName='
     const entry=entries[fp.entryIndex];
     if(!entry)continue;
     const expectedCasino=fp?.configBinding?.jackpotsCasino||null;
-    const requestCasinoBound=requestCasinoMatches(fp,expectedCasino);
+    const requestCasinoBound=requestCasinoMatches(fp,expectedCasino,entry);
     for(const payload of jsonPayloads(entry)){
       const parsed=parseJson(payload.text);if(parsed===null)continue;
       for(const node of walkObjects(parsed)){
@@ -129,7 +151,7 @@ export function analyzeBetfairSportingStructuredWebtickersRows(har,{sourceName='
     }
   }
   return {
-    version:'betfair-sporting-webtickers-structured-row-v1',
+    version:'betfair-sporting-webtickers-structured-row-v1.1-ws-direction-binding',
     mode:'OFFLINE_PASSIVE_MODERN_WEBTICKERS_STRUCTURED_ROW_DISCOVERY_NO_PLAY',
     sourceName,
     exactConfiguredWebtickersTrafficObserved:protocol?.exactModernWebtickersTrafficObserved===true,
@@ -137,9 +159,9 @@ export function analyzeBetfairSportingStructuredWebtickersRows(har,{sourceName='
     structuredSljp1RowCandidates:candidates,
     exactModernResponseSemanticsVerified:false,
     usableForOverduePair:false,
-    scientificUse:'Candidates require game=sljp-1, EUR, local=0, amount, guaranteedHitTime, timestamp and winc to be co-located in one parsed JSON object (amount/GHT may be in that row own jackpot child). Values are never assembled across sibling rows or unrelated frames. This closes a flattening ambiguity only; unknown modern response semantics still prevent promotion to server truth or overdue execution evidence.',
+    scientificUse:'Candidates require game=sljp-1, EUR, local=0, amount, guaranteedHitTime, timestamp and winc to be co-located in one parsed JSON object (amount/GHT may be in that row own jackpot child). Values are never assembled across sibling rows or unrelated frames. Request-side casino evidence is direction-safe: URL/query, POST body and WebSocket client-send frames can support it; WebSocket receive frames cannot. This closes flattening and request/response contamination ambiguities only; unknown modern response semantics still prevent promotion to server truth or overdue execution evidence.',
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,exactConfiguredBetfairWebtickersTrafficRequired:true,noCrossObjectFieldAssembly:true,sljp1EurLocal0Required:true,amountGhtTimestampWincRequired:true,responseCasinoMismatchRejected:true,modernResponseSemanticsCannotBeGuessed:true,structuredCandidateCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,exactConfiguredBetfairWebtickersTrafficRequired:true,noCrossObjectFieldAssembly:true,webSocketReceiveCannotSatisfyRequestCasinoBinding:true,sljp1EurLocal0Required:true,amountGhtTimestampWincRequired:true,responseCasinoMismatchRejected:true,modernResponseSemanticsCannotBeGuessed:true,structuredCandidateCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
-function fail(reason,extra={}){return {version:'betfair-sporting-webtickers-structured-row-v1',mode:'OFFLINE_PASSIVE_MODERN_WEBTICKERS_STRUCTURED_ROW_DISCOVERY_NO_PLAY',valid:false,reason,structuredSljp1RowCandidateCount:0,structuredSljp1RowCandidates:[],exactModernResponseSemanticsVerified:false,usableForOverduePair:false,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},...extra};}
+function fail(reason,extra={}){return {version:'betfair-sporting-webtickers-structured-row-v1.1-ws-direction-binding',mode:'OFFLINE_PASSIVE_MODERN_WEBTICKERS_STRUCTURED_ROW_DISCOVERY_NO_PLAY',valid:false,reason,structuredSljp1RowCandidateCount:0,structuredSljp1RowCandidates:[],exactModernResponseSemanticsVerified:false,usableForOverduePair:false,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},...extra};}
