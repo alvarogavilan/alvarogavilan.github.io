@@ -48,6 +48,8 @@ export function parsePlaytechMhbTickerXml(xml,{
   const requestAttrs=requestMatch?attrs(requestMatch[1]):{};
   const requestCasino=normalizeText(requestAttrs.casino);
   const requestCasinoNormalized=requestCasino?.toLowerCase()??null;
+  const requestStartTimestamp=epoch(requestAttrs.startTimestamp);
+  const requestExecInterval=finite(requestAttrs.execInterval);
   const gameRe=/<gamedata\b([^>]*)>([\s\S]*?)<\/gamedata>/gi;
   for(const gm of s.matchAll(gameRe)){
     const ga=attrs(gm[1]);
@@ -55,6 +57,9 @@ export function parsePlaytechMhbTickerXml(xml,{
     if(!code||!TARGETS[code]) continue;
     const t=TARGETS[code];
     const rowLocal=normalizeLocal(ga.local);
+    const gameTimestamp=epoch(ga.timestamp);
+    const winCount=finite(ga.winc);
+    const gameGroup=normalizeText(ga.gamegroup);
     const amountRe=/<amount\b([^>]*)>([^<]*)<\/amount>/gi;
     for(const amountMatch of gm[2].matchAll(amountRe)){
       const aa=attrs(amountMatch[1]);
@@ -68,13 +73,15 @@ export function parsePlaytechMhbTickerXml(xml,{
       const amount=finite(String(amountMatch[2]).trim());
       const guaranteedHitTime=epoch(aa.guaranteedHitTime);
       const guaranteedHitAmount=finite(aa.guranteedHitAmount ?? aa.guaranteedHitAmount);
+      const totalWinnings=finite(aa.wins);
       const distanceToGuaranteedHitAmount=(amount!=null&&guaranteedHitAmount!=null)?guaranteedHitAmount-amount:null;
       const secondsToGuaranteedHit=(guaranteedHitTime!=null)?guaranteedHitTime-nowEpochSeconds:null;
       out.push({
         code,network:t.network,tier:t.tier,expectedGuarantee:t.guarantee,providerScope:t.providerScope??null,
+        gameGroup,gameTimestamp,winCount,
         amount,currency:rowCurrency,sign:aa.sign||null,stepPerSecond:finite(aa.step),
-        wins:finite(aa.wins),instanceCode:rowInstanceCode,
-        requestCasino,local:rowLocal,isLocal:rowLocal==null?null:rowLocal===1,
+        wins:totalWinnings,totalWinnings,instanceCode:rowInstanceCode,
+        requestCasino,requestStartTimestamp,requestExecInterval,local:rowLocal,isLocal:rowLocal==null?null:rowLocal===1,
         guaranteedHitTime,guaranteedHitAmount,
         distanceToGuaranteedHitAmount,
         secondsToGuaranteedHit,
@@ -87,14 +94,16 @@ export function parsePlaytechMhbTickerXml(xml,{
     }
   }
   return {
-    version:'playtech-mhb-ticker-parser-v1.5-sporting-legends',
+    version:'playtech-mhb-ticker-parser-v1.6-win-count-timestamps',
     filters:{currency:wantedCurrency,casino:wantedCasino,local:wantedLocal,instanceCode:wantedInstanceCode},
-    requestCasino,
+    requestCasino,requestStartTimestamp,requestExecInterval,
     rows:out,
     rejected,
     guards:{
       parserOnly:true,multiCurrencySafe:true,topologyMetadataPreserved:true,exactBindingFiltersSupported:true,
-      providerDocumentedScopeEnforced:true,instanceCodeOptionalByTickerSpec:true,noTopologyInference:true,noBetting:true,realMoneyAllowed:false,
+      providerDocumentedScopeEnforced:true,instanceCodeOptionalByTickerSpec:true,noTopologyInference:true,
+      winCountPreservedFromGamedataWinc:true,gameTimestampPreserved:true,amountWinsNotConfusedWithWinCount:true,
+      noBetting:true,realMoneyAllowed:false,
     },
   };
 }
