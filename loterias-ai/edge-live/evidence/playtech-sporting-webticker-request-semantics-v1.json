@@ -1,0 +1,89 @@
+{
+  "version": "playtech-sporting-webticker-request-semantics-v1",
+  "generatedAt": "2026-08-26",
+  "scope": {
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "operatorTarget": "Betfair Spain",
+    "provider": "Playtech",
+    "gameFamily": "Sporting Legends",
+    "targetGame": "AP McCoy Sporting Legends™",
+    "targetGameId": "ap-mccoy-sporting-legends-cptn"
+  },
+  "sources": [
+    {
+      "class": "SPORTING_LEGENDS_PRODUCT_INTEGRATION_PDF_HOSTED_BY_BETCONSTRUCT",
+      "url": "https://clientzone.betconstruct.com/media/download/801cbj/Bobby%20George%E2%84%A2%20Sporting%20Legends%E2%84%A2.pdf",
+      "facts": [
+        "The Sporting Legends Jackpot Ticker Specification identifies Daily as sljp-1, Weekly as sljp-2 and Mega as sljp-3.",
+        "Its example Daily response is game-based info=1, global local=0, includes timestamp and winc on gamedata, and guaranteedHitTime on the amount element.",
+        "The document explicitly says its Playtech casino name and ticker URL are examples and licensees must use their own relevant instance names and ticker URLs."
+      ]
+    },
+    {
+      "class": "PUBLIC_MIRROR_OF_PLAYTECH_PROGRESSIVE_JACKPOT_TICKER_SPEC_V3_1_JUNE_2022",
+      "url": "https://www.scribd.com/document/957977467/Playtech-Jackpot-Ticker-Specifications",
+      "facts": [
+        "The mirrored document describes both JavaScript and XML Playtech progressive jackpot tickers.",
+        "For a JavaScript game-based ticker, info=1 selects game-based data and casino plus game are mandatory.",
+        "The JavaScript ticker parameter set documents local, currency and optional instanceCode in addition to casino and game.",
+        "The XML section independently defines game-based info=1, local=0 as global, currency as ISO 4217, gamedata timestamp as Unix UTC seconds, winc as win count, and guaranteedHitTime on amount as a Unix timestamp.",
+        "The document's non-XML error table distinguishes non-XML ticker info values, supporting that JavaScript ticker parameter semantics are service-level rather than an XML-only convention."
+      ]
+    },
+    {
+      "class": "PUBLIC_PLAYTECH_PLATFORM_INITIAL_RESOURCES_OTHER_OPERATOR_ARCHITECTURE_WITNESS",
+      "url": "https://www.versus.bet.br/initialResources/pt_BR_desktop?t=1770915709847",
+      "observedViaPublicIndex": "2026-08-26",
+      "facts": [
+        "The public Playtech-platform configuration exposes useServicesCasinoJackpots=true.",
+        "It exposes jackpotsCasino=versusbet.br.",
+        "It exposes both jackpotsCasinoUrl and liveEndpointUrl as https://webtickers.malmegas.com/webtickers."
+      ],
+      "transferGuard": "This proves a modern Playtech-platform webtickers architecture exists at another operator. It does not prove Betfair Spain uses the same casino name, endpoint, route, transport, request body or response schema."
+    }
+  ],
+  "closedSemantics": {
+    "sportingDailyProviderCodeSljp1Verified": true,
+    "sportingDailyProviderScopeGlobalLocal0Verified": true,
+    "providerGameBasedTickerInfo1SemanticsVerified": true,
+    "providerGameBasedTickerRequiresCasinoAndGameVerified": true,
+    "providerTickerLocalCurrencyInstanceCodeParameterSemanticsVerified": true,
+    "providerGamedataTimestampUnixUtcSemanticsVerified": true,
+    "providerGamedataWincWinCountSemanticsVerified": true,
+    "providerGuaranteedHitTimeUnixUtcSemanticsVerified": true,
+    "modernPlaytechPlatformWebtickersArchitectureObservedAtAnotherOperator": true
+  },
+  "stillUnknownForBetfairSpain": {
+    "exactInitialResourcesJackpotsCasinoVerified": false,
+    "exactConfiguredTickerEndpointVerified": false,
+    "exactModernWebtickersTransportVerified": false,
+    "exactModernWebtickersMethodVerified": false,
+    "exactModernRequestPlacementQueryBodyOrFrameVerified": false,
+    "exactModernResponseSchemaVerified": false,
+    "exactModernResponseRowIdentityVerified": false,
+    "currentSljp1AmountVerified": false,
+    "currentGuaranteedHitTimeVerified": false,
+    "currentWinCountVerified": false,
+    "directPublicModernProbeSafeAndVerified": false
+  },
+  "scientificConsequence": "A Betfair Spain HAR that co-locates the exact Betfair initialResources casino and configured webtickers endpoint, and then observes a game-based request carrying info=1, the exact casino, game=sljp-1, EUR and local=0, would have provider-documented parameter semantics rather than guessed field names. The HAR must still prove Betfair-specific transport, exact request placement and row-coherent response semantics before any modern webtickers snapshot can feed the overdue gate.",
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "otherOperatorCasinoNameCannotTransferToBetfair": true,
+    "otherOperatorEndpointCannotTransferToBetfair": true,
+    "documentedParameterNamesDoNotProveBetfairTransport": true,
+    "aggregateResponseFieldsDoNotProveRowIdentity": true,
+    "singleSnapshotCannotProveOverdue": true,
+    "noCredentials": true,
+    "noCookies": true,
+    "noWagerProbe": true,
+    "noAutomaticBetting": true
+  }
+}
