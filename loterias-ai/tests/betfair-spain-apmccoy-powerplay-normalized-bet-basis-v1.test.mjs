@@ -1,0 +1,22 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+const d=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/betfair-spain-apmccoy-powerplay-normalized-bet-basis-v1.json','utf8'));
+assert.equal(d.market,'ES');
+assert.equal(d.operator,'Betfair Spain');
+assert.equal(d.sourceType,'ONLINE');
+assert.equal(d.promotion,false);
+assert.equal(d.closedSemantics.accumulatorPurchaseMultiple,10);
+assert.equal(d.closedSemantics.accumulatorPlusPurchaseMultiple,20);
+assert.equal(d.closedSemantics.initialPowerPlaySpinCount,5);
+assert.equal(d.closedSemantics.bonusWheelCashPrizeUsesPowerPlayPurchaseDividedByFive,true);
+assert.equal(d.closedSemantics.accumulatorNormalizedFormulaMultipleOfSelectedTotalBet,2);
+assert.equal(d.closedSemantics.accumulatorPlusNormalizedFormulaMultipleOfSelectedTotalBet,4);
+assert.equal(d.stillUnknown.jackpotTriggerUsesSameNormalizedWagerBasis,false);
+assert.equal(d.stillUnknown.jackpotHazardWeightPerInitialPowerPlaySpinVerified,false);
+assert.equal(d.economicGuard.nominalHurdleUsableForExecution,false);
+assert.equal(d.execution.decision,'NO_PLAY');
+assert.equal(d.execution.realMoneyAllowed,false);
+assert.equal(d.hardGuards.bonusWheelFormulaCannotBeTransferredToJackpotHazard,true);
+assert.equal(d.hardGuards.superSpinCannotBeAssignedOneFifthWeight,true);
+console.log('betfair-spain-apmccoy-powerplay-normalized-bet-basis-v1.test.mjs: PASS');
