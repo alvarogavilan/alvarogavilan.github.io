@@ -88,17 +88,17 @@ function betfairInitialResourcesUrl(url){
   }catch{return false;}
 }
 
-function exactApMcCoyRealLauncher(url){
+function betfairRealCasinoLauncher(url){
   try{
     const u=new URL(maybeDecode(url));
     if(u.protocol!=='https:'||u.hostname.toLowerCase()!=='launcher.betfair.es')return null;
-    const gameId=u.searchParams.get('gameId');
+    const gameId=clean(u.searchParams.get('gameId'));
     const rp=u.searchParams.get('RPBucket');
     const dataChannel=u.searchParams.get('dataChannel');
     const launchProduct=u.searchParams.get('launchProduct');
     const mode=u.searchParams.get('mode');
-    if(gameId!==EXACT_GAME_ID||rp!=='casino'||dataChannel!=='casino'||launchProduct!=='casino'||mode!=='real')return null;
-    return {launcherOrigin:u.origin,launcherPath:u.pathname,gameId,rpBucket:rp,dataChannel,launchProduct,mode};
+    if(!gameId||rp!=='casino'||dataChannel!=='casino'||launchProduct!=='casino'||mode!=='real')return null;
+    return {launcherOrigin:u.origin,launcherPath:u.pathname,gameId,rpBucket:rp,dataChannel,launchProduct,mode,exactApMcCoy:gameId===EXACT_GAME_ID};
   }catch{return null;}
 }
 
@@ -112,12 +112,17 @@ export function analyzeBetfairSportingHar(har,{sourceName='capture.har'}={}){
   const relevant=[];
   const allFields={};
   const allUrls=[];
+  const betfairRealCasinoLauncherBindings=[];
   const exactApMcCoyRealLauncherBindings=[];
 
   entries.forEach((entry,index)=>{
     const rawRequestUrl=String(entry?.request?.url||'');
-    const exactLauncher=exactApMcCoyRealLauncher(rawRequestUrl);
-    if(exactLauncher)exactApMcCoyRealLauncherBindings.push({index,startedDateTime:entry?.startedDateTime||null,...exactLauncher});
+    const launcher=betfairRealCasinoLauncher(rawRequestUrl);
+    if(launcher){
+      const binding={index,startedDateTime:entry?.startedDateTime||null,...launcher};
+      betfairRealCasinoLauncherBindings.push(binding);
+      if(launcher.exactApMcCoy)exactApMcCoyRealLauncherBindings.push(binding);
+    }
 
     const parts=textParts(entry);
     const joined=parts.map(([,v])=>v).join('\n');
@@ -196,6 +201,7 @@ export function analyzeBetfairSportingHar(har,{sourceName='capture.har'}={}){
     entryCount:entries.length,
     relevantEntryCount:relevant.length,
     discovery:{
+      betfairRealCasinoLauncherBindings,
       exactApMcCoyRealLauncherBindings,
       exactApMcCoyRealLauncherBindingObserved:exactApMcCoyRealLauncherBindings.length>0,
       imsCandidates,
@@ -210,8 +216,8 @@ export function analyzeBetfairSportingHar(har,{sourceName='capture.har'}={}){
       currentDailyAmountExactVerified:false,
       currentGuaranteedHitTimeExactVerified:false,
     },
-    scientificUse:'Offline HAR discovery only. In addition to passive ticker/config recovery, the HAR now records whether the exact Betfair Spain real-money launcher for gameId ap-mccoy-sporting-legends-cptn was actually observed in the same capture. This closes a provenance gap: a generic Betfair or different-game HAR must not be sufficient for the AP McCoy overdue lane. Base64 bodies, escaped JSON URLs, unquoted keys and Chrome DevTools WebSocket frames remain supported. pairedServerEvidence still requires a Betfair-owned initialResources response co-locating jackpotsCasino with its configured ticker endpoint plus an exact endpoint-matching sljp-1 response. Execution remains blocked until exact-game attestation, server validation, freshness, same-cycle continuity, deadline, unawarded state and race gates all pass.',
+    scientificUse:'Offline HAR discovery only. The HAR records every Betfair real-money casino launcher gameId plus the exact AP McCoy launcher. Downstream AP McCoy correlation can therefore require that the latest real casino launcher preceding a ticker entry is AP McCoy, preventing stale Preserve-log history from a prior AP McCoy launch from lending provenance to a later different game. Base64 bodies, escaped JSON URLs, unquoted keys and Chrome DevTools WebSocket frames remain supported. pairedServerEvidence still requires a Betfair-owned initialResources response co-locating jackpotsCasino with its configured ticker endpoint plus an exact endpoint-matching sljp-1 response. Execution remains blocked until exact-game attestation, server validation, freshness, same-cycle continuity, deadline, unawarded state and race gates all pass.',
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,noCredentials:true,noCookiesEmitted:true,noWagerProbe:true,noAutomaticBetting:true,harEvidenceCannotAuthorizeGreen:true,coLocatedBetfairInitialResourcesRequired:true,configuredEndpointMatchRequired:true,exactApMcCoyRealLauncherMustBeObservedBeforeOverdueValidation:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,noCredentials:true,noCookiesEmitted:true,noWagerProbe:true,noAutomaticBetting:true,harEvidenceCannotAuthorizeGreen:true,coLocatedBetfairInitialResourcesRequired:true,configuredEndpointMatchRequired:true,allRealCasinoLauncherGameIdsRetainedForSessionOrdering:true,latestPrecedingLauncherMustBeExactApMcCoyDownstream:true,exactApMcCoyRealLauncherMustBeObservedBeforeOverdueValidation:true},
   };
 }
