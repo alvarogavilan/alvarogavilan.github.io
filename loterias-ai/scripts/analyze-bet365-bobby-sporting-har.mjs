@@ -2,17 +2,30 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {analyzeBet365BobbySportingHar} from '../edge-backend/src/bet365-bobby-sporting-har-discovery-v1.mjs';
+import {recoverBet365BobbyLegacySljp1Candidate} from '../edge-backend/src/bet365-bobby-legacy-ticker-candidate-v1.mjs';
 
 function usage(){return 'Usage: node loterias-ai/scripts/analyze-bet365-bobby-sporting-har.mjs <capture.har>';}
-function fail(reason,extra={}){return {version:'bet365-bobby-safe-har-cli-v1.1-stake-candidates',ok:false,reason,...extra,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0}};}
+function fail(reason,extra={}){return {version:'bet365-bobby-safe-har-cli-v1.2-legacy-daily-vector',ok:false,reason,...extra,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0}};}
+function safeLegacy(v){
+  if(v?.valid!==true)return {valid:false,reason:v?.reason||'LEGACY_SLJP1_VECTOR_NOT_RECOVERED',exactLegacySljp1ProtocolFieldsRecovered:false,bet365LicenseeBindingVerified:false,usableForOverduePair:false};
+  return {
+    valid:true,reason:v.reason||null,captureEpochSeconds:v.captureEpochSeconds??null,tickerEntryIndex:v.tickerEntryIndex??null,tickerEndpoint:v.tickerEndpoint||null,
+    expectedRequestCasino:v.expectedRequestCasino||null,expectedInstanceCode:v.expectedInstanceCode||null,snapshot:v.snapshot||null,feedAgeSeconds:v.feedAgeSeconds??null,maxFeedAgeSeconds:v.maxFeedAgeSeconds??null,
+    exactBobbyProviderGameMarkerVerified:v.exactBobbyProviderGameMarkerVerified===true,exactLegacySljp1ProtocolFieldsRecovered:v.exactLegacySljp1ProtocolFieldsRecovered===true,
+    currentDailyAmountCandidateRecovered:v.currentDailyAmountCandidateRecovered===true,currentGuaranteedHitTimeCandidateRecovered:v.currentGuaranteedHitTimeCandidateRecovered===true,currentWinCountCandidateRecovered:v.currentWinCountCandidateRecovered===true,currentGameTimestampCandidateRecovered:v.currentGameTimestampCandidateRecovered===true,currentRequestExecIntervalCandidateRecovered:v.currentRequestExecIntervalCandidateRecovered===true,
+    bet365LicenseeBindingVerified:false,exactBet365LauncherSemanticsVerified:false,exactBet365TickerEndpointOwnershipVerified:false,currentSljp1ExecutionStateVerified:false,usableForOverduePair:false,
+  };
+}
 
 export function analyzeSafeBet365BobbyHarText(raw,{sourceName='capture.har'}={}){
   let har;
   try{har=JSON.parse(raw);}catch(error){return fail('HAR_PARSE_FAILED',{error:String(error?.message||error)});}
   let analysis;
   try{analysis=analyzeBet365BobbySportingHar(har,{sourceName});}catch(error){return fail('HAR_ANALYSIS_FAILED',{error:String(error?.message||error)});}
+  let legacy;
+  try{legacy=recoverBet365BobbyLegacySljp1Candidate(har,{sourceName});}catch(error){legacy={valid:false,reason:'LEGACY_RECOVERY_FAILED',error:String(error?.message||error)};}
   return {
-    version:'bet365-bobby-safe-har-cli-v1.1-stake-candidates',ok:analysis?.valid===true,sourceName,
+    version:'bet365-bobby-safe-har-cli-v1.2-legacy-daily-vector',ok:analysis?.valid===true,sourceName,
     target:analysis?.target||null,
     exactTargetMarkerObserved:analysis?.exactTargetMarkerObserved===true,
     exactTargetDailyTickerCandidateObserved:analysis?.exactTargetDailyTickerCandidateObserved===true,
@@ -27,6 +40,7 @@ export function analyzeSafeBet365BobbyHarText(raw,{sourceName='capture.har'}={})
     servedStakeMenuSemanticsVerified:false,
     servedTenCentTotalStakeVerified:false,
     tenCentJackpotEligibilityVerified:false,
+    legacySljp1Candidate:safeLegacy(legacy),
     servedBet365SessionBindingVerified:false,
     exactBet365LauncherSemanticsVerified:false,
     exactBet365JackpotsCasinoImsVerified:false,
@@ -36,7 +50,7 @@ export function analyzeSafeBet365BobbyHarText(raw,{sourceName='capture.har'}={})
     scientificReason:analysis?.scientificUse||analysis?.reason||null,
     nextRequiredEvidence:analysis?.nextRequiredEvidence||[],
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{offlineOnly:true,noNetwork:true,rawHarNeverEmitted:true,requestHeadersNeverEmitted:true,credentialsAndCookiesNeverEmitted:true,endpointQueriesAndFragmentsNeverEmitted:true,stakeCandidatesAreStructuralOnly:true,numericStakeCandidateCannotBecomeServedTotalStake:true,tenCentCandidateCannotProveJackpotEligibility:true,analysisCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{offlineOnly:true,noNetwork:true,rawHarNeverEmitted:true,rawXmlNeverEmitted:true,requestHeadersNeverEmitted:true,credentialsAndCookiesNeverEmitted:true,endpointQueriesAndFragmentsNeverEmitted:true,stakeCandidatesAreStructuralOnly:true,numericStakeCandidateCannotBecomeServedTotalStake:true,tenCentCandidateCannotProveJackpotEligibility:true,legacyDailyVectorCannotProveBet365EndpointOwnership:true,legacyDailyVectorCannotAuthorizeGreen:true,analysisCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
 
