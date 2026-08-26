@@ -1,6 +1,6 @@
 {
-  "version": "playtech-betfair-spain-launcher-bindings-v1",
-  "generatedAt": "2026-08-26T04:45:00Z",
+  "version": "playtech-betfair-spain-launcher-bindings-v1.1-gods-and-giants",
+  "generatedAt": "2026-08-26T08:38:00Z",
   "mode": "CURRENT_SPAIN_PUBLIC_LAUNCHER_BINDING_NO_PLAY",
   "market": "ES",
   "operator": "Betfair Spain",
@@ -28,7 +28,7 @@
     {
       "network": "AGE_OF_GODS_NORSE",
       "title": "Age of the Gods Norse King of Asgard",
-      "catalogPage": "https://casino.betfair.es/c/playtech",
+      "catalogPage": "https://casino.betfair.es/studios/playtech",
       "launcherHost": "https://launcher.betfair.es/",
       "launcherGameId": "age-of-the-gods-norse-king-of-asgard-cptn",
       "launchProduct": "casino",
@@ -43,9 +43,32 @@
         "Which Norse lower tiers are active on Betfair.",
         "Underlying Playtech IMS casino name.",
         "Ticker host.",
-        "Local/global jackpot topology.",
-        "Ticker instanceCode.",
         "Current Daily value or guaranteedHitTime."
+      ]
+    },
+    {
+      "network": "AGE_OF_GODS_NORSE",
+      "title": "Age of the Gods Norse Gods and Giants",
+      "publicGamePage": "https://casino.betfair.es/juego/age-of-the-gods-norse-gods-and-giants-cptn",
+      "currentCatalogPage": "https://casino.betfair.es/c/jackpots",
+      "launcherHost": "https://launcher.betfair.es/",
+      "launcherGameId": "age-of-the-gods-norse-gods-and-giants-cptn",
+      "launchProduct": "casino",
+      "dataChannel": "casino",
+      "modeObserved": "real",
+      "publicPageRtpPct": 94.38,
+      "publicPageHeadlineJackpotSnapshotEUR": 609225.70,
+      "headlineTierBindingVerified": false,
+      "publicPageHistoricalTierSet": ["ULTIMATE_POWER", "EXTRA", "INSTANT"],
+      "dailyActiveOnBetfairFromThisPage": false,
+      "providerLinkedGameCodeComparator": "gpas_aoggagiants_pop",
+      "whatThisProves": "Betfair Spain currently catalogs Gods and Giants and exposes an exact public launcher gameId for the title. The page's historical rules show a Betfair configuration with Ultimate, Extra and Instant, not Daily.",
+      "whatThisDoesNotProve": [
+        "That Betfair's current active tier set is unchanged from the historical rules text.",
+        "That the headline jackpot is any specific Norse tier.",
+        "Underlying Playtech IMS casino name.",
+        "Ticker host.",
+        "Current aognjp-2 Daily state."
       ]
     }
   ],
@@ -54,15 +77,18 @@
     "jackpotsCasinoUrlRecoveredForBetfairSpain": false,
     "newJackpotXmlEndpointRecoveredForBetfairSpain": false,
     "exactImsCasinoNameRecovered": false,
-    "exactTickerInstanceCodeRecovered": false,
-    "exactLocalGlobalTopologyRecovered": false
+    "currentAognjp2EurGlobalRowRecovered": false,
+    "currentGuaranteedHitTimeRecovered": false,
+    "instanceCode": "OPTIONAL_UNLESS_PRESENT_OR_NEEDED_TO_DISAMBIGUATE"
   },
   "parserReadiness": {
-    "mainCommit": "60ad7d0a6e399397b586f482622e326eca6a855c",
+    "parserVersion": "playtech-mhb-ticker-parser-v1.4-protocol-scope-safe",
     "exactCurrencyFilter": true,
     "exactCasinoFilter": true,
     "exactLocalGlobalFilter": true,
-    "exactInstanceCodeFilter": true
+    "instanceCodeOptionalByTickerSpec": true,
+    "exactInstanceCodeFilterWhenPresent": true,
+    "providerDocumentedGlobalScopeGuard": true
   },
   "execution": {
     "decision": "NO_PLAY",
@@ -77,8 +103,9 @@
     "sameTitleDoesNotProveSameImsBuild": true,
     "launcherGameIdDoesNotProveTickerCasinoIdentity": true,
     "headlineJackpotDoesNotBindLowerTier": true,
+    "historicalTierSetDoesNotProveCurrentTierSet": true,
     "foreignOrComparatorTickerHostNeverTransferred": true,
     "noWagerProbe": true
   },
-  "nextDecisiveEvidence": "Recover a public same-deployment Betfair Spain Playtech IMS casino/ticker configuration, then parse EUR aognjp-2 or krjp-3 with exact casino + local/global + instanceCode binding."
+  "nextDecisiveEvidence": "Recover a current Spanish same-network Playtech ticker/casino binding and parse EUR aognjp-2 with exact IMS casino plus local=0; instanceCode is only required if present or needed to disambiguate."
 }
