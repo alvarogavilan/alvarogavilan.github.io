@@ -12,7 +12,7 @@ const post={
   ]})}},
 };
 let r=analyzeBetfairSportingStructuredWebtickersRows({log:{entries:[initial,post]}},{sourceName:'structured.har'});
-assert.equal(r.version,'betfair-sporting-webtickers-structured-row-v1');
+assert.equal(r.version,'betfair-sporting-webtickers-structured-row-v1.1-ws-direction-binding');
 assert.equal(r.exactConfiguredWebtickersTrafficObserved,true);
 assert.equal(r.structuredSljp1RowCandidateCount,1);
 const c=r.structuredSljp1RowCandidates[0];
@@ -60,8 +60,25 @@ r=analyzeBetfairSportingStructuredWebtickersRows({log:{entries:[initial,ws]}},{s
 assert.equal(r.structuredSljp1RowCandidateCount,1);
 assert.equal(r.structuredSljp1RowCandidates[0].payloadKind,'websocket-receive');
 assert.equal(r.structuredSljp1RowCandidates[0].configuredWebSocketTransportUpgradeObserved,true);
+assert.equal(r.structuredSljp1RowCandidates[0].requestCasinoMatchesConfiguredBinding,true);
 assert.equal(r.structuredSljp1RowCandidates[0].row.amount,124.56);
 assert.equal(r.execution.maxTotalStakeEUR,0);
+
+// Server receive data must never be allowed to manufacture request-side casino evidence.
+const wsReceiveOnlyCasino={
+  ...ws,
+  _webSocketMessages:[
+    {type:'send',opcode:1,data:'{"game":"sljp-1","currency":"EUR","local":0}'},
+    {type:'receive',opcode:1,data:'{"casino":"bf_es","game":"sljp-1","currency":"EUR","local":0,"timestamp":2399,"winc":44,"amount":125.67,"guaranteedHitTime":2400}'},
+  ],
+};
+r=analyzeBetfairSportingStructuredWebtickersRows({log:{entries:[initial,wsReceiveOnlyCasino]}},{sourceName:'structured-ws-direction.har'});
+assert.equal(r.structuredSljp1RowCandidateCount,1);
+assert.equal(r.structuredSljp1RowCandidates[0].responseCasinoMatchesConfiguredBinding,true);
+assert.equal(r.structuredSljp1RowCandidates[0].requestCasinoMatchesConfiguredBinding,false);
+assert.equal(r.hardGuards.webSocketReceiveCannotSatisfyRequestCasinoBinding,true);
+assert.equal(r.execution.decision,'NO_PLAY');
+assert.equal(r.execution.realMoneyAllowed,false);
 
 const bad=analyzeBetfairSportingStructuredWebtickersRows('{bad');
 assert.equal(bad.valid,false);
