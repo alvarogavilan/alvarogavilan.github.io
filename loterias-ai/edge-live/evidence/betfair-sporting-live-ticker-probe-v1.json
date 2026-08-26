@@ -1,0 +1,54 @@
+{
+  "version": "betfair-sporting-live-ticker-probe-contract-v1",
+  "generatedAt": "2026-08-26T19:58:00+02:00",
+  "target": {
+    "market": "ES",
+    "operator": "Betfair Spain",
+    "provider": "Playtech",
+    "game": "AP McCoy Sporting Legends",
+    "gameId": "ap-mccoy-sporting-legends-cptn",
+    "tier": "Daily",
+    "providerGameCode": "sljp-1"
+  },
+  "purpose": "Convert an exact Betfair-owned co-located initialResources binding into a passive public XML request for the exact Sporting Legends Daily row and validate the returned server snapshot without login, credentials, POST, wager probe or automatic betting.",
+  "requestContract": {
+    "method": "GET",
+    "endpointMustBeConfiguredByBetfairInitialResources": true,
+    "endpointPathMustEndWith": "new_jackpotxml.php",
+    "info": "1",
+    "casino": "FROM_EXACT_BETFAIR_INITIAL_RESOURCES_ONLY",
+    "game": "sljp-1",
+    "currency": "eur",
+    "local": "0",
+    "instanceCode": "ONLY_IF_PRESENT_IN_SAME_CONFIG_BINDING"
+  },
+  "primaryProtocolBasis": {
+    "document": "Playtech Progressive Jackpot Ticker Specifications",
+    "facts": [
+      "info=1 is game-based information and requires casino and game",
+      "local=0 selects a global jackpot",
+      "currency is a three-letter ISO code",
+      "successful XML echoes request attributes and provides gamedata timestamp/winc plus jackpot amount metadata"
+    ]
+  },
+  "promotionRule": "A fresh validated single sljp-1 snapshot may close exact ticker/IMS identity plus current amount/GHT observation, but can never prove overdue state or authorize a wager by itself. The existing two-snapshot cross-deadline overdue evaluator remains mandatory.",
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "publicGetOnly": true,
+    "arbitraryTickerUrlInputDisabled": true,
+    "crossOperatorCasinoTransferForbidden": true,
+    "singleSnapshotCannotAuthorizeGreen": true,
+    "noLoginProbe": true,
+    "noCredentials": true,
+    "noWagerProbe": true,
+    "noAutomaticBetting": true
+  }
+}
