@@ -50,31 +50,51 @@ function wsSendValueSets(entry,baseValues){
   }
   return out;
 }
-function vals(src,name){return (src?.[key(name)]||[]).map(v=>clean(v));}
-function has(src,name,expected){
-  const e=clean(expected).toLowerCase();
-  return vals(src,name).some(v=>v.toLowerCase()===e);
+function normalizeValue(name,value){
+  const n=key(name),v=clean(value).toLowerCase();
+  if(n==='local'){
+    if(v==='0'||v==='false')return '0';
+    if(v==='1'||v==='true')return '1';
+  }
+  return v;
 }
-function observed(src,name){return vals(src,name).length>0;}
+function normalizedValues(src,names){
+  const list=[];
+  for(const name of Array.isArray(names)?names:[names]){
+    for(const v of src?.[key(name)]||[])list.push(normalizeValue(name,v));
+  }
+  return uniq(list);
+}
+function exactSemantic(src,names,expected){
+  const values=normalizedValues(src,names);
+  const target=normalizeValue(Array.isArray(names)?names[0]:names,expected);
+  return {observed:values.length>0,ambiguous:values.length>1,matches:values.length===1&&values[0]===target,normalizedValues:values};
+}
 function evaluate(values,{expectedCasino,expectedInstanceCode=null}={}){
-  const infoGameBased=has(values,'info','1');
-  const casinoMatches=has(values,'casino',expectedCasino);
-  const gameMatches=has(values,'game','sljp-1')||has(values,'gameCode','sljp-1');
-  const currencyEur=has(values,'currency','EUR');
-  const localGlobal=has(values,'local','0')||has(values,'local','false');
-  const instanceObserved=observed(values,'instanceCode');
-  const instanceCodeConsistent=!expectedInstanceCode||!instanceObserved||has(values,'instanceCode',expectedInstanceCode);
-  const providerDocumentedGameRequestComplete=infoGameBased&&casinoMatches&&gameMatches;
-  const exactSportingDailyScopeObserved=providerDocumentedGameRequestComplete&&currencyEur&&localGlobal&&instanceCodeConsistent;
+  const info=exactSemantic(values,'info','1');
+  const casino=exactSemantic(values,'casino',expectedCasino);
+  const game=exactSemantic(values,['game','gameCode'],'sljp-1');
+  const currency=exactSemantic(values,'currency','EUR');
+  const local=exactSemantic(values,'local','0');
+  const instanceValues=normalizedValues(values,'instanceCode');
+  const instanceObserved=instanceValues.length>0;
+  const instanceAmbiguous=instanceValues.length>1;
+  const instanceCodeConsistent=expectedInstanceCode
+    ? instanceValues.length===0||(instanceValues.length===1&&instanceValues[0]===normalizeValue('instanceCode',expectedInstanceCode))
+    : instanceValues.length===0;
+  const ambiguityDetected=info.ambiguous||casino.ambiguous||game.ambiguous||currency.ambiguous||local.ambiguous||instanceAmbiguous||(!expectedInstanceCode&&instanceObserved);
+  const providerDocumentedGameRequestComplete=info.matches&&casino.matches&&game.matches&&!ambiguityDetected;
+  const exactSportingDailyScopeObserved=providerDocumentedGameRequestComplete&&currency.matches&&local.matches&&instanceCodeConsistent;
   return {
     values,
-    infoGameBased,
-    casinoMatches,
-    gameMatches,
-    currencyEur,
-    localGlobal,
+    infoGameBased:info.matches,
+    casinoMatches:casino.matches,
+    gameMatches:game.matches,
+    currencyEur:currency.matches,
+    localGlobal:local.matches,
     instanceCodeObserved:instanceObserved,
     instanceCodeConsistent,
+    ambiguityDetected,
     providerDocumentedGameRequestComplete,
     exactSportingDailyScopeObserved,
     requestContractSemanticsSupportedByProviderSpec:exactSportingDailyScopeObserved,
@@ -126,7 +146,7 @@ export function analyzeBetfairSportingWebtickersRequestSemantics(har,{sourceName
   }
   const matches=observations.filter(x=>x.requestContractSemanticsSupportedByProviderSpec===true);
   return {
-    version:'betfair-sporting-webtickers-request-semantics-v1',
+    version:'betfair-sporting-webtickers-request-semantics-v1.1-fail-closed-routing',
     mode:'OFFLINE_PASSIVE_PROVIDER_DOCUMENTED_REQUEST_SEMANTICS_NO_PLAY',
     sourceName,
     exactConfiguredWebtickersTrafficObserved:protocol?.exactModernWebtickersTrafficObserved===true,
@@ -138,11 +158,11 @@ export function analyzeBetfairSportingWebtickersRequestSemantics(har,{sourceName
     exactModernResponseSemanticsVerified:false,
     directPublicModernProbeAllowed:false,
     usableForOverduePair:false,
-    scientificUse:'Playtech ticker documentation independently defines game-based info=1 with casino and game, plus local, currency and optional instanceCode semantics; Sporting Legends documentation identifies Daily as sljp-1 and global local=0. This analyzer checks whether an exact Betfair-configured webtickers request observed in HAR carries those documented semantics without emitting credentials. A semantic match does not prove the modern transport contract, response schema, live row truth or overdue state.',
+    scientificUse:'Playtech ticker documentation independently defines game-based info=1 with casino and game, plus local, currency and optional instanceCode semantics; Sporting Legends documentation identifies Daily as sljp-1 and global local=0. This analyzer checks whether an exact Betfair-configured webtickers request observed in HAR carries those documented semantics without emitting credentials. Conflicting duplicate routing/scope values, aliases that disagree, or an instanceCode that cannot be bound to Betfair initialResources fail closed. A semantic match does not prove the modern transport contract, response schema, live row truth or overdue state.',
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,exactBetfairConfiguredWebtickersTrafficRequired:true,providerDocumentedInfo1CasinoGameRequired:true,sljp1EurLocal0Required:true,otherOperatorValuesCannotTransfer:true,credentialsNeverEmitted:true,requestSemanticMatchCannotAuthorizeGreen:true,directModernProbeBlocked:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,exactBetfairConfiguredWebtickersTrafficRequired:true,providerDocumentedInfo1CasinoGameRequired:true,sljp1EurLocal0Required:true,conflictingRoutingValuesRejectMatch:true,unboundInstanceCodeRejectsMatch:true,otherOperatorValuesCannotTransfer:true,credentialsNeverEmitted:true,requestSemanticMatchCannotAuthorizeGreen:true,directModernProbeBlocked:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
 function fail(reason,extra={}){
-  return {version:'betfair-sporting-webtickers-request-semantics-v1',mode:'OFFLINE_PASSIVE_PROVIDER_DOCUMENTED_REQUEST_SEMANTICS_NO_PLAY',valid:false,reason,providerDocumentedExactDailyRequestObserved:false,providerDocumentedExactDailyRequestMatchCount:0,directPublicModernProbeAllowed:false,usableForOverduePair:false,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},...extra};
+  return {version:'betfair-sporting-webtickers-request-semantics-v1.1-fail-closed-routing',mode:'OFFLINE_PASSIVE_PROVIDER_DOCUMENTED_REQUEST_SEMANTICS_NO_PLAY',valid:false,reason,providerDocumentedExactDailyRequestObserved:false,providerDocumentedExactDailyRequestMatchCount:0,directPublicModernProbeAllowed:false,usableForOverduePair:false,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},...extra};
 }
