@@ -1,19 +1,53 @@
 {
-  "version": "aotgn-daily-first-contribution-spanish-v1.1-source-verified",
-  "generatedAt": "2026-08-26T03:58:00Z",
+  "version": "aotgn-daily-first-contribution-spanish-v1.2-priority-operator-bridge",
+  "generatedAt": "2026-08-26T04:05:00Z",
   "mode": "SPANISH_ONLINE_DETERMINISTIC_ROLLOVER_CANDIDATE_NO_PLAY",
   "market": "ES",
   "provider": "Playtech",
   "network": "Age of the Gods Norse",
-  "primaryExecutionCandidate": {
+  "primarySpanishRuleSource": {
     "operator": "Casino777.es",
     "game": "Age of the Gods Norse: King of Asgard",
     "gamePage": "https://www.casino777.es/age-of-the-gods-norse-king-of-asgard",
-    "currentAvailabilityEvidence": "Casino777 Spain current public game page is indexed and was crawled within the last week at verification time; the July 2026 RTP catalogue also lists King of Asgard.",
+    "currentAvailabilityEvidence": "Current Spanish public game page indexed/crawled within the last week; July 2026 RTP catalogue also lists the exact title.",
     "minBetEUR": 0.10,
     "maxBetEUR": 190.00,
     "publishedBaseGameRtpPct": 94.56,
     "rulesVersionOnPage": "v1.0 - 04-11-2025"
+  },
+  "priorityOperatorBridge": {
+    "operator": "CasinoBarcelona.es",
+    "priorityOperator": true,
+    "sourceUrl": "https://ayuda.casinobarcelona.es/hc/es/articles/4408642180625-T%C3%A9rminos-y-condiciones-generales-del-Bono-de-Casino",
+    "sourceObservedFreshness": "current help page crawled within the last month at verification time",
+    "sourceUse": "CATALOG_PRESENCE_ONLY_NON_PROMOTIONAL_EVIDENCE",
+    "currentExactTitlesListed": [
+      "Age of the Gods Norse: Book of Dwarves",
+      "Age of the Gods Norse: Gods and Giants",
+      "Age of the Gods Norse: King of Asgard",
+      "Age of The Gods Norse: Norse Legends",
+      "Age of the Gods Norse: Ways of Thunder",
+      "Kingdoms Rise: Battle Beast",
+      "Kingdoms Rise: Captains Treasure",
+      "Kingdoms Rise: Chasm of Fear",
+      "Kingdoms Rise: Forbidden Forest",
+      "Kingdoms Rise: Guardians of the Abyss",
+      "Kingdoms Rise: Legend of Elvenstone",
+      "Kingdoms Rise: Legion Uprising",
+      "Kingdoms Rise: Reign of Ice",
+      "Kingdoms Rise: Sands of Fury",
+      "Kingdoms Rise: Scorching Clouds",
+      "Kingdoms Rise: Shadow Queen"
+    ],
+    "whatThisProves": "The exact Playtech Norse and Kingdoms Rise title families are currently recognized in CasinoBarcelona.es's own live casino catalogue/terms, closing the priority-operator title-availability bridge.",
+    "whatThisDoesNotProve": [
+      "Which Norse jackpot levels are currently activated by CasinoBarcelona.es.",
+      "The current Daily value or guaranteed-hit timestamp.",
+      "That CasinoBarcelona.es uses the same funding split or active-tier configuration as Casino777, JOKERBET, Betfair or William Hill.",
+      "That the deterministic rollover condition is currently reachable in a live CasinoBarcelona session."
+    ],
+    "promotionTermsUsedForEdge": false,
+    "nonPromoOnly": true
   },
   "primarySpanishSourceVerification": {
     "verified": true,
@@ -43,12 +77,8 @@
       "deterministicRolloverClauseSourceVerified": true,
       "deterministicRolloverClause": "If the Daily jackpot does not activate while bets are contributing to it, the first bet/contribution in the next timed period is guaranteed to win the Daily jackpot."
     },
-    "extra": {
-      "mustWinBeforeDisplayedMaximum": true
-    },
-    "instant": {
-      "mustWinBeforeDisplayedMaximum": true
-    }
+    "extra": {"mustWinBeforeDisplayedMaximum": true},
+    "instant": {"mustWinBeforeDisplayedMaximum": true}
   },
   "operatorConfigurationDivergence": {
     "jokerbetGodsAndGiantsCurrentPage": {
@@ -70,21 +100,21 @@
   "economicMeaning": {
     "deterministicConditionExistsInSpanishRules": true,
     "deterministicConditionSourceVerified": true,
+    "priorityOperatorCurrentTitleBridgeVerified": true,
     "condition": "DAILY_ROLLOVER_WITHOUT_PRIOR_ACTIVATION_AND_FIRST_NETWORK_CONTRIBUTION_NEXT_PERIOD",
     "conditionalJackpotWinProbabilityIfConditionAndFirstContributionAreBothVerified": 1,
-    "minimumPossibleQualifyingStakeEURAtCandidateGame": 0.10,
     "positiveEvNotYetProven": true,
-    "remainingProblemClass": "OBSERVABILITY_AND_NETWORK_FIRST_CONTRIBUTION_ATTAINABILITY_NOT_JACKPOT_HAZARD",
+    "remainingProblemClass": "PRIORITY_OPERATOR_ACTIVE_TIER_STATE_PLUS_OBSERVABILITY_AND_NETWORK_FIRST_CONTRIBUTION_ATTAINABILITY",
     "why": [
-      "Current active jackpot set at Casino777 has not been observed in a live session; the Daily may be disabled by the licensee.",
-      "The exact Daily jackpot value and next rollover time have not been captured in a same-session Spanish screen/ticker.",
-      "The guarantee applies to the first contribution across the jackpot network, so practical attainability/race latency has not been demonstrated.",
+      "CasinoBarcelona.es current catalogue presence is verified, but its active Norse jackpot subset has not been observed in a live session.",
+      "The exact Daily jackpot value and next rollover time have not been captured in a same-session priority-operator screen/ticker.",
+      "The guarantee applies to the first contribution across the shared jackpot network, so practical attainability/race latency has not been demonstrated.",
       "No real-money probe is allowed to test first-contributor status."
     ]
   },
   "nextDecisiveEvidence": [
-    "Recover the current EUR aognjp-2 ticker row including amount and guaranteedHitTime, or obtain a no-bet same-session Spanish screen proving DAILY is active with its value and exact rollover timestamp.",
-    "Passive observation across one rollover proving whether the Daily is paid before expiry or enters the next timed period without activation.",
+    "Recover a current EUR aognjp-2 ticker row for the CasinoBarcelona deployment including amount and guaranteedHitTime, or obtain one no-bet CasinoBarcelona screen proving DAILY is active with its value and exact rollover timestamp.",
+    "Passively observe at least one full Daily period/reset at the exact priority-operator configuration.",
     "If a rollover-without-activation is observed, verify whether a pre-bet state allows first-contribution status to be identified conservatively without wagering.",
     "Only after prospective passive validation may a real-money execution contract be considered."
   ],
@@ -96,6 +126,8 @@
     "maxTotalStakeEUR": 0
   },
   "hardGuards": {
+    "onlineOnly": true,
+    "nonPromoOnly": true,
     "dailyMustBeCurrentlyActive": true,
     "operatorConfigCannotBeTransferred": true,
     "firstContributionCannotBeAssumed": true,
