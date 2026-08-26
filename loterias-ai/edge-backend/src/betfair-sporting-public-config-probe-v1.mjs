@@ -1,6 +1,9 @@
+import {buildBetfairSportingSljp1RequestUrl,validateBetfairSportingServerSnapshot} from '../../casino/jackpots/betfair-sporting-server-binding-validator-v1.mjs';
+
 const MAX_TEXT_CHARS=2_000_000;
 const MAX_ASSETS=6;
 const MAX_CONFIG_DOCS=10;
+const MAX_SERVER_PROBES=2;
 const KEYWORDS=['jackpotsCasino','jackpotsCasinoUrl','liveEndpointUrl','useServicesCasinoJackpots','initialResources','new_jackpotxml.php','webtickers','sljp-1','tonymc','guaranteedHitTime','instanceCode'];
 const GAME_PAGE_URL='https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn';
 const LAUNCHER_URL='https://launcher.betfair.es/?RPBucket=casino&dataChannel=casino&gameId=ap-mccoy-sporting-legends-cptn&launchProduct=casino&mode=real&returnURL=https%3A%2F%2Fcasino.betfair.es%2Fjuego%2Fap-mccoy-sporting-legends-cptn&switchedToPopup=true';
@@ -37,47 +40,28 @@ export function extractSportingPublicConfigSignals(text,{sourceUrl='unknown'}={}
       from=i+key.length;count++;
     }
   }
-
   const assignments={};
   for(const key of ['jackpotsCasino','jackpotsCasinoUrl','liveEndpointUrl','instanceCode']){
     const re=new RegExp(`(?:["']${key}["']|\\b${key}\\b)\\s*[:=]\\s*["']([^"'<>\\s,;]+)["']`,'i');
     const m=body.match(re);if(m)assignments[key]=unescapeUrl(m[1]);
   }
-
-  const urls=[...normalized.matchAll(/https?:\/\/[^\s"'<>]+/gi)]
-    .map(m=>m[0].replace(/[),;]+$/,''))
-    .filter(u=>/jackpot|ticker|sljp|playtech|initialresources/i.test(u)).slice(0,30);
-
+  const urls=[...normalized.matchAll(/https?:\/\/[^\s"'<>]+/gi)].map(m=>m[0].replace(/[),;]+$/,'')).filter(u=>/jackpot|ticker|sljp|playtech|initialresources/i.test(u)).slice(0,30);
   return {sourceUrl,assignments,urls:[...new Set(urls)],hits,sljp1Observed:/\bsljp-1\b/i.test(body),tonymcObserved:/\btonymc\b/i.test(body),guaranteedHitTimeObserved:/\bguaranteedHitTime\b/i.test(body),useServicesCasinoJackpotsObserved:/\buseServicesCasinoJackpots\b/i.test(body)};
 }
 
-function allowedAssetHost(hostname){
-  const h=String(hostname||'').toLowerCase();
-  return h==='launcher.betfair.es'||h.endsWith('.betfair.es')||h.endsWith('.betfair.com')||h.endsWith('.cdnppb.net')||h.includes('playtech');
-}
-function allowedConfigHost(hostname){
-  const h=String(hostname||'').toLowerCase();
-  return allowedAssetHost(h)||h==='webtickers.malmegas.com';
-}
-function betfairOwnedConfigSource(sourceUrl){
-  try{
-    const u=new URL(sourceUrl);
-    const h=u.hostname.toLowerCase();
-    return u.protocol==='https:'&&(h==='betfair.es'||h.endsWith('.betfair.es'))&&/\/initialresources(?:\/|$)/i.test(u.pathname);
-  }catch{return false;}
-}
+function allowedAssetHost(hostname){const h=String(hostname||'').toLowerCase();return h==='launcher.betfair.es'||h.endsWith('.betfair.es')||h.endsWith('.betfair.com')||h.endsWith('.cdnppb.net')||h.includes('playtech');}
+function allowedConfigHost(hostname){const h=String(hostname||'').toLowerCase();return allowedAssetHost(h)||h==='webtickers.malmegas.com';}
+function betfairOwnedConfigSource(sourceUrl){try{const u=new URL(sourceUrl),h=u.hostname.toLowerCase();return u.protocol==='https:'&&(h==='betfair.es'||h.endsWith('.betfair.es'))&&/\/initialresources(?:\/|$)/i.test(u.pathname);}catch{return false;}}
 
 export function deriveCoLocatedBetfairConfigBindings(scans=[]){
   const out=[];
   for(const scan of Array.isArray(scans)?scans:[]){
     if(!scan||!betfairOwnedConfigSource(scan.sourceUrl))continue;
-    const casino=clean(scan.assignments?.jackpotsCasino);
-    if(!casino)continue;
+    const casino=clean(scan.assignments?.jackpotsCasino);if(!casino)continue;
     const tickerUrls=[scan.assignments?.jackpotsCasinoUrl,scan.assignments?.liveEndpointUrl].filter(Boolean);
     for(const rawUrl of tickerUrls){
       try{
-        const u=new URL(rawUrl);
-        if(u.protocol!=='https:'||!allowedConfigHost(u.hostname))continue;
+        const u=new URL(rawUrl);if(u.protocol!=='https:'||!allowedConfigHost(u.hostname))continue;
         const candidate={sourceUrl:scan.sourceUrl,jackpotsCasino:casino,tickerUrl:u.href,instanceCode:clean(scan.assignments?.instanceCode)||null,sameDocument:true,sourceBetfairOwned:true,sourceInitialResources:true};
         if(!out.some(x=>x.sourceUrl===candidate.sourceUrl&&x.jackpotsCasino===candidate.jackpotsCasino&&x.tickerUrl===candidate.tickerUrl))out.push(candidate);
       }catch{}
@@ -88,9 +72,7 @@ export function deriveCoLocatedBetfairConfigBindings(scans=[]){
 
 export function discoverPublicAssetUrls(html,baseUrl){
   const out=[];const re=/<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi;
-  for(const m of String(html||'').matchAll(re)){
-    try{const u=new URL(unescapeUrl(m[1]),baseUrl);if(u.protocol!=='https:'||!allowedAssetHost(u.hostname))continue;if(!out.includes(u.href))out.push(u.href);if(out.length>=MAX_ASSETS)break;}catch{}
-  }
+  for(const m of String(html||'').matchAll(re)){try{const u=new URL(unescapeUrl(m[1]),baseUrl);if(u.protocol!=='https:'||!allowedAssetHost(u.hostname))continue;if(!out.includes(u.href))out.push(u.href);if(out.length>=MAX_ASSETS)break;}catch{}}
   return out;
 }
 
@@ -101,9 +83,7 @@ export function discoverPublicConfigUrls(text,baseUrl){
   const assignment=extractSportingPublicConfigSignals(normalized,{sourceUrl:baseUrl}).assignments;
   for(const v of [assignment.jackpotsCasinoUrl,assignment.liveEndpointUrl])if(v)raw.push(v);
   const out=[];
-  for(const v of raw){
-    try{const u=new URL(v,baseUrl);if(u.protocol!=='https:'||!allowedConfigHost(u.hostname))continue;if(!/(?:initialResources|new_jackpotxml\.php|webtickers)/i.test(u.href))continue;if(!out.includes(u.href))out.push(u.href);if(out.length>=MAX_CONFIG_DOCS)break;}catch{}
-  }
+  for(const v of raw){try{const u=new URL(v,baseUrl);if(u.protocol!=='https:'||!allowedConfigHost(u.hostname))continue;if(!/(?:initialResources|new_jackpotxml\.php|webtickers)/i.test(u.href))continue;if(!out.includes(u.href))out.push(u.href);if(out.length>=MAX_CONFIG_DOCS)break;}catch{}}
   return out;
 }
 
@@ -117,9 +97,10 @@ async function fetchPublicText(url){
   }catch(e){return {ok:false,status:null,requestedUrl:url,finalUrl:null,contentType:null,text:'',truncated:false,error:String(e?.message||e)};}
 }
 function unique(values){return [...new Set(values.filter(Boolean))];}
+function serverIdentity(v){if(!v?.valid)return null;try{const u=new URL(v.tickerEndpoint);return `${String(v.expectedBetfairImsCasino).toLowerCase()}|${u.origin}${u.pathname}`;}catch{return null;}}
 
 export async function runBetfairSportingPublicConfigProbe(){
-  const observedAt=new Date().toISOString();
+  const observedAt=new Date().toISOString(),nowEpochSeconds=Math.floor(Date.now()/1000);
   const gamePage=await fetchPublicText(GAME_PAGE_URL);
   const launcher=await fetchPublicText(LAUNCHER_URL);
   const documents=[gamePage,launcher].filter(x=>x.text);
@@ -142,13 +123,26 @@ export async function runBetfairSportingPublicConfigProbe(){
   const hubJackpotServiceSources=unique(scans.filter(x=>x.useServicesCasinoJackpotsObserved).map(x=>x.sourceUrl));
   const hits=scans.flatMap(x=>x.hits).slice(0,120);
 
+  const serverSnapshotAttempts=[];
+  for(const binding of coLocatedBetfairConfigBindings.slice(0,MAX_SERVER_PROBES)){
+    const requestUrl=buildBetfairSportingSljp1RequestUrl(binding);
+    if(!requestUrl)continue;
+    const response=await fetchPublicText(requestUrl);
+    const validation=response.text?validateBetfairSportingServerSnapshot({configBinding:binding,tickerXml:response.text,responseUrl:response.finalUrl||response.requestedUrl,nowEpochSeconds}):null;
+    serverSnapshotAttempts.push({binding,request:{ok:response.ok,status:response.status,requestedUrl:response.requestedUrl,finalUrl:response.finalUrl,contentType:response.contentType,truncated:response.truncated,error:response.error||null},validation});
+  }
+  const validServerSnapshots=serverSnapshotAttempts.map(x=>x.validation).filter(x=>x?.valid===true);
+  const validServerIdentityKeys=unique(validServerSnapshots.map(serverIdentity));
+  const exactServerBindingUnique=validServerIdentityKeys.length===1&&validServerSnapshots.length>0;
+  const currentServerSnapshot=exactServerBindingUnique?validServerSnapshots[0]:null;
+
   return {
-    version:'betfair-sporting-public-config-probe-v1.3-colocated-binding',observedAt,mode:'PUBLIC_PASSIVE_CONFIG_DISCOVERY_NO_PLAY',
+    version:'betfair-sporting-public-config-probe-v1.4-passive-server-snapshot',observedAt,mode:'PUBLIC_PASSIVE_CONFIG_AND_SERVER_DISCOVERY_NO_PLAY',
     target:{market:'ES',operator:'Betfair Spain',provider:'Playtech',game:'AP McCoy Sporting Legends™',gameId:'ap-mccoy-sporting-legends-cptn'},
-    fetches:{gamePage:{ok:gamePage.ok,status:gamePage.status,requestedUrl:gamePage.requestedUrl,finalUrl:gamePage.finalUrl,contentType:gamePage.contentType,truncated:gamePage.truncated,error:gamePage.error||null},launcher:{ok:launcher.ok,status:launcher.status,requestedUrl:launcher.requestedUrl,finalUrl:launcher.finalUrl,contentType:launcher.contentType,truncated:launcher.truncated,error:launcher.error||null},assets:assets.map(x=>({ok:x.ok,status:x.status,requestedUrl:x.requestedUrl,finalUrl:x.finalUrl,contentType:x.contentType,truncated:x.truncated,error:x.error||null})),configDocuments:configDocs.map(x=>({ok:x.ok,status:x.status,requestedUrl:x.requestedUrl,finalUrl:x.finalUrl,contentType:x.contentType,truncated:x.truncated,error:x.error||null}))},
-    discovery:{scannedDocumentCount:scans.length,publicAssetCount:assetUrls.length,staticPublicConfigCandidates:[...STATIC_PUBLIC_CONFIG_CANDIDATES],discoveredPublicConfigUrls:discoveredConfigUrls,publicConfigDocumentCount:configUrls.length,publicConfigUrls:configUrls,jackpotsCasinoCandidates,jackpotTickerUrlCandidates,coLocatedBetfairConfigBindings,instanceCodeCandidates,sljp1Sources,tonymcSources,guaranteedHitTimeSources,hubJackpotServiceSources,hits,bindingCandidateObserved:coLocatedBetfairConfigBindings.length>0,exactBetfairSpainTickerImsBindingVerified:false,currentSljp1RowRecovered:false,currentDailyAmountExactVerified:false,currentGuaranteedHitTimeExactVerified:false},
-    scientificUse:'Public passive discovery only. A binding candidate now requires jackpotsCasino and the ticker endpoint to be co-located in the same Betfair-owned initialResources document; cross-document pairing is forbidden. Even a co-located candidate cannot authorize execution and must be independently validated against the exact Betfair Spain sljp-1 EUR local=0 response before it may enter the overdue GREEN route.',
+    fetches:{gamePage:{ok:gamePage.ok,status:gamePage.status,requestedUrl:gamePage.requestedUrl,finalUrl:gamePage.finalUrl,contentType:gamePage.contentType,truncated:gamePage.truncated,error:gamePage.error||null},launcher:{ok:launcher.ok,status:launcher.status,requestedUrl:launcher.requestedUrl,finalUrl:launcher.finalUrl,contentType:launcher.contentType,truncated:launcher.truncated,error:launcher.error||null},assets:assets.map(x=>({ok:x.ok,status:x.status,requestedUrl:x.requestedUrl,finalUrl:x.finalUrl,contentType:x.contentType,truncated:x.truncated,error:x.error||null})),configDocuments:configDocs.map(x=>({ok:x.ok,status:x.status,requestedUrl:x.requestedUrl,finalUrl:x.finalUrl,contentType:x.contentType,truncated:x.truncated,error:x.error||null})),serverSnapshotAttempts:serverSnapshotAttempts.map(x=>({binding:x.binding,request:x.request,validation:x.validation}))},
+    discovery:{scannedDocumentCount:scans.length,publicAssetCount:assetUrls.length,staticPublicConfigCandidates:[...STATIC_PUBLIC_CONFIG_CANDIDATES],discoveredPublicConfigUrls:discoveredConfigUrls,publicConfigDocumentCount:configUrls.length,publicConfigUrls:configUrls,jackpotsCasinoCandidates,jackpotTickerUrlCandidates,coLocatedBetfairConfigBindings,instanceCodeCandidates,sljp1Sources,tonymcSources,guaranteedHitTimeSources,hubJackpotServiceSources,hits,bindingCandidateObserved:coLocatedBetfairConfigBindings.length>0,serverSnapshotAttemptCount:serverSnapshotAttempts.length,validServerIdentityCount:validServerIdentityKeys.length,exactBetfairSpainTickerImsBindingVerified:exactServerBindingUnique,currentSljp1RowRecovered:!!currentServerSnapshot?.currentSljp1RowRecovered,currentDailyAmountExactVerified:!!currentServerSnapshot?.currentDailyAmountExactVerified,currentGuaranteedHitTimeExactVerified:!!currentServerSnapshot?.currentGuaranteedHitTimeExactVerified,currentServerSnapshot},
+    scientificUse:'Public passive discovery only. A server snapshot may be promoted only when casino+ticker are co-located in the same Betfair-owned initialResources document and the exact configured endpoint returns a fresh EUR local=0 sljp-1 XML row echoing that casino. A single current row can verify binding/current state but cannot prove overdue; the overdue route still requires a same-binding cross-guaranteedHitTime pair plus prospective race evidence.',
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,noLoginProbe:true,noCookies:true,noCredentials:true,noPost:true,noWagerProbe:true,noAutomaticBetting:true,hardcodedPublicTargetsOnly:true,arbitraryUrlInputDisabled:true,configCandidateCannotAuthorizeGreen:true,staticConfigCandidatesBetfairOwnedHostsOnly:true,discoveredConfigUrlsKeywordBounded:true,discoveredConfigHostsAllowlisted:true,foreignHubArchitectureCannotPopulateBetfairState:true,crossDocumentBindingPairingDisabled:true,bindingCandidateRequiresSameBetfairInitialResourcesDocument:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,noLoginProbe:true,noCookies:true,noCredentials:true,noPost:true,noWagerProbe:true,noAutomaticBetting:true,hardcodedPublicTargetsOnly:true,arbitraryUrlInputDisabled:true,configCandidateCannotAuthorizeGreen:true,staticConfigCandidatesBetfairOwnedHostsOnly:true,discoveredConfigUrlsKeywordBounded:true,discoveredConfigHostsAllowlisted:true,foreignHubArchitectureCannotPopulateBetfairState:true,crossDocumentBindingPairingDisabled:true,bindingCandidateRequiresSameBetfairInitialResourcesDocument:true,serverSnapshotCannotProveOverdueByItself:true,serverRequestGameFixedToSljp1:true,serverRequestCurrencyFixedToEur:true,serverRequestLocalFixedToGlobal:true},
   };
 }
