@@ -1,0 +1,64 @@
+{
+  "version": "betfair-spain-apmccoy-april-2026-realized-payout-noninference-v1",
+  "retrievedAtUtc": "2026-08-26T19:42:00Z",
+  "scope": {
+    "operator": "Betfair Spain",
+    "game": "AP McCoy Sporting Legends™",
+    "gameId": "ap-mccoy-sporting-legends-cptn",
+    "onlineOnly": true,
+    "nonPromoOnly": true
+  },
+  "officialHistoricalObservation": {
+    "source": "https://casino.betfair.es/info/rtp-info",
+    "sourceType": "BETFAIR_SPAIN_OFFICIAL_MONTHLY_PAYOUT_PAGE",
+    "pageDefinition": "Betfair states that the table reports average prize payout as a percentage of total collected, calculated for the previous month in Betfair.es Casino.",
+    "sectionLabel": "Abril 2026",
+    "gameRow": "AP McCoy Sporting Legends™",
+    "realizedPayoutPercent": 94.74,
+    "historicalOnly": true
+  },
+  "officialTheoreticalRtpContext": {
+    "source": "https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn",
+    "mainGameRtpPercent": {
+      "min": 93.03,
+      "max": 95.03
+    },
+    "powerPlayAccumulatorRtpPercent": {
+      "min": 94.95,
+      "max": 96.95
+    },
+    "powerPlayAccumulatorPlusRtpPercent": {
+      "min": 95.17,
+      "max": 97.17
+    },
+    "publishedOverallRangePercent": {
+      "min": 93.03,
+      "max": 97.17
+    }
+  },
+  "scientificInterpretation": {
+    "aprilRealizedPayoutInsidePublishedOverallRange": true,
+    "mayIdentifyServedRtpConfiguration": false,
+    "mayIdentifyMainVsPowerPlayMix": false,
+    "mayIdentifyJackpotHazard": false,
+    "mayIdentifyCurrentJackpotState": false,
+    "mayBeUsedAsCurrentEvBaseline": false,
+    "reason": "The 94.74% figure is an aggregate historical realized payout over an unknown finite sample size and unknown player/mode mix. Sampling variance and mode mixing prevent inference of the exact served theoretical RTP or jackpot trigger function. Its numerical proximity to any published RTP sub-range is not evidence that Betfair served that configuration.",
+    "allowedUse": "Operator-specific historical sanity check only. It can falsify claims that depend on an impossible historical payout range only with additional denominator/sample information; absent that information it is not an execution input."
+  },
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "historicalRealizedPayoutIsNotTheoreticalRtp": true,
+    "historicalRealizedPayoutCannotSelectServedConfig": true,
+    "historicalRealizedPayoutCannotSubstituteForExactTickerOrIms": true,
+    "noCrossOperatorTransfer": true,
+    "noWagerProbe": true,
+    "noAutomaticBetting": true
+  }
+}
