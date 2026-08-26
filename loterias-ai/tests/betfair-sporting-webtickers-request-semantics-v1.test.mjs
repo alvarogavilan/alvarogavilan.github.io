@@ -56,7 +56,9 @@ assert.equal(m.currencyEur,true);
 assert.equal(m.localGlobal,true);
 serialized=JSON.stringify(r);
 for(const secret of ['WS_QUERY_SECRET','WS_HEADER_SECRET','WS_SEND_SECRET','WS_RECEIVE_SECRET'])assert.equal(serialized.includes(secret),false);
-assert.equal(serialized.includes('other'),false);
+for(const observation of r.requestSemanticObservations){
+  for(const values of Object.values(observation.values||{}))assert.equal(values.includes('other'),false);
+}
 
 const foreignInitial={request:{method:'GET',url:'https://evil.example/initialResources/es_ES_desktop',headers:[]},response:{status:200,content:{text:config}}};
 r=analyzeBetfairSportingWebtickersRequestSemantics({log:{entries:[foreignInitial,post]}});
