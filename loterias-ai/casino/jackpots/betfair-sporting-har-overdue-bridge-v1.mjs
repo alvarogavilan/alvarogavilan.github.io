@@ -31,7 +31,7 @@ function latestPostLaunchInitialResources(discovery,launcherEntryIndex,tickerEnt
 
 function fail(reason,extra={}){
   return {
-    version:'betfair-sporting-har-overdue-bridge-v1.5-session-config-attested',
+    version:'betfair-sporting-har-overdue-bridge-v1.6-forward-pair-time',
     valid:false,
     decision:'NO_PLAY',
     reason,
@@ -58,6 +58,7 @@ function fail(reason,extra={}){
       bothSnapshotsMustPassExactServerBindingValidator:true,
       harCaptureTimeMustAttestFreshness:true,
       callerCannotBackdateHarFreshness:true,
+      pairCaptureTimeMustAdvanceStrictly:true,
       finalGreenDelegatedOnlyToExistingOverdueEvaluator:true,
     },
     ...extra,
@@ -115,7 +116,7 @@ export function validateBetfairSportingHarSnapshot(har,{
   });
   if(validation.valid!==true)return fail('SERVER_SNAPSHOT_VALIDATION_FAILED',{discovery,validation,captureEpochSeconds});
   return {
-    version:'betfair-sporting-har-overdue-bridge-v1.5-session-config-attested',
+    version:'betfair-sporting-har-overdue-bridge-v1.6-forward-pair-time',
     valid:true,
     usableForOverduePair:true,
     sourceName,
@@ -163,7 +164,7 @@ export function evaluateBetfairSportingHarOverduePair({
   const after=validateBetfairSportingHarSnapshot(afterHar,{sourceName:afterSourceName,nowEpochSeconds:afterNowEpochSeconds,maxFeedAgeIntervals,maxCaptureTimeArgumentSkewSeconds});
   if(after.valid!==true)return fail('AFTER_HAR_SNAPSHOT_INVALID',{before,after});
 
-  if(before.captureEpochSeconds>after.captureEpochSeconds)return fail('HAR_CAPTURE_ORDER_INVALID',{before,after});
+  if(!(after.captureEpochSeconds>before.captureEpochSeconds))return fail('HAR_CAPTURE_ORDER_NOT_FORWARD',{before,after});
   if(decisionNow<after.captureEpochSeconds)return fail('DECISION_TIME_PRECEDES_AFTER_CAPTURE',{before,after,decisionNowEpochSeconds:decisionNow});
   if(text(before.expectedBetfairImsCasino)?.toLowerCase()!==text(after.expectedBetfairImsCasino)?.toLowerCase())return fail('IMS_CHANGED_BETWEEN_CAPTURES',{before,after});
   if(!sameHttpsEndpoint(before.tickerEndpoint,after.tickerEndpoint))return fail('TICKER_ENDPOINT_CHANGED_BETWEEN_CAPTURES',{before,after});
@@ -187,12 +188,13 @@ export function evaluateBetfairSportingHarOverduePair({
   });
 
   return {
-    version:'betfair-sporting-har-overdue-bridge-v1.5-session-config-attested',
+    version:'betfair-sporting-har-overdue-bridge-v1.6-forward-pair-time',
     valid:finalEvaluation.valid===true,
     before,after,
     exactApMcCoyRealLauncherBindingVerifiedOnBothSnapshots:true,
     latestPrecedingRealCasinoLauncherIsExactApMcCoyOnBothSnapshots:true,
     latestPostLaunchInitialResourcesBindingVerifiedOnBothSnapshots:true,
+    captureTimeAdvanced:true,
     finalEvaluation,
     decision:finalEvaluation.decision,
     reason:finalEvaluation.reason,
@@ -207,6 +209,7 @@ export function evaluateBetfairSportingHarOverduePair({
       latestPrecedingRealCasinoLauncherVerifiedOnBothSnapshots:true,
       latestPostLaunchInitialResourcesVerifiedOnBothSnapshots:true,
       configBindingPrecedesTickerOnBothSnapshots:true,
+      strictForwardCaptureOrderVerified:true,
       bothSnapshotsPassedExactServerBindingValidator:true,
       harCaptureTimeAttestedOnBothSnapshots:true,
       sameImsTickerAndConfigEndpointsAcrossCaptures:true,
