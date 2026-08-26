@@ -6,6 +6,15 @@ const EXACT_GAME_ID='ap-mccoy-sporting-legends-cptn';
 const clean=v=>String(v??'').trim();
 const lower=v=>clean(v).toLowerCase();
 
+function endpointShape(url){
+  try{const u=new URL(clean(url));return `${u.origin}${u.pathname}`;}catch{return null;}
+}
+function betfairInitialResources(url){
+  try{
+    const u=new URL(clean(url)),h=u.hostname.toLowerCase();
+    return u.protocol==='https:'&&(h==='betfair.es'||h.endsWith('.betfair.es'))&&/\/initialresources(?:\/|$)/i.test(u.pathname);
+  }catch{return false;}
+}
 function compatibleTransport(request,row){
   if(row?.payloadKind==='websocket-receive')return String(request?.source||'').startsWith('websocket-send:');
   return request?.source==='http-request';
@@ -14,6 +23,24 @@ function latestPrecedingLauncher(bindings,entryIndex){
   if(!Number.isInteger(entryIndex))return null;
   const preceding=(bindings||[]).filter(l=>Number.isInteger(l?.index)&&l.index<entryIndex).sort((a,b)=>b.index-a.index);
   return preceding[0]||null;
+}
+function latestSessionConfig(discovery,launcherIndex,entryIndex){
+  const relevant=discovery?.discovery?.relevantEntries||[];
+  const configEntries=relevant.filter(r=>
+    Number.isInteger(r?.index)&&r.index>launcherIndex&&r.index<entryIndex&&betfairInitialResources(r?.request?.url)
+  ).sort((a,b)=>b.index-a.index);
+  const latest=configEntries[0];
+  if(!latest)return {valid:false,reason:'NO_POST_LAUNCH_BETFAIR_INITIAL_RESOURCES'};
+  const candidates=(discovery?.discovery?.configBindingCandidates||[]).filter(b=>b?.sourceEntryIndex===latest.index);
+  const normalized=[];
+  for(const b of candidates){
+    const casino=clean(b?.jackpotsCasino),tickerEndpoint=endpointShape(b?.tickerUrl);
+    if(!casino||!tickerEndpoint)continue;
+    const key=`${lower(casino)}|${tickerEndpoint}`;
+    if(!normalized.some(x=>x.key===key))normalized.push({key,casino,tickerEndpoint,sourceEntryIndex:latest.index});
+  }
+  if(normalized.length!==1)return {valid:false,reason:normalized.length?'AMBIGUOUS_LATEST_SESSION_CONFIG':'LATEST_SESSION_CONFIG_BINDING_NOT_RECOVERED',sourceEntryIndex:latest.index,candidates:normalized};
+  return {valid:true,...normalized[0]};
 }
 function safeRequest(r){
   return {
@@ -52,7 +79,7 @@ function safeRow(c){
 }
 function fail(reason,extra={}){
   return {
-    version:'betfair-sporting-webtickers-correlated-session-v1.2-latest-launcher-attested',
+    version:'betfair-sporting-webtickers-correlated-session-v1.3-session-config-attested',
     mode:'OFFLINE_PASSIVE_EXACT_GAME_REQUEST_RESPONSE_CORRELATION_NO_PLAY',
     valid:false,reason,
     exactApMcCoyRealLauncherBindingObserved:false,
@@ -80,12 +107,17 @@ export function analyzeBetfairSportingCorrelatedWebtickersSession(har,{sourceNam
   const requestMatches=(requests?.requestSemanticObservations||[]).filter(r=>r?.requestContractSemanticsSupportedByProviderSpec===true&&r?.ambiguityDetected!==true);
   const rowCandidates=rows?.structuredSljp1RowCandidates||[];
   const correlated=[];
-  let ambiguousCorrelationCount=0,launcherOrderRejectedCount=0,staleExactLauncherRejectedCount=0;
+  let ambiguousCorrelationCount=0,launcherOrderRejectedCount=0,staleExactLauncherRejectedCount=0,sessionConfigRejectedCount=0;
 
   for(const row of rowCandidates){
     const latestLauncher=latestPrecedingLauncher(allLauncherBindings,row?.entryIndex);
     if(!latestLauncher){launcherOrderRejectedCount++;continue;}
     if(latestLauncher.gameId!==EXACT_GAME_ID){staleExactLauncherRejectedCount++;continue;}
+
+    const sessionConfig=latestSessionConfig(discovery,latestLauncher.index,row.entryIndex);
+    const rowEndpoint=endpointShape(row.configuredEndpoint);
+    if(!sessionConfig.valid||lower(sessionConfig.casino)!==lower(row.expectedBetfairImsCasino)||sessionConfig.tickerEndpoint!==rowEndpoint){sessionConfigRejectedCount++;continue;}
+
     const matches=requestMatches.filter(req=>
       req.entryIndex===row.entryIndex&&
       compatibleTransport(req,row)&&
@@ -99,9 +131,12 @@ export function analyzeBetfairSportingCorrelatedWebtickersSession(har,{sourceNam
       exactApMcCoyRealLauncherPrecedesCorrelatedEntry:true,
       latestPrecedingRealCasinoLauncherIsExactApMcCoy:true,
       launcherEntryIndex:latestLauncher.index,
+      latestPostLaunchBetfairInitialResourcesBindingVerified:true,
+      initialResourcesEntryIndex:sessionConfig.sourceEntryIndex,
       sameEntryRequestResponseCorrelation:true,
       compatibleTransportCorrelation:true,
       expectedBetfairImsCasino:row.expectedBetfairImsCasino||null,
+      configuredEndpoint:rowEndpoint,
       request:safeRequest(matches[0]),
       responseRow:safeRow(row),
       providerDocumentedRequestSemanticsVerified:true,
@@ -112,7 +147,7 @@ export function analyzeBetfairSportingCorrelatedWebtickersSession(har,{sourceNam
   }
 
   return {
-    version:'betfair-sporting-webtickers-correlated-session-v1.2-latest-launcher-attested',
+    version:'betfair-sporting-webtickers-correlated-session-v1.3-session-config-attested',
     mode:'OFFLINE_PASSIVE_EXACT_GAME_REQUEST_RESPONSE_CORRELATION_NO_PLAY',
     sourceName,
     valid:true,
@@ -126,10 +161,11 @@ export function analyzeBetfairSportingCorrelatedWebtickersSession(har,{sourceNam
     ambiguousCorrelationCount,
     launcherOrderRejectedCount,
     staleExactLauncherRejectedCount,
+    sessionConfigRejectedCount,
     exactModernResponseSemanticsVerified:false,
     usableForOverduePair:false,
-    scientificUse:'Requires the latest Betfair real-money casino launcher preceding the correlated webtickers entry to be the exact AP McCoy game, plus a provider-documented sljp-1 EUR local=0 request semantic match and a co-located structured sljp-1 response row on that same network entry with compatible HTTP or WebSocket direction. This prevents a stale AP McCoy launcher left in a Preserve-log HAR from lending provenance after a later different-game launcher. It still does not promote the modern response schema to server truth or overdue execution evidence.',
+    scientificUse:'Requires the latest Betfair real-money casino launcher preceding the webtickers entry to be AP McCoy and the latest Betfair initialResources observed after that launcher and before the ticker to resolve uniquely to the same casino and configured endpoint used by the correlated request/response. This prevents stale launcher or stale pre-launch configuration in Preserve-log HARs from lending provenance. The request and structured sljp-1 response must still correlate on one compatible HTTP/WebSocket entry. Modern response schema semantics remain unverified and cannot authorize execution.',
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,exactApMcCoyRealLauncherRequired:true,latestPrecedingRealCasinoLauncherMustBeExactApMcCoy:true,staleExactLauncherCannotAuthorizeLaterDifferentGameTraffic:true,sameEntryCorrelationRequired:true,compatibleTransportDirectionRequired:true,exactConfiguredBetfairCasinoRequired:true,ambiguousMultipleRequestMatchesRejected:true,modernResponseSemanticsCannotBeGuessed:true,correlationCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,exactApMcCoyRealLauncherRequired:true,latestPrecedingRealCasinoLauncherMustBeExactApMcCoy:true,staleExactLauncherCannotAuthorizeLaterDifferentGameTraffic:true,latestPostLaunchBetfairInitialResourcesMustMatchTickerBinding:true,stalePreLaunchConfigCannotAuthorizeTicker:true,ambiguousLatestSessionConfigRejected:true,sameEntryCorrelationRequired:true,compatibleTransportDirectionRequired:true,exactConfiguredBetfairCasinoRequired:true,ambiguousMultipleRequestMatchesRejected:true,modernResponseSemanticsCannotBeGuessed:true,correlationCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
