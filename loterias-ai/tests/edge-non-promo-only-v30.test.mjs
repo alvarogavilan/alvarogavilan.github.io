@@ -13,7 +13,13 @@ import fs from 'node:fs';
 const worker=fs.readFileSync('loterias-ai/edge-backend/src/index-v30.mjs','utf8');
 const wrangler=fs.readFileSync('loterias-ai/edge-backend/wrangler.jsonc','utf8');
 
-assert.match(wrangler,/"main"\s*:\s*"src\/index-v30\.mjs"/);
+// wrangler.jsonc's main has since moved on to index-v31.mjs (Betfair Sporting
+// public-config probe route) - v31 itself extends V30EdgeSentinel, so the
+// NON_PROMO_ONLY rejection below is still inherited and still live; this
+// file only verifies v30's own content, matching this codebase's own
+// established pattern for its versioned Worker chain (each version file is
+// an immutable historical snapshot once superseded, verified by asserting
+// on its own file content rather than by asserting it is still deployed).
 assert.ok(worker.includes("import { EdgeSentinel as V29EdgeSentinel } from './index-v29.mjs'"));
 
 const rejectedPaths=[
