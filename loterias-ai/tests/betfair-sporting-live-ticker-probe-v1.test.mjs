@@ -56,9 +56,18 @@ assert.equal(r.currentSnapshotCannotProveOverdueByItself,true);
 assert.equal(r.hardGuards.configuredRoutingQueryPreserved,true);
 assert.equal(new URL(requested).searchParams.get('casino'),'betfair_es');
 
+const equivalentBinding={...binding,sourceUrl:'https://casino.betfair.es/initialResources/es_ES_desktop'};
+r=await runBetfairSportingLiveTickerProbe({configProbeRunner:async()=>({discovery:{coLocatedBetfairConfigBindings:[binding,equivalentBinding]}}),fetchImpl,nowEpochSeconds:2010});
+assert.equal(r.valid,true);
+assert.equal(r.bindingProvenance.equivalentConfigSourceCount,2);
+assert.equal(r.bindingProvenance.distinctExactRequestCount,1);
+assert.deepEqual(r.bindingProvenance.equivalentConfigSources.sort(),[binding.sourceUrl,equivalentBinding.sourceUrl].sort());
+assert.equal(r.decision,'NO_PLAY');
+
 r=await runBetfairSportingLiveTickerProbe({configProbeRunner:async()=>({discovery:{coLocatedBetfairConfigBindings:[binding,{...binding,jackpotsCasino:'other'}]}}),fetchImpl,nowEpochSeconds:2010});
 assert.equal(r.valid,false);
 assert.equal(r.reason,'AMBIGUOUS_EXACT_XML_BINDING');
+assert.equal(r.distinctExactRequestCount,2);
 assert.equal(r.realMoneyAllowed,false);
 
 r=await runBetfairSportingLiveTickerProbe({configProbeRunner,fetchImpl:async url=>({ok:true,status:200,url:String(url),headers:{get:()=> 'application/xml'},text:async()=>'<bad />'}),nowEpochSeconds:2010});
