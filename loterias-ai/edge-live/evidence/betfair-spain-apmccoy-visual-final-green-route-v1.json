@@ -1,0 +1,68 @@
+{
+  "version": "betfair-spain-apmccoy-visual-final-green-route-v1",
+  "generatedAt": "2026-08-26T18:26:00+02:00",
+  "status": "VISUAL_FINAL_RECHECK_ROUTE_READY_NO_LIVE_GREEN",
+  "market": "ES",
+  "operator": "Betfair Spain",
+  "provider": "Playtech",
+  "game": "AP McCoy Sporting Legends™",
+  "gameId": "ap-mccoy-sporting-legends-cptn",
+  "sourceType": "ONLINE",
+  "promotion": false,
+  "route": {
+    "path": "loterias-ai/casino/jackpots/sporting-legends-visual-final-green-v1.mjs",
+    "version": "sporting-legends-visual-final-green-v1",
+    "finalTickerRequiredForThisRoute": false,
+    "priorValidatedVisualRaceLedgerRequired": true,
+    "currentCycleMayAppearInPriorLedger": false,
+    "currentRecheckScreenshotsRequired": 2,
+    "beforeBoundaryCountdownMustBePositive": true,
+    "detectionCountdownMustEqualZero": true,
+    "currentDailyAmountMustNotDecreaseAcrossBoundary": true,
+    "sameStakeAcrossCurrentPairRequired": true,
+    "exactOfficialBetfairDailyIdentityRequired": true,
+    "uniqueEvidenceIdsAndSha256Required": true,
+    "currentEvidenceMayBeReusedFromPriorLedger": false,
+    "maxDetectionAgeSeconds": 2,
+    "defaultConservativeBaseRtpPct": 93.03,
+    "minimumRaceConfidence": 0.95,
+    "greenMaxSpins": 1,
+    "manualActionOnly": true
+  },
+  "economicDecision": {
+    "breakEvenProbabilityFormula": "((100-conservativeBaseRtpPct)/100*stakeEUR)/currentDailyAmountEUR",
+    "conservativeExpectedReturnPctFormula": "conservativeBaseRtpPct + firstBetRaceProbabilityLowerBound*currentDailyAmountEUR/stakeEUR*100",
+    "greenRequiresStrictProbabilityMargin": true,
+    "greenRequiresConservativeExpectedReturnAbove100": true
+  },
+  "currentLiveState": {
+    "validatedPriorVisualPassiveCycleCount": 0,
+    "priorVisualRaceProbabilityLowerBound": null,
+    "currentOfficialDailyBoundaryPairCaptured": false,
+    "greenNow": false
+  },
+  "scientificConsequence": "The hidden Betfair ticker/IMS is no longer a structural blocker for the visual execution route. A prior prospectively validated official-client visual race ledger plus a fresh exact official-client boundary recheck can independently close the state and EV gates. The current live state remains NO_PLAY because no validated prior visual cycle exists yet.",
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "headlineCannotSubstituteForInGameDailyCounter": true,
+    "singleCurrentScreenshotCannotAuthorizeGreen": true,
+    "currentCycleCannotTrainAndAuthorizeItself": true,
+    "staleScreenshotCannotAuthorizeGreen": true,
+    "priorLedgerEvidenceCannotBeReusedAsCurrentRecheck": true,
+    "noAutomaticWagering": true,
+    "noRaceAutomation": true
+  },
+  "nextDecisiveEvidence": [
+    "Collect at least one prospectively frozen passive official-client Daily cycle with three unique screenshots and no wager to create a prior visual race bound.",
+    "On a later comparable Daily boundary, capture a fresh two-screenshot official-client before/zero pair with exact amount and stake; do not reuse prior evidence.",
+    "Emit GREEN only if the prior one-sided race-probability lower bound strictly exceeds the exact conservative break-even probability for the fresh current Daily amount and stake."
+  ]
+}

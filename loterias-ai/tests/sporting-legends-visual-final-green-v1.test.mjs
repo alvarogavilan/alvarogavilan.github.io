@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import {evaluateSportingLegendsVisualFinalGreen} from '../casino/jackpots/sporting-legends-visual-final-green-v1.mjs';
+const sha=c=>c.repeat(64);
+const base={sourceClass:'BETFAIR_ES_OFFICIAL_GAME_CLIENT_SCREENSHOT',market:'ES',operator:'Betfair Spain',gameId:'ap-mccoy-sporting-legends-cptn',gameTitle:'AP McCoy Sporting Legends™',tier:'DAILY',stakeEUR:0.25,imageEvidencePresent:true,humanReviewVerified:true,exactGameIdentityVisible:true,exactDailyLabelVisible:true,exactDisplayedValuesVerified:true,officialClientIdentityVerified:true};
+const prior={valid:true,usableForExecution:true,source:'VALIDATED_PASSIVE_CYCLE_LEDGER',ledgerSubtype:'VISUAL_OFFICIAL_CLIENT',firstBetRaceProbabilityLowerBound:0.05,confidence:0.95,protocolId:'visual-p1',actionLatencySeconds:3,cycleIds:['old-cycle'],evidenceIds:['old-a','old-b','old-c'],evidenceSha256:[sha('a'),sha('b'),sha('c')]};
+const before={...base,evidenceId:'now-a',evidenceSha256:sha('d'),capturedAtEpochSeconds:1000,amountEUR:100,countdownSeconds:5};
+const detection={...base,evidenceId:'now-b',evidenceSha256:sha('e'),capturedAtEpochSeconds:1005,amountEUR:100.02,countdownSeconds:0};
+let r=evaluateSportingLegendsVisualFinalGreen({priorRaceEvidence:prior,currentCycleId:'new-cycle',protocolId:'visual-p1',protocolFrozenAtEpochSeconds:900,beforeBoundary:before,detection,nowEpochSeconds:1006,actionLatencySeconds:3});
+assert.equal(r.valid,true);assert.equal(r.decision,'GREEN');assert.equal(r.realMoneyAllowed,true);assert.equal(r.maxSpins,1);assert.equal(r.realStakeEUR,0.25);assert.ok(r.conservativeExpectedReturnPct>100);assert.ok(r.firstBetRaceProbabilityLowerBound>r.breakEvenFirstBetProbability);assert.equal(r.guards.noTickerRequiredForVisualFinalRoute,true);
+r=evaluateSportingLegendsVisualFinalGreen({priorRaceEvidence:prior,currentCycleId:'new-cycle',protocolId:'visual-p1',protocolFrozenAtEpochSeconds:900,beforeBoundary:before,detection,nowEpochSeconds:1010,actionLatencySeconds:3});
+assert.equal(r.valid,false);assert.equal(r.reason,'CURRENT_DETECTION_TOO_STALE');assert.equal(r.realMoneyAllowed,false);
+r=evaluateSportingLegendsVisualFinalGreen({priorRaceEvidence:prior,currentCycleId:'old-cycle',protocolId:'visual-p1',protocolFrozenAtEpochSeconds:900,beforeBoundary:before,detection,nowEpochSeconds:1006,actionLatencySeconds:3});
+assert.equal(r.valid,false);assert.equal(r.reason,'CURRENT_CYCLE_ALREADY_IN_PRIOR_LEDGER');
+r=evaluateSportingLegendsVisualFinalGreen({priorRaceEvidence:prior,currentCycleId:'new-cycle',protocolId:'visual-p1',protocolFrozenAtEpochSeconds:900,beforeBoundary:before,detection:{...detection,evidenceSha256:sha('a')},nowEpochSeconds:1006,actionLatencySeconds:3});
+assert.equal(r.valid,false);assert.equal(r.reason,'CURRENT_EVIDENCE_REUSED_FROM_PRIOR_LEDGER');
+r=evaluateSportingLegendsVisualFinalGreen({priorRaceEvidence:{...prior,firstBetRaceProbabilityLowerBound:0.00001},currentCycleId:'new-cycle',protocolId:'visual-p1',protocolFrozenAtEpochSeconds:900,beforeBoundary:before,detection,nowEpochSeconds:1006,actionLatencySeconds:3});
+assert.equal(r.valid,true);assert.equal(r.decision,'NO_PLAY');assert.equal(r.realMoneyAllowed,false);
+console.log('sporting-legends-visual-final-green-v1.test.mjs: PASS');
