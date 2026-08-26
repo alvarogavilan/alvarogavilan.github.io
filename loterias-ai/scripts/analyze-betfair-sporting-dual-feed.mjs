@@ -3,13 +3,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {analyzeBetfairSportingDualFeedCalibrationSample,evaluateBetfairSportingDualFeedCalibrationSeries} from '../edge-backend/src/betfair-sporting-dual-feed-calibration-v1.mjs';
 
-function usage(){return 'Usage: node loterias-ai/scripts/analyze-betfair-sporting-dual-feed.mjs <capture.har> [capture2.har ...] [--max-skew <seconds>]';}
+const MAX_CAPTURE_SKEW_SECONDS=5;
+function usage(){return 'Usage: node loterias-ai/scripts/analyze-betfair-sporting-dual-feed.mjs <capture.har> [capture2.har ...] [--max-skew <seconds <= 5>]';}
 const finite=v=>{const n=Number(v);return Number.isFinite(n)?n:null;};
-function fail(reason,extra={}){return {version:'betfair-sporting-dual-feed-cli-v1',ok:false,reason,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},hardGuards:{offlineOnly:true,noNetwork:true,rawHarNeverEmitted:true,credentialsAndCookiesNeverEmitted:true,noWagerProbe:true,noAutomaticBetting:true},...extra};}
+function fail(reason,extra={}){return {version:'betfair-sporting-dual-feed-cli-v1.1-frozen-policy',ok:false,reason,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},hardGuards:{offlineOnly:true,noNetwork:true,rawHarNeverEmitted:true,credentialsAndCookiesNeverEmitted:true,callerCannotRelaxCaptureSkewCeiling:true,noWagerProbe:true,noAutomaticBetting:true},...extra};}
 
-export function analyzeSafeDualFeedTexts(items,{maxCaptureSkewSeconds=5}={}){
+export function analyzeSafeDualFeedTexts(items,{maxCaptureSkewSeconds=MAX_CAPTURE_SKEW_SECONDS}={}){
   const maxSkew=finite(maxCaptureSkewSeconds);
-  if(maxSkew===null||maxSkew<0)return fail('INVALID_CAPTURE_SKEW_POLICY');
+  if(maxSkew===null||maxSkew<0||maxSkew>MAX_CAPTURE_SKEW_SECONDS)return fail('INVALID_CAPTURE_SKEW_POLICY',{maxAllowedCaptureSkewSeconds:MAX_CAPTURE_SKEW_SECONDS});
   const list=Array.isArray(items)?items:[];
   if(!list.length)return fail('NO_HAR_INPUTS');
   const samples=[];
@@ -21,13 +22,15 @@ export function analyzeSafeDualFeedTexts(items,{maxCaptureSkewSeconds=5}={}){
   }
   const series=samples.length>=2?evaluateBetfairSportingDualFeedCalibrationSeries(samples):null;
   return {
-    version:'betfair-sporting-dual-feed-cli-v1',
+    version:'betfair-sporting-dual-feed-cli-v1.1-frozen-policy',
     ok:true,
     sampleCount:samples.length,
+    maxCaptureSkewSeconds:maxSkew,
+    maxAllowedCaptureSkewSeconds:MAX_CAPTURE_SKEW_SECONDS,
     samples,
     series,
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{offlineOnly:true,noNetwork:true,rawHarNeverEmitted:true,credentialsAndCookiesNeverEmitted:true,endpointQueriesAndFragmentsNeverEmitted:true,calibrationCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{offlineOnly:true,noNetwork:true,rawHarNeverEmitted:true,credentialsAndCookiesNeverEmitted:true,endpointQueriesAndFragmentsNeverEmitted:true,callerCannotRelaxCaptureSkewCeiling:true,calibrationCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
 
@@ -35,11 +38,11 @@ export function main(argv=process.argv.slice(2)){
   if(!argv.length||argv[0]==='--help'||argv[0]==='-h'){
     process.stdout.write(`${usage()}\n`);return argv[0]?0:2;
   }
-  let maxCaptureSkewSeconds=5;
+  let maxCaptureSkewSeconds=MAX_CAPTURE_SKEW_SECONDS;
   const skewIndex=argv.indexOf('--max-skew');
   if(skewIndex>=0){
     const v=finite(argv[skewIndex+1]);
-    if(v===null||v<0){process.stdout.write(`${JSON.stringify(fail('INVALID_CAPTURE_SKEW_POLICY'),null,2)}\n`);return 2;}
+    if(v===null||v<0||v>MAX_CAPTURE_SKEW_SECONDS){process.stdout.write(`${JSON.stringify(fail('INVALID_CAPTURE_SKEW_POLICY',{maxAllowedCaptureSkewSeconds:MAX_CAPTURE_SKEW_SECONDS}),null,2)}\n`);return 2;}
     maxCaptureSkewSeconds=v;
   }
   const files=argv.filter((_,i)=>i!==skewIndex&&i!==skewIndex+1);
