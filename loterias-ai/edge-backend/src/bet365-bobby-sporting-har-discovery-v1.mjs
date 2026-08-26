@@ -12,6 +12,11 @@ const clean=v=>String(v??'').replace(/\u0000/g,'').trim();
 const normalizeKey=v=>clean(v).toLowerCase().replace(/[^a-z0-9]/g,'');
 const uniq=a=>[...new Set(a.filter(v=>v!==null&&v!==undefined&&v!==''))];
 
+function safeRoutingValue(v){
+  const s=clean(v);
+  if(!s||s.length>80||/[\r\n]/.test(s)||/^https?:|^wss?:/i.test(s)||/bearer|token|secret|password|sessionid/i.test(s))return null;
+  return /^[a-z0-9_.:\-]+$/i.test(s)?s:null;
+}
 function decodeContent(content){
   const raw=String(content?.text||'');
   if(!raw)return '';
@@ -42,12 +47,15 @@ function sportingCodesInText(text){
 }
 function exactTargetMarker(entry){
   const joined=entryTextParts(entry).join('\n').toLowerCase();
-  return joined.includes(TARGET_GAME_CODE)||joined.includes(TARGET_TITLE)&&joined.includes('sporting legends');
+  return joined.includes(TARGET_GAME_CODE)||(joined.includes(TARGET_TITLE)&&joined.includes('sporting legends'));
 }
 function safeRoutingFromUrl(url,out={}){
   try{
     const u=new URL(String(url||''));
-    for(const [k,v] of u.searchParams){const nk=normalizeKey(k);if(SAFE_ROUTING_KEYS.has(nk)){if(!out[nk])out[nk]=[];out[nk].push(clean(v));}}
+    for(const [k,v] of u.searchParams){
+      const nk=normalizeKey(k),sv=safeRoutingValue(v);
+      if(SAFE_ROUTING_KEYS.has(nk)&&sv){if(!out[nk])out[nk]=[];out[nk].push(sv);}
+    }
   }catch{}
   return out;
 }
@@ -58,7 +66,7 @@ function scanSafeRouting(value,out={},depth=0){
   for(const [k,v] of Object.entries(value)){
     const nk=normalizeKey(k);
     if(SAFE_ROUTING_KEYS.has(nk)&&['string','number','boolean'].includes(typeof v)){
-      const s=clean(v);if(s&&s.length<=200){if(!out[nk])out[nk]=[];out[nk].push(s);}
+      const sv=safeRoutingValue(v);if(sv){if(!out[nk])out[nk]=[];out[nk].push(sv);}
     }
     if(v&&typeof v==='object')scanSafeRouting(v,out,depth+1);
   }
@@ -88,7 +96,7 @@ function tickerTransport(entry){
 }
 function latestSportingMarkerBefore(markers,index){return markers.filter(x=>x.index<index).sort((a,b)=>b.index-a.index)[0]||null;}
 function fail(reason,extra={}){
-  return {version:'bet365-bobby-sporting-har-discovery-v1',valid:false,reason,exactTargetMarkerObserved:false,exactTargetDailyTickerCandidateObserved:false,servedBet365SessionBindingVerified:false,usableForOverduePair:false,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},...extra};
+  return {version:'bet365-bobby-sporting-har-discovery-v1.1-ambiguous-provenance-guard',valid:false,reason,exactTargetMarkerObserved:false,exactTargetDailyTickerCandidateObserved:false,servedBet365SessionBindingVerified:false,usableForOverduePair:false,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},...extra};
 }
 
 export function analyzeBet365BobbySportingHar(har,{sourceName='capture.har'}={}){
@@ -109,7 +117,9 @@ export function analyzeBet365BobbySportingHar(har,{sourceName='capture.har'}={})
     if(!tickerTransport(entry)||!dailyMarker(entry))continue;
     const latest=latestSportingMarkerBefore(sportingMarkers,i);
     const routing=safeRouting(entry);
-    const targetPrecedes=!!latest&&(latest.target||latest.codes.includes(TARGET_GAME_CODE));
+    const otherLatestCodes=(latest?.codes||[]).filter(code=>code!==TARGET_GAME_CODE);
+    const latestTargetsBobby=!!latest&&(latest.target===true||latest.codes.includes(TARGET_GAME_CODE));
+    const targetPrecedes=latestTargetsBobby&&otherLatestCodes.length===0;
     const conflictingLatestSportingMarker=!!latest&&!targetPrecedes;
     candidates.push({
       tickerEntryIndex:i,
@@ -132,7 +142,7 @@ export function analyzeBet365BobbySportingHar(har,{sourceName='capture.har'}={})
   const exactTargetMarkerObserved=targetMarkers.length>0;
   const exactTargetDailyTickerCandidateObserved=exactCandidates.length>0;
   return {
-    version:'bet365-bobby-sporting-har-discovery-v1',
+    version:'bet365-bobby-sporting-har-discovery-v1.1-ambiguous-provenance-guard',
     mode:'OFFLINE_PASSIVE_BET365_BOBBY_SPORTING_DISCOVERY_NO_PLAY',
     valid:true,sourceName,entryCount:entries.length,
     target:{title:'Bobby George: Sporting Legends',provider:'Playtech',providerGameCode:TARGET_GAME_CODE,jackpotGroup:'sljp',dailyCode:DAILY_CODE},
@@ -146,7 +156,7 @@ export function analyzeBet365BobbySportingHar(har,{sourceName='capture.har'}={})
     exactBet365TickerEndpointOwnershipVerified:false,
     exactModernResponseSemanticsVerified:false,
     usableForOverduePair:false,
-    scientificUse:'Offline discovery only. A candidate requires sljp-1 ticker traffic after the latest observed Sporting Legends game marker resolves to exact Bobby George gpas_bgeorge_pop. Output is redacted to endpoint origin/path plus allowlisted routing fields. Because the current bet365 launcher/session ownership contract is not yet independently documented, even an exact candidate is not promoted to served operator binding or overdue evidence.',
+    scientificUse:'Offline discovery only. A candidate requires sljp-1 ticker traffic after the latest observed Sporting Legends game marker resolves exclusively to exact Bobby George gpas_bgeorge_pop. Output is redacted to endpoint origin/path plus allowlisted routing fields. Because the current bet365 launcher/session ownership contract is not yet independently documented, even an exact candidate is not promoted to served operator binding or overdue evidence.',
     nextRequiredEvidence:[
       'exact bet365 Spain real-money Bobby launcher/session provenance',
       'licensee-specific jackpotsCasino or IMS binding',
@@ -155,6 +165,6 @@ export function analyzeBet365BobbySportingHar(har,{sourceName='capture.har'}={})
       'served 0.10 EUR stake and jackpot eligibility attestation'
     ],
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,passiveHarOnly:true,rawHarNeverEmitted:true,credentialsCookiesHeadersNeverEmitted:true,endpointQueriesFragmentsNeverEmitted:true,exactProviderGameCodeRequired:true,latestSportingMarkerMustBeTarget:true,sljp1Required:true,otherSportingMarkerInvalidatesStaleTargetProvenance:true,discoveryCandidateCannotProveBet365Ownership:true,discoveryCandidateCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,passiveHarOnly:true,rawHarNeverEmitted:true,credentialsCookiesHeadersNeverEmitted:true,endpointQueriesFragmentsNeverEmitted:true,allowlistedRoutingValuesMustPassSafeLexicalFilter:true,exactProviderGameCodeRequired:true,latestSportingMarkerMustBeExclusiveTarget:true,sljp1Required:true,otherSportingMarkerInvalidatesStaleTargetProvenance:true,discoveryCandidateCannotProveBet365Ownership:true,discoveryCandidateCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
