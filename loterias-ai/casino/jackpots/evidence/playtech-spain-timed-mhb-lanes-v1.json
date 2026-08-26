@@ -1,0 +1,160 @@
+{
+  "version": "playtech-spain-timed-mhb-lanes-v1",
+  "generatedAt": "2026-08-26T03:35:00Z",
+  "mode": "CURRENT_SPAIN_TIMED_AND_AMOUNT_GUARANTEE_RESEARCH_NO_PLAY",
+  "priority": "P0",
+  "summary": {
+    "materialFinding": "Two currently available Spanish Playtech networks expose explicit time- or amount-guaranteed jackpot mechanics: Kingdoms Rise on Betfair Spain and Age of the Gods Norse Gods and Giants on JOKERBET Spain.",
+    "executionReady": false,
+    "whyNotYet": "Exact live tier state from the Playtech ticker and exact deployed funding/hazard or final winner-allocation semantics are not yet verified."
+  },
+  "playtechTickerContract": {
+    "specification": "Playtech Progressive Jackpot Ticker Specifications v3.1 (June 2022)",
+    "xmlEndpointName": "new_jackpotxml.php",
+    "amountAttributes": {
+      "guaranteedHitTime": "Unix timestamp; provided only when a guaranteed hit time exists",
+      "guranteedHitAmount": "Guaranteed hit amount; spelling preserved from Playtech XML specification",
+      "guaranteedHitAmountAliasAcceptedByParser": true,
+      "step": "Ticker statistical increase speed per second when supplied"
+    },
+    "updateCadence": "near real time; specification describes five-minute refreshes",
+    "liveHostRecovered": false,
+    "operatorCasinoInstanceRecovered": false,
+    "parserPath": "loterias-ai/casino/jackpots/playtech-mhb-ticker-parser-v1.mjs"
+  },
+  "kingdomsRiseBetfairSpain": {
+    "operator": "Betfair Spain",
+    "provider": "Playtech",
+    "currentAvailability": {
+      "verified": true,
+      "catalogSource": "https://casino.betfair.es/c/all-games",
+      "catalogObservedFreshness": "6 days at research time",
+      "examples": [
+        "Kingdoms Rise Forbidden Forest",
+        "Kingdoms Rise Sands of Fury",
+        "Kingdoms Rise Reign of Ice",
+        "Kingdoms Rise Legion Uprising",
+        "Kingdoms Rise Captain's Treasure"
+      ]
+    },
+    "spanishOperatorMechanics": {
+      "source": "https://casino.betfair.es/juego/kingdom-rise-forbidden-forest-cptn",
+      "dailyStrike": "Awarded every day at a specific time/date",
+      "powerStrike": "Awarded by reaching a specified played/amount condition displayed by the game",
+      "epic": "Progressive and can be won on any spin",
+      "anyStakeCanTrigger": true,
+      "higherStakeRaisesChance": true,
+      "threeLevelsActiveOnBetfairSpain": true
+    },
+    "providerPrimaryArchitecture": {
+      "source": "https://www.playtech.com/playtech-launches-new-kingdoms-rise-games-suite/",
+      "description": "Playtech launched Kingdoms Rise with a configurable three-tier networked jackpot offering Daily, Capped and Progressive jackpots."
+    },
+    "tickerCodes": {
+      "krjp-1": "EPIC",
+      "krjp-2": "POWER_STRIKE_AMOUNT_GUARANTEE",
+      "krjp-3": "DAILY_STRIKE_TIME_GUARANTEE"
+    },
+    "publicHeadlineSnapshots": [
+      {
+        "game": "Kingdoms Rise Forbidden Forest",
+        "pageSnapshotEUR": 1865.76,
+        "tierBindingVerified": false,
+        "dynamicCurrentExecutionUseAllowed": false
+      },
+      {
+        "game": "Kingdoms Rise Sands of Fury",
+        "pageSnapshotEUR": 1075.29,
+        "tierBindingVerified": false,
+        "dynamicCurrentExecutionUseAllowed": false
+      }
+    ],
+    "economicConfiguration": {
+      "exactBetfairTierFundingSplitKnown": false,
+      "exactBetfairTotalJackpotContributionKnown": false,
+      "williamHillSpainComparator": {
+        "activeLevels": ["EPIC", "POWER_STRIKE"],
+        "publishedContributionPctOfBet": 0.55,
+        "transferToBetfairAllowed": false
+      },
+      "historicalThreeTierComparator": {
+        "reportedTotalJackpotComponentPct": 0.99,
+        "equalSplitAssumptionAllowed": false,
+        "transferToBetfairAllowed": false
+      }
+    },
+    "status": "CURRENT_SPAIN_TIMED_MHB_CONFIRMED_LIVE_TIER_STATE_OPEN"
+  },
+  "aotgNorseGodsGiantsSpain": {
+    "provider": "Playtech",
+    "exactGameCode": "gpas_aoggagiants_pop",
+    "jokerbetSpain": {
+      "currentAvailabilityVerified": true,
+      "catalogSource": "https://www.jokerbet.es/tragaperras-slots/juegos.html",
+      "currentCatalogObservedFreshness": "today at research time",
+      "gamePage": "https://www.jokerbet.es/tragaperras-slots/age-of-the-gods-norse-gods-and-giants.html",
+      "publishedBaseRtpPct": 94.38,
+      "publishedMechanics": {
+        "daily": "must be won before countdown ends",
+        "extra": "must be won before reaching a limit amount",
+        "instant": "won immediately if the maximum established amount is reached",
+        "ultimate": "large progressive",
+        "anyStakeCanTrigger": true,
+        "higherStakeRaisesChance": true
+      }
+    },
+    "betfairSpainComparator": {
+      "currentCatalogAvailabilityVerified": true,
+      "catalogSource": "https://casino.betfair.es/c/all-games",
+      "exactPageHistoricalConfigRtpBasePct": 94.38,
+      "exactPageHistoricalConfigRtpIncludingJackpotPct": 94.93,
+      "historicalPageEnabledDaily": false,
+      "configurationTransferToJokerbetAllowed": false
+    },
+    "spanish96_49ConfigurationEvidence": {
+      "jueggingRulesListedRtpPct": 96.49,
+      "onePlayExactGameCodeRtpRangePct": [94.38, 96.49],
+      "playtechTechnicalDefaultExcludingJackpotPct": 94.38,
+      "playtechTechnicalIncludingJackpotPct": 96.49,
+      "differencePercentagePoints": 2.11,
+      "differenceCannotBeAssumedMeterFundingRate": true
+    },
+    "tickerCodes": {
+      "aognjp-2": "DAILY_TIME_GUARANTEE",
+      "aognjp-3": "EXTRA_AMOUNT_GUARANTEE",
+      "aognjp-7": "INSTANT_AMOUNT_GUARANTEE",
+      "mrj-4": "ULTIMATE_POWER"
+    },
+    "historicalTickerControl": {
+      "aognjp-3ObservedGBP": 490.61,
+      "observedYear": 2020,
+      "use": "CODE_REALITY_AND_ARCHITECTURE_CONTROL_ONLY",
+      "capTransferToSpainAllowed": false
+    },
+    "status": "CURRENT_SPAIN_TIMED_AND_AMOUNT_GUARANTEES_CONFIRMED_LIVE_TIER_STATE_OPEN"
+  },
+  "decisiveNextEvidence": [
+    "Recover a current Playtech XML ticker host plus the Betfair/JOKERBET casino instance identifier, then query krjp-2/krjp-3 and aognjp-2/aognjp-3/aognjp-7 in EUR.",
+    "If direct ticker access remains unavailable, obtain one no-bet in-game screenshot showing the individual timer/cap and current tier amounts from one Spanish operator.",
+    "Recover the exact deployed jackpot funding split and winner-allocation semantics before treating proximity to guaranteed amount/time as deterministic or +EV.",
+    "Prospectively verify at least one full amount/time cycle and reset before real-money promotion."
+  ],
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "foreignCapOrDeadlineNeverPopulatesSpainState": true,
+    "headlineAmountCannotBeBoundToTierWithoutEvidence": true,
+    "sameGameCodeDoesNotProveSameJackpotConfiguration": true,
+    "rtpJackpotComponentIsNotAutomaticallyMeterFundingRate": true,
+    "guaranteedHitDoesNotProveCrossingWagerWinnerWithoutAllocationRule": true,
+    "sharedNetworkConcurrencyMustBeConsidered": true,
+    "noPromotions": true,
+    "onlineOnly": true,
+    "noBetting": true
+  }
+}
