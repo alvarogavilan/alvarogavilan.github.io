@@ -9,7 +9,7 @@ const post={
   response:{status:200,content:{mimeType:'application/json',text:'{"ok":true,"token":"RESPONSE_SECRET"}'}},
 };
 let r=analyzeBetfairSportingWebtickersRequestSemantics({log:{entries:[initial,post]}},{sourceName:'request-post.har'});
-assert.equal(r.version,'betfair-sporting-webtickers-request-semantics-v1');
+assert.equal(r.version,'betfair-sporting-webtickers-request-semantics-v1.1-fail-closed-routing');
 assert.equal(r.exactConfiguredWebtickersTrafficObserved,true);
 assert.equal(r.providerDocumentedExactDailyRequestObserved,true);
 assert.equal(r.providerDocumentedExactDailyRequestMatchCount,1);
@@ -21,6 +21,7 @@ assert.equal(m.casinoMatches,true);
 assert.equal(m.gameMatches,true);
 assert.equal(m.currencyEur,true);
 assert.equal(m.localGlobal,true);
+assert.equal(m.ambiguityDetected,false);
 assert.equal(m.providerDocumentedGameRequestComplete,true);
 assert.equal(m.exactSportingDailyScopeObserved,true);
 assert.equal(r.directPublicModernProbeAllowed,false);
@@ -35,6 +36,22 @@ const info2={...post,request:{...post.request,postData:{mimeType:'application/js
 r=analyzeBetfairSportingWebtickersRequestSemantics({log:{entries:[initial,info2]}});
 assert.equal(r.providerDocumentedExactDailyRequestObserved,false);
 assert.equal(r.providerDocumentedExactDailyRequestMatchCount,0);
+
+// Contradictory routing/scope values fail closed instead of passing because one expected value is present.
+const contradictory={...post,request:{...post.request,url:'https://webtickers.malmegas.com/webtickers?casino=other_es&info=2',postData:{mimeType:'application/json',text:'{"info":1,"casino":"bf_es","game":"sljp-1","currency":"EUR","local":0}'}}};
+r=analyzeBetfairSportingWebtickersRequestSemantics({log:{entries:[initial,contradictory]}});
+assert.equal(r.providerDocumentedExactDailyRequestObserved,false);
+assert.equal(r.providerDocumentedExactDailyRequestMatchCount,0);
+assert.equal(r.requestSemanticObservations[0].ambiguityDetected,true);
+assert.equal(r.hardGuards.conflictingRoutingValuesRejectMatch,true);
+
+// An instanceCode in traffic cannot silently add an unbound routing dimension when Betfair config did not bind one.
+const unboundInstance={...post,request:{...post.request,postData:{mimeType:'application/json',text:'{"info":1,"casino":"bf_es","game":"sljp-1","currency":"EUR","local":0,"instanceCode":"ims-unbound"}'}}};
+r=analyzeBetfairSportingWebtickersRequestSemantics({log:{entries:[initial,unboundInstance]}});
+assert.equal(r.providerDocumentedExactDailyRequestObserved,false);
+assert.equal(r.requestSemanticObservations[0].instanceCodeObserved,true);
+assert.equal(r.requestSemanticObservations[0].instanceCodeConsistent,false);
+assert.equal(r.hardGuards.unboundInstanceCodeRejectsMatch,true);
 
 // WSS subscribe semantics are evaluated only from outbound frames plus the request URL, never receive frames.
 const ws={
@@ -54,6 +71,7 @@ assert.equal(m.casinoMatches,true);
 assert.equal(m.gameMatches,true);
 assert.equal(m.currencyEur,true);
 assert.equal(m.localGlobal,true);
+assert.equal(m.ambiguityDetected,false);
 serialized=JSON.stringify(r);
 for(const secret of ['WS_QUERY_SECRET','WS_HEADER_SECRET','WS_SEND_SECRET','WS_RECEIVE_SECRET'])assert.equal(serialized.includes(secret),false);
 for(const observation of r.requestSemanticObservations){
