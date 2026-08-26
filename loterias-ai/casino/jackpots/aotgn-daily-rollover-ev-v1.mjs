@@ -8,6 +8,7 @@ export function evaluateAotgnDailyRolloverWindow({
   currentDailyJackpotEUR = null,
   stakeEUR = null,
   sameSessionFreshnessVerified = false,
+  spanishMarketNetworkBindingVerified = false,
   prospectivePassiveValidationPassed = false,
 } = {}) {
   const numericReady = finitePositive(currentDailyJackpotEUR) && finitePositive(stakeEUR);
@@ -16,7 +17,8 @@ export function evaluateAotgnDailyRolloverWindow({
     dailyActiveVerified === true &&
     rolloverWithoutActivationVerified === true &&
     firstNetworkContributionPrecommitAttainableVerified === true &&
-    sameSessionFreshnessVerified === true;
+    sameSessionFreshnessVerified === true &&
+    spanishMarketNetworkBindingVerified === true;
 
   // Deliberately ignore every possible base-game return. If the first
   // contribution is guaranteed to win the displayed Daily jackpot, the
@@ -28,7 +30,7 @@ export function evaluateAotgnDailyRolloverWindow({
   const executionCandidate = positiveEvLowerBoundProven && prospectivePassiveValidationPassed === true;
 
   return {
-    version: 'aotgn-daily-rollover-ev-v1',
+    version: 'aotgn-daily-rollover-ev-v1.1-spain-network-safe',
     model: 'DETERMINISTIC_FIRST_CONTRIBUTION_WORST_CASE_LOWER_BOUND',
     deterministicConditionVerified,
     numericReady,
@@ -47,6 +49,7 @@ export function evaluateAotgnDailyRolloverWindow({
       ...(rolloverWithoutActivationVerified ? [] : ['ROLLOVER_WITHOUT_ACTIVATION_NOT_VERIFIED']),
       ...(firstNetworkContributionPrecommitAttainableVerified ? [] : ['FIRST_NETWORK_CONTRIBUTION_PRECOMMIT_ATTAINABILITY_NOT_VERIFIED']),
       ...(sameSessionFreshnessVerified ? [] : ['CURRENT_SAME_SESSION_STATE_NOT_VERIFIED']),
+      ...(spanishMarketNetworkBindingVerified ? [] : ['SPANISH_MARKET_NETWORK_BINDING_NOT_VERIFIED']),
       ...(numericReady ? [] : ['CURRENT_DAILY_OR_STAKE_MISSING']),
       ...(prospectivePassiveValidationPassed ? [] : ['PROSPECTIVE_PASSIVE_VALIDATION_MISSING']),
     ],
@@ -54,6 +57,8 @@ export function evaluateAotgnDailyRolloverWindow({
       baseRtpNotNeededForLowerBound: true,
       normalJackpotHazardNotNeededInsideVerifiedDeterministicWindow: true,
       firstContributionCannotBeAssumed: true,
+      foreignTickerStateTransferBlocked: true,
+      spanishMarketNetworkBindingRequired: true,
       externalExecutionContractRequired: true,
       realMoneyAllowed: false,
     },

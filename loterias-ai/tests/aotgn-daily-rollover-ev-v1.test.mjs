@@ -3,12 +3,29 @@ import {evaluateAotgnDailyRolloverWindow} from '../casino/jackpots/aotgn-daily-r
 
 const blocked=evaluateAotgnDailyRolloverWindow({
   rulesSourceVerified:true,dailyActiveVerified:true,
-  currentDailyJackpotEUR:100,stakeEUR:0.10,sameSessionFreshnessVerified:true
+  currentDailyJackpotEUR:100,stakeEUR:0.10,sameSessionFreshnessVerified:true,
+  spanishMarketNetworkBindingVerified:true
 });
 assert.equal(blocked.conditionalJackpotWinProbability,null);
 assert.equal(blocked.worstCaseNetLowerBoundEUR,null);
 assert.equal(blocked.decision,'NO_PLAY');
 assert.ok(blocked.blockers.includes('ROLLOVER_WITHOUT_ACTIVATION_NOT_VERIFIED'));
+
+const foreignStateBlocked=evaluateAotgnDailyRolloverWindow({
+  rulesSourceVerified:true,dailyActiveVerified:true,
+  rolloverWithoutActivationVerified:true,
+  firstNetworkContributionPrecommitAttainableVerified:true,
+  currentDailyJackpotEUR:100,stakeEUR:0.10,
+  sameSessionFreshnessVerified:true,
+  spanishMarketNetworkBindingVerified:false,
+  prospectivePassiveValidationPassed:true
+});
+assert.equal(foreignStateBlocked.deterministicConditionVerified,false);
+assert.equal(foreignStateBlocked.conditionalJackpotWinProbability,null);
+assert.equal(foreignStateBlocked.executionCandidate,false);
+assert.equal(foreignStateBlocked.decision,'NO_PLAY');
+assert.ok(foreignStateBlocked.blockers.includes('SPANISH_MARKET_NETWORK_BINDING_NOT_VERIFIED'));
+assert.equal(foreignStateBlocked.guards.foreignTickerStateTransferBlocked,true);
 
 const deterministic=evaluateAotgnDailyRolloverWindow({
   rulesSourceVerified:true,dailyActiveVerified:true,
@@ -16,6 +33,7 @@ const deterministic=evaluateAotgnDailyRolloverWindow({
   firstNetworkContributionPrecommitAttainableVerified:true,
   currentDailyJackpotEUR:100,stakeEUR:0.10,
   sameSessionFreshnessVerified:true,
+  spanishMarketNetworkBindingVerified:true,
   prospectivePassiveValidationPassed:false
 });
 assert.equal(deterministic.conditionalJackpotWinProbability,1);
@@ -31,6 +49,7 @@ const validated=evaluateAotgnDailyRolloverWindow({
   firstNetworkContributionPrecommitAttainableVerified:true,
   currentDailyJackpotEUR:0.11,stakeEUR:0.10,
   sameSessionFreshnessVerified:true,
+  spanishMarketNetworkBindingVerified:true,
   prospectivePassiveValidationPassed:true
 });
 assert.ok(validated.worstCaseNetLowerBoundEUR>0);
