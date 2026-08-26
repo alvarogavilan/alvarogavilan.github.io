@@ -1,6 +1,6 @@
 {
-  "version": "betfair-spain-sporting-legends-overdue-first-bet-p0-v1.2-guaranteed-hit-boundary",
-  "generatedAt": "2026-08-26T13:28:00+02:00",
+  "version": "betfair-spain-sporting-legends-overdue-first-bet-p0-v1.3-validated-ledger",
+  "generatedAt": "2026-08-26T15:45:00+02:00",
   "mode": "SPAIN_ONLINE_FOLLOWING_DAY_FIRST_BET_RESEARCH_NO_PLAY",
   "market": "ES",
   "operator": "Betfair Spain",
@@ -46,11 +46,17 @@
     "gamedataTimestampDocumented": true,
     "gamedataWinCountAttribute": "winc",
     "amountWinsIsNotWinCount": true,
+    "requestExecIntervalRequiredForCadenceBoundedGreen": true,
     "parserPath": "loterias-ai/casino/jackpots/playtech-mhb-ticker-parser-v1.mjs",
     "parserVersionRequired": "playtech-mhb-ticker-parser-v1.6-win-count-timestamps",
     "followingDayDetectorPath": "loterias-ai/casino/jackpots/sporting-legends-overdue-first-bet-v1.mjs",
-    "detectorVersionRequired": "sporting-legends-overdue-first-bet-v1.2-guaranteed-hit-boundary",
-    "raceBoundPath": "loterias-ai/casino/jackpots/sporting-legends-race-bound-v1.mjs"
+    "detectorVersionRequired": "sporting-legends-overdue-first-bet-v1.4-cadence-bound-green",
+    "passiveRaceCycleValidatorPath": "loterias-ai/casino/jackpots/sporting-legends-passive-race-cycle-v1.mjs",
+    "passiveRaceCycleValidatorVersion": "sporting-legends-passive-race-cycle-v1",
+    "empiricalRaceBoundPath": "loterias-ai/casino/jackpots/sporting-legends-empirical-race-bound-v1.mjs",
+    "empiricalRaceBoundVersion": "sporting-legends-empirical-race-bound-v1.1-ledger-required",
+    "greenRouteOrchestratorPath": "loterias-ai/casino/jackpots/sporting-legends-overdue-green-route-v1.mjs",
+    "greenRouteOrchestratorVersion": "sporting-legends-overdue-green-route-v1.1-validated-ledger"
   },
   "stateProofRequired": {
     "exactBetfairSpainTickerImsBindingVerified": false,
@@ -61,6 +67,7 @@
     "sameGuaranteedHitTimeAcrossPairVerified": false,
     "winCountUnchangedAcrossGuaranteedHitVerified": false,
     "dailyAmountNonDecreasingAcrossGuaranteedHitVerified": false,
+    "requestExecIntervalCadenceVerified": false,
     "postBoundaryFeedFreshEnoughVerified": false,
     "followingDayUnawardedStateVerified": false
   },
@@ -75,16 +82,22 @@
     "dailyAmountMustBeExactAndCurrent": true,
     "breakEvenFirstBetProbabilityFormula": "((1 - conservativeBaseRtp) * stakeEUR) / currentDailyJackpotEUR",
     "measuredActionLatencyRequired": true,
-    "raceModelProspectivelyValidated": false,
+    "validatedPassiveCycleLedgerRequired": true,
+    "rawAggregatedDryRunCountsExecutionAllowed": false,
     "firstBetProbabilityLowerBoundAboveBreakEven": false,
     "conditionalPositiveEvVerified": false
   },
   "raceBound": {
-    "candidateModel": "STATIONARY_POISSON_COMPETING_ELIGIBLE_BET_ARRIVALS",
-    "zeroEligibleArrivalWindowSecondsCanBeObservedAs": "fresh_after_gamedata_timestamp - exact_current_guaranteedHitTime, only when unchanged winc and no reset prove the Daily survived",
-    "oneSidedRateUpperBound": "lambda_upper=-ln(1-confidence)/zeroArrivalWindowSeconds",
-    "firstBetProbabilityLowerBound": "exp(-lambda_upper*measuredActionLatencySeconds)",
-    "stationarityMayBeAssumedNow": false,
+    "executionMethod": "ONE_SIDED_CLOPPER_PEARSON_FROM_VALIDATED_PASSIVE_CYCLE_LEDGER",
+    "poissonStationarityRequiredForGreen": false,
+    "poissonModelMayAuthorizeExecution": false,
+    "rawAggregatedCountsMayAuthorizeExecution": false,
+    "eachCycleMustBeProspectivelyObserved": true,
+    "eachCycleMustPassPassiveSnapshotValidator": true,
+    "uniqueCycleIdsRequired": true,
+    "frozenProtocolRequired": true,
+    "sameFrozenLatencyCeilingRequired": true,
+    "currentMeasuredLatencyMustNotExceedFrozenCeiling": true,
     "prospectiveValidationRequired": true,
     "usableForExecutionNow": false
   },
@@ -113,7 +126,7 @@
     "stakeAtDecisionExactVerified": false,
     "postBoundaryFeedFreshEnoughVerified": false,
     "measuredActionLatencyVerified": false,
-    "raceModelProspectivelyValidated": false,
+    "validatedPassiveCycleLedgerVerified": false,
     "firstBetProbabilityLowerBoundAboveBreakEven": false,
     "prospectiveDryRunCycleVerified": false
   },
@@ -142,14 +155,18 @@
     "amountWinsCannotBeUsedAsWinCount": true,
     "followingDayRuleDoesNotProveOurBetWillBeFirst": true,
     "poissonStationarityCannotBeAssumed": true,
+    "poissonCannotAuthorizeGreen": true,
+    "aggregatedCountsCannotAuthorizeGreen": true,
+    "validatedPassiveCycleLedgerRequiredForGreen": true,
     "latencyCannotBeGuessed": true,
     "conditionalEvScreenCannotAuthorizeRealMoneyByItself": true
   },
   "nextDecisiveEvidence": [
     "Recover the exact Betfair Spain Playtech ticker hostname and IMS casino identity.",
-    "Parse the exact current Betfair Spain sljp-1 EUR local=0 amount, gamedata timestamp, winc and guaranteedHitTime.",
-    "Capture the same binding on both sides of that exact guaranteedHitTime and require unchanged winc, unchanged guaranteedHitTime, nondecreasing amount and fresh timestamp to prove the Daily survived into the following-day state.",
-    "Measure end-to-end decision/action latency without wagering and prospectively validate a competing-bet arrival model from repeated passive cycles.",
-    "Compare a conservative first-bet race probability lower bound with the exact break-even probability using the observed stake and exact Daily amount."
+    "Parse the exact current Betfair Spain sljp-1 EUR local=0 amount, gamedata timestamp, winc, request execInterval and guaranteedHitTime.",
+    "Capture the same binding on both sides of that exact guaranteedHitTime and require unchanged winc, unchanged guaranteedHitTime, nondecreasing amount and cadence-bounded fresh timestamps to prove the Daily survived into the following-day state.",
+    "Measure end-to-end decision/action latency without wagering and freeze a conservative latency ceiling before prospective dry-run observations.",
+    "Persist prospectively observed passive before/detection/confirmation cycles with unique IDs under one frozen protocol and validate every cycle.",
+    "Compute the one-sided 95% Clopper-Pearson lower bound from the validated ledger and require it to be strictly above the exact break-even probability using the observed stake and exact Daily amount."
   ]
 }
