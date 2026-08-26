@@ -16,6 +16,7 @@ const modern=(timestamp,amount,winc=7,ght=1100,captureOffset=1)=>({
 const har=(timestamp,amount,modernAmount=amount)=>({log:{entries:[launcher(),initial(),legacy(timestamp,amount),modern(timestamp,modernAmount)]}});
 
 let r=analyzeBetfairSportingDualFeedCalibrationSample(har(1000,123.45),{sourceName:'dual-1.har',maxCaptureSkewSeconds:2});
+assert.equal(r.version,'betfair-sporting-dual-feed-calibration-v1.3-frozen-policy');
 assert.equal(r.valid,true);
 assert.equal(r.sameLauncherEntry,true);
 assert.equal(r.sameInitialResourcesEntry,true);
@@ -24,6 +25,7 @@ assert.equal(r.expectedBetfairImsCasino,'bf_es');
 assert.equal(r.legacyTickerEndpoint,'https://legacy.example/new_jackpotxml.php');
 assert.equal(r.modernTickerEndpoint,'https://webtickers.malmegas.com/webtickers');
 assert.equal(r.captureSkewSeconds,1);
+assert.equal(r.maxAllowedCaptureSkewSeconds,5);
 assert.equal(r.captureSkewWithinPolicy,true);
 assert.deepEqual(r.legacyStateVector,r.modernStateVector);
 assert.equal(r.exactStateVectorMatch,true);
@@ -35,6 +37,15 @@ assert.equal(r.execution.decision,'NO_PLAY');
 assert.equal(r.execution.realMoneyAllowed,false);
 assert.equal(r.execution.maxSpins,0);
 assert.equal(r.hardGuards.legacyAndModernEndpointScopePreserved,true);
+assert.equal(r.hardGuards.callerCannotWeakenCaptureSkewPolicy,true);
+
+// Caller cannot relax the frozen maximum capture skew.
+const relaxedSkew=analyzeBetfairSportingDualFeedCalibrationSample(har(1000,123.45),{sourceName:'relaxed.har',maxCaptureSkewSeconds:6});
+assert.equal(relaxedSkew.valid,false);
+assert.equal(relaxedSkew.reason,'INVALID_CAPTURE_SKEW_POLICY');
+assert.equal(relaxedSkew.maxAllowedCaptureSkewSeconds,5);
+assert.equal(relaxedSkew.realMoneyAllowed,undefined);
+assert.equal(relaxedSkew.execution.realMoneyAllowed,false);
 
 // A near-simultaneous modern row with any state-field mismatch is not a calibration candidate.
 r=analyzeBetfairSportingDualFeedCalibrationSample(har(1000,123.45,123.46),{sourceName:'mismatch.har',maxCaptureSkewSeconds:2});
@@ -44,8 +55,8 @@ assert.equal(r.exactStateVectorMatch,false);
 assert.equal(r.calibrationCandidate,false);
 assert.equal(r.execution.realMoneyAllowed,false);
 
-// Exact state equality outside the capture-skew policy also fails closed.
-const skewed={log:{entries:[launcher(),initial(),legacy(1000,123.45),modern(1000,123.45,7,1100,10)]}};
+// Exact state equality outside the requested capture-skew policy also fails closed.
+const skewed={log:{entries:[launcher(),initial(),legacy(1000,123.45),modern(1000,123.45,7,1100,4)]}};
 r=analyzeBetfairSportingDualFeedCalibrationSample(skewed,{sourceName:'skewed.har',maxCaptureSkewSeconds:2});
 assert.equal(r.valid,true);
 assert.equal(r.exactStateVectorMatch,true);
@@ -60,7 +71,7 @@ const samples=[
 ];
 const series=evaluateBetfairSportingDualFeedCalibrationSeries(samples);
 assert.equal(series.valid,true);
-assert.equal(series.version,'betfair-sporting-dual-feed-calibration-series-v1.2-unique-contract-samples');
+assert.equal(series.version,'betfair-sporting-dual-feed-calibration-series-v1.4-frozen-policy');
 assert.equal(series.contractValidCalibrationSampleCount,3);
 assert.equal(series.exactCalibrationSampleCount,3);
 assert.equal(series.uniqueExactCalibrationSampleCount,3);
@@ -75,10 +86,23 @@ assert.equal(series.exactModernResponseSemanticsVerified,false);
 assert.equal(series.usableForOverduePair,false);
 assert.equal(series.execution.decision,'NO_PLAY');
 assert.equal(series.execution.realMoneyAllowed,false);
+assert.equal(series.policy.hardMinimums.minExactSamples,3);
+assert.equal(series.policy.hardMinimums.minDistinctServerTimestamps,3);
+assert.equal(series.policy.hardMinimums.minDistinctAmounts,2);
+assert.equal(series.hardGuards.callerCannotWeakenCalibrationSeriesPolicy,true);
 assert.equal(series.hardGuards.fullSampleContractRecomputed,true);
 assert.equal(series.hardGuards.duplicateCapturesDoNotCountTowardCalibration,true);
 assert.equal(series.hardGuards.noAutomaticPromotionToOverdueGate,true);
 assert.equal(series.hardGuards.oneExactImsAndEndpointScopeRequired,true);
+
+// Caller cannot lower the scientific calibration thresholds.
+const weakened=evaluateBetfairSportingDualFeedCalibrationSeries(samples,{minExactSamples:2,minDistinctServerTimestamps:2,minDistinctAmounts:1});
+assert.equal(weakened.valid,false);
+assert.equal(weakened.reason,'INVALID_CALIBRATION_SERIES_POLICY');
+assert.equal(weakened.minimumPolicy.minExactSamples,3);
+assert.equal(weakened.minimumPolicy.minDistinctServerTimestamps,3);
+assert.equal(weakened.minimumPolicy.minDistinctAmounts,2);
+assert.equal(weakened.execution.realMoneyAllowed,false);
 
 // Repeating one exact HAR/sample cannot manufacture the minimum calibration series.
 const repeated=evaluateBetfairSportingDualFeedCalibrationSeries([samples[0],samples[0],samples[0]]);
