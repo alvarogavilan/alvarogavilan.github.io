@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import {evaluateBetfairSportingHarOverduePair,validateBetfairSportingHarSnapshot} from '../casino/jackpots/betfair-sporting-har-overdue-bridge-v1.mjs';
 
-const config=(casino='bf_es',ticker='https://tickers.playtech.example/new_jackpotxml.php')=>({
-  request:{method:'GET',url:'https://launcher.betfair.es/initialResources/es_ES_desktop',headers:[]},
+const config=(casino='bf_es',ticker='https://tickers.playtech.example/new_jackpotxml.php',cacheBust='')=>({
+  request:{method:'GET',url:`https://launcher.betfair.es/initialResources/es_ES_desktop${cacheBust?`?cacheBust=${cacheBust}`:''}`,headers:[]},
   response:{status:200,headers:[],content:{mimeType:'application/json',text:JSON.stringify({jackpotsCasino:casino,jackpotsCasinoUrl:ticker})}},
 });
 const ticker=(gameTimestamp,amount,winCount=42,casino='bf_es',ght=2000)=>({
@@ -10,7 +10,7 @@ const ticker=(gameTimestamp,amount,winCount=42,casino='bf_es',ght=2000)=>({
   request:{method:'GET',url:`https://tickers.playtech.example/new_jackpotxml.php?casino=${casino}&currency=EUR&game=sljp-1&local=0&winc=0`,headers:[]},
   response:{status:200,headers:[],content:{mimeType:'text/xml',text:`<request casino="${casino}" currency="eur" game="sljp-1" startTimestamp="${gameTimestamp-10}" execInterval="10"/><gamedata game="sljp-1" gamegroup="sljp" local="0" timestamp="${gameTimestamp}" winc="${winCount}"><amount currency="EUR" guaranteedHitTime="${ght}" step="0.01" wins="1000">${amount}</amount></gamedata>`}},
 });
-const har=(gameTimestamp,amount,winCount=42,casino='bf_es',ght=2000)=>({log:{entries:[config(casino),ticker(gameTimestamp,amount,winCount,casino,ght)]}});
+const har=(gameTimestamp,amount,winCount=42,casino='bf_es',ght=2000,cacheBust='')=>({log:{entries:[config(casino,'https://tickers.playtech.example/new_jackpotxml.php',cacheBust),ticker(gameTimestamp,amount,winCount,casino,ght)]}});
 
 const one=validateBetfairSportingHarSnapshot(har(1990,100),{sourceName:'before.har',nowEpochSeconds:1995});
 assert.equal(one.valid,true);
@@ -20,8 +20,8 @@ assert.equal(one.snapshot.guaranteedHitTime,2000);
 assert.equal(one.decision,'NO_PLAY');
 
 const r=evaluateBetfairSportingHarOverduePair({
-  beforeHar:har(1990,100),
-  afterHar:har(2005,100.02),
+  beforeHar:har(1990,100,42,'bf_es',2000,'before'),
+  afterHar:har(2005,100.02,42,'bf_es',2000,'after'),
   beforeNowEpochSeconds:1995,
   afterNowEpochSeconds:2010,
   decisionNowEpochSeconds:2010,
@@ -33,6 +33,7 @@ assert.equal(r.valid,true);
 assert.equal(r.finalEvaluation.followingDayUnawardedVerified,true);
 assert.equal(r.finalEvaluation.nextEligibleNetworkBetGuaranteedJackpot,true);
 assert.equal(r.finalEvaluation.exactBetfairSpainTickerImsBindingVerified,true);
+assert.equal(r.hardGuards.benignCacheBusterQueryChangesIgnored,true);
 assert.equal(r.decision,'NO_PLAY');
 assert.equal(r.realMoneyAllowed,false);
 assert.equal(r.maxSpins,0);
