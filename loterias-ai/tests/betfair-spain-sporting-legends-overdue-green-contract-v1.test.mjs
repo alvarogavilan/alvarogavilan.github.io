@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const d=JSON.parse(fs.readFileSync('loterias-ai/edge-live/evidence/betfair-spain-sporting-legends-overdue-green-contract-v1.json','utf8'));
+assert.equal(d.status,'GREEN_ENGINE_READY_LIVE_STATE_NOT_YET_VERIFIED');
+assert.equal(d.identity.providerVariant,'tonymc');
+assert.equal(d.identity.exactBetfairSpainTickerImsBindingVerified,false);
+assert.equal(d.engine.poissonStationarityRequiredForGreen,false);
+assert.equal(d.engine.greenMayAuthorizeAtMostOneManualSpin,true);
+assert.equal(d.currentLiveState.greenNow,false);
+assert.equal(d.greenPromotionContract.onPass.maxSpins,1);
+assert.equal(d.execution.decision,'NO_PLAY');
+assert.equal(d.execution.realMoneyAllowed,false);
+assert.equal(d.hardGuards.syntheticTestGreenCannotBePromotedToLiveGreen,true);
+console.log('betfair-spain-sporting-legends-overdue-green-contract-v1.test.mjs: PASS');
