@@ -1,5 +1,5 @@
 {
-  "version": "betfair-spain-sporting-legends-overdue-green-contract-v1",
+  "version": "betfair-spain-sporting-legends-overdue-green-contract-v1.1-validated-cycle-ledger",
   "generatedAt": "2026-08-26T14:26:00+02:00",
   "status": "GREEN_ENGINE_READY_LIVE_STATE_NOT_YET_VERIFIED",
   "market": "ES",
@@ -15,7 +15,9 @@
     "providerVariantBindingVerified": true,
     "dailyTickerCode": "sljp-1",
     "dailyTickerProtocolVerified": true,
-    "exactBetfairSpainTickerImsBindingVerified": false
+    "exactBetfairSpainTickerImsBindingVerified": false,
+    "exactBetfairSpainTickerHostRecovered": false,
+    "exactBetfairSpainImsCasinoRecovered": false
   },
   "publishedMechanic": {
     "followingDayFirstEligibleBetRuleBetfairVerified": true,
@@ -26,13 +28,21 @@
   },
   "engine": {
     "overdueEvaluatorPath": "loterias-ai/casino/jackpots/sporting-legends-overdue-first-bet-v1.mjs",
-    "overdueEvaluatorVersion": "sporting-legends-overdue-first-bet-v1.3-green-promotion-contract",
+    "overdueEvaluatorVersion": "sporting-legends-overdue-first-bet-v1.4-cadence-bound-green",
+    "passiveRaceCycleValidatorPath": "loterias-ai/casino/jackpots/sporting-legends-passive-race-cycle-v1.mjs",
+    "passiveRaceCycleValidatorVersion": "sporting-legends-passive-race-cycle-v1",
     "empiricalRaceBoundPath": "loterias-ai/casino/jackpots/sporting-legends-empirical-race-bound-v1.mjs",
+    "empiricalRaceBoundVersion": "sporting-legends-empirical-race-bound-v1.1-ledger-required",
     "empiricalRaceMethod": "ONE_SIDED_CLOPPER_PEARSON_BINOMIAL",
     "greenRouteOrchestratorPath": "loterias-ai/casino/jackpots/sporting-legends-overdue-green-route-v1.mjs",
+    "greenRouteOrchestratorVersion": "sporting-legends-overdue-green-route-v1.1-validated-ledger",
     "poissonStationarityRequiredForGreen": false,
     "prospectiveFrozenProtocolRequired": true,
-    "comparablePostDetectionDryRunCyclesRequired": true,
+    "validatedPassiveCycleLedgerRequired": true,
+    "rawBooleanDryRunCannotAuthorizeGreen": true,
+    "aggregatedCountsCannotAuthorizeGreen": true,
+    "requestExecIntervalCadenceRequired": true,
+    "expectedImsConcreteValueRequired": true,
     "measuredLatencyMustNotExceedFrozenCeiling": true,
     "greenMayAuthorizeAtMostOneManualSpin": true
   },
@@ -44,11 +54,15 @@
     "currentGuaranteedHitTimeExactVerified": false,
     "currentWinCountExactVerified": false,
     "currentGameTimestampExactVerified": false,
+    "currentRequestExecIntervalExactVerified": false,
     "crossGuaranteedHitSameBindingPairVerified": false,
+    "crossGuaranteedHitPairCadenceBoundedVerified": false,
     "followingDayUnawardedStateVerified": false,
     "stakeAtDecisionExactVerified": false,
     "measuredActionLatencyVerified": false,
+    "frozenActionLatencyCeilingVerified": false,
     "prospectiveComparableDryRunCycleCount": 0,
+    "validatedPassiveCycleLedgerVerified": false,
     "empiricalFirstBetProbabilityLowerBound": null,
     "exactBreakEvenFirstBetProbability": null,
     "greenNow": false
@@ -56,14 +70,17 @@
   "greenPromotionContract": {
     "allRequired": true,
     "requirements": [
-      "exact Betfair Spain ticker+IMS binding",
-      "fresh EUR local=0 sljp-1 snapshots bracketing current guaranteedHitTime",
-      "unchanged winc and guaranteedHitTime plus no jackpot reset across boundary",
+      "exact Betfair Spain ticker hostname plus concrete IMS casino identity",
+      "fresh EUR local=0 sljp-1 snapshots bracketing the exact current guaranteedHitTime",
+      "before and after snapshots bounded by the provider request execInterval cadence",
+      "unchanged winc and guaranteedHitTime plus no jackpot reset across the boundary",
       "exact current Daily amount",
       "exact Spanish stake at decision time",
-      "manual action latency measured under a protocol frozen before observations",
-      "at least one comparable prospective passive post-detection dry-run cycle",
-      "one-sided 95% empirical race probability lower bound strictly above exact break-even probability"
+      "manual action latency measured and not greater than a ceiling frozen before observations",
+      "at least one prospectively observed passive cycle validated from before/detection/confirmation snapshots",
+      "unique cycle IDs and one unchanged frozen protocol across the execution evidence ledger",
+      "one-sided 95% Clopper-Pearson race probability lower bound from the validated cycle ledger strictly above exact break-even probability",
+      "final live state recheck immediately before any manual spin"
     ],
     "onPass": {
       "decision": "GREEN",
@@ -82,16 +99,16 @@
   },
   "statisticalLeverage": {
     "confidence": 0.95,
-    "oneSuccessOutOfOneProspectiveCycleLowerBound": 0.05,
-    "twoSuccessesOutOfTwoProspectiveCyclesLowerBound": 0.22360679774997896,
+    "oneSuccessOutOfOneValidatedProspectiveCycleLowerBound": 0.05,
+    "twoSuccessesOutOfTwoValidatedProspectiveCyclesLowerBound": 0.22360679774997896,
+    "importantLimit": "These values become execution-usable only when they are computed from the validated passive cycle ledger under the frozen protocol. Aggregated counts or manually asserted booleans are research-only.",
     "illustrativeBreakEvenOnly": {
       "baseRtpPct": 93.03,
       "stakeEUR": 0.25,
       "dailyJackpotEUR": 100.02,
       "breakEvenFirstBetProbability": 0.00017421515696860624,
       "mayDriveExecution": false
-    },
-    "interpretation": "A small number of prospectively clean cycles can be statistically sufficient because the race break-even probability can be very small relative to a Daily jackpot. Exact current stake and jackpot are still mandatory before GREEN."
+    }
   },
   "execution": {
     "decision": "NO_PLAY",
@@ -111,14 +128,21 @@
     "providerExampleTimestampCannotPopulateCurrentGuaranteedHitTime": true,
     "historicalRtpCannotProveProspectiveEdge": true,
     "syntheticTestGreenCannotBePromotedToLiveGreen": true,
+    "rawBooleanDryRunCannotAuthorizeGreen": true,
+    "aggregatedDryRunCountsCannotAuthorizeGreen": true,
+    "historicalOrWideSnapshotPairCannotProveOverdueRace": true,
+    "nullOrBooleanCannotBecomeNumericExecutionInput": true,
+    "requestExecIntervalCadenceMustBePreserved": true,
+    "expectedBetfairImsMustBeConcreteAndMatchSnapshots": true,
     "oneOfOneStatisticalBoundCannotBypassExactLiveBinding": true,
     "finalLiveRecheckMandatory": true
   },
   "nextDecisiveEvidence": [
     "Recover exact Betfair Spain ticker hostname and IMS casino identity.",
-    "Capture the exact current sljp-1 EUR local=0 amount, winc, gamedata timestamp and guaranteedHitTime.",
-    "Observe a same-binding overdue state across guaranteedHitTime with unchanged winc and no reset.",
-    "Measure manual decision-to-submit latency without wagering and freeze the latency ceiling before dry-run observations.",
-    "Complete the first comparable passive post-detection dry-run cycle and compute the exact empirical lower bound."
+    "Capture exact current sljp-1 EUR local=0 amount, winc, gamedata timestamp, request execInterval and guaranteedHitTime.",
+    "Observe a cadence-bounded same-binding overdue state across guaranteedHitTime with unchanged winc and no reset.",
+    "Measure manual decision-to-submit latency without wagering and freeze a conservative latency ceiling before dry-run observations.",
+    "Complete the first comparable passive before/detection/confirmation cycle under the frozen protocol and persist it with a unique cycle ID.",
+    "Compute the validated-ledger empirical lower bound and compare it with the exact live break-even probability."
   ]
 }

@@ -1,35 +1,42 @@
 import assert from 'node:assert/strict';
-import {deriveProspectiveEmpiricalRaceLowerBound} from '../casino/jackpots/sporting-legends-empirical-race-bound-v1.mjs';
+import {deriveProspectiveEmpiricalRaceLowerBound,deriveProspectiveEmpiricalRaceLowerBoundFromValidatedCycles} from '../casino/jackpots/sporting-legends-empirical-race-bound-v1.mjs';
+import {validateSportingLegendsPassiveRaceCycle} from '../casino/jackpots/sporting-legends-passive-race-cycle-v1.mjs';
+import {evaluateSportingLegendsOverdueFirstBet} from '../casino/jackpots/sporting-legends-overdue-first-bet-v1.mjs';
 
-let r=deriveProspectiveEmpiricalRaceLowerBound({
-  successfulDryRunCycles:1,totalDryRunCycles:1,confidence:0.95,
-  prospectiveProtocolFrozen:true,comparableCycleDefinitionVerified:true,
+let r=deriveProspectiveEmpiricalRaceLowerBound({successfulDryRunCycles:1,totalDryRunCycles:1,confidence:0.95,prospectiveProtocolFrozen:true,comparableCycleDefinitionVerified:true});
+assert.equal(r.valid,true);
+assert.equal(r.usableForExecution,false);
+assert.equal(r.reason,'AGGREGATED_COUNTS_RESEARCH_ONLY');
+assert.ok(Math.abs(r.firstBetRaceProbabilityLowerBound-0.05)<1e-10);
+
+const base={code:'sljp-1',requestCasino:'betfair-es-ims',instanceCode:null,local:0,currency:'EUR',guaranteedHitTime:2000,winCount:42,amount:100,requestExecInterval:10};
+const cycle=validateSportingLegendsPassiveRaceCycle({
+  cycleId:'cycle-1',protocolId:'p1',protocolFrozenAtEpochSeconds:1900,recordedAtEpochSeconds:2012,
+  beforeBoundary:{...base,gameTimestamp:1990},detection:{...base,gameTimestamp:2005,amount:100.02},confirmation:{...base,gameTimestamp:2008,amount:100.03},
+  expectedBetfairImsCasino:'betfair-es-ims',exactBetfairSpainTickerImsBindingVerified:true,
+  betfairFirstBetFollowingDayRuleVerified:true,providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified:true,actionLatencySeconds:2,
 });
+assert.equal(cycle.valid,true);
+
+r=deriveProspectiveEmpiricalRaceLowerBoundFromValidatedCycles({cycles:[cycle],confidence:0.95,protocolId:'p1',actionLatencySeconds:2,prospectiveProtocolFrozen:true});
 assert.equal(r.valid,true);
 assert.equal(r.usableForExecution,true);
-assert.equal(r.method,'ONE_SIDED_CLOPPER_PEARSON_BINOMIAL');
+assert.equal(r.source,'VALIDATED_PASSIVE_CYCLE_LEDGER');
 assert.ok(Math.abs(r.firstBetRaceProbabilityLowerBound-0.05)<1e-10);
-assert.equal(r.guards.noPoissonStationarityAssumption,true);
-assert.equal(r.guards.passiveDryRunsOnly,true);
 
-r=deriveProspectiveEmpiricalRaceLowerBound({
-  successfulDryRunCycles:2,totalDryRunCycles:2,confidence:0.95,
-  prospectiveProtocolFrozen:true,comparableCycleDefinitionVerified:true,
+const green=evaluateSportingLegendsOverdueFirstBet({
+  before:{...base,gameTimestamp:1990},after:{...base,gameTimestamp:2005,amount:100.02},nowEpochSeconds:2010,
+  exactBetfairSpainTickerImsBindingVerified:true,expectedBetfairImsCasino:'betfair-es-ims',
+  betfairFirstBetFollowingDayRuleVerified:true,providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified:true,
+  stakeEUR:0.25,raceEvidence:r,currentDailyAmountExactVerified:true,stakeAtDecisionExactVerified:true,
+  measuredActionLatencyVerified:true,measuredActionLatencySeconds:2,prospectiveDryRunCycleVerified:true,
 });
-assert.ok(Math.abs(r.firstBetRaceProbabilityLowerBound-Math.sqrt(0.05))<1e-10);
+assert.equal(green.decision,'GREEN');
+assert.equal(green.realMoneyAllowed,true);
+assert.equal(green.maxSpins,1);
 
-r=deriveProspectiveEmpiricalRaceLowerBound({
-  successfulDryRunCycles:0,totalDryRunCycles:5,confidence:0.95,
-  prospectiveProtocolFrozen:true,comparableCycleDefinitionVerified:true,
-});
-assert.equal(r.firstBetRaceProbabilityLowerBound,0);
-
-r=deriveProspectiveEmpiricalRaceLowerBound({
-  successfulDryRunCycles:1,totalDryRunCycles:1,
-  prospectiveProtocolFrozen:false,comparableCycleDefinitionVerified:true,
-});
-assert.equal(r.valid,false);
-assert.equal(r.reason,'PROSPECTIVE_PROTOCOL_NOT_FROZEN');
-assert.equal(r.usableForExecution,false);
+const dup=deriveProspectiveEmpiricalRaceLowerBoundFromValidatedCycles({cycles:[cycle,cycle],protocolId:'p1',actionLatencySeconds:2,prospectiveProtocolFrozen:true});
+assert.equal(dup.valid,false);
+assert.equal(dup.reason,'MISSING_OR_DUPLICATE_CYCLE_ID');
 
 console.log('sporting-legends-empirical-race-bound-v1.test.mjs: PASS');
