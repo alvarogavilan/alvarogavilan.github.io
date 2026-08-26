@@ -1,0 +1,40 @@
+{
+  "version": "bet365-spain-sporting-dual-feed-prospective-freeze-v1",
+  "generatedAtUtc": "2026-08-26T22:24:00Z",
+  "status": "FROZEN_BEFORE_PRIVATE_PROSPECTIVE_CALIBRATION_EVIDENCE",
+  "scope": "ONLINE_ONLY_NON_PROMO_PASSIVE_PRIVATE_HAR",
+  "protocolImplementationCommitSha": "6674608d2ead2d6c0341c387d335140be22eb408",
+  "protocolAdversarialTestCommitSha": "e47a759a251d8fd3839febe782d42845e5d64fb5",
+  "targetPolicy": {
+    "supportedBet365SpainSportingGameCodes": ["gpas_bgeorge_pop", "gpas_slblara_pop", "gpas_slfbruno_pop"],
+    "legacyFeed": "Playtech new_jackpotxml.php exact EUR global sljp-1 XML",
+    "modernFeed": "bet365.es-owned configured /webtickers transport exact structured sljp-1 candidate",
+    "sameExactTargetRequired": true,
+    "sameConfiguredRequestCasinoRequired": true,
+    "sameConcreteInstanceCodeRequired": true,
+    "completeStateVectorExactEqualityRequired": ["game", "currency", "local", "amount", "guaranteedHitTime", "gameTimestamp", "winCount", "instanceCode"],
+    "maximumCaptureSkewSeconds": 5,
+    "minimumUniqueExactSamples": 3,
+    "minimumDistinctServerTimestamps": 3,
+    "minimumDistinctAmounts": 2,
+    "oneLogicalTargetCasinoInstanceEndpointScopeRequired": true,
+    "duplicateCapturesDoNotCount": true
+  },
+  "prospectiveRules": {
+    "allAcceptedPrivateCaptureTimesMustBeStrictlyAfterThisFreezeCommit": true,
+    "captureOrderMustBeStrictlyForward": true,
+    "oldHarCannotBeRelabeledProspective": true,
+    "rawHarMustRemainPrivate": true,
+    "allAttemptsShouldBeLoggedForIndependentReview": true,
+    "successfulSamplesAloneCannotProveCompleteAttemptLedger": true
+  },
+  "promotionLimits": {
+    "empiricalModernResponseMappingMayBeCalibrated": true,
+    "exactModernResponseSemanticsMayBeDeclaredDocumentedFromCalibration": false,
+    "servedTenCentEligibilityMayBeInferred": false,
+    "operatorFollowingDayRuleAdoptionMayBeInferred": false,
+    "overdueExecutionMayBeAuthorized": false,
+    "greenMayBeAuthorized": false
+  },
+  "execution": {"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
