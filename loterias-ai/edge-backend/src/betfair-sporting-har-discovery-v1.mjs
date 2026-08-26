@@ -59,6 +59,17 @@ function mergeFields(dst,src){
   return dst;
 }
 
+function betfairInitialResourcesUrl(url){
+  try{
+    const u=new URL(url),h=u.hostname.toLowerCase();
+    return u.protocol==='https:'&&(h==='betfair.es'||h.endsWith('.betfair.es'))&&/\/initialresources(?:\/|$)/i.test(u.pathname);
+  }catch{return false;}
+}
+
+function sameEndpoint(a,b){
+  try{const x=new URL(a),y=new URL(b);return x.protocol==='https:'&&y.protocol==='https:'&&x.origin===y.origin&&x.pathname===y.pathname;}catch{return false;}
+}
+
 export function analyzeBetfairSportingHar(har,{sourceName='capture.har'}={}){
   const obj=typeof har==='string'?JSON.parse(har):har;
   const entries=Array.isArray(obj?.log?.entries)?obj.log.entries:[];
@@ -71,6 +82,7 @@ export function analyzeBetfairSportingHar(har,{sourceName='capture.har'}={}){
     const joined=parts.map(([,v])=>v).join('\n');
     if(!KEY_RE.test(maybeDecode(joined)))return;
     const requestUrl=String(entry?.request?.url||'');
+    const responseText=String(entry?.response?.content?.text||'');
     const decoded=maybeDecode(joined);
     const fields={};
     mergeFields(fields,fieldCandidates(decoded));
@@ -86,7 +98,7 @@ export function analyzeBetfairSportingHar(har,{sourceName='capture.har'}={}){
       index,
       startedDateTime:entry?.startedDateTime||null,
       request:{method:entry?.request?.method||null,url:requestUrl||null},
-      response:{status:Number.isFinite(entry?.response?.status)?entry.response.status:null,mimeType:entry?.response?.content?.mimeType||null},
+      response:{status:Number.isFinite(entry?.response?.status)?entry.response.status:null,mimeType:entry?.response?.content?.mimeType||null,text:responseText||null},
       markers:{
         newJackpotXml:/new_jackpotxml\.php/i.test(decoded),
         webtickers:/webtickers/i.test(decoded),
@@ -105,6 +117,28 @@ export function analyzeBetfairSportingHar(har,{sourceName='capture.har'}={}){
     r.markers.newJackpotXml && r.markers.sljp1 &&
     ((r.fields.game||[]).some(v=>/\bsljp-1\b/i.test(v)) || /(?:[?&]|%26)game(?:=|%3D)(?:sljp-1|sljp%2D1)/i.test(maybeDecode(r.request.url||'')))
   );
+  const configBindingCandidates=[];
+  for(const r of relevant){
+    const sourceUrl=r.request.url||'';
+    if(!betfairInitialResourcesUrl(sourceUrl))continue;
+    const responseFields=fieldCandidates(r.response.text||'');
+    const casinos=uniq([...(responseFields.jackpotsCasino||[]),...(responseFields.casino||[])]);
+    const tickerUrls=uniq([...(responseFields.jackpotsCasinoUrl||[]),...(responseFields.liveEndpointUrl||[])]).filter(u=>/^https:\/\//i.test(u));
+    const instanceCodes=uniq([...(responseFields.instanceCode||[]),...(responseFields.instancecode||[])]);
+    for(const jackpotsCasino of casinos)for(const tickerUrl of tickerUrls)configBindingCandidates.push({
+      sourceEntryIndex:r.index,sourceUrl,jackpotsCasino,tickerUrl,instanceCode:instanceCodes.length===1?instanceCodes[0]:null,
+      sameDocument:true,sourceBetfairOwned:true,sourceInitialResources:true,
+    });
+  }
+  const pairedServerEvidence=[];
+  for(const b of configBindingCandidates){
+    for(const t of exactTickerEntryCandidates){
+      if(!sameEndpoint(b.tickerUrl,t.request.url||''))continue;
+      const echoedCasino=(t.fields.casino||[]).map(x=>x.toLowerCase());
+      if(echoedCasino.length&&!echoedCasino.includes(String(b.jackpotsCasino).toLowerCase()))continue;
+      pairedServerEvidence.push({configBinding:b,tickerEntryIndex:t.index,responseUrl:t.request.url,tickerXml:t.response.text||null,startedDateTime:t.startedDateTime||null});
+    }
+  }
   const imsCandidates=uniq([
     ...(allFields.casino||[]),
     ...(allFields.jackpotsCasino||[]),
@@ -114,7 +148,7 @@ export function analyzeBetfairSportingHar(har,{sourceName='capture.har'}={}){
   const tickerUrlCandidates=uniq(allUrls.filter(u=>/new_jackpotxml\.php|webtickers/i.test(maybeDecode(u))));
 
   return {
-    version:'betfair-sporting-har-discovery-v1',
+    version:'betfair-sporting-har-discovery-v1.1-colocated-binding',
     mode:'OFFLINE_PASSIVE_HAR_DISCOVERY_NO_PLAY',
     sourceName,
     entryCount:entries.length,
@@ -123,15 +157,17 @@ export function analyzeBetfairSportingHar(har,{sourceName='capture.har'}={}){
       imsCandidates,
       tickerUrlCandidates,
       fields:allFields,
+      configBindingCandidates,
       exactTickerEntryCandidates,
+      pairedServerEvidence,
       relevantEntries:relevant,
       exactBetfairSpainTickerImsBindingVerified:false,
       currentSljp1RowRecovered:exactTickerEntryCandidates.length>0,
       currentDailyAmountExactVerified:false,
       currentGuaranteedHitTimeExactVerified:false,
     },
-    scientificUse:'Offline HAR discovery only. A captured sljp-1 row is evidence of what the exact browser session requested/received, but execution remains blocked until exact Betfair Spain IMS/ticker identity, freshness, same-cycle continuity, deadline and unawarded server state are independently validated by the final gate.',
+    scientificUse:'Offline HAR discovery only. pairedServerEvidence requires a Betfair-owned initialResources response that co-locates jackpotsCasino with its configured ticker endpoint plus an exact endpoint-matching sljp-1 HAR response. It is shaped for the server-binding validator, but execution remains blocked until that validator, freshness, same-cycle continuity, deadline and unawarded state all pass.',
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,noCredentials:true,noCookiesEmitted:true,noWagerProbe:true,noAutomaticBetting:true,harEvidenceCannotAuthorizeGreen:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,noCredentials:true,noCookiesEmitted:true,noWagerProbe:true,noAutomaticBetting:true,harEvidenceCannotAuthorizeGreen:true,coLocatedBetfairInitialResourcesRequired:true,configuredEndpointMatchRequired:true},
   };
 }
