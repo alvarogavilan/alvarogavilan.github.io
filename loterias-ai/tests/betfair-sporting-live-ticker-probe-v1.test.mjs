@@ -41,6 +41,7 @@ const fetchImpl=async url=>{
 const configProbeRunner=async()=>({version:'test-config',observedAt:'2026-08-26T17:00:00Z',discovery:{coLocatedBetfairConfigBindings:[binding]}});
 
 let r=await runBetfairSportingLiveTickerProbe({configProbeRunner,fetchImpl,nowEpochSeconds:2010,maxFeedAgeIntervals:2});
+assert.equal(r.version,'betfair-sporting-live-ticker-probe-v1.4-public-output-redaction');
 assert.equal(r.valid,true);
 assert.equal(r.exactBetfairSpainTickerImsBindingVerified,true);
 assert.equal(r.currentSljp1RowRecovered,true);
@@ -53,8 +54,25 @@ assert.equal(r.decision,'NO_PLAY');
 assert.equal(r.realMoneyAllowed,false);
 assert.equal(r.maxSpins,0);
 assert.equal(r.currentSnapshotCannotProveOverdueByItself,true);
-assert.equal(r.hardGuards.configuredRoutingQueryPreserved,true);
+assert.equal(r.hardGuards.configuredRoutingQueryPreservedInternally,true);
+assert.equal(r.hardGuards.publicOutputEndpointQueriesAndFragmentsRedacted,true);
+assert.equal(r.tickerFetch.requestedEndpoint,'https://example.playtech.com/new_jackpotxml.php');
+assert.equal(r.tickerFetch.finalEndpoint,'https://example.playtech.com/new_jackpotxml.php');
 assert.equal(new URL(requested).searchParams.get('casino'),'betfair_es');
+
+const secretBinding={
+  ...binding,
+  sourceUrl:'https://launcher.betfair.es/initialResources/es_ES_desktop?cacheBust=SOURCE_SECRET',
+  tickerUrl:'https://example.playtech.com/new_jackpotxml.php?route=ROUTE_SECRET',
+};
+r=await runBetfairSportingLiveTickerProbe({configProbeRunner:async()=>({version:'secret-config',observedAt:'2026-08-26T17:00:00Z',discovery:{bindingCandidateObserved:true,coLocatedBetfairConfigBindings:[secretBinding]}}),fetchImpl,nowEpochSeconds:2010});
+assert.equal(r.valid,true);
+assert.equal(r.configBinding.sourceUrl,'https://launcher.betfair.es/initialResources/es_ES_desktop');
+assert.equal(r.configBinding.tickerUrl,'https://example.playtech.com/new_jackpotxml.php');
+assert.equal(r.tickerFetch.requestedEndpoint,'https://example.playtech.com/new_jackpotxml.php');
+const publicSerialized=JSON.stringify(r);
+for(const secret of ['SOURCE_SECRET','ROUTE_SECRET'])assert.equal(publicSerialized.includes(secret),false);
+assert.equal(new URL(requested).searchParams.get('route'),'ROUTE_SECRET');
 
 const equivalentBinding={...binding,sourceUrl:'https://casino.betfair.es/initialResources/es_ES_desktop'};
 r=await runBetfairSportingLiveTickerProbe({configProbeRunner:async()=>({discovery:{coLocatedBetfairConfigBindings:[binding,equivalentBinding]}}),fetchImpl,nowEpochSeconds:2010});
@@ -70,12 +88,14 @@ assert.equal(r.reason,'AMBIGUOUS_EXACT_XML_BINDING');
 assert.equal(r.distinctExactRequestCount,2);
 assert.equal(r.realMoneyAllowed,false);
 
-const modern={...binding,tickerUrl:'https://webtickers.malmegas.com/webtickers'};
-r=await runBetfairSportingLiveTickerProbe({configProbeRunner:async()=>({discovery:{coLocatedBetfairConfigBindings:[modern]}}),fetchImpl,nowEpochSeconds:2010});
+const modern={...binding,tickerUrl:'https://webtickers.malmegas.com/webtickers?token=MODERN_SECRET'};
+r=await runBetfairSportingLiveTickerProbe({configProbeRunner:async()=>({discovery:{bindingCandidateObserved:true,coLocatedBetfairConfigBindings:[modern]}}),fetchImpl,nowEpochSeconds:2010});
 assert.equal(r.valid,false);
 assert.equal(r.reason,'MODERN_WEBTICKERS_BINDING_OBSERVED_PROTOCOL_NOT_VERIFIED');
 assert.equal(r.modernProtocolResearchRequired,true);
 assert.equal(r.modernWebtickersBindings.length,1);
+assert.equal(r.modernWebtickersBindings[0].tickerUrl,'https://webtickers.malmegas.com/webtickers');
+assert.equal(JSON.stringify(r).includes('MODERN_SECRET'),false);
 assert.equal(r.realMoneyAllowed,false);
 assert.equal(r.hardGuards.modernWebtickersProtocolCannotBeGuessed,true);
 
