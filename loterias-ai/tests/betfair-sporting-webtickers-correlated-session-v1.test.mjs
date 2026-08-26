@@ -16,12 +16,16 @@ const http={
 };
 
 let r=analyzeBetfairSportingCorrelatedWebtickersSession({log:{entries:[launcher,initial,http]}},{sourceName:'http.har'});
+assert.equal(r.version,'betfair-sporting-webtickers-correlated-session-v1.1-launcher-order-attested');
 assert.equal(r.valid,true);
 assert.equal(r.exactApMcCoyRealLauncherBindingObserved,true);
+assert.equal(r.exactApMcCoyRealLauncherBindingCount,1);
 assert.equal(r.requestSemanticMatchCount,1);
 assert.equal(r.structuredSljp1RowCandidateCount,1);
 assert.equal(r.correlatedExactDailyCandidateCount,1);
+assert.equal(r.launcherOrderRejectedCount,0);
 assert.equal(r.ambiguousCorrelationCount,0);
+assert.equal(r.correlatedExactDailyCandidates[0].exactApMcCoyRealLauncherPrecedesCorrelatedEntry,true);
 assert.equal(r.correlatedExactDailyCandidates[0].sameEntryRequestResponseCorrelation,true);
 assert.equal(r.correlatedExactDailyCandidates[0].request.source,'http-request');
 assert.equal(r.correlatedExactDailyCandidates[0].responseRow.row.amount,123.45);
@@ -36,7 +40,16 @@ r=analyzeBetfairSportingCorrelatedWebtickersSession({log:{entries:[initial,http]
 assert.equal(r.valid,true);
 assert.equal(r.exactApMcCoyRealLauncherBindingObserved,false);
 assert.equal(r.correlatedExactDailyCandidateCount,0);
+assert.equal(r.launcherOrderRejectedCount,1);
 assert.equal(r.execution.maxTotalStakeEUR,0);
+
+// A launcher that appears only after ticker traffic cannot retroactively attest that ticker entry.
+r=analyzeBetfairSportingCorrelatedWebtickersSession({log:{entries:[initial,http,launcher]}},{sourceName:'late-launcher.har'});
+assert.equal(r.exactApMcCoyRealLauncherBindingObserved,true);
+assert.equal(r.correlatedExactDailyCandidateCount,0);
+assert.equal(r.launcherOrderRejectedCount,1);
+assert.equal(r.hardGuards.exactLauncherMustPrecedeCorrelatedEntry,true);
+assert.equal(r.execution.realMoneyAllowed,false);
 
 // Two valid client send frames on one WSS entry are ambiguous and fail closed instead of being paired to one server row.
 const ws={
