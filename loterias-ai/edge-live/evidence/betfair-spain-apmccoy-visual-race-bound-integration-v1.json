@@ -1,0 +1,69 @@
+{
+  "version": "betfair-spain-apmccoy-visual-race-bound-integration-v1",
+  "generatedAt": "2026-08-26T16:12:00+02:00",
+  "status": "VISUAL_LEDGER_CAN_FEED_RACE_BOUND_FINAL_SERVER_RECHECK_STILL_REQUIRED",
+  "market": "ES",
+  "operator": "Betfair Spain",
+  "provider": "Playtech",
+  "game": "AP McCoy Sporting Legends™",
+  "sourceType": "ONLINE",
+  "promotion": false,
+  "integration": {
+    "visualCycleValidator": "sporting-legends-visual-passive-cycle-v1",
+    "visualRaceBoundPath": "loterias-ai/casino/jackpots/sporting-legends-visual-empirical-race-bound-v1.mjs",
+    "visualRaceBoundVersion": "sporting-legends-visual-empirical-race-bound-v1",
+    "method": "ONE_SIDED_CLOPPER_PEARSON_BINOMIAL",
+    "acceptedEvidenceMode": "DIRECT_OFFICIAL_GAME_CLIENT_VISUAL",
+    "acceptedLedgerSubtype": "VISUAL_OFFICIAL_CLIENT",
+    "visualAndTickerCyclesMayBeMixed": false,
+    "uniqueCycleIdsRequired": true,
+    "uniqueScreenshotEvidenceIdsRequired": true,
+    "uniqueScreenshotSha256Required": true,
+    "protocolMustBeFrozenProspectively": true,
+    "sameActionLatencyRequiredAcrossLedger": true,
+    "singleVisualCycleMayAuthorizeItsOwnBet": false
+  },
+  "greenIsolation": {
+    "visualLedgerMayProvideRaceProbabilityInput": true,
+    "visualLedgerAloneMayAuthorizeGreen": false,
+    "finalExactBetfairSpainTickerImsBindingStillRequired": true,
+    "finalFreshSljp1ServerPairStillRequired": true,
+    "finalExactDailyAmountStillRequired": true,
+    "finalExactStakeStillRequired": true,
+    "finalMeasuredLatencyStillRequired": true,
+    "finalServerRecheckStillRequiredImmediatelyBeforeManualSpin": true,
+    "syntheticGreenCannotBecomeLiveGreen": true
+  },
+  "currentLiveState": {
+    "validatedVisualPassiveCycleCount": 0,
+    "visualRaceProbabilityLowerBound": null,
+    "exactTickerHostRecovered": false,
+    "exactImsCasinoRecovered": false,
+    "currentSljp1RowRecovered": false,
+    "greenNow": false
+  },
+  "scientificConsequence": "The inaccessible ticker no longer blocks collection or statistical use of prospective race evidence: direct official Betfair Spain AP McCoy Daily client screenshots can now build the Clopper-Pearson race bound. The server-side ticker/IMS remains mandatory for the final current-state recheck, so this integration cannot create a visual-only false GREEN.",
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "noAutomaticBetting": true,
+    "noRaceAutomation": true,
+    "noPoissonStationarityAssumption": true,
+    "visualLedgerCannotInventTickerOrIms": true,
+    "visualEvidenceCannotPopulateFinalServerState": true,
+    "reusedScreenshotEvidenceCannotEnterLedger": true,
+    "mixedVisualAndTickerLedgerCannotEnterOneBound": true
+  },
+  "nextDecisiveEvidence": [
+    "Capture the first prospectively frozen official-client visual Daily cycle without wagering and persist three distinct screenshots with hashes.",
+    "Recover the exact Betfair Spain ticker hostname and IMS casino identity for the final server-side live recheck.",
+    "Once both evidence lanes exist, compute the visual-ledger race lower bound and compare it against the exact live break-even probability from the final server state."
+  ]
+}
