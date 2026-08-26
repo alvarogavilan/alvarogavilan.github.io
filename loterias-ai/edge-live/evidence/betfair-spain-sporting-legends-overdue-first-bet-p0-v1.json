@@ -1,7 +1,7 @@
 {
-  "version": "betfair-spain-sporting-legends-overdue-first-bet-p0-v1",
-  "generatedAt": "2026-08-26T12:55:00+02:00",
-  "mode": "SPAIN_ONLINE_OVERDUE_FIRST_BET_RESEARCH_NO_PLAY",
+  "version": "betfair-spain-sporting-legends-overdue-first-bet-p0-v1.1-following-day-race",
+  "generatedAt": "2026-08-26T13:12:00+02:00",
+  "mode": "SPAIN_ONLINE_FOLLOWING_DAY_FIRST_BET_RESEARCH_NO_PLAY",
   "market": "ES",
   "operator": "Betfair Spain",
   "provider": "Playtech",
@@ -9,78 +9,103 @@
   "sourceType": "ONLINE",
   "promotion": false,
   "breakthrough": {
-    "route": "OVERDUE_FIRST_BET",
-    "description": "Published Betfair Spain rules state that when no gameplay takes place at the time a Daily or Weekly jackpot must be won, that jackpot is triggered by the first bet placed the following day.",
+    "route": "FOLLOWING_DAY_FIRST_BET_RACE",
+    "description": "Betfair Spain and Playtech publish that when no gameplay takes place when a Daily or Weekly jackpot must be won, that jackpot is triggered by the first bet placed the following day.",
     "currentBetfairSpainRuleVerified": true,
     "betfairRuleUrl": "https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn",
     "providerRuleCorroborated": true,
     "providerRuleUrl": "https://clientzone.betconstruct.com/media/download/801cbj/Bobby%20George%E2%84%A2%20Sporting%20Legends%E2%84%A2.pdf",
-    "scientificConsequence": "In a genuinely overdue and still-unawarded state, the normal random stake-to-jackpot hazard is not the decisive mechanism for the overdue tier; the decisive uncertainty becomes whether the contemplated wager is actually the first network bet after the published condition becomes true."
+    "semanticCorrectionVerified": true,
+    "semanticCorrection": "FOLLOWING_DAY_NOT_IMMEDIATELY_AFTER_DEADLINE",
+    "scientificConsequence": "Only if the exact Betfair Spain sljp-1 Daily survives unawarded into a separately verified following-day boundary does the ordinary random jackpot hazard cease to be decisive for that tier. The remaining uncertainty is the race to submit the first eligible network bet."
   },
   "clockSemantics": {
     "dailyMustBeWonByEndOfDayPublishedByPlaytech": true,
-    "playtechLaunchUrl": "https://www.playtech.com/playtech-launches-spectacular-sporting-legends-games-suite/",
     "betfairEarlyDailyRetriggerCutoffLondon": "21:00",
-    "earlyRetriggerCutoffIsDeadline": false,
-    "betfairWeeklyEarlyRetriggerReferenceIsDeadline": false,
+    "earlyRetriggerCutoffIsFollowingDayBoundary": false,
+    "earlyRetriggerCutoffIsExecutableDeadline": false,
     "onlyCurrentTickerGuaranteedHitTimeMayDefineExecutableDeadline": true,
-    "currentTickerGuaranteedHitTimeRecovered": false
+    "currentTickerGuaranteedHitTimeRecovered": false,
+    "followingDayBoundaryTimezonePublishedPrecisely": false,
+    "followingDayStartEpochSecondsVerified": false,
+    "followingDayBoundaryCannotBeInferredFromRetriggerCutoff": true
   },
   "tickerProtocolProof": {
-    "specUrl": "https://www.scribd.com/document/957977467/Playtech-Jackpot-Ticker-Specifications",
     "sljp1GuaranteedHitTimeDocumented": true,
     "gamedataTimestampDocumented": true,
     "gamedataWinCountAttribute": "winc",
     "amountWinsIsNotWinCount": true,
-    "javascriptTickerRefreshIntervalMinutes": 5,
     "parserPath": "loterias-ai/casino/jackpots/playtech-mhb-ticker-parser-v1.mjs",
     "parserVersionRequired": "playtech-mhb-ticker-parser-v1.6-win-count-timestamps",
-    "overdueDetectorPath": "loterias-ai/casino/jackpots/sporting-legends-overdue-first-bet-v1.mjs"
+    "followingDayDetectorPath": "loterias-ai/casino/jackpots/sporting-legends-overdue-first-bet-v1.mjs",
+    "raceBoundPath": "loterias-ai/casino/jackpots/sporting-legends-race-bound-v1.mjs"
   },
   "stateProofRequired": {
     "exactBetfairSpainTickerImsBindingVerified": false,
     "beforeDeadlineSljp1SnapshotVerified": false,
-    "afterDeadlineSljp1SnapshotVerified": false,
-    "sameBindingAcrossDeadlineVerified": false,
-    "sameGuaranteedHitTimeAcrossDeadlineVerified": false,
-    "winCountUnchangedAcrossDeadlineVerified": false,
-    "dailyAmountNonDecreasingAcrossDeadlineVerified": false,
-    "postDeadlineFeedFreshEnoughVerified": false,
-    "overdueUnawardedStateVerified": false
+    "afterVerifiedFollowingDayBoundarySljp1SnapshotVerified": false,
+    "sameBindingAcrossObservationWindowVerified": false,
+    "sameGuaranteedHitTimeAcrossObservationWindowVerified": false,
+    "winCountUnchangedAcrossObservationWindowVerified": false,
+    "dailyAmountNonDecreasingAcrossObservationWindowVerified": false,
+    "postFollowingDayFeedFreshEnoughVerified": false,
+    "followingDayUnawardedStateVerified": false
   },
   "economicRoute": {
     "usesMainGameOnly": true,
     "usesConservativePublishedRtpFloorPct": 93.03,
     "exactServedRtpVariantRequiredForThisRoute": false,
     "powerPlayWeightingRequiredForThisRoute": false,
-    "normalRandomHazardFunctionRequiredForThisRoute": false,
+    "normalRandomHazardFunctionRequiredForThisSpecialRoute": false,
+    "networkFirstBetRaceProbabilityRequired": true,
     "stakeMustBeObservedAtDecisionTime": true,
     "dailyAmountMustBeExactAndCurrent": true,
     "breakEvenFirstBetProbabilityFormula": "((1 - conservativeBaseRtp) * stakeEUR) / currentDailyJackpotEUR",
+    "measuredActionLatencyRequired": true,
     "raceModelProspectivelyValidated": false,
     "firstBetProbabilityLowerBoundAboveBreakEven": false,
     "conditionalPositiveEvVerified": false
   },
+  "raceBound": {
+    "candidateModel": "STATIONARY_POISSON_COMPETING_ELIGIBLE_BET_ARRIVALS",
+    "oneSidedRateUpperBound": "lambda_upper=-ln(1-confidence)/zeroArrivalWindowSeconds",
+    "firstBetProbabilityLowerBound": "exp(-lambda_upper*measuredActionLatencySeconds)",
+    "stationarityMayBeAssumedNow": false,
+    "prospectiveValidationRequired": true,
+    "usableForExecutionNow": false
+  },
+  "illustrationOnly": {
+    "notCurrentState": true,
+    "baseRtpPct": 93.03,
+    "stakeEUR": 0.25,
+    "dailyJackpotEUR": 100.02,
+    "breakEvenFirstBetProbability": 0.00017421515696860624,
+    "breakEvenFirstBetProbabilityPct": 0.017421515696860624,
+    "mayDriveExecution": false
+  },
   "gates": {
-    "currentBetfairSpainFirstBetRuleVerified": true,
-    "playtechEndOfDayDailyMechanicVerified": true,
+    "currentBetfairSpainFollowingDayFirstBetRuleVerified": true,
+    "providerFollowingDayFirstBetRuleCorroborated": true,
+    "followingDaySemanticsCorrected": true,
     "tickerProtocolGuaranteedHitTimeVerified": true,
     "tickerProtocolWinCountAndTimestampVerified": true,
     "parserV16Ready": true,
     "exactBetfairSpainTickerImsBindingVerified": false,
-    "crossDeadlineSameBindingPairVerified": false,
-    "overdueUnawardedStateVerified": false,
+    "followingDayBoundaryVerified": false,
+    "bridgingSameBindingPairVerified": false,
+    "followingDayUnawardedStateVerified": false,
     "currentDailyAmountExactVerified": false,
     "stakeAtDecisionExactVerified": false,
-    "postDeadlineFeedFreshEnoughVerified": false,
+    "postFollowingDayFeedFreshEnoughVerified": false,
+    "measuredActionLatencyVerified": false,
     "raceModelProspectivelyValidated": false,
     "firstBetProbabilityLowerBoundAboveBreakEven": false,
     "prospectiveDryRunCycleVerified": false
   },
   "gateProgress": {
-    "closed": 5,
-    "total": 14,
-    "note": "This is a separate conditional route, not a percentage distance to real-money GREEN."
+    "closed": 6,
+    "total": 17,
+    "note": "Separate conditional route. This is not a percentage distance to real-money GREEN."
   },
   "execution": {
     "decision": "NO_PLAY",
@@ -95,18 +120,21 @@
     "noLoginProbe": true,
     "noWagerProbe": true,
     "noRaceAutomation": true,
+    "followingDayCannotBeReinterpretedAsImmediatelyAfterDeadline": true,
+    "timezoneBoundaryCannotBeInvented": true,
     "earlyRetriggerCutoffCannotSubstituteForGuaranteedHitTime": true,
     "thirdPartyGlobalAmountCannotBindBetfairSpain": true,
     "amountWinsCannotBeUsedAsWinCount": true,
-    "overdueRuleDoesNotProveOurBetWillBeFirst": true,
-    "feedRefreshCadenceCreatesRaceRisk": true,
+    "followingDayRuleDoesNotProveOurBetWillBeFirst": true,
+    "poissonStationarityCannotBeAssumed": true,
+    "latencyCannotBeGuessed": true,
     "conditionalEvScreenCannotAuthorizeRealMoneyByItself": true
   },
   "nextDecisiveEvidence": [
-    "Recover the exact Betfair Spain Playtech ticker hostname ind IMS casino identity.",
-    "Capture sljp-1 EUR local=0 before and after its actual guaranteedHitTime with the same exact binding.",
-    "Require unchanged gamedata winc, unchanged guaranteedHitTime, nondecreasing amount and a fresh post-deadline gamedata timestamp.",
-    "Prospectively calibrate the probability that a contemplated manual wager is the first network bet after the last verified feed timestamp.",
-    "Compare the conservative lower bound on first-bet probability with the exact break-even probability using the observed stake and exact Daily amount."
+    "Recover the exact Betfair Spain Playtech ticker hostname and IMS casino identity.",
+    "Determine from provider/operator evidence the exact boundary meant by following day; do not assume a timezone or midnight.",
+    "Capture the same exact sljp-1 EUR local=0 binding before guaranteedHitTime and after the verified following-day boundary with unchanged winc, unchanged guaranteedHitTime and no reset.",
+    "Measure end-to-end decision/action latency without wagering and prospectively validate a competing-bet arrival model from repeated passive cycles.",
+    "Compare a conservative first-bet race probability lower bound with the exact break-even probability using the observed stake and exact Daily amount."
   ]
 }
