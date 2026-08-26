@@ -1,0 +1,57 @@
+{
+  "version": "age-of-gods-norse-spain-config-v1",
+  "generatedAt": "2026-08-26T03:45:00+02:00",
+  "market": "ES",
+  "operator": "William Hill Spain",
+  "game": "Age of the Gods Norse: Gods and Giants",
+  "provider": "Playtech",
+  "source": "https://casino.williamhill.es/slots/aotgn-gods-and-giants",
+  "currentSpainFacts": {
+    "currentlyPlayablePagePresent": true,
+    "jackpotContributionPct": 0.55,
+    "activeJackpotLevels": ["Ultimate Power Jackpot", "Extra Jackpot"],
+    "dailyJackpotPresentInCurrentSpainRules": false,
+    "instantJackpotPresentInCurrentSpainRules": false,
+    "nonUltimateCanTurnRed": true,
+    "redSemantics": "The counter changes to indicate that someone is likely to win the jackpot soon.",
+    "anyStakeEligible": true,
+    "higherStakeRaisesTriggerProbability": true,
+    "baseGameOnlyForJackpotWin": true,
+    "networkSharedAcrossMultipleAgeOfGodsNorseGames": true
+  },
+  "globalComparatorOnly": {
+    "gameCode": "gpas_aoggagiants_pop",
+    "globalHistoricalOrNonSpainDescriptionsMayExpose": ["Daily Jackpot", "Instant Jackpot", "Extra Jackpot", "Ultimate Jackpot"],
+    "transferToSpainAllowed": false,
+    "reason": "Current William Hill Spain rules explicitly expose only Ultimate Power and Extra at 0.55% contribution. Global/non-Spain Daily/Instant descriptions therefore cannot populate the Spanish execution model."
+  },
+  "economicClosure": {
+    "exactSpainContributionKnown": true,
+    "exactSpainActiveTierSetKnown": true,
+    "stakeMonotonicityKnown": true,
+    "extraRedStateObservable": true,
+    "exactTriggerHazardByStakeKnown": false,
+    "exactExtraRedThresholdOrCapKnown": false,
+    "exactUltimateHazardKnown": false,
+    "breakEvenStateComputable": false,
+    "status": "SPAIN_CONFIG_BOUND_HAZARD_AND_RED_THRESHOLD_OPEN"
+  },
+  "priority": {
+    "rank": "HIGH",
+    "reason": "Current Spanish rules expose an operator-side RED near-hit state for Extra plus known 0.55% total network contribution and stake-proportional trigger probability. This is more actionable than importing foreign Daily/Instant caps, but it is not yet an EV signal."
+  },
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "globalDailyInstantCannotPopulateSpain": true,
+    "foreignMustHitCapsCannotPopulateSpain": true,
+    "redStateDoesNotEqualPositiveEv": true,
+    "contributionRateDoesNotDetermineHazard": true,
+    "sameTitleDoesNotProveSameJurisdictionConfig": true
+  }
+}
