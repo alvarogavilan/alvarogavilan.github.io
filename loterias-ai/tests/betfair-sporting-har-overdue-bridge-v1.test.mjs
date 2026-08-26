@@ -44,11 +44,33 @@ assert.equal(configAfterTicker.reason,'CONFIG_BINDING_DOES_NOT_PRECEDE_TICKER_EN
 assert.equal(configAfterTicker.hardGuards.configBindingMustPrecedeTickerEntry,true);
 assert.equal(configAfterTicker.realMoneyAllowed,false);
 
+const preLaunchConfigHar={log:{entries:[config(),exactLauncher(),ticker(1990,100)]}};
+const preLaunchConfig=validateBetfairSportingHarSnapshot(preLaunchConfigHar,{sourceName:'stale-prelaunch-config.har'});
+assert.equal(preLaunchConfig.valid,false);
+assert.equal(preLaunchConfig.reason,'CONFIG_BINDING_NOT_POST_AP_MCCOY_LAUNCH');
+assert.equal(preLaunchConfig.hardGuards.configBindingMustFollowExactLauncher,true);
+assert.equal(preLaunchConfig.realMoneyAllowed,false);
+
+const supersededConfigHar={log:{entries:[
+  exactLauncher(),
+  config('bf_es','https://tickers.playtech.example/new_jackpotxml.php','first'),
+  config('other_es','https://other.example/new_jackpotxml.php','latest'),
+  ticker(1990,100),
+]}};
+const supersededConfig=validateBetfairSportingHarSnapshot(supersededConfigHar,{sourceName:'superseded-config.har'});
+assert.equal(supersededConfig.valid,false);
+assert.equal(supersededConfig.reason,'PAIRED_CONFIG_IS_NOT_LATEST_POST_LAUNCH_INITIAL_RESOURCES');
+assert.equal(supersededConfig.latestPostLaunchInitialResourcesEntryIndex,2);
+assert.equal(supersededConfig.configEntryIndex,1);
+assert.equal(supersededConfig.hardGuards.stalePreLaunchOrSupersededConfigCannotAuthorizeTicker,true);
+assert.equal(supersededConfig.realMoneyAllowed,false);
+
 const one=validateBetfairSportingHarSnapshot(har(1990,100),{sourceName:'before.har'});
-assert.equal(one.version,'betfair-sporting-har-overdue-bridge-v1.4-latest-launcher-attested');
+assert.equal(one.version,'betfair-sporting-har-overdue-bridge-v1.5-session-config-attested');
 assert.equal(one.valid,true);
 assert.equal(one.exactApMcCoyRealLauncherBindingVerified,true);
 assert.equal(one.latestPrecedingRealCasinoLauncherIsExactApMcCoy,true);
+assert.equal(one.latestPostLaunchInitialResourcesBindingVerified,true);
 assert.equal(one.launcherEntryIndex,0);
 assert.equal(one.configEntryIndex,1);
 assert.equal(one.tickerEntryIndex,2);
@@ -72,10 +94,11 @@ const r=evaluateBetfairSportingHarOverduePair({
   providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified:true,
   stakeEUR:0.25,
 });
-assert.equal(r.version,'betfair-sporting-har-overdue-bridge-v1.4-latest-launcher-attested');
+assert.equal(r.version,'betfair-sporting-har-overdue-bridge-v1.5-session-config-attested');
 assert.equal(r.valid,true);
 assert.equal(r.exactApMcCoyRealLauncherBindingVerifiedOnBothSnapshots,true);
 assert.equal(r.latestPrecedingRealCasinoLauncherIsExactApMcCoyOnBothSnapshots,true);
+assert.equal(r.latestPostLaunchInitialResourcesBindingVerifiedOnBothSnapshots,true);
 assert.equal(r.before.captureEpochSeconds,1990);
 assert.equal(r.after.captureEpochSeconds,2005);
 assert.equal(r.finalEvaluation.followingDayUnawardedVerified,true);
@@ -83,6 +106,7 @@ assert.equal(r.finalEvaluation.nextEligibleNetworkBetGuaranteedJackpot,true);
 assert.equal(r.finalEvaluation.exactBetfairSpainTickerImsBindingVerified,true);
 assert.equal(r.hardGuards.exactApMcCoyRealLauncherVerifiedOnBothSnapshots,true);
 assert.equal(r.hardGuards.latestPrecedingRealCasinoLauncherVerifiedOnBothSnapshots,true);
+assert.equal(r.hardGuards.latestPostLaunchInitialResourcesVerifiedOnBothSnapshots,true);
 assert.equal(r.hardGuards.configBindingPrecedesTickerOnBothSnapshots,true);
 assert.equal(r.hardGuards.benignCacheBusterQueryChangesIgnored,true);
 assert.equal(r.hardGuards.harCaptureTimeAttestedOnBothSnapshots,true);
