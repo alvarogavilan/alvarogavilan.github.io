@@ -4,6 +4,29 @@ const currentBase={code:'sljp-1',requestCasino:'BETFAIR_ES_IMS',instanceCode:'sp
 const base={before,after,nowEpochSeconds:1002,exactBetfairSpainTickerImsBindingVerified:true,expectedBetfairImsCasino:'BETFAIR_ES_IMS',betfairFirstBetFollowingDayRuleVerified:true,providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified:true,conservativeBaseRtpPct:93.03,stakeEUR:0.25,currentDailyAmountExactVerified:true,stakeAtDecisionExactVerified:true,measuredActionLatencySeconds:0.4,measuredActionLatencyVerified:true,frozenActionLatencyCeilingSeconds:2,frozenProtocolId:'p1',dryRunCycles:[dryRun]};
 let r=evaluateSportingLegendsOverdueGreenRoute(base);assert.equal(r.decision,'NO_PLAY');assert.equal(r.reason,'EMPIRICAL_RACE_BOUND_NOT_EXECUTABLE');assert.equal(r.empiricalRaceBound.reason,'BINOMIAL_EXECUTION_ASSUMPTIONS_NOT_VERIFIED');
 const closed={...base,binomialIidAssumptionJustified:true,completeProspectiveCycleLedgerVerified:true,currentCycleExchangeabilityVerified:true,assumptionEvidenceId:'race-model-assumptions-v1'};r=evaluateSportingLegendsOverdueGreenRoute(closed);assert.equal(r.decision,'GREEN');assert.equal(r.realMoneyAllowed,true);assert.equal(r.empiricalRaceBound.executionAssumptionsClosed,true);assert.equal(r.validatedDryRunCycles[0].outcome,'SUCCESS');assert.equal(r.raceExecutionAssumptionsVerified,true);assert.equal(r.raceConfidenceVerified,true);assert.equal(r.raceWindowBudgetVerified,true);
+
+// Adversarial regression: caller-supplied RTP must never manufacture a GREEN by
+// lowering the break-even race threshold below the conservative published floor.
+const floorScreen=evaluateSportingLegendsOverdueGreenRoute({...closed,stakeEUR:100,conservativeBaseRtpPct:93.03});
+assert.equal(floorScreen.decision,'NO_PLAY');
+assert.equal(floorScreen.conservativeBaseRtpPct,93.03);
+assert.ok(floorScreen.breakEvenFirstBetProbability>floorScreen.firstBetProbabilityLowerBound);
+const injected100=evaluateSportingLegendsOverdueGreenRoute({...closed,stakeEUR:100,conservativeBaseRtpPct:100});
+assert.equal(injected100.version,'sporting-legends-overdue-first-bet-v1.7-execution-rtp-cap');
+assert.equal(injected100.decision,'NO_PLAY');
+assert.equal(injected100.realMoneyAllowed,false);
+assert.equal(injected100.requestedConservativeBaseRtpPct,100);
+assert.equal(injected100.conservativeBaseRtpPct,93.03);
+assert.equal(injected100.maxUnverifiedExecutionBaseRtpPct,93.03);
+assert.equal(injected100.callerRtpCappedForExecution,true);
+assert.equal(injected100.breakEvenFirstBetProbability,floorScreen.breakEvenFirstBetProbability);
+assert.equal(injected100.guards.callerSuppliedHigherRtpCannotEaseGreenThreshold,true);
+const injectedPublishedMax=evaluateSportingLegendsOverdueGreenRoute({...closed,stakeEUR:100,conservativeBaseRtpPct:97.17});
+assert.equal(injectedPublishedMax.decision,'NO_PLAY');
+assert.equal(injectedPublishedMax.requestedConservativeBaseRtpPct,97.17);
+assert.equal(injectedPublishedMax.conservativeBaseRtpPct,93.03);
+assert.equal(injectedPublishedMax.breakEvenFirstBetProbability,floorScreen.breakEvenFirstBetProbability);
+
 r=evaluateSportingLegendsOverdueGreenRoute({...closed,dryRunCycles:[{...dryRun,confirmation:{...dryRun.confirmation,winCount:7,amount:30}}]});assert.equal(r.decision,'NO_PLAY');
 r=evaluateSportingLegendsOverdueGreenRoute({...closed,measuredActionLatencySeconds:2.1});assert.equal(r.reason,'MEASURED_LATENCY_EXCEEDS_FROZEN_CEILING');
 r=evaluateSportingLegendsOverdueGreenRoute({...closed,confidence:0.80});assert.equal(r.decision,'NO_PLAY');assert.equal(r.reason,'RACE_EVIDENCE_EXECUTION_CONTRACT_NOT_VERIFIED');assert.equal(r.raceConfidenceVerified,false);
