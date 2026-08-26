@@ -2,6 +2,7 @@ const finite=(v)=>{if(v===null||v===undefined||v===''||typeof v==='boolean')retu
 const text=(v)=>typeof v==='string'&&v.trim()?v.trim():null;
 const upper=(v)=>text(v)?.toUpperCase()??null;
 const MIN_EXECUTION_RACE_CONFIDENCE=0.95;
+const MAX_UNVERIFIED_EXECUTION_BASE_RTP_PCT=93.03;
 
 function sameBinding(a,b){
   if(!a||!b)return false;
@@ -55,8 +56,12 @@ export function evaluateSportingLegendsOverdueFirstBet({
     measuredLatencyAndProspectiveDryRunRequiredForGreen:true,
     feedAgeConsumesValidatedRaceWindow:true,
     greenRequiresTotalExposureWithinValidatedRaceWindow:true,
+    executionRtpPinnedToPublishedMainGameFloorUnlessSeparatelyReviewed:true,
+    maxUnverifiedExecutionBaseRtpPct:MAX_UNVERIFIED_EXECUTION_BASE_RTP_PCT,
+    callerSuppliedHigherRtpCannotEaseGreenThreshold:true,
+    historicalRealizedPayoutCannotSetExecutionRtp:true,
   };
-  const fail=(reason,extra={})=>({version:'sporting-legends-overdue-first-bet-v1.6-race-evidence-contract',decision:'NO_PLAY',valid:false,reason,realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,guards,...extra});
+  const fail=(reason,extra={})=>({version:'sporting-legends-overdue-first-bet-v1.7-execution-rtp-cap',decision:'NO_PLAY',valid:false,reason,realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,guards,...extra});
   if(!before||!after)return fail('MISSING_CROSS_BOUNDARY_SNAPSHOTS');
   if(before.code!=='sljp-1'||after.code!=='sljp-1')return fail('NOT_SPORTING_DAILY');
   if(upper(before.currency)!=='EUR'||upper(after.currency)!=='EUR'||before.local!==0||after.local!==0)return fail('NOT_GLOBAL_EUR_DAILY');
@@ -96,11 +101,14 @@ export function evaluateSportingLegendsOverdueFirstBet({
   const zeroEligibleArrivalWindowSeconds=afterLagSeconds;
   const followingDayUnawardedVerified=true;
   const nextEligibleNetworkBetGuaranteedJackpot=true;
-  const rtp=finite(conservativeBaseRtpPct);
+  const requestedRtp=finite(conservativeBaseRtpPct);
+  const requestedRtpValid=requestedRtp!==null&&requestedRtp>=0&&requestedRtp<=100;
+  const rtp=requestedRtpValid?Math.min(requestedRtp,MAX_UNVERIFIED_EXECUTION_BASE_RTP_PCT):null;
+  const callerRtpCappedForExecution=requestedRtpValid&&requestedRtp>MAX_UNVERIFIED_EXECUTION_BASE_RTP_PCT;
   const stake=finite(stakeEUR);
   const jackpot=afterAmount;
   let breakEvenFirstBetProbability=null;
-  if(rtp!==null&&stake!==null&&stake>0&&jackpot>0&&rtp>=0&&rtp<=100){
+  if(rtp!==null&&stake!==null&&stake>0&&jackpot>0){
     breakEvenFirstBetProbability=((100-rtp)/100*stake)/jackpot;
   }
 
@@ -162,7 +170,7 @@ export function evaluateSportingLegendsOverdueFirstBet({
     baseStructuredRaceEvidenceValid&&!raceWindowBudgetVerified?'VALIDATED_RACE_WINDOW_EXHAUSTED':
     probabilityGate?'CONDITIONAL_RACE_EV_SCREEN_PASSED_EXECUTION_GATES_PENDING':'FOLLOWING_DAY_UNAWARDED_VERIFIED_RACE_GATE_OPEN';
   return {
-    version:'sporting-legends-overdue-first-bet-v1.6-race-evidence-contract',
+    version:'sporting-legends-overdue-first-bet-v1.7-execution-rtp-cap',
     decision,valid:true,reason,
     followingDayUnawardedVerified,nextEligibleNetworkBetGuaranteedJackpot,
     exactBetfairSpainTickerImsBindingVerified:true,
@@ -171,7 +179,13 @@ export function evaluateSportingLegendsOverdueFirstBet({
     requestExecIntervalSeconds:afterExec,beforeLeadSeconds,afterLagSeconds,
     zeroEligibleArrivalWindowSeconds,feedAgeSeconds,maxFeedAgeSeconds,
     beforeGameTimestamp:beforeTs,afterGameTimestamp:afterTs,winCount:afterWin,
-    currentDailyJackpotEUR:jackpot,conservativeBaseRtpPct:rtp,stakeEUR:stake,
+    currentDailyJackpotEUR:jackpot,
+    requestedConservativeBaseRtpPct:requestedRtp,
+    conservativeBaseRtpPct:rtp,
+    maxUnverifiedExecutionBaseRtpPct:MAX_UNVERIFIED_EXECUTION_BASE_RTP_PCT,
+    callerRtpCappedForExecution,
+    executionRtpSource:'BETFAIR_AP_MCCOY_PUBLISHED_MAIN_GAME_MINIMUM_CONSERVATIVE_CAP',
+    stakeEUR:stake,
     breakEvenFirstBetProbability,
     firstBetProbabilityLowerBound:researchPLower,
     baseStructuredRaceEvidenceValid,structuredRaceEvidenceValid,
