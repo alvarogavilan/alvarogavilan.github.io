@@ -1,7 +1,7 @@
 {
-  "version": "aotgn-playtech-global-code-scope-v1.1-instance-optional",
+  "version": "aotgn-playtech-global-code-scope-v1.2-operator-ticker-isolation",
   "date": "2026-08-26",
-  "mode": "PROVIDER_SCOPE_AND_PROTOCOL_BINDING_NO_PLAY",
+  "mode": "PROVIDER_SCOPE_PROTOCOL_AND_DEPLOYMENT_BINDING_NO_PLAY",
   "market": "ES",
   "provider": "Playtech",
   "network": "Age of the Gods Norse",
@@ -31,6 +31,15 @@
     "xmlEndpoint": "new_jackpotxml.php",
     "minimumGlobalCasinoRequestTemplate": "new_jackpotxml.php?info=2&casino=<IMS_CASINO>&currency=eur&local=0"
   },
+  "deploymentIsolationCrosscheck": {
+    "document": "Sporting Legends jackpot ticker specification using Playtech ticker contract",
+    "publiclyRecoverableCopy": "https://clientzone.betconstruct.com/media/download/801cbj/Bobby%20George%E2%84%A2%20Sporting%20Legends%E2%84%A2.pdf",
+    "documentStatementClass": "PLAYTECH_LICENSEE_IMPLEMENTATION_GUIDANCE_PUBLIC_COPY",
+    "finding": "The implementation guidance states that licensees need to use their own relevant instance names and ticker URLs.",
+    "scientificMeaning": "A working Playtech ticker hostname or IMS casino value recovered from another licensee, jurisdiction, or deployment cannot be transferred to a Spanish target operator without same-deployment evidence.",
+    "genericTickerHostTransferAllowed": false,
+    "foreignImsCasinoTransferAllowed": false
+  },
   "scientificConsequence": {
     "aognjpLocal1Accepted": false,
     "aognjpLocal0ConsistentWithProviderReference": true,
@@ -40,6 +49,8 @@
     "sameTitleProvesActiveDaily": false,
     "headlineAmountMayBindDaily": false,
     "operatorCasinoStillRequired": true,
+    "sameDeploymentTickerHostStillRequired": true,
+    "foreignOrGenericTickerHostCanPopulateSpanishTarget": false,
     "currentTickerRowStillRequired": true,
     "prospectiveCycleStillRequired": true
   },
@@ -80,6 +91,8 @@
     "noLoginOrWagerProbe": true,
     "noHeadlineToTierBinding": true,
     "noOperatorCasinoInference": true,
-    "noRealMoneyPromotionFromProviderScopeOrProtocolAlone": true
+    "noForeignTickerHostTransfer": true,
+    "noGenericTickerHostTransfer": true,
+    "noRealMoneyPromotionFromProviderScopeProtocolOrForeignDeploymentAlone": true
   }
 }
