@@ -9,8 +9,11 @@ function usage(){
   return 'Usage: node loterias-ai/scripts/analyze-betfair-sporting-har.mjs <capture.har> [--now-epoch <seconds>]';
 }
 function finite(v){const n=Number(v);return Number.isFinite(n)?n:null;}
+function safeEndpoint(v){
+  try{const u=new URL(String(v||''));return ['https:','wss:'].includes(u.protocol)?`${u.origin}${u.pathname}`:null;}catch{return null;}
+}
 function fail(reason,extra={}){
-  return {version:'betfair-sporting-safe-har-cli-v1',ok:false,reason,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},...extra};
+  return {version:'betfair-sporting-safe-har-cli-v1.1-endpoint-redaction',ok:false,reason,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},...extra};
 }
 function safeSnapshotValidation(v){
   if(!v||typeof v!=='object')return null;
@@ -20,8 +23,8 @@ function safeSnapshotValidation(v){
     reason:v.reason||null,
     exactBetfairSpainTickerImsBindingVerified:v.exactBetfairSpainTickerImsBindingVerified===true,
     expectedBetfairImsCasino:v.expectedBetfairImsCasino||null,
-    tickerEndpoint:v.tickerEndpoint||null,
-    configSourceUrl:v.configSourceUrl||null,
+    tickerEndpoint:safeEndpoint(v.tickerEndpoint),
+    configSourceUrl:safeEndpoint(v.configSourceUrl),
     snapshot:v.valid===true?{
       code:s.code||null,currency:s.currency||null,local:s.local??null,providerScope:s.providerScope||null,
       amount:s.amount??null,guaranteedHitTime:s.guaranteedHitTime??null,gameTimestamp:s.gameTimestamp??null,
@@ -35,8 +38,8 @@ function safeLegacyDiscovery(d){
   const x=d?.discovery||{};
   return {
     version:d?.version||null,sourceName:d?.sourceName||null,entryCount:d?.entryCount??0,relevantEntryCount:d?.relevantEntryCount??0,
-    imsCandidates:x.imsCandidates||[],tickerUrlCandidates:x.tickerUrlCandidates||[],
-    configBindingCandidates:(x.configBindingCandidates||[]).map(b=>({sourceUrl:b.sourceUrl||null,jackpotsCasino:b.jackpotsCasino||null,tickerUrl:b.tickerUrl||null,instanceCode:b.instanceCode||null,sameDocument:b.sameDocument===true,sourceBetfairOwned:b.sourceBetfairOwned===true,sourceInitialResources:b.sourceInitialResources===true})),
+    imsCandidates:x.imsCandidates||[],tickerUrlCandidates:(x.tickerUrlCandidates||[]).map(safeEndpoint).filter(Boolean),
+    configBindingCandidates:(x.configBindingCandidates||[]).map(b=>({sourceUrl:safeEndpoint(b.sourceUrl),jackpotsCasino:b.jackpotsCasino||null,tickerUrl:safeEndpoint(b.tickerUrl),instanceCode:b.instanceCode||null,sameDocument:b.sameDocument===true,sourceBetfairOwned:b.sourceBetfairOwned===true,sourceInitialResources:b.sourceInitialResources===true})),
     exactTickerEntryCandidateCount:(x.exactTickerEntryCandidates||[]).length,
     pairedServerEvidenceCount:(x.pairedServerEvidence||[]).length,
     currentSljp1RowRecovered:x.currentSljp1RowRecovered===true,
@@ -52,7 +55,7 @@ export function analyzeSafeHarText(raw,{sourceName='capture.har',nowEpochSeconds
   try{modern=analyzeBetfairSportingWebtickersProtocolHar(har,{sourceName});}catch(error){return fail('MODERN_PROTOCOL_DISCOVERY_FAILED',{error:String(error?.message||error)});}
   try{validated=validateBetfairSportingHarSnapshot(har,{sourceName,nowEpochSeconds});}catch(error){validated=fail('SERVER_SNAPSHOT_VALIDATOR_FAILED',{error:String(error?.message||error)});}
   return {
-    version:'betfair-sporting-safe-har-cli-v1',ok:true,sourceName,
+    version:'betfair-sporting-safe-har-cli-v1.1-endpoint-redaction',ok:true,sourceName,
     legacy:safeLegacyDiscovery(legacy),
     modernWebtickers:{
       version:modern?.version||null,
@@ -65,7 +68,7 @@ export function analyzeSafeHarText(raw,{sourceName='capture.har',nowEpochSeconds
     },
     validatedLegacySnapshot:safeSnapshotValidation(validated),
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{offlineOnly:true,noNetwork:true,rawHarNeverEmitted:true,authorizationAndCookieValuesNeverEmitted:true,sensitiveModernValuesRedacted:true,harCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{offlineOnly:true,noNetwork:true,rawHarNeverEmitted:true,authorizationAndCookieValuesNeverEmitted:true,endpointQueriesAndFragmentsNeverEmitted:true,sensitiveModernValuesRedacted:true,harCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
 
