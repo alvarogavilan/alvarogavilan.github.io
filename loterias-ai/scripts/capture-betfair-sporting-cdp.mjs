@@ -25,12 +25,18 @@ export function isEligibleBetfairSportingTarget(raw){
     return /\/juego\/ap-mccoy-sporting-legends-cptn(?:\/|$)/i.test(u.pathname)||/\/game\/ap-mccoy-sporting-legends-cptn(?:\/|$)/i.test(u.pathname);
   }catch{return false;}
 }
+function privateRoot(cwd=process.cwd()){return path.resolve(cwd,'.git','edge-private');}
 export function defaultPrivateCapturePath({cwd=process.cwd(),epochMs=Date.now()}={}){
   const stamp=new Date(Number(epochMs)).toISOString().replace(/[:.]/g,'-');
-  return path.join(cwd,'.git','edge-private',`betfair-sporting-${stamp}.har`);
+  return path.join(privateRoot(cwd),`betfair-sporting-${stamp}.har`);
+}
+export function isPrivateCapturePath(candidate,{cwd=process.cwd()}={}){
+  if(!candidate)return false;
+  const root=privateRoot(cwd),resolved=path.resolve(candidate),rel=path.relative(root,resolved);
+  return rel!==''&&!rel.startsWith('..')&&!path.isAbsolute(rel)&&/\.har$/i.test(resolved);
 }
 export function discoverConfiguredTickerEndpointsFromText(text){
-  const s=String(text||'').replace(/\\\//g,'/').replace(/\\u0026/gi,'&');
+  const s=String(text||'').replace(/\\+\//g,'/').replace(/\\u0026/gi,'&');
   const out=[];
   for(const m of s.matchAll(/https:\/\/[^\s"'<>\\]+/gi)){
     const raw=m[0].replace(/[),;]+$/,'');
@@ -59,7 +65,7 @@ export function filterRelevantCaptureEntries(entries,{configuredEndpoints=[]}={}
   });
 }
 function usage(){
-  return 'Usage: node loterias-ai/scripts/capture-betfair-sporting-cdp.mjs [--port 9222] [--seconds 90] [--out <private.har>]';
+  return 'Usage: node loterias-ai/scripts/capture-betfair-sporting-cdp.mjs [--port 9222] [--seconds 90] [--out .git/edge-private/<name>.har]';
 }
 async function fetchTargets(port){
   const r=await fetch(`http://127.0.0.1:${port}/json`);
@@ -87,8 +93,9 @@ function toHeadersArray(){return [];}
 function entryFromRequest(ev){
   const req=ev.request||{};
   const postData=req.postData?{mimeType:req.headers?.['Content-Type']||req.headers?.['content-type']||null,text:String(req.postData)}:undefined;
+  const wall=finite(ev.wallTime);
   return {
-    startedDateTime:new Date().toISOString(),
+    startedDateTime:wall!==null?new Date(wall*1000).toISOString():new Date().toISOString(),
     request:{method:req.method||null,url:req.url||null,headers:toHeadersArray(),...(postData?{postData}: {})},
     response:{status:null,headers:[],content:{mimeType:null,text:''}},
     _resourceType:ev.type||null,
@@ -99,15 +106,15 @@ function bodyWorthFetching(type){return BODY_TYPES.has(String(type||''));}
 function bodyHasEvidence(text){return EVIDENCE_RE.test(String(text||''));}
 function safeSummary(result,outFile,targetUrl,seconds){
   return {
-    version:'betfair-sporting-passive-cdp-capture-v1',
+    version:'betfair-sporting-passive-cdp-capture-v1.1-private-only',
     ok:true,
-    targetUrl,
+    targetEndpoint:endpointShape(targetUrl),
     captureSeconds:seconds,
     privateHarPath:outFile,
     warning:'RAW HAR IS LOCAL-PRIVATE EVIDENCE. DO NOT COMMIT OR SHARE IT. Share only the sanitized analyzer output.',
     analysis:result,
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{localhostCdpOnly:true,networkObservationOnly:true,noPageNavigationCommands:true,noClicks:true,noWagerProbe:true,noAutomaticBetting:true,noRequestHeadersPersisted:true,rawHarPrivateUnderGitDirByDefault:true},
+    hardGuards:{localhostCdpOnly:true,networkObservationOnly:true,noPageNavigationCommands:true,noClicks:true,noWagerProbe:true,noAutomaticBetting:true,noRequestHeadersPersisted:true,targetQueryNeverEmitted:true,rawHarAlwaysUnderGitPrivateDir:true},
   };
 }
 
@@ -172,8 +179,9 @@ export async function captureFromExistingChrome({port=9222,seconds=90,outFile=nu
   try{ws.close();}catch{}
 
   const entries=filterRelevantCaptureEntries([...records.values()],{configuredEndpoints:[...configuredEndpoints]}).map(({_resourceType,_requestId,...e})=>e);
-  const har={log:{version:'1.2',creator:{name:'Loterias AI passive CDP capture',version:'1'},entries}};
+  const har={log:{version:'1.2',creator:{name:'Loterias AI passive CDP capture',version:'1.1'},entries}};
   const finalOut=outFile?path.resolve(outFile):defaultPrivateCapturePath();
+  if(!isPrivateCapturePath(finalOut))throw new Error('OUTFILE_MUST_BE_UNDER_GIT_EDGE_PRIVATE');
   fs.mkdirSync(path.dirname(finalOut),{recursive:true,mode:0o700});
   fs.writeFileSync(finalOut,JSON.stringify(har,null,2),{encoding:'utf8',mode:0o600});
   try{fs.chmodSync(finalOut,0o600);}catch{}
@@ -189,7 +197,7 @@ export async function main(argv=process.argv.slice(2)){
     const result=await captureFromExistingChrome({port,seconds,outFile:out});
     process.stdout.write(`${JSON.stringify(result,null,2)}\n`);return 0;
   }catch(error){
-    process.stdout.write(`${JSON.stringify({version:'betfair-sporting-passive-cdp-capture-v1',ok:false,reason:String(error?.message||error),usage:usage(),execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0}},null,2)}\n`);return 1;
+    process.stdout.write(`${JSON.stringify({version:'betfair-sporting-passive-cdp-capture-v1.1-private-only',ok:false,reason:String(error?.message||error),usage:usage(),execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0}},null,2)}\n`);return 1;
   }
 }
 
