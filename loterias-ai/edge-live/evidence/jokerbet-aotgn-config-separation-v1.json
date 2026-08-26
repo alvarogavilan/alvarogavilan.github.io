@@ -1,13 +1,13 @@
 {
-  "version": "jokerbet-aotgn-config-separation-v1",
+  "version": "jokerbet-aotgn-config-separation-v1.1-provider-table-corrected",
   "date": "2026-08-26",
   "mode": "CURRENT_SPAIN_OPERATOR_CONFIG_SEPARATION_NO_PLAY",
   "market": "ES",
   "operator": "JOKERBET.es",
   "provider": "Playtech",
   "finding": {
-    "materialConclusion": "Current JOKERBET public evidence supports Age of the Gods Norse: Gods and Giants as a four-tier Norse deployment that explicitly includes the Daily time-guaranteed jackpot; JOKERBET's King of Asgard public page describes a different jackpot set. Same operator/provider/family therefore does not prove identical tier configuration.",
-    "targetPriority": "AGE_OF_THE_GODS_NORSE_GODS_AND_GIANTS_JOKERBET_ES"
+    "materialConclusion": "Current JOKERBET public evidence supports Age of the Gods Norse: Gods and Giants as a Spanish Norse deployment whose public page presents Ultimate, Extra, Daily and Instant as triggerable jackpot levels; JOKERBET's King of Asgard public page describes a different jackpot set. Same operator/provider/family therefore does not prove identical tier configuration.",
+    "targetPriority": "AGE_OF_THE_GODS_NORSE_GODS_AND_GIANTS_JOKERBET_ES_FOR_OPERATOR_PAGE_DAILY_EVIDENCE_ONLY"
   },
   "godsAndGiants": {
     "publicPage": "https://www.jokerbet.es/tragaperras-slots/age-of-the-gods-norse-gods-and-giants.html",
@@ -23,10 +23,21 @@
       "daily": "must be won before the displayed countdown ends",
       "instant": "won immediately if the established maximum amount is reached"
     },
-    "dailyExplicitlyPresent": true,
+    "operatorPagePresentsDailyAsTriggerable": true,
+    "providerTableDirectAognjp2LinkVerified": false,
+    "providerTableLayoutCaveat": "The public text extraction of Playtech's jackpot-code table wraps columns across lines. It places gpas_aoggagiants_pop adjacent to the Extra/Daily row boundary and cannot safely be used as a direct Gods-and-Giants-to-aognjp-2 binding without visual/table-layout confirmation.",
     "anyStakeCanTriggerAccordingToPage": true,
     "higherStakeRaisesChanceAccordingToPage": true,
     "executionUseOfPublishedAmountsAllowed": false
+  },
+  "bookOfDwarvesProviderControl": {
+    "game": "Age of the Gods Norse: Book of Dwarves",
+    "providerGameCode": "gpas_gogold_pop",
+    "onePlaySpainPublishesExactImsCode": true,
+    "onePlaySource": "https://oneplaycasino.es/juegos/age-of-the-gods-norse-book-of-dwarves",
+    "playtechTablePlacesGameInNorseDailyRow": true,
+    "preferredDirectProviderDailyBindingTarget": true,
+    "sameOperatorConfigurationTransferAllowed": false
   },
   "kingOfAsgardComparator": {
     "publicPage": "https://www.jokerbet.es/tragaperras-slots/age-of-the-gods-norse-king-of-asgard.html",
@@ -35,18 +46,16 @@
     "publishedBaseRtpPct": 94.56,
     "publishedMinBetEUR": 0.10,
     "publishedMaxBetEUR": 60,
-    "publishedJackpotLabels": [
-      "Ultimate Power Jackpot",
-      "Extra Power Jackpot",
-      "Power Jackpot"
-    ],
+    "publishedJackpotLabels": ["Ultimate Power Jackpot","Extra Power Jackpot","Power Jackpot"],
     "dailyExplicitlyPresentOnPublicPage": false,
     "configurationTransferToGodsAndGiantsAllowed": false
   },
   "scientificConsequence": {
     "sameOperatorSameProviderSameFamilyImpliesSameTierSet": false,
     "kingOfAsgardCanStandInForGodsAndGiants": false,
-    "jokerbetGodsAndGiantsIsPreferredAognjp2SpanishTarget": true,
+    "jokerbetGodsAndGiantsIsPreferredAognjp2SpanishTarget": false,
+    "jokerbetGodsAndGiantsStillUsefulForSpanishDailyMechanicEvidence": true,
+    "bookOfDwarvesIsCleanerProviderTableAognjp2Target": true,
     "headlineOrMarketingAmountCanPopulateLiveTickerState": false,
     "currentTickerRowStillRequired": true,
     "exactSpanishSameDeploymentTickerHostStillRequired": true,
@@ -54,24 +63,19 @@
     "prospectiveResetCycleStillRequired": true
   },
   "decisiveTickerTarget": {
-    "operator": "JOKERBET.es",
-    "game": "Age of the Gods Norse: Gods and Giants",
+    "primaryProviderBindingGame": "Age of the Gods Norse: Book of Dwarves",
+    "primaryProviderGameCode": "gpas_gogold_pop",
     "tickerGameCode": "aognjp-2",
     "currency": "eur",
     "local": 0,
-    "requiredFields": [
-      "request.casino",
-      "gamedata.game=aognjp-2",
-      "gamedata.local=0",
-      "amount.currency=eur",
-      "amount.guaranteedHitTime"
-    ],
+    "requiredFields": ["request.casino","gamedata.game=aognjp-2","gamedata.local=0","amount.currency=eur","amount.guaranteedHitTime"],
     "instanceCodeRequired": false,
     "instanceCodeIfPresentMustBePreserved": true
   },
   "sourceCaveat": {
     "jokerbetPageStatesNonContractual": true,
     "pageMayBeModified": true,
+    "playtechTableTextExtractionHasColumnWrapping": true,
     "thereforeUsedForTargetSelectionNotForRealMoneyPromotion": true
   },
   "execution": {
@@ -87,6 +91,7 @@
     "noLoginOrWagerProbe": true,
     "noSameTitleConfigInference": true,
     "noSameOperatorFamilyConfigInference": true,
-    "noForeignTickerHostTransfer": true
+    "noForeignTickerHostTransfer": true,
+    "noWrappedTableColumnInference": true
   }
 }
