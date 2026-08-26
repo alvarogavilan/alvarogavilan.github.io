@@ -2,11 +2,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {analyzeBetfairSportingDualFeedCalibrationSample,evaluateBetfairSportingDualFeedCalibrationSeries} from '../edge-backend/src/betfair-sporting-dual-feed-calibration-v1.mjs';
+import {evaluateBetfairSportingProspectiveCalibration} from '../edge-backend/src/betfair-sporting-prospective-calibration-v1.mjs';
 
 const MAX_CAPTURE_SKEW_SECONDS=5;
 function usage(){return 'Usage: node loterias-ai/scripts/analyze-betfair-sporting-dual-feed.mjs <capture.har> [capture2.har ...] [--max-skew <seconds <= 5>]';}
 const finite=v=>{const n=Number(v);return Number.isFinite(n)?n:null;};
-function fail(reason,extra={}){return {version:'betfair-sporting-dual-feed-cli-v1.2-arg-safe',ok:false,reason,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},hardGuards:{offlineOnly:true,noNetwork:true,rawHarNeverEmitted:true,credentialsAndCookiesNeverEmitted:true,callerCannotRelaxCaptureSkewCeiling:true,noWagerProbe:true,noAutomaticBetting:true},...extra};}
+function fail(reason,extra={}){return {version:'betfair-sporting-dual-feed-cli-v1.3-prospective-status',ok:false,reason,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},hardGuards:{offlineOnly:true,noNetwork:true,rawHarNeverEmitted:true,credentialsAndCookiesNeverEmitted:true,callerCannotRelaxCaptureSkewCeiling:true,noWagerProbe:true,noAutomaticBetting:true},...extra};}
 
 export function parseDualFeedCliArgs(argv=[]){
   const args=Array.isArray(argv)?argv.map(String):[];
@@ -40,16 +41,18 @@ export function analyzeSafeDualFeedTexts(items,{maxCaptureSkewSeconds=MAX_CAPTUR
     samples.push(analyzeBetfairSportingDualFeedCalibrationSample(har,{sourceName:item.sourceName||`capture-${i+1}.har`,maxCaptureSkewSeconds:maxSkew}));
   }
   const series=samples.length>=2?evaluateBetfairSportingDualFeedCalibrationSeries(samples):null;
+  const prospective=samples.length>=3?evaluateBetfairSportingProspectiveCalibration(samples):null;
   return {
-    version:'betfair-sporting-dual-feed-cli-v1.2-arg-safe',
+    version:'betfair-sporting-dual-feed-cli-v1.3-prospective-status',
     ok:true,
     sampleCount:samples.length,
     maxCaptureSkewSeconds:maxSkew,
     maxAllowedCaptureSkewSeconds:MAX_CAPTURE_SKEW_SECONDS,
     samples,
     series,
+    prospective,
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{offlineOnly:true,noNetwork:true,rawHarNeverEmitted:true,credentialsAndCookiesNeverEmitted:true,endpointQueriesAndFragmentsNeverEmitted:true,callerCannotRelaxCaptureSkewCeiling:true,cliFirstInputNeverDroppedWhenOptionAbsent:true,calibrationCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{offlineOnly:true,noNetwork:true,rawHarNeverEmitted:true,credentialsAndCookiesNeverEmitted:true,endpointQueriesAndFragmentsNeverEmitted:true,callerCannotRelaxCaptureSkewCeiling:true,cliFirstInputNeverDroppedWhenOptionAbsent:true,prospectiveStatusPinnedToFrozenProtocolCommit:true,calibrationCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
 
