@@ -14,15 +14,26 @@ const result=analyzeSafeDualFeedTexts([
   {raw:raw(1020,123.65),sourceName:'three.har'},
 ],{maxCaptureSkewSeconds:2});
 assert.equal(result.ok,true);
+assert.equal(result.version,'betfair-sporting-dual-feed-cli-v1.1-frozen-policy');
 assert.equal(result.sampleCount,3);
+assert.equal(result.maxCaptureSkewSeconds,2);
+assert.equal(result.maxAllowedCaptureSkewSeconds,5);
 assert.equal(result.samples.every(x=>x.calibrationCandidate===true),true);
 assert.equal(result.series.empiricalModernResponseMappingVerified,true);
 assert.equal(result.series.exactModernResponseSemanticsVerified,false);
 assert.equal(result.execution.decision,'NO_PLAY');
 assert.equal(result.execution.realMoneyAllowed,false);
 assert.equal(result.hardGuards.rawHarNeverEmitted,true);
+assert.equal(result.hardGuards.callerCannotRelaxCaptureSkewCeiling,true);
 const serialized=JSON.stringify(result);
 for(const secret of ['LAUNCH_SECRET','COOKIE_SECRET','CONFIG_SECRET','AUTH_SECRET','LEGACY_CONFIG_SECRET','MODERN_CONFIG_SECRET','LEGACY_QUERY_SECRET','MODERN_QUERY_SECRET','MODERN_AUTH_SECRET','BODY_SECRET','RESPONSE_SECRET'])assert.equal(serialized.includes(secret),false);
+
+const relaxed=analyzeSafeDualFeedTexts([{raw:raw(1000,123.45),sourceName:'relaxed.har'}],{maxCaptureSkewSeconds:6});
+assert.equal(relaxed.ok,false);
+assert.equal(relaxed.reason,'INVALID_CAPTURE_SKEW_POLICY');
+assert.equal(relaxed.maxAllowedCaptureSkewSeconds,5);
+assert.equal(relaxed.hardGuards.callerCannotRelaxCaptureSkewCeiling,true);
+assert.equal(relaxed.execution.realMoneyAllowed,false);
 
 const badRaw=JSON.stringify({log:{entries:[{request:{method:'GET',url:'https://launcher.betfair.es/?token=FAIL_SECRET',headers:[{name:'Authorization',value:'Bearer FAIL_AUTH'}]},response:{status:500,content:{text:'FAIL_BODY_SECRET'}}}]}});
 const failed=analyzeSafeDualFeedTexts([{raw:badRaw,sourceName:'bad.har'}]);
