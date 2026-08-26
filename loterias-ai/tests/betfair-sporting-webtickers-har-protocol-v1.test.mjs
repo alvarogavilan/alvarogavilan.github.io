@@ -4,12 +4,12 @@ import {analyzeBetfairSportingWebtickersProtocolHar} from '../edge-backend/src/b
 const config='{"jackpotsCasino":"bf_es","liveEndpointUrl":"https://webtickers.malmegas.com/webtickers?configured=CONFIGURED_SECRET"}';
 const har={log:{entries:[
   {startedDateTime:'2026-08-26T18:00:00Z',request:{method:'GET',url:'https://launcher.betfair.es/initialResources/es_ES_desktop?cacheBust=CONFIG_SOURCE_SECRET',headers:[]},response:{status:200,content:{mimeType:'application/json',text:config}}},
-  {startedDateTime:'2026-08-26T18:00:01Z',request:{method:'POST',url:'https://webtickers.malmegas.com/webtickers?casino=bf_es&route=es-prod&token=QUERY_SECRET',headers:[{name:'Content-Type',value:'application/json'},{name:'Authorization',value:'Bearer HEADER_SECRET'},{name:'Cookie',value:'sid=COOKIE_SECRET'}],postData:{mimeType:'application/json',text:'{"casino":"bf_es","game":"sljp-1","currency":"eur","local":0,"vipLevel":"guest","token":"BODY_SECRET","nested":{"instanceCode":"ims-a"}}'}},response:{status:200,content:{mimeType:'application/json',text:'{"game":"sljp-1","guaranteedHitTime":2100,"token":"RESPONSE_SECRET","jackpot":{"amount":123.45}}'}}},
+  {startedDateTime:'2026-08-26T18:00:01Z',request:{method:'POST',url:'https://webtickers.malmegas.com/webtickers?casino=bf_es&route=es-prod&token=QUERY_SECRET',headers:[{name:'Content-Type',value:'application/json'},{name:'Authorization',value:'Bearer HEADER_SECRET'},{name:'Cookie',value:'sid=COOKIE_SECRET'}],postData:{mimeType:'application/json',text:'{"casino":"bf_es","game":"sljp-1","currency":"eur","local":0,"vipLevel":"guest","token":"BODY_SECRET","nested":{"instanceCode":"ims-a"}}'}},response:{status:200,content:{mimeType:'application/json',text:'{"game":"sljp-1","currency":"EUR","local":0,"timestamp":2099,"winc":42,"guaranteedHitTime":2100,"token":"RESPONSE_SECRET","jackpot":{"amount":123.45}}'}}},
   {request:{method:'POST',url:'https://evil.example/webtickers?casino=fake',postData:{mimeType:'application/json',text:'{"game":"sljp-1"}'},headers:[]},response:{status:200,content:{text:'{"game":"sljp-1"}'}}}
 ]}};
 
 const r=analyzeBetfairSportingWebtickersProtocolHar(har,{sourceName:'betfair-modern.har'});
-assert.equal(r.version,'betfair-sporting-webtickers-har-protocol-v1.2-source-url-redaction');
+assert.equal(r.version,'betfair-sporting-webtickers-har-protocol-v1.3-response-state-fingerprint');
 assert.equal(r.modernBetfairConfigBindingCount,1);
 assert.equal(r.exactConfiguredWebtickersTrafficCount,1);
 assert.equal(r.exactModernWebtickersTrafficObserved,true);
@@ -38,6 +38,15 @@ assert.deepEqual(p.request.postData.safeProtocolValues.instancecode,['ims-a']);
 assert.equal(Object.hasOwn(p.request.postData.safeProtocolValues,'token'),false);
 assert.equal(p.response.markers.sljp1,true);
 assert.equal(p.response.markers.guaranteedHitTime,true);
+assert.deepEqual(p.response.safeProtocolValues.game,['sljp-1']);
+assert.deepEqual(p.response.safeProtocolValues.currency,['EUR']);
+assert.deepEqual(p.response.safeProtocolValues.local,['0']);
+assert.deepEqual(p.response.safeProtocolValues.timestamp,['2099']);
+assert.deepEqual(p.response.safeProtocolValues.winc,['42']);
+assert.deepEqual(p.response.safeProtocolValues.guaranteedhittime,['2100']);
+assert.deepEqual(p.response.safeProtocolValues.amount,['123.45']);
+assert.equal(Object.hasOwn(p.response.safeProtocolValues,'token'),false);
+assert.equal(r.hardGuards.responseStateCandidatesCannotProveRowIdentity,true);
 const serialized=JSON.stringify(r);
 for(const secret of ['CONFIG_SOURCE_SECRET','CONFIGURED_SECRET','QUERY_SECRET','HEADER_SECRET','COOKIE_SECRET','BODY_SECRET','RESPONSE_SECRET'])assert.equal(serialized.includes(secret),false);
 assert.equal(serialized.includes('evil.example'),false);
@@ -52,7 +61,7 @@ const wsHar={log:{entries:[
     response:{status:101,content:{mimeType:'application/octet-stream',text:''}},
     _webSocketMessages:[
       {type:'send',opcode:1,data:'{"casino":"bf_es","game":"sljp-1","currency":"EUR","token":"WS_SEND_SECRET"}'},
-      {type:'receive',opcode:1,data:'{"game":"sljp-1","guaranteedHitTime":2200,"jackpot":{"code":"sljp-1"},"token":"WS_RECEIVE_SECRET"}'},
+      {type:'receive',opcode:1,data:'{"game":"sljp-1","currency":"EUR","local":0,"timestamp":2199,"winc":43,"guaranteedHitTime":2200,"jackpot":{"code":"sljp-1","amount":124.56},"token":"WS_RECEIVE_SECRET"}'},
     ],
   },
 ]}};
@@ -72,9 +81,35 @@ assert.deepEqual(wp.request.webSocket.safeProtocolValues.game,['sljp-1']);
 assert.equal(wp.response.webSocketReceiveFrameCount,1);
 assert.equal(wp.response.markers.sljp1,true);
 assert.equal(wp.response.markers.guaranteedHitTime,true);
+assert.deepEqual(wp.response.safeProtocolValues.guaranteedhittime,['2200']);
+assert.deepEqual(wp.response.safeProtocolValues.amount,['124.56']);
 const wsSerialized=JSON.stringify(w);
 for(const secret of ['CONFIG_SOURCE_SECRET','CONFIGURED_SECRET','WS_QUERY_SECRET','WS_HEADER_SECRET','WS_SEND_SECRET','WS_RECEIVE_SECRET'])assert.equal(wsSerialized.includes(secret),false);
 assert.equal(w.hardGuards.webSocketUpgradeRequiresSameHostPortPathAndObservedFrames,true);
+
+const sseHar={log:{entries:[
+  har.log.entries[0],
+  {
+    startedDateTime:'2026-08-26T18:00:03Z',
+    request:{method:'GET',url:'https://webtickers.malmegas.com/webtickers?casino=bf_es&token=SSE_QUERY_SECRET',headers:[{name:'Accept',value:'text/event-stream'}]},
+    response:{status:200,content:{mimeType:'text/event-stream',text:'event: jackpot\ndata: {"game":"sljp-1","currency":"EUR","local":0,"timestamp":2299,"winc":44,"amount":125.67,"guaranteedHitTime":2300,"token":"SSE_RESPONSE_SECRET"}\n\n'}},
+  },
+]}};
+const s=analyzeBetfairSportingWebtickersProtocolHar(sseHar,{sourceName:'betfair-modern-sse.har'});
+assert.equal(s.exactConfiguredWebtickersTrafficCount,1);
+const sp=s.protocolFingerprints[0];
+assert.equal(sp.response.sseDataFrameCount,1);
+assert.equal(sp.response.markers.sljp1,true);
+assert.equal(sp.response.markers.guaranteedHitTime,true);
+assert.deepEqual(sp.response.safeProtocolValues.game,['sljp-1']);
+assert.deepEqual(sp.response.safeProtocolValues.currency,['EUR']);
+assert.deepEqual(sp.response.safeProtocolValues.local,['0']);
+assert.deepEqual(sp.response.safeProtocolValues.timestamp,['2299']);
+assert.deepEqual(sp.response.safeProtocolValues.winc,['44']);
+assert.deepEqual(sp.response.safeProtocolValues.amount,['125.67']);
+assert.deepEqual(sp.response.safeProtocolValues.guaranteedhittime,['2300']);
+const sseSerialized=JSON.stringify(s);
+for(const secret of ['CONFIG_SOURCE_SECRET','CONFIGURED_SECRET','SSE_QUERY_SECRET','SSE_RESPONSE_SECRET'])assert.equal(sseSerialized.includes(secret),false);
 
 const wsWithoutFrames={log:{entries:[
   har.log.entries[0],
