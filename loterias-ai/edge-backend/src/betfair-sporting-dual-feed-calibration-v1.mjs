@@ -1,7 +1,7 @@
 import {validateBetfairSportingHarSnapshot} from '../../casino/jackpots/betfair-sporting-har-overdue-bridge-v1.mjs';
 import {analyzeBetfairSportingCorrelatedWebtickersSession} from './betfair-sporting-webtickers-correlated-session-v1.mjs';
 
-const SAMPLE_VERSION='betfair-sporting-dual-feed-calibration-v1.1-scope-attested';
+const SAMPLE_VERSION='betfair-sporting-dual-feed-calibration-v1.2-safe-failures';
 const finite=v=>{if(v===null||v===undefined||v===''||typeof v==='boolean')return null;const n=Number(v);return Number.isFinite(n)?n:null;};
 const lower=v=>String(v??'').trim().toLowerCase();
 const isoEpoch=v=>{const ms=Date.parse(String(v||''));return Number.isFinite(ms)?ms/1000:null;};
@@ -18,7 +18,39 @@ function fail(reason,extra={}){
     exactModernResponseSemanticsVerified:false,
     usableForOverduePair:false,
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
+    hardGuards:{rawHarNeverEmitted:true,credentialsAndCookiesNeverEmitted:true,failureDiagnosticsRedacted:true,noWagerProbe:true,noAutomaticBetting:true},
     ...extra,
+  };
+}
+function safeLegacySummary(x){
+  if(!x||typeof x!=='object')return null;
+  return {
+    valid:x.valid===true,
+    reason:x.reason||null,
+    exactApMcCoyRealLauncherBindingVerified:x.exactApMcCoyRealLauncherBindingVerified===true,
+    latestPrecedingRealCasinoLauncherIsExactApMcCoy:x.latestPrecedingRealCasinoLauncherIsExactApMcCoy===true,
+    latestPostLaunchBetfairInitialResourcesBindingVerified:x.latestPostLaunchBetfairInitialResourcesBindingVerified===true,
+    launcherEntryIndex:Number.isInteger(x.launcherEntryIndex)?x.launcherEntryIndex:null,
+    configEntryIndex:Number.isInteger(x.configEntryIndex)?x.configEntryIndex:null,
+    tickerEntryIndex:Number.isInteger(x.tickerEntryIndex)?x.tickerEntryIndex:null,
+    captureEpochSeconds:finite(x.captureEpochSeconds),
+    expectedBetfairImsCasino:String(x.expectedBetfairImsCasino||'').trim()||null,
+    tickerEndpoint:safeEndpoint(x.tickerEndpoint),
+    configSourceEndpoint:safeEndpoint(x.configSourceUrl),
+  };
+}
+function safeModernSummary(x){
+  if(!x||typeof x!=='object')return null;
+  return {
+    valid:x.valid!==false,
+    exactApMcCoyRealLauncherBindingObserved:x.exactApMcCoyRealLauncherBindingObserved===true,
+    exactSessionRequestSemanticMatchCount:x.exactSessionRequestSemanticMatchCount??0,
+    structuredSljp1RowCandidateCount:x.structuredSljp1RowCandidateCount??0,
+    correlatedExactDailyCandidateCount:x.correlatedExactDailyCandidateCount??0,
+    launcherOrderRejectedCount:x.launcherOrderRejectedCount??0,
+    staleExactLauncherRejectedCount:x.staleExactLauncherRejectedCount??0,
+    sessionConfigRejectedCount:x.sessionConfigRejectedCount??0,
+    ambiguousCorrelationCount:x.ambiguousCorrelationCount??0,
   };
 }
 function oneModern(analysis){
@@ -63,28 +95,30 @@ export function analyzeBetfairSportingDualFeedCalibrationSample(har,{sourceName=
   const maxSkew=finite(maxCaptureSkewSeconds);
   if(maxSkew===null||maxSkew<0)return fail('INVALID_CAPTURE_SKEW_POLICY',{sourceName});
   const legacy=validateBetfairSportingHarSnapshot(har,{sourceName});
-  if(legacy?.valid!==true)return fail('LEGACY_XML_SNAPSHOT_NOT_EXACTLY_VALIDATED',{sourceName,legacy});
+  const legacySummary=safeLegacySummary(legacy);
+  if(legacy?.valid!==true)return fail('LEGACY_XML_SNAPSHOT_NOT_EXACTLY_VALIDATED',{sourceName,legacy:legacySummary});
   const modern=analyzeBetfairSportingCorrelatedWebtickersSession(har,{sourceName});
+  const modernSummary=safeModernSummary(modern);
   const candidate=oneModern(modern);
-  if(!candidate)return fail('MODERN_CORRELATED_DAILY_CANDIDATE_NOT_UNIQUE',{sourceName,legacy,modern});
+  if(!candidate)return fail('MODERN_CORRELATED_DAILY_CANDIDATE_NOT_UNIQUE',{sourceName,legacy:legacySummary,modern:modernSummary});
 
   const sameLauncherEntry=legacy.launcherEntryIndex===candidate.launcherEntryIndex;
   const sameInitialResourcesEntry=legacy.configEntryIndex===candidate.initialResourcesEntryIndex;
   const expectedBetfairImsCasino=String(legacy.expectedBetfairImsCasino||'').trim()||null;
   const sameCasino=lower(expectedBetfairImsCasino)===lower(candidate.expectedBetfairImsCasino)&&!!lower(expectedBetfairImsCasino);
   if(!sameLauncherEntry||!sameInitialResourcesEntry||!sameCasino){
-    return fail('DUAL_FEEDS_NOT_FROM_SAME_ATTESTED_AP_MCCOY_SESSION',{sourceName,legacy,modern,sameLauncherEntry,sameInitialResourcesEntry,sameCasino});
+    return fail('DUAL_FEEDS_NOT_FROM_SAME_ATTESTED_AP_MCCOY_SESSION',{sourceName,legacy:legacySummary,modern:modernSummary,sameLauncherEntry,sameInitialResourcesEntry,sameCasino});
   }
 
   const legacyVector=stateVector(legacy.snapshot);
   const modernVector=stateVector(candidate?.responseRow?.row);
-  if(!complete(legacyVector)||!complete(modernVector))return fail('DUAL_FEED_STATE_VECTOR_INCOMPLETE',{sourceName,legacy,modern,legacyVector,modernVector});
+  if(!complete(legacyVector)||!complete(modernVector))return fail('DUAL_FEED_STATE_VECTOR_INCOMPLETE',{sourceName,legacy:legacySummary,modern:modernSummary,legacyStateVector:legacyVector,modernStateVector:modernVector});
   const legacyCapture=finite(legacy.captureEpochSeconds);
   const modernCapture=isoEpoch(candidate?.responseRow?.startedDateTime||candidate?.request?.startedDateTime);
-  if(legacyCapture===null||modernCapture===null)return fail('DUAL_FEED_CAPTURE_TIME_MISSING',{sourceName,legacy,modern});
+  if(legacyCapture===null||modernCapture===null)return fail('DUAL_FEED_CAPTURE_TIME_MISSING',{sourceName,legacy:legacySummary,modern:modernSummary});
   const legacyTickerEndpoint=safeEndpoint(legacy.tickerEndpoint);
   const modernTickerEndpoint=safeEndpoint(candidate.configuredEndpoint||candidate?.responseRow?.configuredEndpoint||candidate?.request?.endpoint);
-  if(!legacyTickerEndpoint||!modernTickerEndpoint)return fail('DUAL_FEED_ENDPOINT_SCOPE_MISSING',{sourceName,legacy,modern});
+  if(!legacyTickerEndpoint||!modernTickerEndpoint)return fail('DUAL_FEED_ENDPOINT_SCOPE_MISSING',{sourceName,legacy:legacySummary,modern:modernSummary});
   const captureSkewSeconds=Math.abs(modernCapture-legacyCapture);
   const captureSkewWithinPolicy=captureSkewSeconds<=maxSkew;
   const exactStateVectorMatch=exactVectorEqual(legacyVector,modernVector);
@@ -115,7 +149,7 @@ export function analyzeBetfairSportingDualFeedCalibrationSample(har,{sourceName=
     usableForOverduePair:false,
     scientificUse:'A calibration candidate requires an independently validated legacy Playtech XML sljp-1 snapshot and an exact-session modern webtickers correlated row in the same AP McCoy HAR. Both must share the same launcher, post-launch Betfair initialResources entry and IMS casino, retain explicit legacy and modern endpoint scope, occur within the capture-skew policy, and match the complete state vector exactly: game, EUR, local=0, amount, guaranteedHitTime, timestamp and winc. One matching sample is cross-feed consistency evidence only and cannot establish stable modern response semantics or authorize overdue execution.',
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,legacyXmlMustPassExactServerValidator:true,modernCandidateMustPassExactSessionCorrelation:true,sameLauncherAndInitialResourcesRequiredAcrossFeeds:true,sameBetfairImsCasinoRequired:true,legacyAndModernEndpointScopePreserved:true,completeStateVectorRequired:true,exactStateVectorEqualityRequired:true,boundedCaptureSkewRequired:true,singleCalibrationSampleCannotVerifyModernSemantics:true,dualFeedCalibrationCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,rawHarNeverEmitted:true,credentialsAndCookiesNeverEmitted:true,failureDiagnosticsRedacted:true,legacyXmlMustPassExactServerValidator:true,modernCandidateMustPassExactSessionCorrelation:true,sameLauncherAndInitialResourcesRequiredAcrossFeeds:true,sameBetfairImsCasinoRequired:true,legacyAndModernEndpointScopePreserved:true,completeStateVectorRequired:true,exactStateVectorEqualityRequired:true,boundedCaptureSkewRequired:true,singleCalibrationSampleCannotVerifyModernSemantics:true,dualFeedCalibrationCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
 
@@ -146,7 +180,7 @@ export function evaluateBetfairSportingDualFeedCalibrationSeries(samples,{minExa
   const oneLogicalScope=scopeKeys.size===1&&exact.length>0;
   const empiricalModernResponseMappingVerified=enoughSamples&&enoughDistinctTimestamps&&enoughDistinctAmounts&&oneLogicalScope;
   return {
-    version:'betfair-sporting-dual-feed-calibration-series-v1.2-unique-contract-samples',
+    version:'betfair-sporting-dual-feed-calibration-series-v1.3-safe-unique-contract-samples',
     mode:'OFFLINE_PASSIVE_EMPIRICAL_MODERN_RESPONSE_MAPPING_CALIBRATION_NO_PLAY',
     valid:true,
     sampleCount:list.length,
@@ -166,6 +200,6 @@ export function evaluateBetfairSportingDualFeedCalibrationSeries(samples,{minExa
     usableForOverduePair:false,
     scientificUse:'Multiple exact dual-feed matches across changing server timestamps and jackpot amounts can cross-validate that observed modern fields track the provider-documented legacy XML vector only when every accepted sample satisfies the complete calibration-sample contract, duplicate captures are collapsed, and all unique samples belong to one exact IMS and stable legacy/modern endpoint scope. This remains empirical mapping calibration, not independent documentation of the modern schema. exactModernResponseSemanticsVerified stays false and the result cannot enter the overdue execution gate without a separately reviewed promotion standard.',
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,multipleExactDualFeedSamplesRequired:true,fullSampleContractRecomputed:true,duplicateCapturesDoNotCountTowardCalibration:true,stateVariationRequired:true,threeDistinctServerTimestampsRequiredByDefault:true,oneExactImsAndEndpointScopeRequired:true,empiricalCalibrationDoesNotEqualDocumentedSemantics:true,noAutomaticPromotionToOverdueGate:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,rawHarNeverEmitted:true,credentialsAndCookiesNeverEmitted:true,multipleExactDualFeedSamplesRequired:true,fullSampleContractRecomputed:true,duplicateCapturesDoNotCountTowardCalibration:true,stateVariationRequired:true,threeDistinctServerTimestampsRequiredByDefault:true,oneExactImsAndEndpointScopeRequired:true,empiricalCalibrationDoesNotEqualDocumentedSemantics:true,noAutomaticPromotionToOverdueGate:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
