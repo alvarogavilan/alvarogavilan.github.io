@@ -1,0 +1,73 @@
+{
+  "version": "betfair-spain-apmccoy-realized-payout-variance-v1",
+  "retrievedAtUtc": "2026-08-26T19:44:00Z",
+  "scope": {
+    "operator": "Betfair Spain",
+    "game": "AP McCoy Sporting Legends™",
+    "gameId": "ap-mccoy-sporting-legends-cptn",
+    "onlineOnly": true,
+    "nonPromoOnly": true
+  },
+  "officialBetfairMonthlyPayoutSnapshots": [
+    {
+      "month": "2026-04",
+      "realizedPayoutPercent": 94.74,
+      "source": "https://casino.betfair.es/info/rtp-info",
+      "provenance": "Official Betfair Spain RTP page historical indexed view with section label Abril 2026 and exact AP McCoy row."
+    },
+    {
+      "month": "2026-06",
+      "realizedPayoutPercent": 80.88,
+      "source": "https://casino.betfair.es/en-es/info/rtp-info-en",
+      "provenance": "Official Betfair Spain English RTP page indexed with section label June 2026 and exact AP McCoy row."
+    },
+    {
+      "month": "2026-07",
+      "realizedPayoutPercent": 108.41,
+      "source": "https://casino.betfair.es/info/rtp-info",
+      "provenance": "Official Betfair Spain RTP page fresh indexed snapshot with section label Julio 2026 and exact AP McCoy row."
+    }
+  ],
+  "observedHistoricalRangePercent": {
+    "min": 80.88,
+    "max": 108.41,
+    "spanPercentagePoints": 27.53
+  },
+  "officialTheoreticalRtpContext": {
+    "source": "https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn",
+    "mainGame": [93.03, 95.03],
+    "powerPlayAccumulator": [94.95, 96.95],
+    "powerPlayAccumulatorPlus": [95.17, 97.17],
+    "publishedOverall": [93.03, 97.17]
+  },
+  "keyScientificFinding": {
+    "juneRealizedPayoutBelowPublishedTheoreticalMinimum": true,
+    "julyRealizedPayoutAbovePublishedTheoreticalMaximum": true,
+    "thereforeMonthlyRealizedPayoutCannotBeTreatedAsServedTheoreticalRtp": true,
+    "reason": "Betfair's own exact-game monthly realized payout moves from 80.88% to 108.41%, while the published theoretical range is 93.03%-97.17%. Finite-sample realized payout can therefore sit far outside the theoretical RTP range. The monthly figures cannot identify the served configuration, player mode mix, jackpot hazard, or current EV."
+  },
+  "allowedUse": {
+    "operatorSpecificHistoricalVarianceEvidence": true,
+    "servedRtpInference": false,
+    "modeSelectionInference": false,
+    "jackpotHazardInference": false,
+    "currentStateInference": false,
+    "currentEvInput": false,
+    "raceProbabilityInput": false
+  },
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "realizedPayoutNotTheoreticalRtp": true,
+    "numericalClosenessToPublishedModeCannotSelectConfig": true,
+    "historicalMonthlyPayoutCannotReplaceExactBetfairImsTickerBinding": true,
+    "noCrossOperatorTransfer": true,
+    "noWagerProbe": true,
+    "noAutomaticBetting": true
+  }
+}
