@@ -4,6 +4,7 @@ import path from 'node:path';
 import {analyzeBetfairSportingHar} from '../edge-backend/src/betfair-sporting-har-discovery-v1.mjs';
 import {analyzeBetfairSportingWebtickersProtocolHar} from '../edge-backend/src/betfair-sporting-webtickers-har-protocol-v1.mjs';
 import {analyzeBetfairSportingStructuredWebtickersRows} from '../edge-backend/src/betfair-sporting-webtickers-structured-row-v1.mjs';
+import {analyzeBetfairSportingWebtickersRequestSemantics} from '../edge-backend/src/betfair-sporting-webtickers-request-semantics-v1.mjs';
 import {validateBetfairSportingHarSnapshot} from '../casino/jackpots/betfair-sporting-har-overdue-bridge-v1.mjs';
 
 function usage(){
@@ -82,14 +83,57 @@ function safeStructuredModern(s){
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
   };
 }
+function safeRequestSemantics(s){
+  const allowed=new Set(['info','casino','game','gamecode','currency','local','instancecode']);
+  const observations=(s?.requestSemanticObservations||[]).map(o=>{
+    const values={};
+    for(const [k,vals] of Object.entries(o?.values||{}))if(allowed.has(String(k).toLowerCase()))values[k]=Array.isArray(vals)?vals.slice(0,20):[];
+    return {
+      entryIndex:o.entryIndex??null,
+      startedDateTime:o.startedDateTime||null,
+      source:o.source||null,
+      method:o.method||null,
+      endpoint:safeEndpoint(o.endpoint),
+      configuredWebSocketTransportUpgradeObserved:o.configuredWebSocketTransportUpgradeObserved===true,
+      expectedBetfairImsCasino:o.expectedBetfairImsCasino||null,
+      expectedInstanceCode:o.expectedInstanceCode||null,
+      values,
+      infoGameBased:o.infoGameBased===true,
+      casinoMatches:o.casinoMatches===true,
+      gameMatches:o.gameMatches===true,
+      currencyEur:o.currencyEur===true,
+      localGlobal:o.localGlobal===true,
+      instanceCodeObserved:o.instanceCodeObserved===true,
+      instanceCodeConsistent:o.instanceCodeConsistent===true,
+      ambiguityDetected:o.ambiguityDetected===true,
+      providerDocumentedGameRequestComplete:o.providerDocumentedGameRequestComplete===true,
+      exactSportingDailyScopeObserved:o.exactSportingDailyScopeObserved===true,
+      requestContractSemanticsSupportedByProviderSpec:o.requestContractSemanticsSupportedByProviderSpec===true,
+    };
+  });
+  return {
+    version:s?.version||null,
+    exactConfiguredWebtickersTrafficObserved:s?.exactConfiguredWebtickersTrafficObserved===true,
+    requestSemanticObservationCount:observations.length,
+    providerDocumentedExactDailyRequestMatchCount:s?.providerDocumentedExactDailyRequestMatchCount??0,
+    providerDocumentedExactDailyRequestObserved:s?.providerDocumentedExactDailyRequestObserved===true,
+    requestSemanticObservations:observations,
+    exactModernTransportContractVerified:false,
+    exactModernResponseSemanticsVerified:false,
+    directPublicModernProbeAllowed:false,
+    usableForOverduePair:false,
+    execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
+  };
+}
 
 export function analyzeSafeHarText(raw,{sourceName='capture.har',nowEpochSeconds=Math.floor(Date.now()/1000)}={}){
   let har;
   try{har=JSON.parse(raw);}catch(error){return fail('HAR_PARSE_FAILED',{error:String(error?.message||error)});}
-  let legacy,modern,structured,validated;
+  let legacy,modern,structured,requestSemantics,validated;
   try{legacy=analyzeBetfairSportingHar(har,{sourceName});}catch(error){return fail('LEGACY_DISCOVERY_FAILED',{error:String(error?.message||error)});}
   try{modern=analyzeBetfairSportingWebtickersProtocolHar(har,{sourceName});}catch(error){return fail('MODERN_PROTOCOL_DISCOVERY_FAILED',{error:String(error?.message||error)});}
   try{structured=analyzeBetfairSportingStructuredWebtickersRows(har,{sourceName});}catch(error){return fail('MODERN_STRUCTURED_ROW_DISCOVERY_FAILED',{error:String(error?.message||error)});}
+  try{requestSemantics=analyzeBetfairSportingWebtickersRequestSemantics(har,{sourceName});}catch(error){return fail('MODERN_REQUEST_SEMANTICS_DISCOVERY_FAILED',{error:String(error?.message||error)});}
   try{validated=validateBetfairSportingHarSnapshot(har,{sourceName,nowEpochSeconds});}catch(error){validated=fail('SERVER_SNAPSHOT_VALIDATOR_FAILED',{error:String(error?.message||error)});}
   return {
     version:'betfair-sporting-safe-har-cli-v1.2-structured-modern',ok:true,sourceName,
@@ -103,10 +147,11 @@ export function analyzeSafeHarText(raw,{sourceName='capture.har',nowEpochSeconds
       directPublicModernProbeAllowed:false,
       protocolFingerprints:modern?.protocolFingerprints||[],
     },
+    documentedRequestSemantics:safeRequestSemantics(requestSemantics),
     structuredModernWebtickers:safeStructuredModern(structured),
     validatedLegacySnapshot:safeSnapshotValidation(validated),
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{offlineOnly:true,noNetwork:true,rawHarNeverEmitted:true,authorizationAndCookieValuesNeverEmitted:true,endpointQueriesAndFragmentsNeverEmitted:true,sensitiveModernValuesRedacted:true,structuredModernRowsRemainDiscoveryOnly:true,modernResponseSemanticsCannotBeGuessed:true,harCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{offlineOnly:true,noNetwork:true,rawHarNeverEmitted:true,authorizationAndCookieValuesNeverEmitted:true,endpointQueriesAndFragmentsNeverEmitted:true,sensitiveModernValuesRedacted:true,documentedRequestSemanticsRemainDiscoveryOnly:true,ambiguousRequestRoutingFailsClosed:true,structuredModernRowsRemainDiscoveryOnly:true,modernResponseSemanticsCannotBeGuessed:true,harCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
 
