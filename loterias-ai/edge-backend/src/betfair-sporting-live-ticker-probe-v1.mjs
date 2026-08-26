@@ -4,9 +4,16 @@ import {validateBetfairSportingServerSnapshot} from '../../casino/jackpots/betfa
 const finite=v=>{if(v===null||v===undefined||v===''||typeof v==='boolean')return null;const n=Number(v);return Number.isFinite(n)?n:null;};
 const text=v=>typeof v==='string'&&v.trim()?v.trim():null;
 
+function betfairInitialResourcesSource(url){
+  try{
+    const u=new URL(url),h=u.hostname.toLowerCase();
+    return u.protocol==='https:'&&!u.username&&!u.password&&(h==='betfair.es'||h.endsWith('.betfair.es'))&&/\/initialresources(?:\/|$)/i.test(u.pathname);
+  }catch{return false;}
+}
+
 function fail(reason,extra={}){
   return {
-    version:'betfair-sporting-live-ticker-probe-v1',
+    version:'betfair-sporting-live-ticker-probe-v1.1-routing-query-preserved',
     observedAt:new Date().toISOString(),
     mode:'PUBLIC_PASSIVE_LIVE_TICKER_NO_PLAY',
     valid:false,
@@ -16,7 +23,7 @@ function fail(reason,extra={}){
     currentDailyAmountExactVerified:false,
     currentGuaranteedHitTimeExactVerified:false,
     decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,publicGetOnly:true,noLoginProbe:true,noCookies:true,noCredentials:true,noPost:true,noWagerProbe:true,noAutomaticBetting:true,singleSnapshotCannotAuthorizeGreen:true,configuredNewJackpotXmlEndpointOnly:true,arbitraryUrlInputDisabled:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,publicGetOnly:true,noLoginProbe:true,noCookies:true,noCredentials:true,noPost:true,noWagerProbe:true,noAutomaticBetting:true,singleSnapshotCannotAuthorizeGreen:true,configuredNewJackpotXmlEndpointOnly:true,arbitraryUrlInputDisabled:true,betfairInitialResourcesSourceReverified:true,configuredRoutingQueryPreserved:true},
     ...extra,
   };
 }
@@ -24,18 +31,22 @@ function fail(reason,extra={}){
 export function buildExactSportingTickerUrl(configBinding){
   const b=configBinding;
   if(!b||b.sameDocument!==true||b.sourceBetfairOwned!==true||b.sourceInitialResources!==true)return null;
+  if(!betfairInitialResourcesSource(b.sourceUrl))return null;
   const casino=text(b.jackpotsCasino),raw=text(b.tickerUrl);
   if(!casino||!raw)return null;
   try{
     const u=new URL(raw);
-    if(u.protocol!=='https:'||!/\/new_jackpotxml\.php$/i.test(u.pathname))return null;
-    u.search='';
+    if(u.protocol!=='https:'||u.username||u.password||!/\/new_jackpotxml\.php$/i.test(u.pathname))return null;
+    u.hash='';
+    // Preserve any operator-configured routing/query parameters. Only the documented
+    // jackpot protocol fields are overwritten with the exact Sporting Daily request.
     u.searchParams.set('info','1');
     u.searchParams.set('casino',casino);
     u.searchParams.set('game','sljp-1');
     u.searchParams.set('currency','eur');
     u.searchParams.set('local','0');
     if(text(b.instanceCode))u.searchParams.set('instanceCode',text(b.instanceCode));
+    else u.searchParams.delete('instanceCode');
     return u.href;
   }catch{return null;}
 }
@@ -78,7 +89,7 @@ export async function runBetfairSportingLiveTickerProbe({
   if(validation.valid!==true)return fail('SERVER_SNAPSHOT_VALIDATION_FAILED',{configProbe,configBinding,tickerFetch,validation});
 
   return {
-    version:'betfair-sporting-live-ticker-probe-v1',
+    version:'betfair-sporting-live-ticker-probe-v1.1-routing-query-preserved',
     observedAt:new Date(now*1000).toISOString(),
     mode:'PUBLIC_PASSIVE_LIVE_TICKER_NO_PLAY',
     valid:true,
@@ -94,6 +105,6 @@ export async function runBetfairSportingLiveTickerProbe({
     currentGuaranteedHitTimeExactVerified:true,
     currentSnapshotCannotProveOverdueByItself:true,
     decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,publicGetOnly:true,noLoginProbe:true,noCookies:true,noCredentials:true,noPost:true,noWagerProbe:true,noAutomaticBetting:true,singleSnapshotCannotAuthorizeGreen:true,configuredNewJackpotXmlEndpointOnly:true,arbitraryUrlInputDisabled:true,exactSljp1EurLocal0Query:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,publicGetOnly:true,noLoginProbe:true,noCookies:true,noCredentials:true,noPost:true,noWagerProbe:true,noAutomaticBetting:true,singleSnapshotCannotAuthorizeGreen:true,configuredNewJackpotXmlEndpointOnly:true,arbitraryUrlInputDisabled:true,exactSljp1EurLocal0Query:true,betfairInitialResourcesSourceReverified:true,configuredRoutingQueryPreserved:true,configuredProtocolFieldsOverriddenExactly:true},
   };
 }
