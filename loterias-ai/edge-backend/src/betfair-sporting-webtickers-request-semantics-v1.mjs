@@ -130,12 +130,19 @@ function exactSessionProvenance(base,fp){
     const id=`${casino.toLowerCase()}|${tickerEndpoint}`;
     if(!normalized.some(x=>x.id===id))normalized.push({id,casino,tickerEndpoint});
   }
-  if(normalized.length!==1)return {verified:false,latestLauncher,latestInitial,ambiguousSessionConfig:normalized.length>1};
-  const only=normalized[0];
   const expectedCasino=clean(fp?.configBinding?.jackpotsCasino).toLowerCase();
   const expectedEndpoint=endpointShape(fp?.configBinding?.tickerEndpoint);
-  const bindingMatches=only.casino.toLowerCase()===expectedCasino&&only.tickerEndpoint===expectedEndpoint;
-  return {verified:bindingMatches,latestLauncher,latestInitial,bindingMatches};
+  const exactMatches=normalized.filter(x=>x.casino.toLowerCase()===expectedCasino&&x.tickerEndpoint===expectedEndpoint);
+  const verified=exactMatches.length===1;
+  return {
+    verified,
+    latestLauncher,
+    latestInitial,
+    bindingMatches:verified,
+    targetBindingMatchCount:exactMatches.length,
+    configuredBindingCount:normalized.length,
+    alternateConfiguredBindingCount:Math.max(0,normalized.length-exactMatches.length),
+  };
 }
 
 export function analyzeBetfairSportingWebtickersRequestSemantics(har,{sourceName='capture.har'}={}){
@@ -159,6 +166,9 @@ export function analyzeBetfairSportingWebtickersRequestSemantics(har,{sourceName
       launcherEntryIndex:Number.isInteger(session?.latestLauncher?.index)?session.latestLauncher.index:null,
       latestPostLaunchInitialResourcesBindingVerified:session?.verified===true,
       initialResourcesEntryIndex:Number.isInteger(session?.latestInitial?.index)?session.latestInitial.index:null,
+      exactSessionConfiguredBindingCount:Number.isInteger(session?.configuredBindingCount)?session.configuredBindingCount:0,
+      exactSessionTargetBindingMatchCount:Number.isInteger(session?.targetBindingMatchCount)?session.targetBindingMatchCount:0,
+      alternateConfiguredBindingCount:Number.isInteger(session?.alternateConfiguredBindingCount)?session.alternateConfiguredBindingCount:0,
       exactApMcCoySessionProvenanceVerified:session?.verified===true,
     };
     const queryValues=fp?.request?.query?.safeProtocolValues||{};
@@ -197,7 +207,7 @@ export function analyzeBetfairSportingWebtickersRequestSemantics(har,{sourceName
   const matches=observations.filter(x=>x.requestContractSemanticsSupportedByProviderSpec===true);
   const exactApMcCoyMatches=matches.filter(x=>x.exactApMcCoySessionProvenanceVerified===true);
   return {
-    version:'betfair-sporting-webtickers-request-semantics-v1.3-session-provenance',
+    version:'betfair-sporting-webtickers-request-semantics-v1.4-target-binding-provenance',
     mode:'OFFLINE_PASSIVE_PROVIDER_DOCUMENTED_REQUEST_SEMANTICS_NO_PLAY',
     sourceName,
     exactApMcCoyRealLauncherBindingObserved,
@@ -212,11 +222,11 @@ export function analyzeBetfairSportingWebtickersRequestSemantics(har,{sourceName
     exactModernResponseSemanticsVerified:false,
     directPublicModernProbeAllowed:false,
     usableForOverduePair:false,
-    scientificUse:'Playtech ticker documentation independently defines game-based info=1 with casino and game, plus local, currency and optional instanceCode semantics; Sporting Legends documentation identifies Daily as sljp-1 and global local=0. Generic Betfair webtickers traffic can characterize those protocol semantics, but AP-McCoy-specific provenance now requires the latest preceding real-money Betfair casino launcher to be AP McCoy and the latest post-launch Betfair initialResources before that request to resolve uniquely to the same casino and configured endpoint. This blocks stale Preserve-log launchers and stale/superseded configuration from lending exact-game provenance. Conflicting routing values or an unbound instanceCode fail closed. A semantic match still does not prove the modern response schema, live row truth or overdue state.',
+    scientificUse:'Playtech documentation independently defines game-based info=1 with casino and game plus local, currency and optional instanceCode semantics; Sporting Legends identifies Daily as sljp-1 and global local=0. AP-McCoy-specific provenance requires the latest preceding real-money Betfair casino launcher to be AP McCoy and the latest post-launch Betfair initialResources before that request to contain exactly one binding matching the observed webtickers casino and endpoint. Other configured ticker endpoints may coexist in the same document and do not invalidate the target binding. Stale launchers/config, a missing or multiply ambiguous target binding, conflicting routing values, or an unbound instanceCode fail closed. A semantic request match still does not prove modern response schema or overdue state.',
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,exactBetfairConfiguredWebtickersTrafficRequired:true,providerDocumentedInfo1CasinoGameRequired:true,sljp1EurLocal0Required:true,latestPrecedingRealCasinoLauncherRequiredForApMcCoySpecificMatch:true,latestPostLaunchInitialResourcesRequiredForApMcCoySpecificMatch:true,staleExactLauncherCannotEstablishApMcCoyRequestProvenance:true,staleOrSupersededConfigCannotEstablishApMcCoyRequestProvenance:true,genericBetfairHarCannotEstablishExactApMcCoySession:true,conflictingRoutingValuesRejectMatch:true,unboundInstanceCodeRejectsMatch:true,otherOperatorValuesCannotTransfer:true,credentialsNeverEmitted:true,requestSemanticMatchCannotAuthorizeGreen:true,directModernProbeBlocked:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,exactBetfairConfiguredWebtickersTrafficRequired:true,providerDocumentedInfo1CasinoGameRequired:true,sljp1EurLocal0Required:true,latestPrecedingRealCasinoLauncherRequiredForApMcCoySpecificMatch:true,latestPostLaunchInitialResourcesRequiredForApMcCoySpecificMatch:true,exactTargetBindingMustExistUniquely:true,alternateConfiguredTickerEndpointsMayCoexist:true,staleExactLauncherCannotEstablishApMcCoyRequestProvenance:true,staleOrSupersededConfigCannotEstablishApMcCoyRequestProvenance:true,genericBetfairHarCannotEstablishExactApMcCoySession:true,conflictingRoutingValuesRejectMatch:true,unboundInstanceCodeRejectsMatch:true,otherOperatorValuesCannotTransfer:true,credentialsNeverEmitted:true,requestSemanticMatchCannotAuthorizeGreen:true,directModernProbeBlocked:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
 function fail(reason,extra={}){
-  return {version:'betfair-sporting-webtickers-request-semantics-v1.3-session-provenance',mode:'OFFLINE_PASSIVE_PROVIDER_DOCUMENTED_REQUEST_SEMANTICS_NO_PLAY',valid:false,reason,exactApMcCoyRealLauncherBindingObserved:false,providerDocumentedExactDailyRequestObserved:false,providerDocumentedExactDailyRequestMatchCount:0,exactApMcCoyProviderDocumentedDailyRequestObserved:false,exactApMcCoyProviderDocumentedDailyRequestMatchCount:0,directPublicModernProbeAllowed:false,usableForOverduePair:false,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},...extra};
+  return {version:'betfair-sporting-webtickers-request-semantics-v1.4-target-binding-provenance',mode:'OFFLINE_PASSIVE_PROVIDER_DOCUMENTED_REQUEST_SEMANTICS_NO_PLAY',valid:false,reason,exactApMcCoyRealLauncherBindingObserved:false,providerDocumentedExactDailyRequestObserved:false,providerDocumentedExactDailyRequestMatchCount:0,exactApMcCoyProviderDocumentedDailyRequestObserved:false,exactApMcCoyProviderDocumentedDailyRequestMatchCount:0,directPublicModernProbeAllowed:false,usableForOverduePair:false,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},...extra};
 }
