@@ -70,6 +70,15 @@ assert.equal(r.reason,'AMBIGUOUS_EXACT_XML_BINDING');
 assert.equal(r.distinctExactRequestCount,2);
 assert.equal(r.realMoneyAllowed,false);
 
+const modern={...binding,tickerUrl:'https://webtickers.malmegas.com/webtickers'};
+r=await runBetfairSportingLiveTickerProbe({configProbeRunner:async()=>({discovery:{coLocatedBetfairConfigBindings:[modern]}}),fetchImpl,nowEpochSeconds:2010});
+assert.equal(r.valid,false);
+assert.equal(r.reason,'MODERN_WEBTICKERS_BINDING_OBSERVED_PROTOCOL_NOT_VERIFIED');
+assert.equal(r.modernProtocolResearchRequired,true);
+assert.equal(r.modernWebtickersBindings.length,1);
+assert.equal(r.realMoneyAllowed,false);
+assert.equal(r.hardGuards.modernWebtickersProtocolCannotBeGuessed,true);
+
 r=await runBetfairSportingLiveTickerProbe({configProbeRunner,fetchImpl:async url=>({ok:true,status:200,url:String(url),headers:{get:()=> 'application/xml'},text:async()=>'<bad />'}),nowEpochSeconds:2010});
 assert.equal(r.valid,false);
 assert.equal(r.reason,'SERVER_SNAPSHOT_VALIDATION_FAILED');
