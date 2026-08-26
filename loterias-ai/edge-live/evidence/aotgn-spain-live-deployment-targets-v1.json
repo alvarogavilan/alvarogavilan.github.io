@@ -1,101 +1,78 @@
 {
-  "version": "aotgn-spain-live-deployment-targets-v1",
-  "generatedAt": "2026-08-26T10:10:00+02:00",
+  "version": "aotgn-spain-live-deployment-targets-v1.1-dual-gate",
+  "generatedAt": "2026-08-26T10:18:00+02:00",
   "mode": "SPAIN_ONLINE_NORSE_LIVE_TARGET_MATRIX_NO_PLAY",
   "market": "ES",
   "provider": "Playtech",
   "networkFamily": "Age of the Gods Norse",
-  "objective": "Recover a current same-Spain-network aognjp-2 EUR state with exact deployment identity and guaranteedHitTime without login, wager, promotion or foreign-state transfer.",
-  "targets": [
-    {
-      "priority": "P0",
+  "objective": "Close two independent gates without inference: (A) current Spanish Daily deployment/state and (B) exact aognjp-2 ticker/deployment identity.",
+  "p0Strategy": {
+    "stateObservationGate": {
       "operator": "JOKERBET",
       "legalOperator": "VERAMATIC ONLINE, S.A.",
       "game": "Age of the Gods Norse: Gods and Giants",
       "playtechGameCode": "gpas_aoggagiants_pop",
-      "dailyCode": "aognjp-2",
       "currentPublicPageVerified": true,
       "dailyMechanicPublishedOnCurrentPage": true,
       "spanishInteroperatorPlaytechNetworkVerified": true,
-      "exactTickerHostRecovered": false,
-      "exactImsCasinoRecovered": false,
-      "currentAognjp2EurGlobalRowRecovered": false,
-      "currentGuaranteedHitTimeRecovered": false,
-      "dailyActiveNowVerified": false,
-      "whyPriority": "Current Spanish operator page publishes Daily mechanics for the exact provider-linked game and JOKERBET independently documents participation in a Playtech inter-operator progressive network within Spain."
+      "directGameToAognjp2BindingVerified": false,
+      "reason": "Best current public Spanish surface for Daily mechanics and Spain inter-operator network evidence, but the flattened provider table does not cleanly bind Gods and Giants directly to aognjp-2.",
+      "stillMissing": [
+        "same-session Daily-active observation",
+        "current Daily amount",
+        "current guaranteedHitTime",
+        "exact Spanish ticker/IMS binding"
+      ]
     },
-    {
-      "priority": "P1_OBSERVATION",
-      "operator": "bwin.es",
-      "legalOperator": "ElectraWorks (Ceuta), S.A.",
-      "games": ["Age of the Gods Norse: Ways of Thunder", "Age of the Gods Norse: King of Asgard"],
-      "currentJackpotCatalogPresenceVerified": true,
-      "norseDailyEditorialEvidenceExists": true,
-      "dailyActiveNowVerified": false,
-      "launcherWithoutRegistrationRecovered": false,
-      "use": "Secondary Spanish deployment surface only; category membership and editorial descriptions cannot populate aognjp-2 state."
-    },
-    {
-      "priority": "P1_COMPARATOR",
-      "operator": "Betfair Spain",
-      "knownLauncherBindings": ["age-of-the-gods-norse-king-of-asgard-cptn"],
-      "currentNorseCatalogPresenceVerified": true,
-      "headlineNetworkAmountObserved": true,
-      "headlineBoundToDaily": false,
-      "use": "Current Spanish launcher/catalog comparator; never bind headline jackpot amount to Daily without exact tier evidence."
-    },
-    {
-      "priority": "P1_OBSERVATION",
-      "operator": "Interwetten Spain",
-      "recentRtpEvidence": {
-        "march2026": ["Age of the Gods Norse: Book of Dwarves", "Age of the Gods Norse: King of Asgard", "Age of the Gods Norse: Norse Legends", "Age of the Gods Norse: Ways of Thunder"],
-        "november2025GodsAndGiantsRealizedRtpPct": 301.59
-      },
-      "dailyActiveNowVerified": false,
-      "sameSpanishNorsePoolVerified": false,
-      "use": "Recent Spanish real-play evidence and possible technical observation surface only. Realized RTP above 100% is not prospective edge evidence."
-    },
-    {
-      "priority": "P2_COMPARATOR",
-      "operator": "PartyCasino Spain",
+    "tickerIdentityGate": {
+      "operatorControls": [
+        "PartyCasino Spain",
+        "bwin.es",
+        "Betfair Spain"
+      ],
       "game": "Age of the Gods Norse: Book of Dwarves",
-      "editorialDailyMechanicPublished": true,
-      "currentNorseJackpotCategoryPresenceVerified": false,
-      "dailyActiveNowVerified": false,
-      "reasonDowngraded": "Editorial/blog description conflicts with lack of Norse title in the current public Jackpot Slots category; blog cannot be promoted to live state."
-    },
+      "playtechGameCode": "gpas_gogold_pop",
+      "dailyNetworkCode": "aognjp-2",
+      "providerTableBindingConfidence": "STRONG_BUT_VISUAL_TABLE_CONFIRMATION_OR_LIVE_TICKER_STILL_REQUIRED",
+      "partyCasinoEditorialDailyPublished": true,
+      "partyCasinoCurrentJackpotLobbyPresenceVerified": false,
+      "betfairCurrentDailyPublished": false,
+      "reason": "Book of Dwarves is the cleaner provider-table control for Daily identity, but no current Spanish deployment has yet supplied a same-session aognjp-2 row."
+    }
+  },
+  "secondaryTargets": [
     {
-      "priority": "NEGATIVE_CONTROL",
       "operator": "William Hill Spain",
-      "game": "Age of the Gods Norse: Book of Dwarves",
+      "lane": "EXTRA_AOGNJP3",
       "publishedActiveLevels": ["ULTIMATE", "EXTRA"],
-      "dailyPublishedActive": false,
-      "networkScopePublished": true,
-      "use": "Configuration-divergence control: same family/network does not mean Daily is enabled on every Spanish deployment."
+      "publishedCommonNorseContributionPct": 0.55,
+      "currentAognjp3StateRecovered": false,
+      "thresholdWinnerAllocationVerified": false,
+      "use": "Independent amount-guarantee research lane; contribution must not be assigned wholly to Extra."
+    },
+    {
+      "operator": "Interwetten Spain",
+      "lane": "RECENT_REAL_PLAY_CONTROL",
+      "use": "Recent Spanish real-play evidence only; realized RTP above 100% is not prospective edge."
     }
   ],
-  "newEvidence": {
-    "interwettenMarch2026RtpSource": "https://www.interwetten.es/SportsBook/AssetsLibrary/2026/returntoplayer/RTPSpain032026.pdf",
-    "interwettenNovember2025RtpSource": "https://www.interwetten.es/SportsBook/AssetsLibrary/2025/returntoplayer/RTP_Spain_112025.pdf",
-    "meaning": "Confirms recent real-money Spanish play of several Norse titles and very large realized variance on Gods and Giants; does not identify jackpot tier, cap, timer, hazard or prospective EV."
-  },
-  "nextDecisiveEvidence": [
-    "Recover exact Spanish ticker host or a public same-market network-state endpoint.",
-    "Recover exact IMS casino identity for a usable Spanish participant, or independently prove observed ticker belongs to the same Spain inter-operator network.",
-    "Observe current EUR local=0 aognjp-2 row with guaranteedHitTime.",
-    "Verify Daily is active on a usable Spanish deployment at the same time as the observed state.",
-    "Passively observe at least one full Daily period/reset and, separately, any rollover-without-activation event.",
-    "Do not infer first-network-contribution attainability; verify it conservatively before any execution contract."
+  "decisiveEvidence": [
+    "Recover exact Spanish jackpotsCasino/jackpotsCasinoUrl or equivalent same-market network-state endpoint.",
+    "Recover exact IMS casino identity for the observed Spanish deployment or independently bind the endpoint to the same Spanish inter-operator network.",
+    "Observe current EUR local=0 aognjp-2 with guaranteedHitTime.",
+    "Verify Daily is active on a usable Spanish deployment in the same observation window.",
+    "Passively observe a full Daily period/reset and separately any rollover-without-activation event.",
+    "Verify first-network-contribution status is knowable before wagering; never infer it from timer proximity."
   ],
   "hardGuards": {
     "onlineOnly": true,
     "nonPromoOnly": true,
-    "categoryDoesNotProveTier": true,
-    "blogDoesNotProveCurrentActive": true,
-    "sameLegalOperatorDoesNotProveSameConfig": true,
+    "wrappedProviderTableTextDoesNotProveDirectBinding": true,
+    "currentPageMechanicDoesNotProveTickerIdentity": true,
+    "providerTableIdentityDoesNotProveCurrentDeployment": true,
+    "sameLegalOperatorDoesNotProveSameIms": true,
     "sameProviderDoesNotProveSameMarketNetwork": true,
     "headlineAmountDoesNotBindDaily": true,
-    "realizedRtpAbove100DoesNotProveProspectiveEdge": true,
     "foreignTickerStateTransferBlocked": true,
     "noLoginProbe": true,
     "noWagerProbe": true,
