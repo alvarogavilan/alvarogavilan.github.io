@@ -1,0 +1,108 @@
+{
+  "version": "playtech-norse-spain-observer-matrix-v1",
+  "generatedAt": "2026-08-26T08:50:00Z",
+  "mode": "SPAIN_PUBLIC_OBSERVER_RANKING_NO_PLAY",
+  "market": "ES",
+  "provider": "Playtech",
+  "network": "Age of the Gods Norse",
+  "targetCode": "aognjp-2",
+  "targetMechanic": "DAILY_TIME_GUARANTEE_WITH_DETERMINISTIC_ROLLOVER_CLAUSE",
+  "observers": [
+    {
+      "rank": 1,
+      "operator": "Casino777.es",
+      "surface": "https://www.casino777.es/age-of-the-gods-norse-king-of-asgard",
+      "currentPublicEvidence": true,
+      "dailyRulesPublished": true,
+      "deterministicRolloverClausePublished": true,
+      "networkAcrossOnlineCasinosPublished": true,
+      "dailyCurrentActiveVerified": false,
+      "tickerHostRecovered": false,
+      "imsCasinoRecovered": false,
+      "whyPriority": "Strongest current Spanish rules source: Daily ticker semantics plus first-contribution guarantee if the previous timed period survives.",
+      "executionUseAllowed": false
+    },
+    {
+      "rank": 2,
+      "operator": "JOKERBET.es",
+      "surface": "https://www.jokerbet.es/tragaperras-slots/age-of-the-gods-norse-gods-and-giants.html",
+      "currentPublicEvidence": true,
+      "exactGame": "Age of the Gods Norse: Gods and Giants",
+      "providerLinkedGameCode": "gpas_aoggagiants_pop",
+      "dailyMechanicPublished": true,
+      "operatorPlaytechSpainInteroperatorNetworkPublished": true,
+      "dailyCurrentActiveVerified": false,
+      "tickerHostRecovered": false,
+      "imsCasinoRecovered": false,
+      "operatorOwnPromoJackpotExcluded": true,
+      "whyPriority": "Exact aognjp-2-linked title plus explicit Spanish inter-operator Playtech network evidence; JOKERBET's separate promotional jackpot system is excluded.",
+      "executionUseAllowed": false
+    },
+    {
+      "rank": 3,
+      "operator": "Betfair Spain",
+      "surface": "https://casino.betfair.es/juego/age-of-the-gods-norse-gods-and-giants-cptn",
+      "currentCatalogSurface": "https://casino.betfair.es/c/jackpots",
+      "currentCatalogPresence": true,
+      "launcherHost": "https://launcher.betfair.es/",
+      "launcherGameId": "age-of-the-gods-norse-gods-and-giants-cptn",
+      "historicalRulesTierSet": ["ULTIMATE_POWER", "EXTRA", "INSTANT"],
+      "dailyInHistoricalRules": false,
+      "historicalPageRtpBasePct": 94.38,
+      "historicalPageRtpIncludingJackpotPct": 94.93,
+      "headlineJackpotTierBindingVerified": false,
+      "tickerHostRecovered": false,
+      "imsCasinoRecovered": false,
+      "whyPriority": "Best exact public launcher binding for Gods and Giants, but historical Betfair rules omit Daily; useful for technical integration comparison, not Daily execution.",
+      "executionUseAllowed": false
+    },
+    {
+      "rank": 4,
+      "operator": "William Hill Spain",
+      "surface": "https://casino.williamhill.es/slots/aotgn-king-of-asgard",
+      "currentPublicEvidence": true,
+      "publishedTierSet": ["ULTIMATE_POWER", "EXTRA"],
+      "publishedContributionPctOfBet": 0.55,
+      "networkAcrossParticipatingCasinosPublished": true,
+      "dailyPublishedActive": false,
+      "whyPriority": "Strong network/comparator evidence and explicit contribution for its own configuration, but no Daily. Contribution rate must never be transferred to JOKERBET/Casino777 Daily.",
+      "executionUseAllowed": false
+    }
+  ],
+  "providerContract": {
+    "aognjp2ClassifiedGlobal": true,
+    "aognjp2LinkedGameCode": "gpas_aoggagiants_pop",
+    "instanceCodeRequired": false,
+    "minimumDesiredLiveState": [
+      "same Spanish market network binding",
+      "EUR",
+      "aognjp-2",
+      "local=0",
+      "current amount",
+      "guaranteedHitTime"
+    ]
+  },
+  "deterministicResearchCondition": {
+    "ruleSource": "Casino777.es Spanish current game rules",
+    "condition": "If Daily survives the timed period while bets contribute, the first bet/contribution in the next timed period is guaranteed to win the Daily jackpot.",
+    "conditionalJackpotWinProbabilityIfAllPreconditionsVerified": 1,
+    "baseRtpNeededForWorstCaseLowerBound": false,
+    "normalHazardNeededInsideVerifiedDeterministicWindow": false,
+    "firstNetworkContributionMayBeAssumed": false,
+    "sameSessionFreshnessRequired": true,
+    "prospectivePassiveValidationRequired": true
+  },
+  "currentDecision": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "nextDecisiveEvidence": [
+    "Recover one current Spanish-market aognjp-2 EUR row with local=0, current amount and guaranteedHitTime from a participant proven bound to the same Spanish Norse network.",
+    "Verify Daily is active on at least one usable Spanish deployment.",
+    "Observe at least one full Daily period/reset passively.",
+    "Demonstrate whether first-network-contribution status can be known before committing a wager; never infer it from timer proximity alone."
+  ]
+}
