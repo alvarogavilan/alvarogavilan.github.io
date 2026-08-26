@@ -8,9 +8,15 @@ const SPORTING_GAME_CODES=new Set([
   'gpas_gnsla1_pop','gpas_gnslb1_pop',
 ]);
 const SAFE_ROUTING_KEYS=new Set(['casino','currency','local','game','instancecode','jackpotscasino']);
+const STAKE_KEYS=new Set([
+  'minbet','minimumbet','minstake','minimumstake','basecost','basecostmultiplier','maxbet','maximumbet','maxstake','maximumstake',
+  'betvalues','betamounts','stakevalues','denominations','denomination','coinvalues','mincoin','maxcoin','coinvalue',
+  'betperline','linebet','minlinebet','maxlinebet','minbetperline','maxbetperline','activepaylines','paylines',
+]);
 const clean=v=>String(v??'').replace(/\u0000/g,'').trim();
 const normalizeKey=v=>clean(v).toLowerCase().replace(/[^a-z0-9]/g,'');
 const uniq=a=>[...new Set(a.filter(v=>v!==null&&v!==undefined&&v!==''))];
+const finite=v=>{if(v===null||v===undefined||v===''||typeof v==='boolean')return null;const n=Number(v);return Number.isFinite(n)?n:null;};
 
 function safeRoutingValue(v){
   const s=clean(v);
@@ -85,6 +91,29 @@ function safeRouting(entry){
   for(const k of Object.keys(out))out[k]=uniq(out[k]);
   return out;
 }
+function numbersFromValue(v){
+  const out=[];const add=x=>{const n=finite(x);if(n!==null&&n>=0&&n<=1_000_000)out.push(n);};
+  if(Array.isArray(v)){for(const x of v.slice(0,500)){if(Array.isArray(x)){for(const y of x.slice(0,100))add(y);}else add(x);}}else add(v);
+  return uniq(out);
+}
+function scanStakeJson(value,{entryIndex,source,endpoint,path='$'},out=[],depth=0){
+  if(depth>12||out.length>=500)return out;
+  if(Array.isArray(value)){value.slice(0,500).forEach((v,i)=>scanStakeJson(v,{entryIndex,source,endpoint,path:`${path}[${i}]`},out,depth+1));return out;}
+  if(!value||typeof value!=='object')return out;
+  for(const [k,v] of Object.entries(value)){
+    const nk=normalizeKey(k),p=`${path}.${k}`;
+    if(STAKE_KEYS.has(nk)){
+      const numericValues=numbersFromValue(v);
+      if(numericValues.length)out.push({entryIndex,source,endpoint,key:k,normalizedKey:nk,objectPath:p,numericValues});
+    }
+    if(v&&typeof v==='object')scanStakeJson(v,{entryIndex,source,endpoint,path:p},out,depth+1);
+  }
+  return out;
+}
+function scanStakeText(raw,meta,out){
+  const s=String(raw||'').trim();if(!s)return;
+  try{scanStakeJson(JSON.parse(s),meta,out);}catch{}
+}
 function dailyMarker(entry){
   const joined=entryTextParts(entry).join('\n').toLowerCase();
   if(joined.includes(DAILY_CODE))return true;
@@ -95,8 +124,10 @@ function tickerTransport(entry){
   return /(?:\/|^)(?:webtickers|new_jackpotxml\.php)(?:\/|$)/i.test(ep)||/webtickers|new_jackpotxml\.php/i.test(String(entry?.request?.url||''));
 }
 function latestSportingMarkerBefore(markers,index){return markers.filter(x=>x.index<index).sort((a,b)=>b.index-a.index)[0]||null;}
+function latestSportingMarkerAtOrBefore(markers,index){return markers.filter(x=>x.index<=index).sort((a,b)=>b.index-a.index)[0]||null;}
+function exclusiveBobbyMarker(marker){return !!marker&&(marker.target===true||marker.codes.includes(TARGET_GAME_CODE))&&marker.codes.every(code=>code===TARGET_GAME_CODE);}
 function fail(reason,extra={}){
-  return {version:'bet365-bobby-sporting-har-discovery-v1.1-ambiguous-provenance-guard',valid:false,reason,exactTargetMarkerObserved:false,exactTargetDailyTickerCandidateObserved:false,servedBet365SessionBindingVerified:false,usableForOverduePair:false,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},...extra};
+  return {version:'bet365-bobby-sporting-har-discovery-v1.2-stake-candidates',valid:false,reason,exactTargetMarkerObserved:false,exactTargetDailyTickerCandidateObserved:false,stakeMenuCandidateObserved:false,servedTenCentTotalStakeVerified:false,servedBet365SessionBindingVerified:false,usableForOverduePair:false,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},...extra};
 }
 
 export function analyzeBet365BobbySportingHar(har,{sourceName='capture.har'}={}){
@@ -117,54 +148,44 @@ export function analyzeBet365BobbySportingHar(har,{sourceName='capture.har'}={})
     if(!tickerTransport(entry)||!dailyMarker(entry))continue;
     const latest=latestSportingMarkerBefore(sportingMarkers,i);
     const routing=safeRouting(entry);
-    const otherLatestCodes=(latest?.codes||[]).filter(code=>code!==TARGET_GAME_CODE);
-    const latestTargetsBobby=!!latest&&(latest.target===true||latest.codes.includes(TARGET_GAME_CODE));
-    const targetPrecedes=latestTargetsBobby&&otherLatestCodes.length===0;
+    const targetPrecedes=exclusiveBobbyMarker(latest);
     const conflictingLatestSportingMarker=!!latest&&!targetPrecedes;
     candidates.push({
-      tickerEntryIndex:i,
-      startedDateTime:entry?.startedDateTime||null,
-      endpoint:endpointShape(entry?.request?.url),
-      exactDailyCodeObserved:true,
-      latestSportingMarkerIndex:latest?.index??null,
-      latestSportingMarkerCodes:latest?.codes||[],
-      exactTargetMarkerPrecedesTicker:targetPrecedes,
-      conflictingLatestSportingMarker,
-      safeRouting:routing,
-      requestCasinoCandidates:routing.casino||routing.jackpotscasino||[],
-      currencyCandidates:routing.currency||[],
-      localCandidates:routing.local||[],
-      gameCandidates:routing.game||[],
-      instanceCodeCandidates:routing.instancecode||[],
+      tickerEntryIndex:i,startedDateTime:entry?.startedDateTime||null,endpoint:endpointShape(entry?.request?.url),exactDailyCodeObserved:true,
+      latestSportingMarkerIndex:latest?.index??null,latestSportingMarkerCodes:latest?.codes||[],
+      exactTargetMarkerPrecedesTicker:targetPrecedes,conflictingLatestSportingMarker,safeRouting:routing,
+      requestCasinoCandidates:routing.casino||routing.jackpotscasino||[],currencyCandidates:routing.currency||[],localCandidates:routing.local||[],gameCandidates:routing.game||[],instanceCodeCandidates:routing.instancecode||[],
     });
   }
   const exactCandidates=candidates.filter(x=>x.exactTargetMarkerPrecedesTicker&&!x.conflictingLatestSportingMarker);
+
+  const stakeCandidates=[];
+  for(let i=0;i<entries.length;i++){
+    const latest=latestSportingMarkerAtOrBefore(sportingMarkers,i);
+    if(!exclusiveBobbyMarker(latest))continue;
+    const entry=entries[i],endpoint=endpointShape(entry?.request?.url);
+    scanStakeText(decodeContent(entry?.response?.content),{entryIndex:i,source:'http-response',endpoint},stakeCandidates);
+    for(let j=0;j<(entry?._webSocketMessages||[]).length;j++){
+      const msg=entry._webSocketMessages[j];if(msg?.type!=='receive'||!msg?.data)continue;
+      scanStakeText(msg.data,{entryIndex:i,source:`websocket-receive:${j}`,endpoint},stakeCandidates);
+    }
+  }
+  const stakeDedup=[];const stakeSeen=new Set();
+  for(const c of stakeCandidates){const id=[c.entryIndex,c.source,c.endpoint,c.normalizedKey,c.objectPath,JSON.stringify(c.numericValues)].join('|');if(!stakeSeen.has(id)){stakeSeen.add(id);stakeDedup.push(c);}}
+  const observedStakeKeys=uniq(stakeDedup.map(x=>x.normalizedKey)).sort();
   const exactTargetMarkerObserved=targetMarkers.length>0;
   const exactTargetDailyTickerCandidateObserved=exactCandidates.length>0;
   return {
-    version:'bet365-bobby-sporting-har-discovery-v1.1-ambiguous-provenance-guard',
-    mode:'OFFLINE_PASSIVE_BET365_BOBBY_SPORTING_DISCOVERY_NO_PLAY',
-    valid:true,sourceName,entryCount:entries.length,
-    target:{title:'Bobby George: Sporting Legends',provider:'Playtech',providerGameCode:TARGET_GAME_CODE,jackpotGroup:'sljp',dailyCode:DAILY_CODE},
+    version:'bet365-bobby-sporting-har-discovery-v1.2-stake-candidates',mode:'OFFLINE_PASSIVE_BET365_BOBBY_SPORTING_DISCOVERY_NO_PLAY',valid:true,sourceName,entryCount:entries.length,
+    target:{title:'Bobby George: Sporting Legends',provider:'Playtech',providerGameCode:TARGET_GAME_CODE,jackpotGroup:'sljp',dailyCode:DAILY_CODE,publishedBet365SpainMinimumEUR:0.10},
     exactTargetMarkerObserved,targetMarkerEntryIndexes:targetMarkers.map(x=>x.index),
-    dailyTickerCandidateCount:candidates.length,exactTargetDailyTickerCandidateCount:exactCandidates.length,
-    exactTargetDailyTickerCandidateObserved,
-    candidates,
-    servedBet365SessionBindingVerified:false,
-    exactBet365LauncherSemanticsVerified:false,
-    exactBet365JackpotsCasinoImsVerified:false,
-    exactBet365TickerEndpointOwnershipVerified:false,
-    exactModernResponseSemanticsVerified:false,
-    usableForOverduePair:false,
-    scientificUse:'Offline discovery only. A candidate requires sljp-1 ticker traffic after the latest observed Sporting Legends game marker resolves exclusively to exact Bobby George gpas_bgeorge_pop. Output is redacted to endpoint origin/path plus allowlisted routing fields. Because the current bet365 launcher/session ownership contract is not yet independently documented, even an exact candidate is not promoted to served operator binding or overdue evidence.',
-    nextRequiredEvidence:[
-      'exact bet365 Spain real-money Bobby launcher/session provenance',
-      'licensee-specific jackpotsCasino or IMS binding',
-      'configured ticker endpoint ownership',
-      'fresh sljp-1 response semantics with amount, guaranteedHitTime, winc, timestamp and execInterval',
-      'served 0.10 EUR stake and jackpot eligibility attestation'
-    ],
+    dailyTickerCandidateCount:candidates.length,exactTargetDailyTickerCandidateCount:exactCandidates.length,exactTargetDailyTickerCandidateObserved,candidates,
+    stakeMenuCandidateObserved:stakeDedup.length>0,stakeMenuCandidateCount:stakeDedup.length,observedStakeKeys,stakeMenuCandidates:stakeDedup,
+    servedStakeMenuSemanticsVerified:false,servedTenCentTotalStakeVerified:false,tenCentJackpotEligibilityVerified:false,
+    servedBet365SessionBindingVerified:false,exactBet365LauncherSemanticsVerified:false,exactBet365JackpotsCasinoImsVerified:false,exactBet365TickerEndpointOwnershipVerified:false,exactModernResponseSemanticsVerified:false,usableForOverduePair:false,
+    scientificUse:'Offline discovery only. A Daily candidate requires sljp-1 ticker traffic after the latest Sporting Legends marker resolves exclusively to Bobby George gpas_bgeorge_pop. Stake candidates are scanned only from server HTTP response bodies and WebSocket receive frames while the latest Sporting marker remains exclusively Bobby. Numeric stake/base-cost/menu candidates are structural clues, not proof that 0.10 EUR is the served total wager or jackpot-eligible. Output contains only endpoint origin/path, allowlisted routing values, structural JSON paths and numeric candidates.',
+    nextRequiredEvidence:['exact bet365 Spain real-money Bobby launcher/session provenance','licensee-specific jackpotsCasino or IMS binding','configured ticker endpoint ownership','fresh sljp-1 response semantics with amount, guaranteedHitTime, winc, timestamp and execInterval','served 0.10 EUR total stake semantics and jackpot eligibility attestation'],
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,passiveHarOnly:true,rawHarNeverEmitted:true,credentialsCookiesHeadersNeverEmitted:true,endpointQueriesFragmentsNeverEmitted:true,allowlistedRoutingValuesMustPassSafeLexicalFilter:true,exactProviderGameCodeRequired:true,latestSportingMarkerMustBeExclusiveTarget:true,sljp1Required:true,otherSportingMarkerInvalidatesStaleTargetProvenance:true,discoveryCandidateCannotProveBet365Ownership:true,discoveryCandidateCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,passiveHarOnly:true,rawHarNeverEmitted:true,credentialsCookiesHeadersNeverEmitted:true,endpointQueriesFragmentsNeverEmitted:true,allowlistedRoutingValuesMustPassSafeLexicalFilter:true,exactProviderGameCodeRequired:true,latestSportingMarkerMustBeExclusiveTarget:true,sljp1Required:true,otherSportingMarkerInvalidatesStaleTargetProvenance:true,stakeCandidatesServerReceiveOnly:true,numericStakeCandidateCannotBecomeServedTotalStake:true,baseCostCannotAloneProveCurrencyStake:true,tenCentPublishedMinimumCannotAloneProveJackpotEligibility:true,discoveryCandidateCannotProveBet365Ownership:true,discoveryCandidateCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
