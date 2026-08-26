@@ -1,6 +1,6 @@
 {
-  "version": "betfair-spain-sporting-legends-ap-mccoy-p0-v1.1-global-candidate-observer",
-  "generatedAt": "2026-08-26T12:45:00+02:00",
+  "version": "betfair-spain-sporting-legends-ap-mccoy-p0-v1.2-powerplay-weighting-guard",
+  "generatedAt": "2026-08-26T12:21:16+02:00",
   "mode": "SPAIN_ONLINE_TIMED_JACKPOT_P0_NO_PLAY",
   "market": "ES",
   "operator": "Betfair Spain",
@@ -13,6 +13,7 @@
     "url": "https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn",
     "currentCatalogPresenceVerified": true,
     "jackpotCategoryBreadcrumbObserved": true,
+    "latestPublicCrawlFreshness": "last week",
     "publishedTheoreticalRtp": {
       "mainGameMinPct": 93.03,
       "mainGameMaxPct": 95.03,
@@ -21,7 +22,8 @@
       "accumulatorPlusMinPct": 95.17,
       "accumulatorPlusMaxPct": 97.17
     },
-    "pageHeadlineJackpotSnapshotEUR": 2721.23,
+    "pageHeadlineJackpotSnapshotEUR": 9178.25,
+    "priorHeadlineJackpotSnapshotEUR": 2721.23,
     "headlineSnapshotFreshEnoughForExecution": false,
     "headlineTierBindingVerified": false
   },
@@ -50,6 +52,19 @@
     "weeklyEarlyWinCanRetrigger": true,
     "firstBetAfterDeadlineIfNoPlayAtDueTimeRulePublished": true,
     "exactPlayerHazardFunctionPublished": false
+  },
+  "powerPlaySemantics": {
+    "accumulatorCostMultipleOfSelectedTotalBet": 10,
+    "accumulatorSpins": 5,
+    "accumulatorPlusCostMultipleOfSelectedTotalBet": 20,
+    "accumulatorPlusInitialSpins": 5,
+    "accumulatorPlusHasExtraSuperSpin": true,
+    "sportingJackpotsCanTriggerDuringPowerPlay": true,
+    "exactJackpotStakeWeightingDuringPowerPlayVerified": false,
+    "unknowns": [
+      "Whether jackpot hazard weights the whole 10x/20x purchase, each internal spin, the selected total bet, or another normalized stake.",
+      "Whether the extra Super Spin contributes independently to Sporting Legends jackpot hazard."
+    ]
   },
   "providerTickerProtocol": {
     "source": "https://clientzone.betconstruct.com/media/download/801cbj/Bobby%20George%E2%84%A2%20Sporting%20Legends%E2%84%A2.pdf",
@@ -105,11 +120,34 @@
     "usableForExecution": false,
     "scientificUse": "Candidate global state for passive cycle/reset observation and future exact-binding cross-check only."
   },
+  "retrospectiveSpainRtpValidation": {
+    "source": "https://casino.betfair.es/info/rtp-info",
+    "sourceClass": "BETFAIR_REALIZED_PERIOD_PAYOUT_NOT_THEORETICAL_RTP",
+    "latestObservedApMcCoyRealizedRtpPct": 108.41,
+    "alternatePeriodOrSurfaceObservedRtpPct": 80.88,
+    "periodIdentityHarmonized": false,
+    "provesProspectivePositiveEv": false,
+    "scientificUse": "Plausibility/control only: realized payout can exceed 100% in a reporting window, but cannot be projected forward or substituted for theoretical RTP."
+  },
   "economicScreen": {
-    "bestPublishedNonJackpotRtpCandidatePct": 97.17,
-    "breakEvenAdditionalJackpotReturnPct": 2.83,
-    "interpretation": "Because Betfair publishes that Sporting Legends jackpots do not reduce game RTP, a current player-specific jackpot EV above 2.83% of stake would lift the 97.17% Accumulator Plus configuration above 100% total expectation. This is a break-even target only, not evidence that current player-specific jackpot EV exceeds it.",
-    "positiveEvVerified": false
+    "exactServedRtpVariantVerified": false,
+    "mainGame": {
+      "publishedMinRtpPct": 93.03,
+      "publishedMaxRtpPct": 95.03,
+      "conservativeUnboundRtpPct": 93.03,
+      "conservativeBreakEvenAdditionalJackpotReturnPct": 6.97,
+      "nominalBestVariantBreakEvenAdditionalJackpotReturnPct": 4.97,
+      "nominalBestVariantUsableForExecution": false
+    },
+    "accumulatorPlus": {
+      "publishedMinRtpPct": 95.17,
+      "publishedMaxRtpPct": 97.17,
+      "nominalBestVariantBreakEvenAdditionalJackpotReturnPct": 2.83,
+      "exactJackpotStakeWeightingVerified": false,
+      "nominalBreakEvenUsableForExecution": false
+    },
+    "positiveEvVerified": false,
+    "interpretation": "Without an exact served RTP variant, the clean main-game screen uses 93.03% and therefore needs >6.97 percentage points of player-specific jackpot return. The 2.83-point Accumulator Plus screen is nominal only and is blocked until Power Play jackpot stake weighting is verified."
   },
   "gates": {
     "currentSpanishGamePageVerified": true,
@@ -118,6 +156,8 @@
     "providerSljpCodesVerified": true,
     "jackpotRtpIndependencePublished": true,
     "globalCandidateStateObserved": true,
+    "exactServedRtpVariantVerified": false,
+    "powerPlayJackpotStakeWeightingVerified": false,
     "exactBetfairSpainTickerImsBindingVerified": false,
     "currentDailyAmountVerified": false,
     "currentGuaranteedHitTimeVerified": false,
@@ -129,7 +169,8 @@
   "nextDecisiveEvidence": [
     "Recover Betfair Spain's same-deployment Sporting Legends ticker URL and IMS casino identity without login or wager.",
     "Parse current EUR local=0 sljp-1 amount plus guaranteedHitTime in the same observation window as the Spanish AP McCoy deployment.",
-    "Use the global candidate snapshot only for passive reset/cycle detection until a same-session Betfair Spain binding exists.",
+    "Determine the exact served RTP variant; until then use the minimum published RTP for conservative screening.",
+    "Verify how Sporting Legends jackpot hazard weights Playtech Power Play 10x/20x purchases before using Accumulator/Accumulator Plus RTP in execution math.",
     "Determine the exact stake-to-player-trigger probability rule or a rigorous lower bound from provider/operator evidence; contribution rate alone is not player hazard.",
     "Observe a full Daily cycle/reset prospectively and test the published first-bet-after-deadline rule passively.",
     "Only promote GREEN if a conservative player-specific lower-bound EV exceeds 100% after all execution gates."
@@ -146,11 +187,15 @@
     "nonPromoOnly": true,
     "noLoginProbe": true,
     "noWagerProbe": true,
-    "staleHeadlineSnapshotCannotDriveExecution": true,
+    "staleOrTierUnboundHeadlineCannotDriveExecution": true,
     "foreignTickerCannotPopulateSpainState": true,
     "thirdPartyGlobalCandidateCannotPopulateSpainState": true,
     "contributionRateIsNotPlayerHazard": true,
     "higherStakeQualitativeRuleIsNotExactProbability": true,
+    "sameSportingLegendsFamilyDoesNotProveSameJackpotConfiguration": true,
+    "retrospectiveRtpAbove100DoesNotProveProspectiveEdge": true,
+    "exactServedRtpVariantRequiredBeforeUsingBestPublishedRtp": true,
+    "accumulatorPlusRtpCannotDriveExecutionUntilJackpotStakeWeightingVerified": true,
     "rtpAbove100RequiresCurrentPlayerSpecificJackpotEvProof": true
   }
 }
