@@ -19,12 +19,12 @@ const http={
 };
 
 let r=analyzeBetfairSportingCorrelatedWebtickersSession({log:{entries:[launcher,initial,http]}},{sourceName:'http.har'});
-assert.equal(r.version,'betfair-sporting-webtickers-correlated-session-v1.3-session-config-attested');
+assert.equal(r.version,'betfair-sporting-webtickers-correlated-session-v1.4-independent-request-provenance');
 assert.equal(r.valid,true);
 assert.equal(r.exactApMcCoyRealLauncherBindingObserved,true);
 assert.equal(r.exactApMcCoyRealLauncherBindingCount,1);
 assert.equal(r.betfairRealCasinoLauncherBindingCount,1);
-assert.equal(r.requestSemanticMatchCount,1);
+assert.equal(r.exactSessionRequestSemanticMatchCount,1);
 assert.equal(r.structuredSljp1RowCandidateCount,1);
 assert.equal(r.correlatedExactDailyCandidateCount,1);
 assert.equal(r.launcherOrderRejectedCount,0);
@@ -35,10 +35,16 @@ const c=r.correlatedExactDailyCandidates[0];
 assert.equal(c.exactApMcCoyRealLauncherPrecedesCorrelatedEntry,true);
 assert.equal(c.latestPrecedingRealCasinoLauncherIsExactApMcCoy,true);
 assert.equal(c.latestPostLaunchBetfairInitialResourcesBindingVerified,true);
+assert.equal(c.independentRequestSessionProvenanceVerified,true);
 assert.equal(c.launcherEntryIndex,0);
 assert.equal(c.initialResourcesEntryIndex,1);
 assert.equal(c.sameEntryRequestResponseCorrelation,true);
 assert.equal(c.request.source,'http-request');
+assert.equal(c.request.exactApMcCoySessionProvenanceVerified,true);
+assert.equal(c.request.latestPrecedingRealCasinoLauncherIsExactApMcCoy,true);
+assert.equal(c.request.latestPostLaunchInitialResourcesBindingVerified,true);
+assert.equal(c.request.launcherEntryIndex,0);
+assert.equal(c.request.initialResourcesEntryIndex,1);
 assert.equal(c.responseRow.row.amount,123.45);
 assert.equal(c.exactModernResponseSemanticsVerified,false);
 assert.equal(r.usableForOverduePair,false);
@@ -46,11 +52,14 @@ assert.equal(r.execution.decision,'NO_PLAY');
 assert.equal(r.execution.realMoneyAllowed,false);
 assert.equal(r.execution.maxSpins,0);
 assert.equal(r.hardGuards.latestPostLaunchBetfairInitialResourcesMustMatchTickerBinding,true);
+assert.equal(r.hardGuards.independentRequestSessionProvenanceMustAgree,true);
+assert.equal(r.hardGuards.sameLauncherAndInitialResourcesIndicesRequiredAcrossAnalyzers,true);
 
 // The same Betfair traffic without AP McCoy launcher is never promoted.
 r=analyzeBetfairSportingCorrelatedWebtickersSession({log:{entries:[initial,http]}},{sourceName:'generic.har'});
 assert.equal(r.valid,true);
 assert.equal(r.exactApMcCoyRealLauncherBindingObserved,false);
+assert.equal(r.exactSessionRequestSemanticMatchCount,0);
 assert.equal(r.correlatedExactDailyCandidateCount,0);
 assert.equal(r.launcherOrderRejectedCount,1);
 assert.equal(r.execution.maxTotalStakeEUR,0);
@@ -58,6 +67,7 @@ assert.equal(r.execution.maxTotalStakeEUR,0);
 // A launcher appearing after ticker traffic cannot retroactively attest it.
 r=analyzeBetfairSportingCorrelatedWebtickersSession({log:{entries:[initial,http,launcher]}},{sourceName:'late-launcher.har'});
 assert.equal(r.exactApMcCoyRealLauncherBindingObserved,true);
+assert.equal(r.exactSessionRequestSemanticMatchCount,0);
 assert.equal(r.correlatedExactDailyCandidateCount,0);
 assert.equal(r.launcherOrderRejectedCount,1);
 assert.equal(r.execution.realMoneyAllowed,false);
@@ -65,6 +75,7 @@ assert.equal(r.execution.realMoneyAllowed,false);
 // Config captured before AP McCoy launch is stale for that launched session.
 r=analyzeBetfairSportingCorrelatedWebtickersSession({log:{entries:[initial,launcher,http]}},{sourceName:'prelaunch-config.har'});
 assert.equal(r.exactApMcCoyRealLauncherBindingObserved,true);
+assert.equal(r.exactSessionRequestSemanticMatchCount,0);
 assert.equal(r.correlatedExactDailyCandidateCount,0);
 assert.equal(r.sessionConfigRejectedCount,1);
 assert.equal(r.hardGuards.stalePreLaunchConfigCannotAuthorizeTicker,true);
@@ -74,19 +85,20 @@ assert.equal(r.execution.realMoneyAllowed,false);
 r=analyzeBetfairSportingCorrelatedWebtickersSession({log:{entries:[launcher,initial,otherLauncher,initial,http]}},{sourceName:'different-game-after-apmccoy.har'});
 assert.equal(r.exactApMcCoyRealLauncherBindingObserved,true);
 assert.equal(r.betfairRealCasinoLauncherBindingCount,2);
+assert.equal(r.exactSessionRequestSemanticMatchCount,0);
 assert.equal(r.correlatedExactDailyCandidateCount,0);
 assert.equal(r.staleExactLauncherRejectedCount,1);
 assert.equal(r.hardGuards.staleExactLauncherCannotAuthorizeLaterDifferentGameTraffic,true);
 assert.equal(r.execution.maxSpins,0);
 
-// The latest post-launch initialResources is authoritative for session provenance; a mismatching newer config blocks an older matching one.
+// The latest post-launch initialResources is authoritative; a mismatching newer config blocks the older matching one.
 r=analyzeBetfairSportingCorrelatedWebtickersSession({log:{entries:[launcher,initial,initialFor('other_ims'),http]}},{sourceName:'changed-config.har'});
 assert.equal(r.correlatedExactDailyCandidateCount,0);
 assert.ok(r.sessionConfigRejectedCount>=1);
 assert.equal(r.hardGuards.ambiguousLatestSessionConfigRejected,true);
 assert.equal(r.execution.realMoneyAllowed,false);
 
-// Two valid client send frames on one WSS entry are ambiguous and fail closed instead of being paired to one server row.
+// Two valid client send frames on one WSS entry remain ambiguous even when both carry exact session provenance.
 const ws={
   startedDateTime:'2026-08-26T19:00:01Z',
   request:{method:'GET',url:'wss://webtickers.malmegas.com/webtickers',headers:[]},
@@ -98,7 +110,7 @@ const ws={
   ],
 };
 r=analyzeBetfairSportingCorrelatedWebtickersSession({log:{entries:[launcher,initial,ws]}},{sourceName:'ambiguous-ws.har'});
-assert.equal(r.requestSemanticMatchCount,2);
+assert.equal(r.exactSessionRequestSemanticMatchCount,2);
 assert.equal(r.structuredSljp1RowCandidateCount,1);
 assert.equal(r.correlatedExactDailyCandidateCount,0);
 assert.equal(r.ambiguousCorrelationCount,1);
