@@ -4,6 +4,9 @@ const upper=(v)=>text(v)?.toUpperCase()??null;
 const lower=(v)=>text(v)?.toLowerCase()??null;
 const MIN_EXECUTION_RACE_CONFIDENCE=0.95;
 const MAX_UNVERIFIED_EXECUTION_BASE_RTP_PCT=93.03;
+const RACE_EVIDENCE_VERSION='sporting-legends-empirical-race-bound-v1.2-explicit-binomial-assumptions';
+const RACE_EVIDENCE_METHOD='ONE_SIDED_CLOPPER_PEARSON_BINOMIAL';
+const RACE_EVIDENCE_SOURCE='VALIDATED_PASSIVE_CYCLE_LEDGER';
 const SHA40=/^[a-f0-9]{40}$/i;
 // Deliberately empty until a real prospective race-ledger artifact has been
 // independently reviewed in a later commit. Caller-supplied objects cannot add
@@ -60,6 +63,8 @@ export function evaluateSportingLegendsOverdueFirstBet({
     jackpotMustNotReset:true,
     raceProbabilityMustBeProspectivelyValidated:true,
     greenRequiresStructuredProspectiveRaceEvidence:true,
+    raceEvidenceExactVersionRequired:RACE_EVIDENCE_VERSION,
+    raceEvidenceProtocolIdRequired:true,
     raceEvidenceMustCarryClosedBinomialExecutionAssumptions:true,
     raceEvidenceMustCarryCompleteUniqueCycleLedgerIdentity:true,
     independentProspectiveRaceLedgerReviewRequiredForGreen:true,
@@ -75,7 +80,7 @@ export function evaluateSportingLegendsOverdueFirstBet({
     callerSuppliedHigherRtpCannotEaseGreenThreshold:true,
     historicalRealizedPayoutCannotSetExecutionRtp:true,
   };
-  const fail=(reason,extra={})=>({version:'sporting-legends-overdue-first-bet-v1.8-independent-ledger-review',decision:'NO_PLAY',valid:false,reason,realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,guards,...extra});
+  const fail=(reason,extra={})=>({version:'sporting-legends-overdue-first-bet-v1.9-reviewed-race-contract',decision:'NO_PLAY',valid:false,reason,realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,guards,...extra});
   if(!before||!after)return fail('MISSING_CROSS_BOUNDARY_SNAPSHOTS');
   if(before.code!=='sljp-1'||after.code!=='sljp-1')return fail('NOT_SPORTING_DAILY');
   if(upper(before.currency)!=='EUR'||upper(after.currency)!=='EUR'||before.local!==0||after.local!==0)return fail('NOT_GLOBAL_EUR_DAILY');
@@ -133,6 +138,7 @@ export function evaluateSportingLegendsOverdueFirstBet({
   const totalExposureSinceServerDetectionSeconds=measuredLatency!==null?feedAgeSeconds+measuredLatency:null;
   const raceConfidence=finite(raceEvidence?.confidence);
   const raceConfidenceVerified=raceConfidence!==null&&raceConfidence>=MIN_EXECUTION_RACE_CONFIDENCE&&raceConfidence<1;
+  const raceProtocolId=text(raceEvidence?.protocolId);
   const raceAssumptions=raceEvidence?.assumptions;
   const raceAssumptionEvidenceId=text(raceAssumptions?.assumptionEvidenceId);
   const raceExecutionAssumptionsVerified=!!raceEvidence&&
@@ -148,9 +154,9 @@ export function evaluateSportingLegendsOverdueFirstBet({
 
   const review=raceEvidence?.independentReview;
   const raceLedgerReviewCommitSha=lower(review?.reviewCommitSha);
-  const raceLedgerIndependentReviewMetadataVerified=!!raceEvidence&&!!review&&
+  const raceLedgerIndependentReviewMetadataVerified=!!raceEvidence&&!!review&&!!raceProtocolId&&
     review.type==='GITHUB_REVIEWED_PROSPECTIVE_RACE_LEDGER'&&
-    text(review.protocolId)===text(raceEvidence.protocolId)&&
+    text(review.protocolId)===raceProtocolId&&
     exactOrderedTextList(review.cycleIds,raceCycleIds)&&
     !!raceLedgerReviewCommitSha&&SHA40.test(raceLedgerReviewCommitSha);
   const raceLedgerReviewCommitApproved=raceLedgerIndependentReviewMetadataVerified&&
@@ -158,9 +164,11 @@ export function evaluateSportingLegendsOverdueFirstBet({
   const raceLedgerIndependentlyReviewed=raceLedgerIndependentReviewMetadataVerified&&raceLedgerReviewCommitApproved;
 
   const preReviewStructuredRaceEvidenceValid=!!raceEvidence&&
+    raceEvidence.version===RACE_EVIDENCE_VERSION&&
+    !!raceProtocolId&&
     raceEvidence.valid===true&&raceEvidence.usableForExecution===true&&
-    raceEvidence.method==='ONE_SIDED_CLOPPER_PEARSON_BINOMIAL'&&
-    raceEvidence.source==='VALIDATED_PASSIVE_CYCLE_LEDGER'&&
+    raceEvidence.method===RACE_EVIDENCE_METHOD&&
+    raceEvidence.source===RACE_EVIDENCE_SOURCE&&
     raceEvidence.prospectiveProtocolFrozen===true&&
     raceEvidence.comparableCycleDefinitionVerified===true&&
     raceExecutionAssumptionsVerified&&raceConfidenceVerified&&raceLedgerIdentityVerified&&
@@ -196,12 +204,12 @@ export function evaluateSportingLegendsOverdueFirstBet({
   const green=greenProbabilityGate&&executionGateClosed;
   const decision=green?'GREEN':'NO_PLAY';
   const reason=green?'GREEN_OVERDUE_FIRST_BET_ALL_GATES_CLOSED':
-    raceEvidence&&preReviewStructuredRaceEvidenceValid&&!raceLedgerIndependentlyReviewed?'PROSPECTIVE_RACE_LEDGER_INDEPENDENT_REVIEW_REQUIRED':
     raceEvidence&&!preReviewStructuredRaceEvidenceValid?'RACE_EVIDENCE_EXECUTION_CONTRACT_NOT_VERIFIED':
-    baseStructuredRaceEvidenceValid&&!raceWindowBudgetVerified?'VALIDATED_RACE_WINDOW_EXHAUSTED':
+    preReviewStructuredRaceEvidenceValid&&!preReviewRaceWindowBudgetVerified?'VALIDATED_RACE_WINDOW_EXHAUSTED':
+    preReviewRaceWindowBudgetVerified&&!raceLedgerIndependentlyReviewed?'PROSPECTIVE_RACE_LEDGER_INDEPENDENT_REVIEW_REQUIRED':
     probabilityGate?'CONDITIONAL_RACE_EV_SCREEN_PASSED_EXECUTION_GATES_PENDING':'FOLLOWING_DAY_UNAWARDED_VERIFIED_RACE_GATE_OPEN';
   return {
-    version:'sporting-legends-overdue-first-bet-v1.8-independent-ledger-review',
+    version:'sporting-legends-overdue-first-bet-v1.9-reviewed-race-contract',
     decision,valid:true,reason,
     followingDayUnawardedVerified,nextEligibleNetworkBetGuaranteedJackpot,
     exactBetfairSpainTickerImsBindingVerified:true,
@@ -219,6 +227,7 @@ export function evaluateSportingLegendsOverdueFirstBet({
     stakeEUR:stake,
     breakEvenFirstBetProbability,
     firstBetProbabilityLowerBound:researchPLower,
+    raceProtocolId,
     preReviewStructuredRaceEvidenceValid,preReviewRaceWindowBudgetVerified,
     baseStructuredRaceEvidenceValid,structuredRaceEvidenceValid,
     raceExecutionAssumptionsVerified,raceConfidence,raceConfidenceVerified,
