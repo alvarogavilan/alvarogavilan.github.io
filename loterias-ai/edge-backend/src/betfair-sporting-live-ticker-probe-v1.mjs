@@ -11,9 +11,18 @@ function betfairInitialResourcesSource(url){
   }catch{return false;}
 }
 
+function isModernWebtickersBinding(binding){
+  if(!binding||binding.sameDocument!==true||binding.sourceBetfairOwned!==true||binding.sourceInitialResources!==true)return false;
+  if(!betfairInitialResourcesSource(binding.sourceUrl)||!text(binding.jackpotsCasino)||!text(binding.tickerUrl))return false;
+  try{
+    const u=new URL(binding.tickerUrl);
+    return u.protocol==='https:'&&!u.username&&!u.password&&/\/webtickers\/?$/i.test(u.pathname);
+  }catch{return false;}
+}
+
 function fail(reason,extra={}){
   return {
-    version:'betfair-sporting-live-ticker-probe-v1.2-equivalent-binding-collapse',
+    version:'betfair-sporting-live-ticker-probe-v1.3-modern-service-discriminator',
     observedAt:new Date().toISOString(),
     mode:'PUBLIC_PASSIVE_LIVE_TICKER_NO_PLAY',
     valid:false,
@@ -23,7 +32,7 @@ function fail(reason,extra={}){
     currentDailyAmountExactVerified:false,
     currentGuaranteedHitTimeExactVerified:false,
     decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,publicGetOnly:true,noLoginProbe:true,noCookies:true,noCredentials:true,noPost:true,noWagerProbe:true,noAutomaticBetting:true,singleSnapshotCannotAuthorizeGreen:true,configuredNewJackpotXmlEndpointOnly:true,arbitraryUrlInputDisabled:true,betfairInitialResourcesSourceReverified:true,configuredRoutingQueryPreserved:true,equivalentBindingCollapseRequiresIdenticalExactRequestUrl:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,publicGetOnly:true,noLoginProbe:true,noCookies:true,noCredentials:true,noPost:true,noWagerProbe:true,noAutomaticBetting:true,singleSnapshotCannotAuthorizeGreen:true,configuredNewJackpotXmlEndpointOnly:true,arbitraryUrlInputDisabled:true,betfairInitialResourcesSourceReverified:true,configuredRoutingQueryPreserved:true,equivalentBindingCollapseRequiresIdenticalExactRequestUrl:true,modernWebtickersProtocolCannotBeGuessed:true},
     ...extra,
   };
 }
@@ -84,7 +93,11 @@ export async function runBetfairSportingLiveTickerProbe({
   try{configProbe=await configProbeRunner();}catch(error){return fail('PUBLIC_CONFIG_PROBE_FAILED',{error:String(error?.message||error)});}
   const allBindings=Array.isArray(configProbe?.discovery?.coLocatedBetfairConfigBindings)?configProbe.discovery.coLocatedBetfairConfigBindings:[];
   const bindingGroups=groupEquivalentExactBindings(allBindings);
-  if(bindingGroups.length!==1)return fail(bindingGroups.length?'AMBIGUOUS_EXACT_XML_BINDING':'EXACT_XML_BINDING_NOT_FOUND',{configProbe,bindingCount:bindingGroups.reduce((n,g)=>n+g.bindings.length,0),distinctExactRequestCount:bindingGroups.length});
+  const modernWebtickersBindings=allBindings.filter(isModernWebtickersBinding);
+  if(bindingGroups.length!==1){
+    if(bindingGroups.length===0&&modernWebtickersBindings.length>0)return fail('MODERN_WEBTICKERS_BINDING_OBSERVED_PROTOCOL_NOT_VERIFIED',{configProbe,bindingCount:modernWebtickersBindings.length,modernWebtickersBindings,modernProtocolResearchRequired:true});
+    return fail(bindingGroups.length?'AMBIGUOUS_EXACT_XML_BINDING':'EXACT_XML_BINDING_NOT_FOUND',{configProbe,bindingCount:bindingGroups.reduce((n,g)=>n+g.bindings.length,0),distinctExactRequestCount:bindingGroups.length,modernWebtickersBindingCount:modernWebtickersBindings.length});
+  }
 
   const bindingGroup=bindingGroups[0];
   const configBinding=bindingGroup.bindings[0];
@@ -103,14 +116,14 @@ export async function runBetfairSportingLiveTickerProbe({
   if(validation.valid!==true)return fail('SERVER_SNAPSHOT_VALIDATION_FAILED',{configProbe,configBinding,equivalentConfigSources,tickerFetch,validation});
 
   return {
-    version:'betfair-sporting-live-ticker-probe-v1.2-equivalent-binding-collapse',
+    version:'betfair-sporting-live-ticker-probe-v1.3-modern-service-discriminator',
     observedAt:new Date(now*1000).toISOString(),
     mode:'PUBLIC_PASSIVE_LIVE_TICKER_NO_PLAY',
     valid:true,
     reason:'EXACT_BETFAIR_SPORTING_SERVER_BINDING_AND_FRESH_SLJP1_SNAPSHOT_VERIFIED',
     configProbeSummary:{version:configProbe?.version||null,observedAt:configProbe?.observedAt||null},
     configBinding,
-    bindingProvenance:{equivalentConfigSourceCount:equivalentConfigSources.length,equivalentConfigSources,distinctExactRequestCount:1},
+    bindingProvenance:{equivalentConfigSourceCount:equivalentConfigSources.length,equivalentConfigSources,distinctExactRequestCount:1,modernWebtickersBindingCount:modernWebtickersBindings.length},
     tickerFetch:{ok:tickerFetch.ok,status:tickerFetch.status,requestedUrl:tickerFetch.requestedUrl,finalUrl:tickerFetch.finalUrl,contentType:tickerFetch.contentType,truncated:tickerFetch.truncated},
     validation,
     snapshot:validation.snapshot,
@@ -120,6 +133,6 @@ export async function runBetfairSportingLiveTickerProbe({
     currentGuaranteedHitTimeExactVerified:true,
     currentSnapshotCannotProveOverdueByItself:true,
     decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,publicGetOnly:true,noLoginProbe:true,noCookies:true,noCredentials:true,noPost:true,noWagerProbe:true,noAutomaticBetting:true,singleSnapshotCannotAuthorizeGreen:true,configuredNewJackpotXmlEndpointOnly:true,arbitraryUrlInputDisabled:true,exactSljp1EurLocal0Query:true,betfairInitialResourcesSourceReverified:true,configuredRoutingQueryPreserved:true,configuredProtocolFieldsOverriddenExactly:true,equivalentBindingCollapseRequiresIdenticalExactRequestUrl:true,distinctExactRequestsRemainAmbiguous:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,publicGetOnly:true,noLoginProbe:true,noCookies:true,noCredentials:true,noPost:true,noWagerProbe:true,noAutomaticBetting:true,singleSnapshotCannotAuthorizeGreen:true,configuredNewJackpotXmlEndpointOnly:true,arbitraryUrlInputDisabled:true,exactSljp1EurLocal0Query:true,betfairInitialResourcesSourceReverified:true,configuredRoutingQueryPreserved:true,configuredProtocolFieldsOverriddenExactly:true,equivalentBindingCollapseRequiresIdenticalExactRequestUrl:true,distinctExactRequestsRemainAmbiguous:true,modernWebtickersProtocolCannotBeGuessed:true},
   };
 }
