@@ -1,7 +1,7 @@
 {
-  "version": "betfair-spain-apmccoy-provider-variant-narrowing-v1",
+  "version": "betfair-spain-apmccoy-provider-variant-narrowing-v1.1-tonymc-triangulated",
   "generatedAt": "2026-08-26",
-  "mode": "SPAIN_ONLINE_PROVIDER_VARIANT_NARROWING_NO_PLAY",
+  "mode": "SPAIN_ONLINE_PROVIDER_VARIANT_IDENTITY_NO_PLAY",
   "market": "ES",
   "operator": "Betfair Spain",
   "provider": "Playtech",
@@ -25,26 +25,41 @@
       }
     ]
   },
+  "officialPlaytechProductIdentity": {
+    "url": "https://www.playtech.com/ap-mccoy-brings-playtech-power-play-to-sporting-legends-series/",
+    "publishedDate": "2019-03-06",
+    "apMcCoyIsFirstSportingLegendsTitleWithPlaytechPowerPlay": true,
+    "publishedPowerPlayModes": ["ACCUMULATOR", "ACCUMULATOR_PLUS"],
+    "publishedJackpotTiers": ["DAILY", "WEEKLY", "MEGA"]
+  },
   "currentBetfairSpainRules": {
     "url": "https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn",
     "playtechPowerPlayExplicitlyPresent": true,
     "powerPlayModes": ["ACCUMULATOR", "ACCUMULATOR_PLUS"],
+    "jackpotTiers": ["DAILY", "WEEKLY", "MEGA"],
     "publicLauncherUrlRecovered": true,
     "publicLauncherUrl": "https://launcher.betfair.es/?RPBucket=casino&dataChannel=casino&gameId=ap-mccoy-sporting-legends-cptn&launchProduct=casino&mode=real&returnURL=https%3A%2F%2Fcasino.betfair.es%2Fjuego%2Fap-mccoy-sporting-legends-cptn&switchedToPopup=true",
     "publicLauncherGameId": "ap-mccoy-sporting-legends-cptn",
     "internalPlaytechGameCodeExposedByPublicLauncher": false
   },
-  "variantNarrowing": {
+  "variantIdentity": {
     "tmccoyNonPttpVariantExcludedForCurrentBetfairRules": true,
-    "reason": "The provider reference explicitly labels tmccoy as non PTPP, while the current Betfair Spain rules explicitly contain Playtech Power Play. Therefore the current Betfair configuration cannot be the non-PTPP tmccoy variant.",
-    "tonymcPromotedAsExactBetfairInternalCode": false,
-    "reasonNotPromoted": "The public provider table shows tonymc as the other AP McCoy entry, but the public Betfair launcher exposes only the product gameId and does not expose an internal Playtech game code. Completeness/exhaustiveness of hidden provider variants is not assumed.",
-    "exactBetfairSpainInternalGameVariantVerified": false
+    "tonymcProviderVariantBindingVerified": true,
+    "bindingMethod": "TRIANGULATED_PROVIDER_IDENTITY",
+    "bindingBasis": [
+      "Playtech's provider-code reference maps the ordinary AP McCoy: Sporting Legends title to tonymc and separately maps the explicitly non-PTPP variant to tmccoy.",
+      "Playtech's official product release states that AP McCoy: Sporting Legends is the first Sporting Legends title to include Playtech Power Play, with Accumulator and Accumulator Plus.",
+      "Betfair Spain's current AP McCoy rules explicitly contain Playtech Power Play with Accumulator and Accumulator Plus, matching the ordinary PTPP product and excluding the non-PTPP tmccoy variant."
+    ],
+    "publicLauncherDirectlyExposesTonmyc": false,
+    "exactTickerImsBindingVerified": false,
+    "whatThisCloses": "Provider-level game variant identity for the current Betfair AP McCoy rules: tonymc rather than tmccoy non-PTPP.",
+    "whatThisDoesNotClose": "Betfair's IMS casino name, ticker host, sljp-1 live row, guaranteedHitTime, served RTP variant, Power Play jackpot stake weighting or player hazard."
   },
   "scientificConsequence": {
     "candidateVariantSetNarrowed": true,
     "nonPttpVariantRemoved": true,
-    "exactInternalVariantStillOpen": true,
+    "betfairCurrentProviderVariantIdentityVerified": true,
     "powerPlayStakeWeightingGateStillRequired": true,
     "exactTickerImsBindingStillRequired": true,
     "currentSljp1StateStillRequired": true,
@@ -60,10 +75,11 @@
   "hardGuards": {
     "onlineOnly": true,
     "nonPromoOnly": true,
-    "providerVariantExclusionDoesNotProveExactRemainingVariant": true,
+    "providerVariantIdentityDoesNotProveTickerImsIdentity": true,
     "publicLauncherProductIdDoesNotEqualInternalPlaytechGameCode": true,
+    "providerVariantBindingDoesNotVerifyPowerPlayJackpotWeighting": true,
     "noLoginProbe": true,
     "noWagerProbe": true,
-    "noRealMoneyPromotionFromVariantNarrowingAlone": true
+    "noRealMoneyPromotionFromVariantIdentityAlone": true
   }
 }
