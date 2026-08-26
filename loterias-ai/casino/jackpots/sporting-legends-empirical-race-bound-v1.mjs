@@ -6,16 +6,20 @@ function cpLower(n,k,c){const alpha=1-c;if(k<=0)return 0;let lo=0,hi=1;for(let i
 
 export function deriveProspectiveEmpiricalRaceLowerBound({successfulDryRunCycles,totalDryRunCycles,confidence=0.95,prospectiveProtocolFrozen=false,comparableCycleDefinitionVerified=false}={}){
   const k=finite(successfulDryRunCycles),n=finite(totalDryRunCycles),c=finite(confidence);
-  const guards={researchOnly:true,aggregatedCountsCannotAuthorizeExecution:true,noPoissonStationarityAssumption:true,passiveDryRunsOnly:true,noAutomaticWagering:true,realMoneyAllowed:false};
-  const fail=(reason,extra={})=>({version:'sporting-legends-empirical-race-bound-v1.1-ledger-required',valid:false,usableForExecution:false,reason,guards,...extra});
+  const guards={researchOnly:true,aggregatedCountsCannotAuthorizeExecution:true,noPoissonStationarityAssumption:true,clopperPearsonRequiresBinomialSamplingAssumption:true,passiveDryRunsOnly:true,noAutomaticWagering:true,realMoneyAllowed:false};
+  const fail=(reason,extra={})=>({version:'sporting-legends-empirical-race-bound-v1.2-explicit-binomial-assumptions',valid:false,usableForExecution:false,reason,guards,...extra});
   if(!Number.isInteger(n)||n<1)return fail('INVALID_TRIAL_COUNT');if(!Number.isInteger(k)||k<0||k>n)return fail('INVALID_SUCCESS_COUNT');if(!(c>0&&c<1))return fail('INVALID_CONFIDENCE');if(prospectiveProtocolFrozen!==true)return fail('PROSPECTIVE_PROTOCOL_NOT_FROZEN');if(comparableCycleDefinitionVerified!==true)return fail('CYCLE_COMPARABILITY_NOT_VERIFIED');
-  return {version:'sporting-legends-empirical-race-bound-v1.1-ledger-required',valid:true,usableForExecution:false,reason:'AGGREGATED_COUNTS_RESEARCH_ONLY',method:'ONE_SIDED_CLOPPER_PEARSON_BINOMIAL',source:'AGGREGATED_COUNTS_ONLY',successfulDryRunCycles:k,totalDryRunCycles:n,confidence:c,firstBetRaceProbabilityLowerBound:cpLower(n,k,c),prospectiveProtocolFrozen:true,comparableCycleDefinitionVerified:true,guards};
+  return {version:'sporting-legends-empirical-race-bound-v1.2-explicit-binomial-assumptions',valid:true,usableForExecution:false,reason:'AGGREGATED_COUNTS_RESEARCH_ONLY',method:'ONE_SIDED_CLOPPER_PEARSON_BINOMIAL',source:'AGGREGATED_COUNTS_ONLY',successfulDryRunCycles:k,totalDryRunCycles:n,confidence:c,firstBetRaceProbabilityLowerBound:cpLower(n,k,c),prospectiveProtocolFrozen:true,comparableCycleDefinitionVerified:true,guards};
 }
 
-export function deriveProspectiveEmpiricalRaceLowerBoundFromValidatedCycles({cycles,confidence=0.95,protocolId,actionLatencySeconds,prospectiveProtocolFrozen=false}={}){
-  const list=Array.isArray(cycles)?cycles:[];const c=finite(confidence),pid=text(protocolId),latency=finite(actionLatencySeconds);
-  const guards={validatedPassiveCycleLedgerRequired:true,uniqueCycleIdsRequired:true,noPoissonStationarityAssumption:true,noAutomaticWagering:true,realMoneyAllowed:false};
-  const fail=(reason,extra={})=>({version:'sporting-legends-empirical-race-bound-v1.1-ledger-required',valid:false,usableForExecution:false,reason,guards,...extra});
+export function deriveProspectiveEmpiricalRaceLowerBoundFromValidatedCycles({
+  cycles,confidence=0.95,protocolId,actionLatencySeconds,prospectiveProtocolFrozen=false,
+  binomialIidAssumptionJustified=false,completeProspectiveCycleLedgerVerified=false,
+  currentCycleExchangeabilityVerified=false,assumptionEvidenceId=null,
+}={}){
+  const list=Array.isArray(cycles)?cycles:[];const c=finite(confidence),pid=text(protocolId),latency=finite(actionLatencySeconds),assumptionEvidence=text(assumptionEvidenceId);
+  const guards={validatedPassiveCycleLedgerRequired:true,uniqueCycleIdsRequired:true,noPoissonStationarityAssumption:true,clopperPearsonRequiresBinomialIidOrEquivalentSamplingModel:true,completeProspectiveLedgerRequiredForExecution:true,currentCycleExchangeabilityRequiredForExecution:true,assumptionEvidenceRequiredForExecution:true,noAutomaticWagering:true,realMoneyAllowed:false};
+  const fail=(reason,extra={})=>({version:'sporting-legends-empirical-race-bound-v1.2-explicit-binomial-assumptions',valid:false,usableForExecution:false,reason,guards,...extra});
   if(!pid)return fail('MISSING_PROTOCOL_ID');if(!(latency>0))return fail('INVALID_ACTION_LATENCY');if(!(c>0&&c<1))return fail('INVALID_CONFIDENCE');if(prospectiveProtocolFrozen!==true)return fail('PROSPECTIVE_PROTOCOL_NOT_FROZEN');if(list.length<1)return fail('NO_VALIDATED_CYCLES');
   const ids=new Set();let k=0;
   for(const x of list){
@@ -24,6 +28,18 @@ export function deriveProspectiveEmpiricalRaceLowerBoundFromValidatedCycles({cyc
     if(text(x.protocolId)!==pid)return fail('PROTOCOL_ID_MISMATCH');if(finite(x.actionLatencySeconds)!==latency)return fail('ACTION_LATENCY_MISMATCH');
     if(x.outcome!=='SUCCESS'&&x.outcome!=='FAILURE')return fail('INVALID_CYCLE_OUTCOME');if(x.outcome==='SUCCESS')k++;
   }
-  const n=list.length;
-  return {version:'sporting-legends-empirical-race-bound-v1.1-ledger-required',valid:true,usableForExecution:true,reason:'VALIDATED_PASSIVE_CYCLE_CLOPPER_PEARSON_BOUND_AVAILABLE',method:'ONE_SIDED_CLOPPER_PEARSON_BINOMIAL',source:'VALIDATED_PASSIVE_CYCLE_LEDGER',protocolId:pid,actionLatencySeconds:latency,cycleIds:[...ids],successfulDryRunCycles:k,totalDryRunCycles:n,confidence:c,firstBetRaceProbabilityLowerBound:cpLower(n,k,c),prospectiveProtocolFrozen:true,comparableCycleDefinitionVerified:true,guards};
+  const n=list.length,pLower=cpLower(n,k,c);
+  const assumptions={
+    binomialIidAssumptionJustified:binomialIidAssumptionJustified===true,
+    completeProspectiveCycleLedgerVerified:completeProspectiveCycleLedgerVerified===true,
+    currentCycleExchangeabilityVerified:currentCycleExchangeabilityVerified===true,
+    assumptionEvidenceId:assumptionEvidence,
+  };
+  const executionAssumptionsClosed=assumptions.binomialIidAssumptionJustified&&assumptions.completeProspectiveCycleLedgerVerified&&assumptions.currentCycleExchangeabilityVerified&&!!assumptionEvidence;
+  return {
+    version:'sporting-legends-empirical-race-bound-v1.2-explicit-binomial-assumptions',valid:true,
+    usableForExecution:executionAssumptionsClosed,
+    reason:executionAssumptionsClosed?'VALIDATED_PASSIVE_CYCLE_CLOPPER_PEARSON_BOUND_AVAILABLE':'BINOMIAL_EXECUTION_ASSUMPTIONS_NOT_VERIFIED',
+    method:'ONE_SIDED_CLOPPER_PEARSON_BINOMIAL',source:'VALIDATED_PASSIVE_CYCLE_LEDGER',protocolId:pid,actionLatencySeconds:latency,cycleIds:[...ids],successfulDryRunCycles:k,totalDryRunCycles:n,confidence:c,firstBetRaceProbabilityLowerBound:pLower,prospectiveProtocolFrozen:true,comparableCycleDefinitionVerified:true,executionAssumptionsClosed,assumptions,guards,
+  };
 }

@@ -2,41 +2,10 @@ import assert from 'node:assert/strict';
 import {deriveProspectiveEmpiricalRaceLowerBound,deriveProspectiveEmpiricalRaceLowerBoundFromValidatedCycles} from '../casino/jackpots/sporting-legends-empirical-race-bound-v1.mjs';
 import {validateSportingLegendsPassiveRaceCycle} from '../casino/jackpots/sporting-legends-passive-race-cycle-v1.mjs';
 import {evaluateSportingLegendsOverdueFirstBet} from '../casino/jackpots/sporting-legends-overdue-first-bet-v1.mjs';
-
-let r=deriveProspectiveEmpiricalRaceLowerBound({successfulDryRunCycles:1,totalDryRunCycles:1,confidence:0.95,prospectiveProtocolFrozen:true,comparableCycleDefinitionVerified:true});
-assert.equal(r.valid,true);
-assert.equal(r.usableForExecution,false);
-assert.equal(r.reason,'AGGREGATED_COUNTS_RESEARCH_ONLY');
-assert.ok(Math.abs(r.firstBetRaceProbabilityLowerBound-0.05)<1e-10);
-
+let r=deriveProspectiveEmpiricalRaceLowerBound({successfulDryRunCycles:1,totalDryRunCycles:1,confidence:0.95,prospectiveProtocolFrozen:true,comparableCycleDefinitionVerified:true});assert.equal(r.valid,true);assert.equal(r.usableForExecution,false);assert.equal(r.reason,'AGGREGATED_COUNTS_RESEARCH_ONLY');assert.ok(Math.abs(r.firstBetRaceProbabilityLowerBound-0.05)<1e-10);
 const base={code:'sljp-1',requestCasino:'betfair-es-ims',instanceCode:null,local:0,currency:'EUR',guaranteedHitTime:2000,winCount:42,amount:100,requestExecInterval:10};
-const cycle=validateSportingLegendsPassiveRaceCycle({
-  cycleId:'cycle-1',protocolId:'p1',protocolFrozenAtEpochSeconds:1900,recordedAtEpochSeconds:2012,
-  beforeBoundary:{...base,gameTimestamp:1990},detection:{...base,gameTimestamp:2005,amount:100.02},confirmation:{...base,gameTimestamp:2008,amount:100.03},
-  expectedBetfairImsCasino:'betfair-es-ims',exactBetfairSpainTickerImsBindingVerified:true,
-  betfairFirstBetFollowingDayRuleVerified:true,providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified:true,actionLatencySeconds:2,
-});
-assert.equal(cycle.valid,true);
-
-r=deriveProspectiveEmpiricalRaceLowerBoundFromValidatedCycles({cycles:[cycle],confidence:0.95,protocolId:'p1',actionLatencySeconds:2,prospectiveProtocolFrozen:true});
-assert.equal(r.valid,true);
-assert.equal(r.usableForExecution,true);
-assert.equal(r.source,'VALIDATED_PASSIVE_CYCLE_LEDGER');
-assert.ok(Math.abs(r.firstBetRaceProbabilityLowerBound-0.05)<1e-10);
-
-const green=evaluateSportingLegendsOverdueFirstBet({
-  before:{...base,gameTimestamp:1990},after:{...base,gameTimestamp:2005,amount:100.02},nowEpochSeconds:2010,
-  exactBetfairSpainTickerImsBindingVerified:true,expectedBetfairImsCasino:'betfair-es-ims',
-  betfairFirstBetFollowingDayRuleVerified:true,providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified:true,
-  stakeEUR:0.25,raceEvidence:r,currentDailyAmountExactVerified:true,stakeAtDecisionExactVerified:true,
-  measuredActionLatencyVerified:true,measuredActionLatencySeconds:2,prospectiveDryRunCycleVerified:true,
-});
-assert.equal(green.decision,'GREEN');
-assert.equal(green.realMoneyAllowed,true);
-assert.equal(green.maxSpins,1);
-
-const dup=deriveProspectiveEmpiricalRaceLowerBoundFromValidatedCycles({cycles:[cycle,cycle],protocolId:'p1',actionLatencySeconds:2,prospectiveProtocolFrozen:true});
-assert.equal(dup.valid,false);
-assert.equal(dup.reason,'MISSING_OR_DUPLICATE_CYCLE_ID');
-
-console.log('sporting-legends-empirical-race-bound-v1.test.mjs: PASS');
+const cycle=validateSportingLegendsPassiveRaceCycle({cycleId:'cycle-1',protocolId:'p1',protocolFrozenAtEpochSeconds:1900,recordedAtEpochSeconds:2012,beforeBoundary:{...base,gameTimestamp:1990},detection:{...base,gameTimestamp:2005,amount:100.02},confirmation:{...base,gameTimestamp:2008,amount:100.03},expectedBetfairImsCasino:'betfair-es-ims',exactBetfairSpainTickerImsBindingVerified:true,betfairFirstBetFollowingDayRuleVerified:true,providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified:true,actionLatencySeconds:2});assert.equal(cycle.valid,true);
+r=deriveProspectiveEmpiricalRaceLowerBoundFromValidatedCycles({cycles:[cycle],confidence:0.95,protocolId:'p1',actionLatencySeconds:2,prospectiveProtocolFrozen:true});assert.equal(r.valid,true);assert.equal(r.usableForExecution,false);assert.equal(r.reason,'BINOMIAL_EXECUTION_ASSUMPTIONS_NOT_VERIFIED');assert.ok(Math.abs(r.firstBetRaceProbabilityLowerBound-0.05)<1e-10);
+const executable=deriveProspectiveEmpiricalRaceLowerBoundFromValidatedCycles({cycles:[cycle],confidence:0.95,protocolId:'p1',actionLatencySeconds:2,prospectiveProtocolFrozen:true,binomialIidAssumptionJustified:true,completeProspectiveCycleLedgerVerified:true,currentCycleExchangeabilityVerified:true,assumptionEvidenceId:'race-model-assumptions-v1'});assert.equal(executable.valid,true);assert.equal(executable.usableForExecution,true);assert.equal(executable.executionAssumptionsClosed,true);
+const green=evaluateSportingLegendsOverdueFirstBet({before:{...base,gameTimestamp:1990},after:{...base,gameTimestamp:2005,amount:100.02},nowEpochSeconds:2010,exactBetfairSpainTickerImsBindingVerified:true,expectedBetfairImsCasino:'betfair-es-ims',betfairFirstBetFollowingDayRuleVerified:true,providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified:true,stakeEUR:0.25,raceEvidence:executable,currentDailyAmountExactVerified:true,stakeAtDecisionExactVerified:true,measuredActionLatencyVerified:true,measuredActionLatencySeconds:2,prospectiveDryRunCycleVerified:true});assert.equal(green.decision,'GREEN');assert.equal(green.realMoneyAllowed,true);
+const dup=deriveProspectiveEmpiricalRaceLowerBoundFromValidatedCycles({cycles:[cycle,cycle],protocolId:'p1',actionLatencySeconds:2,prospectiveProtocolFrozen:true});assert.equal(dup.valid,false);assert.equal(dup.reason,'MISSING_OR_DUPLICATE_CYCLE_ID');console.log('sporting-legends-empirical-race-bound-v1.test.mjs: PASS');

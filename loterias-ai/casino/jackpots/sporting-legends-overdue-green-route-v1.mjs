@@ -3,7 +3,7 @@ import {validateSportingLegendsPassiveRaceCycle} from './sporting-legends-passiv
 import {evaluateSportingLegendsOverdueFirstBet} from './sporting-legends-overdue-first-bet-v1.mjs';
 const finite=(v)=>{if(v===null||v===undefined||v===''||typeof v==='boolean')return null;const n=Number(v);return Number.isFinite(n)?n:null;};
 const text=v=>typeof v==='string'&&v.trim()?v.trim():null;
-const noPlay=(reason,extra={})=>({version:'sporting-legends-overdue-green-route-v1.1-validated-ledger',decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,reason,...extra});
+const noPlay=(reason,extra={})=>({version:'sporting-legends-overdue-green-route-v1.2-explicit-binomial-assumptions',decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,reason,...extra});
 
 export function evaluateSportingLegendsOverdueGreenRoute({
   before,after,nowEpochSeconds,
@@ -16,6 +16,8 @@ export function evaluateSportingLegendsOverdueGreenRoute({
   measuredActionLatencySeconds=null,measuredActionLatencyVerified=false,
   frozenActionLatencyCeilingSeconds=null,
   frozenProtocolId=null,dryRunCycles=[],confidence=0.95,
+  binomialIidAssumptionJustified=false,completeProspectiveCycleLedgerVerified=false,
+  currentCycleExchangeabilityVerified=false,assumptionEvidenceId=null,
 }={}){
   const measured=finite(measuredActionLatencySeconds),ceiling=finite(frozenActionLatencyCeilingSeconds),protocol=text(frozenProtocolId),ims=text(expectedBetfairImsCasino);
   if(measuredActionLatencyVerified!==true||measured===null||!(measured>0))return noPlay('MEASURED_ACTION_LATENCY_NOT_VERIFIED');
@@ -40,7 +42,10 @@ export function evaluateSportingLegendsOverdueGreenRoute({
     validated.push(v);
   }
 
-  const bound=deriveProspectiveEmpiricalRaceLowerBoundFromValidatedCycles({cycles:validated,confidence,protocolId:protocol,actionLatencySeconds:ceiling,prospectiveProtocolFrozen:true});
+  const bound=deriveProspectiveEmpiricalRaceLowerBoundFromValidatedCycles({
+    cycles:validated,confidence,protocolId:protocol,actionLatencySeconds:ceiling,prospectiveProtocolFrozen:true,
+    binomialIidAssumptionJustified,completeProspectiveCycleLedgerVerified,currentCycleExchangeabilityVerified,assumptionEvidenceId,
+  });
   if(!bound.valid||!bound.usableForExecution)return noPlay('EMPIRICAL_RACE_BOUND_NOT_EXECUTABLE',{empiricalRaceBound:bound});
   const result=evaluateSportingLegendsOverdueFirstBet({
     before,after,nowEpochSeconds,
@@ -51,5 +56,5 @@ export function evaluateSportingLegendsOverdueGreenRoute({
     measuredActionLatencyVerified:true,measuredActionLatencySeconds:measured,
     prospectiveDryRunCycleVerified:true,
   });
-  return {...result,version:'sporting-legends-overdue-green-route-v1.1-validated-ledger',empiricalRaceBound:bound,validatedDryRunCycles:validated,dryRunSummary:{protocolId:protocol,frozenActionLatencyCeilingSeconds:ceiling,measuredActionLatencySeconds:measured,successfulDryRunCycles:bound.successfulDryRunCycles,totalDryRunCycles:bound.totalDryRunCycles,confidence},guards:{...(result.guards||{}),poissonNotRequiredForGreen:true,rawBooleanDryRunsCannotAuthorizeGreen:true,eachCycleMustPassPassiveSnapshotValidator:true,currentMeasuredLatencyMustNotExceedFrozenCeiling:true}};
+  return {...result,version:'sporting-legends-overdue-green-route-v1.2-explicit-binomial-assumptions',empiricalRaceBound:bound,validatedDryRunCycles:validated,dryRunSummary:{protocolId:protocol,frozenActionLatencyCeilingSeconds:ceiling,measuredActionLatencySeconds:measured,successfulDryRunCycles:bound.successfulDryRunCycles,totalDryRunCycles:bound.totalDryRunCycles,confidence,executionAssumptionsClosed:bound.executionAssumptionsClosed},guards:{...(result.guards||{}),poissonNotRequiredForGreen:true,clopperPearsonAssumptionsMustBeExplicitForGreen:true,rawBooleanDryRunsCannotAuthorizeGreen:true,eachCycleMustPassPassiveSnapshotValidator:true,currentMeasuredLatencyMustNotExceedFrozenCeiling:true}};
 }

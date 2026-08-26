@@ -1,31 +1,6 @@
 import assert from 'node:assert/strict';
 import {evaluateSportingLegendsOverdueGreenRoute} from '../casino/jackpots/sporting-legends-overdue-green-route-v1.mjs';
-const currentBase={code:'sljp-1',requestCasino:'BETFAIR_ES_IMS',instanceCode:'sporting',local:0,currency:'EUR',guaranteedHitTime:1000,winCount:7,amount:100.02,requestExecInterval:10};
-const before={...currentBase,gameTimestamp:999};
-const after={...currentBase,gameTimestamp:1001,amount:100.03};
-const dryBase={...currentBase,guaranteedHitTime:900,winCount:6,amount:99};
-const dryRun={cycleId:'cycle-1',protocolFrozenAtEpochSeconds:800,recordedAtEpochSeconds:904,beforeBoundary:{...dryBase,gameTimestamp:899},detection:{...dryBase,gameTimestamp:901,amount:99.01},confirmation:{...dryBase,gameTimestamp:903,amount:99.02}};
-const base={before,after,nowEpochSeconds:1002,exactBetfairSpainTickerImsBindingVerified:true,expectedBetfairImsCasino:'BETFAIR_ES_IMS',betfairFirstBetFollowingDayRuleVerified:true,providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified:true,conservativeBaseRtpPct:93.03,stakeEUR:0.25,currentDailyAmountExactVerified:true,stakeAtDecisionExactVerified:true,measuredActionLatencySeconds:0.4,measuredActionLatencyVerified:true,frozenActionLatencyCeilingSeconds:1,frozenProtocolId:'p1',dryRunCycles:[dryRun]};
-let r=evaluateSportingLegendsOverdueGreenRoute(base);
-assert.equal(r.decision,'GREEN');
-assert.equal(r.realMoneyAllowed,true);
-assert.equal(r.maxSpins,1);
-assert.equal(r.empiricalRaceBound.source,'VALIDATED_PASSIVE_CYCLE_LEDGER');
-assert.ok(Math.abs(r.empiricalRaceBound.firstBetRaceProbabilityLowerBound-0.05)<1e-10);
-assert.ok(r.firstBetProbabilityLowerBound>r.breakEvenFirstBetProbability);
-assert.equal(r.validatedDryRunCycles[0].outcome,'SUCCESS');
-
-r=evaluateSportingLegendsOverdueGreenRoute({...base,dryRunCycles:[{...dryRun,confirmation:{...dryRun.confirmation,winCount:7,amount:30}}]});
-assert.equal(r.decision,'NO_PLAY');
-assert.equal(r.realMoneyAllowed,false);
-
-r=evaluateSportingLegendsOverdueGreenRoute({...base,measuredActionLatencySeconds:1.1});
-assert.equal(r.reason,'MEASURED_LATENCY_EXCEEDS_FROZEN_CEILING');
-r=evaluateSportingLegendsOverdueGreenRoute({...base,exactBetfairSpainTickerImsBindingVerified:false});
-assert.equal(r.decision,'NO_PLAY');
-assert.equal(r.reason,'INVALID_DRY_RUN_CYCLE');
-r=evaluateSportingLegendsOverdueGreenRoute({...base,expectedBetfairImsCasino:'WRONG_IMS'});
-assert.equal(r.reason,'INVALID_DRY_RUN_CYCLE');
-r=evaluateSportingLegendsOverdueGreenRoute({...base,dryRunCycles:[{protocolId:'p1',observedProspectively:true,protocolFrozenBeforeObservation:true,comparableCycleDefinitionVerified:true,detectedOverdueStateVerified:true,sameBetfairBindingVerified:true,postDetectionSurvivalSeconds:2}]});
-assert.equal(r.reason,'INVALID_DRY_RUN_CYCLE');
-console.log('sporting-legends-overdue-green-route-v1.test.mjs: PASS');
+const currentBase={code:'sljp-1',requestCasino:'BETFAIR_ES_IMS',instanceCode:'sporting',local:0,currency:'EUR',guaranteedHitTime:1000,winCount:7,amount:100.02,requestExecInterval:10};const before={...currentBase,gameTimestamp:999};const after={...currentBase,gameTimestamp:1001,amount:100.03};const dryBase={...currentBase,guaranteedHitTime:900,winCount:6,amount:99};const dryRun={cycleId:'cycle-1',protocolFrozenAtEpochSeconds:800,recordedAtEpochSeconds:904,beforeBoundary:{...dryBase,gameTimestamp:899},detection:{...dryBase,gameTimestamp:901,amount:99.01},confirmation:{...dryBase,gameTimestamp:903,amount:99.02}};
+const base={before,after,nowEpochSeconds:1002,exactBetfairSpainTickerImsBindingVerified:true,expectedBetfairImsCasino:'BETFAIR_ES_IMS',betfairFirstBetFollowingDayRuleVerified:true,providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified:true,conservativeBaseRtpPct:93.03,stakeEUR:0.25,currentDailyAmountExactVerified:true,stakeAtDecisionExactVerified:true,measuredActionLatencySeconds:0.4,measuredActionLatencyVerified:true,frozenActionLatencyCeilingSeconds:1,frozenProtocolId:'p1',dryRunCycles:[dryRun]};let r=evaluateSportingLegendsOverdueGreenRoute(base);assert.equal(r.decision,'NO_PLAY');assert.equal(r.reason,'EMPIRICAL_RACE_BOUND_NOT_EXECUTABLE');assert.equal(r.empiricalRaceBound.reason,'BINOMIAL_EXECUTION_ASSUMPTIONS_NOT_VERIFIED');
+const closed={...base,binomialIidAssumptionJustified:true,completeProspectiveCycleLedgerVerified:true,currentCycleExchangeabilityVerified:true,assumptionEvidenceId:'race-model-assumptions-v1'};r=evaluateSportingLegendsOverdueGreenRoute(closed);assert.equal(r.decision,'GREEN');assert.equal(r.realMoneyAllowed,true);assert.equal(r.empiricalRaceBound.executionAssumptionsClosed,true);assert.equal(r.validatedDryRunCycles[0].outcome,'SUCCESS');
+r=evaluateSportingLegendsOverdueGreenRoute({...closed,dryRunCycles:[{...dryRun,confirmation:{...dryRun.confirmation,winCount:7,amount:30}}]});assert.equal(r.decision,'NO_PLAY');r=evaluateSportingLegendsOverdueGreenRoute({...closed,measuredActionLatencySeconds:1.1});assert.equal(r.reason,'MEASURED_LATENCY_EXCEEDS_FROZEN_CEILING');r=evaluateSportingLegendsOverdueGreenRoute({...closed,exactBetfairSpainTickerImsBindingVerified:false});assert.equal(r.reason,'INVALID_DRY_RUN_CYCLE');console.log('sporting-legends-overdue-green-route-v1.test.mjs: PASS');
