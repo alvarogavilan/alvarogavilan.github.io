@@ -19,7 +19,7 @@ const http={
 };
 
 let r=analyzeBetfairSportingCorrelatedWebtickersSession({log:{entries:[launcher,initial,http]}},{sourceName:'http.har'});
-assert.equal(r.version,'betfair-sporting-webtickers-correlated-session-v1.4-independent-request-provenance');
+assert.equal(r.version,'betfair-sporting-webtickers-correlated-session-v1.5-target-binding-provenance');
 assert.equal(r.valid,true);
 assert.equal(r.exactApMcCoyRealLauncherBindingObserved,true);
 assert.equal(r.exactApMcCoyRealLauncherBindingCount,1);
@@ -38,6 +38,7 @@ assert.equal(c.latestPostLaunchBetfairInitialResourcesBindingVerified,true);
 assert.equal(c.independentRequestSessionProvenanceVerified,true);
 assert.equal(c.launcherEntryIndex,0);
 assert.equal(c.initialResourcesEntryIndex,1);
+assert.equal(c.targetBindingMatchCount,1);
 assert.equal(c.sameEntryRequestResponseCorrelation,true);
 assert.equal(c.request.source,'http-request');
 assert.equal(c.request.exactApMcCoySessionProvenanceVerified,true);
@@ -52,6 +53,7 @@ assert.equal(r.execution.decision,'NO_PLAY');
 assert.equal(r.execution.realMoneyAllowed,false);
 assert.equal(r.execution.maxSpins,0);
 assert.equal(r.hardGuards.latestPostLaunchBetfairInitialResourcesMustMatchTickerBinding,true);
+assert.equal(r.hardGuards.exactTargetSessionBindingMustExistUniquely,true);
 assert.equal(r.hardGuards.independentRequestSessionProvenanceMustAgree,true);
 assert.equal(r.hardGuards.sameLauncherAndInitialResourcesIndicesRequiredAcrossAnalyzers,true);
 
@@ -95,7 +97,7 @@ assert.equal(r.execution.maxSpins,0);
 r=analyzeBetfairSportingCorrelatedWebtickersSession({log:{entries:[launcher,initial,initialFor('other_ims'),http]}},{sourceName:'changed-config.har'});
 assert.equal(r.correlatedExactDailyCandidateCount,0);
 assert.ok(r.sessionConfigRejectedCount>=1);
-assert.equal(r.hardGuards.ambiguousLatestSessionConfigRejected,true);
+assert.equal(r.hardGuards.exactTargetSessionBindingMustExistUniquely,true);
 assert.equal(r.execution.realMoneyAllowed,false);
 
 // Two valid client send frames on one WSS entry remain ambiguous even when both carry exact session provenance.
