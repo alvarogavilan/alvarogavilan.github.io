@@ -16,6 +16,21 @@ function maybeDecode(s){
   return v;
 }
 
+function decodeHarContent(content){
+  const raw=String(content?.text||'');
+  if(!raw)return '';
+  if(String(content?.encoding||'').toLowerCase()!=='base64')return raw;
+  try{
+    if(typeof Buffer!=='undefined')return Buffer.from(raw,'base64').toString('utf8');
+    if(typeof atob==='function'){
+      const bin=atob(raw);let pct='';
+      for(let i=0;i<bin.length;i++)pct+=`%${bin.charCodeAt(i).toString(16).padStart(2,'0')}`;
+      return decodeURIComponent(pct);
+    }
+  }catch{}
+  return raw;
+}
+
 function textParts(entry){
   const req=entry?.request||{};
   const res=entry?.response||{};
@@ -23,7 +38,8 @@ function textParts(entry){
   if(req.url)out.push(['request.url',String(req.url)]);
   if(req.postData?.text)out.push(['request.postData.text',String(req.postData.text)]);
   for(const h of req.headers||[]) if(h?.name||h?.value) out.push([`request.header.${h.name||''}`,`${h.name||''}: ${h.value||''}`]);
-  if(res.content?.text)out.push(['response.content.text',String(res.content.text)]);
+  const responseText=decodeHarContent(res.content);
+  if(responseText)out.push(['response.content.text',responseText]);
   for(const h of res.headers||[]) if(h?.name||h?.value) out.push([`response.header.${h.name||''}`,`${h.name||''}: ${h.value||''}`]);
   return out;
 }
@@ -82,7 +98,7 @@ export function analyzeBetfairSportingHar(har,{sourceName='capture.har'}={}){
     const joined=parts.map(([,v])=>v).join('\n');
     if(!KEY_RE.test(maybeDecode(joined)))return;
     const requestUrl=String(entry?.request?.url||'');
-    const responseText=String(entry?.response?.content?.text||'');
+    const responseText=decodeHarContent(entry?.response?.content);
     const decoded=maybeDecode(joined);
     const fields={};
     mergeFields(fields,fieldCandidates(decoded));
@@ -98,7 +114,7 @@ export function analyzeBetfairSportingHar(har,{sourceName='capture.har'}={}){
       index,
       startedDateTime:entry?.startedDateTime||null,
       request:{method:entry?.request?.method||null,url:requestUrl||null},
-      response:{status:Number.isFinite(entry?.response?.status)?entry.response.status:null,mimeType:entry?.response?.content?.mimeType||null,text:responseText||null},
+      response:{status:Number.isFinite(entry?.response?.status)?entry.response.status:null,mimeType:entry?.response?.content?.mimeType||null,contentEncoding:entry?.response?.content?.encoding||null,text:responseText||null},
       markers:{
         newJackpotXml:/new_jackpotxml\.php/i.test(decoded),
         webtickers:/webtickers/i.test(decoded),
@@ -148,7 +164,7 @@ export function analyzeBetfairSportingHar(har,{sourceName='capture.har'}={}){
   const tickerUrlCandidates=uniq(allUrls.filter(u=>/new_jackpotxml\.php|webtickers/i.test(maybeDecode(u))));
 
   return {
-    version:'betfair-sporting-har-discovery-v1.1-colocated-binding',
+    version:'betfair-sporting-har-discovery-v1.2-base64-content',
     mode:'OFFLINE_PASSIVE_HAR_DISCOVERY_NO_PLAY',
     sourceName,
     entryCount:entries.length,
@@ -166,7 +182,7 @@ export function analyzeBetfairSportingHar(har,{sourceName='capture.har'}={}){
       currentDailyAmountExactVerified:false,
       currentGuaranteedHitTimeExactVerified:false,
     },
-    scientificUse:'Offline HAR discovery only. pairedServerEvidence requires a Betfair-owned initialResources response that co-locates jackpotsCasino with its configured ticker endpoint plus an exact endpoint-matching sljp-1 HAR response. It is shaped for the server-binding validator, but execution remains blocked until that validator, freshness, same-cycle continuity, deadline and unawarded state all pass.',
+    scientificUse:'Offline HAR discovery only. Base64-encoded HAR response bodies are decoded before analysis. pairedServerEvidence requires a Betfair-owned initialResources response that co-locates jackpotsCasino with its configured ticker endpoint plus an exact endpoint-matching sljp-1 HAR response. It is shaped for the server-binding validator, but execution remains blocked until that validator, freshness, same-cycle continuity, deadline and unawarded state all pass.',
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
     hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,noCredentials:true,noCookiesEmitted:true,noWagerProbe:true,noAutomaticBetting:true,harEvidenceCannotAuthorizeGreen:true,coLocatedBetfairInitialResourcesRequired:true,configuredEndpointMatchRequired:true},
   };
