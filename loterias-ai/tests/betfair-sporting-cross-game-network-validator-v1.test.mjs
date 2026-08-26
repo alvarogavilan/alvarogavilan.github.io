@@ -12,17 +12,48 @@ const ROBERTO='roberto-carlos-sl-cptn';
 
 assert.deepEqual(new Set(BETFAIR_SPORTING_CROSS_GAME_CANDIDATE_IDS),new Set([AP,RONNIE,FRANKIE,ROBERTO]));
 let one=validateBetfairSportingHarForExactGame(har(RONNIE,{capture:1000,gameTs:1000}),{gameId:RONNIE});
+assert.equal(one.version,'betfair-sporting-cross-game-single-session-v1.1-latest-session-poll');
 assert.equal(one.valid,true);
 assert.equal(one.gameId,RONNIE);
 assert.equal(one.expectedBetfairImsCasino,'bf_es');
 assert.equal(one.tickerEndpoint,'https://legacy.example/new_jackpotxml.php');
+assert.equal(one.latestPairedTickerPollSelected,true);
+assert.equal(one.pairedServerEvidenceCount,1);
 assert.equal(one.execution.decision,'NO_PLAY');
+
+const multiPoll={log:{entries:[
+  launcher(RONNIE),initial(),
+  ticker({capture:990,gameTs:990,amount:123.35}),
+  ticker({capture:1000,gameTs:1000,amount:123.45}),
+]}};
+one=validateBetfairSportingHarForExactGame(multiPoll,{gameId:RONNIE});
+assert.equal(one.valid,true);
+assert.equal(one.pairedServerEvidenceCount,2);
+assert.equal(one.latestPairedTickerPollSelected,true);
+assert.equal(one.tickerEntryIndex,3);
+assert.equal(one.captureEpochSeconds,1000);
+assert.equal(one.snapshot.amount,123.45);
+assert.equal(one.hardGuards.multipleNormalTickerPollsSupported,true);
+
+// Preserve-log safety: never fall back to an older valid Ronnie poll after a
+// later real-money AP McCoy launcher owns the latest sljp-1 poll.
+const laterOtherGame={log:{entries:[
+  launcher(RONNIE),initial(),ticker({capture:990,gameTs:990,amount:123.35}),
+  launcher(AP),ticker({capture:1000,gameTs:1000,amount:123.45}),
+]}};
+one=validateBetfairSportingHarForExactGame(laterOtherGame,{gameId:RONNIE});
+assert.equal(one.valid,false);
+assert.equal(one.reason,'LATEST_PRECEDING_REAL_LAUNCHER_NOT_TARGET_GAME');
+assert.equal(one.latestPairedTickerEntryIndex,4);
+assert.equal(one.observedGameId,AP);
+assert.equal(one.execution.realMoneyAllowed,false);
 
 let r=evaluateBetfairSportingCrossGameNetworkBinding({
   leftHar:har(AP,{capture:1000,gameTs:1000,amount:123.45}),leftGameId:AP,
   rightHar:har(RONNIE,{capture:1005,gameTs:1005,amount:123.55}),rightGameId:RONNIE,
   maxCaptureSkewSeconds:10,
 });
+assert.equal(r.version,'betfair-sporting-cross-game-network-validator-v1.1-latest-session-poll');
 assert.equal(r.valid,true);
 assert.equal(r.exactSharedSljp1NetworkBindingVerified,true);
 assert.equal(r.sameImsCasino,true);
@@ -33,6 +64,7 @@ assert.equal(r.nondecreasingAmount,true);
 assert.equal(r.crossGameExecutionEquivalentVerified,false);
 assert.equal(r.execution.decision,'NO_PLAY');
 assert.equal(r.execution.realMoneyAllowed,false);
+assert.equal(r.hardGuards.latestPairedTickerPollSelectedOnBothGames,true);
 assert.equal(r.hardGuards.sharedNetworkDoesNotImplyEqualHazard,true);
 
 r=evaluateBetfairSportingCrossGameNetworkBinding({leftHar:har(AP,{capture:1000,gameTs:1000}),leftGameId:AP,rightHar:har(FRANKIE,{casino:'other_es',capture:1005,gameTs:1005}),rightGameId:FRANKIE,maxCaptureSkewSeconds:10});
