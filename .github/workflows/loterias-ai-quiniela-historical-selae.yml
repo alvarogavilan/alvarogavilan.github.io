@@ -2,8 +2,6 @@ name: Loterias AI Quiniela Historical SELAE Cross-check
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '8 */3 * * *'
   push:
     paths:
       - 'loterias-ai/scripts/crosscheck-quiniela-historical-selae.mjs'
@@ -39,10 +37,9 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
           # The first durable checkpoint proved that a four-row strict batch can
-          # complete and persist. Use small eight-row production checkpoints so
-          # SELAE/network latency cannot strand a large batch. Historical evidence
-          # is recoverable, therefore the schedule follows the repository-wide
-          # eight-runs/day maintenance budget; manual/code-change triggers remain.
+          # complete and persist. Historical evidence is recoverable, so it no
+          # longer runs on a recurring schedule. Keep a small eight-row batch for
+          # explicit manual/code-change runs without consuming routine Actions.
           batch_limit=8
           echo "Quiniela historical SELAE batch_limit=${batch_limit} event=${{ github.event_name }}"
 
