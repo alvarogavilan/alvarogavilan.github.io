@@ -1,8 +1,9 @@
-// EDGE LIVE UX loader v13: preserve the proven browser-direct monitor, use the
+// EDGE LIVE UX loader v14: preserve the proven browser-direct monitor, use the
 // permanent Cloudflare backend as primary/failover source, surface accumulated
-// 24/7 science, fail-closed ATH/cycle history, the internal Spain-only library,
-// explicit historical coverage, the legal Spain universe, timing research,
-// sample-depth semantics, Spanish jackpot awards, and conditional MG threshold scenarios.
+// 24/7 science, explicit P0 research progress, fail-closed ATH/cycle history,
+// the internal Spain-only library, explicit historical coverage, the legal Spain
+// universe, timing research, sample-depth semantics, Spanish jackpot awards,
+// and conditional MG threshold scenarios.
 //
 // Deliberately does NOT load edge-jokerbet-stack-client-v1.mjs: that panel's
 // entire premise is asking whether a game's base RTP plus JOKERBET's Club/
@@ -15,6 +16,7 @@
 import './edge-live-ux-legacy-v1.mjs';
 import './edge-backend-client-v1.mjs';
 import './edge-science-client-v1.mjs';
+import './edge-research-progress-v1.mjs';
 import './edge-history-client-v1.mjs';
 import './edge-library-client-v1.mjs';
 import './edge-library-coverage-client-v1.mjs';
