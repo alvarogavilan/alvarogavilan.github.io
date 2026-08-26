@@ -1,0 +1,70 @@
+{
+  "version": "aotgn-playtech-global-code-scope-v1",
+  "date": "2026-08-26",
+  "mode": "PROVIDER_SCOPE_BINDING_NO_PLAY",
+  "market": "ES",
+  "provider": "Playtech",
+  "network": "Age of the Gods Norse",
+  "finding": {
+    "providerDocument": "Game Codes for the Jackpot System / Jackpot Ticker Game Codes",
+    "publiclyRecoverableCopy": "https://www.scribd.com/document/957977470/Game-Codes-for-the-Jackpot-Ticker-System",
+    "documentAuthorshipClass": "PLAYTECH_REFERENCE_DOCUMENT_PUBLIC_MIRROR",
+    "section": "Global Jackpots",
+    "globalDefinition": "A global jackpot is collected across the entire Playtech progressive network.",
+    "codes": {
+      "aognjp-2": "Age of the Gods Norse Daily Jackpot",
+      "aognjp-3": "Age of the Gods Norse Extra Jackpot",
+      "aognjp-7": "Age of the Gods Norse Instant Jackpot",
+      "mrj-4": "Age of the Gods Ultimate Power Jackpot"
+    },
+    "aognjpGroupType": "multi-level progressive jackpot",
+    "providerScopeForListedCodes": "GLOBAL"
+  },
+  "tickerSpecificationCrosscheck": {
+    "document": "Playtech Progressive Jackpot Ticker Specifications v3.1",
+    "publiclyRecoverableCopy": "https://www.scribd.com/document/957977467/Playtech-Jackpot-Ticker-Specifications",
+    "local0Meaning": "global progressive jackpot",
+    "local1Meaning": "local progressive jackpot",
+    "casinoMeaning": "IMS casino name",
+    "instanceCodeMeaning": "identification code of the jackpot instance",
+    "xmlEndpoint": "new_jackpotxml.php"
+  },
+  "scientificConsequence": {
+    "aognjpLocal1Accepted": false,
+    "aognjpLocal0ConsistentWithProviderReference": true,
+    "missingLocalMetadataPromotedToGlobal": false,
+    "sameTitleProvesActiveDaily": false,
+    "headlineAmountMayBindDaily": false,
+    "operatorCasinoInstanceStillRequired": true,
+    "currentTickerRowStillRequired": true,
+    "prospectiveCycleStillRequired": true
+  },
+  "implementation": {
+    "parserPath": "loterias-ai/casino/jackpots/playtech-mhb-ticker-parser-v1.mjs",
+    "testPath": "loterias-ai/tests/playtech-mhb-ticker-parser-v1.test.mjs",
+    "expectedParserVersion": "playtech-mhb-ticker-parser-v1.3-provider-scope-safe",
+    "localTestPassedBeforeCommit": true
+  },
+  "remainingP0Gate": {
+    "exactSpanishTickerHostRecovered": false,
+    "exactImsCasinoNameRecovered": false,
+    "exactInstanceCodeRecovered": false,
+    "currentAognjp2EurRowRecovered": false,
+    "currentDailyActiveOnTargetOperatorVerified": false,
+    "fullDailyResetObservedProspectively": false
+  },
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "onlineOnly": true,
+    "noLoginOrWagerProbe": true,
+    "noHeadlineToTierBinding": true,
+    "noOperatorInstanceInference": true,
+    "noRealMoneyPromotionFromProviderScopeAlone": true
+  }
+}

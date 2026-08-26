@@ -1,8 +1,8 @@
 const TARGETS = Object.freeze({
-  'aognjp-2': {network:'AGE_OF_GODS_NORSE', tier:'DAILY', guarantee:'TIME'},
-  'aognjp-3': {network:'AGE_OF_GODS_NORSE', tier:'EXTRA', guarantee:'AMOUNT'},
-  'aognjp-7': {network:'AGE_OF_GODS_NORSE', tier:'INSTANT', guarantee:'AMOUNT'},
-  'mrj-4': {network:'AGE_OF_GODS', tier:'ULTIMATE_POWER', guarantee:'NONE'},
+  'aognjp-2': {network:'AGE_OF_GODS_NORSE', tier:'DAILY', guarantee:'TIME', providerScope:'GLOBAL'},
+  'aognjp-3': {network:'AGE_OF_GODS_NORSE', tier:'EXTRA', guarantee:'AMOUNT', providerScope:'GLOBAL'},
+  'aognjp-7': {network:'AGE_OF_GODS_NORSE', tier:'INSTANT', guarantee:'AMOUNT', providerScope:'GLOBAL'},
+  'mrj-4': {network:'AGE_OF_GODS', tier:'ULTIMATE_POWER', guarantee:'NONE', providerScope:'GLOBAL'},
   'krjp-1': {network:'KINGDOMS_RISE', tier:'EPIC', guarantee:'NONE'},
   'krjp-2': {network:'KINGDOMS_RISE', tier:'POWER_STRIKE', guarantee:'AMOUNT'},
   'krjp-3': {network:'KINGDOMS_RISE', tier:'DAILY_STRIKE', guarantee:'TIME'},
@@ -21,6 +21,11 @@ function normalizeLocal(v){
   if(v===false||v===0||v==='0') return 0;
   return null;
 }
+function providerScopeMismatch(scope,rowLocal){
+  if(scope==='GLOBAL'&&rowLocal===1) return true;
+  if(scope==='LOCAL'&&rowLocal===0) return true;
+  return false;
+}
 
 export function parsePlaytechMhbTickerXml(xml,{
   nowEpochSeconds=Math.floor(Date.now()/1000),
@@ -35,7 +40,7 @@ export function parsePlaytechMhbTickerXml(xml,{
   const wantedLocal=normalizeLocal(local);
   const wantedInstanceCode=normalizeText(instanceCode);
   const out=[];
-  const rejected={currency:0,casino:0,local:0,instanceCode:0};
+  const rejected={currency:0,casino:0,local:0,instanceCode:0,providerScope:0};
   const requestMatch=s.match(/<request\b([^>]*)>/i);
   const requestAttrs=requestMatch?attrs(requestMatch[1]):{};
   const requestCasino=normalizeText(requestAttrs.casino);
@@ -45,12 +50,14 @@ export function parsePlaytechMhbTickerXml(xml,{
     const ga=attrs(gm[1]);
     const code=ga.game||null;
     if(!code||!TARGETS[code]) continue;
+    const t=TARGETS[code];
     const rowLocal=normalizeLocal(ga.local);
     const amountRe=/<amount\b([^>]*)>([^<]*)<\/amount>/gi;
     for(const amountMatch of gm[2].matchAll(amountRe)){
       const aa=attrs(amountMatch[1]);
       const rowCurrency=normalizeText(aa.currency);
       const rowInstanceCode=normalizeText(aa.instancecode);
+      if(providerScopeMismatch(t.providerScope,rowLocal)){rejected.providerScope++;continue;}
       if(wantedCurrency&&String(rowCurrency||'').toLowerCase()!==wantedCurrency){rejected.currency++;continue;}
       if(wantedCasino&&requestCasinoNormalized!==wantedCasino){rejected.casino++;continue;}
       if(wantedLocal!=null&&rowLocal!==wantedLocal){rejected.local++;continue;}
@@ -60,11 +67,10 @@ export function parsePlaytechMhbTickerXml(xml,{
       // Playtech's published XML specification historically misspells this
       // attribute as `guranteedHitAmount`; accept the corrected spelling too.
       const guaranteedHitAmount=finite(aa.guranteedHitAmount ?? aa.guaranteedHitAmount);
-      const t=TARGETS[code];
       const distanceToGuaranteedHitAmount=(amount!=null&&guaranteedHitAmount!=null)?guaranteedHitAmount-amount:null;
       const secondsToGuaranteedHit=(guaranteedHitTime!=null)?guaranteedHitTime-nowEpochSeconds:null;
       out.push({
-        code,network:t.network,tier:t.tier,expectedGuarantee:t.guarantee,
+        code,network:t.network,tier:t.tier,expectedGuarantee:t.guarantee,providerScope:t.providerScope??null,
         amount,currency:rowCurrency,sign:aa.sign||null,stepPerSecond:finite(aa.step),
         wins:finite(aa.wins),instanceCode:rowInstanceCode,
         requestCasino,local:rowLocal,isLocal:rowLocal==null?null:rowLocal===1,
@@ -73,19 +79,20 @@ export function parsePlaytechMhbTickerXml(xml,{
         secondsToGuaranteedHit,
         guaranteeObserved: guaranteedHitTime!=null?'TIME':guaranteedHitAmount!=null?'AMOUNT':'NONE',
         failClosedMismatch:(t.guarantee==='TIME'&&guaranteedHitTime==null)||(t.guarantee==='AMOUNT'&&guaranteedHitAmount==null),
+        providerScopeMismatch:false,
         bindingObserved:{casino:requestCasino!=null,local:rowLocal!=null,instanceCode:rowInstanceCode!=null},
       });
     }
   }
   return {
-    version:'playtech-mhb-ticker-parser-v1.2-topology-safe',
+    version:'playtech-mhb-ticker-parser-v1.3-provider-scope-safe',
     filters:{currency:wantedCurrency,casino:wantedCasino,local:wantedLocal,instanceCode:wantedInstanceCode},
     requestCasino,
     rows:out,
     rejected,
     guards:{
       parserOnly:true,multiCurrencySafe:true,topologyMetadataPreserved:true,exactBindingFiltersSupported:true,
-      noTopologyInference:true,noBetting:true,realMoneyAllowed:false,
+      providerDocumentedScopeEnforced:true,noTopologyInference:true,noBetting:true,realMoneyAllowed:false,
     },
   };
 }
