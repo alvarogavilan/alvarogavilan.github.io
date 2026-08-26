@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {analyzeBetfairSportingHar} from '../edge-backend/src/betfair-sporting-har-discovery-v1.mjs';
 import {analyzeBetfairSportingWebtickersProtocolHar} from '../edge-backend/src/betfair-sporting-webtickers-har-protocol-v1.mjs';
+import {analyzeBetfairSportingStructuredWebtickersRows} from '../edge-backend/src/betfair-sporting-webtickers-structured-row-v1.mjs';
 import {validateBetfairSportingHarSnapshot} from '../casino/jackpots/betfair-sporting-har-overdue-bridge-v1.mjs';
 
 function usage(){
@@ -13,7 +14,7 @@ function safeEndpoint(v){
   try{const u=new URL(String(v||''));return ['https:','wss:'].includes(u.protocol)?`${u.origin}${u.pathname}`:null;}catch{return null;}
 }
 function fail(reason,extra={}){
-  return {version:'betfair-sporting-safe-har-cli-v1.1-endpoint-redaction',ok:false,reason,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},...extra};
+  return {version:'betfair-sporting-safe-har-cli-v1.2-structured-modern',ok:false,reason,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},...extra};
 }
 function safeSnapshotValidation(v){
   if(!v||typeof v!=='object')return null;
@@ -22,6 +23,7 @@ function safeSnapshotValidation(v){
     valid:v.valid===true,
     reason:v.reason||null,
     exactBetfairSpainTickerImsBindingVerified:v.exactBetfairSpainTickerImsBindingVerified===true,
+    exactApMcCoyRealLauncherBindingVerified:v.exactApMcCoyRealLauncherBindingVerified===true,
     expectedBetfairImsCasino:v.expectedBetfairImsCasino||null,
     tickerEndpoint:safeEndpoint(v.tickerEndpoint),
     configSourceUrl:safeEndpoint(v.configSourceUrl),
@@ -38,6 +40,8 @@ function safeLegacyDiscovery(d){
   const x=d?.discovery||{};
   return {
     version:d?.version||null,sourceName:d?.sourceName||null,entryCount:d?.entryCount??0,relevantEntryCount:d?.relevantEntryCount??0,
+    exactApMcCoyRealLauncherBindingObserved:x.exactApMcCoyRealLauncherBindingObserved===true,
+    exactApMcCoyRealLauncherBindingCount:(x.exactApMcCoyRealLauncherBindings||[]).length,
     imsCandidates:x.imsCandidates||[],tickerUrlCandidates:(x.tickerUrlCandidates||[]).map(safeEndpoint).filter(Boolean),
     configBindingCandidates:(x.configBindingCandidates||[]).map(b=>({sourceUrl:safeEndpoint(b.sourceUrl),jackpotsCasino:b.jackpotsCasino||null,tickerUrl:safeEndpoint(b.tickerUrl),instanceCode:b.instanceCode||null,sameDocument:b.sameDocument===true,sourceBetfairOwned:b.sourceBetfairOwned===true,sourceInitialResources:b.sourceInitialResources===true})),
     exactTickerEntryCandidateCount:(x.exactTickerEntryCandidates||[]).length,
@@ -46,16 +50,49 @@ function safeLegacyDiscovery(d){
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
   };
 }
+function safeStructuredModern(s){
+  const candidates=(s?.structuredSljp1RowCandidates||[]).map(c=>({
+    entryIndex:c.entryIndex??null,
+    startedDateTime:c.startedDateTime||null,
+    payloadKind:c.payloadKind||null,
+    payloadIndex:c.payloadIndex??null,
+    objectPath:c.objectPath||null,
+    configuredEndpoint:safeEndpoint(c.configuredEndpoint),
+    expectedBetfairImsCasino:c.expectedBetfairImsCasino||null,
+    exactConfiguredEndpointMatch:c.exactConfiguredEndpointMatch===true,
+    configuredWebSocketTransportUpgradeObserved:c.configuredWebSocketTransportUpgradeObserved===true,
+    requestCasinoMatchesConfiguredBinding:c.requestCasinoMatchesConfiguredBinding===true,
+    responseCasinoMatchesConfiguredBinding:c.responseCasinoMatchesConfiguredBinding===true?true:c.responseCasinoMatchesConfiguredBinding===false?false:null,
+    row:c.row?{
+      game:c.row.game||null,currency:c.row.currency||null,local:c.row.local??null,
+      amount:c.row.amount??null,guaranteedHitTime:c.row.guaranteedHitTime??null,gameTimestamp:c.row.gameTimestamp??null,
+      winCount:c.row.winCount??null,casino:c.row.casino||null,instanceCode:c.row.instanceCode||null,gameGroup:c.row.gameGroup||null,
+    }:null,
+    coLocatedRequiredStateFields:c.coLocatedRequiredStateFields===true,
+    exactModernResponseSemanticsVerified:false,
+    usableForOverduePair:false,
+  }));
+  return {
+    version:s?.version||null,
+    exactConfiguredWebtickersTrafficObserved:s?.exactConfiguredWebtickersTrafficObserved===true,
+    structuredSljp1RowCandidateCount:candidates.length,
+    structuredSljp1RowCandidates:candidates,
+    exactModernResponseSemanticsVerified:false,
+    usableForOverduePair:false,
+    execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
+  };
+}
 
 export function analyzeSafeHarText(raw,{sourceName='capture.har',nowEpochSeconds=Math.floor(Date.now()/1000)}={}){
   let har;
   try{har=JSON.parse(raw);}catch(error){return fail('HAR_PARSE_FAILED',{error:String(error?.message||error)});}
-  let legacy,modern,validated;
+  let legacy,modern,structured,validated;
   try{legacy=analyzeBetfairSportingHar(har,{sourceName});}catch(error){return fail('LEGACY_DISCOVERY_FAILED',{error:String(error?.message||error)});}
   try{modern=analyzeBetfairSportingWebtickersProtocolHar(har,{sourceName});}catch(error){return fail('MODERN_PROTOCOL_DISCOVERY_FAILED',{error:String(error?.message||error)});}
+  try{structured=analyzeBetfairSportingStructuredWebtickersRows(har,{sourceName});}catch(error){return fail('MODERN_STRUCTURED_ROW_DISCOVERY_FAILED',{error:String(error?.message||error)});}
   try{validated=validateBetfairSportingHarSnapshot(har,{sourceName,nowEpochSeconds});}catch(error){validated=fail('SERVER_SNAPSHOT_VALIDATOR_FAILED',{error:String(error?.message||error)});}
   return {
-    version:'betfair-sporting-safe-har-cli-v1.1-endpoint-redaction',ok:true,sourceName,
+    version:'betfair-sporting-safe-har-cli-v1.2-structured-modern',ok:true,sourceName,
     legacy:safeLegacyDiscovery(legacy),
     modernWebtickers:{
       version:modern?.version||null,
@@ -66,9 +103,10 @@ export function analyzeSafeHarText(raw,{sourceName='capture.har',nowEpochSeconds
       directPublicModernProbeAllowed:false,
       protocolFingerprints:modern?.protocolFingerprints||[],
     },
+    structuredModernWebtickers:safeStructuredModern(structured),
     validatedLegacySnapshot:safeSnapshotValidation(validated),
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{offlineOnly:true,noNetwork:true,rawHarNeverEmitted:true,authorizationAndCookieValuesNeverEmitted:true,endpointQueriesAndFragmentsNeverEmitted:true,sensitiveModernValuesRedacted:true,harCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{offlineOnly:true,noNetwork:true,rawHarNeverEmitted:true,authorizationAndCookieValuesNeverEmitted:true,endpointQueriesAndFragmentsNeverEmitted:true,sensitiveModernValuesRedacted:true,structuredModernRowsRemainDiscoveryOnly:true,modernResponseSemanticsCannotBeGuessed:true,harCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
 
