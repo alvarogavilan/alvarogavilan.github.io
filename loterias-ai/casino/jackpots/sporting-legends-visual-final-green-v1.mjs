@@ -37,10 +37,12 @@ export function evaluateSportingLegendsVisualFinalGreen({
     priorProspectiveVisualRaceLedgerRequired:true,currentCycleExcludedFromPriorLedger:true,
     exactOfficialBetfairDailyVisualRequired:true,twoDistinctCurrentScreenshotsRequired:true,
     currentRecheckMustBracketDisplayedBoundary:true,currentDetectionMustBeFresh:true,
-    noTickerRequiredForVisualFinalRoute:true,headlinePageCannotSubstituteForInGameDailyCounter:true,
-    noAutomaticWagering:true,manualActionOnly:true,maxOneSpin:true,
+    visualEvidenceCannotProveUnawardedServerState:true,
+    exactServerTickerImsOverdueRecheckRequiredForGreen:true,
+    headlinePageCannotSubstituteForInGameDailyCounter:true,
+    noAutomaticWagering:true,manualActionOnly:true,maxOneSpin:false,
   };
-  const fail=(reason,extra={})=>({version:'sporting-legends-visual-final-green-v1',decision:'NO_PLAY',valid:false,reason,realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,guards,...extra});
+  const fail=(reason,extra={})=>({version:'sporting-legends-visual-final-green-v1.1-server-state-guard',decision:'NO_PLAY',valid:false,reason,realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,guards,...extra});
   const race=priorRaceEvidence;
   if(!race||race.valid!==true||race.usableForExecution!==true||race.source!==RACE_SOURCE||race.ledgerSubtype!==LEDGER_SUBTYPE)return fail('PRIOR_VISUAL_RACE_LEDGER_NOT_VALIDATED');
   const pLower=finite(race.firstBetRaceProbabilityLowerBound),conf=finite(race.confidence),latency=finite(actionLatencySeconds),raceLatency=finite(race.actionLatencySeconds);
@@ -73,17 +75,19 @@ export function evaluateSportingLegendsVisualFinalGreen({
   if(rtp===null||!(rtp>0&&rtp<100))return fail('INVALID_CONSERVATIVE_RTP');
   const breakEvenFirstBetProbability=((100-rtp)/100*stake)/jackpot;
   const conservativeExpectedReturnPct=rtp+(pLower*jackpot/stake*100);
-  const green=pLower>breakEvenFirstBetProbability&&conservativeExpectedReturnPct>100;
+  const conditionalPositiveEvScreenPassed=pLower>breakEvenFirstBetProbability&&conservativeExpectedReturnPct>100;
   return {
-    version:'sporting-legends-visual-final-green-v1',valid:true,
-    decision:green?'GREEN':'NO_PLAY',
-    reason:green?'GREEN_VISUAL_OVERDUE_FIRST_BET_PRIOR_LEDGER_AND_FRESH_RECHECK':'VISUAL_RACE_BOUND_BELOW_BREAK_EVEN',
-    source:'DIRECT_OFFICIAL_GAME_CLIENT_VISUAL_FINAL_RECHECK',protocolId:pid,currentCycleId:cycleId,
-    currentDailyAmountEUR:jackpot,stakeEUR:stake,conservativeBaseRtpPct:rtp,
+    version:'sporting-legends-visual-final-green-v1.1-server-state-guard',valid:true,
+    decision:'NO_PLAY',
+    reason:conditionalPositiveEvScreenPassed?'VISUAL_SCREEN_PASSED_SERVER_OVERDUE_RECHECK_REQUIRED':'VISUAL_RACE_BOUND_BELOW_BREAK_EVEN',
+    source:'DIRECT_OFFICIAL_GAME_CLIENT_VISUAL_RESEARCH_RECHECK',protocolId:pid,currentCycleId:cycleId,
+    currentDisplayedDailyAmountEUR:jackpot,stakeEUR:stake,conservativeBaseRtpPct:rtp,
     firstBetRaceProbabilityLowerBound:pLower,confidence:conf,breakEvenFirstBetProbability,conservativeExpectedReturnPct,
+    conditionalPositiveEvScreenPassed,
     estimatedBoundaryEpochSeconds:estimatedBoundary,detectionTimestamp:detect.capturedAtEpochSeconds,detectionAgeSeconds,
     actionLatencySeconds:latency,
-    realMoneyAllowed:green,realStakeEUR:green?stake:0,maxSpins:green?1:0,maxTotalStakeEUR:green?stake:0,
-    manualActionRequired:green,guards,
+    exactServerOverdueStateVerified:false,
+    realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,
+    manualActionRequired:false,guards,
   };
 }

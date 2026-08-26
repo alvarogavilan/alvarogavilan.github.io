@@ -1,7 +1,7 @@
 {
-  "version": "betfair-spain-apmccoy-visual-final-green-route-v1",
-  "generatedAt": "2026-08-26T18:26:00+02:00",
-  "status": "VISUAL_FINAL_RECHECK_ROUTE_READY_NO_LIVE_GREEN",
+  "version": "betfair-spain-apmccoy-visual-final-green-route-v1.1-server-state-guard",
+  "generatedAt": "2026-08-26T18:52:00+02:00",
+  "status": "VISUAL_EXECUTION_ROUTE_RETIRED_SERVER_OVERDUE_RECHECK_REQUIRED",
   "market": "ES",
   "operator": "Betfair Spain",
   "provider": "Playtech",
@@ -11,8 +11,10 @@
   "promotion": false,
   "route": {
     "path": "loterias-ai/casino/jackpots/sporting-legends-visual-final-green-v1.mjs",
-    "version": "sporting-legends-visual-final-green-v1",
-    "finalTickerRequiredForThisRoute": false,
+    "version": "sporting-legends-visual-final-green-v1.1-server-state-guard",
+    "visualOnlyGreenDisabled": true,
+    "finalTickerRequiredForThisRoute": true,
+    "exactServerTickerImsOverdueRecheckRequiredForGreen": true,
     "priorValidatedVisualRaceLedgerRequired": true,
     "currentCycleMayAppearInPriorLedger": false,
     "currentRecheckScreenshotsRequired": 2,
@@ -26,22 +28,21 @@
     "maxDetectionAgeSeconds": 2,
     "defaultConservativeBaseRtpPct": 93.03,
     "minimumRaceConfidence": 0.95,
-    "greenMaxSpins": 1,
+    "greenMaxSpins": 0,
     "manualActionOnly": true
   },
-  "economicDecision": {
-    "breakEvenProbabilityFormula": "((100-conservativeBaseRtpPct)/100*stakeEUR)/currentDailyAmountEUR",
-    "conservativeExpectedReturnPctFormula": "conservativeBaseRtpPct + firstBetRaceProbabilityLowerBound*currentDailyAmountEUR/stakeEUR*100",
-    "greenRequiresStrictProbabilityMargin": true,
-    "greenRequiresConservativeExpectedReturnAbove100": true
+  "scientificCorrection": {
+    "problem": "A displayed countdown of zero plus a nondecreasing visual amount does not prove that the same Daily jackpot remains unawarded. UI lag, post-award display persistence, or reseeding could mimic that pattern.",
+    "correction": "Visual observations may contribute prospective race evidence and a conditional EV screen, but they cannot authorize real-money execution. Final GREEN must use the exact Betfair Spain ticker/IMS and a fresh sljp-1 EUR local=0 server-side cross-boundary overdue proof.",
+    "falseGreenPathClosed": true
   },
   "currentLiveState": {
     "validatedPriorVisualPassiveCycleCount": 0,
     "priorVisualRaceProbabilityLowerBound": null,
     "currentOfficialDailyBoundaryPairCaptured": false,
+    "exactServerOverdueStateVerified": false,
     "greenNow": false
   },
-  "scientificConsequence": "The hidden Betfair ticker/IMS is no longer a structural blocker for the visual execution route. A prior prospectively validated official-client visual race ledger plus a fresh exact official-client boundary recheck can independently close the state and EV gates. The current live state remains NO_PLAY because no validated prior visual cycle exists yet.",
   "execution": {
     "decision": "NO_PLAY",
     "realMoneyAllowed": false,
@@ -52,17 +53,20 @@
   "hardGuards": {
     "onlineOnly": true,
     "nonPromoOnly": true,
+    "visualEvidenceCannotProveUnawardedServerState": true,
     "headlineCannotSubstituteForInGameDailyCounter": true,
     "singleCurrentScreenshotCannotAuthorizeGreen": true,
     "currentCycleCannotTrainAndAuthorizeItself": true,
     "staleScreenshotCannotAuthorizeGreen": true,
     "priorLedgerEvidenceCannotBeReusedAsCurrentRecheck": true,
+    "exactTickerImsRequiredForGreen": true,
     "noAutomaticWagering": true,
     "noRaceAutomation": true
   },
   "nextDecisiveEvidence": [
-    "Collect at least one prospectively frozen passive official-client Daily cycle with three unique screenshots and no wager to create a prior visual race bound.",
-    "On a later comparable Daily boundary, capture a fresh two-screenshot official-client before/zero pair with exact amount and stake; do not reuse prior evidence.",
-    "Emit GREEN only if the prior one-sided race-probability lower bound strictly exceeds the exact conservative break-even probability for the fresh current Daily amount and stake."
+    "Recover the exact Betfair Spain Playtech ticker hostname and IMS casino identity.",
+    "Recover a fresh exact EUR local=0 sljp-1 server row with amount, winc, gamedata timestamp and current guaranteedHitTime.",
+    "Use a same-binding server pair that brackets the current guaranteedHitTime with unchanged winc and no reset to prove the Daily is truly overdue.",
+    "Use only prospectively validated passive race evidence to compare a conservative first-bet probability lower bound against exact live break-even."
   ]
 }
