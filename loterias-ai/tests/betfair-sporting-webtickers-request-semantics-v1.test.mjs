@@ -12,7 +12,7 @@ const post={
   response:{status:200,content:{mimeType:'application/json',text:'{"ok":true,"token":"RESPONSE_SECRET"}'}},
 };
 let r=analyzeBetfairSportingWebtickersRequestSemantics({log:{entries:[initial,post]}},{sourceName:'request-post.har'});
-assert.equal(r.version,'betfair-sporting-webtickers-request-semantics-v1.3-session-provenance');
+assert.equal(r.version,'betfair-sporting-webtickers-request-semantics-v1.4-target-binding-provenance');
 assert.equal(r.exactConfiguredWebtickersTrafficObserved,true);
 assert.equal(r.providerDocumentedExactDailyRequestObserved,true);
 assert.equal(r.providerDocumentedExactDailyRequestMatchCount,1);
