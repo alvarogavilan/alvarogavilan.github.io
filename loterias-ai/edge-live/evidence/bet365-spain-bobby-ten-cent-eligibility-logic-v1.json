@@ -1,0 +1,72 @@
+{
+  "version": "bet365-spain-bobby-ten-cent-eligibility-logic-v1",
+  "generatedAtDate": "2026-08-26",
+  "status": "CONDITIONAL_ELIGIBILITY_LOGIC_STRONG_SERVED_STAKE_STILL_REQUIRED",
+  "target": {
+    "operator": "bet365 Spain",
+    "title": "Bobby George: Sporting Legends",
+    "providerGameCode": "gpas_bgeorge_pop",
+    "jackpotGroup": "sljp",
+    "dailyCode": "sljp-1"
+  },
+  "currentOperatorEvidence": {
+    "source": "https://content001.bet365.es/help/docs/es/rtptables/currentpdf/Spanishv2.pdf",
+    "publishedMinimumBetEUR": 0.10,
+    "publishedMaximumBetEUR": 25.00,
+    "publishedRtpPct": 96.49,
+    "currentPublishedMinimumIsNotARealTimeStakeAttestation": true
+  },
+  "exactProviderEvidence": {
+    "technicalManual": "https://clientzone.betconstruct.com/media/download/801cbj/Bobby%20George%E2%84%A2%20Sporting%20Legends%E2%84%A2.pdf",
+    "gameCode": "gpas_bgeorge_pop",
+    "jackpotCode": "sljp",
+    "anyBetAnySizeMayWin": true,
+    "largerBetHasGreaterChance": true,
+    "dailyCode": "sljp-1",
+    "dailyTimedGuaranteedHitMechanic": true,
+    "firstBetFollowingDayMechanic": true
+  },
+  "providerNetworkEvidence": {
+    "source": "https://www.scribd.com/document/957977470/Game-Codes-for-the-Jackpot-Ticker-System",
+    "sportingLegendsJackpotBetSize": "VARIABLE",
+    "exactBobbyCodeListedAsLinkedGame": "gpas_bgeorge_pop",
+    "dailyCode": "sljp-1",
+    "weeklyCode": "sljp-2",
+    "megaCode": "sljp-3"
+  },
+  "conditionalInference": {
+    "requiredCurrentSessionFacts": [
+      "exact served game identity is gpas_bgeorge_pop",
+      "bet365.es-owned/configured jackpot transport routes that exact target to EUR global sljp-1",
+      "the current real-money UI/server still offers a total stake of 0.10 EUR"
+    ],
+    "then": {
+      "tenCentJackpotEligibilityStronglySupported": true,
+      "why": "For the exact Bobby timed Sporting Legends configuration, Playtech states that any bet of any size can win and its jackpot-code guide marks Sporting Legends jackpot bet size as variable. Therefore, once the exact current bet365 Spain session is independently bound to gpas_bgeorge_pop and sljp-1, a currently served playable 0.10 EUR total stake is not a separate jackpot-threshold class; it is within the documented any-size eligibility model."
+    },
+    "notAllowed": [
+      "using the current RTP table alone to assert the live UI is still offering 0.10 EUR",
+      "using provider family membership alone to assert bet365 currently serves timed sljp-1",
+      "using the conditional inference without exact current-session routing proof",
+      "using an inferred coin value or line bet as total stake"
+    ]
+  },
+  "pipelineImpact": {
+    "eligibilityQuestionSeparatedFromStakeAtDecisionQuestion": true,
+    "servedTenCentAtDecisionStillRequired": true,
+    "recommendedPassiveEvidence": "server-side minBet/minStake/total-bet configuration from the exact current target session or an exact contemporaneous human-visible stake UI attestation",
+    "currentConfiguredSljp1Gate": "loterias-ai/edge-backend/src/bet365-sporting-configured-sljp1-transport-v1.mjs",
+    "currentStakeCandidateScanner": "loterias-ai/edge-backend/src/bet365-sporting-low-cost-har-discovery-v1.mjs"
+  },
+  "hardGuards": {
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "conditionalInferenceCannotSelfVerifySession": true,
+    "publishedMinimumCannotSubstituteRealTimeStake": true,
+    "variableJackpotBetSizeDoesNotProveCurrentOperatorGeneration": true,
+    "crossOperatorTransferForbidden": true,
+    "noWagerProbe": true,
+    "noAutomaticBetting": true
+  },
+  "execution": {"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
