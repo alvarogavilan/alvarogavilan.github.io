@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {validateBetfairSportingServerSnapshot} from '../casino/jackpots/betfair-sporting-server-binding-validator-v1.mjs';
+import {buildBetfairSportingSljp1RequestUrl,validateBetfairSportingServerSnapshot} from '../casino/jackpots/betfair-sporting-server-binding-validator-v1.mjs';
 
 const binding={
   sourceUrl:'https://launcher.betfair.es/initialResources/es_ES_desktop',
@@ -8,9 +8,18 @@ const binding={
   instanceCode:null,
   sameDocument:true,sourceBetfairOwned:true,sourceInitialResources:true,
 };
-const xml=`<root><request casino="betfair_es" currency="eur" game="sljp-1" startTimestamp="1990" execInterval="10"/><gamedata game="sljp-1" gamegroup="sljp" local="0" timestamp="2005" winc="42"><amount currency="EUR" guaranteedHitTime="2100" step="0.01" wins="1000">123.45</amount></gamedata></root>`;
+const requestUrl=buildBetfairSportingSljp1RequestUrl(binding);
+const u=new URL(requestUrl);
+assert.equal(u.origin+u.pathname,'https://example.playtech.com/new_jackpotxml.php');
+assert.equal(u.searchParams.get('info'),'1');
+assert.equal(u.searchParams.get('casino'),'betfair_es');
+assert.equal(u.searchParams.get('game'),'sljp-1');
+assert.equal(u.searchParams.get('local'),'0');
+assert.equal(u.searchParams.get('currency'),'eur');
+assert.equal(buildBetfairSportingSljp1RequestUrl({...binding,sameDocument:false}),null);
 
-let r=validateBetfairSportingServerSnapshot({configBinding:binding,tickerXml:xml,responseUrl:'https://example.playtech.com/new_jackpotxml.php?info=1&casino=betfair_es&game=sljp-1&currency=eur&local=0',nowEpochSeconds:2010});
+const xml=`<root><request casino="betfair_es" currency="eur" game="sljp-1" startTimestamp="1990" execInterval="10"/><gamedata game="sljp-1" gamegroup="sljp" local="0" timestamp="2005" winc="42"><amount currency="EUR" guaranteedHitTime="2100" step="0.01" wins="1000">123.45</amount></gamedata></root>`;
+let r=validateBetfairSportingServerSnapshot({configBinding:binding,tickerXml:xml,responseUrl:requestUrl,nowEpochSeconds:2010});
 assert.equal(r.valid,true);
 assert.equal(r.usableForOverduePair,true);
 assert.equal(r.exactBetfairSpainTickerImsBindingVerified,true);
