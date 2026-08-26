@@ -41,7 +41,7 @@ const fetchImpl=async url=>{
 const configProbeRunner=async()=>({version:'test-config',observedAt:'2026-08-26T17:00:00Z',discovery:{coLocatedBetfairConfigBindings:[binding]}});
 
 let r=await runBetfairSportingLiveTickerProbe({configProbeRunner,fetchImpl,nowEpochSeconds:2010,maxFeedAgeIntervals:2});
-assert.equal(r.version,'betfair-sporting-live-ticker-probe-v1.4-public-output-redaction');
+assert.equal(r.version,'betfair-sporting-live-ticker-probe-v1.5-error-redaction');
 assert.equal(r.valid,true);
 assert.equal(r.exactBetfairSpainTickerImsBindingVerified,true);
 assert.equal(r.currentSljp1RowRecovered,true);
@@ -56,6 +56,7 @@ assert.equal(r.maxSpins,0);
 assert.equal(r.currentSnapshotCannotProveOverdueByItself,true);
 assert.equal(r.hardGuards.configuredRoutingQueryPreservedInternally,true);
 assert.equal(r.hardGuards.publicOutputEndpointQueriesAndFragmentsRedacted,true);
+assert.equal(r.hardGuards.publicOutputFetchErrorsRedacted,true);
 assert.equal(r.tickerFetch.requestedEndpoint,'https://example.playtech.com/new_jackpotxml.php');
 assert.equal(r.tickerFetch.finalEndpoint,'https://example.playtech.com/new_jackpotxml.php');
 assert.equal(new URL(requested).searchParams.get('casino'),'betfair_es');
@@ -98,6 +99,20 @@ assert.equal(r.modernWebtickersBindings[0].tickerUrl,'https://webtickers.malmega
 assert.equal(JSON.stringify(r).includes('MODERN_SECRET'),false);
 assert.equal(r.realMoneyAllowed,false);
 assert.equal(r.hardGuards.modernWebtickersProtocolCannotBeGuessed,true);
+
+r=await runBetfairSportingLiveTickerProbe({configProbeRunner,fetchImpl:async()=>{throw new Error('FETCH_SECRET https://example.playtech.com/new_jackpotxml.php?token=ERROR_SECRET');},nowEpochSeconds:2010});
+assert.equal(r.valid,false);
+assert.equal(r.reason,'TICKER_FETCH_FAILED');
+assert.equal(r.tickerFetch.errorObserved,true);
+assert.equal(r.tickerFetch.requestedEndpoint,'https://example.playtech.com/new_jackpotxml.php');
+assert.equal(JSON.stringify(r).includes('FETCH_SECRET'),false);
+assert.equal(JSON.stringify(r).includes('ERROR_SECRET'),false);
+
+r=await runBetfairSportingLiveTickerProbe({configProbeRunner:async()=>{throw new Error('CONFIG_SECRET');},fetchImpl,nowEpochSeconds:2010});
+assert.equal(r.valid,false);
+assert.equal(r.reason,'PUBLIC_CONFIG_PROBE_FAILED');
+assert.equal(r.errorObserved,true);
+assert.equal(JSON.stringify(r).includes('CONFIG_SECRET'),false);
 
 r=await runBetfairSportingLiveTickerProbe({configProbeRunner,fetchImpl:async url=>({ok:true,status:200,url:String(url),headers:{get:()=> 'application/xml'},text:async()=>'<bad />'}),nowEpochSeconds:2010});
 assert.equal(r.valid,false);
