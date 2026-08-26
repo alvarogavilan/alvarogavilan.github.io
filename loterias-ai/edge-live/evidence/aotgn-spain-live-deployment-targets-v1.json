@@ -1,11 +1,11 @@
 {
-  "version": "aotgn-spain-live-deployment-targets-v1.2-partycasino-current-deployment",
-  "generatedAt": "2026-08-26T11:34:33+02:00",
+  "version": "aotgn-spain-live-deployment-targets-v1.3-provider-identity-split",
+  "generatedAt": "2026-08-26T11:50:00+02:00",
   "mode": "SPAIN_ONLINE_NORSE_LIVE_TARGET_MATRIX_NO_PLAY",
   "market": "ES",
   "provider": "Playtech",
   "networkFamily": "Age of the Gods Norse",
-  "objective": "Close independent gates without inference: (A) current Spanish Daily deployment/configuration and (B) exact live aognjp-2 ticker/deployment identity and state.",
+  "objective": "Close independent gates without inference: (A) current Spanish Daily deployment/configuration, (B) exact provider/ticker identity and (C) exact live Daily state.",
   "p0Strategy": {
     "stateObservationGate": {
       "operator": "JOKERBET",
@@ -16,7 +16,11 @@
       "dailyMechanicPublishedOnCurrentPage": true,
       "spanishInteroperatorPlaytechNetworkVerified": true,
       "directGameToAognjp2BindingVerified": false,
-      "reason": "Best current public Spanish surface for Daily mechanics and Spain inter-operator network evidence, but the flattened provider table does not cleanly bind Gods and Giants directly to aognjp-2.",
+      "reason": "JOKERBET is a current Spanish surface for the Daily mechanic and inter-operator network evidence, but Gods and Giants must not be used as the clean provider-code identity for aognjp-2.",
+      "sameSessionDailyActiveVerified": false,
+      "currentDailyAmountRecovered": false,
+      "currentGuaranteedHitTimeRecovered": false,
+      "exactSpanishTickerImsBindingVerified": false,
       "stillMissing": [
         "same-session Daily-active observation",
         "current Daily amount",
@@ -31,12 +35,14 @@
       "playtechGameCode": "gpas_gogold_pop",
       "dailyNetworkCode": "aognjp-2",
       "sourceEvidenceFile": "./partycasino-spain-aognjp2-deployment-v1.json",
+      "providerCodeSource": "https://www.scribd.com/document/957977470/Game-Codes-for-the-Jackpot-Ticker-System",
       "currentSpanishJackpotCategoryPresenceVerified": true,
       "exactAognjp2LinkedTitleCurrentlyInJackpotCategory": true,
       "dailyTierPublishedForSameOperatorTitle": true,
       "dailyDeploymentConfiguredEvidenceStrong": true,
+      "providerCodeBindingAognjp2ToBookOfDwarvesVerified": true,
       "sameSessionDailyActiveVerified": false,
-      "whatThisCloses": "A current licensed Spanish deployment/configuration target exists for the exact Book of Dwarves title linked in the provider-code evidence to aognjp-2, and the same operator publishes the Daily tier for that title.",
+      "whatThisCloses": "A current licensed Spanish deployment/configuration target exists for Book of Dwarves, and provider-code evidence binds Book of Dwarves (gpas_gogold_pop) to the Age of the Gods Norse Daily code aognjp-2.",
       "whatThisDoesNotClose": "This does not prove a current same-session Daily meter, a Spanish ticker/IMS identity, current amount, guaranteedHitTime, rollover state or positive EV."
     },
     "tickerIdentityGate": {
@@ -48,23 +54,23 @@
       "game": "Age of the Gods Norse: Book of Dwarves",
       "playtechGameCode": "gpas_gogold_pop",
       "dailyNetworkCode": "aognjp-2",
-      "providerTableBindingConfidence": "STRONG_BUT_VISUAL_TABLE_CONFIRMATION_OR_LIVE_TICKER_STILL_REQUIRED",
+      "aognjp2ToBookOfDwarvesProviderBindingVerified": true,
+      "providerBindingEvidenceClass": "PLAYTECH_REFERENCE_DOCUMENT_PUBLIC_MIRROR_PLUS_CURRENT_SPANISH_DEPLOYMENT",
+      "providerBindingSource": "https://www.scribd.com/document/957977470/Game-Codes-for-the-Jackpot-Ticker-System",
       "partyCasinoEditorialDailyPublished": true,
       "partyCasinoCurrentJackpotLobbyPresenceVerified": true,
       "partyCasinoExactAognjp2LinkedTitleCurrentlyInJackpotCategory": true,
       "partyCasinoDailyDeploymentConfiguredEvidenceStrong": true,
+      "exactSpanishTickerImsBindingVerified": false,
       "betfairCurrentDailyPublished": false,
-      "reason": "PartyCasino now supplies a current Spanish deployment/configuration target for Book of Dwarves, while exact live ticker/IMS identity and same-session Daily state remain unverified."
+      "reason": "Provider identity Book of Dwarves ↔ aognjp-2 is now separated from live deployment identity. Exact Spanish ticker host/IMS and same-session state remain unverified."
     }
   },
   "secondaryTargets": [
     {
       "operator": "William Hill Spain",
       "lane": "EXTRA_AOGNJP3",
-      "publishedActiveLevels": [
-        "ULTIMATE",
-        "EXTRA"
-      ],
+      "publishedActiveLevels": ["ULTIMATE", "EXTRA"],
       "publishedCommonNorseContributionPct": 0.55,
       "currentAognjp3StateRecovered": false,
       "thresholdWinnerAllocationVerified": false,
@@ -87,8 +93,8 @@
   "hardGuards": {
     "onlineOnly": true,
     "nonPromoOnly": true,
+    "providerCodeIdentityDoesNotEqualSpanishTickerIdentity": true,
     "currentDeploymentEvidenceDoesNotEqualSameSessionDailyState": true,
-    "wrappedProviderTableTextDoesNotProveDirectBinding": true,
     "currentPageMechanicDoesNotProveTickerIdentity": true,
     "providerTableIdentityDoesNotProveCurrentTickerState": true,
     "sameLegalOperatorDoesNotProveSameIms": true,

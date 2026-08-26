@@ -7,38 +7,44 @@ function gateState(data){
   const s=data?.p0Strategy?.stateObservationGate||null;
   const d=data?.p0Strategy?.currentDeploymentConfigurationGate||null;
   const t=data?.p0Strategy?.tickerIdentityGate||null;
-  if(!s||!t)return null;
-  const deploymentClosed=Boolean(d&&d.currentSpanishJackpotCategoryPresenceVerified===true&&d.exactAognjp2LinkedTitleCurrentlyInJackpotCategory===true&&d.dailyTierPublishedForSameOperatorTitle===true&&d.dailyDeploymentConfiguredEvidenceStrong===true);
-  const exactTickerIms=(s.exactSpanishTickerImsBindingVerified===true)||
+  if(!s||!d||!t)return null;
+  const deploymentClosed=d.currentSpanishJackpotCategoryPresenceVerified===true&&
+    d.exactAognjp2LinkedTitleCurrentlyInJackpotCategory===true&&
+    d.dailyTierPublishedForSameOperatorTitle===true&&
+    d.dailyDeploymentConfiguredEvidenceStrong===true;
+  const providerIdentity=t.aognjp2ToBookOfDwarvesProviderBindingVerified===true||d.providerCodeBindingAognjp2ToBookOfDwarvesVerified===true;
+  const exactTickerIms=t.exactSpanishTickerImsBindingVerified===true||s.exactSpanishTickerImsBindingVerified===true||
     (s.exactTickerHostRecovered===true&&s.exactImsCasinoRecovered===true);
-  const currentAmount=(s.currentDailyAmountRecovered===true)||hasFinite(s.currentDailyJackpotEUR);
-  const currentTime=(s.currentGuaranteedHitTimeRecovered===true)||hasFinite(s.guaranteedHitTime);
-  const activeNow=(s.sameSessionDailyActiveVerified===true)||(s.dailyActiveNowVerified===true);
+  const currentAmount=s.currentDailyAmountRecovered===true||hasFinite(s.currentDailyJackpotEUR);
+  const currentTime=s.currentGuaranteedHitTimeRecovered===true||hasFinite(s.guaranteedHitTime);
+  const activeNow=s.sameSessionDailyActiveVerified===true||s.dailyActiveNowVerified===true;
   const configuration=progress([
     {key:'currentPublicPageVerified',label:'Ficha española actual verificada',closed:s.currentPublicPageVerified===true},
     {key:'dailyMechanicPublishedOnCurrentPage',label:'Mecánica Daily publicada',closed:s.dailyMechanicPublishedOnCurrentPage===true},
     {key:'spanishInteroperatorPlaytechNetworkVerified',label:'Red Playtech interoperador España verificada',closed:s.spanishInteroperatorPlaytechNetworkVerified===true},
-    {key:'currentSpanishDailyDeploymentConfigured',label:'Despliegue español actual: título aognjp-2 + Daily publicado',closed:deploymentClosed},
+    {key:'currentSpanishDailyDeploymentConfigured',label:'Despliegue español actual de Daily identificado',closed:deploymentClosed},
+  ]);
+  const identity=progress([
+    {key:'aognjp2ToBookOfDwarvesProviderBindingVerified',label:'Identidad proveedor Book of Dwarves ↔ aognjp-2',closed:providerIdentity},
+    {key:'exactSpanishTickerImsBindingVerified',label:'Ticker + IMS español exactos',closed:exactTickerIms},
   ]);
   const live=progress([
-    {key:'directGameToAognjp2BindingVerified',label:'Binding directo juego → aognjp-2 sin ambigüedad',closed:s.directGameToAognjp2BindingVerified===true},
     {key:'sameSessionDailyActiveVerified',label:'Daily activo en misma sesión',closed:activeNow},
     {key:'currentDailyAmountRecovered',label:'Importe Daily actual',closed:currentAmount},
     {key:'currentGuaranteedHitTimeRecovered',label:'guaranteedHitTime actual',closed:currentTime},
-    {key:'exactSpanishTickerImsBindingVerified',label:'Ticker + IMS español exactos',closed:exactTickerIms},
   ]);
-  return {s,d,t,configuration,live};
+  return {s,d,t,configuration,identity,live};
 }
 
 export function summarizeP0NorseProgress(data){
   const state=gateState(data);
-  if(!state)return {ready:false,target:null,deployment:null,ticker:null,gates:[],closed:0,total:9,pct:0,open:[],configuration:progress([]),live:progress([])};
-  const {s,d,t,configuration,live}=state;
-  const gates=[...configuration.gates,...live.gates];
-  const closed=configuration.closed+live.closed;
+  if(!state)return {ready:false,target:null,deployment:null,ticker:null,gates:[],closed:0,total:9,pct:0,open:[],configuration:progress([]),identity:progress([]),live:progress([])};
+  const {s,d,t,configuration,identity,live}=state;
+  const gates=[...configuration.gates,...identity.gates,...live.gates];
+  const closed=configuration.closed+identity.closed+live.closed;
   const total=gates.length;
   const pct=total?Math.round((closed/total)*1000)/10:0;
-  return {ready:true,target:s,deployment:d,ticker:t,gates,closed,total,pct,open:gates.filter(g=>!g.closed),configuration,live};
+  return {ready:true,target:s,deployment:d,ticker:t,gates,closed,total,pct,open:gates.filter(g=>!g.closed),configuration,identity,live};
 }
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -72,8 +78,9 @@ function render(data,error=null){
       <span style="padding:6px 8px;border-radius:999px;border:1px solid #66eba455;background:#29df8612;color:#66eba4;font-size:8px;font-weight:1000">${s.pct.toFixed(1).replace('.',',')}%</span>
     </div>
     ${lane('A · CONFIGURACIÓN / DESPLIEGUE',s.configuration,'#66eba4')}
-    ${lane('B · ESTADO LIVE / TICKER',s.live,'#ffd987')}
-    <div style="margin-top:6px;font-size:7px;color:#8fa79b">El 100% del carril A NO autoriza apuestas. El carril B y los gates prospectivos posteriores deben cerrarse antes de GREEN.</div>
+    ${lane('B · IDENTIDAD PROVEEDOR / TICKER',s.identity,'#70b9ff')}
+    ${lane('C · ESTADO LIVE',s.live,'#ffd987')}
+    <div style="margin-top:6px;font-size:7px;color:#8fa79b">Este porcentaje mide solo cierre científico de esta subetapa. NO es probabilidad de ganar, EV ni distancia lineal hasta GREEN.</div>
     <div style="margin-top:10px;font-size:11px;font-weight:1000">JOKERBET + PartyCasino · Age of the Gods Norse · España</div>
     <div style="margin-top:8px;padding:9px;border-radius:13px;background:#29df8609;border:1px solid #29df8626;font-size:8px;line-height:1.55"><b style="color:#66eba4">CERRADO (${closed.length})</b><br>${closed.map(x=>'✓ '+esc(x)).join('<br>')}</div>
     <div style="margin-top:7px;padding:9px;border-radius:13px;background:#ff5b6608;border:1px solid #ff5b6626;font-size:8px;line-height:1.55"><b style="color:#ff9298">FALTA (${open.length})</b><br>${open.map(x=>'• '+esc(x)).join('<br>')}</div>

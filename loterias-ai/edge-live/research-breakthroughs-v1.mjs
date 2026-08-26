@@ -58,22 +58,30 @@ function buildOnlineCards(data){
 function norseGateSummary(data){
   const s=data?.p0Strategy?.stateObservationGate;
   const d=data?.p0Strategy?.currentDeploymentConfigurationGate;
-  if(!s)return null;
-  const deploymentClosed=Boolean(d&&d.currentSpanishJackpotCategoryPresenceVerified===true&&d.exactAognjp2LinkedTitleCurrentlyInJackpotCategory===true&&d.dailyTierPublishedForSameOperatorTitle===true&&d.dailyDeploymentConfiguredEvidenceStrong===true);
+  const t=data?.p0Strategy?.tickerIdentityGate;
+  if(!s||!d||!t)return null;
+  const deploymentClosed=d.currentSpanishJackpotCategoryPresenceVerified===true&&d.exactAognjp2LinkedTitleCurrentlyInJackpotCategory===true&&d.dailyTierPublishedForSameOperatorTitle===true&&d.dailyDeploymentConfiguredEvidenceStrong===true;
+  const providerIdentity=t.aognjp2ToBookOfDwarvesProviderBindingVerified===true||d.providerCodeBindingAognjp2ToBookOfDwarvesVerified===true;
+  const exactTickerIms=t.exactSpanishTickerImsBindingVerified===true||s.exactSpanishTickerImsBindingVerified===true||(s.exactTickerHostRecovered===true&&s.exactImsCasinoRecovered===true);
   const configuration=[
     s.currentPublicPageVerified===true,
     s.dailyMechanicPublishedOnCurrentPage===true,
     s.spanishInteroperatorPlaytechNetworkVerified===true,
     deploymentClosed
   ];
+  const identity=[providerIdentity,exactTickerIms];
   const live=[
-    s.directGameToAognjp2BindingVerified===true,
     (s.sameSessionDailyActiveVerified===true)||(s.dailyActiveNowVerified===true),
     (s.currentDailyAmountRecovered===true)||hasNumber(s.currentDailyJackpotEUR),
-    (s.currentGuaranteedHitTimeRecovered===true)||hasNumber(s.guaranteedHitTime),
-    (s.exactSpanishTickerImsBindingVerified===true)||(s.exactTickerHostRecovered===true&&s.exactImsCasinoRecovered===true)
+    (s.currentGuaranteedHitTimeRecovered===true)||hasNumber(s.guaranteedHitTime)
   ];
-  return {configurationClosed:configuration.filter(Boolean).length,configurationTotal:configuration.length,liveClosed:live.filter(Boolean).length,liveTotal:live.length,closed:[...configuration,...live].filter(Boolean).length,total:configuration.length+live.length,deploymentClosed};
+  return {
+    configurationClosed:configuration.filter(Boolean).length,configurationTotal:configuration.length,
+    identityClosed:identity.filter(Boolean).length,identityTotal:identity.length,
+    liveClosed:live.filter(Boolean).length,liveTotal:live.length,
+    closed:[...configuration,...identity,...live].filter(Boolean).length,total:configuration.length+identity.length+live.length,
+    deploymentClosed,providerIdentity
+  };
 }
 
 function buildNorseCards(data){
@@ -85,13 +93,15 @@ function buildNorseCards(data){
   return [{
     kind:'NORSE_P0',id:'playtech-norse-daily-spain-p0',game:'Age of the Gods Norse · Daily P0',operator:`${String(s.operator||'JOKERBET')} + ${String(d?.operator||'PartyCasino')}`,
     url:'https://www.jokerbet.es/tragaperras-slots/age-of-the-gods-norse-gods-and-giants.html',priority:'P0',status:'P0 · INVESTIGACIÓN',action:'NO_PLAY',sourceType:'ONLINE',promotion:false,
-    mechanism:'Playtech Norse Daily · despliegue/config ES separado del estado LIVE',closedGates:gs.closed,totalGates:gs.total,
-    configurationClosed:gs.configurationClosed,configurationTotal:gs.configurationTotal,liveClosed:gs.liveClosed,liveTotal:gs.liveTotal,
+    mechanism:'Playtech Norse Daily · configuración, identidad y estado LIVE separados',closedGates:gs.closed,totalGates:gs.total,
+    configurationClosed:gs.configurationClosed,configurationTotal:gs.configurationTotal,
+    identityClosed:gs.identityClosed,identityTotal:gs.identityTotal,
+    liveClosed:gs.liveClosed,liveTotal:gs.liveTotal,
     spanishNetworkVerified:s.spanishInteroperatorPlaytechNetworkVerified===true,dailyPublished:s.dailyMechanicPublishedOnCurrentPage===true,dailyConfiguredDeploymentVerified:gs.deploymentClosed,
-    directTickerBindingVerified:s.directGameToAognjp2BindingVerified===true,sameSessionDailyVerified:(s.sameSessionDailyActiveVerified===true)||(s.dailyActiveNowVerified===true),
-    strongFinding:'JOKERBET aporta mecánica Daily y red española; PartyCasino aporta un despliegue español actual del Book of Dwarves vinculado a aognjp-2 con Daily publicado para ese título.',
-    guardText:'El despliegue/configuración ya avanzó, pero faltan binding LIVE sin ambigüedad, Daily same-session, importe/deadline actuales y ticker+IMS español antes de cualquier ejecución.',
-    decisiveBlocker:'FALTA_ESTADO_DAILY_Y_BINDING_TICKER_ESPANOL'
+    providerDailyIdentityVerified:gs.providerIdentity,sameSessionDailyVerified:(s.sameSessionDailyActiveVerified===true)||(s.dailyActiveNowVerified===true),
+    strongFinding:'JOKERBET aporta mecánica Daily y red española; PartyCasino aporta despliegue español actual de Book of Dwarves; la referencia Playtech vincula Book of Dwarves (gpas_gogold_pop) con aognjp-2 Daily.',
+    guardText:'La identidad de proveedor no es estado LIVE: faltan ticker+IMS español exactos, Daily same-session, importe y guaranteedHitTime actuales antes de cualquier ejecución.',
+    decisiveBlocker:'FALTA_TICKER_IMS_Y_ESTADO_DAILY_ESPANOL'
   }];
 }
 
@@ -125,9 +135,9 @@ function norseCardHtml(c){
     <div class="breakMechanism">⚡ ${esc(c.mechanism)}</div>
     <div class="breakGrid">
       <div><small>CONFIG / DESPLIEGUE</small><b>${Number(c.configurationClosed)||0}/${Number(c.configurationTotal)||4}</b></div>
-      <div><small>ESTADO LIVE / TICKER</small><b>${Number(c.liveClosed)||0}/${Number(c.liveTotal)||5}</b></div>
-      <div><small>RED ESPAÑA</small><b>${c.spanishNetworkVerified?'VERIFICADA':'POR CERRAR'}</b></div>
-      <div><small>DAILY SAME-SESSION</small><b>${c.sameSessionDailyVerified?'VERIFICADO':'POR CERRAR'}</b></div>
+      <div><small>IDENTIDAD</small><b>${Number(c.identityClosed)||0}/${Number(c.identityTotal)||2}</b></div>
+      <div><small>ESTADO LIVE</small><b>${Number(c.liveClosed)||0}/${Number(c.liveTotal)||3}</b></div>
+      <div><small>DINERO REAL</small><b>0 € · NO_PLAY</b></div>
     </div>
     <div class="breakGood">HALLAZGO REAL: ${esc(c.strongFinding)}</div>
     <div class="breakGuard">🔴 NO ES SEÑAL DE APUESTA · ${esc(c.guardText)}</div>
