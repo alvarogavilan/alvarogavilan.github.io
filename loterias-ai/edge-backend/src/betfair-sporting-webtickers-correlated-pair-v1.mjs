@@ -3,10 +3,11 @@ import {analyzeBetfairSportingCorrelatedWebtickersSession} from './betfair-sport
 const finite=v=>{if(v===null||v===undefined||v===''||typeof v==='boolean')return null;const n=Number(v);return Number.isFinite(n)?n:null;};
 const text=v=>typeof v==='string'&&v.trim()?v.trim():null;
 const lower=v=>String(v??'').trim().toLowerCase();
+const isoMs=v=>{const t=Date.parse(String(v||''));return Number.isFinite(t)?t:null;};
 
 function fail(reason,extra={}){
   return {
-    version:'betfair-sporting-webtickers-correlated-pair-v1',
+    version:'betfair-sporting-webtickers-correlated-pair-v1.1-capture-order-attested',
     mode:'OFFLINE_PASSIVE_MODERN_PAIR_CONTINUITY_CANDIDATE_NO_PLAY',
     valid:false,reason,
     pairCandidateVerified:false,
@@ -34,6 +35,12 @@ export function analyzeBetfairSportingCorrelatedWebtickersPair({beforeHar,afterH
   if(!b)return fail('BEFORE_EXACT_CORRELATED_CANDIDATE_NOT_UNIQUE',{before,after});
   if(!a)return fail('AFTER_EXACT_CORRELATED_CANDIDATE_NOT_UNIQUE',{before,after});
 
+  const bCaptureMs=isoMs(b?.responseRow?.startedDateTime||b?.request?.startedDateTime);
+  const aCaptureMs=isoMs(a?.responseRow?.startedDateTime||a?.request?.startedDateTime);
+  if(bCaptureMs===null||aCaptureMs===null)return fail('HAR_CAPTURE_TIME_MISSING_OR_INVALID',{before,after});
+  const captureTimeAdvanced=aCaptureMs>bCaptureMs;
+  if(!captureTimeAdvanced)return fail('HAR_CAPTURE_ORDER_NOT_FORWARD',{before,after,beforeCaptureTime:b?.responseRow?.startedDateTime||null,afterCaptureTime:a?.responseRow?.startedDateTime||null});
+
   const bRow=row(b),aRow=row(a);
   const bCasino=text(b.expectedBetfairImsCasino),aCasino=text(a.expectedBetfairImsCasino);
   const bEndpoint=endpoint(b),aEndpoint=endpoint(a);
@@ -52,15 +59,18 @@ export function analyzeBetfairSportingCorrelatedWebtickersPair({beforeHar,afterH
   const amountNondecreasing=aAmount>=bAmount;
   const serverTimeAdvanced=aTs>bTs;
   const deadlineCrossedCandidate=bTs<=bGht&&aTs>bGht;
-  const sameCycleContinuityCandidate=sameGuaranteedHitTime&&winCountUnchanged&&amountNondecreasing&&serverTimeAdvanced;
+  const sameCycleContinuityCandidate=sameGuaranteedHitTime&&winCountUnchanged&&amountNondecreasing&&serverTimeAdvanced&&captureTimeAdvanced;
   const unawardedAcrossDeadlineCandidate=sameCycleContinuityCandidate&&deadlineCrossedCandidate;
 
   return {
-    version:'betfair-sporting-webtickers-correlated-pair-v1',
+    version:'betfair-sporting-webtickers-correlated-pair-v1.1-capture-order-attested',
     mode:'OFFLINE_PASSIVE_MODERN_PAIR_CONTINUITY_CANDIDATE_NO_PLAY',
     valid:true,
     beforeCandidate:b,
     afterCandidate:a,
+    beforeCaptureTime:b?.responseRow?.startedDateTime||null,
+    afterCaptureTime:a?.responseRow?.startedDateTime||null,
+    captureTimeAdvanced,
     sameBetfairImsCasino:sameCasino,
     sameConfiguredEndpoint:sameEndpoint,
     sameGuaranteedHitTime,
@@ -73,8 +83,8 @@ export function analyzeBetfairSportingCorrelatedWebtickersPair({beforeHar,afterH
     pairCandidateVerified:unawardedAcrossDeadlineCandidate,
     exactModernResponseSemanticsVerified:false,
     usableForOverduePair:false,
-    scientificUse:'Compares two exact AP McCoy same-entry correlated modern webtickers candidates. It requires the same Betfair casino binding and configured endpoint, then checks same GHT, unchanged win count, nondecreasing amount, advancing server timestamp and a timestamp crossing of GHT. These are continuity candidates only: until the exact modern response schema and field semantics are independently verified for Betfair Spain, this pair must not be treated as server-proven overdue state.',
+    scientificUse:'Compares two exact AP McCoy same-entry correlated modern webtickers candidates. HAR capture timestamps must move forward, and the pair must retain the same Betfair casino binding and configured endpoint before checking same GHT, unchanged win count, nondecreasing amount, advancing server timestamp and a server-timestamp crossing of GHT. These remain continuity candidates only: until the exact modern response schema and field semantics are independently verified for Betfair Spain, this pair must not be treated as server-proven overdue state.',
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,exactApMcCoyCorrelatedCandidateRequiredOnBothCaptures:true,sameBetfairCasinoAndConfiguredEndpointRequired:true,sameGhtAndWinCountRequiredForContinuity:true,modernResponseSemanticsCannotBeGuessed:true,pairCandidateCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,exactApMcCoyCorrelatedCandidateRequiredOnBothCaptures:true,forwardHarCaptureOrderRequired:true,sameBetfairCasinoAndConfiguredEndpointRequired:true,sameGhtAndWinCountRequiredForContinuity:true,modernResponseSemanticsCannotBeGuessed:true,pairCandidateCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
