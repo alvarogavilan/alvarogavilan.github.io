@@ -1,0 +1,84 @@
+{
+  "version": "betfair-spain-apmccoy-dual-feed-prospective-freeze-v1",
+  "status": "FROZEN_BEFORE_FUTURE_CAPTURE",
+  "frozenAtUtc": "2026-08-26T19:37:47Z",
+  "freezeAttestation": {
+    "type": "GITHUB_FILE_INTRODUCTION_COMMIT",
+    "rule": "Any capture claimed as prospective under this protocol must have both legacy and modern HAR capture timestamps strictly later than frozenAtUtc and strictly later than the GitHub commit timestamp that first introduced this file.",
+    "backdatingForbidden": true,
+    "retrospectiveCaptureCannotBeRelabeledProspective": true
+  },
+  "scope": {
+    "operator": "Betfair Spain",
+    "operatorHost": "casino.betfair.es",
+    "provider": "Playtech",
+    "game": "AP McCoy: Sporting Legends",
+    "gameId": "ap-mccoy-sporting-legends-cptn",
+    "launcherHost": "launcher.betfair.es",
+    "jackpotTier": "Daily",
+    "providerGameCode": "sljp-1",
+    "currency": "EUR",
+    "local": 0,
+    "onlineOnly": true,
+    "nonPromoOnly": true
+  },
+  "captureProtocol": {
+    "rawHarStorage": "LOCAL_PRIVATE_ONLY",
+    "rawHarMustNeverBeCommitted": true,
+    "credentialsCookiesTokensMustNeverBeEmitted": true,
+    "wagerProbeAllowed": false,
+    "automaticBettingAllowed": false,
+    "exactCurrentRealMoneyApMcCoyLauncherRequired": true,
+    "latestPostLaunchBetfairInitialResourcesRequired": true,
+    "exactImsAndConfiguredEndpointsRequired": true,
+    "legacyXmlSnapshotMustPassExactServerValidator": true,
+    "modernRequestAndResponseMustPassExactSessionCorrelation": true,
+    "sameLauncherAndInitialResourcesRequiredAcrossFeeds": true,
+    "completeStateVector": [
+      "game",
+      "currency",
+      "local",
+      "amount",
+      "guaranteedHitTime",
+      "gameTimestamp",
+      "winCount"
+    ],
+    "exactStateVectorEqualityRequired": true,
+    "maxCaptureSkewSeconds": 5,
+    "minimumUniqueExactSamples": 3,
+    "minimumDistinctServerTimestamps": 3,
+    "minimumDistinctAmounts": 2,
+    "duplicateCapturesCount": false,
+    "oneExactImsAndEndpointScopeRequired": true,
+    "callerMayTightenPolicy": true,
+    "callerMayRelaxPolicy": false
+  },
+  "interpretation": {
+    "singleMatchingCapture": "CROSS_FEED_CONSISTENCY_ONLY",
+    "minimumSeriesPassingFrozenPolicy": "EMPIRICAL_MODERN_RESPONSE_MAPPING_CANDIDATE_ONLY",
+    "empiricalMappingDoesNotEqualDocumentedModernSemantics": true,
+    "exactModernResponseSemanticsVerified": false,
+    "usableForOverduePair": false,
+    "automaticPromotionForbidden": true,
+    "futureSemanticPromotionRequires": [
+      "separately reviewed promotion standard committed after prospective evidence exists",
+      "independent modern schema documentation or comparably strong independent semantic evidence",
+      "no weakening of this frozen capture policy",
+      "continued exact Betfair Spain AP McCoy session binding"
+    ]
+  },
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "protocolFreezeCannotAuthorizeGreen": true,
+    "prospectiveEvidenceCannotBeManufacturedFromOldHar": true,
+    "rawHarNeverPublic": true,
+    "noWagerProbe": true,
+    "noAutomaticBetting": true
+  }
+}
