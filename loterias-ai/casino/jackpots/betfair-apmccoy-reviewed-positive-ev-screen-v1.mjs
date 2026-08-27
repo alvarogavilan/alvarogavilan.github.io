@@ -1,10 +1,10 @@
-import {evaluateBetfairSportingHarOverduePair} from './betfair-sporting-har-overdue-bridge-v1.mjs';
+import {evaluateBetfairApMcCoyResearchHarPair} from './betfair-apmccoy-research-har-bridge-v1.mjs';
 import {deriveBetfairApMcCoyReviewedRaceLowerBound} from './betfair-apmccoy-reviewed-race-bound-v1.mjs';
 import {isApprovedBetfairApMcCoyServedStakeReviewArtifact} from '../../edge-backend/src/betfair-apmccoy-served-stake-review-v1.mjs';
 import {isApprovedBetfairApMcCoyActionLatencyReviewArtifact} from './betfair-apmccoy-action-latency-review-v1.mjs';
 
-const VERSION='betfair-apmccoy-reviewed-positive-ev-screen-v1.7-internal-har-and-race-derivation';
-const BRIDGE_VERSION='betfair-sporting-har-overdue-bridge-v1.10-code-owned-latency-dryrun';
+const VERSION='betfair-apmccoy-reviewed-positive-ev-screen-v1.8-research-only-har-bridge';
+const BRIDGE_VERSION='betfair-apmccoy-research-har-bridge-v1';
 const RACE_VERSION='betfair-apmccoy-reviewed-race-bound-v1.6-exact-cycle-artifacts';
 const REQUIRED_SCHEDULED_ATTEMPTS=7;
 const MIN_RACE_CONFIDENCE=0.95;
@@ -23,12 +23,13 @@ export function evaluateBetfairApMcCoyReviewedPositiveEvScreen({
   stakeEUR,stakeReviewCommit,actionLatencyMeasurement,actionLatencyReviewCommit,
   scheduledAttemptLedgerReview,raceAssumptionsReview,reviewedCycles,confidence=0.95,
 }={}){
-  const bridge=evaluateBetfairSportingHarOverduePair({
+  const bridge=evaluateBetfairApMcCoyResearchHarPair({
     beforeHar,afterHar,beforeSourceName,afterSourceName,beforeNowEpochSeconds,afterNowEpochSeconds,
     maxFeedAgeIntervals,maxCaptureTimeArgumentSkewSeconds,decisionNowEpochSeconds,
     stakeEUR,stakeReviewCommit,actionLatencyMeasurement,actionLatencyReviewCommit,
   });
-  if(!bridge||bridge.version!==BRIDGE_VERSION||bridge.valid!==true)return fail('INTERNALLY_DERIVED_CURRENT_AP_MCCOY_OVERDUE_BRIDGE_REQUIRED',{bridgeDerivationReason:bridge?.reason||null,bridgeDerivationVersion:bridge?.version||null});
+  if(!bridge||bridge.version!==BRIDGE_VERSION||bridge.valid!==true||bridge.researchStateAvailable!==true||bridge.usableForEvResearch!==true)return fail('INTERNALLY_DERIVED_CURRENT_AP_MCCOY_RESEARCH_BRIDGE_REQUIRED',{bridgeDerivationReason:bridge?.reason||null,bridgeDerivationVersion:bridge?.version||null});
+  if(bridge.realMoneyAllowed===true||bridge.decision!=='NO_PLAY'||bridge.usableForExecution===true)return fail('RESEARCH_BRIDGE_MUST_NEVER_PROPAGATE_EXECUTION_AUTHORITY');
   if(bridge.operatorFollowingDayRuleVerifiedFromCodeOwnedCurrentEvidence!==true||bridge.providerGhtBoundarySemanticsVerifiedFromCodeOwnedEvidence!==true)return fail('CODE_OWNED_OPERATOR_SEMANTICS_REQUIRED');
   if(bridge.currentDailyAmountExactVerifiedFromValidatedServerSnapshot!==true||bridge.finalEvaluation?.followingDayUnawardedVerified!==true||bridge.finalEvaluation?.nextEligibleNetworkBetGuaranteedJackpot!==true)return fail('CURRENT_EXACT_POST_GHT_UNAWARDED_STATE_REQUIRED');
   if(bridge.stakeAtDecisionExactVerifiedFromCodeOwnedReview!==true||bridge.stakeReview?.valid!==true||bridge.stakeReview?.stakeAtDecisionExactVerified!==true||!isApprovedBetfairApMcCoyServedStakeReviewArtifact(bridge.stakeReview))return fail('EXACT_CODE_REVIEWED_SERVED_STAKE_ARTIFACT_REQUIRED');
@@ -76,8 +77,8 @@ export function evaluateBetfairApMcCoyReviewedPositiveEvScreen({
     actionLatencyReviewCommit:race.actionLatencyReviewCommit,actionLatencyReviewArtifactIdentity:race.actionLatencyReviewArtifactIdentity,
     completeProspectiveLedgerCommit:race.completeProspectiveLedgerCommit,
     reviewedPositiveEvScreenPassed,executionAdapterStillRequired:true,freshFinalRevalidationStillRequired:true,usableForExecution:false,
-    scientificUse:'Research-only AP McCoy positive-EV screen. Both the current served state and race probability are re-derived internally: the former from the two passive HAR captures through the exact launcher/config/IMS/ticker/stake/latency bridge, and the latter from exact reviewed survival, ledger, latency and statistical artifacts. Caller-supplied bridge objects, current jackpot amounts, pRace values or precomputed race bounds are not accepted. A positive screen remains non-executable pending fresh final revalidation.',
+    scientificUse:'Research-only AP McCoy positive-EV screen. Current state is derived only through the research-only HAR wrapper, which cannot propagate legacy GREEN, and race probability is derived only from exact reviewed artifacts. Caller-supplied bridge objects, jackpot amounts, pRace values or precomputed bounds are ignored. A positive result remains non-executable pending a separately reviewed fresh final adapter.',
     execution:execution(),
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,callerSuppliedBridgeRejected:true,currentServedStateDerivedInternallyFromHarOnly:true,callerSuppliedRaceBoundRejected:true,raceProbabilityDerivedInternallyOnly:true,exactReviewedStakeArtifactRequired:true,exactReviewedArtifactIdentitiesRequired:true,exactReviewedCycleArtifactsRequired:true,priorCodeOwnedActivationRequired:true,fixedSevenScheduledAttemptDenominatorRequired:true,minimumRaceConfidence95Pct:true,exactBindingScopeEqualityRequired:true,failedShortInvalidMissedAttemptsRemainInDenominator:true,optionalStoppingForbidden:true,reviewedRaceWindowMustFitFrozenSurvivalHorizon:true,conservativeRtpFloorRequired:true,currentExposureMustFitReviewedRaceWindow:true,positiveEvScreenIsNotExecutionAuthority:true,freshFinalRevalidationStillRequired:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false}
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,researchOnlyHarBridgeRequired:true,legacyGreenCannotPropagate:true,callerSuppliedBridgeRejected:true,currentServedStateDerivedInternallyFromHarOnly:true,callerSuppliedRaceBoundRejected:true,raceProbabilityDerivedInternallyOnly:true,exactReviewedStakeArtifactRequired:true,exactReviewedArtifactIdentitiesRequired:true,exactReviewedCycleArtifactsRequired:true,priorCodeOwnedActivationRequired:true,fixedSevenScheduledAttemptDenominatorRequired:true,minimumRaceConfidence95Pct:true,exactBindingScopeEqualityRequired:true,failedShortInvalidMissedAttemptsRemainInDenominator:true,optionalStoppingForbidden:true,reviewedRaceWindowMustFitFrozenSurvivalHorizon:true,conservativeRtpFloorRequired:true,currentExposureMustFitReviewedRaceWindow:true,positiveEvScreenIsNotExecutionAuthority:true,freshFinalRevalidationStillRequired:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false}
   };
 }
