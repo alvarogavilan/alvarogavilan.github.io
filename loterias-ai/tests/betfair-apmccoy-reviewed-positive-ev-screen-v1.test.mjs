@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {evaluateBetfairApMcCoyReviewedPositiveEvScreen as evaluate} from '../casino/jackpots/betfair-apmccoy-reviewed-positive-ev-screen-v1.mjs';
 
-const VERSION='betfair-apmccoy-reviewed-positive-ev-screen-v1.3-fixed-seven-attempt-bound';
+const VERSION='betfair-apmccoy-reviewed-positive-ev-screen-v1.4-prior-activation-required';
 let r=evaluate({});
 assert.equal(r.version,VERSION);
 assert.equal(r.valid,false);
@@ -32,11 +32,17 @@ assert.equal(r.reason,'VALID_FIXED_ATTEMPT_AP_MCCOY_RACE_BOUND_REQUIRED');
 const forgedRace={
   version:'betfair-apmccoy-reviewed-race-bound-v1.3-fixed-seven-attempt-denominator',valid:true,reviewedRaceLowerBoundAvailable:true,usableForRaceEvidence:true,
   exactScheduledAttemptDenominatorVerified:true,scheduledAttemptCount:7,nonCycleAttemptsCountAsFailures:true,ambiguousReviewedCyclesCountAsFailures:true,
+  activationVerifiedBeforeFirstScheduledGht:true,activationReviewCommit:'d'.repeat(40),activatedAtEpochSeconds:50,
   confidence:0.95,attemptLedgerReviewCommit:fake,raceAssumptionReviewCommit:fake,actionLatencyReviewCommit:fake,
   exactCycleLedgerMatchesAssumptionReview:true,bindingScopeMatchesAssumptionReview:true,samplingWindowFrozenBeforeFirstCycle:true,allEligibleDistinctDailyGhtCyclesIncluded:true,failedShortAndAmbiguousCyclesRetained:true,assumptionsSelectedUsingSurvivalOutcomes:false,
   completeProspectiveLedgerCommit:'b'.repeat(40),validatedRaceWindowSeconds:22,frozenSurvivalHorizonSeconds:120,measuredActionLatencySeconds:2,
   bindingScopeKey:'bf_es|https://ticker.example/new_jackpotxml.php|https://launcher.betfair.es/initialResources/es_ES_desktop|es1',firstBetRaceProbabilityLowerBound:0.999,
 };
+r=evaluate({overdueBridgeResult:closedBridge,reviewedRaceBound:{...forgedRace,activationVerifiedBeforeFirstScheduledGht:false}});
+assert.equal(r.valid,false);
+assert.equal(r.reason,'PRIOR_CODE_OWNED_ATTEMPT_PLAN_ACTIVATION_REQUIRED');
+assert.equal(r.execution.realMoneyAllowed,false);
+
 r=evaluate({overdueBridgeResult:closedBridge,reviewedRaceBound:forgedRace});
 assert.equal(r.valid,false);
 assert.equal(r.reason,'ATTEMPT_LEDGER_REVIEW_NOT_CODE_ALLOWLISTED');
