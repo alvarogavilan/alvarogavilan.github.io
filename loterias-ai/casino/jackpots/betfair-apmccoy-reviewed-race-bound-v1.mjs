@@ -1,14 +1,14 @@
-import {isApprovedBetfairApMcCoySurvivalReviewCommit} from './betfair-apmccoy-post-ght-survival-review-v1.mjs';
+import {isApprovedBetfairApMcCoySurvivalReviewArtifact} from './betfair-apmccoy-post-ght-survival-review-v1.mjs';
 import {classifyBetfairApMcCoyReviewedSurvivalCycleAtLatency} from './betfair-apmccoy-post-ght-survival-curve-v1.mjs';
 import {isApprovedBetfairApMcCoyActionLatencyReviewArtifact} from './betfair-apmccoy-action-latency-review-v1.mjs';
 import {isApprovedBetfairApMcCoyRaceAssumptionReviewArtifact} from './betfair-apmccoy-race-assumptions-review-v1.mjs';
 import {isApprovedBetfairApMcCoyAttemptLedgerReviewArtifact} from './betfair-apmccoy-scheduled-attempt-ledger-review-v1.mjs';
 
-const VERSION='betfair-apmccoy-reviewed-race-bound-v1.5-all-exact-reviewed-artifacts';
+const VERSION='betfair-apmccoy-reviewed-race-bound-v1.6-exact-cycle-artifacts';
 const CYCLE_VERSION='betfair-apmccoy-post-ght-survival-review-v1';
 const LATENCY_VERSION='betfair-apmccoy-action-latency-review-v1';
 const ASSUMPTION_VERSION='betfair-apmccoy-race-assumptions-review-v1';
-const ATTEMPT_REVIEW_VERSION='betfair-apmccoy-scheduled-attempt-ledger-review-v1.3-code-owned-artifact-identity';
+const ATTEMPT_REVIEW_VERSION='betfair-apmccoy-scheduled-attempt-ledger-review-v1.4-exact-cycle-artifacts';
 const REQUIRED_SCHEDULED_ATTEMPTS=7;
 const MIN_CONFIDENCE=0.95;
 const MAX_DECISION_FEED_AGE_INTERVALS=2;
@@ -28,7 +28,7 @@ export function deriveBetfairApMcCoyReviewedRaceLowerBound({reviewedCycles,sched
   if(c===null||c<MIN_CONFIDENCE||c>=1)return fail('CONFIDENCE_BELOW_FROZEN_MINIMUM',{confidence:c,minimumConfidence:MIN_CONFIDENCE});
 
   const attempt=scheduledAttemptLedgerReview;
-  if(!attempt||attempt.version!==ATTEMPT_REVIEW_VERSION||attempt.valid!==true||attempt.completeScheduledAttemptLedgerVerified!==true||attempt.allScheduledOpportunitiesRetained!==true||attempt.usableForRaceDenominator!==true)return fail('VALID_FIXED_SCHEDULED_ATTEMPT_LEDGER_REVIEW_REQUIRED');
+  if(!attempt||attempt.version!==ATTEMPT_REVIEW_VERSION||attempt.valid!==true||attempt.completeScheduledAttemptLedgerVerified!==true||attempt.allScheduledOpportunitiesRetained!==true||attempt.usableForRaceDenominator!==true||attempt.exactReviewedCycleArtifactsVerified!==true)return fail('VALID_FIXED_SCHEDULED_ATTEMPT_LEDGER_REVIEW_REQUIRED');
   if(attempt.activationVerifiedBeforeFirstScheduledGht!==true||!text(attempt.activationReviewCommit)||!(finite(attempt.activatedAtEpochSeconds)>0))return fail('CODE_OWNED_ATTEMPT_PLAN_ACTIVATION_REQUIRED');
   if(!isApprovedBetfairApMcCoyAttemptLedgerReviewArtifact(attempt))return fail('ATTEMPT_LEDGER_REVIEW_ARTIFACT_NOT_CODE_APPROVED',{reviewCommit:attempt.reviewCommit||null,reviewArtifactIdentity:attempt.reviewArtifactIdentity||null});
   if(Number(attempt.targetScheduledOpportunities)!==REQUIRED_SCHEDULED_ATTEMPTS||Number(attempt.scheduledAttemptCount)!==REQUIRED_SCHEDULED_ATTEMPTS)return fail('EXACT_SEVEN_SCHEDULED_ATTEMPTS_REQUIRED',{scheduledAttemptCount:attempt.scheduledAttemptCount??null});
@@ -56,7 +56,7 @@ export function deriveBetfairApMcCoyReviewedRaceLowerBound({reviewedCycles,sched
   const ids=new Set(),bindings=new Set(),execs=new Set(),prepared=[];
   for(const cycle of cycles){
     if(!cycle||cycle.version!==CYCLE_VERSION||cycle.valid!==true||cycle.independentReviewApproved!==true||cycle.completeAttemptLedgerVerified!==true||cycle.completeObservationHorizon!==true||cycle.usableForLatencyClassification!==true)return fail('INVALID_REVIEWED_SURVIVAL_CYCLE');
-    if(!isApprovedBetfairApMcCoySurvivalReviewCommit(cycle.reviewCommit))return fail('SURVIVAL_REVIEW_COMMIT_NOT_CODE_ALLOWLISTED',{cycleId:cycle.cycleId||null,reviewCommit:cycle.reviewCommit||null});
+    if(!isApprovedBetfairApMcCoySurvivalReviewArtifact(cycle))return fail('SURVIVAL_REVIEW_ARTIFACT_NOT_CODE_APPROVED',{cycleId:cycle.cycleId||null,reviewCommit:cycle.reviewCommit||null,reviewArtifactIdentity:cycle.reviewArtifactIdentity||null});
     const id=text(cycle.cycleId),key=bindingKey(cycle),exec=finite(cycle.requestExecIntervalSeconds);
     if(!id||ids.has(id))return fail('MISSING_OR_DUPLICATE_CYCLE_ID',{cycleId:id});ids.add(id);
     if(!key||key==='|||')return fail('MISSING_BINDING_SCOPE',{cycleId:id});bindings.add(key);
@@ -94,15 +94,15 @@ export function deriveBetfairApMcCoyReviewedRaceLowerBound({reviewedCycles,sched
     activationReviewCommit:attempt.activationReviewCommit,activatedAtEpochSeconds:attempt.activatedAtEpochSeconds,
     maxDecisionFeedAgeIntervals:MAX_DECISION_FEED_AGE_INTERVALS,maxDecisionFeedAgeSeconds,frozenSurvivalHorizonIntervals:FROZEN_SURVIVAL_HORIZON_INTERVALS,frozenSurvivalHorizonSeconds,validatedRaceWindowSeconds,
     raceAssumptionReviewCommit:assumptions.reviewCommit,raceAssumptionReviewArtifactIdentity:assumptions.reviewArtifactIdentity,attemptLedgerReviewCommit:attempt.reviewCommit,attemptLedgerReviewArtifactIdentity:attempt.reviewArtifactIdentity,completeProspectiveLedgerCommit:fullLedgerCommit,assumptionEvidenceId:assumptions.assumptionEvidenceId,
-    attemptIds:attempt.attemptIds,scheduledGhtEpochSeconds:attempt.scheduledGhtEpochSeconds,cycleIds:actualCycleIds,reviewedCycleCount:cycles.length,scheduledAttemptCount:REQUIRED_SCHEDULED_ATTEMPTS,nonCycleFailureCount,
+    attemptIds:attempt.attemptIds,scheduledGhtEpochSeconds:attempt.scheduledGhtEpochSeconds,cycleIds:actualCycleIds,cycleReviewArtifactIdentities:cycles.map(x=>x.reviewArtifactIdentity),reviewedCycleCount:cycles.length,scheduledAttemptCount:REQUIRED_SCHEDULED_ATTEMPTS,nonCycleFailureCount,
     successfulDryRunCycles:successes,observedReviewedCycleFailureCount:observedReviewedCycleFailures,ambiguousReviewedCycles:ambiguous,conservativeFailureCycles:conservativeFailures,
     nonCycleAttemptsCountAsFailures:true,ambiguousReviewedCyclesCountAsFailures:true,classifications,
     confidence:c,minimumConfidence:MIN_CONFIDENCE,method:'ONE_SIDED_CLOPPER_PEARSON_BINOMIAL_FIXED_SEVEN_ATTEMPTS_CONSERVATIVE_FAILURES',firstBetRaceProbabilityLowerBound:lowerBound,
-    exactScheduledAttemptDenominatorVerified:true,exactReviewedArtifactIdentitiesVerified:true,activationVerifiedBeforeFirstScheduledGht:true,completeProspectiveCycleLedgerVerified:true,binomialSamplingAssumptionJustified:true,currentCycleExchangeabilityVerified:true,
+    exactScheduledAttemptDenominatorVerified:true,exactReviewedArtifactIdentitiesVerified:true,exactReviewedCycleArtifactsVerified:true,activationVerifiedBeforeFirstScheduledGht:true,completeProspectiveCycleLedgerVerified:true,binomialSamplingAssumptionJustified:true,currentCycleExchangeabilityVerified:true,
     exactCycleLedgerMatchesAssumptionReview:true,bindingScopeMatchesAssumptionReview:true,samplingWindowFrozenBeforeFirstCycle:true,allEligibleDistinctDailyGhtCyclesIncluded:true,failedShortAndAmbiguousCyclesRetained:true,assumptionsSelectedUsingSurvivalOutcomes:false,
     bindingScopeKey:actualBindingScopeKey,requestExecIntervalSeconds:exec,reviewedRaceLowerBoundAvailable:true,usableForRaceEvidence:true,usableForExecution:false,
-    scientificUse:'Derives the AP McCoy race lower confidence bound only from exact code-owned reviewed artifacts. The attempt-ledger, action-latency and race-assumption review SHAs are each bound to their exact canonical artifact identities and cannot be reused with altered content. Exactly seven scheduled Daily GHT opportunities remain in the denominator; missing, failed and ambiguous outcomes are conservative failures; confidence is at least 95%; and feed age plus end-to-end action latency must fit the frozen survival horizon.',
+    scientificUse:'Derives the AP McCoy race lower confidence bound only from exact code-owned reviewed artifacts at every layer: each survival cycle, the fixed seven-attempt ledger, action latency and race assumptions. Approved SHAs cannot be reused with altered cycle timing, outcomes, ledger content, latency or assumptions. Exactly seven scheduled Daily GHT opportunities remain in the denominator and missing, failed or ambiguous outcomes are conservative failures.',
     execution:execution(),
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,exactReviewedArtifactIdentitiesRequired:true,approvedReviewShaCannotAuthorizeAlteredArtifact:true,codeOwnedActivationRequired:true,activationBeforeFirstScheduledGhtRequired:true,fixedSevenScheduledAttemptDenominator:true,codeOwnedAttemptLedgerReviewArtifact:true,codeOwnedLatencyReviewArtifact:true,codeOwnedRaceAssumptionReviewArtifact:true,fullAttemptLedgerCommitMustMatchRaceAssumptionReview:true,callerReviewedCycleSubsetCannotReplaceAttemptLedger:true,nonCycleFailuresCannotBeDropped:true,ambiguousReviewedCyclesCannotBeDropped:true,minimumConfidence95Pct:true,optionalStoppingForbidden:true,bindingScopeMustMatchAttemptAndAssumptionReviews:true,latencyIndependentOfSurvivalOutcomes:true,maxDecisionFeedAgeIntervalsFrozen:true,raceWindowIncludesFeedAgePlusActionLatency:true,raceWindowCannotExceedFrozenTwelveIntervalSurvivalHorizon:true,notExecutionAuthority:true,servedStakeStillRequired:true,currentFreshStateStillRequired:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false}
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,exactReviewedArtifactIdentitiesRequired:true,exactReviewedCycleArtifactsRequired:true,approvedReviewShaCannotAuthorizeAlteredArtifact:true,codeOwnedActivationRequired:true,activationBeforeFirstScheduledGhtRequired:true,fixedSevenScheduledAttemptDenominator:true,fullAttemptLedgerCommitMustMatchRaceAssumptionReview:true,callerReviewedCycleSubsetCannotReplaceAttemptLedger:true,nonCycleFailuresCannotBeDropped:true,ambiguousReviewedCyclesCannotBeDropped:true,minimumConfidence95Pct:true,optionalStoppingForbidden:true,bindingScopeMustMatchAttemptAndAssumptionReviews:true,latencyIndependentOfSurvivalOutcomes:true,maxDecisionFeedAgeIntervalsFrozen:true,raceWindowIncludesFeedAgePlusActionLatency:true,raceWindowCannotExceedFrozenTwelveIntervalSurvivalHorizon:true,notExecutionAuthority:true,servedStakeStillRequired:true,currentFreshStateStillRequired:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false}
   };
 }
