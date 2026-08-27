@@ -1,0 +1,103 @@
+{
+  "version": "betfair-spain-apmccoy-post-ght-survival-freeze-v1",
+  "generatedAtDate": "2026-08-27",
+  "status": "PROSPECTIVE_LATENCY_AGNOSTIC_POST_GHT_SURVIVAL_COLLECTION_FROZEN",
+  "scope": "ONLINE_ONLY_NON_PROMO_PASSIVE_RESEARCH",
+  "operator": "Betfair Spain",
+  "market": "ES",
+  "target": {
+    "title": "AP McCoy Sporting Legends™",
+    "gameId": "ap-mccoy-sporting-legends-cptn",
+    "exactPublicUrl": "https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn",
+    "requiredDailyCode": "sljp-1"
+  },
+  "semanticAnchors": {
+    "currentOperatorRulesCommit": "7ae808f0cd72ff04ee016d9aaee3b0e2a456cb4c",
+    "providerNetworkSemanticsCommit": "573a901b3022fd380c1d7181bd04e8291af43c4d",
+    "operatorFirstBetFollowingDayRuleVerified": true,
+    "providerGuaranteedHitTimeBoundarySemanticsVerified": true,
+    "operatorAnyBetAnySizeEligibilityVerified": true,
+    "operatorFundedJackpotRtpSeparationVerified": true
+  },
+  "freezeAnchor": {
+    "mainShaBeforeFreezeArtifact": "cbff107304b06aaa5f0c05066603b68a347a137c",
+    "rule": "The commit that first adds this artifact is the prospective protocol freeze. Only exact AP McCoy passive observations strictly later than that commit timestamp may enter the survival ledger."
+  },
+  "whyLatencyAgnostic": "Choosing an action-latency threshold after observing which post-GHT windows survived would bias the race estimate. Every complete cycle therefore records the full bounded post-GHT state path without selecting a latency. A later independently frozen latency may classify every retained reviewed cycle deterministically; cycles cannot be included or excluded based on that latency.",
+  "frozenObservationUnit": {
+    "oneCyclePerDistinctDailyGht": true,
+    "exactApMcCoyRealLauncherRequiredInEveryHar": true,
+    "latestPostLaunchBetfairInitialResourcesRequiredInEveryHar": true,
+    "sameBetfairImsCasinoRequired": true,
+    "sameConfiguredTickerEndpointRequired": true,
+    "sameConfigSourceEndpointRequired": true,
+    "sameObservedTickerEndpointRequired": true,
+    "sameInstanceCodeRequired": true,
+    "sameGuaranteedHitTimeRequiredWithinCycle": true,
+    "requiredCode": "sljp-1",
+    "requiredCurrency": "EUR",
+    "requiredLocal": 0,
+    "beforeBoundarySnapshotRequired": true,
+    "postGhtSnapshotsRequired": true,
+    "firstPostGhtSnapshotMustBeFirstRetainedValidatedObservationAfterBoundary": true,
+    "allRetainedPostGhtSnapshotsMustRemainInStrictTimeOrder": true,
+    "maximumAllowedGapBetweenServerSnapshots": "requestExecInterval * 2",
+    "cycleMustContinueUntil": [
+      "an award/reset is observed",
+      "or the predeclared observation horizon ends"
+    ],
+    "predeclaredObservationHorizon": "requestExecInterval * 12 after first post-GHT detection",
+    "stakeNotRequiredForRawSurvivalCollection": true,
+    "noRealWagerRequired": true,
+    "passiveOnly": true
+  },
+  "frozenOutputs": {
+    "detectionLagSeconds": "firstPostGht.gameTimestamp - guaranteedHitTime",
+    "lastConfirmedUnawardedLagSeconds": "latest retained state with unchanged winCount, unchanged guaranteedHitTime and nondecreasing amount, measured from GHT",
+    "firstObservedAwardOrResetLagSeconds": "first retained state with changed winCount, decreased amount or changed guaranteedHitTime, if observed",
+    "survivalLowerBoundSeconds": "lastConfirmedUnawardedTimestamp - detectionTimestamp",
+    "awardTimeIntervalCensored": true,
+    "rightCensoredIfNoAwardByObservationHorizon": true,
+    "latencyThresholdClassificationForbiddenAtCollectionTime": true
+  },
+  "laterDeterministicClassification": {
+    "allowedOnlyAfterIndependentLatencyFreeze": true,
+    "successAtLatencyL": "cycle has confirmed unchanged/unreset state at or after detectionTimestamp + L",
+    "failureAtLatencyL": "award/reset is observed strictly before detectionTimestamp + L",
+    "ambiguousAtLatencyL": "observation gaps or censoring do not establish either condition",
+    "ambiguousCyclesCannotBeSilentlyDropped": true,
+    "completeProspectiveLedgerRequired": true,
+    "latencyCannotBeChosenUsingSurvivalOutcomes": true
+  },
+  "executionSeparation": {
+    "survivalCollectionCanProceedBeforeStakeReview": true,
+    "reason": "Post-GHT survival is a passive server-state property. Exact served stake and its review are required for economic/execution evaluation but not for observing how long the overdue network state remains unawarded.",
+    "servedStakeReviewStillRequiredForExecution": true,
+    "prospectiveRaceReviewStillRequiredForExecution": true,
+    "freshFinalStateStillRequiredForExecution": true
+  },
+  "antiPHacking": {
+    "retrospectivePreFreezeCyclesForbidden": true,
+    "failedOrShortCyclesCannotBeDropped": true,
+    "duplicateGhtCyclesCannotCountTwice": true,
+    "postGhtSnapshotsCannotBeCherryPicked": true,
+    "latencyCannotBeSelectedFromObservedSurvivalDistribution": true,
+    "horizonCannotBeExtendedAfterSeeingAProfitableCycle": true
+  },
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "passiveOnly": true,
+    "exactApMcCoySessionBindingRequired": true,
+    "noWagerProbe": true,
+    "noAutomaticBetting": true,
+    "realMoneyAllowed": false
+  }
+}
