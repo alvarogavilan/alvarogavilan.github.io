@@ -1,18 +1,22 @@
 const VERSION='betfair-apmccoy-action-latency-review-v1';
-const CONTRACT_REVISION='v1.1-dispatch-plus-passive-rtt';
+const CONTRACT_REVISION='v1.2-code-owned-artifact-identity';
 const FREEZE_COMMIT_SHA='8eb28f5d7a3c708104f3e2356b6cc86764dba68c';
 const SHA=/^[0-9a-f]{40}$/;
 const MIN_SAMPLE_COUNT=20;
 const REQUIRED_START_EVENT='VALIDATED_SERVER_STATE_AVAILABLE_TO_DECISION_LOGIC';
 const REQUIRED_END_EVENT='MANUAL_WAGER_REQUEST_DISPATCH_OBSERVED_LOCALLY';
 const REQUIRED_NETWORK_ALLOWANCE_BASIS='PASSIVE_SAME_ORIGIN_FULL_RTT_UPPER_BOUND';
-// Deliberately empty. A real non-wager latency measurement package must be
-// committed and independently reviewed before a later code change may pin it.
-const APPROVED_ACTION_LATENCY_REVIEW_COMMITS=new Set();
+// Deliberately empty. Future approval entries map review commit -> exact canonical
+// reviewed measurement identity, preventing reuse of an approved SHA with altered
+// protocol, samples, dispatch latency, network allowance or total latency.
+const APPROVED_ACTION_LATENCY_REVIEWS=new Map();
 const finite=v=>{if(v===null||v===undefined||v===''||typeof v==='boolean')return null;const n=Number(v);return Number.isFinite(n)?n:null;};
 const text=v=>typeof v==='string'&&v.trim()?v.trim():null;
 function execution(){return {decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0};}
-export function isApprovedBetfairApMcCoyActionLatencyReviewCommit(value){const s=text(value)?.toLowerCase();return !!s&&SHA.test(s)&&APPROVED_ACTION_LATENCY_REVIEW_COMMITS.has(s);}
+function identityFields(v){return [text(v?.protocolId),text(v?.method),Number(v?.sampleCount),text(v?.startEvent),text(v?.endEvent),finite(v?.measuredDispatchLatencySeconds),finite(v?.networkAllowanceSeconds),text(v?.networkAllowanceBasis),finite(v?.measuredActionLatencySeconds),v?.networkAllowanceDerivedFromPassiveTrafficOnly===true,v?.wagerProbeUsed===false,v?.selectedUsingPostGhtSurvivalOutcomes===false];}
+function artifactIdentity(v){return JSON.stringify(identityFields(v));}
+export function isApprovedBetfairApMcCoyActionLatencyReviewCommit(value){const s=text(value)?.toLowerCase();return !!s&&SHA.test(s)&&APPROVED_ACTION_LATENCY_REVIEWS.has(s);}
+export function isApprovedBetfairApMcCoyActionLatencyReviewArtifact(review){const commit=text(review?.reviewCommit)?.toLowerCase();if(!commit||!SHA.test(commit))return false;const expected=APPROVED_ACTION_LATENCY_REVIEWS.get(commit);return !!expected&&expected===artifactIdentity(review);}
 function fail(reason,extra={}){return {version:VERSION,contractRevision:CONTRACT_REVISION,valid:false,reason,measuredActionLatencyVerified:false,latencyPolicyIndependentlyReviewed:false,usableForRaceWindow:false,usableForExecution:false,execution:execution(),...extra};}
 
 export function reviewBetfairApMcCoyActionLatency({measurement,reviewCommit}={}){
@@ -34,16 +38,16 @@ export function reviewBetfairApMcCoyActionLatency({measurement,reviewCommit}={})
   if(m.selectedUsingPostGhtSurvivalOutcomes!==false)return fail('LATENCY_SELECTION_MUST_BE_INDEPENDENT_OF_SURVIVAL_OUTCOMES',{measuredActionLatencySeconds:total,sampleCount,protocolId});
   const commit=text(reviewCommit)?.toLowerCase()||null;
   if(!commit||!SHA.test(commit))return fail('VALID_ACTION_LATENCY_REVIEW_COMMIT_REQUIRED',{measuredActionLatencySeconds:total,sampleCount,protocolId});
-  if(!isApprovedBetfairApMcCoyActionLatencyReviewCommit(commit))return fail('ACTION_LATENCY_REVIEW_COMMIT_NOT_CODE_ALLOWLISTED',{reviewCommit:commit,measuredActionLatencySeconds:total,sampleCount,protocolId});
+  const normalized={protocolId,method,sampleCount,startEvent:REQUIRED_START_EVENT,endEvent:REQUIRED_END_EVENT,measuredDispatchLatencySeconds:dispatch,networkAllowanceSeconds:network,networkAllowanceBasis:REQUIRED_NETWORK_ALLOWANCE_BASIS,measuredActionLatencySeconds:total,networkAllowanceDerivedFromPassiveTrafficOnly:true,wagerProbeUsed:false,selectedUsingPostGhtSurvivalOutcomes:false};
+  const identity=artifactIdentity(normalized),approvedIdentity=APPROVED_ACTION_LATENCY_REVIEWS.get(commit);
+  if(!approvedIdentity)return fail('ACTION_LATENCY_REVIEW_COMMIT_NOT_CODE_ALLOWLISTED',{reviewCommit:commit,measuredActionLatencySeconds:total,sampleCount,protocolId});
+  if(approvedIdentity!==identity)return fail('ACTION_LATENCY_REVIEW_ARTIFACT_IDENTITY_MISMATCH',{reviewCommit:commit,reviewArtifactIdentity:identity});
   return {
     version:VERSION,contractRevision:CONTRACT_REVISION,valid:true,reason:'INDEPENDENT_AP_MCCOY_END_TO_END_ACTION_LATENCY_REVIEW_APPROVED',
-    reviewCommit:commit,freezeCommitSha:FREEZE_COMMIT_SHA,protocolId,method,sampleCount,
-    startEvent:REQUIRED_START_EVENT,endEvent:REQUIRED_END_EVENT,
-    measuredDispatchLatencySeconds:dispatch,networkAllowanceSeconds:network,networkAllowanceBasis:REQUIRED_NETWORK_ALLOWANCE_BASIS,
-    measuredActionLatencySeconds:total,selectedUsingPostGhtSurvivalOutcomes:false,networkAllowanceDerivedFromPassiveTrafficOnly:true,wagerProbeUsed:false,
+    reviewCommit:commit,reviewArtifactIdentity:identity,freezeCommitSha:FREEZE_COMMIT_SHA,...normalized,
     measuredActionLatencyVerified:true,latencyPolicyIndependentlyReviewed:true,usableForRaceWindow:true,usableForExecution:false,
-    scientificUse:'Code-owned promotion gate for conservative AP McCoy action latency. The reviewed value must cover the interval from validated server-state availability through local manual wager-request dispatch plus a positive network allowance derived only from passive same-origin full-RTT observations. At least twenty samples are required, no wager probe is allowed, and the protocol must be independent of post-GHT survival outcomes. The result supplies only a conservative race-window input and cannot prove state, stake, jackpot eligibility or execution authority.',
+    scientificUse:'Code-owned promotion gate for conservative AP McCoy action latency. Approval binds the review commit to the exact canonical measurement identity, so an approved SHA cannot be reused with altered protocol, sample count, dispatch latency, passive network allowance or total latency. The reviewed total covers validated server-state availability through local manual request dispatch plus a positive passive full-RTT allowance; at least twenty samples are required and wager probes are forbidden.',
     execution:execution(),
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,minimumSampleCount:MIN_SAMPLE_COUNT,startEventFixed:true,endEventFixedAtLocalRequestDispatch:true,positivePassiveNetworkAllowanceRequired:true,fullPassiveRttAllowanceRequired:true,totalMustCoverDispatchPlusNetworkAllowance:true,networkAllowanceFromPassiveTrafficOnly:true,wagerProbeForbidden:true,codeOwnedReviewAllowlist:true,reviewAllowlistCurrentlyEmpty:APPROVED_ACTION_LATENCY_REVIEW_COMMITS.size===0,latencySelectionCannotUseSurvivalOutcomes:true,latencyCannotSelfAuthorizeRaceProbability:true,noAutomaticBetting:true,realMoneyAllowed:false}
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,minimumSampleCount:MIN_SAMPLE_COUNT,startEventFixed:true,endEventFixedAtLocalRequestDispatch:true,positivePassiveNetworkAllowanceRequired:true,fullPassiveRttAllowanceRequired:true,totalMustCoverDispatchPlusNetworkAllowance:true,networkAllowanceFromPassiveTrafficOnly:true,wagerProbeForbidden:true,codeOwnedReviewArtifactIdentity:true,reviewAllowlistCurrentlyEmpty:APPROVED_ACTION_LATENCY_REVIEWS.size===0,approvedShaCannotBeReusedWithAlteredArtifact:true,latencySelectionCannotUseSurvivalOutcomes:true,latencyCannotSelfAuthorizeRaceProbability:true,noAutomaticBetting:true,realMoneyAllowed:false}
   };
 }
