@@ -1,71 +1,22 @@
 import {analyzeBetfairSportingHar} from '../../edge-backend/src/betfair-sporting-har-discovery-v1.mjs';
+import {reviewBetfairApMcCoyServedStake} from '../../edge-backend/src/betfair-apmccoy-served-stake-review-v1.mjs';
 import {validateBetfairSportingServerSnapshot} from './betfair-sporting-server-binding-validator-v1.mjs';
+import {getBetfairApMcCoyCurrentOperatorSemantics} from './betfair-apmccoy-current-operator-semantics-v1.mjs';
 import {evaluateSportingLegendsOverdueFirstBet} from './sporting-legends-overdue-first-bet-v1.mjs';
 
 const EXACT_GAME_ID='ap-mccoy-sporting-legends-cptn';
-const VERSION='betfair-sporting-har-overdue-bridge-v1.7-latest-session-poll';
+const VERSION='betfair-sporting-har-overdue-bridge-v1.8-code-owned-semantics-stake';
 const finite=v=>{if(v===null||v===undefined||v===''||typeof v==='boolean')return null;const n=Number(v);return Number.isFinite(n)?n:null;};
 const text=v=>typeof v==='string'&&v.trim()?v.trim():null;
-function sameHttpsEndpoint(a,b){
-  try{const x=new URL(a),y=new URL(b);return x.protocol==='https:'&&y.protocol==='https:'&&x.origin===y.origin&&x.pathname===y.pathname;}catch{return false;}
-}
-function isoEpochSeconds(v){
-  const s=text(v);if(!s)return null;
-  const ms=Date.parse(s);return Number.isFinite(ms)?ms/1000:null;
-}
-function betfairInitialResourcesUrl(url){
-  try{
-    const u=new URL(String(url||'')),h=u.hostname.toLowerCase();
-    return u.protocol==='https:'&&(h==='betfair.es'||h.endsWith('.betfair.es'))&&/\/initialresources(?:\/|$)/i.test(u.pathname);
-  }catch{return false;}
-}
-function latestPrecedingRealCasinoLauncher(discovery,tickerEntryIndex){
-  if(!Number.isInteger(tickerEntryIndex))return null;
-  const all=discovery?.discovery?.betfairRealCasinoLauncherBindings||[];
-  return all.filter(x=>Number.isInteger(x?.index)&&x.index<tickerEntryIndex).sort((a,b)=>b.index-a.index)[0]||null;
-}
-function latestPostLaunchInitialResources(discovery,launcherEntryIndex,tickerEntryIndex){
-  if(!Number.isInteger(launcherEntryIndex)||!Number.isInteger(tickerEntryIndex))return null;
-  const relevant=discovery?.discovery?.relevantEntries||[];
-  return relevant.filter(r=>Number.isInteger(r?.index)&&r.index>launcherEntryIndex&&r.index<tickerEntryIndex&&betfairInitialResourcesUrl(r?.request?.url)).sort((a,b)=>b.index-a.index)[0]||null;
-}
+function sameHttpsEndpoint(a,b){try{const x=new URL(a),y=new URL(b);return x.protocol==='https:'&&y.protocol==='https:'&&x.origin===y.origin&&x.pathname===y.pathname;}catch{return false;}}
+function isoEpochSeconds(v){const s=text(v);if(!s)return null;const ms=Date.parse(s);return Number.isFinite(ms)?ms/1000:null;}
+function betfairInitialResourcesUrl(url){try{const u=new URL(String(url||'')),h=u.hostname.toLowerCase();return u.protocol==='https:'&&(h==='betfair.es'||h.endsWith('.betfair.es'))&&/\/initialresources(?:\/|$)/i.test(u.pathname);}catch{return false;}}
+function latestPrecedingRealCasinoLauncher(discovery,tickerEntryIndex){if(!Number.isInteger(tickerEntryIndex))return null;const all=discovery?.discovery?.betfairRealCasinoLauncherBindings||[];return all.filter(x=>Number.isInteger(x?.index)&&x.index<tickerEntryIndex).sort((a,b)=>b.index-a.index)[0]||null;}
+function latestPostLaunchInitialResources(discovery,launcherEntryIndex,tickerEntryIndex){if(!Number.isInteger(launcherEntryIndex)||!Number.isInteger(tickerEntryIndex))return null;const relevant=discovery?.discovery?.relevantEntries||[];return relevant.filter(r=>Number.isInteger(r?.index)&&r.index>launcherEntryIndex&&r.index<tickerEntryIndex&&betfairInitialResourcesUrl(r?.request?.url)).sort((a,b)=>b.index-a.index)[0]||null;}
 
 function fail(reason,extra={}){
-  return {
-    version:VERSION,
-    valid:false,
-    decision:'NO_PLAY',
-    reason,
-    realMoneyAllowed:false,
-    realStakeEUR:0,
-    maxSpins:0,
-    maxTotalStakeEUR:0,
-    hardGuards:{
-      onlineOnly:true,
-      nonPromoOnly:true,
-      passiveHarOnly:true,
-      noNetwork:true,
-      noCredentials:true,
-      noWagerProbe:true,
-      noAutomaticBetting:true,
-      harAloneCannotAuthorizeGreen:true,
-      exactApMcCoyRealLauncherRequiredInSameHar:true,
-      latestPrecedingRealCasinoLauncherMustBeExactApMcCoy:true,
-      staleApMcCoyLauncherCannotAuthorizeLaterDifferentGameTicker:true,
-      configBindingMustPrecedeTickerEntry:true,
-      configBindingMustFollowExactLauncher:true,
-      latestPostLaunchInitialResourcesMustOwnTickerBinding:true,
-      stalePreLaunchOrSupersededConfigCannotAuthorizeTicker:true,
-      latestPairedTickerPollMustOwnSnapshot:true,
-      olderValidPollCannotOverrideLaterInvalidOrDifferentGamePoll:true,
-      bothSnapshotsMustPassExactServerBindingValidator:true,
-      harCaptureTimeMustAttestFreshness:true,
-      callerCannotBackdateHarFreshness:true,
-      pairCaptureTimeMustAdvanceStrictly:true,
-      finalGreenDelegatedOnlyToExistingOverdueEvaluator:true,
-    },
-    ...extra,
-  };
+  return {version:VERSION,valid:false,decision:'NO_PLAY',reason,realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,passiveHarOnly:true,noNetwork:true,noCredentials:true,noWagerProbe:true,noAutomaticBetting:true,harAloneCannotAuthorizeGreen:true,exactApMcCoyRealLauncherRequiredInSameHar:true,latestPrecedingRealCasinoLauncherMustBeExactApMcCoy:true,staleApMcCoyLauncherCannotAuthorizeLaterDifferentGameTicker:true,configBindingMustPrecedeTickerEntry:true,configBindingMustFollowExactLauncher:true,latestPostLaunchInitialResourcesMustOwnTickerBinding:true,stalePreLaunchOrSupersededConfigCannotAuthorizeTicker:true,latestPairedTickerPollMustOwnSnapshot:true,olderValidPollCannotOverrideLaterInvalidOrDifferentGamePoll:true,bothSnapshotsMustPassExactServerBindingValidator:true,harCaptureTimeMustAttestFreshness:true,callerCannotBackdateHarFreshness:true,pairCaptureTimeMustAdvanceStrictly:true,operatorSemanticsCodeOwned:true,stakeSemanticsCodeOwnedAndReviewAllowlisted:true,currentDailyAmountDerivedFromValidatedServerSnapshot:true,callerRuleBooleanIgnored:true,callerStakeVerifiedBooleanIgnored:true,callerCurrentAmountVerifiedBooleanIgnored:true,finalGreenDelegatedOnlyToExistingOverdueEvaluator:true},...extra};
 }
 
 function assessPair(discovery,p,{nowEpochSeconds,maxFeedAgeIntervals,maxCaptureTimeArgumentSkewSeconds}){
@@ -88,139 +39,57 @@ function assessPair(discovery,p,{nowEpochSeconds,maxFeedAgeIntervals,maxCaptureT
   if(validation.valid!==true)return {ok:false,reason:'SERVER_SNAPSHOT_VALIDATION_FAILED',extra:{validation,captureEpochSeconds}};
   return {ok:true,p,tickerEntryIndex,configEntryIndex,latestLauncher,captureEpochSeconds,validation};
 }
-function assessedIdentity(x){
-  const s=x?.validation?.snapshot||{};
-  return JSON.stringify([x?.configEntryIndex,x?.validation?.expectedBetfairImsCasino,x?.validation?.tickerEndpoint,s.code,s.currency,s.local,s.amount,s.guaranteedHitTime,s.gameTimestamp,s.winCount,s.requestExecInterval,s.requestCasino,s.instanceCode]);
-}
+function assessedIdentity(x){const s=x?.validation?.snapshot||{};return JSON.stringify([x?.configEntryIndex,x?.validation?.expectedBetfairImsCasino,x?.validation?.tickerEndpoint,s.code,s.currency,s.local,s.amount,s.guaranteedHitTime,s.gameTimestamp,s.winCount,s.requestExecInterval,s.requestCasino,s.instanceCode]);}
 
-export function validateBetfairSportingHarSnapshot(har,{
-  sourceName='capture.har',
-  nowEpochSeconds=null,
-  maxFeedAgeIntervals=2,
-  maxCaptureTimeArgumentSkewSeconds=2,
-}={}){
-  let discovery;
-  try{discovery=analyzeBetfairSportingHar(har,{sourceName});}catch(error){return fail('HAR_PARSE_FAILED',{error:String(error?.message||error)});}
+export function validateBetfairSportingHarSnapshot(har,{sourceName='capture.har',nowEpochSeconds=null,maxFeedAgeIntervals=2,maxCaptureTimeArgumentSkewSeconds=2}={}){
+  let discovery;try{discovery=analyzeBetfairSportingHar(har,{sourceName});}catch(error){return fail('HAR_PARSE_FAILED',{error:String(error?.message||error)});}
   if(discovery?.discovery?.exactApMcCoyRealLauncherBindingObserved!==true)return fail('EXACT_AP_MCCOY_REAL_LAUNCHER_BINDING_NOT_FOUND',{discovery});
-  const pairs=discovery?.discovery?.pairedServerEvidence||[];
-  if(!pairs.length)return fail('PAIRED_SERVER_EVIDENCE_NOT_FOUND',{discovery});
-  const indexed=pairs.filter(p=>Number.isInteger(p?.tickerEntryIndex));
-  if(!indexed.length)return fail('PAIRED_SERVER_EVIDENCE_MISSING_TICKER_INDEX',{discovery});
+  const pairs=discovery?.discovery?.pairedServerEvidence||[];if(!pairs.length)return fail('PAIRED_SERVER_EVIDENCE_NOT_FOUND',{discovery});
+  const indexed=pairs.filter(p=>Number.isInteger(p?.tickerEntryIndex));if(!indexed.length)return fail('PAIRED_SERVER_EVIDENCE_MISSING_TICKER_INDEX',{discovery});
   const latestTickerEntryIndex=Math.max(...indexed.map(p=>p.tickerEntryIndex));
   const latestPairs=indexed.filter(p=>p.tickerEntryIndex===latestTickerEntryIndex);
   const assessed=latestPairs.map(p=>assessPair(discovery,p,{nowEpochSeconds,maxFeedAgeIntervals,maxCaptureTimeArgumentSkewSeconds}));
   const valid=assessed.filter(x=>x.ok===true);
-  if(!valid.length){
-    if(assessed.length===1)return fail(assessed[0].reason,{discovery,...assessed[0].extra,pairedServerEvidenceCount:pairs.length,latestPairedTickerEntryIndex:latestTickerEntryIndex});
-    return fail('LATEST_PAIRED_SERVER_EVIDENCE_NOT_SESSION_VALID',{pairedServerEvidenceCount:pairs.length,latestPairedTickerEntryIndex:latestTickerEntryIndex,pairRejections:assessed.map(x=>({reason:x.reason,tickerEntryIndex:x.extra?.tickerEntryIndex??latestTickerEntryIndex,configEntryIndex:x.extra?.configEntryIndex??null}))});
-  }
-  const identities=new Set(valid.map(assessedIdentity));
-  if(identities.size!==1)return fail('AMBIGUOUS_LATEST_PAIRED_SERVER_EVIDENCE',{pairedServerEvidenceCount:pairs.length,latestPairedTickerEntryIndex:latestTickerEntryIndex,latestValidPairCount:valid.length});
+  if(!valid.length){if(assessed.length===1)return fail(assessed[0].reason,{discovery,...assessed[0].extra,pairedServerEvidenceCount:pairs.length,latestPairedTickerEntryIndex:latestTickerEntryIndex});return fail('LATEST_PAIRED_SERVER_EVIDENCE_NOT_SESSION_VALID',{pairedServerEvidenceCount:pairs.length,latestPairedTickerEntryIndex:latestTickerEntryIndex,pairRejections:assessed.map(x=>({reason:x.reason,tickerEntryIndex:x.extra?.tickerEntryIndex??latestTickerEntryIndex,configEntryIndex:x.extra?.configEntryIndex??null}))});}
+  const identities=new Set(valid.map(assessedIdentity));if(identities.size!==1)return fail('AMBIGUOUS_LATEST_PAIRED_SERVER_EVIDENCE',{pairedServerEvidenceCount:pairs.length,latestPairedTickerEntryIndex:latestTickerEntryIndex,latestValidPairCount:valid.length});
   const chosen=valid[0],p=chosen.p,validation=chosen.validation;
-  return {
-    version:VERSION,
-    valid:true,
-    usableForOverduePair:true,
-    sourceName,
-    exactApMcCoyRealLauncherBindingVerified:true,
-    latestPrecedingRealCasinoLauncherIsExactApMcCoy:true,
-    latestPostLaunchInitialResourcesBindingVerified:true,
-    latestPairedTickerPollSelected:true,
-    pairedServerEvidenceCount:pairs.length,
-    launcherEntryIndex:chosen.latestLauncher.index,
-    configEntryIndex:chosen.configEntryIndex,
-    tickerEntryIndex:chosen.tickerEntryIndex,
-    captureStartedDateTime:p.startedDateTime,
-    captureEpochSeconds:chosen.captureEpochSeconds,
-    freshnessClockSource:'HAR_TICKER_ENTRY_STARTED_DATE_TIME',
-    discovery,
-    validation,
-    snapshot:validation.snapshot,
-    expectedBetfairImsCasino:validation.expectedBetfairImsCasino,
-    tickerEndpoint:validation.tickerEndpoint,
-    configSourceUrl:validation.configSourceUrl,
-    decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,
-    hardGuards:{harAloneCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true,exactApMcCoyRealLauncherRequiredInSameHar:true,latestPrecedingRealCasinoLauncherMustBeExactApMcCoy:true,staleApMcCoyLauncherCannotAuthorizeLaterDifferentGameTicker:true,configBindingMustPrecedeTickerEntry:true,configBindingMustFollowExactLauncher:true,latestPostLaunchInitialResourcesMustOwnTickerBinding:true,stalePreLaunchOrSupersededConfigCannotAuthorizeTicker:true,latestPairedTickerPollMustOwnSnapshot:true,olderValidPollCannotOverrideLaterInvalidOrDifferentGamePoll:true,multipleNormalTickerPollsSupported:true,harCaptureTimeMustAttestFreshness:true,callerCannotBackdateHarFreshness:true},
-  };
+  return {version:VERSION,valid:true,usableForOverduePair:true,sourceName,exactApMcCoyRealLauncherBindingVerified:true,latestPrecedingRealCasinoLauncherIsExactApMcCoy:true,latestPostLaunchInitialResourcesBindingVerified:true,latestPairedTickerPollSelected:true,pairedServerEvidenceCount:pairs.length,launcherEntryIndex:chosen.latestLauncher.index,configEntryIndex:chosen.configEntryIndex,tickerEntryIndex:chosen.tickerEntryIndex,captureStartedDateTime:p.startedDateTime,captureEpochSeconds:chosen.captureEpochSeconds,freshnessClockSource:'HAR_TICKER_ENTRY_STARTED_DATE_TIME',discovery,validation,snapshot:validation.snapshot,expectedBetfairImsCasino:validation.expectedBetfairImsCasino,tickerEndpoint:validation.tickerEndpoint,configSourceUrl:validation.configSourceUrl,decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,hardGuards:{harAloneCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true,exactApMcCoyRealLauncherRequiredInSameHar:true,latestPrecedingRealCasinoLauncherMustBeExactApMcCoy:true,staleApMcCoyLauncherCannotAuthorizeLaterDifferentGameTicker:true,configBindingMustPrecedeTickerEntry:true,configBindingMustFollowExactLauncher:true,latestPostLaunchInitialResourcesMustOwnTickerBinding:true,stalePreLaunchOrSupersededConfigCannotAuthorizeTicker:true,latestPairedTickerPollMustOwnSnapshot:true,olderValidPollCannotOverrideLaterInvalidOrDifferentGamePoll:true,multipleNormalTickerPollsSupported:true,harCaptureTimeMustAttestFreshness:true,callerCannotBackdateHarFreshness:true}};
 }
 
 export function evaluateBetfairSportingHarOverduePair({
-  beforeHar,afterHar,
-  beforeSourceName='before.har',afterSourceName='after.har',
-  beforeNowEpochSeconds=null,afterNowEpochSeconds=null,
-  maxFeedAgeIntervals=2,
-  maxCaptureTimeArgumentSkewSeconds=2,
-  decisionNowEpochSeconds,
-  betfairFirstBetFollowingDayRuleVerified=false,
-  providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified=false,
-  stakeEUR,
-  raceEvidence,
-  currentDailyAmountExactVerified=false,
-  stakeAtDecisionExactVerified=false,
-  measuredActionLatencyVerified=false,
-  measuredActionLatencySeconds,
-  prospectiveDryRunCycleVerified=false,
+  beforeHar,afterHar,beforeSourceName='before.har',afterSourceName='after.har',beforeNowEpochSeconds=null,afterNowEpochSeconds=null,
+  maxFeedAgeIntervals=2,maxCaptureTimeArgumentSkewSeconds=2,decisionNowEpochSeconds,
+  stakeEUR,stakeReviewCommit,raceEvidence,measuredActionLatencyVerified=false,measuredActionLatencySeconds,prospectiveDryRunCycleVerified=false,
 }={}){
-  const decisionNow=finite(decisionNowEpochSeconds);
-  if(decisionNow===null)return fail('EXPLICIT_DECISION_TIME_REQUIRED');
+  const decisionNow=finite(decisionNowEpochSeconds);if(decisionNow===null)return fail('EXPLICIT_DECISION_TIME_REQUIRED');
+  const semantics=getBetfairApMcCoyCurrentOperatorSemantics();
+  if(semantics?.valid!==true||semantics.betfairFirstBetFollowingDayRuleVerified!==true||semantics.providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified!==true)return fail('CODE_OWNED_AP_MCCOY_OPERATOR_SEMANTICS_NOT_CLOSED',{semantics});
   const before=validateBetfairSportingHarSnapshot(beforeHar,{sourceName:beforeSourceName,nowEpochSeconds:beforeNowEpochSeconds,maxFeedAgeIntervals,maxCaptureTimeArgumentSkewSeconds});
-  if(before.valid!==true)return fail('BEFORE_HAR_SNAPSHOT_INVALID',{before});
+  if(before.valid!==true)return fail('BEFORE_HAR_SNAPSHOT_INVALID',{before,semantics});
   const after=validateBetfairSportingHarSnapshot(afterHar,{sourceName:afterSourceName,nowEpochSeconds:afterNowEpochSeconds,maxFeedAgeIntervals,maxCaptureTimeArgumentSkewSeconds});
-  if(after.valid!==true)return fail('AFTER_HAR_SNAPSHOT_INVALID',{before,after});
+  if(after.valid!==true)return fail('AFTER_HAR_SNAPSHOT_INVALID',{before,after,semantics});
+  if(!(after.captureEpochSeconds>before.captureEpochSeconds))return fail('HAR_CAPTURE_ORDER_NOT_FORWARD',{before,after,semantics});
+  if(decisionNow<after.captureEpochSeconds)return fail('DECISION_TIME_PRECEDES_AFTER_CAPTURE',{before,after,decisionNowEpochSeconds:decisionNow,semantics});
+  if(text(before.expectedBetfairImsCasino)?.toLowerCase()!==text(after.expectedBetfairImsCasino)?.toLowerCase())return fail('IMS_CHANGED_BETWEEN_CAPTURES',{before,after,semantics});
+  if(!sameHttpsEndpoint(before.tickerEndpoint,after.tickerEndpoint))return fail('TICKER_ENDPOINT_CHANGED_BETWEEN_CAPTURES',{before,after,semantics});
+  if(!sameHttpsEndpoint(before.configSourceUrl,after.configSourceUrl))return fail('CONFIG_SOURCE_ENDPOINT_CHANGED_BETWEEN_CAPTURES',{before,after,semantics});
 
-  if(!(after.captureEpochSeconds>before.captureEpochSeconds))return fail('HAR_CAPTURE_ORDER_NOT_FORWARD',{before,after});
-  if(decisionNow<after.captureEpochSeconds)return fail('DECISION_TIME_PRECEDES_AFTER_CAPTURE',{before,after,decisionNowEpochSeconds:decisionNow});
-  if(text(before.expectedBetfairImsCasino)?.toLowerCase()!==text(after.expectedBetfairImsCasino)?.toLowerCase())return fail('IMS_CHANGED_BETWEEN_CAPTURES',{before,after});
-  if(!sameHttpsEndpoint(before.tickerEndpoint,after.tickerEndpoint))return fail('TICKER_ENDPOINT_CHANGED_BETWEEN_CAPTURES',{before,after});
-  if(!sameHttpsEndpoint(before.configSourceUrl,after.configSourceUrl))return fail('CONFIG_SOURCE_ENDPOINT_CHANGED_BETWEEN_CAPTURES',{before,after});
+  const stakeReview=reviewBetfairApMcCoyServedStake(afterHar,{sourceName:afterSourceName,reviewCommit:stakeReviewCommit,requiredStakeEUR:stakeEUR});
+  if(stakeReview?.valid!==true||stakeReview.stakeAtDecisionExactVerified!==true)return fail('SERVED_AP_MCCOY_STAKE_REVIEW_REQUIRED',{before,after,semantics,stakeReview});
+  const currentDailyAmount=finite(after?.snapshot?.amount);
+  if(!(currentDailyAmount>0))return fail('VALIDATED_AFTER_SNAPSHOT_DAILY_AMOUNT_REQUIRED',{before,after,semantics,stakeReview});
 
   const finalEvaluation=evaluateSportingLegendsOverdueFirstBet({
-    before:before.snapshot,
-    after:after.snapshot,
-    nowEpochSeconds:decisionNow,
-    exactBetfairSpainTickerImsBindingVerified:true,
-    expectedBetfairImsCasino:before.expectedBetfairImsCasino,
-    betfairFirstBetFollowingDayRuleVerified,
-    providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified,
-    stakeEUR,
-    raceEvidence,
-    currentDailyAmountExactVerified,
-    stakeAtDecisionExactVerified,
-    measuredActionLatencyVerified,
-    measuredActionLatencySeconds,
-    prospectiveDryRunCycleVerified,
+    before:before.snapshot,after:after.snapshot,nowEpochSeconds:decisionNow,
+    exactBetfairSpainTickerImsBindingVerified:true,expectedBetfairImsCasino:before.expectedBetfairImsCasino,
+    betfairFirstBetFollowingDayRuleVerified:semantics.betfairFirstBetFollowingDayRuleVerified,
+    providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified:semantics.providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified,
+    conservativeBaseRtpPct:semantics.conservativeMainGameRtpPct,
+    stakeEUR:stakeReview.selectedStakeEUR,raceEvidence,
+    currentDailyAmountExactVerified:true,stakeAtDecisionExactVerified:true,
+    measuredActionLatencyVerified,measuredActionLatencySeconds,prospectiveDryRunCycleVerified,
   });
 
-  return {
-    version:VERSION,
-    valid:finalEvaluation.valid===true,
-    before,after,
-    exactApMcCoyRealLauncherBindingVerifiedOnBothSnapshots:true,
-    latestPrecedingRealCasinoLauncherIsExactApMcCoyOnBothSnapshots:true,
-    latestPostLaunchInitialResourcesBindingVerifiedOnBothSnapshots:true,
-    latestPairedTickerPollSelectedOnBothSnapshots:true,
-    captureTimeAdvanced:true,
-    finalEvaluation,
-    decision:finalEvaluation.decision,
-    reason:finalEvaluation.reason,
-    realMoneyAllowed:finalEvaluation.realMoneyAllowed===true,
-    realStakeEUR:finalEvaluation.realStakeEUR||0,
-    maxSpins:finalEvaluation.maxSpins||0,
-    maxTotalStakeEUR:finalEvaluation.maxTotalStakeEUR||0,
-    hardGuards:{
-      onlineOnly:true,nonPromoOnly:true,passiveHarOnly:true,noWagerProbe:true,noAutomaticBetting:true,
-      harAloneCannotAuthorizeGreen:true,
-      exactApMcCoyRealLauncherVerifiedOnBothSnapshots:true,
-      latestPrecedingRealCasinoLauncherVerifiedOnBothSnapshots:true,
-      latestPostLaunchInitialResourcesVerifiedOnBothSnapshots:true,
-      latestPairedTickerPollVerifiedOnBothSnapshots:true,
-      configBindingPrecedesTickerOnBothSnapshots:true,
-      strictForwardCaptureOrderVerified:true,
-      bothSnapshotsPassedExactServerBindingValidator:true,
-      harCaptureTimeAttestedOnBothSnapshots:true,
-      sameImsTickerAndConfigEndpointsAcrossCaptures:true,
-      benignCacheBusterQueryChangesIgnored:true,
-      finalGreenDelegatedOnlyToExistingOverdueEvaluator:true,
-    },
-  };
+  return {version:VERSION,valid:finalEvaluation.valid===true,before,after,semantics,stakeReview,exactApMcCoyRealLauncherBindingVerifiedOnBothSnapshots:true,latestPrecedingRealCasinoLauncherIsExactApMcCoyOnBothSnapshots:true,latestPostLaunchInitialResourcesBindingVerifiedOnBothSnapshots:true,latestPairedTickerPollSelectedOnBothSnapshots:true,captureTimeAdvanced:true,currentDailyAmountExactVerifiedFromValidatedServerSnapshot:true,stakeAtDecisionExactVerifiedFromCodeOwnedReview:true,operatorFollowingDayRuleVerifiedFromCodeOwnedCurrentEvidence:true,providerGhtBoundarySemanticsVerifiedFromCodeOwnedEvidence:true,finalEvaluation,decision:finalEvaluation.decision,reason:finalEvaluation.reason,realMoneyAllowed:finalEvaluation.realMoneyAllowed===true,realStakeEUR:finalEvaluation.realStakeEUR||0,maxSpins:finalEvaluation.maxSpins||0,maxTotalStakeEUR:finalEvaluation.maxTotalStakeEUR||0,
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,passiveHarOnly:true,noWagerProbe:true,noAutomaticBetting:true,harAloneCannotAuthorizeGreen:true,exactApMcCoyRealLauncherVerifiedOnBothSnapshots:true,latestPrecedingRealCasinoLauncherVerifiedOnBothSnapshots:true,latestPostLaunchInitialResourcesVerifiedOnBothSnapshots:true,latestPairedTickerPollVerifiedOnBothSnapshots:true,configBindingPrecedesTickerOnBothSnapshots:true,strictForwardCaptureOrderVerified:true,bothSnapshotsPassedExactServerBindingValidator:true,harCaptureTimeAttestedOnBothSnapshots:true,sameImsTickerAndConfigEndpointsAcrossCaptures:true,benignCacheBusterQueryChangesIgnored:true,operatorSemanticsCodeOwned:true,stakeReviewCodeOwned:true,currentDailyAmountDerivedFromValidatedServerState:true,callerSemanticAndVerificationBooleansCannotCloseTheseThreeGates:true,finalGreenDelegatedOnlyToExistingOverdueEvaluator:true}}
 }
