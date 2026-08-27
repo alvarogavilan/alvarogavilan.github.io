@@ -1,5 +1,5 @@
 {
-  "version": "betfair-spain-apmccoy-readiness-2026-08-27-v2",
+  "version": "betfair-spain-apmccoy-readiness-2026-08-27-v2.1-exact-ledger",
   "generatedAtDate": "2026-08-27",
   "status": "SEMANTICS_AND_FAIL_CLOSED_PIPELINE_READY_REAL_PRIVATE_SESSION_AND_PROSPECTIVE_LEDGER_MISSING_NO_PLAY",
   "scope": "ONLINE_ONLY_NON_PROMO_RESEARCH",
@@ -20,9 +20,18 @@
     "providerNetworkEvidenceCommit": "573a901b3022fd380c1d7181bd04e8291af43c4d",
     "codeOwnedSemanticAnchorCommit": "e925de07b461fc7d2563caeadd5e679997773998"
   },
+  "stakeResearchBoundary": {
+    "currentBetfairVisiblePagePublishesExplicitMinimumStake": false,
+    "sameExactTitleCrossOperatorMinimumStakePrior": 0.25,
+    "priorCurrencyUnitOnly": true,
+    "betfairSpainEurStakeTransferAllowed": false,
+    "servedBetfairTotalStakeStillRequired": true,
+    "priorEvidenceCommit": "96db53127d6d9d5a3e641c0eae588db602860234"
+  },
   "pipelineReady": {
     "exactHarLauncherConfigTickerBinding": true,
     "serverDerivedCurrentDailyAmount": true,
+    "singleHarRedactedCurrentSessionAnalyzer": true,
     "explicitTotalStakeMenuDiscovery": true,
     "codeOwnedStakeReviewGate": true,
     "callerSemanticStakeAndAmountBooleansRemovedFromAuthority": true,
@@ -35,22 +44,37 @@
     "codeOwnedActionLatencyReviewGate": true,
     "callerLatencyAndDryRunBooleansRemovedFromBridgeAuthority": true,
     "codeOwnedRaceAssumptionReviewGate": true,
+    "raceAssumptionsBoundToExactCycleLedger": true,
+    "raceAssumptionsBoundToExactServedBinding": true,
+    "samplingWindowMustPrecedeFirstCycle": true,
+    "allEligibleDistinctDailyGhtCyclesMustBeRetained": true,
+    "failedShortAndAmbiguousCyclesMustBeRetained": true,
+    "assumptionSelectionMustBeIndependentOfSurvivalOutcomes": true,
     "reviewedRaceLowerBoundAtFeedAgePlusActionLatency": true,
-    "reviewedPositiveEvScreen": true
+    "reviewedRaceWindowCannotExceedFrozenTwelveIntervalHorizon": true,
+    "reviewedPositiveEvScreenRequiresExactLedgerContract": true,
+    "duplicateParallelRaceModulesRemoved": true
   },
   "pipelineCommits": {
     "stakeDiscoveryHardening": "f773866f7c66d2f8b06bc6c02b4dae32fa0f5a42",
     "stakeReview": "874e760baf88a1bf291f55f926976fce2314ebe6",
     "bridgeCodeOwnedSemanticsStake": "5fa0b8ff80d8c67d5b9084c9df8b4408e1c28936",
+    "singleHarAnalyzer": "e46bf5ab150f0f6b4a5f113108776eea487630e9",
     "survivalValidator": "a1247d09132521add93b9eeae17a82cdb4087743",
     "survivalReview": "b3a493244f8c149111f198314af1d8cb3ac9689c",
     "survivalCurve": "42b25e5c9158dad1e366a07c6eff73ff4891a2e7",
     "actionLatencyReview": "6cb2b707d5ed879be2a22c1a8f67ff893d356a9a",
     "bridgeLatencyDryRunHardening": "4fa70a225fb67ee01901557886d3de25492864a5",
-    "raceAssumptionsReview": "79095ec8be9f8668d3aae91ad8a571732016e640",
+    "raceAssumptionsInitial": "79095ec8be9f8668d3aae91ad8a571732016e640",
+    "raceAssumptionsExactLedgerHardening": "f85ae49eff3d6bf9fce59f2482cd7f9feee10681",
+    "raceAssumptionsExactLedgerTest": "19118e1e2e0a9ccf42c6eefa829a52ca9281842f",
     "reviewedRaceBoundInitial": "5713da4eca0d666f4c1be221e78c82d25fc232bd",
     "reviewedRaceBoundFeedAgeFix": "cbc2ac11222e8fef19a9c48077a03116dacc17e5",
-    "positiveEvScreen": "87c80727be2ec3e96ca21fca9b203019d675ee04"
+    "reviewedRaceBoundExactLedgerFrozenHorizon": "b760e50bc34bbf2a3ce9b2e10c360039cac43240",
+    "positiveEvScreenInitial": "87c80727be2ec3e96ca21fca9b203019d675ee04",
+    "positiveEvScreenExactLedgerHardening": "5fba9e66b6f4e72a1e62416e39aa7a49605159b8",
+    "positiveEvScreenExactLedgerTest": "e1e376fbcd80e9053a1291b73c8562988131bb44",
+    "duplicateCleanupFinal": "cd6d8fe05aad86cf35d267dec19a2df48c50d411"
   },
   "currentlyOpenEvidenceGates": {
     "realAuthenticatedPassiveApMcCoyHarAvailable": false,
@@ -70,9 +94,10 @@
   },
   "publicSearchBoundary": {
     "currentPublicPageStillIndexed": true,
-    "publicInitialResourcesOrJackpotsCasinoBindingFoundBySearch": false,
-    "publicSljp1OrTickerBindingFoundBySearch": false,
-    "interpretation": "The operator page closes semantics, but indexed public content does not expose the current private IMS/ticker binding. That evidence must come from a real passive served session rather than inference."
+    "publicMinimumStakeFoundOnBetfairVisiblePage": false,
+    "publicInitialResourcesOrJackpotsCasinoBindingFoundByIndexedSearch": false,
+    "publicSljp1OrTickerBindingFoundByIndexedSearch": false,
+    "interpretation": "The operator page closes semantics, but indexed public content does not expose the current private IMS/ticker binding or an explicit Betfair Spain minimum stake. Those facts must come from a real passive served session rather than cross-operator inference."
   },
   "rtpBoundary": {
     "currentBetfairRtpInfoPageIsStatisticalPayoutData": true,
@@ -80,7 +105,7 @@
     "statisticalPayoutForbiddenAsExecutionBaseRtp": true,
     "executionEconomicsRemainPinnedToExactGameRuleMainGameFloorPct": 93.03
   },
-  "nextDecisiveObservation": "One real current passive AP McCoy Betfair Spain session containing the exact real launcher, latest post-launch Betfair initialResources, configured IMS/ticker, fresh EUR local=0 sljp-1 response and an explicit total-stake menu. If captured around a future GHT under the already frozen post-GHT protocol, the same evidence can begin the prospective survival ledger without any wager probe.",
+  "nextDecisiveObservation": "One real current passive AP McCoy Betfair Spain session containing the exact real launcher, latest post-launch Betfair initialResources, configured IMS/ticker, fresh EUR local=0 sljp-1 response and an explicit total-stake menu. The existing one-HAR analyzer can immediately reduce that capture to a credential-redacted evidence summary. If captured around a future GHT under the already frozen post-GHT protocol, the same session evidence can begin the prospective survival ledger without any wager probe.",
   "execution": {
     "decision": "NO_PLAY",
     "realMoneyAllowed": false,
@@ -92,10 +117,13 @@
     "onlineOnly": true,
     "nonPromoOnly": true,
     "noCrossOperatorStateTransfer": true,
+    "noCrossCurrencyStakeEquivalence": true,
     "publicDynamicJackpotCannotAuthorizeExecution": true,
     "statisticalObservedRtpCannotSetExecutionBaseRtp": true,
     "privateServedBindingCannotBeInvented": true,
     "reviewAllowlistsRemainEmptyWithoutRealEvidence": true,
+    "raceAssumptionReviewMustMatchExactObservedLedger": true,
+    "reviewedRaceWindowMustFitFrozenProspectiveHorizon": true,
     "noWagerProbe": true,
     "noAutomaticBetting": true,
     "realMoneyAllowed": false
