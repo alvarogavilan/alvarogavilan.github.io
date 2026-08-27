@@ -1,14 +1,14 @@
 import {isApprovedBetfairApMcCoySurvivalReviewCommit} from './betfair-apmccoy-post-ght-survival-review-v1.mjs';
 import {classifyBetfairApMcCoyReviewedSurvivalCycleAtLatency} from './betfair-apmccoy-post-ght-survival-curve-v1.mjs';
-import {isApprovedBetfairApMcCoyActionLatencyReviewCommit} from './betfair-apmccoy-action-latency-review-v1.mjs';
+import {isApprovedBetfairApMcCoyActionLatencyReviewArtifact} from './betfair-apmccoy-action-latency-review-v1.mjs';
 import {isApprovedBetfairApMcCoyRaceAssumptionReviewCommit} from './betfair-apmccoy-race-assumptions-review-v1.mjs';
-import {isApprovedBetfairApMcCoyAttemptLedgerReviewCommit} from './betfair-apmccoy-scheduled-attempt-ledger-review-v1.mjs';
+import {isApprovedBetfairApMcCoyAttemptLedgerReviewArtifact} from './betfair-apmccoy-scheduled-attempt-ledger-review-v1.mjs';
 
-const VERSION='betfair-apmccoy-reviewed-race-bound-v1.3-fixed-seven-attempt-denominator';
+const VERSION='betfair-apmccoy-reviewed-race-bound-v1.4-exact-reviewed-artifacts';
 const CYCLE_VERSION='betfair-apmccoy-post-ght-survival-review-v1';
 const LATENCY_VERSION='betfair-apmccoy-action-latency-review-v1';
 const ASSUMPTION_VERSION='betfair-apmccoy-race-assumptions-review-v1';
-const ATTEMPT_REVIEW_VERSION='betfair-apmccoy-scheduled-attempt-ledger-review-v1.2-code-owned-activation';
+const ATTEMPT_REVIEW_VERSION='betfair-apmccoy-scheduled-attempt-ledger-review-v1.3-code-owned-artifact-identity';
 const REQUIRED_SCHEDULED_ATTEMPTS=7;
 const MIN_CONFIDENCE=0.95;
 const MAX_DECISION_FEED_AGE_INTERVALS=2;
@@ -30,7 +30,7 @@ export function deriveBetfairApMcCoyReviewedRaceLowerBound({reviewedCycles,sched
   const attempt=scheduledAttemptLedgerReview;
   if(!attempt||attempt.version!==ATTEMPT_REVIEW_VERSION||attempt.valid!==true||attempt.completeScheduledAttemptLedgerVerified!==true||attempt.allScheduledOpportunitiesRetained!==true||attempt.usableForRaceDenominator!==true)return fail('VALID_FIXED_SCHEDULED_ATTEMPT_LEDGER_REVIEW_REQUIRED');
   if(attempt.activationVerifiedBeforeFirstScheduledGht!==true||!text(attempt.activationReviewCommit)||!(finite(attempt.activatedAtEpochSeconds)>0))return fail('CODE_OWNED_ATTEMPT_PLAN_ACTIVATION_REQUIRED');
-  if(!isApprovedBetfairApMcCoyAttemptLedgerReviewCommit(attempt.reviewCommit))return fail('ATTEMPT_LEDGER_REVIEW_COMMIT_NOT_CODE_ALLOWLISTED',{reviewCommit:attempt.reviewCommit||null});
+  if(!isApprovedBetfairApMcCoyAttemptLedgerReviewArtifact(attempt))return fail('ATTEMPT_LEDGER_REVIEW_ARTIFACT_NOT_CODE_APPROVED',{reviewCommit:attempt.reviewCommit||null,reviewArtifactIdentity:attempt.reviewArtifactIdentity||null});
   if(Number(attempt.targetScheduledOpportunities)!==REQUIRED_SCHEDULED_ATTEMPTS||Number(attempt.scheduledAttemptCount)!==REQUIRED_SCHEDULED_ATTEMPTS)return fail('EXACT_SEVEN_SCHEDULED_ATTEMPTS_REQUIRED',{scheduledAttemptCount:attempt.scheduledAttemptCount??null});
   if(attempt.nonCycleAttemptsCountAsConservativeRaceFailures!==true||attempt.ambiguousReviewedCyclesCountAsConservativeRaceFailures!==true||attempt.stopRuleChangedAfterObservation!==false)return fail('FROZEN_DENOMINATOR_CONSERVATISM_REQUIRED');
   const fullLedgerCommit=text(attempt.ledgerCommit)?.toLowerCase(),attemptBinding=text(attempt.bindingScopeKey);
@@ -45,7 +45,7 @@ export function deriveBetfairApMcCoyReviewedRaceLowerBound({reviewedCycles,sched
 
   const latency=actionLatencyReview;
   if(!latency||latency.version!==LATENCY_VERSION||latency.valid!==true||latency.measuredActionLatencyVerified!==true||latency.latencyPolicyIndependentlyReviewed!==true||latency.selectedUsingPostGhtSurvivalOutcomes!==false)return fail('VALID_INDEPENDENT_ACTION_LATENCY_REVIEW_REQUIRED');
-  if(!isApprovedBetfairApMcCoyActionLatencyReviewCommit(latency.reviewCommit))return fail('ACTION_LATENCY_REVIEW_COMMIT_NOT_CODE_ALLOWLISTED',{reviewCommit:latency.reviewCommit||null});
+  if(!isApprovedBetfairApMcCoyActionLatencyReviewArtifact(latency))return fail('ACTION_LATENCY_REVIEW_ARTIFACT_NOT_CODE_APPROVED',{reviewCommit:latency.reviewCommit||null,reviewArtifactIdentity:latency.reviewArtifactIdentity||null});
   const measuredActionLatencySeconds=finite(latency.measuredActionLatencySeconds);if(!(measuredActionLatencySeconds>0))return fail('INVALID_REVIEWED_ACTION_LATENCY');
 
   const assumptions=raceAssumptionsReview;
@@ -90,19 +90,19 @@ export function deriveBetfairApMcCoyReviewedRaceLowerBound({reviewedCycles,sched
   return {
     version:VERSION,valid:true,mode:'OFFLINE_CODE_REVIEWED_AP_MCCOY_FIXED_ATTEMPT_RACE_BOUND_NO_PLAY',reason:'CODE_REVIEWED_AP_MCCOY_CONSERVATIVE_RACE_LOWER_BOUND_AVAILABLE_OVER_FIXED_SEVEN_ATTEMPTS',
     operator:'Betfair Spain',market:'ES',target:{title:'AP McCoy Sporting Legends',gameId:'ap-mccoy-sporting-legends-cptn'},
-    protocolId:assumptions.protocolId,latencyMeasurementProtocolId:latency.protocolId,measuredActionLatencySeconds,actionLatencyReviewCommit:latency.reviewCommit,
+    protocolId:assumptions.protocolId,latencyMeasurementProtocolId:latency.protocolId,measuredActionLatencySeconds,actionLatencyReviewCommit:latency.reviewCommit,actionLatencyReviewArtifactIdentity:latency.reviewArtifactIdentity,
     activationReviewCommit:attempt.activationReviewCommit,activatedAtEpochSeconds:attempt.activatedAtEpochSeconds,
     maxDecisionFeedAgeIntervals:MAX_DECISION_FEED_AGE_INTERVALS,maxDecisionFeedAgeSeconds,frozenSurvivalHorizonIntervals:FROZEN_SURVIVAL_HORIZON_INTERVALS,frozenSurvivalHorizonSeconds,validatedRaceWindowSeconds,
-    raceAssumptionReviewCommit:assumptions.reviewCommit,attemptLedgerReviewCommit:attempt.reviewCommit,completeProspectiveLedgerCommit:fullLedgerCommit,assumptionEvidenceId:assumptions.assumptionEvidenceId,
+    raceAssumptionReviewCommit:assumptions.reviewCommit,attemptLedgerReviewCommit:attempt.reviewCommit,attemptLedgerReviewArtifactIdentity:attempt.reviewArtifactIdentity,completeProspectiveLedgerCommit:fullLedgerCommit,assumptionEvidenceId:assumptions.assumptionEvidenceId,
     attemptIds:attempt.attemptIds,scheduledGhtEpochSeconds:attempt.scheduledGhtEpochSeconds,cycleIds:actualCycleIds,reviewedCycleCount:cycles.length,scheduledAttemptCount:REQUIRED_SCHEDULED_ATTEMPTS,nonCycleFailureCount,
     successfulDryRunCycles:successes,observedReviewedCycleFailureCount:observedReviewedCycleFailures,ambiguousReviewedCycles:ambiguous,conservativeFailureCycles:conservativeFailures,
     nonCycleAttemptsCountAsFailures:true,ambiguousReviewedCyclesCountAsFailures:true,classifications,
     confidence:c,minimumConfidence:MIN_CONFIDENCE,method:'ONE_SIDED_CLOPPER_PEARSON_BINOMIAL_FIXED_SEVEN_ATTEMPTS_CONSERVATIVE_FAILURES',firstBetRaceProbabilityLowerBound:lowerBound,
-    exactScheduledAttemptDenominatorVerified:true,activationVerifiedBeforeFirstScheduledGht:true,completeProspectiveCycleLedgerVerified:true,binomialSamplingAssumptionJustified:true,currentCycleExchangeabilityVerified:true,
+    exactScheduledAttemptDenominatorVerified:true,exactReviewedArtifactIdentitiesVerified:true,activationVerifiedBeforeFirstScheduledGht:true,completeProspectiveCycleLedgerVerified:true,binomialSamplingAssumptionJustified:true,currentCycleExchangeabilityVerified:true,
     exactCycleLedgerMatchesAssumptionReview:true,bindingScopeMatchesAssumptionReview:true,samplingWindowFrozenBeforeFirstCycle:true,allEligibleDistinctDailyGhtCyclesIncluded:true,failedShortAndAmbiguousCyclesRetained:true,assumptionsSelectedUsingSurvivalOutcomes:false,
     bindingScopeKey:actualBindingScopeKey,requestExecIntervalSeconds:exec,reviewedRaceLowerBoundAvailable:true,usableForRaceEvidence:true,usableForExecution:false,
-    scientificUse:'Derives the AP McCoy race lower confidence bound only after a code-owned activation fixes the served binding before the first scheduled GHT, then over exactly the first seven scheduled Daily GHT opportunities. Complete reviewed survival cycles may count as successes; failed, late, short, invalid or missed opportunities and ambiguous cycles remain conservative failures. The statistical review must point to the same committed full attempt ledger, confidence may not be below 95%, and the feed-age-plus-action window may not exceed the frozen survival horizon. This remains race evidence only.',
+    scientificUse:'Derives the AP McCoy race lower confidence bound only from exact code-owned reviewed artifacts. The attempt-ledger review SHA is bound to its exact seven-opportunity ledger identity and the latency review SHA to its exact end-to-end dispatch-plus-passive-RTT measurement identity; approved SHAs cannot be reused with altered content. Exactly seven scheduled Daily GHT opportunities remain in the denominator, missing/failed/ambiguous outcomes are conservative failures, confidence is at least 95%, and the feed-age-plus-action window may not exceed the frozen survival horizon.',
     execution:execution(),
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,codeOwnedActivationRequired:true,activationBeforeFirstScheduledGhtRequired:true,fixedSevenScheduledAttemptDenominator:true,codeOwnedAttemptLedgerReviewAllowlist:true,codeOwnedSurvivalReviewAllowlist:true,codeOwnedLatencyReviewAllowlist:true,codeOwnedRaceAssumptionReviewAllowlist:true,fullAttemptLedgerCommitMustMatchRaceAssumptionReview:true,callerReviewedCycleSubsetCannotReplaceAttemptLedger:true,nonCycleFailuresCannotBeDropped:true,ambiguousReviewedCyclesCannotBeDropped:true,minimumConfidence95Pct:true,optionalStoppingForbidden:true,bindingScopeMustMatchAttemptAndAssumptionReviews:true,latencyIndependentOfSurvivalOutcomes:true,maxDecisionFeedAgeIntervalsFrozen:true,raceWindowIncludesFeedAgePlusActionLatency:true,raceWindowCannotExceedFrozenTwelveIntervalSurvivalHorizon:true,notExecutionAuthority:true,servedStakeStillRequired:true,currentFreshStateStillRequired:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false}
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,exactReviewedArtifactIdentitiesRequired:true,approvedReviewShaCannotAuthorizeAlteredArtifact:true,codeOwnedActivationRequired:true,activationBeforeFirstScheduledGhtRequired:true,fixedSevenScheduledAttemptDenominator:true,codeOwnedAttemptLedgerReviewArtifact:true,codeOwnedLatencyReviewArtifact:true,codeOwnedRaceAssumptionReviewAllowlist:true,fullAttemptLedgerCommitMustMatchRaceAssumptionReview:true,callerReviewedCycleSubsetCannotReplaceAttemptLedger:true,nonCycleFailuresCannotBeDropped:true,ambiguousReviewedCyclesCannotBeDropped:true,minimumConfidence95Pct:true,optionalStoppingForbidden:true,bindingScopeMustMatchAttemptAndAssumptionReviews:true,latencyIndependentOfSurvivalOutcomes:true,maxDecisionFeedAgeIntervalsFrozen:true,raceWindowIncludesFeedAgePlusActionLatency:true,raceWindowCannotExceedFrozenTwelveIntervalSurvivalHorizon:true,notExecutionAuthority:true,servedStakeStillRequired:true,currentFreshStateStillRequired:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false}
   };
 }
