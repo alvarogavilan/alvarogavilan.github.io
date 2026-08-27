@@ -12,31 +12,40 @@ function base(extra=[]){return {log:{entries:[
   ...extra,
 ]}};}
 
-const bothText='Frank Bruno Sporting Legends jackpot rules. The Daily Jackpot is guaranteed to be won within the remaining time. If it is not awarded, the first bet on the following day wins it. Any bet of any size can win the Daily Jackpot; a larger bet has a greater chance.';
-let r=discover(base([entry('https://casino.bet365.es/game-help/FrankBrunoSL?session=PRIVATE','2026-08-27T05:40:07Z',bothText,'text/plain')]));
+const allText='Frank Bruno Sporting Legends jackpot rules. The Daily Jackpot is guaranteed to be won within the remaining time. If it is not awarded, the first bet on the following day wins it. Any bet of any size can win the Daily Jackpot; a larger bet has a greater chance. The jackpots are funded by the operator and do not affect the RTP of the game.';
+let r=discover(base([entry('https://casino.bet365.es/game-help/FrankBrunoSL?session=PRIVATE','2026-08-27T05:40:07Z',allText,'text/plain')]));
 assert.equal(r.valid,true);
 assert.equal(r.exactBet365SpainFrontendToConfiguredSljp1TransportBindingVerified,true);
 assert.equal(r.candidateCount,1);
 assert.equal(r.followingDayFirstBetRuleCandidateObserved,true);
 assert.equal(r.anySizeJackpotEligibilityCandidateObserved,true);
+assert.equal(r.operatorFundedJackpotRtpSeparationCandidateObserved,true);
+assert.equal(r.operatorFundedJackpotRtpSeparationCandidateCount,1);
 assert.equal(r.operatorRuleAdoptionVerified,false);
 assert.equal(r.servedTenCentJackpotEligibilityVerified,false);
+assert.equal(r.bet365JackpotDoesNotAffectGameRtpVerified,false);
 assert.equal(r.independentSemanticReviewRequired,true);
 assert.equal(r.usableForExecution,false);
 assert.equal(r.execution.decision,'NO_PLAY');
 assert.equal(r.candidates[0].responseHost,'casino.bet365.es');
 assert.equal(r.candidates[0].responsePath,'/game-help/FrankBrunoSL');
+assert.equal(r.candidates[0].concepts.operatorFunded,true);
+assert.equal(r.candidates[0].concepts.jackpotDoesNotAffectRtp,true);
 assert.match(r.candidates[0].bodySha256,/^[0-9a-f]{64}$/);
 const serialized=JSON.stringify(r);
-for(const forbidden of ['PRIVATE','SECRET','HIDDEN','QUERY_SECRET',bothText])assert.equal(serialized.includes(forbidden),false);
+for(const forbidden of ['PRIVATE','SECRET','HIDDEN','QUERY_SECRET',allText])assert.equal(serialized.includes(forbidden),false);
 
-r=discover(base([entry('https://provider.example/game-help','2026-08-27T05:40:07Z',bothText,'text/plain')]));
-assert.equal(r.valid,true);assert.equal(r.candidateCount,0);assert.equal(r.followingDayFirstBetRuleCandidateObserved,false);assert.equal(r.anySizeJackpotEligibilityCandidateObserved,false);
+r=discover(base([entry('https://provider.example/game-help','2026-08-27T05:40:07Z',allText,'text/plain')]));
+assert.equal(r.valid,true);assert.equal(r.candidateCount,0);assert.equal(r.followingDayFirstBetRuleCandidateObserved,false);assert.equal(r.anySizeJackpotEligibilityCandidateObserved,false);assert.equal(r.operatorFundedJackpotRtpSeparationCandidateObserved,false);
 
-r=discover(base([entry('https://casino.bet365.es/game-help/generic','2026-08-27T05:40:07Z','The first bet on the following day wins the Daily Jackpot. Any bet of any size can win.','text/plain')]));
+r=discover(base([entry('https://casino.bet365.es/game-help/generic','2026-08-27T05:40:07Z','The first bet on the following day wins the Daily Jackpot. Any bet of any size can win. The jackpots are funded by the operator and do not affect the RTP of the game.','text/plain')]));
 assert.equal(r.valid,true);assert.equal(r.candidateCount,0);
 
-r=discover({log:{entries:[entry('https://casino.bet365.es/game-help/FrankBrunoSL','2026-08-27T05:40:07Z',bothText,'text/plain')]}});
+const rtpOnly='Frank Bruno Sporting Legends jackpot rules. The jackpots are funded by the operator and do not affect the RTP of the game.';
+r=discover(base([entry('https://help.bet365.es/game-rules/frank','2026-08-27T05:40:07Z',rtpOnly,'text/plain')]));
+assert.equal(r.valid,true);assert.equal(r.followingDayFirstBetRuleCandidateObserved,false);assert.equal(r.anySizeJackpotEligibilityCandidateObserved,false);assert.equal(r.operatorFundedJackpotRtpSeparationCandidateObserved,true);
+
+r=discover({log:{entries:[entry('https://casino.bet365.es/game-help/FrankBrunoSL','2026-08-27T05:40:07Z',allText,'text/plain')]}});
 assert.equal(r.valid,false);assert.equal(r.reason,'EXACT_FRANK_SERVED_SLJP1_BINDING_REQUIRED');assert.equal(r.execution.realMoneyAllowed,false);
 
 console.log('bet365-frank-served-rules-candidate-v1.test.mjs: PASS');
