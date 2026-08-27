@@ -1,0 +1,86 @@
+{
+  "version": "bet365-spain-frank-prospective-race-freeze-v1",
+  "generatedAtDate": "2026-08-27",
+  "status": "PROSPECTIVE_STRUCTURE_FROZEN_EXECUTION_PRECONDITIONS_AND_ACTION_LATENCY_NOT_YET_CLOSED",
+  "scope": "ONLINE_ONLY_NON_PROMO_PASSIVE_RESEARCH",
+  "operator": "bet365 Spain",
+  "market": "ES",
+  "target": {
+    "title": "Frank Bruno: Sporting Legends",
+    "providerGameCode": "gpas_slfbruno_pop",
+    "exactPublicPlayUrl": "https://casino.bet365.es/play/FrankBrunoSL",
+    "jackpotGroupCandidate": "sljp",
+    "dailyCodeCandidate": "sljp-1"
+  },
+  "freezeAnchor": {
+    "mainShaBeforeFreezeArtifact": "9cd44561b5715f3ec72cef735f8d07f261588ac2",
+    "mainCommitUtc": "2026-08-27T01:19:08Z",
+    "rule": "No race cycle may count prospectively unless every observation used by that cycle is strictly later than the commit that adds this freeze artifact and a later code gate pins that exact freeze commit SHA/UTC."
+  },
+  "frozenCycleDefinition": {
+    "validator": "loterias-ai/casino/jackpots/bet365-sporting-passive-race-cycle-v1.mjs",
+    "boundEstimator": "loterias-ai/casino/jackpots/bet365-sporting-empirical-race-bound-v1.mjs",
+    "requiredNetwork": "SPORTING_LEGENDS",
+    "requiredTier": "DAILY",
+    "requiredTickerCode": "sljp-1",
+    "requiredCurrency": "EUR",
+    "requiredLocal": 0,
+    "sameExactProviderGameAcrossCycle": "gpas_slfbruno_pop",
+    "sameBet365ConfiguredJackpotsCasinoAcrossCycle": true,
+    "sameConfiguredTickerEndpointAcrossCycle": true,
+    "sameInstanceCodeAcrossCycle": true,
+    "sameGuaranteedHitTimeAcrossCycle": true,
+    "beforeBoundarySnapshotRequired": true,
+    "firstPostGhtDetectionRequired": true,
+    "postHypotheticalActionWindowConfirmationRequired": true,
+    "passiveDryRunOnly": true,
+    "realWagerForbiddenForCalibrationCycles": true,
+    "outcomeSuccessDefinition": "At confirmation time, winCount remains unchanged from detection and amount has not reset/decreased, after the frozen hypothetical action-latency window has elapsed.",
+    "outcomeFailureDefinition": "By confirmation time, the Daily state has awarded/reset before the frozen hypothetical action-latency window can be considered survived."
+  },
+  "preconditionsBeforeFirstCountedCycle": {
+    "exactBet365SpainServedFrontendToSljp1BindingReviewed": false,
+    "servedTenCentTotalStakeReviewed": false,
+    "servedTenCentJackpotEligibilityReviewed": false,
+    "bet365FirstBetFollowingDayRuleAdoptionReviewed": false,
+    "providerGhtBoundarySemanticsReviewed": false,
+    "actionLatencySecondsFrozenBeforeCycle": false,
+    "actionLatencyPolicy": "Must be established by a dedicated prospective latency artifact before the first counted race cycle. No retrospective choice of latency after observing race outcomes is allowed."
+  },
+  "statisticalPlan": {
+    "method": "ONE_SIDED_CLOPPER_PEARSON_BINOMIAL",
+    "defaultConfidence": 0.95,
+    "pointEstimateCannotAuthorizeExecution": true,
+    "completeProspectiveLedgerRequired": true,
+    "uniqueCycleIdsRequired": true,
+    "sameProtocolAndActionLatencyAcrossLedgerRequired": true,
+    "binomialIidOrEquivalentSamplingModelMustBeIndependentlyJustified": true,
+    "currentCycleExchangeabilityMustBeIndependentlyReviewed": true,
+    "bindingScopeCannotChangeAcrossLedger": true
+  },
+  "antiP_hacking": {
+    "retrospectiveCyclesCannotBePromoted": true,
+    "failedCyclesCannotBeDropped": true,
+    "duplicateCyclesCannotCountTwice": true,
+    "latencyCannotBeOptimizedAfterSeeingOutcomes": true,
+    "operatorRuleCannotBeInheritedFromBetfairOrAnotherLicensee": true,
+    "providerRuleCannotBeSelfPromotedToBet365OperatorRule": true,
+    "headlineRtpCannotSetRaceThreshold": true
+  },
+  "nextRequiredArtifact": "Freeze an independently defensible actionLatencySeconds policy/value and pin the exact commit before collecting the first counted cycle. The current artifact freezes the cycle/statistical structure only.",
+  "hardGuards": {
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "passiveOnly": true,
+    "noWagerProbe": true,
+    "noAutomaticBetting": true,
+    "realMoneyAllowed": false
+  },
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  }
+}
