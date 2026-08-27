@@ -3,6 +3,7 @@ import {evaluateBetfairApMcCoyAttemptPlanActivation,getApprovedBetfairApMcCoyAtt
 
 const fake='a'.repeat(40),binding='bf_es|https://ticker.example/new_jackpotxml.php|https://launcher.betfair.es/initialResources/es_ES_desktop|es1';
 let r=evaluateBetfairApMcCoyAttemptPlanActivation({activationReviewCommit:fake,bindingScopeKey:binding,firstScheduledGhtEpochSeconds:2_000});
+assert.equal(r.version,'betfair-apmccoy-attempt-plan-activation-v1.1-first-ght-pinned');
 assert.equal(r.valid,false);
 assert.equal(r.reason,'ACTIVATION_REVIEW_COMMIT_NOT_CODE_ALLOWLISTED');
 assert.equal(r.planActivated,false);
