@@ -1,0 +1,87 @@
+{
+  "version": "betfair-spain-apmccoy-prospective-attempt-plan-freeze-v1",
+  "generatedAtDate": "2026-08-27",
+  "status": "FROZEN_BEFORE_FIRST_REAL_PROSPECTIVE_CYCLE",
+  "scope": "ONLINE_ONLY_NON_PROMO_PASSIVE_RESEARCH",
+  "operator": "Betfair Spain",
+  "market": "ES",
+  "target": {
+    "title": "AP McCoy Sporting Legends™",
+    "gameId": "ap-mccoy-sporting-legends-cptn",
+    "dailyCode": "sljp-1"
+  },
+  "freezeAnchor": {
+    "mainShaBeforePlanFreeze": "61631760d7652d7bbf69a4bff33276ffb68abbe8",
+    "existingPostGhtProtocolFreezeCommit": "8eb28f5d7a3c708104f3e2356b6cc86764dba68c",
+    "realProspectiveCyclesKnownAtFreeze": 0,
+    "rule": "This stopping rule is committed before the first real prospective AP McCoy cycle. It may not be shortened, extended or restarted based on observed survival outcomes."
+  },
+  "activation": {
+    "startsOnlyAfterFirstExactQualifyingSessionBindingIsIndependentlyRecorded": true,
+    "bindingMustRemainIdenticalAcrossPlan": true,
+    "bindingComponents": [
+      "Betfair Spain exact AP McCoy real launcher",
+      "latest post-launch Betfair initialResources source",
+      "jackpotsCasino/IMS",
+      "configured ticker endpoint",
+      "observed ticker endpoint",
+      "EUR GLOBAL local=0 sljp-1",
+      "instanceCode when present"
+    ]
+  },
+  "stoppingRule": {
+    "type": "FIXED_FIRST_SEVEN_SCHEDULED_DISTINCT_DAILY_GHT_OPPORTUNITIES",
+    "targetScheduledOpportunities": 7,
+    "whySeven": "A complete seven-opportunity block forces repeated-day evidence and prevents a one-success stop rule. Seven is a reproducibility floor, not a claim of statistical sufficiency; the conservative confidence bound remains the quantitative gate.",
+    "scheduledOpportunityDefinition": "After activation, each of the first seven distinct Daily sljp-1 guaranteedHitTime boundaries for the frozen exact binding is one scheduled opportunity, regardless of whether capture succeeds.",
+    "stopAfterExactlySevenScheduledOpportunities": true,
+    "stopAfterSuccessForbidden": true,
+    "retryUntilSevenSuccessfulCyclesForbidden": true,
+    "extensionAfterBadOutcomesForbidden": true,
+    "replacementOfFailedOrMissedOpportunityForbidden": true
+  },
+  "attemptLedger": {
+    "everyScheduledOpportunityMustHaveExactlyOneEntry": true,
+    "allowedTerminalClasses": [
+      "REVIEWED_COMPLETE_SURVIVAL_CYCLE",
+      "CAPTURE_FAILED",
+      "CAPTURE_STARTED_TOO_LATE",
+      "CAPTURE_STOPPED_SHORT",
+      "BINDING_OR_SCOPE_INVALID",
+      "MISSED_SCHEDULED_OPPORTUNITY"
+    ],
+    "reviewedCompleteCycleMayBecomeRaceSuccessOrFailureAfterIndependentLatencyFreeze": true,
+    "allOtherTerminalClassesAreConservativeRaceFailures": true,
+    "ambiguousReviewedCycleIsConservativeRaceFailure": true,
+    "failedShortInvalidOrMissedAttemptsCannotBeDropped": true,
+    "duplicateDailyGhtCannotCountTwice": true,
+    "strictScheduledOrderRequired": true
+  },
+  "relationshipToExistingSurvivalProtocol": {
+    "survivalProtocolStillControlsWithinOpportunityCapturePath": true,
+    "withinOpportunityHorizonIntervals": 12,
+    "maximumServerGapIntervals": 2,
+    "attemptPlanControlsDenominatorAndStoppingRule": true,
+    "survivalCycleValidatorAloneCannotDefineRaceDenominator": true
+  },
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "passiveOnly": true,
+    "frozenBeforeFirstCycle": true,
+    "fixedScheduledOpportunityCount": 7,
+    "allScheduledAttemptsRemainInDenominator": true,
+    "missingDataCannotImproveRaceBound": true,
+    "noOptionalStopping": true,
+    "noWagerProbe": true,
+    "noAutomaticBetting": true,
+    "realMoneyAllowed": false
+  }
+}
