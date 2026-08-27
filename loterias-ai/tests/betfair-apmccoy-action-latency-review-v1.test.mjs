@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {reviewBetfairApMcCoyActionLatency as review} from '../casino/jackpots/betfair-apmccoy-action-latency-review-v1.mjs';
+import {reviewBetfairApMcCoyActionLatency as review,isApprovedBetfairApMcCoyActionLatencyReviewArtifact} from '../casino/jackpots/betfair-apmccoy-action-latency-review-v1.mjs';
 
 const measurement={
   measuredDispatchLatencySeconds:2.0,
@@ -18,12 +18,13 @@ const measurement={
 const fake='a'.repeat(40);
 let r=review({measurement,reviewCommit:fake});
 assert.equal(r.valid,false);
-assert.equal(r.contractRevision,'v1.1-dispatch-plus-passive-rtt');
+assert.equal(r.contractRevision,'v1.2-code-owned-artifact-identity');
 assert.equal(r.reason,'ACTION_LATENCY_REVIEW_COMMIT_NOT_CODE_ALLOWLISTED');
 assert.equal(r.measuredActionLatencyVerified,false);
 assert.equal(r.usableForRaceWindow,false);
 assert.equal(r.execution.decision,'NO_PLAY');
 assert.equal(r.execution.realMoneyAllowed,false);
+assert.equal(isApprovedBetfairApMcCoyActionLatencyReviewArtifact({...measurement,reviewCommit:fake}),false);
 
 r=review({measurement:{...measurement,selectedUsingPostGhtSurvivalOutcomes:true},reviewCommit:fake});
 assert.equal(r.reason,'LATENCY_SELECTION_MUST_BE_INDEPENDENT_OF_SURVIVAL_OUTCOMES');
