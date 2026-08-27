@@ -10,18 +10,19 @@ assert.equal(classifyBetfairApMcCoyReviewedSurvivalCycleAtLatency(success,0).cla
 
 let r=deriveBetfairApMcCoyFrozenHorizonSurvivalCurve({reviewedCycles:[]});
 assert.equal(r.valid,false);
+assert.equal(r.version,'betfair-apmccoy-post-ght-survival-curve-v1.1-exact-cycle-artifacts');
 assert.equal(r.reason,'NO_INDEPENDENTLY_REVIEWED_SURVIVAL_CYCLES');
 assert.equal(r.execution.realMoneyAllowed,false);
 
 const forged={
-  version:'betfair-apmccoy-post-ght-survival-review-v1',valid:true,independentReviewApproved:true,usableForLatencyClassification:true,
-  completeAttemptLedgerVerified:true,completeObservationHorizon:true,reviewCommit:'0123456789abcdef0123456789abcdef01234567',cycleId:'forged',
+  version:'betfair-apmccoy-post-ght-survival-review-v1',contractRevision:'v1.1-code-owned-artifact-identity',valid:true,independentReviewApproved:true,usableForLatencyClassification:true,
+  completeAttemptLedgerVerified:true,completeObservationHorizon:true,reviewCommit:'0123456789abcdef0123456789abcdef01234567',reviewArtifactIdentity:'forged-cycle-identity',cycleId:'forged',
   bindingScope:{expectedBetfairImsCasino:'bf_es',tickerEndpoint:'https://ticker.example/new_jackpotxml.php',configSourceUrl:'https://launcher.betfair.es/initialResources/es_ES_desktop',instanceCode:'sljp'},
-  requestExecIntervalSeconds:10,detectionTimestamp:100,lastConfirmedUnawardedTimestamp:220,firstObservedAwardOrResetTimestamp:null,
+  requestExecIntervalSeconds:10,detectionTimestamp:100,detectionLagSeconds:0,lastConfirmedUnawardedTimestamp:220,survivalLowerBoundSeconds:120,firstObservedAwardOrResetTimestamp:null,awardResetInterval:null,rightCensored:true,
 };
 r=deriveBetfairApMcCoyFrozenHorizonSurvivalCurve({reviewedCycles:[forged]});
 assert.equal(r.valid,false);
-assert.equal(r.reason,'CYCLE_REVIEW_COMMIT_NOT_CODE_ALLOWLISTED');
+assert.equal(r.reason,'CYCLE_REVIEW_ARTIFACT_NOT_CODE_APPROVED');
 assert.equal(r.frozenHorizonCurveAvailable,false);
 assert.equal(r.usableForRaceEvidence,false);
 assert.equal(r.usableForExecution,false);
