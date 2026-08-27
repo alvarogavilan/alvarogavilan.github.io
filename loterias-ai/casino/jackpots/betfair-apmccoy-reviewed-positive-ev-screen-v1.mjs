@@ -1,6 +1,9 @@
+import {evaluateBetfairSportingHarOverduePair} from './betfair-sporting-har-overdue-bridge-v1.mjs';
 import {deriveBetfairApMcCoyReviewedRaceLowerBound} from './betfair-apmccoy-reviewed-race-bound-v1.mjs';
+import {isApprovedBetfairApMcCoyServedStakeReviewArtifact} from '../../edge-backend/src/betfair-apmccoy-served-stake-review-v1.mjs';
+import {isApprovedBetfairApMcCoyActionLatencyReviewArtifact} from './betfair-apmccoy-action-latency-review-v1.mjs';
 
-const VERSION='betfair-apmccoy-reviewed-positive-ev-screen-v1.6-exact-cycle-race-derivation';
+const VERSION='betfair-apmccoy-reviewed-positive-ev-screen-v1.7-internal-har-and-race-derivation';
 const BRIDGE_VERSION='betfair-sporting-har-overdue-bridge-v1.10-code-owned-latency-dryrun';
 const RACE_VERSION='betfair-apmccoy-reviewed-race-bound-v1.6-exact-cycle-artifacts';
 const REQUIRED_SCHEDULED_ATTEMPTS=7;
@@ -14,13 +17,22 @@ function currentBindingKey(bridge){const s=bridge?.after?.snapshot||{};return [l
 function execution(){return {decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0};}
 function fail(reason,extra={}){return {version:VERSION,valid:false,reason,reviewedPositiveEvScreenPassed:false,usableForExecution:false,execution:execution(),...extra};}
 
-export function evaluateBetfairApMcCoyReviewedPositiveEvScreen({overdueBridgeResult,scheduledAttemptLedgerReview,raceAssumptionsReview,reviewedCycles,confidence=0.95}={}){
-  const bridge=overdueBridgeResult;
-  if(!bridge||bridge.version!==BRIDGE_VERSION||bridge.valid!==true)return fail('VALID_CURRENT_AP_MCCOY_OVERDUE_BRIDGE_RESULT_REQUIRED');
+export function evaluateBetfairApMcCoyReviewedPositiveEvScreen({
+  beforeHar,afterHar,beforeSourceName='before.har',afterSourceName='after.har',beforeNowEpochSeconds=null,afterNowEpochSeconds=null,
+  maxFeedAgeIntervals=2,maxCaptureTimeArgumentSkewSeconds=2,decisionNowEpochSeconds,
+  stakeEUR,stakeReviewCommit,actionLatencyMeasurement,actionLatencyReviewCommit,
+  scheduledAttemptLedgerReview,raceAssumptionsReview,reviewedCycles,confidence=0.95,
+}={}){
+  const bridge=evaluateBetfairSportingHarOverduePair({
+    beforeHar,afterHar,beforeSourceName,afterSourceName,beforeNowEpochSeconds,afterNowEpochSeconds,
+    maxFeedAgeIntervals,maxCaptureTimeArgumentSkewSeconds,decisionNowEpochSeconds,
+    stakeEUR,stakeReviewCommit,actionLatencyMeasurement,actionLatencyReviewCommit,
+  });
+  if(!bridge||bridge.version!==BRIDGE_VERSION||bridge.valid!==true)return fail('INTERNALLY_DERIVED_CURRENT_AP_MCCOY_OVERDUE_BRIDGE_REQUIRED',{bridgeDerivationReason:bridge?.reason||null,bridgeDerivationVersion:bridge?.version||null});
   if(bridge.operatorFollowingDayRuleVerifiedFromCodeOwnedCurrentEvidence!==true||bridge.providerGhtBoundarySemanticsVerifiedFromCodeOwnedEvidence!==true)return fail('CODE_OWNED_OPERATOR_SEMANTICS_REQUIRED');
   if(bridge.currentDailyAmountExactVerifiedFromValidatedServerSnapshot!==true||bridge.finalEvaluation?.followingDayUnawardedVerified!==true||bridge.finalEvaluation?.nextEligibleNetworkBetGuaranteedJackpot!==true)return fail('CURRENT_EXACT_POST_GHT_UNAWARDED_STATE_REQUIRED');
-  if(bridge.stakeAtDecisionExactVerifiedFromCodeOwnedReview!==true||bridge.stakeReview?.valid!==true||bridge.stakeReview?.stakeAtDecisionExactVerified!==true)return fail('CODE_REVIEWED_SERVED_STAKE_REQUIRED');
-  if(bridge.measuredActionLatencyVerifiedFromCodeOwnedReview!==true||bridge.actionLatencyReview?.valid!==true||bridge.actionLatencyReview?.measuredActionLatencyVerified!==true)return fail('CODE_REVIEWED_ACTION_LATENCY_REQUIRED');
+  if(bridge.stakeAtDecisionExactVerifiedFromCodeOwnedReview!==true||bridge.stakeReview?.valid!==true||bridge.stakeReview?.stakeAtDecisionExactVerified!==true||!isApprovedBetfairApMcCoyServedStakeReviewArtifact(bridge.stakeReview))return fail('EXACT_CODE_REVIEWED_SERVED_STAKE_ARTIFACT_REQUIRED');
+  if(bridge.measuredActionLatencyVerifiedFromCodeOwnedReview!==true||bridge.actionLatencyReview?.valid!==true||bridge.actionLatencyReview?.measuredActionLatencyVerified!==true||!isApprovedBetfairApMcCoyActionLatencyReviewArtifact(bridge.actionLatencyReview))return fail('EXACT_CODE_REVIEWED_ACTION_LATENCY_ARTIFACT_REQUIRED');
 
   const race=deriveBetfairApMcCoyReviewedRaceLowerBound({reviewedCycles,scheduledAttemptLedgerReview,actionLatencyReview:bridge.actionLatencyReview,raceAssumptionsReview,confidence});
   if(!race||race.version!==RACE_VERSION||race.valid!==true||race.reviewedRaceLowerBoundAvailable!==true||race.usableForRaceEvidence!==true)return fail('INTERNALLY_DERIVED_FIXED_ATTEMPT_RACE_BOUND_REQUIRED',{raceDerivationReason:race?.reason||null,raceDerivationVersion:race?.version||null});
@@ -58,13 +70,14 @@ export function evaluateBetfairApMcCoyReviewedPositiveEvScreen({overdueBridgeRes
     feedAgeSeconds,measuredActionLatencySeconds,totalExposureSeconds,validatedRaceWindowSeconds:raceWindow,frozenSurvivalHorizonSeconds:frozenHorizon,
     activationVerifiedBeforeFirstScheduledGht:true,activationReviewCommit:race.activationReviewCommit,activatedAtEpochSeconds:race.activatedAtEpochSeconds,
     exactScheduledAttemptDenominatorVerified:true,exactReviewedArtifactIdentitiesVerified:true,exactReviewedCycleArtifactsVerified:true,scheduledAttemptCount:REQUIRED_SCHEDULED_ATTEMPTS,
+    stakeReviewCommit:bridge.stakeReview.reviewCommit,stakeReviewArtifactIdentity:bridge.stakeReview.reviewArtifactIdentity,
     attemptLedgerReviewCommit:race.attemptLedgerReviewCommit,attemptLedgerReviewArtifactIdentity:race.attemptLedgerReviewArtifactIdentity,
     raceAssumptionReviewCommit:race.raceAssumptionReviewCommit,raceAssumptionReviewArtifactIdentity:race.raceAssumptionReviewArtifactIdentity,
     actionLatencyReviewCommit:race.actionLatencyReviewCommit,actionLatencyReviewArtifactIdentity:race.actionLatencyReviewArtifactIdentity,
     completeProspectiveLedgerCommit:race.completeProspectiveLedgerCommit,
     reviewedPositiveEvScreenPassed,executionAdapterStillRequired:true,freshFinalRevalidationStillRequired:true,usableForExecution:false,
-    scientificUse:'Research-only AP McCoy positive-EV screen. The race lower bound is re-derived internally from exact code-owned reviewed survival cycles, attempt ledger, race assumptions and current bridge latency artifact; caller-supplied pRace or precomputed race-bound objects are ignored. Exactly seven scheduled Daily GHT opportunities remain in the denominator and a positive screen is still not execution authority.',
+    scientificUse:'Research-only AP McCoy positive-EV screen. Both the current served state and race probability are re-derived internally: the former from the two passive HAR captures through the exact launcher/config/IMS/ticker/stake/latency bridge, and the latter from exact reviewed survival, ledger, latency and statistical artifacts. Caller-supplied bridge objects, current jackpot amounts, pRace values or precomputed race bounds are not accepted. A positive screen remains non-executable pending fresh final revalidation.',
     execution:execution(),
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,callerSuppliedRaceBoundRejected:true,raceProbabilityDerivedInternallyOnly:true,exactReviewedArtifactIdentitiesRequired:true,exactReviewedCycleArtifactsRequired:true,priorCodeOwnedActivationRequired:true,activationMustPrecedeFirstScheduledGht:true,fixedSevenScheduledAttemptDenominatorRequired:true,minimumRaceConfidence95Pct:true,exactCurrentPostGhtStateRequired:true,codeReviewedStakeRequired:true,exactLatencyArtifactMustMatchCurrentBridge:true,exactBindingScopeEqualityRequired:true,failedShortInvalidMissedAttemptsRemainInDenominator:true,optionalStoppingForbidden:true,reviewedRaceWindowMustFitFrozenSurvivalHorizon:true,conservativeRtpFloorRequired:true,currentExposureMustFitReviewedRaceWindow:true,positiveEvScreenIsNotExecutionAuthority:true,freshFinalRevalidationStillRequired:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false}
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,callerSuppliedBridgeRejected:true,currentServedStateDerivedInternallyFromHarOnly:true,callerSuppliedRaceBoundRejected:true,raceProbabilityDerivedInternallyOnly:true,exactReviewedStakeArtifactRequired:true,exactReviewedArtifactIdentitiesRequired:true,exactReviewedCycleArtifactsRequired:true,priorCodeOwnedActivationRequired:true,fixedSevenScheduledAttemptDenominatorRequired:true,minimumRaceConfidence95Pct:true,exactBindingScopeEqualityRequired:true,failedShortInvalidMissedAttemptsRemainInDenominator:true,optionalStoppingForbidden:true,reviewedRaceWindowMustFitFrozenSurvivalHorizon:true,conservativeRtpFloorRequired:true,currentExposureMustFitReviewedRaceWindow:true,positiveEvScreenIsNotExecutionAuthority:true,freshFinalRevalidationStillRequired:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false}
   };
 }
