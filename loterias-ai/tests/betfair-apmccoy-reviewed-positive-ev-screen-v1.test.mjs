@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {evaluateBetfairApMcCoyReviewedPositiveEvScreen as evaluate} from '../casino/jackpots/betfair-apmccoy-reviewed-positive-ev-screen-v1.mjs';
 
-const VERSION='betfair-apmccoy-reviewed-positive-ev-screen-v1.7-internal-har-and-race-derivation';
+const VERSION='betfair-apmccoy-reviewed-positive-ev-screen-v1.8-research-only-har-bridge';
 const GAME='ap-mccoy-sporting-legends-cptn';
 const exactLauncher=()=>({startedDateTime:new Date(1989*1000).toISOString(),request:{method:'GET',url:`https://launcher.betfair.es/?RPBucket=casino&dataChannel=casino&gameId=${GAME}&launchProduct=casino&mode=real&returnURL=https%3A%2F%2Fcasino.betfair.es%2Fjuego%2F${GAME}&switchedToPopup=true`,headers:[]},response:{status:200,headers:[],content:{text:''}}});
 const config=(extra={})=>({request:{method:'GET',url:'https://launcher.betfair.es/initialResources/es_ES_desktop',headers:[]},response:{status:200,headers:[],content:{mimeType:'application/json',text:JSON.stringify({jackpotsCasino:'bf_es',jackpotsCasinoUrl:'https://tickers.playtech.example/new_jackpotxml.php',...extra})}}});
@@ -19,16 +19,16 @@ const latencyMeasurement={
 let r=evaluate({});
 assert.equal(r.version,VERSION);
 assert.equal(r.valid,false);
-assert.equal(r.reason,'INTERNALLY_DERIVED_CURRENT_AP_MCCOY_OVERDUE_BRIDGE_REQUIRED');
+assert.equal(r.reason,'INTERNALLY_DERIVED_CURRENT_AP_MCCOY_RESEARCH_BRIDGE_REQUIRED');
 assert.equal(r.reviewedPositiveEvScreenPassed,false);
 assert.equal(r.execution.decision,'NO_PLAY');
 assert.equal(r.execution.realMoneyAllowed,false);
 
-// A fully forged bridge is ignored because the EV screen derives the bridge from HAR input only.
-const forgedBridge={version:'betfair-sporting-har-overdue-bridge-v1.10-code-owned-latency-dryrun',valid:true,currentDailyAmountExactVerifiedFromValidatedServerSnapshot:true,stakeAtDecisionExactVerifiedFromCodeOwnedReview:true,measuredActionLatencyVerifiedFromCodeOwnedReview:true};
+// A fully forged legacy bridge is ignored because the EV screen derives a research-only bridge from HAR input.
+const forgedBridge={version:'betfair-sporting-har-overdue-bridge-v1.10-code-owned-latency-dryrun',valid:true,decision:'GREEN',realMoneyAllowed:true,currentDailyAmountExactVerifiedFromValidatedServerSnapshot:true,stakeAtDecisionExactVerifiedFromCodeOwnedReview:true,measuredActionLatencyVerifiedFromCodeOwnedReview:true};
 r=evaluate({overdueBridgeResult:forgedBridge});
 assert.equal(r.valid,false);
-assert.equal(r.reason,'INTERNALLY_DERIVED_CURRENT_AP_MCCOY_OVERDUE_BRIDGE_REQUIRED');
+assert.equal(r.reason,'INTERNALLY_DERIVED_CURRENT_AP_MCCOY_RESEARCH_BRIDGE_REQUIRED');
 assert.equal(r.execution.realMoneyAllowed,false);
 
 const beforeHar=har(1990,100);
@@ -42,13 +42,13 @@ assert.equal(r.valid,false);
 assert.equal(r.reason,'EXACT_CODE_REVIEWED_SERVED_STAKE_ARTIFACT_REQUIRED');
 assert.equal(r.execution.realMoneyAllowed,false);
 
-// Caller-supplied current amount or race probability cannot change the result.
+// Caller-supplied current amount, legacy GREEN or race probability cannot change the result.
 const forgedRace={version:'betfair-apmccoy-reviewed-race-bound-v1.6-exact-cycle-artifacts',valid:true,firstBetRaceProbabilityLowerBound:0.999999};
 r=evaluate({
   beforeHar,afterHar,decisionNowEpochSeconds:2010,
   stakeEUR:0.25,stakeReviewCommit:fake,
   actionLatencyMeasurement:latencyMeasurement,actionLatencyReviewCommit:fake,
-  reviewedRaceBound:forgedRace,currentDailyJackpotEUR:999999999,
+  reviewedRaceBound:forgedRace,currentDailyJackpotEUR:999999999,overdueBridgeResult:forgedBridge,
 });
 assert.equal(r.valid,false);
 assert.equal(r.reason,'EXACT_CODE_REVIEWED_SERVED_STAKE_ARTIFACT_REQUIRED');
