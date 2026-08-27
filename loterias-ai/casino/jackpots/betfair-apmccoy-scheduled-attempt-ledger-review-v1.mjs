@@ -1,7 +1,7 @@
 import {isApprovedBetfairApMcCoySurvivalReviewCommit} from './betfair-apmccoy-post-ght-survival-review-v1.mjs';
 import {evaluateBetfairApMcCoyAttemptPlanActivation} from './betfair-apmccoy-attempt-plan-activation-v1.mjs';
 
-const VERSION='betfair-apmccoy-scheduled-attempt-ledger-review-v1.2-code-owned-activation';
+const VERSION='betfair-apmccoy-scheduled-attempt-ledger-review-v1.3-code-owned-artifact-identity';
 const LEDGER_VERSION='betfair-apmccoy-scheduled-attempt-ledger-v1';
 const CYCLE_VERSION='betfair-apmccoy-post-ght-survival-review-v1';
 const PLAN_FREEZE_COMMIT_SHA='e82f6d61dffa21ec3ca7ec940c51fc3fe36f0e1a';
@@ -9,14 +9,20 @@ const TARGET_SCHEDULED_OPPORTUNITIES=7;
 const SHA40=/^[0-9a-f]{40}$/i;
 const SHA256=/^[0-9a-f]{64}$/i;
 const NON_CYCLE_FAILURE_CLASSES=new Set(['CAPTURE_FAILED','CAPTURE_STARTED_TOO_LATE','CAPTURE_STOPPED_SHORT','BINDING_OR_SCOPE_INVALID','MISSED_SCHEDULED_OPPORTUNITY']);
-const APPROVED_ATTEMPT_LEDGER_REVIEW_COMMITS=new Set();
+// Future entries map review commit -> exact canonical reviewed-ledger identity.
+// Empty now: no real seven-opportunity ledger has been observed or reviewed.
+const APPROVED_ATTEMPT_LEDGER_REVIEWS=new Map();
 const text=v=>typeof v==='string'&&v.trim()?v.trim():null;
 const finite=v=>{if(v===null||v===undefined||v===''||typeof v==='boolean')return null;const n=Number(v);return Number.isFinite(n)?n:null;};
 function execution(){return {decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0};}
-export function isApprovedBetfairApMcCoyAttemptLedgerReviewCommit(value){const s=text(value)?.toLowerCase();return !!s&&SHA40.test(s)&&APPROVED_ATTEMPT_LEDGER_REVIEW_COMMITS.has(s);}
-function fail(reason,extra={}){return {version:VERSION,valid:false,reason,completeScheduledAttemptLedgerVerified:false,allScheduledOpportunitiesRetained:false,usableForRaceDenominator:false,usableForExecution:false,execution:execution(),...extra};}
 function bindingKey(b){return [String(b?.expectedBetfairImsCasino||'').toLowerCase(),String(b?.tickerEndpoint||''),String(b?.configSourceUrl||''),String(b?.instanceCode||'')].join('|');}
 function cycleScheduledGht(c){const detection=finite(c?.detectionTimestamp),lag=finite(c?.detectionLagSeconds);return detection!==null&&lag!==null?detection-lag:null;}
+function cycleIdentity(c){return [text(c?.cycleId),text(c?.reviewCommit)?.toLowerCase()||null,bindingKey(c?.bindingScope),finite(c?.requestExecIntervalSeconds),finite(c?.detectionTimestamp),finite(c?.detectionLagSeconds),finite(c?.lastConfirmedUnawardedTimestamp),finite(c?.survivalLowerBoundSeconds),finite(c?.firstObservedAwardOrResetTimestamp),finite(c?.awardResetInterval?.lowerExclusiveTimestamp),finite(c?.awardResetInterval?.upperInclusiveTimestamp),c?.rightCensored===true,c?.completeObservationHorizon===true,c?.completeAttemptLedgerVerified===true];}
+function entryIdentity(e){if(e?.terminalClass==='REVIEWED_COMPLETE_SURVIVAL_CYCLE')return [text(e?.attemptId),finite(e?.scheduledGhtEpochSeconds),e.terminalClass,cycleIdentity(e.reviewedCycle)];return [text(e?.attemptId),finite(e?.scheduledGhtEpochSeconds),text(e?.terminalClass),text(e?.evidenceDigestSha256)?.toLowerCase()||null,text(e?.reason)];}
+function ledgerArtifactIdentity(v){return JSON.stringify([text(v?.planFreezeCommitSha)?.toLowerCase()||null,text(v?.activationReviewCommit)?.toLowerCase()||null,finite(v?.activatedAtEpochSeconds),text(v?.ledgerCommit)?.toLowerCase()||null,text(v?.stoppingRuleType),Number(v?.targetScheduledOpportunities),Number(v?.scheduledAttemptCount),text(v?.bindingScopeKey),(v?.entries||[]).map(entryIdentity)]);}
+export function isApprovedBetfairApMcCoyAttemptLedgerReviewCommit(value){const s=text(value)?.toLowerCase();return !!s&&SHA40.test(s)&&APPROVED_ATTEMPT_LEDGER_REVIEWS.has(s);}
+export function isApprovedBetfairApMcCoyAttemptLedgerReviewArtifact(review){const commit=text(review?.reviewCommit)?.toLowerCase();if(!commit||!SHA40.test(commit))return false;const expected=APPROVED_ATTEMPT_LEDGER_REVIEWS.get(commit);return !!expected&&expected===ledgerArtifactIdentity(review);}
+function fail(reason,extra={}){return {version:VERSION,valid:false,reason,completeScheduledAttemptLedgerVerified:false,allScheduledOpportunitiesRetained:false,usableForRaceDenominator:false,usableForExecution:false,execution:execution(),...extra};}
 
 export function reviewBetfairApMcCoyScheduledAttemptLedger({ledger,ledgerCommit,reviewCommit}={}){
   const l=ledger||{};
@@ -29,7 +35,6 @@ export function reviewBetfairApMcCoyScheduledAttemptLedger({ledger,ledgerCommit,
   const declaredBinding=text(l.bindingScopeKey);if(!declaredBinding||declaredBinding==='|||')return fail('FROZEN_BINDING_SCOPE_KEY_REQUIRED');
   const entries=Array.isArray(l.entries)?l.entries:[];
   if(entries.length!==TARGET_SCHEDULED_OPPORTUNITIES)return fail('EXACTLY_SEVEN_SCHEDULED_ATTEMPT_ENTRIES_REQUIRED',{entryCount:entries.length});
-
   const activation=evaluateBetfairApMcCoyAttemptPlanActivation({activationReviewCommit:l.activationReviewCommit,bindingScopeKey:declaredBinding,firstScheduledGhtEpochSeconds:entries[0]?.scheduledGhtEpochSeconds});
   if(activation.valid!==true||activation.planActivated!==true)return fail('ATTEMPT_PLAN_ACTIVATION_NOT_VERIFIED',{activation});
 
@@ -58,16 +63,18 @@ export function reviewBetfairApMcCoyScheduledAttemptLedger({ledger,ledgerCommit,
   }
   const commit=text(reviewCommit)?.toLowerCase();if(!commit||!SHA40.test(commit))return fail('VALID_ATTEMPT_LEDGER_REVIEW_COMMIT_REQUIRED',{ledgerCommit:committed,scheduledAttemptCount:entries.length});
   if(commit===committed)return fail('INDEPENDENT_REVIEW_COMMIT_MUST_DIFFER_FROM_LEDGER_COMMIT',{ledgerCommit:committed,reviewCommit:commit});
-  if(!isApprovedBetfairApMcCoyAttemptLedgerReviewCommit(commit))return fail('ATTEMPT_LEDGER_REVIEW_COMMIT_NOT_CODE_ALLOWLISTED',{ledgerCommit:committed,reviewCommit:commit,scheduledAttemptCount:entries.length,reviewedCycleCount,nonCycleFailureCount});
+  const identitySource={planFreezeCommitSha:PLAN_FREEZE_COMMIT_SHA,activationReviewCommit:activation.activationReviewCommit,activatedAtEpochSeconds:activation.activatedAtEpochSeconds,ledgerCommit:committed,stoppingRuleType:l.stoppingRuleType,targetScheduledOpportunities:TARGET_SCHEDULED_OPPORTUNITIES,scheduledAttemptCount:entries.length,bindingScopeKey:declaredBinding,entries:safeEntries};
+  const identity=ledgerArtifactIdentity(identitySource),approvedIdentity=APPROVED_ATTEMPT_LEDGER_REVIEWS.get(commit);
+  if(!approvedIdentity)return fail('ATTEMPT_LEDGER_REVIEW_COMMIT_NOT_CODE_ALLOWLISTED',{ledgerCommit:committed,reviewCommit:commit,scheduledAttemptCount:entries.length,reviewedCycleCount,nonCycleFailureCount});
+  if(approvedIdentity!==identity)return fail('ATTEMPT_LEDGER_REVIEW_ARTIFACT_IDENTITY_MISMATCH',{ledgerCommit:committed,reviewCommit:commit,reviewArtifactIdentity:identity});
   return {
-    version:VERSION,valid:true,reason:'INDEPENDENT_FIXED_SEVEN_AP_MCCOY_ATTEMPT_LEDGER_REVIEW_APPROVED_AFTER_CODE_OWNED_ACTIVATION',
-    planFreezeCommitSha:PLAN_FREEZE_COMMIT_SHA,activationReviewCommit:activation.activationReviewCommit,activatedAtEpochSeconds:activation.activatedAtEpochSeconds,
-    ledgerCommit:committed,reviewCommit:commit,stoppingRuleType:l.stoppingRuleType,targetScheduledOpportunities:TARGET_SCHEDULED_OPPORTUNITIES,scheduledAttemptCount:entries.length,
-    bindingScopeKey:declaredBinding,attemptIds:[...ids],scheduledGhtEpochSeconds:[...ghts],reviewedCycleIds:[...reviewedCycleIds],reviewedCycleCount,nonCycleFailureCount,entries:safeEntries,
+    version:VERSION,valid:true,reason:'INDEPENDENT_FIXED_SEVEN_AP_MCCOY_ATTEMPT_LEDGER_REVIEW_APPROVED_EXACT_IDENTITY',
+    reviewArtifactIdentity:identity,...identitySource,reviewCommit:commit,
+    attemptIds:[...ids],scheduledGhtEpochSeconds:[...ghts],reviewedCycleIds:[...reviewedCycleIds],reviewedCycleCount,nonCycleFailureCount,
     stopRuleChangedAfterObservation:false,allScheduledOpportunitiesRetained:true,completeScheduledAttemptLedgerVerified:true,activationVerifiedBeforeFirstScheduledGht:true,
     nonCycleAttemptsCountAsConservativeRaceFailures:true,ambiguousReviewedCyclesCountAsConservativeRaceFailures:true,usableForRaceDenominator:true,usableForExecution:false,
-    scientificUse:'Promotes only an independently reviewed, separately committed ledger containing exactly the first seven scheduled distinct Daily GHT opportunities for a binding whose activation was itself code-owned before the first scheduled GHT. The activation commit pins binding and activation time; callers cannot backdate activation or switch binding after observing outcomes. Failed, late, short, invalid and missed opportunities remain conservative failures and cannot be replaced.',
+    scientificUse:'Promotes only an independently reviewed, separately committed fixed seven-opportunity ledger after code-owned activation. The review commit is bound to the exact canonical ledger identity: activation, immutable ledger commit, binding, seven GHTs and every reviewed-cycle or failure outcome. An approved SHA therefore cannot be reused with a different binding, omitted failure, altered GHT or changed cycle.',
     execution:execution(),
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,planFreezeCommitRequired:true,codeOwnedActivationRequired:true,activationMustPrecedeFirstScheduledGht:true,activationBindingMustMatchLedger:true,separateCommittedLedgerIdentityRequired:true,independentReviewCommitMustDifferFromLedgerCommit:true,fixedSevenScheduledOpportunities:true,strictDistinctGhtOrder:true,reviewedCyclesMustBeCodeAllowlisted:true,nonCycleFailuresRequireEvidenceDigest:true,missingAttemptsCannotBeDropped:true,retryUntilSuccessForbidden:true,optionalStoppingForbidden:true,codeOwnedLedgerReviewAllowlist:true,reviewAllowlistCurrentlyEmpty:APPROVED_ATTEMPT_LEDGER_REVIEW_COMMITS.size===0,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false}
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,planFreezeCommitRequired:true,codeOwnedActivationRequired:true,activationMustPrecedeFirstScheduledGht:true,activationBindingMustMatchLedger:true,separateCommittedLedgerIdentityRequired:true,independentReviewCommitMustDifferFromLedgerCommit:true,fixedSevenScheduledOpportunities:true,strictDistinctGhtOrder:true,reviewedCyclesMustBeCodeAllowlisted:true,nonCycleFailuresRequireEvidenceDigest:true,missingAttemptsCannotBeDropped:true,retryUntilSuccessForbidden:true,optionalStoppingForbidden:true,codeOwnedReviewArtifactIdentity:true,reviewAllowlistCurrentlyEmpty:APPROVED_ATTEMPT_LEDGER_REVIEWS.size===0,approvedShaCannotBeReusedWithAlteredLedger:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false}
   };
 }
