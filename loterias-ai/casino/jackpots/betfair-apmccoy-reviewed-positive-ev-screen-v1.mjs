@@ -1,6 +1,6 @@
-const VERSION='betfair-apmccoy-reviewed-positive-ev-screen-v1';
+const VERSION='betfair-apmccoy-reviewed-positive-ev-screen-v1.1-exact-ledger-race-contract';
 const BRIDGE_VERSION='betfair-sporting-har-overdue-bridge-v1.10-code-owned-latency-dryrun';
-const RACE_VERSION='betfair-apmccoy-reviewed-race-bound-v1.1-feed-age-budget';
+const RACE_VERSION='betfair-apmccoy-reviewed-race-bound-v1.2-exact-ledger-frozen-horizon';
 const MAX_BASE_RTP_PCT=93.03;
 const finite=v=>{if(v===null||v===undefined||v===''||typeof v==='boolean')return null;const n=Number(v);return Number.isFinite(n)?n:null;};
 const text=v=>typeof v==='string'&&v.trim()?v.trim():null;
@@ -18,6 +18,9 @@ export function evaluateBetfairApMcCoyReviewedPositiveEvScreen({overdueBridgeRes
   if(bridge.stakeAtDecisionExactVerifiedFromCodeOwnedReview!==true||bridge.stakeReview?.valid!==true||bridge.stakeReview?.stakeAtDecisionExactVerified!==true)return fail('CODE_REVIEWED_SERVED_STAKE_REQUIRED');
   if(bridge.measuredActionLatencyVerifiedFromCodeOwnedReview!==true||bridge.actionLatencyReview?.valid!==true||bridge.actionLatencyReview?.measuredActionLatencyVerified!==true)return fail('CODE_REVIEWED_ACTION_LATENCY_REQUIRED');
   if(!race||race.version!==RACE_VERSION||race.valid!==true||race.reviewedRaceLowerBoundAvailable!==true||race.usableForRaceEvidence!==true)return fail('VALID_REVIEWED_AP_MCCOY_RACE_BOUND_REQUIRED');
+  if(race.exactCycleLedgerMatchesAssumptionReview!==true||race.bindingScopeMatchesAssumptionReview!==true||race.samplingWindowFrozenBeforeFirstCycle!==true||race.allEligibleDistinctDailyGhtCyclesIncluded!==true||race.failedShortAndAmbiguousCyclesRetained!==true||race.assumptionsSelectedUsingSurvivalOutcomes!==false)return fail('EXACT_REVIEWED_RACE_LEDGER_CONTRACT_REQUIRED');
+  const raceWindow=finite(race.validatedRaceWindowSeconds),frozenHorizon=finite(race.frozenSurvivalHorizonSeconds);
+  if(!(raceWindow>0)||!(frozenHorizon>0)||raceWindow>frozenHorizon)return fail('REVIEWED_RACE_WINDOW_OUTSIDE_FROZEN_SURVIVAL_HORIZON',{validatedRaceWindowSeconds:raceWindow,frozenSurvivalHorizonSeconds:frozenHorizon});
   if(race.actionLatencyReviewCommit!==bridge.actionLatencyReview.reviewCommit||finite(race.measuredActionLatencySeconds)!==finite(bridge.actionLatencyReview.measuredActionLatencySeconds))return fail('RACE_BOUND_LATENCY_REVIEW_DOES_NOT_MATCH_CURRENT_BRIDGE');
   const key=currentBindingKey(bridge);if(!key||key==='|||')return fail('CURRENT_BINDING_KEY_REQUIRED');
   if(race.bindingScopeKey!==key)return fail('RACE_BOUND_BINDING_SCOPE_DOES_NOT_MATCH_CURRENT_SESSION',{currentBindingScopeKey:key,raceBindingScopeKey:race.bindingScopeKey||null});
@@ -30,8 +33,8 @@ export function evaluateBetfairApMcCoyReviewedPositiveEvScreen({overdueBridgeRes
   const breakEvenFirstBetProbability=expectedBaseLossEUR/jackpot;
   const pLower=finite(race.firstBetRaceProbabilityLowerBound);
   if(!(breakEvenFirstBetProbability>0&&breakEvenFirstBetProbability<1)||pLower===null||pLower<0||pLower>1)return fail('INVALID_BREAK_EVEN_OR_RACE_BOUND',{breakEvenFirstBetProbability,firstBetRaceProbabilityLowerBound:pLower});
-  const feedAgeSeconds=finite(bridge.finalEvaluation?.feedAgeSeconds),measuredActionLatencySeconds=finite(bridge.actionLatencyReview.measuredActionLatencySeconds),validatedRaceWindowSeconds=finite(race.validatedRaceWindowSeconds);
-  if(feedAgeSeconds===null||feedAgeSeconds<0||!(measuredActionLatencySeconds>0)||!(validatedRaceWindowSeconds>0))return fail('CURRENT_EXPOSURE_WINDOW_FIELDS_REQUIRED');
+  const feedAgeSeconds=finite(bridge.finalEvaluation?.feedAgeSeconds),measuredActionLatencySeconds=finite(bridge.actionLatencyReview.measuredActionLatencySeconds),validatedRaceWindowSeconds=raceWindow;
+  if(feedAgeSeconds===null||feedAgeSeconds<0||!(measuredActionLatencySeconds>0))return fail('CURRENT_EXPOSURE_WINDOW_FIELDS_REQUIRED');
   const totalExposureSeconds=feedAgeSeconds+measuredActionLatencySeconds;
   if(totalExposureSeconds>validatedRaceWindowSeconds)return fail('CURRENT_TOTAL_EXPOSURE_EXCEEDS_REVIEWED_RACE_WINDOW',{feedAgeSeconds,measuredActionLatencySeconds,totalExposureSeconds,validatedRaceWindowSeconds});
   const reviewedPositiveEvScreenPassed=pLower>breakEvenFirstBetProbability;
@@ -40,11 +43,12 @@ export function evaluateBetfairApMcCoyReviewedPositiveEvScreen({overdueBridgeRes
     operator:'Betfair Spain',market:'ES',target:{title:'AP McCoy Sporting Legends',gameId:'ap-mccoy-sporting-legends-cptn'},
     bindingScopeKey:key,stakeEUR:stake,currentDailyJackpotEUR:jackpot,conservativeBaseRtpPct:baseRtpPct,expectedBaseLossEUR,
     breakEvenFirstBetProbability,firstBetRaceProbabilityLowerBound:pLower,raceConfidence:race.confidence,
-    feedAgeSeconds,measuredActionLatencySeconds,totalExposureSeconds,validatedRaceWindowSeconds,
+    feedAgeSeconds,measuredActionLatencySeconds,totalExposureSeconds,validatedRaceWindowSeconds,frozenSurvivalHorizonSeconds:frozenHorizon,
+    exactCycleLedgerMatchesAssumptionReview:true,bindingScopeMatchesAssumptionReview:true,
     reviewedPositiveEvScreenPassed,
     executionAdapterStillRequired:true,freshFinalRevalidationStillRequired:true,usableForExecution:false,
-    scientificUse:'Compares the code-reviewed AP McCoy race lower confidence bound with the exact conservative break-even probability only when the current bridge proves the exact post-GHT unawarded server state, operator semantics, code-reviewed served stake and code-reviewed action latency, and when the reviewed race ledger is bound to the identical IMS/ticker/config/instance scope. The current feed age plus measured action latency must fit inside the reviewed race window. Passing this screen is deliberately not execution authority: a separate final adapter must revalidate the live state immediately before any manual action and preserve all execution-contract guards.',
+    scientificUse:'Compares the code-reviewed AP McCoy race lower confidence bound with the exact conservative break-even probability only when the current bridge proves the exact post-GHT unawarded server state, operator semantics, code-reviewed served stake and code-reviewed action latency. The race bound must be tied to the exact reviewed cycle ledger and identical IMS/ticker/config/instance scope, must retain all eligible failed/short/ambiguous cycles, and its feed-age-plus-action race window must remain inside the prospectively frozen twelve-interval survival horizon. Passing this screen is deliberately not execution authority: a separate final adapter must revalidate the live state immediately before any manual action and preserve all execution-contract guards.',
     execution:execution(),
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,exactCurrentPostGhtStateRequired:true,codeReviewedStakeRequired:true,codeReviewedLatencyRequired:true,codeReviewedRaceBoundRequired:true,exactBindingScopeEqualityRequired:true,conservativeRtpFloorRequired:true,currentExposureMustFitReviewedRaceWindow:true,lowerConfidenceBoundMustBeatBreakEven:true,positiveEvScreenIsNotExecutionAuthority:true,freshFinalRevalidationStillRequired:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false}
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,exactCurrentPostGhtStateRequired:true,codeReviewedStakeRequired:true,codeReviewedLatencyRequired:true,codeReviewedRaceBoundRequired:true,exactCycleLedgerReviewMatchRequired:true,exactBindingScopeEqualityRequired:true,samplingWindowMustBeFrozenBeforeCollection:true,allEligibleDistinctDailyGhtCyclesRequired:true,failedShortAmbiguousCyclesMustBeRetained:true,assumptionsIndependentOfOutcomesRequired:true,reviewedRaceWindowMustFitFrozenSurvivalHorizon:true,conservativeRtpFloorRequired:true,currentExposureMustFitReviewedRaceWindow:true,lowerConfidenceBoundMustBeatBreakEven:true,positiveEvScreenIsNotExecutionAuthority:true,freshFinalRevalidationStillRequired:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false}
   };
 }
