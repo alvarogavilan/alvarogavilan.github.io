@@ -1,16 +1,27 @@
 import {analyzeBetfairSportingHar} from './betfair-sporting-har-discovery-v1.mjs';
 
+const VERSION='betfair-sporting-stake-menu-har-discovery-v1.1-total-stake-classes';
 const SUPPORTED_GAME_IDS=new Set([
   'ap-mccoy-sporting-legends-cptn',
   'ronnie-osullivan-sporting-legends-cptn',
   'frankie-dettori-sporting-legends-cptn',
   'roberto-carlos-sl-cptn',
 ]);
-const KEY_SET=new Set([
-  'minbet','minimumbet','minstake','minimumstake','maxbet','maximumbet','maxstake','maximumstake',
-  'betvalues','betamounts','stakevalues','denominations','coinvalues','mincoin','maxcoin','coinvalue',
-  'betperline','linebet','minlinebet','maxlinebet','minbetperline','maxbetperline','activepaylines','paylines',
+const STRONG_TOTAL_MENU_KEYS=new Set([
+  'availabletotalbets','availabletotalstakes','allowedtotalbets','allowedtotalstakes',
+  'totalbetvalues','totalstakevalues','totalbetoptions','totalstakeoptions',
 ]);
+const TOTAL_SCALAR_KEYS=new Set([
+  'minimumtotalbet','mintotalbet','minimumtotalstake','mintotalstake','maximumtotalbet','maxtotalbet','maximumtotalstake','maxtotalstake','totalbet','totalstake',
+]);
+const GENERIC_STAKE_KEYS=new Set([
+  'minbet','minimumbet','minstake','minimumstake','maxbet','maximumbet','maxstake','maximumstake',
+  'betvalues','betamounts','stakevalues','betoptions','stakeoptions',
+]);
+const COMPONENT_KEYS=new Set([
+  'denominations','coinvalues','mincoin','maxcoin','coinvalue','betperline','linebet','minlinebet','maxlinebet','minbetperline','maxbetperline','activepaylines','paylines',
+]);
+const KEY_SET=new Set([...STRONG_TOTAL_MENU_KEYS,...TOTAL_SCALAR_KEYS,...GENERIC_STAKE_KEYS,...COMPONENT_KEYS]);
 const clean=v=>String(v??'').trim();
 const normalizeKey=k=>clean(k).toLowerCase().replace(/[^a-z0-9]/g,'');
 const finite=v=>{if(v===null||v===undefined||v===''||typeof v==='boolean')return null;const n=Number(v);return Number.isFinite(n)?n:null;};
@@ -23,6 +34,7 @@ function numbersFromValue(v){
   else add(v);
   return [...new Set(out)];
 }
+function semanticClass(nk){if(STRONG_TOTAL_MENU_KEYS.has(nk))return 'EXPLICIT_TOTAL_STAKE_MENU';if(TOTAL_SCALAR_KEYS.has(nk))return 'EXPLICIT_TOTAL_STAKE_SCALAR';if(GENERIC_STAKE_KEYS.has(nk))return 'GENERIC_STAKE_FIELD';if(COMPONENT_KEYS.has(nk))return 'BET_COMPONENT_OR_PAYLINE_FIELD';return 'OTHER';}
 function scanJson(value,{entryIndex,source,endpoint,path='$'},out=[],depth=0){
   if(depth>12||out.length>500)return out;
   if(Array.isArray(value)){value.slice(0,500).forEach((v,i)=>scanJson(v,{entryIndex,source,endpoint,path:`${path}[${i}]`},out,depth+1));return out;}
@@ -31,18 +43,15 @@ function scanJson(value,{entryIndex,source,endpoint,path='$'},out=[],depth=0){
     const nk=normalizeKey(k),p=`${path}.${k}`;
     if(KEY_SET.has(nk)){
       const nums=numbersFromValue(v);
-      if(nums.length)out.push({entryIndex,source,endpoint,key:k,normalizedKey:nk,objectPath:p,numericValues:nums});
+      if(nums.length)out.push({entryIndex,source,endpoint,key:k,normalizedKey:nk,semanticClass:semanticClass(nk),objectPath:p,numericValues:nums,valueWasArray:Array.isArray(v)});
     }
     if(v&&typeof v==='object')scanJson(v,{entryIndex,source,endpoint,path:p},out,depth+1);
   }
   return out;
 }
-function parseAndScan(raw,meta,out){
-  const s=String(raw||'').trim();if(!s)return;
-  try{scanJson(JSON.parse(s),meta,out);}catch{}
-}
+function parseAndScan(raw,meta,out){const s=String(raw||'').trim();if(!s)return;try{scanJson(JSON.parse(s),meta,out);}catch{}}
 function latestPrecedingLauncher(bindings,index){return (bindings||[]).filter(x=>Number.isInteger(x?.index)&&x.index<index).sort((a,b)=>b.index-a.index)[0]||null;}
-function fail(reason,extra={}){return {version:'betfair-sporting-stake-menu-har-discovery-v1',valid:false,reason,stakeMenuCandidateObserved:false,servedStakeMenuSemanticsVerified:false,stakeAtDecisionExactVerified:false,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},...extra};}
+function fail(reason,extra={}){return {version:VERSION,valid:false,reason,stakeMenuCandidateObserved:false,strongTotalStakeMenuCandidateObserved:false,servedStakeMenuSemanticsVerified:false,stakeAtDecisionExactVerified:false,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},...extra};}
 
 export function discoverBetfairSportingStakeMenuCandidates(har,{gameId,sourceName='capture.har'}={}){
   const target=clean(gameId);
@@ -57,17 +66,25 @@ export function discoverBetfairSportingStakeMenuCandidates(har,{gameId,sourceNam
     const latest=latestPrecedingLauncher(launchers,i);
     if(!latest||latest.gameId!==target)continue;
     const entry=entries[i],endpoint=endpointShape(entry?.request?.url);
-    const responseText=decodeContent(entry?.response?.content);
-    parseAndScan(responseText,{entryIndex:i,source:'http-response',endpoint},candidates);
+    parseAndScan(decodeContent(entry?.response?.content),{entryIndex:i,source:'http-response',endpoint},candidates);
     for(let j=0;j<(entry?._webSocketMessages||[]).length;j++){
-      const msg=entry._webSocketMessages[j];
-      if(msg?.type!=='receive'||!msg?.data)continue;
+      const msg=entry._webSocketMessages[j];if(msg?.type!=='receive'||!msg?.data)continue;
       parseAndScan(msg.data,{entryIndex:i,source:`websocket-receive:${j}`,endpoint},candidates);
     }
   }
-  const dedup=[];
-  const seen=new Set();
+  const dedup=[],seen=new Set();
   for(const c of candidates){const id=[c.entryIndex,c.source,c.endpoint,c.normalizedKey,c.objectPath,JSON.stringify(c.numericValues)].join('|');if(!seen.has(id)){seen.add(id);dedup.push(c);}}
   const keys=[...new Set(dedup.map(x=>x.normalizedKey))].sort();
-  return {version:'betfair-sporting-stake-menu-har-discovery-v1',mode:'OFFLINE_PASSIVE_EXACT_GAME_STAKE_MENU_CANDIDATE_DISCOVERY_NO_PLAY',valid:true,sourceName,gameId:target,stakeMenuCandidateObserved:dedup.length>0,candidateCount:dedup.length,observedNormalizedKeys:keys,candidates:dedup,servedStakeMenuSemanticsVerified:false,stakeAtDecisionExactVerified:false,scientificUse:'Scans only server HTTP response bodies and WebSocket receive frames after the latest exact target real-money Betfair launcher for allowlisted stake/menu field names. It emits only structural paths and numeric candidates, never raw bodies, queries, credentials or cookies. Numeric candidates are discovery clues only: coin denomination, line bet, total bet, stake arrays and payline counts can have different meanings. No minimum executable stake may be inferred until title-specific served semantics are independently verified.',execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,exactLatestTargetLauncherRequired:true,serverResponsesOnly:true,clientSelectedBetValuesIgnored:true,rawHarNeverEmitted:true,credentialsAndCookiesNeverEmitted:true,endpointQueriesAndFragmentsNeverEmitted:true,numericCandidateDoesNotEqualServedStakeMenu:true,coinValueCannotBeAssumedTotalBet:true,lineBetCannotBeAssumedTotalBet:true,paylineCountCannotBeAssumedActiveAtDecision:true,stakeDiscoveryCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true}};
+  const strongTotalMenuCandidates=dedup.filter(x=>x.semanticClass==='EXPLICIT_TOTAL_STAKE_MENU'&&x.valueWasArray===true);
+  const explicitTotalScalarCandidates=dedup.filter(x=>x.semanticClass==='EXPLICIT_TOTAL_STAKE_SCALAR');
+  return {
+    version:VERSION,mode:'OFFLINE_PASSIVE_EXACT_GAME_STAKE_MENU_CANDIDATE_DISCOVERY_NO_PLAY',valid:true,sourceName,gameId:target,
+    stakeMenuCandidateObserved:dedup.length>0,candidateCount:dedup.length,observedNormalizedKeys:keys,candidates:dedup,
+    strongTotalStakeMenuCandidateObserved:strongTotalMenuCandidates.length>0,strongTotalStakeMenuCandidateCount:strongTotalMenuCandidates.length,strongTotalStakeMenuCandidates,
+    explicitTotalStakeScalarCandidateCount:explicitTotalScalarCandidates.length,explicitTotalStakeScalarCandidates,
+    servedStakeMenuSemanticsVerified:false,stakeAtDecisionExactVerified:false,
+    scientificUse:'Scans only server HTTP response bodies and WebSocket receive frames after the latest exact target real-money Betfair launcher. Candidates are now classified before review: explicit total-stake menu arrays are kept separate from total-stake scalars, generic stake fields and component/payline fields. This narrows the review surface but does not self-verify semantics. Coin values, line bets, paylines, generic betValues and even names containing total stake remain non-executable until an independent exact-title served-artifact review is code-allowlisted. No raw body, query, cookie or credential is emitted.',
+    execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,noNetwork:true,exactLatestTargetLauncherRequired:true,serverResponsesOnly:true,clientSelectedBetValuesIgnored:true,rawHarNeverEmitted:true,credentialsAndCookiesNeverEmitted:true,endpointQueriesAndFragmentsNeverEmitted:true,numericCandidateDoesNotEqualServedStakeMenu:true,strongMenuCandidateStillRequiresIndependentReview:true,totalScalarDoesNotProveMenu:true,genericStakeFieldDoesNotProveTotalStake:true,coinValueCannotBeAssumedTotalBet:true,lineBetCannotBeAssumedTotalBet:true,paylineCountCannotBeAssumedActiveAtDecision:true,stakeDiscoveryCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true}
+  };
 }
