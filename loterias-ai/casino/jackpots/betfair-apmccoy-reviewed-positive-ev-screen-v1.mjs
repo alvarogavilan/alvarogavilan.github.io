@@ -1,8 +1,8 @@
 import {deriveBetfairApMcCoyReviewedRaceLowerBound} from './betfair-apmccoy-reviewed-race-bound-v1.mjs';
 
-const VERSION='betfair-apmccoy-reviewed-positive-ev-screen-v1.5-internal-race-derivation';
+const VERSION='betfair-apmccoy-reviewed-positive-ev-screen-v1.6-exact-cycle-race-derivation';
 const BRIDGE_VERSION='betfair-sporting-har-overdue-bridge-v1.10-code-owned-latency-dryrun';
-const RACE_VERSION='betfair-apmccoy-reviewed-race-bound-v1.5-all-exact-reviewed-artifacts';
+const RACE_VERSION='betfair-apmccoy-reviewed-race-bound-v1.6-exact-cycle-artifacts';
 const REQUIRED_SCHEDULED_ATTEMPTS=7;
 const MIN_RACE_CONFIDENCE=0.95;
 const MAX_BASE_RTP_PCT=93.03;
@@ -22,17 +22,9 @@ export function evaluateBetfairApMcCoyReviewedPositiveEvScreen({overdueBridgeRes
   if(bridge.stakeAtDecisionExactVerifiedFromCodeOwnedReview!==true||bridge.stakeReview?.valid!==true||bridge.stakeReview?.stakeAtDecisionExactVerified!==true)return fail('CODE_REVIEWED_SERVED_STAKE_REQUIRED');
   if(bridge.measuredActionLatencyVerifiedFromCodeOwnedReview!==true||bridge.actionLatencyReview?.valid!==true||bridge.actionLatencyReview?.measuredActionLatencyVerified!==true)return fail('CODE_REVIEWED_ACTION_LATENCY_REQUIRED');
 
-  const race=deriveBetfairApMcCoyReviewedRaceLowerBound({
-    reviewedCycles,
-    scheduledAttemptLedgerReview,
-    actionLatencyReview:bridge.actionLatencyReview,
-    raceAssumptionsReview,
-    confidence,
-  });
-  if(!race||race.version!==RACE_VERSION||race.valid!==true||race.reviewedRaceLowerBoundAvailable!==true||race.usableForRaceEvidence!==true){
-    return fail('INTERNALLY_DERIVED_FIXED_ATTEMPT_RACE_BOUND_REQUIRED',{raceDerivationReason:race?.reason||null,raceDerivationVersion:race?.version||null});
-  }
-  if(race.exactReviewedArtifactIdentitiesVerified!==true)return fail('EXACT_CODE_OWNED_REVIEWED_ARTIFACT_IDENTITIES_REQUIRED');
+  const race=deriveBetfairApMcCoyReviewedRaceLowerBound({reviewedCycles,scheduledAttemptLedgerReview,actionLatencyReview:bridge.actionLatencyReview,raceAssumptionsReview,confidence});
+  if(!race||race.version!==RACE_VERSION||race.valid!==true||race.reviewedRaceLowerBoundAvailable!==true||race.usableForRaceEvidence!==true)return fail('INTERNALLY_DERIVED_FIXED_ATTEMPT_RACE_BOUND_REQUIRED',{raceDerivationReason:race?.reason||null,raceDerivationVersion:race?.version||null});
+  if(race.exactReviewedArtifactIdentitiesVerified!==true||race.exactReviewedCycleArtifactsVerified!==true)return fail('EXACT_CODE_OWNED_REVIEWED_ARTIFACT_IDENTITIES_REQUIRED');
   if(race.exactScheduledAttemptDenominatorVerified!==true||Number(race.scheduledAttemptCount)!==REQUIRED_SCHEDULED_ATTEMPTS||race.nonCycleAttemptsCountAsFailures!==true||race.ambiguousReviewedCyclesCountAsFailures!==true)return fail('COMPLETE_FIXED_SCHEDULED_ATTEMPT_DENOMINATOR_REQUIRED');
   if(race.activationVerifiedBeforeFirstScheduledGht!==true||!text(race.activationReviewCommit)||!(finite(race.activatedAtEpochSeconds)>0))return fail('PRIOR_CODE_OWNED_ATTEMPT_PLAN_ACTIVATION_REQUIRED');
   const raceConfidence=finite(race.confidence);if(raceConfidence===null||raceConfidence<MIN_RACE_CONFIDENCE||raceConfidence>=1)return fail('RACE_CONFIDENCE_BELOW_REQUIRED_MINIMUM',{raceConfidence,minimumRaceConfidence:MIN_RACE_CONFIDENCE});
@@ -65,14 +57,14 @@ export function evaluateBetfairApMcCoyReviewedPositiveEvScreen({overdueBridgeRes
     bindingScopeKey:key,stakeEUR:stake,currentDailyJackpotEUR:jackpot,conservativeBaseRtpPct:requestedRtp,expectedBaseLossEUR,breakEvenFirstBetProbability,firstBetRaceProbabilityLowerBound:pLower,raceConfidence,
     feedAgeSeconds,measuredActionLatencySeconds,totalExposureSeconds,validatedRaceWindowSeconds:raceWindow,frozenSurvivalHorizonSeconds:frozenHorizon,
     activationVerifiedBeforeFirstScheduledGht:true,activationReviewCommit:race.activationReviewCommit,activatedAtEpochSeconds:race.activatedAtEpochSeconds,
-    exactScheduledAttemptDenominatorVerified:true,exactReviewedArtifactIdentitiesVerified:true,scheduledAttemptCount:REQUIRED_SCHEDULED_ATTEMPTS,
+    exactScheduledAttemptDenominatorVerified:true,exactReviewedArtifactIdentitiesVerified:true,exactReviewedCycleArtifactsVerified:true,scheduledAttemptCount:REQUIRED_SCHEDULED_ATTEMPTS,
     attemptLedgerReviewCommit:race.attemptLedgerReviewCommit,attemptLedgerReviewArtifactIdentity:race.attemptLedgerReviewArtifactIdentity,
     raceAssumptionReviewCommit:race.raceAssumptionReviewCommit,raceAssumptionReviewArtifactIdentity:race.raceAssumptionReviewArtifactIdentity,
     actionLatencyReviewCommit:race.actionLatencyReviewCommit,actionLatencyReviewArtifactIdentity:race.actionLatencyReviewArtifactIdentity,
     completeProspectiveLedgerCommit:race.completeProspectiveLedgerCommit,
     reviewedPositiveEvScreenPassed,executionAdapterStillRequired:true,freshFinalRevalidationStillRequired:true,usableForExecution:false,
-    scientificUse:'Research-only AP McCoy positive-EV screen. The race lower bound is re-derived internally from the exact code-owned reviewed attempt ledger, race assumptions and current bridge latency artifact; caller-supplied pRace or precomputed race-bound objects are not accepted. Exactly seven scheduled Daily GHT opportunities remain in the denominator, every failed/missed/ambiguous attempt is conservative, confidence is at least 95%, and fresh same-binding state is required. A positive screen is still not execution authority.',
+    scientificUse:'Research-only AP McCoy positive-EV screen. The race lower bound is re-derived internally from exact code-owned reviewed survival cycles, attempt ledger, race assumptions and current bridge latency artifact; caller-supplied pRace or precomputed race-bound objects are ignored. Exactly seven scheduled Daily GHT opportunities remain in the denominator and a positive screen is still not execution authority.',
     execution:execution(),
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,callerSuppliedRaceBoundRejected:true,raceProbabilityDerivedInternallyOnly:true,exactReviewedArtifactIdentitiesRequired:true,priorCodeOwnedActivationRequired:true,activationMustPrecedeFirstScheduledGht:true,fixedSevenScheduledAttemptDenominatorRequired:true,minimumRaceConfidence95Pct:true,exactCurrentPostGhtStateRequired:true,codeReviewedStakeRequired:true,exactLatencyArtifactMustMatchCurrentBridge:true,exactBindingScopeEqualityRequired:true,failedShortInvalidMissedAttemptsRemainInDenominator:true,optionalStoppingForbidden:true,reviewedRaceWindowMustFitFrozenSurvivalHorizon:true,conservativeRtpFloorRequired:true,currentExposureMustFitReviewedRaceWindow:true,positiveEvScreenIsNotExecutionAuthority:true,freshFinalRevalidationStillRequired:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false}
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,callerSuppliedRaceBoundRejected:true,raceProbabilityDerivedInternallyOnly:true,exactReviewedArtifactIdentitiesRequired:true,exactReviewedCycleArtifactsRequired:true,priorCodeOwnedActivationRequired:true,activationMustPrecedeFirstScheduledGht:true,fixedSevenScheduledAttemptDenominatorRequired:true,minimumRaceConfidence95Pct:true,exactCurrentPostGhtStateRequired:true,codeReviewedStakeRequired:true,exactLatencyArtifactMustMatchCurrentBridge:true,exactBindingScopeEqualityRequired:true,failedShortInvalidMissedAttemptsRemainInDenominator:true,optionalStoppingForbidden:true,reviewedRaceWindowMustFitFrozenSurvivalHorizon:true,conservativeRtpFloorRequired:true,currentExposureMustFitReviewedRaceWindow:true,positiveEvScreenIsNotExecutionAuthority:true,freshFinalRevalidationStillRequired:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false}
   };
 }
