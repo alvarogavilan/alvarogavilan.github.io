@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {reviewBetfairApMcCoyRaceAssumptions} from '../casino/jackpots/betfair-apmccoy-race-assumptions-review-v1.mjs';
+import {reviewBetfairApMcCoyRaceAssumptions,isApprovedBetfairApMcCoyRaceAssumptionReviewArtifact} from '../casino/jackpots/betfair-apmccoy-race-assumptions-review-v1.mjs';
 
 const fakeReview='a'.repeat(40);
 const base={
@@ -19,11 +19,13 @@ const base={
 
 let r=reviewBetfairApMcCoyRaceAssumptions({assumptions:base,reviewCommit:fakeReview});
 assert.equal(r.valid,false);
+assert.equal(r.contractRevision,'v1.2-code-owned-artifact-identity');
 assert.equal(r.reason,'RACE_ASSUMPTION_REVIEW_COMMIT_NOT_CODE_ALLOWLISTED');
 assert.equal(r.independentRaceAssumptionsReviewed,false);
 assert.equal(r.usableForExecution,false);
 assert.equal(r.execution.decision,'NO_PLAY');
 assert.equal(r.execution.realMoneyAllowed,false);
+assert.equal(isApprovedBetfairApMcCoyRaceAssumptionReviewArtifact({...base,reviewCommit:fakeReview}),false);
 
 r=reviewBetfairApMcCoyRaceAssumptions({assumptions:{...base,cycleIds:['ght-001','ght-001']},reviewCommit:fakeReview});
 assert.equal(r.reason,'NONEMPTY_UNIQUE_CYCLE_IDS_REQUIRED');
