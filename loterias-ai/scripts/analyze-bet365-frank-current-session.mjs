@@ -6,10 +6,11 @@ import {verifyBet365SportingServedTotalStake} from '../edge-backend/src/bet365-s
 import {discoverBet365FrankServedRulesCandidate} from '../edge-backend/src/bet365-frank-served-rules-candidate-v1.mjs';
 import {buildBet365FrankServedSemanticsReviewCandidate} from '../edge-backend/src/bet365-frank-served-semantics-review-candidate-v1.mjs';
 import {buildBet365FrankProviderNetworkSemanticsCandidate} from '../edge-backend/src/bet365-frank-provider-network-semantics-candidate-v1.mjs';
+import {getBet365SpainCurrentSportingRtpPolicy} from '../edge-backend/src/bet365-spain-current-sporting-rtp-policy-v1.mjs';
 import {analyzeBet365SportingStructuredWebtickersRows} from '../edge-backend/src/bet365-sporting-webtickers-structured-row-v1.mjs';
 import {analyzeBet365SportingDualFeedCalibrationSample} from '../edge-backend/src/bet365-sporting-dual-feed-calibration-v1.mjs';
 
-const VERSION='analyze-bet365-frank-current-session-v1.5-rtp-decomposition';
+const VERSION='analyze-bet365-frank-current-session-v1.6-operator-owned-rtp-policy';
 const GAME_CODE='gpas_slfbruno_pop';
 const args=process.argv.slice(2);
 function execution(){return {decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0};}
@@ -26,8 +27,10 @@ else{
     const servedRulesCandidate=discoverBet365FrankServedRulesCandidate(har,{sourceName});
     const servedSemanticsReviewCandidate=buildBet365FrankServedSemanticsReviewCandidate(har,{sourceName});
     const providerNetworkSemanticsCandidate=buildBet365FrankProviderNetworkSemanticsCandidate(har,{sourceName});
+    const operatorRtpPolicy=getBet365SpainCurrentSportingRtpPolicy({gameCode:GAME_CODE});
     const modernStateCandidate=analyzeBet365SportingStructuredWebtickersRows(har,{gameCode:GAME_CODE,sourceName});
     const dualFeedCalibrationCandidate=analyzeBet365SportingDualFeedCalibrationSample(har,{gameCode:GAME_CODE,sourceName});
+    const operatorRtpClosed=operatorRtpPolicy?.valid===true&&operatorRtpPolicy?.publishedTheoreticalRtpExcludesJackpotAllocationVerified===true&&operatorRtpPolicy?.headlineRtpMayBeUsedAsBaseGameRtp===true&&Number(operatorRtpPolicy?.publishedTheoreticalRtpPct)===95.92;
     const result={
       version:VERSION,
       valid:true,
@@ -35,6 +38,7 @@ else{
       sourceName,
       target:{title:'Frank Bruno: Sporting Legends',gameCode:GAME_CODE,exactPublicPlayUrl:'https://casino.bet365.es/play/FrankBrunoSL'},
       gates:{
+        currentBet365SpainOperatorRtpPolicy:summary(operatorRtpPolicy),
         exactPlayRouteProviderProvenance:summary(provenance),
         servedSljp1TransportBinding:summary(servedBinding),
         servedTenCentTotalStake:summary(servedStake),
@@ -45,6 +49,11 @@ else{
         legacyVsModernCalibrationCandidate:summary(dualFeedCalibrationCandidate),
       },
       closed:{
+        exactCurrentBet365SpainPublishedFrankRtpRow:operatorRtpClosed,
+        publishedTheoreticalRtpExcludesJackpotAllocation:operatorRtpClosed,
+        headlineRtpMayBeUsedAsBaseGameRtp:operatorRtpClosed,
+        publishedFrankTheoreticalRtpPct:operatorRtpClosed?95.92:null,
+        publishedFrankMinimumBetEUR:operatorRtpClosed?0.10:null,
         exactPlayRouteProviderProvenance:provenance?.valid===true&&provenance?.exactFrontendProviderIdentityCandidateVerified===true,
         exactFrontendToConfiguredSljp1Transport:servedBinding?.valid===true&&servedBinding?.exactBet365SpainFrontendToConfiguredSljp1TransportBindingVerified===true,
         servedTenCentTotalStake:servedStake?.valid===true&&servedStake?.servedTenCentTotalStakeVerified===true,
@@ -61,11 +70,9 @@ else{
         realCrossGhtUnawardedPairVerified:false,
         servedTenCentJackpotEligibilityVerified:false,
         bet365FollowingDayRuleAdoptionVerified:false,
-        bet365JackpotDoesNotAffectGameRtpVerified:false,
-        headlineRtpMayBeUsedAsBaseGameRtp:false,
-        independentOperatorRuleTextReviewRequired:true,
-        independentAnySizeEligibilityTextReviewRequired:true,
-        independentRtpSeparationTextReviewRequired:true,
+        independentOperatorRuleTextOrProviderNetworkReviewRequired:true,
+        independentAnySizeEligibilityTextOrProviderNetworkReviewRequired:true,
+        independentRtpSeparationTextReviewRequired:false,
         independentProviderNetworkSemanticBindingReviewRequired:true,
         prospectivePostGhtSurvivalLedgerReviewed:false,
         independentlyFrozenActionLatencyRequired:true,
@@ -73,7 +80,7 @@ else{
         executionAuthorized:false,
       },
       execution:execution(),
-      hardGuards:{onlineOnly:true,nonPromoOnly:true,localOnly:true,passiveHarOnly:true,operatorOwnedRuleCandidatesNeedIndependentSemanticReview:true,providerNetworkBindingCandidateNeedIndependentSemanticReview:true,headlineRtpCannotSetBaseLossWithoutReviewedBet365RtpDecomposition:true,ruleCandidateCannotSelfVerifyAdoption:true,eligibilityCandidateCannotSelfVerifyTenCentJackpotEligibility:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false},
+      hardGuards:{onlineOnly:true,nonPromoOnly:true,localOnly:true,passiveHarOnly:true,operatorOwnedRtpPolicyClosesOnlyBaseGameRtpDecomposition:true,publishedMinimumBetCannotProveJackpotEligibility:true,publishedMinimumBetCannotProveServedStakeAtDecision:true,operatorOwnedRuleCandidatesNeedIndependentSemanticReview:true,providerNetworkBindingCandidateNeedIndependentSemanticReview:true,headlineRtpMaySetBaseLossOnlyBecauseCurrentBet365SpainPolicyExcludesJackpotAllocation:true,ruleCandidateCannotSelfVerifyAdoption:true,eligibilityCandidateCannotSelfVerifyTenCentJackpotEligibility:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false},
     };
     process.stdout.write(`${JSON.stringify(result,null,2)}\n`);
   }catch(error){
