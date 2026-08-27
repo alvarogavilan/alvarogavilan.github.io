@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
-import {evaluateBetfairSportingHarOverduePair} from '../casino/jackpots/betfair-sporting-har-overdue-bridge-v1.mjs';
+import {evaluateBetfairApMcCoyResearchHarPair} from '../casino/jackpots/betfair-apmccoy-research-har-bridge-v1.mjs';
 
 function usage(){
   return 'Usage: node loterias-ai/scripts/analyze-betfair-sporting-har-pair.mjs <before.har> <after.har> --decision-now-epoch <seconds> [--stake-eur <amount>] [--stake-review-commit <sha>]';
 }
 function finite(v){if(v===null||v===undefined||v===''||typeof v==='boolean')return null;const n=Number(v);return Number.isFinite(n)?n:null;}
 function safeEndpoint(v){try{const u=new URL(String(v||''));return u.protocol==='https:'?`${u.origin}${u.pathname}`:null;}catch{return null;}}
-function fail(reason,extra={}){return {version:'betfair-sporting-safe-har-pair-cli-v1.2-code-owned-semantics',ok:false,reason,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},...extra};}
+function fail(reason,extra={}){return {version:'betfair-sporting-safe-har-pair-cli-v1.3-research-only-bridge',ok:false,reason,execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},...extra};}
 function safeSnapshot(side){
   const s=side?.snapshot||{};
   return {valid:side?.valid===true,captureStartedDateTime:side?.captureStartedDateTime||null,captureEpochSeconds:side?.captureEpochSeconds??null,freshnessClockSource:side?.freshnessClockSource||null,expectedBetfairImsCasino:side?.expectedBetfairImsCasino||null,tickerEndpoint:safeEndpoint(side?.tickerEndpoint),configSourceUrl:safeEndpoint(side?.configSourceUrl),snapshot:side?.valid===true?{code:s.code||null,currency:s.currency||null,local:s.local??null,providerScope:s.providerScope||null,amount:s.amount??null,guaranteedHitTime:s.guaranteedHitTime??null,gameTimestamp:s.gameTimestamp??null,winCount:s.winCount??null,requestExecInterval:s.requestExecInterval??null,requestCasino:s.requestCasino||null,instanceCode:s.instanceCode||null}:null};
@@ -20,6 +20,8 @@ function safeEvaluation(r,requestedStakeEUR){
     pairVerified:r?.before?.valid===true&&r?.after?.valid===true,
     bridgeValid:r?.valid===true,
     bridgeReason:r?.reason||null,
+    researchOnlyBridge:r?.version==='betfair-apmccoy-research-har-bridge-v1',
+    underlyingDecision:r?.underlyingDecision||null,
     before:safeSnapshot(r?.before),after:safeSnapshot(r?.after),
     codeOwnedSemantics:{operatorFollowingDayRuleVerified:r?.operatorFollowingDayRuleVerifiedFromCodeOwnedCurrentEvidence===true,providerGhtBoundarySemanticsVerified:r?.providerGhtBoundarySemanticsVerifiedFromCodeOwnedEvidence===true,conservativeMainGameRtpPct:r?.semantics?.conservativeMainGameRtpPct??null,operatorEvidenceCommit:r?.semantics?.evidence?.operatorRules?.commitSha||null,providerNetworkEvidenceCommit:r?.semantics?.evidence?.providerNetwork?.commitSha||null},
     stakeReview:safeStakeReview(r?.stakeReview),
@@ -33,18 +35,18 @@ export function analyzeSafeHarPairText(beforeRaw,afterRaw,{beforeSourceName='bef
   let beforeHar,afterHar;try{beforeHar=JSON.parse(beforeRaw);}catch(error){return fail('BEFORE_HAR_PARSE_FAILED',{error:String(error?.message||error)});}try{afterHar=JSON.parse(afterRaw);}catch(error){return fail('AFTER_HAR_PARSE_FAILED',{error:String(error?.message||error)});}
   const decisionNow=finite(decisionNowEpochSeconds);if(decisionNow===null)return fail('EXPLICIT_DECISION_TIME_REQUIRED');
   const stake=finite(stakeEUR);if(stakeEUR!==null&&stake===null)return fail('INVALID_STAKE_EUR');
-  let result;try{result=evaluateBetfairSportingHarOverduePair({beforeHar,afterHar,beforeSourceName,afterSourceName,decisionNowEpochSeconds:decisionNow,stakeEUR:stake,stakeReviewCommit,measuredActionLatencyVerified:false,prospectiveDryRunCycleVerified:false});}catch(error){return fail('PAIR_ANALYSIS_FAILED',{error:String(error?.message||error)});}
+  let result;try{result=evaluateBetfairApMcCoyResearchHarPair({beforeHar,afterHar,beforeSourceName,afterSourceName,decisionNowEpochSeconds:decisionNow,stakeEUR:stake,stakeReviewCommit,measuredActionLatencyVerified:false,prospectiveDryRunCycleVerified:false});}catch(error){return fail('PAIR_ANALYSIS_FAILED',{error:String(error?.message||error)});}
   return {
-    version:'betfair-sporting-safe-har-pair-cli-v1.2-code-owned-semantics',ok:true,beforeSourceName,afterSourceName,decisionNowEpochSeconds:decisionNow,analysis:safeEvaluation(result,stake),
+    version:'betfair-sporting-safe-har-pair-cli-v1.3-research-only-bridge',ok:true,beforeSourceName,afterSourceName,decisionNowEpochSeconds:decisionNow,analysis:safeEvaluation(result,stake),
     nextRequiredEvidence:[
       result?.stakeAtDecisionExactVerifiedFromCodeOwnedReview===true?null:'independently reviewed exact served total-stake menu',
       'structured prospective passive-cycle race evidence',
       'verified race-window budget at decision time',
-      'independently measured/frozen action latency',
+      'independently measured/frozen end-to-end action latency',
       'prospective dry-run cycle validation and independent race-ledger review',
     ].filter(Boolean),
     execution:{decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0},
-    hardGuards:{offlineOnly:true,noNetwork:true,rawHarNeverEmitted:true,authorizationAndCookieValuesNeverEmitted:true,endpointQueriesAndFragmentsNeverEmitted:true,operatorSemanticsComeFromCodeOwnedEvidenceAnchors:true,stakeRequiresCodeOwnedIndependentReview:true,callerRuleAndStakeVerificationBooleansNotAccepted:true,pairAnalyzerIsDiagnosticOnly:true,harPairCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
+    hardGuards:{offlineOnly:true,noNetwork:true,rawHarNeverEmitted:true,authorizationAndCookieValuesNeverEmitted:true,endpointQueriesAndFragmentsNeverEmitted:true,operatorSemanticsComeFromCodeOwnedEvidenceAnchors:true,stakeRequiresExactCodeOwnedIndependentReviewArtifact:true,callerRuleAndStakeVerificationBooleansNotAccepted:true,researchOnlyBridgeRequired:true,underlyingLegacyGreenCannotPropagate:true,pairAnalyzerIsDiagnosticOnly:true,harPairCannotAuthorizeGreen:true,noWagerProbe:true,noAutomaticBetting:true},
   };
 }
 
