@@ -1,7 +1,7 @@
 {
-  "version": "bet365-spain-frank-post-ght-survival-freeze-v1",
+  "version": "bet365-spain-frank-post-ght-survival-freeze-v1.1-terminal-reset-clarified",
   "generatedAtDate": "2026-08-27",
-  "status": "PROSPECTIVE_LATENCY_AGNOSTIC_POST_GHT_SURVIVAL_COLLECTION_FROZEN",
+  "status": "PROSPECTIVE_LATENCY_AGNOSTIC_POST_GHT_SURVIVAL_COLLECTION_FROZEN_BEFORE_ANY_COUNTED_CYCLE",
   "scope": "ONLINE_ONLY_NON_PROMO_PASSIVE_RESEARCH",
   "operator": "bet365 Spain",
   "market": "ES",
@@ -12,8 +12,10 @@
     "dailyCodeCandidate": "sljp-1"
   },
   "freezeAnchor": {
-    "mainShaBeforeFreezeArtifact": "1d1d6d57644200ce60b86bc1859ed7d061a4bab9",
-    "rule": "A later validator must hard-pin the exact commit and UTC that adds this artifact. Only observations strictly later than that commit may enter the prospective survival ledger."
+    "mainShaBeforeOriginalFreezeArtifact": "1d1d6d57644200ce60b86bc1859ed7d061a4bab9",
+    "originalFreezeCommitSha": "cd1d0112a0de82abce625ba19e99392d14911f56",
+    "amendmentReason": "Before any counted cycle or validator existed, clarify that unchanged GHT is required only while the old Daily remains unawarded. The first terminal award/reset snapshot may necessarily expose a changed GHT/new cycle.",
+    "rule": "The validator must hard-pin the commit and UTC containing this clarified freeze. Only observations strictly later than that final freeze commit may enter the prospective survival ledger."
   },
   "whyLatencyAgnostic": "Choosing actionLatencySeconds after observing outcomes would create selection bias. Instead every complete passive cycle records the entire bounded post-GHT survival path without selecting a latency threshold. A later independently frozen latency may classify every retained cycle deterministically; cycles may not be selectively included or excluded based on that latency.",
   "frozenObservationUnit": {
@@ -22,7 +24,8 @@
     "sameConfiguredJackpotsCasinoRequired": true,
     "sameTickerEndpointRequired": true,
     "sameInstanceCodeRequired": true,
-    "sameGuaranteedHitTimeRequiredWithinCycle": true,
+    "sameGuaranteedHitTimeRequiredForBeforeDetectionAndAllUnawardedPostGhtSnapshots": true,
+    "terminalAwardOrResetSnapshotMayExposeChangedGuaranteedHitTime": true,
     "requiredCode": "sljp-1",
     "requiredCurrency": "EUR",
     "requiredLocal": 0,
@@ -32,26 +35,27 @@
     "allObservedPostGhtSnapshotsMustBeRetainedInOrder": true,
     "maximumAllowedGapBetweenServerSnapshots": "requestExecInterval * 2",
     "cycleMustContinueUntil": [
-      "an award/reset is observed",
+      "the first award/reset is observed",
       "or the predeclared observation horizon ends"
     ],
+    "terminalDefinition": "First post-detection snapshot with changed winCount, decreased amount, or changed guaranteedHitTime. No later snapshots belong to that old-GHT cycle.",
     "predeclaredObservationHorizon": "requestExecInterval * 12 after first post-GHT detection",
     "noRealWagerRequired": true,
     "passiveOnly": true
   },
   "frozenOutputs": {
-    "detectionLagSeconds": "firstPostGht.gameTimestamp - guaranteedHitTime",
-    "lastConfirmedUnawardedLagSeconds": "latest retained state with unchanged winCount and nondecreasing amount, measured from GHT",
-    "firstObservedAwardOrResetLagSeconds": "first retained state with changed winCount or decreased amount, if observed",
-    "survivalLowerBoundSeconds": "lastConfirmedUnawardedLagSeconds - detectionLagSeconds",
+    "detectionLagSeconds": "firstPostGht.gameTimestamp - old guaranteedHitTime",
+    "lastConfirmedUnawardedLagSeconds": "latest retained state with old GHT, unchanged winCount and nondecreasing amount, measured from old GHT",
+    "firstObservedAwardOrResetLagSeconds": "first terminal state measured from old GHT, if observed",
+    "survivalLowerBoundSeconds": "lastConfirmedUnawardedTimestamp - firstPostGhtDetectionTimestamp",
     "awardTimeIntervalCensored": true,
     "rightCensoredIfNoAwardByObservationHorizon": true,
     "latencyThresholdClassificationForbiddenAtCollectionTime": true
   },
   "laterDeterministicClassification": {
     "allowedOnlyAfterIndependentLatencyFreeze": true,
-    "successAtLatencyL": "cycle has confirmed unchanged/unreset state at or after detectionTimestamp + L",
-    "failureAtLatencyL": "award/reset is observed strictly before detectionTimestamp + L",
+    "successAtLatencyL": "cycle has a confirmed unchanged/unreset old-GHT state at or after detectionTimestamp + L",
+    "failureAtLatencyL": "terminal award/reset is observed strictly before detectionTimestamp + L",
     "ambiguousAtLatencyL": "observation gaps or censoring do not establish either condition",
     "ambiguousCyclesCannotBeSilentlyDropped": true,
     "completeProspectiveLedgerRequired": true,
@@ -59,7 +63,7 @@
   },
   "operatorRuleSeparation": {
     "survivalCollectionMayProceedBeforeBet365FollowingDayRuleIsClosed": true,
-    "reason": "The passive server-state survival path is an observable property independent of whether bet365 legally/operationally adopts the provider first-bet-following-day rule. Rule adoption remains mandatory before translating survival into an executable first-bet race probability.",
+    "reason": "The passive server-state survival path is an observable property independent of whether bet365 operationally adopts the provider first-bet-following-day rule. Rule adoption remains mandatory before translating survival into an executable first-bet race probability.",
     "bet365FollowingDayRuleStillRequiredForExecution": true,
     "servedTenCentJackpotEligibilityStillRequiredForExecution": true
   },
@@ -68,6 +72,7 @@
     "failedOrShortCyclesCannotBeDropped": true,
     "duplicateGhtCyclesCannotCountTwice": true,
     "postGhtSnapshotsCannotBeCherryPicked": true,
+    "snapshotsAfterFirstTerminalStateCannotBeUsedToExtendOldCycleSurvival": true,
     "latencyCannotBeSelectedFromObservedSurvivalDistribution": true,
     "horizonCannotBeExtendedAfterSeeingAProfitableCycle": true
   },
