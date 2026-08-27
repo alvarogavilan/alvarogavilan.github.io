@@ -1,7 +1,7 @@
 {
-  "version": "betfair-spain-apmccoy-readiness-2026-08-27-v2.3-fixed-attempt-race-integrated",
+  "version": "betfair-spain-apmccoy-readiness-2026-08-27-v2.4-prior-code-owned-activation",
   "generatedAtDate": "2026-08-27",
-  "status": "SEMANTICS_AND_FAIL_CLOSED_FIXED_ATTEMPT_PIPELINE_READY_REAL_PRIVATE_SESSION_AND_SEVEN_OPPORTUNITY_LEDGER_MISSING_NO_PLAY",
+  "status": "SEMANTICS_AND_FAIL_CLOSED_FIXED_ATTEMPT_PIPELINE_READY_REAL_PRIVATE_SESSION_ACTIVATION_AND_SEVEN_OPPORTUNITY_LEDGER_MISSING_NO_PLAY",
   "scope": "ONLINE_ONLY_NON_PROMO_RESEARCH",
   "operator": "Betfair Spain",
   "market": "ES",
@@ -45,12 +45,17 @@
     "codeOwnedRaceAssumptionReviewGate": true,
     "scheduledAttemptStoppingRuleFrozenBeforeFirstCycle": true,
     "scheduledAttemptPlanFreezeCommit": "e82f6d61dffa21ec3ca7ec940c51fc3fe36f0e1a",
+    "codeOwnedAttemptPlanActivationGate": true,
+    "activationMustPinBindingAndTimeBeforeFirstScheduledGht": true,
+    "callerCannotBackdateActivationOrChooseAlternateBinding": true,
     "fixedFirstSevenScheduledDistinctDailyGhtOpportunities": true,
     "retryUntilSuccessForbidden": true,
     "failedShortInvalidAndMissedScheduledAttemptsRemainInDenominator": true,
     "scheduledAttemptLedgerIndependentReviewGate": true,
+    "scheduledAttemptLedgerRequiresPriorCodeOwnedActivation": true,
     "scheduledAttemptLedgerCommitMustDifferFromReviewCommit": true,
     "fixedSevenAttemptRaceBoundIntegrated": true,
+    "fixedSevenAttemptRaceBoundRequiresPriorActivation": true,
     "fixedSevenAttemptRaceBoundMinimumConfidencePct": 95,
     "raceAssumptionReviewMustReferenceSameFullAttemptLedgerCommit": true,
     "callerReviewedCycleSubsetCannotReplaceAttemptLedger": true,
@@ -59,7 +64,7 @@
     "reviewedRaceWindowIncludesFeedAgePlusActionLatency": true,
     "reviewedRaceWindowCannotExceedFrozenTwelveIntervalHorizon": true,
     "positiveEvScreenConnectedToFixedAttemptRaceBound": true,
-    "positiveEvScreenRequiresCodeOwnedAttemptLedgerRaceAssumptionAndLatencyReviews": true
+    "positiveEvScreenRequiresPriorActivationAndCodeOwnedReviews": true
   },
   "pipelineCommits": {
     "stakeDiscoveryHardening": "f773866f7c66d2f8b06bc6c02b4dae32fa0f5a42",
@@ -72,13 +77,14 @@
     "actionLatencyReview": "6cb2b707d5ed879be2a22c1a8f67ff893d356a9a",
     "raceAssumptionsExactLedgerHardening": "f85ae49eff3d6bf9fce59f2482cd7f9feee10681",
     "scheduledAttemptPlanFreeze": "e82f6d61dffa21ec3ca7ec940c51fc3fe36f0e1a",
-    "scheduledAttemptLedgerReview": "979766609167f5a22b8654e136d86d43bdba7012",
-    "scheduledAttemptLedgerReviewTest": "3ab265736b999f7c82e3587ce3d94f87c046c463",
-    "fixedAttemptRaceBoundInitial": "e9940fbad95a5e0ec67efbcf90961dc99ccef1cb",
-    "fixedAttemptRaceBoundRepair": "f28f285a9ced7e905b6809c0fc2df371b75d2c99",
-    "fixedAttemptRaceBoundTest": "e5520a000e79cf69aea73f2e7c64e3b17e5e933a",
-    "positiveEvScreenFixedAttemptIntegration": "a72fa2123dd643b75810cfee220a3f9385fda340",
-    "positiveEvScreenFixedAttemptTest": "cda4b8a36a3179bdfcf7db3f9dd97cf2cdcc980f"
+    "attemptPlanActivationGate": "fbd91bf47b3bc1c61d239649358c7da237203e15",
+    "attemptPlanActivationGateTest": "40586c0c72aab155217fcf33b4a7abfbeda3ff5c",
+    "scheduledAttemptLedgerActivationIntegration": "7f503c818a017017542b246ab65aed38b428c76e",
+    "scheduledAttemptLedgerActivationTest": "0d896fa75017bc40930b35c25d63e0710d85119b",
+    "fixedAttemptRaceBoundActivationIntegration": "ab3bafe949015cd158ccf4f6d2bf83228225faea",
+    "fixedAttemptRaceBoundActivationTest": "cea22c7efdff03a045af659f74527134f92412cd",
+    "positiveEvScreenActivationIntegration": "d5c415956b7ced681fa9a2b43a4260ddf973b0f5",
+    "positiveEvScreenActivationTest": "8a92c857e4899ddeae6439f4c7bca67db5d936fa"
   },
   "currentlyOpenEvidenceGates": {
     "realAuthenticatedPassiveApMcCoyHarAvailable": false,
@@ -88,6 +94,7 @@
     "realSameBindingCrossGhtUnawardedPairObserved": false,
     "servedTotalStakeReviewApproved": false,
     "postFreezeProspectiveSurvivalCycleCount": 0,
+    "attemptPlanActivationReviewAllowlistNonEmpty": false,
     "fixedSevenScheduledOpportunityPlanActivated": false,
     "fixedSevenScheduledAttemptLedgerComplete": false,
     "scheduledAttemptLedgerReviewAllowlistNonEmpty": false,
@@ -110,6 +117,7 @@
   "statisticalDenominatorCorrection": {
     "fixedScheduledOpportunityCount": 7,
     "stoppingRuleFrozenBeforeFirstRealCycle": true,
+    "activationMustBeCodeOwnedBeforeFirstScheduledGht": true,
     "allScheduledOpportunitiesMustRemainInDenominator": true,
     "nonCycleAttemptOutcomeIsConservativeFailure": true,
     "ambiguousReviewedCycleOutcomeIsConservativeFailure": true,
@@ -124,7 +132,7 @@
     "statisticalPayoutForbiddenAsExecutionBaseRtp": true,
     "executionEconomicsRemainPinnedToExactGameRuleMainGameFloorPct": 93.03
   },
-  "nextDecisiveObservation": "One real current passive AP McCoy Betfair Spain session containing the exact real launcher, latest post-launch Betfair initialResources, configured IMS/ticker, fresh EUR local=0 sljp-1 response and an explicit total-stake menu. Once one exact binding is independently recorded, the already-frozen stopping rule activates: exactly the first seven scheduled distinct Daily GHT opportunities for that binding must all be logged, including failed, short, invalid or missed captures. No wager probe is required.",
+  "nextDecisiveObservation": "One real current passive AP McCoy Betfair Spain session containing the exact real launcher, latest post-launch Betfair initialResources, configured IMS/ticker, fresh EUR local=0 sljp-1 response and an explicit total-stake menu. After independent review records that exact binding in the code-owned activation gate, exactly the first seven subsequent scheduled distinct Daily GHT opportunities for that binding must all be logged, including failed, short, invalid or missed captures. No wager probe is required.",
   "execution": {"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
   "hardGuards": {
     "onlineOnly": true,
@@ -134,6 +142,7 @@
     "publicDynamicJackpotCannotAuthorizeExecution": true,
     "statisticalObservedRtpCannotSetExecutionBaseRtp": true,
     "privateServedBindingCannotBeInvented": true,
+    "activationCannotBeBackdatedOrCallerSelected": true,
     "reviewAllowlistsRemainEmptyWithoutRealEvidence": true,
     "completeFixedScheduledAttemptDenominatorRequiredForPromotion": true,
     "optionalStoppingForbidden": true,
