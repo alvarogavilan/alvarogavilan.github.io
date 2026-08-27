@@ -1,6 +1,6 @@
-import {isApprovedBetfairApMcCoySurvivalReviewCommit} from './betfair-apmccoy-post-ght-survival-review-v1.mjs';
+import {isApprovedBetfairApMcCoySurvivalReviewArtifact} from './betfair-apmccoy-post-ght-survival-review-v1.mjs';
 
-const VERSION='betfair-apmccoy-post-ght-survival-curve-v1';
+const VERSION='betfair-apmccoy-post-ght-survival-curve-v1.1-exact-cycle-artifacts';
 const REVIEW_VERSION='betfair-apmccoy-post-ght-survival-review-v1';
 const HORIZON_INTERVALS=Object.freeze([1,2,3,4,5,6,7,8,9,10,11,12]);
 const finite=v=>{if(v===null||v===undefined||v===''||typeof v==='boolean')return null;const n=Number(v);return Number.isFinite(n)?n:null;};
@@ -28,7 +28,7 @@ export function deriveBetfairApMcCoyFrozenHorizonSurvivalCurve({reviewedCycles,c
   const ids=new Set(),bindings=new Set(),execs=new Set();
   for(const x of list){
     if(!x||x.version!==REVIEW_VERSION||x.valid!==true||x.independentReviewApproved!==true||x.usableForLatencyClassification!==true||x.completeAttemptLedgerVerified!==true||x.completeObservationHorizon!==true)return fail('INVALID_REVIEWED_SURVIVAL_CYCLE');
-    if(!isApprovedBetfairApMcCoySurvivalReviewCommit(x.reviewCommit))return fail('CYCLE_REVIEW_COMMIT_NOT_CODE_ALLOWLISTED',{cycleId:x.cycleId||null,reviewCommit:x.reviewCommit||null});
+    if(!isApprovedBetfairApMcCoySurvivalReviewArtifact(x))return fail('CYCLE_REVIEW_ARTIFACT_NOT_CODE_APPROVED',{cycleId:x.cycleId||null,reviewCommit:x.reviewCommit||null,reviewArtifactIdentity:x.reviewArtifactIdentity||null});
     const id=text(x.cycleId);if(!id||ids.has(id))return fail('MISSING_OR_DUPLICATE_CYCLE_ID',{cycleId:id});ids.add(id);
     const key=bindingKey(x);if(!key||key==='|||')return fail('MISSING_BINDING_SCOPE',{cycleId:id});bindings.add(key);
     const exec=finite(x.requestExecIntervalSeconds);if(!(exec>0))return fail('INVALID_EXEC_INTERVAL',{cycleId:id});execs.add(exec);
@@ -44,16 +44,16 @@ export function deriveBetfairApMcCoyFrozenHorizonSurvivalCurve({reviewedCycles,c
   });
   return {
     version:VERSION,mode:'OFFLINE_REVIEWED_PROSPECTIVE_BETFAIR_AP_MCCOY_POST_GHT_FROZEN_HORIZON_CURVE_NO_PLAY',valid:true,
-    reason:'REVIEWED_FROZEN_HORIZON_SURVIVAL_CURVE_AVAILABLE_ACTION_LATENCY_AND_EXECUTION_GATES_STILL_UNFROZEN',
+    reason:'EXACT_REVIEWED_FROZEN_HORIZON_SURVIVAL_CURVE_AVAILABLE_ACTION_LATENCY_AND_EXECUTION_GATES_STILL_UNFROZEN',
     operator:'Betfair Spain',market:'ES',target:{title:'AP McCoy Sporting Legends',gameId:'ap-mccoy-sporting-legends-cptn'},
-    reviewedCycleCount:n,cycleIds:[...ids],bindingScopeKey:[...bindings][0],requestExecIntervalSeconds:exec,
+    reviewedCycleCount:n,cycleIds:[...ids],reviewArtifactIdentities:list.map(x=>x.reviewArtifactIdentity),bindingScopeKey:[...bindings][0],requestExecIntervalSeconds:exec,
     horizonIntervals:[...HORIZON_INTERVALS],curve,frozenHorizonCurveAvailable:true,
     latencyThresholdChosenFromOutcomes:false,ambiguousCyclesDropped:false,ambiguousCyclesCountedAsFailuresForBound:true,
     actionLatencyFrozen:false,operatorFollowingDayRuleCodeOwned:true,operatorAnyBetAnySizeRuleCodeOwned:true,servedStakeAtDecisionVerified:false,
     binomialIidAssumptionJustified:false,currentCycleExchangeabilityVerified:false,
     usableForLatencySelection:false,usableForRaceEvidence:false,usableForExecution:false,
-    scientificUse:'Transforms only independently reviewed, code-allowlisted prospective Betfair AP McCoy post-GHT survival cycles into the predeclared one-through-twelve requestExecInterval survival curve. No latency is selected from outcomes. Only confirmed survival at or beyond a threshold counts as success; an observed award/reset strictly before the threshold counts as failure; unresolved intervals remain in the denominator and are conservatively counted as failures. Current exact Betfair operator semantics are already code-owned, but the curve remains descriptive until an action-latency policy is frozen independently of these outcomes, exact served stake at decision is reviewed, sampling/exchangeability assumptions are closed and a fresh final served state passes all execution gates.',
+    scientificUse:'Transforms only exact code-owned reviewed prospective Betfair AP McCoy post-GHT survival artifacts into the predeclared one-through-twelve requestExecInterval curve. An approved review SHA cannot be reused with altered cycle timing or outcomes. No latency is selected from the curve; unresolved intervals remain conservative failures and the result remains descriptive until the independent latency, stake, race-assumption and fresh-state gates close.',
     execution:execution(),
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,reviewedCodeAllowlistedCyclesOnly:true,frozenHorizonsOneThroughTwelve:true,latencyCannotBeSelectedFromCurve:true,ambiguousCyclesCannotBeDropped:true,ambiguousAreFailuresForLowerBound:true,sameBindingRequired:true,sameCadenceRequired:true,noPointEstimateExecution:true,servedStakeStillRequired:true,binomialAssumptionsStillRequired:true,freshFinalStateStillRequired:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,exactReviewedCycleArtifactsOnly:true,approvedReviewShaCannotAuthorizeAlteredCycle:true,frozenHorizonsOneThroughTwelve:true,latencyCannotBeSelectedFromCurve:true,ambiguousCyclesCannotBeDropped:true,ambiguousAreFailuresForLowerBound:true,sameBindingRequired:true,sameCadenceRequired:true,noPointEstimateExecution:true,servedStakeStillRequired:true,binomialAssumptionsStillRequired:true,freshFinalStateStillRequired:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false},
   };
 }
