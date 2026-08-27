@@ -1,0 +1,89 @@
+{
+  "version": "bet365-spain-frank-post-ght-survival-freeze-v1",
+  "generatedAtDate": "2026-08-27",
+  "status": "PROSPECTIVE_LATENCY_AGNOSTIC_POST_GHT_SURVIVAL_COLLECTION_FROZEN",
+  "scope": "ONLINE_ONLY_NON_PROMO_PASSIVE_RESEARCH",
+  "operator": "bet365 Spain",
+  "market": "ES",
+  "target": {
+    "title": "Frank Bruno: Sporting Legends",
+    "providerGameCode": "gpas_slfbruno_pop",
+    "exactPublicPlayUrl": "https://casino.bet365.es/play/FrankBrunoSL",
+    "dailyCodeCandidate": "sljp-1"
+  },
+  "freezeAnchor": {
+    "mainShaBeforeFreezeArtifact": "1d1d6d57644200ce60b86bc1859ed7d061a4bab9",
+    "rule": "A later validator must hard-pin the exact commit and UTC that adds this artifact. Only observations strictly later than that commit may enter the prospective survival ledger."
+  },
+  "whyLatencyAgnostic": "Choosing actionLatencySeconds after observing outcomes would create selection bias. Instead every complete passive cycle records the entire bounded post-GHT survival path without selecting a latency threshold. A later independently frozen latency may classify every retained cycle deterministically; cycles may not be selectively included or excluded based on that latency.",
+  "frozenObservationUnit": {
+    "oneCyclePerDistinctDailyGht": true,
+    "exactTargetRequired": "gpas_slfbruno_pop",
+    "sameConfiguredJackpotsCasinoRequired": true,
+    "sameTickerEndpointRequired": true,
+    "sameInstanceCodeRequired": true,
+    "sameGuaranteedHitTimeRequiredWithinCycle": true,
+    "requiredCode": "sljp-1",
+    "requiredCurrency": "EUR",
+    "requiredLocal": 0,
+    "beforeBoundarySnapshotRequired": true,
+    "postGhtSnapshotsRequired": true,
+    "firstPostGhtSnapshotMustBeFirstObservedAfterBoundary": true,
+    "allObservedPostGhtSnapshotsMustBeRetainedInOrder": true,
+    "maximumAllowedGapBetweenServerSnapshots": "requestExecInterval * 2",
+    "cycleMustContinueUntil": [
+      "an award/reset is observed",
+      "or the predeclared observation horizon ends"
+    ],
+    "predeclaredObservationHorizon": "requestExecInterval * 12 after first post-GHT detection",
+    "noRealWagerRequired": true,
+    "passiveOnly": true
+  },
+  "frozenOutputs": {
+    "detectionLagSeconds": "firstPostGht.gameTimestamp - guaranteedHitTime",
+    "lastConfirmedUnawardedLagSeconds": "latest retained state with unchanged winCount and nondecreasing amount, measured from GHT",
+    "firstObservedAwardOrResetLagSeconds": "first retained state with changed winCount or decreased amount, if observed",
+    "survivalLowerBoundSeconds": "lastConfirmedUnawardedLagSeconds - detectionLagSeconds",
+    "awardTimeIntervalCensored": true,
+    "rightCensoredIfNoAwardByObservationHorizon": true,
+    "latencyThresholdClassificationForbiddenAtCollectionTime": true
+  },
+  "laterDeterministicClassification": {
+    "allowedOnlyAfterIndependentLatencyFreeze": true,
+    "successAtLatencyL": "cycle has confirmed unchanged/unreset state at or after detectionTimestamp + L",
+    "failureAtLatencyL": "award/reset is observed strictly before detectionTimestamp + L",
+    "ambiguousAtLatencyL": "observation gaps or censoring do not establish either condition",
+    "ambiguousCyclesCannotBeSilentlyDropped": true,
+    "completeProspectiveLedgerRequired": true,
+    "latencyCannotBeChosenUsingSurvivalOutcomes": true
+  },
+  "operatorRuleSeparation": {
+    "survivalCollectionMayProceedBeforeBet365FollowingDayRuleIsClosed": true,
+    "reason": "The passive server-state survival path is an observable property independent of whether bet365 legally/operationally adopts the provider first-bet-following-day rule. Rule adoption remains mandatory before translating survival into an executable first-bet race probability.",
+    "bet365FollowingDayRuleStillRequiredForExecution": true,
+    "servedTenCentJackpotEligibilityStillRequiredForExecution": true
+  },
+  "antiP_hacking": {
+    "retrospectivePreFreezeCyclesForbidden": true,
+    "failedOrShortCyclesCannotBeDropped": true,
+    "duplicateGhtCyclesCannotCountTwice": true,
+    "postGhtSnapshotsCannotBeCherryPicked": true,
+    "latencyCannotBeSelectedFromObservedSurvivalDistribution": true,
+    "horizonCannotBeExtendedAfterSeeingAProfitableCycle": true
+  },
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "passiveOnly": true,
+    "noWagerProbe": true,
+    "noAutomaticBetting": true,
+    "realMoneyAllowed": false
+  }
+}
