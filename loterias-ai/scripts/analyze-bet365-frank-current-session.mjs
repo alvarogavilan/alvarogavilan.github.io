@@ -3,10 +3,11 @@ import fs from 'node:fs';
 import {verifyBet365SportingExactPlayRouteProvenance} from '../edge-backend/src/bet365-sporting-exact-play-route-provenance-v1.mjs';
 import {verifyBet365SportingServedSljp1Binding} from '../edge-backend/src/bet365-sporting-served-sljp1-binding-v1.mjs';
 import {verifyBet365SportingServedTotalStake} from '../edge-backend/src/bet365-sporting-served-total-stake-v1.mjs';
+import {detectBet365SportingServedFollowingDayRuleCandidate} from '../edge-backend/src/bet365-sporting-served-following-day-rule-candidate-v1.mjs';
 import {analyzeBet365SportingStructuredWebtickersRows} from '../edge-backend/src/bet365-sporting-webtickers-structured-row-v1.mjs';
 import {analyzeBet365SportingDualFeedCalibrationSample} from '../edge-backend/src/bet365-sporting-dual-feed-calibration-v1.mjs';
 
-const VERSION='analyze-bet365-frank-current-session-v1';
+const VERSION='analyze-bet365-frank-current-session-v1.1-served-rule-candidate';
 const GAME_CODE='gpas_slfbruno_pop';
 const args=process.argv.slice(2);
 function execution(){return {decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0};}
@@ -20,6 +21,7 @@ else{
     const provenance=verifyBet365SportingExactPlayRouteProvenance(har,{gameCode:GAME_CODE,sourceName});
     const servedBinding=verifyBet365SportingServedSljp1Binding(har,{gameCode:GAME_CODE,sourceName});
     const servedStake=verifyBet365SportingServedTotalStake(har,{gameCode:GAME_CODE,sourceName,requiredStakeEUR:0.10});
+    const servedFollowingDayRuleCandidate=detectBet365SportingServedFollowingDayRuleCandidate(har,{gameCode:GAME_CODE,sourceName});
     const modernStateCandidate=analyzeBet365SportingStructuredWebtickersRows(har,{gameCode:GAME_CODE,sourceName});
     const dualFeedCalibrationCandidate=analyzeBet365SportingDualFeedCalibrationSample(har,{gameCode:GAME_CODE,sourceName});
     const result={
@@ -32,6 +34,7 @@ else{
         exactPlayRouteProviderProvenance:summary(provenance),
         servedSljp1TransportBinding:summary(servedBinding),
         servedTenCentTotalStake:summary(servedStake),
+        servedFollowingDayRuleTextCandidate:summary(servedFollowingDayRuleCandidate),
         configuredModernStateCandidate:summary(modernStateCandidate),
         legacyVsModernCalibrationCandidate:summary(dualFeedCalibrationCandidate),
       },
@@ -39,6 +42,7 @@ else{
         exactPlayRouteProviderProvenance:provenance?.valid===true&&provenance?.exactFrontendProviderIdentityCandidateVerified===true,
         exactFrontendToConfiguredSljp1Transport:servedBinding?.valid===true&&servedBinding?.exactBet365SpainFrontendToConfiguredSljp1TransportBindingVerified===true,
         servedTenCentTotalStake:servedStake?.valid===true&&servedStake?.servedTenCentTotalStakeVerified===true,
+        servedFollowingDayRuleTextCandidate:servedFollowingDayRuleCandidate?.valid===true&&servedFollowingDayRuleCandidate?.operatorOwnedRuleTextCandidateObserved===true,
         uniqueStructuredModernSljp1Candidate:modernStateCandidate?.valid===true&&modernStateCandidate?.structuredSljp1RowCandidateCount===1,
         exactDualFeedStateVectorCalibrationSample:dualFeedCalibrationCandidate?.valid===true&&dualFeedCalibrationCandidate?.calibrationCandidate===true,
       },
@@ -48,11 +52,12 @@ else{
         realCrossGhtUnawardedPairVerified:false,
         servedTenCentJackpotEligibilityVerified:false,
         bet365FollowingDayRuleAdoptionVerified:false,
+        independentRuleTextReviewRequired:true,
         prospectiveRaceLedgerReviewed:false,
         executionAuthorized:false,
       },
       execution:execution(),
-      hardGuards:{onlineOnly:true,nonPromoOnly:true,localOnly:true,passiveHarOnly:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false},
+      hardGuards:{onlineOnly:true,nonPromoOnly:true,localOnly:true,passiveHarOnly:true,ruleCandidateCannotSelfVerifyAdoption:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false},
     };
     process.stdout.write(`${JSON.stringify(result,null,2)}\n`);
   }catch(error){
