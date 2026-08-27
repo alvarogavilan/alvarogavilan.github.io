@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {isApprovedBetfairApMcCoySurvivalReviewCommit,reviewBetfairApMcCoyPostGhtSurvivalCycle} from '../casino/jackpots/betfair-apmccoy-post-ght-survival-review-v1.mjs';
+import {isApprovedBetfairApMcCoySurvivalReviewCommit,isApprovedBetfairApMcCoySurvivalReviewArtifact,reviewBetfairApMcCoyPostGhtSurvivalCycle} from '../casino/jackpots/betfair-apmccoy-post-ght-survival-review-v1.mjs';
 
 const fakeSha='0123456789abcdef0123456789abcdef01234567';
 assert.equal(isApprovedBetfairApMcCoySurvivalReviewCommit(fakeSha),false);
@@ -16,11 +16,13 @@ const candidate={
 };
 let r=reviewBetfairApMcCoyPostGhtSurvivalCycle({cycleCandidate:candidate,reviewCommit:fakeSha});
 assert.equal(r.valid,false);
+assert.equal(r.contractRevision,'v1.1-code-owned-artifact-identity');
 assert.equal(r.reason,'REVIEW_COMMIT_NOT_CODE_ALLOWLISTED');
 assert.equal(r.independentReviewApproved,false);
 assert.equal(r.usableForLatencyClassification,false);
 assert.equal(r.execution.decision,'NO_PLAY');
 assert.equal(r.execution.realMoneyAllowed,false);
+assert.equal(isApprovedBetfairApMcCoySurvivalReviewArtifact({...candidate,reviewCommit:fakeSha,completeAttemptLedgerVerified:true}),false);
 
 r=reviewBetfairApMcCoyPostGhtSurvivalCycle({cycleCandidate:candidate,reviewCommit:'bad'});
 assert.equal(r.valid,false);
