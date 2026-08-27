@@ -3,7 +3,8 @@ import {validateSportingLegendsPassiveRaceCycle} from './sporting-legends-passiv
 import {evaluateSportingLegendsOverdueFirstBet} from './sporting-legends-overdue-first-bet-v1.mjs';
 const finite=(v)=>{if(v===null||v===undefined||v===''||typeof v==='boolean')return null;const n=Number(v);return Number.isFinite(n)?n:null;};
 const text=v=>typeof v==='string'&&v.trim()?v.trim():null;
-const noPlay=(reason,extra={})=>({version:'sporting-legends-overdue-green-route-v1.3-reviewed-ledger-gate',decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,reason,...extra});
+const VERSION='sporting-legends-overdue-green-route-v1.4-retired-research-only';
+const noPlay=(reason,extra={})=>({version:VERSION,decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,usableForExecution:false,reason,...extra});
 
 export function evaluateSportingLegendsOverdueGreenRoute({
   before,after,nowEpochSeconds,
@@ -47,9 +48,9 @@ export function evaluateSportingLegendsOverdueGreenRoute({
     cycles:validated,confidence,protocolId:protocol,actionLatencySeconds:ceiling,prospectiveProtocolFrozen:true,
     binomialIidAssumptionJustified,completeProspectiveCycleLedgerVerified,currentCycleExchangeabilityVerified,assumptionEvidenceId,
   });
-  if(!bound.valid||!bound.usableForExecution)return noPlay('EMPIRICAL_RACE_BOUND_NOT_EXECUTABLE',{empiricalRaceBound:bound});
+  if(!bound.valid)return noPlay('EMPIRICAL_RACE_BOUND_INVALID',{empiricalRaceBound:bound});
   const reviewedBound={...bound,independentReview:independentRaceLedgerReview||null};
-  const result=evaluateSportingLegendsOverdueFirstBet({
+  const legacy=evaluateSportingLegendsOverdueFirstBet({
     before,after,nowEpochSeconds,
     exactBetfairSpainTickerImsBindingVerified,expectedBetfairImsCasino:ims,
     betfairFirstBetFollowingDayRuleVerified,providerGuaranteedHitTimeDefinesFollowingDayBoundaryVerified,
@@ -58,5 +59,16 @@ export function evaluateSportingLegendsOverdueGreenRoute({
     measuredActionLatencyVerified:true,measuredActionLatencySeconds:measured,
     prospectiveDryRunCycleVerified:true,
   });
-  return {...result,version:'sporting-legends-overdue-green-route-v1.3-reviewed-ledger-gate',empiricalRaceBound:reviewedBound,validatedDryRunCycles:validated,dryRunSummary:{protocolId:protocol,frozenActionLatencyCeilingSeconds:ceiling,measuredActionLatencySeconds:measured,successfulDryRunCycles:bound.successfulDryRunCycles,totalDryRunCycles:bound.totalDryRunCycles,confidence,executionAssumptionsClosed:bound.executionAssumptionsClosed,independentRaceLedgerReviewSupplied:!!independentRaceLedgerReview,independentRaceLedgerReviewVerified:result.raceLedgerIndependentlyReviewed===true},guards:{...(result.guards||{}),poissonNotRequiredForGreen:true,clopperPearsonAssumptionsMustBeExplicitForGreen:true,rawBooleanDryRunsCannotAuthorizeGreen:true,callerSuppliedDryRunObjectsCannotBypassIndependentReview:true,independentReviewedLedgerCommitAllowlistRequiredForGreen:true,eachCycleMustPassPassiveSnapshotValidator:true,currentMeasuredLatencyMustNotExceedFrozenCeiling:true}};
+  return {
+    ...legacy,
+    version:VERSION,
+    legacyDecision:legacy.decision,
+    legacyRealMoneyAllowed:legacy.realMoneyAllowed===true,
+    decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0,usableForExecution:false,
+    reason:'LEGACY_SPORTING_LEGENDS_GREEN_ROUTE_RETIRED_RESEARCH_ONLY',
+    empiricalRaceBound:reviewedBound,validatedDryRunCycles:validated,
+    dryRunSummary:{protocolId:protocol,frozenActionLatencyCeilingSeconds:ceiling,measuredActionLatencySeconds:measured,successfulDryRunCycles:bound.successfulDryRunCycles,totalDryRunCycles:bound.totalDryRunCycles,confidence,executionAssumptionsClosed:bound.executionAssumptionsClosed,independentRaceLedgerReviewSupplied:!!independentRaceLedgerReview,legacyIndependentRaceLedgerReviewVerified:legacy.raceLedgerIndependentlyReviewed===true},
+    guards:{...(legacy.guards||{}),legacyGreenRouteRetired:true,researchOnly:true,legacyGreenCannotPropagate:true,exactArtifactOperatorSpecificPipelineRequiredForAnyFuturePromotion:true,noWagerProbe:true,noAutomaticWagering:true,realMoneyAllowed:false},
+    scientificUse:'Retired compatibility route. It may still reproduce legacy validation and race diagnostics for historical comparison, but any legacy GREEN is captured only as legacyDecision and cannot propagate. Future promotion must use an operator-specific exact-artifact pipeline with current served evidence, frozen prospective denominator and a separately reviewed fresh final adapter.'
+  };
 }
