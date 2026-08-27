@@ -1,0 +1,85 @@
+{
+  "version": "betfair-apmccoy-cross-operator-stake-prior-2026-08-27-v1",
+  "generatedAtDate": "2026-08-27",
+  "scope": "ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "target": {
+    "operator": "Betfair Spain",
+    "market": "ES",
+    "title": "AP McCoy Sporting Legends™",
+    "gameId": "ap-mccoy-sporting-legends-cptn",
+    "exactBetfairUrl": "https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn"
+  },
+  "currentBetfairPage": {
+    "observedDate": "2026-08-27",
+    "exactTitleObserved": true,
+    "totalBetSelectorSemanticsObserved": true,
+    "anyBetAnySizeJackpotEligibilityObserved": true,
+    "firstBetFollowingDayRuleObserved": true,
+    "operatorFundedJackpotDoesNotAffectGameRtpObserved": true,
+    "explicitMinimumStakePublishedOnVisiblePage": false,
+    "sourceUrl": "https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn"
+  },
+  "exactTitleCrossOperatorEvidence": [
+    {
+      "operator": "Paddy Power",
+      "market": "UK",
+      "sourceUrl": "https://games.paddypower.com/game/ap-mccoy-sporting-legends-cptn",
+      "sameGameSlug": "ap-mccoy-sporting-legends-cptn",
+      "provider": "Playtech",
+      "publishedMinStake": 0.25,
+      "currency": "GBP",
+      "authorityClass": "CURRENT_OPERATOR_PAGE_CROSS_OPERATOR"
+    },
+    {
+      "operator": "PokerStars Italy",
+      "market": "IT",
+      "sourceUrl": "https://www.pokerstars.it/content/dam/new-dam/italy/website/documenti/slot/AP-McCoy-Sporting-Legends.pdf",
+      "providerRulesExactTitle": true,
+      "totalBetExplicitlyDefined": true,
+      "coinValueRelationship": "coin value equals total bet divided by 25",
+      "explicitMinimumStakeInRulesText": false,
+      "authorityClass": "CURRENT_OPERATOR_HOSTED_EXACT_TITLE_RULES_PDF_CROSS_OPERATOR"
+    },
+    {
+      "sourceUrl": "https://www.olbg.com/slots/articles/sporting-legends-slots",
+      "publishedMinStake": 0.25,
+      "currency": "GBP",
+      "authorityClass": "SECONDARY_EXACT_TITLE_CORROBORATION"
+    },
+    {
+      "sourceUrl": "https://slotgameindex.com/blog/games/ap-mccoy-sporting-legends/",
+      "publishedMinStake": 0.25,
+      "currency": "UNSPECIFIED",
+      "authorityClass": "SECONDARY_EXACT_TITLE_CORROBORATION"
+    }
+  ],
+  "researchConclusion": {
+    "providerProductBaseMinimumStakePrior": 0.25,
+    "priorUnit": "currency units",
+    "confidenceClass": "MULTI_SOURCE_EXACT_TITLE_PRIOR_ONLY",
+    "betfairSpainServedMinimumStakeVerified": false,
+    "betfairSpainServedStakeAtDecisionVerified": false,
+    "currencyEquivalenceAcrossOperatorsAssumed": false,
+    "operatorConfigurationTransferAllowed": false,
+    "executionUseAllowed": false,
+    "nextEvidenceNeeded": "Exact Betfair Spain AP McCoy served total-stake menu or equivalent server state in the same real-money HAR/session, followed by independent code-owned review."
+  },
+  "scientificUse": "The repeated 0.25 exact-title value is a search prior only. It may prioritize inspection for an explicit served EUR 0.25 total-bet option in Betfair Spain, but it cannot populate stakeEUR, cannot prove that Betfair uses the same minimum, and cannot authorize execution. The current Betfair page itself defines total-bet controls and jackpot eligibility but does not expose a visible minimum stake.",
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "crossOperatorStakeTransferForbidden": true,
+    "crossCurrencyEquivalenceForbidden": true,
+    "secondarySourceCannotCloseStakeGate": true,
+    "servedBetfairStakeRequired": true,
+    "noWagerProbe": true,
+    "noAutomaticBetting": true
+  }
+}
