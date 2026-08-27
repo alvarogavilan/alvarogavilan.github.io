@@ -9,8 +9,10 @@ const genericHar=(gameTimestamp,amount)=>JSON.stringify({log:{entries:[config(),
 
 const r=analyzeSafeHarPairText(har(1990,100,42,'bf_es',2000,'before'),har(2005,100.02,42,'bf_es',2000,'after'),{beforeSourceName:'before.har',afterSourceName:'after.har',decisionNowEpochSeconds:2010,stakeEUR:0.25,stakeReviewCommit:'a'.repeat(40)});
 assert.equal(r.ok,true);
-assert.equal(r.version,'betfair-sporting-safe-har-pair-cli-v1.2-code-owned-semantics');
+assert.equal(r.version,'betfair-sporting-safe-har-pair-cli-v1.3-research-only-bridge');
 assert.equal(r.analysis.pairVerified,true);
+assert.equal(r.analysis.researchOnlyBridge,true);
+assert.equal(r.analysis.underlyingDecision,'NO_PLAY');
 assert.equal(r.analysis.codeOwnedSemantics.operatorFollowingDayRuleVerified,true);
 assert.equal(r.analysis.codeOwnedSemantics.providerGhtBoundarySemanticsVerified,true);
 assert.equal(r.analysis.codeOwnedSemantics.conservativeMainGameRtpPct,93.03);
@@ -27,14 +29,18 @@ assert.equal(r.analysis.raceGate.structuredProspectiveRaceEvidenceVerified,false
 assert.equal(r.analysis.before.configSourceUrl,'https://launcher.betfair.es/initialResources/es_ES_desktop');
 assert.equal(r.analysis.before.tickerEndpoint,'https://tickers.playtech.example/new_jackpotxml.php');
 assert.equal(r.execution.decision,'NO_PLAY');
+assert.equal(r.execution.realMoneyAllowed,false);
 assert.equal(r.hardGuards.operatorSemanticsComeFromCodeOwnedEvidenceAnchors,true);
-assert.equal(r.hardGuards.stakeRequiresCodeOwnedIndependentReview,true);
+assert.equal(r.hardGuards.stakeRequiresExactCodeOwnedIndependentReviewArtifact,true);
+assert.equal(r.hardGuards.researchOnlyBridgeRequired,true);
+assert.equal(r.hardGuards.underlyingLegacyGreenCannotPropagate,true);
 assert.equal(r.hardGuards.callerRuleAndStakeVerificationBooleansNotAccepted,true);
 const serialized=JSON.stringify(r);
 for(const secret of ['secret-token','cookievalue','configured=secret','token=hidden','cacheBust=before','returnURL='])assert.equal(serialized.includes(secret),false);
 
 const withMenu=analyzeSafeHarPairText(har(1990,100,42,'bf_es',2000,'before'),har(2005,100.02,42,'bf_es',2000,'after',{availableTotalBets:[0.1,0.25,0.5]}),{decisionNowEpochSeconds:2010,stakeEUR:0.25,stakeReviewCommit:'a'.repeat(40)});
 assert.equal(withMenu.ok,true);
+assert.equal(withMenu.analysis.researchOnlyBridge,true);
 assert.equal(withMenu.analysis.stakeReview.reason,'STAKE_REVIEW_COMMIT_NOT_CODE_ALLOWLISTED');
 assert.deepEqual(withMenu.analysis.stakeReview.servedTotalStakeValuesEUR,[0.1,0.25,0.5]);
 assert.equal(withMenu.analysis.raceGate.reviewedStakeEUR,null);
@@ -52,6 +58,7 @@ const reset=analyzeSafeHarPairText(har(1990,100,42),har(2005,90,43),{decisionNow
 assert.equal(reset.ok,true);
 assert.equal(reset.analysis.underlyingScientificReason,'JACKPOT_WIN_COUNT_CHANGED');
 assert.equal(reset.execution.maxSpins,0);
+assert.equal(reset.execution.realMoneyAllowed,false);
 
 const malformed=analyzeSafeHarPairText('{bad',har(2005,100.02),{decisionNowEpochSeconds:2010});
 assert.equal(malformed.ok,false);
