@@ -1,18 +1,24 @@
 const VERSION='betfair-apmccoy-race-assumptions-review-v1';
+const CONTRACT_REVISION='v1.2-code-owned-artifact-identity';
 const SHA=/^[0-9a-f]{40}$/;
-// Empty until a complete prospective AP McCoy ledger and the statistical
-// assumptions used to interpret it are independently reviewed in a later commit.
-const APPROVED_RACE_ASSUMPTION_REVIEW_COMMITS=new Set();
+// Future entries map review commit -> exact canonical reviewed assumption identity.
+// Empty until a complete fixed-attempt AP McCoy ledger and its statistical
+// assumptions are independently reviewed.
+const APPROVED_RACE_ASSUMPTION_REVIEWS=new Map();
 const text=v=>typeof v==='string'&&v.trim()?v.trim():null;
 function execution(){return {decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0};}
-export function isApprovedBetfairApMcCoyRaceAssumptionReviewCommit(value){const s=text(value)?.toLowerCase();return !!s&&SHA.test(s)&&APPROVED_RACE_ASSUMPTION_REVIEW_COMMITS.has(s);}
-function fail(reason,extra={}){return {version:VERSION,valid:false,reason,completeProspectiveCycleLedgerVerified:false,binomialSamplingAssumptionJustified:false,currentCycleExchangeabilityVerified:false,independentRaceAssumptionsReviewed:false,usableForRaceBound:false,usableForExecution:false,execution:execution(),...extra};}
-function exactUniqueCycleIds(value){
-  if(!Array.isArray(value)||value.length<1)return null;
-  const ids=value.map(text);
-  if(ids.some(x=>!x)||new Set(ids).size!==ids.length)return null;
-  return ids;
-}
+function fail(reason,extra={}){return {version:VERSION,contractRevision:CONTRACT_REVISION,valid:false,reason,completeProspectiveCycleLedgerVerified:false,binomialSamplingAssumptionJustified:false,currentCycleExchangeabilityVerified:false,independentRaceAssumptionsReviewed:false,usableForRaceBound:false,usableForExecution:false,execution:execution(),...extra};}
+function exactUniqueCycleIds(value){if(!Array.isArray(value)||value.length<1)return null;const ids=value.map(text);if(ids.some(x=>!x)||new Set(ids).size!==ids.length)return null;return ids;}
+function artifactIdentity(v){return JSON.stringify([
+  text(v?.protocolId),text(v?.completeProspectiveLedgerCommit)?.toLowerCase()||null,
+  Array.isArray(v?.cycleIds)?v.cycleIds.map(text):null,text(v?.bindingScopeKey),text(v?.assumptionEvidenceId),
+  v?.samplingWindowFrozenBeforeFirstCycle===true,v?.allEligibleDistinctDailyGhtCyclesIncluded===true,
+  v?.failedShortAndAmbiguousCyclesRetained===true,v?.assumptionsSelectedUsingSurvivalOutcomes===false,
+  v?.completeProspectiveCycleLedgerVerified===true,v?.binomialSamplingAssumptionJustified===true,
+  v?.currentCycleExchangeabilityVerified===true
+]);}
+export function isApprovedBetfairApMcCoyRaceAssumptionReviewCommit(value){const s=text(value)?.toLowerCase();return !!s&&SHA.test(s)&&APPROVED_RACE_ASSUMPTION_REVIEWS.has(s);}
+export function isApprovedBetfairApMcCoyRaceAssumptionReviewArtifact(review){const commit=text(review?.reviewCommit)?.toLowerCase();if(!commit||!SHA.test(commit))return false;const expected=APPROVED_RACE_ASSUMPTION_REVIEWS.get(commit);return !!expected&&expected===artifactIdentity(review);}
 
 export function reviewBetfairApMcCoyRaceAssumptions({assumptions,reviewCommit}={}){
   const a=assumptions||{};
@@ -29,16 +35,15 @@ export function reviewBetfairApMcCoyRaceAssumptions({assumptions,reviewCommit}={
   if(a.binomialSamplingAssumptionJustified!==true)return fail('BINOMIAL_SAMPLING_ASSUMPTION_NOT_JUSTIFIED',{protocolId,completeProspectiveLedgerCommit:ledgerCommit,cycleIds,assumptionEvidenceId:rationaleId});
   if(a.currentCycleExchangeabilityVerified!==true)return fail('CURRENT_CYCLE_EXCHANGEABILITY_NOT_VERIFIED',{protocolId,completeProspectiveLedgerCommit:ledgerCommit,cycleIds,assumptionEvidenceId:rationaleId});
   const commit=text(reviewCommit)?.toLowerCase();if(!commit||!SHA.test(commit))return fail('VALID_RACE_ASSUMPTION_REVIEW_COMMIT_REQUIRED',{protocolId});
-  if(!isApprovedBetfairApMcCoyRaceAssumptionReviewCommit(commit))return fail('RACE_ASSUMPTION_REVIEW_COMMIT_NOT_CODE_ALLOWLISTED',{protocolId,reviewCommit:commit,completeProspectiveLedgerCommit:ledgerCommit,cycleIds,bindingScopeKey,assumptionEvidenceId:rationaleId});
+  const normalized={protocolId,completeProspectiveLedgerCommit:ledgerCommit,cycleIds,bindingScopeKey,assumptionEvidenceId:rationaleId,samplingWindowFrozenBeforeFirstCycle:true,allEligibleDistinctDailyGhtCyclesIncluded:true,failedShortAndAmbiguousCyclesRetained:true,assumptionsSelectedUsingSurvivalOutcomes:false,completeProspectiveCycleLedgerVerified:true,binomialSamplingAssumptionJustified:true,currentCycleExchangeabilityVerified:true};
+  const identity=artifactIdentity(normalized),approvedIdentity=APPROVED_RACE_ASSUMPTION_REVIEWS.get(commit);
+  if(!approvedIdentity)return fail('RACE_ASSUMPTION_REVIEW_COMMIT_NOT_CODE_ALLOWLISTED',{protocolId,reviewCommit:commit,completeProspectiveLedgerCommit:ledgerCommit,cycleIds,bindingScopeKey,assumptionEvidenceId:rationaleId});
+  if(approvedIdentity!==identity)return fail('RACE_ASSUMPTION_REVIEW_ARTIFACT_IDENTITY_MISMATCH',{protocolId,reviewCommit:commit,reviewArtifactIdentity:identity});
   return {
-    version:VERSION,contractRevision:'v1.1-exact-ledger-binding',valid:true,reason:'INDEPENDENT_AP_MCCOY_RACE_ASSUMPTIONS_REVIEW_APPROVED',protocolId,reviewCommit:commit,
-    completeProspectiveLedgerCommit:ledgerCommit,cycleIds,bindingScopeKey,assumptionEvidenceId:rationaleId,
-    samplingWindowFrozenBeforeFirstCycle:true,allEligibleDistinctDailyGhtCyclesIncluded:true,failedShortAndAmbiguousCyclesRetained:true,
-    assumptionsSelectedUsingSurvivalOutcomes:false,
-    completeProspectiveCycleLedgerVerified:true,binomialSamplingAssumptionJustified:true,binomialIidAssumptionJustified:true,currentCycleExchangeabilityVerified:true,
-    independentRaceAssumptionsReviewed:true,usableForRaceBound:true,usableForExecution:false,
-    scientificUse:'Code-owned review gate for the assumptions required to interpret the exact AP McCoy post-GHT survival ledger as a binomial race probability. The review is bound to one explicit prospective-ledger commit, the exact unique cycle IDs and one binding scope. The sampling window must have been frozen before the first cycle; every eligible distinct Daily GHT cycle must be included; failed, short and ambiguous cycles must be retained; and the sampling/exchangeability assumptions must be chosen independently of the observed survival outcomes. Caller booleans cannot close these assumptions because the review commit itself must be hard-pinned in code. This review does not select latency, approve stake, prove current jackpot state or authorize execution.',
+    version:VERSION,contractRevision:CONTRACT_REVISION,valid:true,reason:'INDEPENDENT_AP_MCCOY_RACE_ASSUMPTIONS_REVIEW_APPROVED_EXACT_IDENTITY',reviewCommit:commit,reviewArtifactIdentity:identity,
+    ...normalized,binomialIidAssumptionJustified:true,independentRaceAssumptionsReviewed:true,usableForRaceBound:true,usableForExecution:false,
+    scientificUse:'Code-owned review gate for the assumptions used to interpret the AP McCoy fixed-attempt ledger as a binomial race probability. The review commit is bound to the exact canonical assumption identity: full ledger commit, exact cycle IDs, binding, rationale and all sampling/exchangeability declarations. An approved SHA cannot be reused with altered assumptions or a different ledger.',
     execution:execution(),
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,codeOwnedReviewAllowlist:true,reviewAllowlistCurrentlyEmpty:APPROVED_RACE_ASSUMPTION_REVIEW_COMMITS.size===0,completeProspectiveLedgerCommitRequired:true,exactCycleLedgerIdentityRequired:true,bindingScopeRequired:true,samplingWindowFrozenBeforeFirstCycleRequired:true,allEligibleDistinctDailyGhtCyclesRequired:true,failedShortAmbiguousCyclesMustBeRetained:true,assumptionSelectionIndependentOfOutcomesRequired:true,binomialAssumptionMustBeReviewed:true,currentCycleExchangeabilityMustBeReviewed:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false}
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,codeOwnedReviewArtifactIdentity:true,reviewAllowlistCurrentlyEmpty:APPROVED_RACE_ASSUMPTION_REVIEWS.size===0,approvedShaCannotBeReusedWithAlteredAssumptions:true,completeProspectiveLedgerCommitRequired:true,exactCycleLedgerIdentityRequired:true,bindingScopeRequired:true,samplingWindowFrozenBeforeFirstCycleRequired:true,allEligibleDistinctDailyGhtCyclesRequired:true,failedShortAmbiguousCyclesMustBeRetained:true,assumptionSelectionIndependentOfOutcomesRequired:true,binomialAssumptionMustBeReviewed:true,currentCycleExchangeabilityMustBeReviewed:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false}
   };
 }
