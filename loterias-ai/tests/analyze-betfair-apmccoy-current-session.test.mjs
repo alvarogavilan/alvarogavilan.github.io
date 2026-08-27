@@ -1,0 +1,34 @@
+import assert from 'node:assert/strict';
+import {analyzeBetfairApMcCoyCurrentSessionHar} from '../scripts/analyze-betfair-apmccoy-current-session.mjs';
+
+const GAME='ap-mccoy-sporting-legends-cptn';
+const ts=Math.floor(Date.parse('2026-08-27T06:20:00Z')/1000);
+const launcher={startedDateTime:new Date((ts-2)*1000).toISOString(),request:{method:'GET',url:`https://launcher.betfair.es/?gameId=${GAME}&launchProduct=casino&mode=real&token=LAUNCH_SECRET`,headers:[{name:'Cookie',value:'sid=COOKIE_SECRET'}]},response:{status:200,content:{text:''}}};
+const config={startedDateTime:new Date((ts-1)*1000).toISOString(),request:{method:'GET',url:'https://launcher.betfair.es/initialResources/es_ES_desktop?token=CONFIG_SECRET',headers:[]},response:{status:200,content:{mimeType:'application/json',text:JSON.stringify({jackpotsCasino:'bf_es',jackpotsCasinoUrl:'https://tickers.playtech.example/new_jackpotxml.php?token=TICKER_CONFIG_SECRET',availableTotalBets:[0.10,0.25,0.50]})}}};
+const ticker={startedDateTime:new Date(ts*1000).toISOString(),request:{method:'GET',url:'https://tickers.playtech.example/new_jackpotxml.php?casino=bf_es&currency=EUR&game=sljp-1&local=0&token=TICKER_SECRET',headers:[]},response:{status:200,content:{mimeType:'text/xml',text:`<request casino="bf_es" currency="eur" game="sljp-1" startTimestamp="${ts-10}" execInterval="10"/><gamedata game="sljp-1" gamegroup="sljp" local="0" timestamp="${ts}" winc="42"><amount currency="EUR" guaranteedHitTime="${ts+100}" instancecode="es1" step="0.01" wins="1000">123.45</amount></gamedata>`}}};
+const r=analyzeBetfairApMcCoyCurrentSessionHar({log:{entries:[launcher,config,ticker]}},{sourceName:'ap-current.har'});
+assert.equal(r.valid,true);
+assert.equal(r.execution.decision,'NO_PLAY');
+assert.equal(r.execution.realMoneyAllowed,false);
+assert.equal(r.semantics.operatorFirstBetFollowingDayRuleVerified,true);
+assert.equal(r.semantics.conservativeMainGameRtpPct,93.03);
+assert.equal(r.closed.exactApMcCoyRealLauncherAndLatestConfigTickerBinding,true);
+assert.equal(r.closed.exactPrivateBetfairImsObserved,true);
+assert.equal(r.closed.freshGlobalEurDailySljp1State,true);
+assert.equal(r.closed.exactCurrentDailyAmountFromServer,true);
+assert.equal(r.closed.exactCurrentGuaranteedHitTimeFromServer,true);
+assert.equal(r.closed.strongServedTotalStakeMenuReviewCandidate,true);
+assert.equal(r.closed.captureEligibleForProspectivePostGhtLedger,true);
+assert.equal(r.servedSnapshot.expectedBetfairImsCasino,'bf_es');
+assert.equal(r.servedSnapshot.tickerEndpoint,'https://tickers.playtech.example/new_jackpotxml.php');
+assert.equal(r.servedSnapshot.configSourceUrl,'https://launcher.betfair.es/initialResources/es_ES_desktop');
+assert.equal(r.servedSnapshot.amount,123.45);
+assert.deepEqual(r.stakeDiscovery.candidates[0].numericValues,[0.1,0.25,0.5]);
+assert.equal(r.stillMandatory.servedTotalStakeIndependentReviewApproved,false);
+assert.equal(r.stillMandatory.realSameBindingCrossGhtUnawardedPair,false);
+assert.equal(r.stillMandatory.executionAuthorized,false);
+const serialized=JSON.stringify(r);
+for(const secret of ['LAUNCH_SECRET','COOKIE_SECRET','CONFIG_SECRET','TICKER_CONFIG_SECRET','TICKER_SECRET'])assert.equal(serialized.includes(secret),false);
+assert.equal(serialized.includes('?'),false);
+
+console.log('analyze-betfair-apmccoy-current-session.test.mjs: PASS');
