@@ -4,11 +4,12 @@ import {verifyBet365SportingExactPlayRouteProvenance} from '../edge-backend/src/
 import {verifyBet365SportingServedSljp1Binding} from '../edge-backend/src/bet365-sporting-served-sljp1-binding-v1.mjs';
 import {verifyBet365SportingServedTotalStake} from '../edge-backend/src/bet365-sporting-served-total-stake-v1.mjs';
 import {discoverBet365FrankServedRulesCandidate} from '../edge-backend/src/bet365-frank-served-rules-candidate-v1.mjs';
+import {buildBet365FrankServedSemanticsReviewCandidate} from '../edge-backend/src/bet365-frank-served-semantics-review-candidate-v1.mjs';
 import {buildBet365FrankProviderNetworkSemanticsCandidate} from '../edge-backend/src/bet365-frank-provider-network-semantics-candidate-v1.mjs';
 import {analyzeBet365SportingStructuredWebtickersRows} from '../edge-backend/src/bet365-sporting-webtickers-structured-row-v1.mjs';
 import {analyzeBet365SportingDualFeedCalibrationSample} from '../edge-backend/src/bet365-sporting-dual-feed-calibration-v1.mjs';
 
-const VERSION='analyze-bet365-frank-current-session-v1.4-provider-network-semantics';
+const VERSION='analyze-bet365-frank-current-session-v1.5-rtp-decomposition';
 const GAME_CODE='gpas_slfbruno_pop';
 const args=process.argv.slice(2);
 function execution(){return {decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0};}
@@ -23,6 +24,7 @@ else{
     const servedBinding=verifyBet365SportingServedSljp1Binding(har,{gameCode:GAME_CODE,sourceName});
     const servedStake=verifyBet365SportingServedTotalStake(har,{gameCode:GAME_CODE,sourceName,requiredStakeEUR:0.10});
     const servedRulesCandidate=discoverBet365FrankServedRulesCandidate(har,{sourceName});
+    const servedSemanticsReviewCandidate=buildBet365FrankServedSemanticsReviewCandidate(har,{sourceName});
     const providerNetworkSemanticsCandidate=buildBet365FrankProviderNetworkSemanticsCandidate(har,{sourceName});
     const modernStateCandidate=analyzeBet365SportingStructuredWebtickersRows(har,{gameCode:GAME_CODE,sourceName});
     const dualFeedCalibrationCandidate=analyzeBet365SportingDualFeedCalibrationSample(har,{gameCode:GAME_CODE,sourceName});
@@ -36,7 +38,8 @@ else{
         exactPlayRouteProviderProvenance:summary(provenance),
         servedSljp1TransportBinding:summary(servedBinding),
         servedTenCentTotalStake:summary(servedStake),
-        servedRuleAndAnySizeEligibilityCandidates:summary(servedRulesCandidate),
+        servedRuleEligibilityAndRtpCandidates:summary(servedRulesCandidate),
+        servedSemanticsReviewPackage:summary(servedSemanticsReviewCandidate),
         providerNetworkSemanticsBindingCandidate:summary(providerNetworkSemanticsCandidate),
         configuredModernStateCandidate:summary(modernStateCandidate),
         legacyVsModernCalibrationCandidate:summary(dualFeedCalibrationCandidate),
@@ -47,6 +50,7 @@ else{
         servedTenCentTotalStake:servedStake?.valid===true&&servedStake?.servedTenCentTotalStakeVerified===true,
         servedFollowingDayRuleTextCandidate:servedRulesCandidate?.valid===true&&servedRulesCandidate?.followingDayFirstBetRuleCandidateObserved===true,
         servedAnySizeEligibilityRuleTextCandidate:servedRulesCandidate?.valid===true&&servedRulesCandidate?.anySizeJackpotEligibilityCandidateObserved===true,
+        servedOperatorFundedJackpotRtpSeparationTextCandidate:servedRulesCandidate?.valid===true&&servedRulesCandidate?.operatorFundedJackpotRtpSeparationCandidateObserved===true,
         exactGlobalSljp1ProviderNetworkSemanticsBindingCandidate:providerNetworkSemanticsCandidate?.valid===true&&providerNetworkSemanticsCandidate?.providerNetworkSemanticsBindingReviewCandidate===true,
         uniqueStructuredModernSljp1Candidate:modernStateCandidate?.valid===true&&modernStateCandidate?.structuredSljp1RowCandidateCount===1,
         exactDualFeedStateVectorCalibrationSample:dualFeedCalibrationCandidate?.valid===true&&dualFeedCalibrationCandidate?.calibrationCandidate===true,
@@ -57,7 +61,11 @@ else{
         realCrossGhtUnawardedPairVerified:false,
         servedTenCentJackpotEligibilityVerified:false,
         bet365FollowingDayRuleAdoptionVerified:false,
+        bet365JackpotDoesNotAffectGameRtpVerified:false,
+        headlineRtpMayBeUsedAsBaseGameRtp:false,
         independentOperatorRuleTextReviewRequired:true,
+        independentAnySizeEligibilityTextReviewRequired:true,
+        independentRtpSeparationTextReviewRequired:true,
         independentProviderNetworkSemanticBindingReviewRequired:true,
         prospectivePostGhtSurvivalLedgerReviewed:false,
         independentlyFrozenActionLatencyRequired:true,
@@ -65,7 +73,7 @@ else{
         executionAuthorized:false,
       },
       execution:execution(),
-      hardGuards:{onlineOnly:true,nonPromoOnly:true,localOnly:true,passiveHarOnly:true,operatorOwnedRuleCandidatesNeedIndependentSemanticReview:true,providerNetworkBindingCandidateNeedIndependentSemanticReview:true,ruleCandidateCannotSelfVerifyAdoption:true,eligibilityCandidateCannotSelfVerifyTenCentJackpotEligibility:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false},
+      hardGuards:{onlineOnly:true,nonPromoOnly:true,localOnly:true,passiveHarOnly:true,operatorOwnedRuleCandidatesNeedIndependentSemanticReview:true,providerNetworkBindingCandidateNeedIndependentSemanticReview:true,headlineRtpCannotSetBaseLossWithoutReviewedBet365RtpDecomposition:true,ruleCandidateCannotSelfVerifyAdoption:true,eligibilityCandidateCannotSelfVerifyTenCentJackpotEligibility:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false},
     };
     process.stdout.write(`${JSON.stringify(result,null,2)}\n`);
   }catch(error){
