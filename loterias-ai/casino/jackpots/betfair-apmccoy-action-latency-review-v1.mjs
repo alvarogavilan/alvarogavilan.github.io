@@ -7,7 +7,7 @@ const APPROVED_ACTION_LATENCY_REVIEW_COMMITS=new Set();
 const finite=v=>{if(v===null||v===undefined||v===''||typeof v==='boolean')return null;const n=Number(v);return Number.isFinite(n)?n:null;};
 const text=v=>typeof v==='string'&&v.trim()?v.trim():null;
 function execution(){return {decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0};}
-function approved(v){const s=text(v)?.toLowerCase();return !!s&&SHA.test(s)&&APPROVED_ACTION_LATENCY_REVIEW_COMMITS.has(s);}
+export function isApprovedBetfairApMcCoyActionLatencyReviewCommit(value){const s=text(value)?.toLowerCase();return !!s&&SHA.test(s)&&APPROVED_ACTION_LATENCY_REVIEW_COMMITS.has(s);}
 function fail(reason,extra={}){return {version:VERSION,valid:false,reason,measuredActionLatencyVerified:false,latencyPolicyIndependentlyReviewed:false,usableForRaceWindow:false,usableForExecution:false,execution:execution(),...extra};}
 
 export function reviewBetfairApMcCoyActionLatency({measurement,reviewCommit}={}){
@@ -23,7 +23,7 @@ export function reviewBetfairApMcCoyActionLatency({measurement,reviewCommit}={})
   if(m.selectedUsingPostGhtSurvivalOutcomes!==false)return fail('LATENCY_SELECTION_MUST_BE_INDEPENDENT_OF_SURVIVAL_OUTCOMES',{measuredActionLatencySeconds:seconds,sampleCount,protocolId});
   const commit=text(reviewCommit)?.toLowerCase()||null;
   if(!commit||!SHA.test(commit))return fail('VALID_ACTION_LATENCY_REVIEW_COMMIT_REQUIRED',{measuredActionLatencySeconds:seconds,sampleCount,protocolId});
-  if(!approved(commit))return fail('ACTION_LATENCY_REVIEW_COMMIT_NOT_CODE_ALLOWLISTED',{reviewCommit:commit,measuredActionLatencySeconds:seconds,sampleCount,protocolId});
+  if(!isApprovedBetfairApMcCoyActionLatencyReviewCommit(commit))return fail('ACTION_LATENCY_REVIEW_COMMIT_NOT_CODE_ALLOWLISTED',{reviewCommit:commit,measuredActionLatencySeconds:seconds,sampleCount,protocolId});
   return {
     version:VERSION,valid:true,reason:'INDEPENDENT_AP_MCCOY_ACTION_LATENCY_REVIEW_APPROVED',
     reviewCommit:commit,freezeCommitSha:FREEZE_COMMIT_SHA,protocolId,method,sampleCount,measuredActionLatencySeconds:seconds,
