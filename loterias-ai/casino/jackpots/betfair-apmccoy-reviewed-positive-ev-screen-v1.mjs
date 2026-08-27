@@ -2,7 +2,7 @@ import {isApprovedBetfairApMcCoyAttemptLedgerReviewCommit} from './betfair-apmcc
 import {isApprovedBetfairApMcCoyRaceAssumptionReviewCommit} from './betfair-apmccoy-race-assumptions-review-v1.mjs';
 import {isApprovedBetfairApMcCoyActionLatencyReviewCommit} from './betfair-apmccoy-action-latency-review-v1.mjs';
 
-const VERSION='betfair-apmccoy-reviewed-positive-ev-screen-v1.3-fixed-seven-attempt-bound';
+const VERSION='betfair-apmccoy-reviewed-positive-ev-screen-v1.4-prior-activation-required';
 const BRIDGE_VERSION='betfair-sporting-har-overdue-bridge-v1.10-code-owned-latency-dryrun';
 const RACE_VERSION='betfair-apmccoy-reviewed-race-bound-v1.3-fixed-seven-attempt-denominator';
 const REQUIRED_SCHEDULED_ATTEMPTS=7;
@@ -26,6 +26,7 @@ export function evaluateBetfairApMcCoyReviewedPositiveEvScreen({overdueBridgeRes
 
   if(!race||race.version!==RACE_VERSION||race.valid!==true||race.reviewedRaceLowerBoundAvailable!==true||race.usableForRaceEvidence!==true)return fail('VALID_FIXED_ATTEMPT_AP_MCCOY_RACE_BOUND_REQUIRED');
   if(race.exactScheduledAttemptDenominatorVerified!==true||Number(race.scheduledAttemptCount)!==REQUIRED_SCHEDULED_ATTEMPTS||race.nonCycleAttemptsCountAsFailures!==true||race.ambiguousReviewedCyclesCountAsFailures!==true)return fail('COMPLETE_FIXED_SCHEDULED_ATTEMPT_DENOMINATOR_REQUIRED');
+  if(race.activationVerifiedBeforeFirstScheduledGht!==true||!text(race.activationReviewCommit)||!(finite(race.activatedAtEpochSeconds)>0))return fail('PRIOR_CODE_OWNED_ATTEMPT_PLAN_ACTIVATION_REQUIRED');
   const raceConfidence=finite(race.confidence);if(raceConfidence===null||raceConfidence<MIN_RACE_CONFIDENCE||raceConfidence>=1)return fail('RACE_CONFIDENCE_BELOW_REQUIRED_MINIMUM',{raceConfidence,minimumRaceConfidence:MIN_RACE_CONFIDENCE});
   if(!isApprovedBetfairApMcCoyAttemptLedgerReviewCommit(race.attemptLedgerReviewCommit))return fail('ATTEMPT_LEDGER_REVIEW_NOT_CODE_ALLOWLISTED',{attemptLedgerReviewCommit:race.attemptLedgerReviewCommit||null});
   if(!isApprovedBetfairApMcCoyRaceAssumptionReviewCommit(race.raceAssumptionReviewCommit))return fail('RACE_ASSUMPTION_REVIEW_NOT_CODE_ALLOWLISTED',{raceAssumptionReviewCommit:race.raceAssumptionReviewCommit||null});
@@ -58,10 +59,11 @@ export function evaluateBetfairApMcCoyReviewedPositiveEvScreen({overdueBridgeRes
     operator:'Betfair Spain',market:'ES',target:{title:'AP McCoy Sporting Legends',gameId:'ap-mccoy-sporting-legends-cptn'},
     bindingScopeKey:key,stakeEUR:stake,currentDailyJackpotEUR:jackpot,conservativeBaseRtpPct:requestedRtp,expectedBaseLossEUR,breakEvenFirstBetProbability,firstBetRaceProbabilityLowerBound:pLower,raceConfidence,
     feedAgeSeconds,measuredActionLatencySeconds,totalExposureSeconds,validatedRaceWindowSeconds:raceWindow,frozenSurvivalHorizonSeconds:frozenHorizon,
+    activationVerifiedBeforeFirstScheduledGht:true,activationReviewCommit:race.activationReviewCommit,activatedAtEpochSeconds:race.activatedAtEpochSeconds,
     exactScheduledAttemptDenominatorVerified:true,scheduledAttemptCount:REQUIRED_SCHEDULED_ATTEMPTS,attemptLedgerReviewCommit:race.attemptLedgerReviewCommit,completeProspectiveLedgerCommit:race.completeProspectiveLedgerCommit,
     reviewedPositiveEvScreenPassed,executionAdapterStillRequired:true,freshFinalRevalidationStillRequired:true,usableForExecution:false,
-    scientificUse:'Research-only AP McCoy positive-EV screen using the code-reviewed lower confidence bound over the complete fixed first seven scheduled Daily GHT opportunities. Every failed, short, invalid, missed and ambiguous attempt remains in the denominator, confidence is at least 95%, and the attempt-ledger, race-assumption and action-latency reviews must all be code-allowlisted. Even a positive screen cannot authorize a wager: a separate fresh final same-binding revalidation and execution contract remain mandatory.',
+    scientificUse:'Research-only AP McCoy positive-EV screen using a code-owned activation fixed before the first scheduled GHT and the lower confidence bound over exactly the first seven scheduled Daily GHT opportunities. Every failed, short, invalid, missed and ambiguous attempt remains in the denominator, confidence is at least 95%, and the attempt-ledger, race-assumption and action-latency reviews must all be code-allowlisted. Even a positive screen cannot authorize a wager: a separate fresh final same-binding revalidation and execution contract remain mandatory.',
     execution:execution(),
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,fixedSevenScheduledAttemptDenominatorRequired:true,minimumRaceConfidence95Pct:true,codeOwnedAttemptLedgerReviewRequired:true,codeOwnedRaceAssumptionReviewRequired:true,codeOwnedActionLatencyReviewRequired:true,exactCurrentPostGhtStateRequired:true,codeReviewedStakeRequired:true,exactBindingScopeEqualityRequired:true,failedShortInvalidMissedAttemptsRemainInDenominator:true,optionalStoppingForbidden:true,reviewedRaceWindowMustFitFrozenSurvivalHorizon:true,conservativeRtpFloorRequired:true,currentExposureMustFitReviewedRaceWindow:true,positiveEvScreenIsNotExecutionAuthority:true,freshFinalRevalidationStillRequired:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false}
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,priorCodeOwnedActivationRequired:true,activationMustPrecedeFirstScheduledGht:true,fixedSevenScheduledAttemptDenominatorRequired:true,minimumRaceConfidence95Pct:true,codeOwnedAttemptLedgerReviewRequired:true,codeOwnedRaceAssumptionReviewRequired:true,codeOwnedActionLatencyReviewRequired:true,exactCurrentPostGhtStateRequired:true,codeReviewedStakeRequired:true,exactBindingScopeEqualityRequired:true,failedShortInvalidMissedAttemptsRemainInDenominator:true,optionalStoppingForbidden:true,reviewedRaceWindowMustFitFrozenSurvivalHorizon:true,conservativeRtpFloorRequired:true,currentExposureMustFitReviewedRaceWindow:true,positiveEvScreenIsNotExecutionAuthority:true,freshFinalRevalidationStillRequired:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false}
   };
 }
