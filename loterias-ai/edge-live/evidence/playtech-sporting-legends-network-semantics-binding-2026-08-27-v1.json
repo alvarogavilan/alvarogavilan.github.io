@@ -1,0 +1,118 @@
+{
+  "version": "playtech-sporting-legends-network-semantics-binding-2026-08-27-v1",
+  "generatedAtDate": "2026-08-27",
+  "status": "PROVIDER_NETWORK_RULE_DOCUMENTED_RUNTIME_BINDING_REQUIRED_NO_PLAY",
+  "scope": "ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "question": "Is first-bet-following-day / any-size eligibility merely a Bobby-title rule, or a documented Sporting Legends provider-network rule that can be bound to a current Frank bet365 sljp-1 session without cross-operator transfer?",
+  "primaryProviderEvidence": {
+    "bobbyGeorgeTechnicalManual": {
+      "url": "https://clientzone.betconstruct.com/media/download/801cbj/Bobby%20George%E2%84%A2%20Sporting%20Legends%E2%84%A2.pdf",
+      "publisher": "Playtech Software Limited",
+      "documentDate": "2021-10",
+      "relevantSection": "Sporting Legends Jackpot / Jackpot Ticker Specification",
+      "documentedClaims": {
+        "dailyGuaranteedWithinTickerTime": true,
+        "weeklyGuaranteedWithinTickerTime": true,
+        "anyBetAnySizeCanWinDailyWeeklyMega": true,
+        "jackpotsLinkedToSeveralGames": true,
+        "gamesAvailableThroughMultipleCasinos": true,
+        "jackpotsCanBeWonInAnyLinkedGameAtAnyParticipatingCasino": true,
+        "ifNoGameplayAtMandatoryDailyOrWeeklyWinTimeFirstBetFollowingDayTriggersJackpot": true,
+        "sportingLegendsJackpotUsesGuaranteedHitTime": true,
+        "dailyTickerCode": "sljp-1",
+        "weeklyTickerCode": "sljp-2",
+        "megaTickerCode": "sljp-3",
+        "licenseesUseOwnRelevantInstanceNamesAndTickerUrls": true
+      },
+      "interpretationBoundary": "The first-bet-following-day sentence sits inside the shared Sporting Legends Jackpot section immediately after the document states that the jackpots are linked to several games and participating casinos. The ticker section maps the timed levels to sljp-1/sljp-2 and explicitly distinguishes licensee-specific instance/ticker routing from the shared jackpot codes. This is strong provider-network semantics, not evidence of a bet365-specific help-page wording."
+    },
+    "jackpotTickerGameCodeGuide": {
+      "url": "https://www.scribd.com/document/957977470/Game-Codes-for-the-Jackpot-Ticker-System",
+      "classification": "Playtech proprietary/confidential jackpot ticker game-code guide surfaced publicly",
+      "sportingLegendsJackpotBetSize": "variable",
+      "dailyCode": "sljp-1",
+      "weeklyCode": "sljp-2",
+      "megaCode": "sljp-3",
+      "frankBrunoLinkedGameCode": "gpas_slfbruno_pop",
+      "bobbyGeorgeLinkedGameCode": "gpas_bgeorge_pop",
+      "brianLaraLinkedGameCode": "gpas_slblara_pop",
+      "interpretationBoundary": "The guide links Frank, Bobby and Brian to the same Sporting Legends jackpot code family. This alone does not prove a current operator serves that generation; runtime exact binding is mandatory."
+    },
+    "playtechCorporateLaunchArticle": {
+      "url": "https://www.playtech.com/playtech-launches-spectacular-sporting-legends-games-suite/",
+      "publishedDate": "2018-02-06",
+      "claims": {
+        "sportingLegendsIsLinkedTimedJackpotSuite": true,
+        "jackpotsGuaranteedToBeWonEveryDay": true,
+        "jackpotCanTriggerOnAnySpinAndAnyStake": true
+      },
+      "role": "Public first-party corroboration only; technical manual controls exact network semantics."
+    }
+  },
+  "currentBet365FrankSurface": {
+    "exactPublicPlayUrl": "https://casino.bet365.es/play/FrankBrunoSL",
+    "exactPublicPlayRouteObservedCurrent": true,
+    "officialSpainRtpTable": "https://content001.bet365.es/help/docs/es/rtptables/currentpdf/Spanishv2.pdf",
+    "officialPublishedMinimumBetEUR": 0.10,
+    "officialPublishedRtpPct": 95.92,
+    "publicSurfaceDoesNotProveServedSljp1": true
+  },
+  "runtimeBindingContract": {
+    "requiredModule": "loterias-ai/edge-backend/src/bet365-sporting-served-sljp1-binding-v1.mjs",
+    "requiredExactPlayPath": "/play/FrankBrunoSL",
+    "requiredProviderGameCode": "gpas_slfbruno_pop",
+    "requiredBet365OwnedJackpotConfiguration": true,
+    "requiredCurrency": "EUR",
+    "requiredLocal": 0,
+    "requiredDailyCode": "sljp-1",
+    "requiredProviderScope": "GLOBAL",
+    "requiredNetwork": "SPORTING_LEGENDS",
+    "requiredTier": "DAILY",
+    "requiredFreshGuaranteedHitTime": true,
+    "whyLocalZeroMatters": "The project parser classifies local=0 as the global provider scope. A future exact Frank session must demonstrate this rather than inherit it from documentation."
+  },
+  "scientificInference": {
+    "providerNetworkFirstBetFollowingDayRuleDocumented": true,
+    "providerNetworkAnySizeEligibilityDocumented": true,
+    "providerNetworkVariableBetSizeDocumented": true,
+    "frankProviderCodeListedInSameNetwork": true,
+    "currentBet365FrankExactPublicRouteExists": true,
+    "exactCurrentBet365FrankGlobalSljp1RuntimeBindingVerified": false,
+    "servedTenCentTotalStakeVerified": false,
+    "providerNetworkSemanticsBoundToCurrentBet365FrankSession": false,
+    "materialConclusion": "If a current passive bet365 Spain Frank session independently closes the exact runtime contract above, applying the Playtech Sporting Legends shared-network semantics would no longer be a cross-operator or mere same-family transfer: it would be a semantic binding to the exact provider network code and GLOBAL timed tier actually served. Because this conclusion is economically decisive, the project still requires an independent review of the runtime artifact and this provider-network interpretation before marking the following-day rule or 0.10 jackpot eligibility verified.",
+    "bet365OwnedRuleTextWouldBeStrongAdditionalCorroborationButNotSolePossibleProofPath": true
+  },
+  "forbiddenInferences": [
+    "Frank is timed merely because its code appears in the provider guide",
+    "bet365 serves sljp-1 merely because it offers a Sporting Legends category",
+    "0.10 is jackpot-eligible merely because the RTP PDF publishes a 0.10 minimum",
+    "William Hill or Betfred rules can be transferred to bet365",
+    "provider-network semantics can be used when the served runtime is a different Mini/Midi/Mega or local jackpot architecture"
+  ],
+  "nextDecisiveEvidence": [
+    "exact authenticated/passive Frank session proving gpas_slfbruno_pop -> bet365-owned configured EUR GLOBAL local=0 sljp-1",
+    "explicit served EUR total-stake menu containing 0.10",
+    "independent review that the exact bound runtime is the provider network described by the Playtech Sporting Legends technical material",
+    "real same-binding cross-GHT pair",
+    "prospective complete post-GHT survival ledger and independently frozen action latency"
+  ],
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "exactRuntimeBindingRequired": true,
+    "independentSemanticBindingReviewRequired": true,
+    "crossOperatorTransferForbidden": true,
+    "differentJackpotGenerationTransferForbidden": true,
+    "noWagerProbe": true,
+    "noAutomaticBetting": true,
+    "realMoneyAllowed": false
+  }
+}
