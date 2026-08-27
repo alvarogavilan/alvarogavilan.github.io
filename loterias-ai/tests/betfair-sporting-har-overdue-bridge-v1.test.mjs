@@ -28,7 +28,7 @@ assert.equal(r.reason,'LATEST_REAL_CASINO_LAUNCHER_NOT_AP_MCCOY');
 assert.equal(r.hardGuards.staleApMcCoyLauncherCannotAuthorizeLaterDifferentGameTicker,true);
 
 const fake='a'.repeat(40);
-const latencyMeasurement={measuredActionLatencySeconds:2.4,sampleCount:20,protocolId:'apmccoy-manual-action-latency-v1',method:'manual-click-to-request-observation',selectedUsingPostGhtSurvivalOutcomes:false};
+const latencyMeasurement={measuredDispatchLatencySeconds:2.0,networkAllowanceSeconds:0.4,measuredActionLatencySeconds:2.4,sampleCount:20,protocolId:'apmccoy-manual-action-latency-v1',method:'non-wager manual rehearsal plus passive same-origin RTT',startEvent:'VALIDATED_SERVER_STATE_AVAILABLE_TO_DECISION_LOGIC',endEvent:'MANUAL_WAGER_REQUEST_DISPATCH_OBSERVED_LOCALLY',networkAllowanceBasis:'PASSIVE_SAME_ORIGIN_FULL_RTT_UPPER_BOUND',networkAllowanceDerivedFromPassiveTrafficOnly:true,wagerProbeUsed:false,selectedUsingPostGhtSurvivalOutcomes:false};
 r=evaluateBetfairSportingHarOverduePair({
   beforeHar:har(1990,100,42,'bf_es',2000,'before'),
   afterHar:har(2005,100.02,42,'bf_es',2000,'after'),
@@ -37,7 +37,6 @@ r=evaluateBetfairSportingHarOverduePair({
   stakeReviewCommit:fake,
   actionLatencyMeasurement:latencyMeasurement,
   actionLatencyReviewCommit:fake,
-  // These legacy fields are deliberately ignored by the bridge.
   measuredActionLatencyVerified:true,
   measuredActionLatencySeconds:0.01,
   prospectiveDryRunCycleVerified:true,
@@ -50,6 +49,7 @@ assert.equal(r.currentDailyAmountExactVerifiedFromValidatedServerSnapshot,true);
 assert.equal(r.stakeAtDecisionExactVerifiedFromCodeOwnedReview,false);
 assert.equal(r.measuredActionLatencyVerifiedFromCodeOwnedReview,false);
 assert.equal(r.actionLatencyReview.valid,false);
+assert.equal(r.actionLatencyReview.contractRevision,'v1.1-dispatch-plus-passive-rtt');
 assert.equal(r.actionLatencyReview.reason,'ACTION_LATENCY_REVIEW_COMMIT_NOT_CODE_ALLOWLISTED');
 assert.equal(r.prospectiveDryRunCycleDerivedFromStructuredRaceEvidence,false);
 assert.equal(r.finalEvaluation.executionGates.measuredActionLatencyVerified,false);
@@ -62,12 +62,7 @@ assert.equal(r.decision,'NO_PLAY');
 assert.equal(r.realMoneyAllowed,false);
 assert.equal(r.maxSpins,0);
 
-const withMenu=evaluateBetfairSportingHarOverduePair({
-  beforeHar:har(1990,100,42,'bf_es',2000,'before'),
-  afterHar:har(2005,100.02,42,'bf_es',2000,'after',{availableTotalBets:[0.10,0.25,0.50]}),
-  decisionNowEpochSeconds:2010,stakeEUR:0.25,stakeReviewCommit:fake,
-  actionLatencyMeasurement:latencyMeasurement,actionLatencyReviewCommit:fake,
-});
+const withMenu=evaluateBetfairSportingHarOverduePair({beforeHar:har(1990,100,42,'bf_es',2000,'before'),afterHar:har(2005,100.02,42,'bf_es',2000,'after',{availableTotalBets:[0.10,0.25,0.50]}),decisionNowEpochSeconds:2010,stakeEUR:0.25,stakeReviewCommit:fake,actionLatencyMeasurement:latencyMeasurement,actionLatencyReviewCommit:fake});
 assert.equal(withMenu.valid,true);
 assert.equal(withMenu.stakeReview.reason,'STAKE_REVIEW_COMMIT_NOT_CODE_ALLOWLISTED');
 assert.deepEqual(withMenu.stakeReview.servedTotalStakeValuesEUR,[0.1,0.25,0.5]);
