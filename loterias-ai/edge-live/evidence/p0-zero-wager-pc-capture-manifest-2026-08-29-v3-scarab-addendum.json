@@ -1,0 +1,26 @@
+{
+  "version":"p0-zero-wager-pc-capture-manifest-2026-08-29-v3-scarab-addendum",
+  "generatedAt":"2026-08-29T13:34:00+02:00",
+  "status":"FROZEN_PASSIVE_CAPTURE_ADDENDUM_NO_PLAY",
+  "extends":"loterias-ai/edge-live/evidence/p0-zero-wager-pc-capture-manifest-2026-08-29-v2-regal-addendum.json",
+  "realMoneyAllowed":false,
+  "newLane":{
+    "lane":"betfair-scarab",
+    "target":"Betfair España — Scarab",
+    "exactObservedLauncherGameId":"scarab-aig",
+    "captureMode":"ZERO_WAGER_PASSIVE_ONLY",
+    "firstCaptureGoal":[
+      "exact IGT/provider/build/version fingerprint",
+      "exact theoretical RTP and served total-bet/denomination menu",
+      "current spin number within the ten-spin cycle before any wager",
+      "all visible gold-border positions before any wager",
+      "state for each bet level/denomination if selectable without spinning",
+      "zero-wager reload comparison for account-private persistence",
+      "passive state/config payload keys without exposing credentials"
+    ],
+    "cannotBeClosedByOneCapture":["positive state-specific EV","cross-player state scope","prospective profitability","execution authorization"],
+    "analysisCommand":"node loterias-ai/scripts/analyze-betfair-scarab-har.mjs betfair-scarab.har"
+  },
+  "hardGuards":{"physicalReferenceStrategyCannotSetSpainThreshold":true,"initialStateCannotBeAssumedPositiveEv":true,"oneAccountCannotProveCrossPlayerScope":true,"noMultiAccountStrategy":true,"noWagerProbe":true,"noAutomaticBetting":true,"realMoneyAllowed":false},
+  "execution":{"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
