@@ -1,0 +1,73 @@
+{
+  "version": "ap-regional-variant-and-trigger-distribution-guards-2026-08-29-v1",
+  "generatedAt": "2026-08-29T13:55:00+02:00",
+  "status": "PERSISTENT_RESEARCH_GUARDS_NO_PLAY",
+  "realMoneyAllowed": false,
+  "guards": [
+    {
+      "id": "OCEAN_MAGIC_REGIONAL_PERSISTENCE_DIVERGENCE",
+      "target": "IGT Ocean Magic",
+      "finding": "Same-title deployments can differ materially in whether bubble state persists. Public AP analysis documents persistent-state versions, while UK-player reports describe versions where bubbles do not persist to the next spin or persistent features clear after cashout/idle conditions.",
+      "sources": [
+        {
+          "url": "https://wizardofodds.com/games/slots/ocean-magic/",
+          "class": "INDEPENDENT_MATHEMATICAL_ANALYSIS",
+          "use": "Confirms variable-state/persistent-bubble mechanic exists in analyzed deployment."
+        },
+        {
+          "url": "https://wizardofvegas.com/forum/gambling/slots/38543-slot-machine-payback/",
+          "class": "PLAYER_AND_FORMER_DESIGNER_DISCUSSION",
+          "use": "Documents UK-version reports where bubbles do not persist and notes persistent features can be configured to clear after cashout/idle state."
+        },
+        {
+          "url": "https://wizardofvegas.com/forum/off-topic/general/41362-slot-ap-is-dying-in-my-area/",
+          "class": "RECENT_AP_COMMUNITY_DISCUSSION",
+          "use": "Documents reports that UK variants of US persistent-state games can have the persistent feature removed."
+        }
+      ],
+      "edgeRule": {
+        "sameTitleProviderAndRtpDoNotProvePersistence": true,
+        "exactSpanishServedPersistenceRuleRequired": true,
+        "preWagerStateVisibilityRequired": true,
+        "crossPlayerOrExactAccountStateScopeMustBeProven": true,
+        "foreignThresholdTransferAllowed": false
+      }
+    },
+    {
+      "id": "MHB_TRIGGER_DISTRIBUTION_OR_CONSERVATIVE_BOUND_REQUIRED",
+      "target": "Must-Hit-By / Must-Win-By progressives",
+      "finding": "A hard ceiling makes cost bounded, but meter closeness alone is insufficient for exact EV. Different games can use materially different hidden-trigger distributions, so midpoint assumptions are not universal.",
+      "sources": [
+        {
+          "url": "https://runtheslots.com/mechanics/must-hit-by",
+          "class": "SPECIALIST_AP_GUIDE",
+          "use": "Explains standard MHB ceiling/floor math and explicitly conditions midpoint spend on a uniform-trigger assumption."
+        },
+        {
+          "url": "https://slotfarmers.club/advantage-play/must-hit-by-progressives",
+          "class": "SPECIALIST_AP_GUIDE",
+          "use": "Warns that trigger distributions can differ by manufacturer and may cluster near the cap."
+        },
+        {
+          "url": "https://wizardofvegas.com/forum/gambling/slots/31946-advantage-plays-in-slot-machines/",
+          "class": "LONG_RUNNING_AP_DISCUSSION",
+          "use": "Warns against assuming a meter at a high percentage of the cap is automatically positive EV when trigger behavior may be concentrated near the top."
+        }
+      ],
+      "edgeRule": {
+        "uniformTriggerCannotBeAssumed": true,
+        "exactTriggerDistributionOrConservativeWorstCaseCostBoundRequiredForExactEvResearch": true,
+        "qualifyingStakeRequired": true,
+        "baseGameCostRequired": true,
+        "currentMeterAndExactCeilingRequired": true,
+        "candidateAdmissionNeverAuthorizesExecution": true
+      }
+    }
+  ],
+  "execution": {
+    "decision": "NO_PLAY",
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  }
+}
