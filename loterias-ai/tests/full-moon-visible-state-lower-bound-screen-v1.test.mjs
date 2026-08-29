@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {screenMoonCollectNextSpin,screenMoonPushNextSpin,summarizeVisibleMoonState} from '../edge-backend/src/full-moon-visible-state-lower-bound-screen-v1.mjs';
+const moons=[{type:'BONUS'},{type:'BONUS'},{type:'MONEY',valueX:5},{type:'MULTIPLIER'},{type:'MONEY',valueX:.5}];
+let r=summarizeVisibleMoonState({totalStakeEUR:1,moons});
+assert.equal(r.visibleMoonPayoutFloorX,26);
+r=screenMoonCollectNextSpin({totalStakeEUR:1,moons});
+assert.equal(r.metrics.collectPayoutFloorEUR,26.5);
+assert.ok(r.metrics.breakEvenTriggerProbabilityPct<4);
+assert.equal(r.execution.realMoneyAllowed,false);
+r=screenMoonCollectNextSpin({totalStakeEUR:1,probabilityAtLeastOneNewQualifyingMoonNextSpin:.05,moons});
+assert.equal(r.practiceVerdict,'CONSERVATIVE_POSITIVE_MOON_COLLECT_ONE_SPIN_CANDIDATE');
+r=screenMoonPushNextSpin({totalStakeEUR:1,probabilityNextMoonCompletesMoonPush:.03,moons});
+assert.equal(r.practiceVerdict,'NON_POSITIVE_MOON_PUSH_LOWER_BOUND');
+console.log('full-moon-visible-state-lower-bound-screen-v1.test.mjs: PASS');
