@@ -1,0 +1,7 @@
+import assert from 'node:assert/strict';
+import {evaluateRepetitionJackpot,liveG24ResearchTemplate} from '../edge-backend/src/roulette-repetition-jackpot-screen-v1.mjs';
+let r=evaluateRepetitionJackpot({wheelSize:37,currentStreakLength:2,triggerLength:3,qualifyingStakeEUR:1,baseHouseEdgePct:2.7027027027,jackpotAwardFloorEUR:10,captureProbability:1,exactEligibilityRuleVerified:true,exactPayoutFloorVerified:true,exactQualifyingStakeVerified:true,fairIndependentWheelAssumptionVerified:true});
+assert.equal(r.ok,true);assert.equal(r.metrics.nextSpinClosesJackpot,true);assert.equal(r.metrics.nextSpinJackpotProbability,Number((1/37).toFixed(12)));assert.equal(r.practiceVerdict,'POSITIVE_ONE_SPIN_OVERLAY_IN_PRACTICE');assert.equal(r.execution.realMoneyAllowed,false);assert.ok(r.metrics.breakEvenAwardFloorEUR>0.99&&r.metrics.breakEvenAwardFloorEUR<1.01);
+r=evaluateRepetitionJackpot({wheelSize:37,currentStreakLength:1,triggerLength:3,qualifyingStakeEUR:1,baseHouseEdgePct:2.7027027027,jackpotAwardFloorEUR:100,captureProbability:1,exactEligibilityRuleVerified:true,exactPayoutFloorVerified:true,exactQualifyingStakeVerified:true,fairIndependentWheelAssumptionVerified:true});assert.equal(r.practiceVerdict,'WAIT_FOR_TRIGGER_MINUS_ONE_STREAK');assert.equal(r.metrics.nextSpinJackpotProbability,0);
+r=liveG24ResearchTemplate({jackpotAwardFloorEUR:100});assert.equal(r.practiceVerdict,'BLOCKED_UNVERIFIED_EXECUTION_INPUTS');assert.equal(r.execution.decision,'NO_PLAY');
+console.log('roulette-repetition-jackpot-screen-v1.test.mjs: PASS');
