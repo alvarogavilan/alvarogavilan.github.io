@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {analyzeEdgeP0HarText} from '../scripts/analyze-edge-p0-har.mjs';
 
 const raw=JSON.stringify({log:{entries:[]}});
-const lanes=['apmccoy','frank','ultimate-vp','ocean-magic'];
+const lanes=['apmccoy','frank','ultimate-vp','magic-nile','scarab','hexbreak3r','ocean-magic'];
 for(const lane of lanes){
   const out=analyzeEdgeP0HarText(raw,{lane,sourceName:`${lane}.har`});
   assert.equal(out.ok,true,`${lane} should route through the unified offline dispatcher`);
@@ -17,6 +17,7 @@ for(const lane of lanes){
   assert.equal(out.hardGuards.noWagerProbe,true);
   assert.equal(out.hardGuards.reviewCandidatesCannotSelfApprove,true);
   assert.equal(out.hardGuards.laneSpecificSummaryRequired,true);
+  assert.equal(out.hardGuards.crossLaneGateTransferForbidden,true);
 }
 const bad=analyzeEdgeP0HarText(raw,{lane:'regal-riches',sourceName:'regal.har'});
 assert.equal(bad.ok,false);
@@ -25,7 +26,7 @@ assert.equal(bad.execution.decision,'NO_PLAY');
 assert.equal(bad.execution.realMoneyAllowed,false);
 assert.deepEqual(bad.supportedLanes,lanes);
 
-const entry=(url,text)=>({request:{url,headers:[]},response:{status:200,content:{mimeType:'text/plain',text}}});
+const entry=(url,text,mimeType='text/plain')=>({request:{url,headers:[]},response:{status:200,content:{mimeType,text}}});
 const oceanRaw=JSON.stringify({log:{entries:[
   entry('https://www.enracha.es/juegos/ocean-magic','Ocean Magic'),
   entry('https://games.example/config','Ocean Magic IGT RTP 92.18 minimum 0.50 maximum 250'),
@@ -37,8 +38,43 @@ assert.equal(ocean.closed.exactTargetSessionObserved,true);
 assert.equal(ocean.closed.configurationCandidateObserved,true);
 assert.equal(ocean.closed.persistentStateCandidateObserved,true);
 assert.equal(ocean.closed.crossPlayerPersistenceVerified,false);
-assert.equal(Object.hasOwn(ocean.closed,'servedRuleReviewCandidatesFound'),false,'Ocean Magic must never receive the Ultimate VP summary shape just because targetPageObserved=true');
-assert.equal(ocean.execution.decision,'NO_PLAY');
-assert.equal(ocean.execution.realMoneyAllowed,false);
+assert.equal(Object.hasOwn(ocean.closed,'servedRuleReviewCandidatesFound'),false);
+
+const betfairLauncher=gameId=>`https://launcher.betfair.es/?RPBucket=casino&dataChannel=casino&gameId=${gameId}&launchProduct=casino&mode=real`;
+const magicRaw=JSON.stringify({log:{entries:[
+  entry(betfairLauncher('magic-of-nile-aig'),'launcher'),
+  entry('https://game.example/help','Magic of the Nile IGT obelisks gems red blue green persistent per bet level RTP 96.02')
+]}});
+const magic=analyzeEdgeP0HarText(magicRaw,{lane:'magic-nile',sourceName:'magic.har'});
+assert.equal(magic.closed.exactTargetLauncherObserved,true);
+assert.equal(magic.closed.providerIgtReviewCandidateObserved,true);
+assert.equal(magic.closed.gemStateReviewCandidateObserved,true);
+assert.equal(magic.closed.stateSpecificEvVerified,false);
+
+const scarabRaw=JSON.stringify({log:{entries:[
+  entry(betfairLauncher('scarab-aig'),'launcher'),
+  entry('https://game.example/help','Scarab IGT 10-spin cycle gold border persistent state denomination bet level')
+]}});
+const scarab=analyzeEdgeP0HarText(scarabRaw,{lane:'scarab',sourceName:'scarab.har'});
+assert.equal(scarab.closed.exactTargetLauncherObserved,true);
+assert.equal(scarab.closed.providerIgtReviewCandidateObserved,true);
+assert.equal(scarab.closed.cycleStateReviewCandidateObserved,true);
+assert.equal(scarab.closed.currentStatePositiveEvVerified,false);
+
+const hexRaw=JSON.stringify({log:{entries:[
+  entry(betfairLauncher('hexbreak3r-aig'),'launcher'),
+  entry('https://game.example/help','Hexbreak3r IGT expanding reel horseshoe Luck Zone progressive reel 3 persistent per bet level RTP')
+]}});
+const hex=analyzeEdgeP0HarText(hexRaw,{lane:'hexbreak3r',sourceName:'hex.har'});
+assert.equal(hex.closed.exactTargetLauncherObserved,true);
+assert.equal(hex.closed.exactSpainGameIdPubliclyVerified,true);
+assert.equal(hex.closed.providerIgtReviewCandidateObserved,true);
+assert.equal(hex.closed.reelStateReviewCandidateObserved,true);
+assert.equal(hex.closed.stateSpecificEvVerified,false);
+
+for(const out of [ocean,magic,scarab,hex]){
+  assert.equal(out.execution.decision,'NO_PLAY');
+  assert.equal(out.execution.realMoneyAllowed,false);
+}
 
 console.log('analyze-edge-p0-har-v1.test.mjs PASS');
