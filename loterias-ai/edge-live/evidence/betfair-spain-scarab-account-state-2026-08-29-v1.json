@@ -1,0 +1,72 @@
+{
+  "version": "betfair-spain-scarab-account-state-2026-08-29-v1",
+  "generatedAt": "2026-08-29T13:28:00+02:00",
+  "status": "CURRENT_BETFAIR_SPAIN_IGT_SCARAB_LAUNCHER_VERIFIED_ACCOUNT_STATE_MODEL_REQUIRED_NO_PLAY",
+  "scope": "ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "realMoneyAllowed": false,
+  "target": {
+    "operator": "Betfair Spain",
+    "title": "Scarab",
+    "providerCatalogSection": "IGT",
+    "exactObservedLauncherGameId": "scarab-aig",
+    "launcherHost": "https://launcher.betfair.es/",
+    "launcherMode": "real",
+    "launcherRpBucket": "casino",
+    "launcherDataChannel": "casino",
+    "observedInfoRoute": "https://casino.betfair.es/en-es/game/scarab-aig"
+  },
+  "currentSpainEvidence": {
+    "currentBetfairSpainIgtCatalogPresenceVerified": true,
+    "exactRealLauncherBindingObserved": true,
+    "betfairMonthlyPayoutPresenceJune2026": true,
+    "betfairMonthlyPayoutPresenceJuly2026": true,
+    "julyObservedPayoutPct": 79.70,
+    "observedPayoutIsStatisticalNotTheoretical": true,
+    "observedPayoutForbiddenForExecutionRtp": true
+  },
+  "manufacturerAndMathMechanic": {
+    "igtSource": "https://www.igtaustralia.com.au/games/scarab/",
+    "wizardSource": "https://wizardofodds.com/games/slots/scarab/",
+    "cycleSpins": 10,
+    "goldBorderPositionsPersistWithinCycle": true,
+    "goldBordersConvertToWildOnSpin10": true,
+    "stateResetsBeforeNextCycle": true,
+    "betLevelsTrackIndependentStateInDocumentedConfigurations": true,
+    "physicalReferenceBetCredits": [75,150,225,300,375],
+    "physicalReferenceStrategy": {
+      "afterGames1To4": "At least two accumulated future-wild positions in reels 1-3",
+      "afterGames5To9": "At least three accumulated future-wild positions in reels 1-3",
+      "transferToBetfairSpainAllowed": false
+    }
+  },
+  "onlineSpecificWarning": {
+    "source": "https://wizardofvegas.com/forum/gambling/slots/41623-does-ev-exist-online/",
+    "observationDate": "2026-08-24",
+    "reportedOnlineStateScope": "PER_USER_PER_DENOMINATION",
+    "reportedCrossPlayerTakeoverAvailable": false,
+    "reportedProviderCountermeasure": "Online Scarab starting states were modified to reduce/prevent advantageous fresh-state exploitation.",
+    "claimRequiresExactBetfairSpainVerification": true,
+    "physicalCrossPlayerModelTransferAllowed": false
+  },
+  "researchHypotheses": [
+    {
+      "id":"ACCOUNT_PRIVATE_INITIAL_STATE_OVERLAY",
+      "question":"Does the current Betfair Spain scarab-aig build expose any denomination/account starting state whose exact conditional EV exceeds its cost?",
+      "status":"UNVERIFIED"
+    },
+    {
+      "id":"ACCOUNT_PRIVATE_PARTIAL_CYCLE_STATE",
+      "question":"Can an existing user's own denomination be left in a favorable partial cycle and revisited later, and if so is the state EV calculable from visible borders/spin count?",
+      "status":"UNVERIFIED"
+    }
+  ],
+  "nextZeroWagerEvidence": [
+    "Open scarab-aig and record current spin counter plus every golden-border position before any wager.",
+    "Open Help/Rules and capture exact served RTP, total-bet choices and cycle/state wording.",
+    "Without spinning, switch denomination/bet level only if UI allows it and record independent visible state for every level.",
+    "Reload without wagering and record whether each denomination returns to the same account-private state.",
+    "Passive HAR should recover exact provider/build/config and any account/denomination state keys without emitting credentials."
+  ],
+  "execution":{"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{"physicalStrategyCannotSetSpainThreshold":true,"crossPlayerPersistenceCannotBeAssumedOnline":true,"accountPrivateStateDoesNotProvePositiveEv":true,"freshDenominationCannotBeAssumedPositiveEv":true,"monthlyPayoutCannotSetTheoreticalRtp":true,"noMultiAccountStrategy":true,"noWagerProbe":true,"noAutomaticBetting":true,"realMoneyAllowed":false}
+}
