@@ -1,0 +1,41 @@
+{
+  "version":"edge-ap-knowledge-index-2026-08-29-v2.2-addendum",
+  "generatedAt":"2026-08-29T16:21:00Z",
+  "baseIndex":"loterias-ai/knowledge/edge-ap-knowledge-index-2026-08-29-v1.json",
+  "previousAddendum":"loterias-ai/knowledge/edge-ap-knowledge-index-2026-08-29-v2.1-addendum.json",
+  "status":"CURRENT_EXPANDED_PERSISTENT_STATE_AND_CLOSURE_INDEX_NO_PLAY",
+  "newEvidence":[
+    "loterias-ai/edge-live/evidence/williamhill-spain-persistent-state-expansion-2026-08-29-v1.json"
+  ],
+  "newKnowledge":[
+    "loterias-ai/knowledge/edge-shortest-path-closure-board-2026-08-29-v1.json"
+  ],
+  "newOperationalCode":[
+    "loterias-ai/edge-backend/src/streak-of-luck-state9-one-spin-screen-v1.mjs",
+    "loterias-ai/edge-backend/src/full-moon-visible-state-lower-bound-screen-v1.mjs",
+    "loterias-ai/edge-backend/src/snakes-ladders-state-screen-v1.mjs",
+    "loterias-ai/edge-backend/src/edge-practice-command-center-v1.mjs",
+    "loterias-ai/edge-backend/src/edge-autonomous-practice-runner-v1.mjs"
+  ],
+  "newPracticeUi":[
+    "loterias-ai/lab/persistent-state-radar.html"
+  ],
+  "newExactSpanishTargets":[
+    {"id":"WILLIAMHILL_ES_SNAKES_LADDERS_MEGADICE","class":"PER_BET_PERSISTENT_PROGRESS_WITH_20X_GUARANTEED_BONUS_FLOOR","closureRank":1,"execution":"NO_PLAY"},
+    {"id":"WILLIAMHILL_ES_AOTGN_WAYS_OF_THUNDER","class":"PER_BET_PERSISTENT_REEL_LEVEL_45_TO_3125_WAYS","closureRank":4,"execution":"NO_PLAY"},
+    {"id":"WILLIAMHILL_ES_SQUEALIN_RICHES","class":"PER_BET_PERSISTENT_BONUS_PROGRESS_BAR","closureRank":5,"execution":"NO_PLAY"}
+  ],
+  "newHardThresholds":[
+    {"id":"SNAKES_10_OF_11","threshold":"p(completes snake next paid spin) > 5%","basis":"20x total-bet guaranteed Board Bonus floor; all ordinary reel return and bonus upside ignored"},
+    {"id":"STREAK_STATE_9","threshold":"pWin > (paidStake - freeSpinValueFloor) / (jackpotAwardFloor - freeSpinValueFloor)","basis":"state-9 next terminal branch; ordinary paid-spin payout ignored"},
+    {"id":"FULL_MOON_5_QUALIFYING","threshold":"p(new qualifying moon) > paidStake / conservative Moon Collect payout floor","basis":"visible moon cash/bonus floors plus minimum new qualifying moon value; ordinary spin return and multiplier/future upside ignored"}
+  ],
+  "testTruth":{
+    "snakesStateScreenLocalTestPassed":true,
+    "streakAndFullMoonLowerBoundCombinedLocalTestPassed":true,
+    "practiceCommandCenterFullIntegrationAfterLatestChangesExecuted":false,
+    "autonomousRunnerFullIntegrationAfterLatestExpansionExecuted":false,
+    "note":"Do not report the latest full integration suites as passed until executed in an environment containing the complete repository."
+  },
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
