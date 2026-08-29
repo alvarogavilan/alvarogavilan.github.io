@@ -1,0 +1,61 @@
+{
+  "version":"shadow-roulette-progression-control-2026-08-29-v1",
+  "generatedAt":"2026-08-29T14:25:00+02:00",
+  "status":"NEGATIVE_CONTROL_SIMULATION_NO_PLAY",
+  "realMoneyAllowed":false,
+  "model":{
+    "game":"European single-zero roulette",
+    "bet":"even-money red",
+    "redWinProbability":0.4864864864864865,
+    "theoreticalLossPerUnitStakedPct":2.7027027027027026,
+    "independentSpins":true
+  },
+  "simulation":{
+    "seed":20260829,
+    "sessionsPerStrategy":20000,
+    "spinsPerSession":500,
+    "simulatedSpinsPerStrategy":10000000,
+    "notes":"Independent Monte Carlo control generated locally. This is not a GitHub Actions test run."
+  },
+  "strategies":[
+    {
+      "id":"FLAT_RED_1",
+      "rule":"Stake 1 unit on red every spin.",
+      "aggregateRoi":-0.0271622,
+      "meanNetUnitsPer500SpinSession":-13.5811,
+      "profitableSessionRate":0.2586,
+      "meanUnitsStakedPerSession":500
+    },
+    {
+      "id":"MARTINGALE_RED_CAP64",
+      "rule":"Start 1; double after loss; reset to 1 after win; maximum stake 64 units.",
+      "aggregateRoi":-0.02654837311340416,
+      "meanNetUnitsPer500SpinSession":-56.7243,
+      "profitableSessionRate":0.4617,
+      "meanUnitsStakedPerSession":2136.6394
+    },
+    {
+      "id":"FIBONACCI_RED_CAP89",
+      "rule":"Fibonacci 1,1,2,3,5,8,13,21,34,55,89 after losses; move back two positions after win; cap 89.",
+      "aggregateRoi":-0.028153774960884743,
+      "meanNetUnitsPer500SpinSession":-51.19955,
+      "profitableSessionRate":0.6031,
+      "meanUnitsStakedPerSession":1818.56785
+    }
+  ],
+  "interpretation":{
+    "allStrategiesRemainConsistentWithNegativeHouseEdge":true,
+    "higherProfitableSessionRateCanHideLargerAverageLoss":true,
+    "martingaleTurnoverMultipleVsFlat":4.2732788,
+    "fibonacciTurnoverMultipleVsFlat":3.6371357,
+    "betProgressionDoesNotCreatePositiveEv":true,
+    "whyThisMatters":"Policy search is allowed to find short-run patterns in discovery, but any strategy that claims to beat an independent negative-EV control must survive validation/holdout and mathematical expectation checks."
+  },
+  "hardGuards":{
+    "controlIsNotGamblingAdvice":true,
+    "simulationDoesNotProveUnknownCasinoRng":true,
+    "noAutomaticBetting":true,
+    "realMoneyAllowed":false
+  },
+  "execution":{"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
