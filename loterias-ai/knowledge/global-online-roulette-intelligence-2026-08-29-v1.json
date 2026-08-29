@@ -1,0 +1,89 @@
+{
+  "version":"global-online-roulette-intelligence-2026-08-29-v1",
+  "generatedAt":"2026-08-29T17:12:00+02:00",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "status":"GLOBAL_ROULETTE_MECHANICS_ABSORBED_NO_PLAY",
+  "realMoneyAllowed":false,
+  "principles":[
+    "Fair RNG history does not create predictive edge.",
+    "Progression systems such as Martingale/Fibonacci alter variance and bankroll failure, not the underlying house edge.",
+    "Physical-wheel prediction or wheel/dealer bias is a separate research family and requires exact table identity plus prospective/out-of-sample validation.",
+    "Jackpot or multiplier overlays can alter EV only through exact eligibility, timing, payout and accounting rules."
+  ],
+  "families":[
+    {
+      "id":"EVOLUTION_LIGHTNING_ROULETTE_POST_CLOSE_MULTIPLIERS",
+      "source":"https://games.evolution.com/live-casino/live-roulette/lightning-roulette/",
+      "sourceClass":"PROVIDER_OFFICIAL",
+      "facts":{"singleZeroWheel":true,"luckyNumbersPerRound":"1-5","multiplierRange":"50x-500x","luckyNumbersGeneratedAfterBettingTimeExpired":true,"ordinaryStraightPayout":"29:1"},
+      "edgeConclusion":"POST_CLOSE_REACTIVE_SELECTION_BLOCKED",
+      "reason":"The official provider states the lucky-number generation begins after betting time has expired."
+    },
+    {
+      "id":"EVOLUTION_FIRST_PERSON_LIGHTNING_RNG",
+      "source":"https://games.evolution.com/es/primera-persona/first-person-lightning-roulette/",
+      "sourceClass":"PROVIDER_OFFICIAL",
+      "facts":{"rngProduct":true,"singleZeroFamily":true,"randomLuckyNumbers":true},
+      "edgeConclusion":"PHYSICAL_WHEEL_PREDICTION_NOT_APPLICABLE"
+    },
+    {
+      "id":"PRAGMATIC_MEGA_ROULETTE",
+      "source":"https://www.pragmaticplay.com/es/live-casino/mega-roulette/",
+      "sourceClass":"PROVIDER_OFFICIAL",
+      "facts":{"singleZero":true,"betWindowSeconds":20,"randomStraightMultipliersPerSpin":"1-5","multiplierRange":"50x-500x","advertisedMaxWinEUR":500000},
+      "edgeConclusion":"STRUCTURAL_RESEARCH_ONLY",
+      "unknowns":["exact multiplier reveal timing relative to bet close in target deployment","exact target RTP/accounting","Spain operator configuration"]
+    },
+    {
+      "id":"PLAYTECH_AGE_OF_GODS_LIVE_ROULETTE_PROGRESSIVE",
+      "source":"https://www.playtech.com/playtech-launches-age-of-the-gods-live-roulette/",
+      "sourceClass":"PROVIDER_OFFICIAL",
+      "facts":{"fourTierProgressive":true,"sharedCasinoLiquidity":true,"jackpotChanceEverySpin":true,"realTimeTicker":true},
+      "edgeConclusion":"PROGRESSIVE_NETWORK_RESEARCH_CANDIDATE",
+      "localBinding":"Betfair Spain exact live roulette lane is handled separately by analyze-betfair-live-roulette-aog-har.mjs"
+    },
+    {
+      "id":"LIVEG24_REPETITION_JACKPOT",
+      "source":"https://www.liveg24.com/jackpot-live-roulette/",
+      "sourceClass":"PROVIDER_OFFICIAL_CURRENT",
+      "facts":{"tiers":["Bronze","Silver","Gold"],"noSideBetOrExtraActionRequired":true,"everySpinContributes":true,"trigger":"same number repeated consecutively","publishedThresholdExamples":[3,4,5],"partnerSpecificAccumulationAndDistribution":true},
+      "edgeConclusion":"STRUCTURAL_REPETITION_JACKPOT_CANDIDATE",
+      "math":"If an exact fair 37-pocket deployment awards a tier on the next identical outcome after a triggerLength-1 streak, the next-spin completion probability is 1/37. Positive EV still depends on exact payout share, qualifying stake and base-game cost.",
+      "spainStatus":"NOT_VERIFIED_AVAILABLE_IN_REGULATED_SPAIN",
+      "regulationSource":"https://www.liveg24.com/regulation/",
+      "regulationPageListedMarkets":["Italy","Isle of Man","Estonia","Colombia","Malta","Brazil"],
+      "spainListedOnCurrentProviderRegulationPage":false,
+      "screen":"loterias-ai/edge-backend/src/roulette-repetition-jackpot-screen-v1.mjs"
+    },
+    {
+      "id":"PHYSICAL_ROULETTE_DETERMINISTIC_PREDICTION",
+      "sources":["https://arxiv.org/abs/1204.6412","https://pubmed.ncbi.nlm.nih.gov/23020489/"],
+      "sourceClass":"PEER_REVIEWED_PHYSICS_RESEARCH",
+      "facts":{"initialPositionVelocityAccelerationCanContainPredictiveInformation":true,"reportedEuropeanWheelExpectedReturnAtLeastPct":18,"tableSlantCanCreateBias":true},
+      "edgeConclusion":"VALID_RESEARCH_FAMILY_NOT_GENERIC_ONLINE_SIGNAL",
+      "requirements":["physical wheel","betting remains open long enough after usable observation","exact latency measurement","exact table identity","prospective validation"]
+    },
+    {
+      "id":"ONLINE_PHYSICAL_WHEEL_BIAS_WALK_FORWARD",
+      "source":"https://arxiv.org/abs/1609.09601",
+      "sourceClass":"QUANTITATIVE_RESEARCH",
+      "facts":{"realOnlineEuropeanWheelData":true,"recordedSpins":10980,"walkForwardAndBacktestingUsed":true},
+      "edgeConclusion":"METHODOLOGY_ADOPTED",
+      "use":"Discovery/validation split and wheel-specific testing rather than hot-number folklore."
+    },
+    {
+      "id":"AXA_5_PREDICTOR_CLAIM",
+      "evidencePath":"loterias-ai/edge-live/evidence/axa-roulette-software-audit-2026-08-29-v1.json",
+      "edgeConclusion":"UNVERIFIED_PREDICTOR_FAIL_CLOSED",
+      "screen":"loterias-ai/edge-backend/src/roulette-predictor-falsification-lab-v1.mjs"
+    }
+  ],
+  "software":[
+    "loterias-ai/edge-backend/src/roulette-practice-clone-v1.mjs",
+    "loterias-ai/edge-backend/src/roulette-edge-lab-v1.mjs",
+    "loterias-ai/edge-backend/src/roulette-predictor-falsification-lab-v1.mjs",
+    "loterias-ai/edge-backend/src/roulette-repetition-jackpot-screen-v1.mjs",
+    "loterias-ai/scripts/analyze-betfair-live-roulette-aog-har.mjs"
+  ],
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
