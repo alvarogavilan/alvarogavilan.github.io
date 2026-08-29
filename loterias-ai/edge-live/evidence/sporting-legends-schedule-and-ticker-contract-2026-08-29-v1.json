@@ -1,0 +1,40 @@
+{
+  "version":"sporting-legends-schedule-and-ticker-contract-2026-08-29-v1",
+  "generatedAt":"2026-08-29T00:00:00+02:00",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "network":"Playtech Sporting Legends",
+  "status":"SCHEDULE_AND_TICKER_FIELDS_CLOSED_OPERATOR_BINDING_AND_RACE_STILL_OPEN_NO_PLAY",
+  "tierCodes":{"daily":"sljp-1","weekly":"sljp-2","mega":"sljp-3"},
+  "providerScheduleEvidence":{
+    "dailyRule":"Playtech states that if the Daily jackpot is won before 21:00 it retriggers; after 21:00 the next day's jackpot begins.",
+    "weeklyRule":"Playtech states that the Weekly jackpot runs until midnight every Friday.",
+    "source":"https://www.playtech.com/ap-mccoy-brings-playtech-power-play-to-sporting-legends-series/",
+    "use":"OBSERVATION_WINDOW_PRIORITIZATION_ONLY_UNTIL_LIVE_GHT_CONFIRMS_EXACT_BOUNDARY"
+  },
+  "tickerContract":{
+    "endpointFamily":"new_jackpotxml.php",
+    "requiredGameBasedParameters":["info=1","casino=<IMS casino>","game=sljp-1 or sljp-2","currency=eur"],
+    "requestFields":["execInterval","startTimestamp","casino","currency","game"],
+    "gamedataFields":["timestamp","local","winc","gamegroup","game"],
+    "amountFields":["guaranteedHitTime","currency","instancecode","wins","step","sign","pos","amount"],
+    "guaranteedHitTimeSemantics":"Unix timestamp used to generate countdown to the guaranteed jackpot hit time.",
+    "source":"Playtech Progressive Jackpot Ticker Specifications v3.1"
+  },
+  "publicPracticeEvidence":{
+    "thirdPartyLiveTrackerObserved":true,
+    "currentPublicExample":{"source":"https://www.online-slot.co.uk/online-slots/reviews/grand-national-sporting-legends/","dailyGBP":24.17,"weeklyGBP":1170.84,"megaGBP":185138.22},
+    "limitation":"Third-party public values are useful for liveness/reset observation only. They are not Betfair Spain IMS-bound ticker snapshots and cannot authorize execution."
+  },
+  "youtubeSearch":{"performed":true,"usableIndexedSportingLegendsTimingVideoRecovered":false,"rule":"No unverified video claim may populate execution probabilities or operator binding."},
+  "remainingExecutionGates":[
+    "exact Spain operator IMS casino name and ticker URL/host",
+    "fresh before/after sljp-1 or sljp-2 snapshots bracketing guaranteedHitTime",
+    "unchanged winc and no amount reset across boundary",
+    "exact current served stake",
+    "measured end-to-end action latency",
+    "prospective passive race-cycle ledger producing a conservative lower bound on first-bet probability",
+    "independent review commit accepted by code allowlist"
+  ],
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{"liveGhtOverridesGenericClockSchedule":true,"noCrossOperatorBindingByAmountMatch":true,"noThirdPartyTickerForExecution":true,"noWagerProbe":true,"noAutomaticBetting":true}
+}
