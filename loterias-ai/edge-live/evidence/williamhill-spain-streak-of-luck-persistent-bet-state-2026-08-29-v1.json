@@ -1,8 +1,8 @@
 {
-  "version":"williamhill-spain-streak-of-luck-persistent-bet-state-2026-08-29-v1",
-  "generatedAt":"2026-08-29T16:55:00+02:00",
+  "version":"williamhill-spain-streak-of-luck-persistent-bet-state-2026-08-29-v1.1-reset-payline-guards",
+  "generatedAt":"2026-08-29T16:20:00Z",
   "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
-  "status":"EXACT_SPAIN_PER_BET_PERSISTENT_STREAK_AND_PROGRESSIVE_RULES_NO_PLAY",
+  "status":"EXACT_SPAIN_PER_BET_PERSISTENT_STREAK_STRONG_STATE9_CANDIDATE_NO_PLAY",
   "realMoneyAllowed":false,
   "target":{"operator":"William Hill Spain","title":"Streak of Luck","provider":"Playtech","url":"https://casino.williamhill.es/slots/streak-of-luck"},
   "exactCurrentOperatorFacts":{
@@ -23,39 +23,81 @@
     "jackpotQualifyingRequirement":"Play Streak of Luck",
     "mainGameAndBonusDiceWinningResultsCount":true,
     "freeSpinWinningResultsDoNotCountTowardStreakOrJackpot":true,
+    "counterResetWording":"The exact William Hill Spain rule says the win counter returns to its initial value when 'un jugador' wins the jackpot.",
+    "sharedCompetitionWording":true,
     "simultaneousWinnerRule":"first activator receives seed plus accumulated amount; other simultaneous activators receive seed amount",
     "sourceClass":"CURRENT_WILLIAM_HILL_SPAIN_EXACT_TITLE_RULE_BODY"
   },
+  "state9Structure":{
+    "observedStateRequired":9,
+    "nextWinningResult":"reaches 10 and triggers the corresponding Lucky progressive jackpot",
+    "nextNonWinningResult":"triggers 60 Lucky Free Games with x2 win multiplier and 0-3 random Wild symbols per free spin",
+    "terminalNextPaidSpin":true,
+    "whyHighPriority":"The next paid result at state 9 terminates into one of two feature branches, enabling an unusually conservative one-spin state valuation once exact stake, jackpot floor and transition probability are bound."
+  },
+  "externalResetRisk":{
+    "exactWordingSupportsAnyPlayerResetInterpretation":true,
+    "executionTreatment":"ASSUME_SHARED_EXTERNAL_RESET_HAZARD_UNTIL_PROVEN_OTHERWISE",
+    "reason":"The rule uses 'un jugador' rather than 'usted', and separately describes simultaneous competing players. A parked state must therefore not be modeled as immortal while a shared jackpot can be won elsewhere.",
+    "parkingStillResearchable":true,
+    "parkingRequiredInputs":["current same-tier jackpot","jackpot growth over time","external reset/hit hazard","state-9 exercise value","survival probability while parked"]
+  },
+  "paylineConfigurationConflict":{
+    "exactWilliamHillHelpContainsActiveLineLanguage":true,
+    "exactWilliamHillHelpContainsPlusMinusLineButtons":true,
+    "gameSpecificSecondarySourcesDescribe50FixedPaylines":true,
+    "secondaryExamples":[
+      {"source":"SlotsMate","finding":"50 paylines all covered by all bets; line bet multiplied by 50; six common totals 0.50,1,2,5,10,20"},
+      {"source":"OnlineCasinoReports","finding":"describes 50 fixed paylines"},
+      {"source":"AskGamblers","finding":"describes 50 paylines and line-bet coin range"}
+    ],
+    "classification":"CONFLICTED_DO_NOT_USE_LINE_COUNT_ARBITRAGE",
+    "hardConclusion":"Do not assume the number of active paylines is adjustable on the exact served current build, and do not derive a jackpot-to-total-stake multiple from 50 lines until served binding resolves the conflict."
+  },
   "whyThisMatters":{
-    "userStakeLadderExceptionClassVerified":true,
-    "reason":"Changing stake is not magic here, but each line-bet level genuinely selects a different persistent streak state and a different progressive. Zero-wager switching can therefore be used to inspect state rather than to force an RNG hit.",
-    "zeroWagerSixStateScanCandidate":true,
+    "creatorStakeLadderExceptionClassVerified":true,
+    "reason":"Changing line bet is not magic, but each line-bet level genuinely selects a different persistent streak state and a different progressive.",
     "privateAccountStateCanHaveConditionalContinuationValue":true,
-    "crossPlayerInheritanceProven":false
+    "crossPlayerInheritanceProven":false,
+    "state9HasPotentiallyLargeConditionalValue":true
   },
   "whatRemainsOpen":{
     "exactCurrentSixLineBetValues":true,
-    "exactCurrentCoinValues":true,
+    "exactCurrentCoinValueToLineBetBinding":true,
+    "exactServedPaylineCountAndWhetherAdjustable":true,
     "exactCurrentCounterValueForEachBetLevel":true,
-    "whetherAllSixCounterStatesCanBeReadBeforeAnyWager":true,
+    "passiveCounterVisibilityWithoutWager":true,
     "exactQualifyingWinningResultTransitionKernel":true,
-    "baseGameExpectedReturnExcludingStreakFeatures":true,
-    "expectedValueOfFreeSpinAwardsAtEachBetLevel":true,
     "currentProgressiveAmountForEachBetLevel":true,
     "jackpotAccountingRelativeToPublishedRtp":true,
-    "bonusDiceMultiOutcomeContributionToStreakKernel":true,
+    "bonusDiceContributionToStreakKernel":true,
+    "externalJackpotResetHazard":true,
     "conditionalStateEv":true,
     "executionAuthorization":true
   },
-  "priority":{"rankBand":"HIGH_PERSISTENT_STATE_DISCOVERY","reason":"Exact regulated-Spain operator rules explicitly preserve separate streak state per bet level and publish guaranteed state-dependent features plus a progressive jackpot."},
+  "researchPriorsNotExecutionFacts":{
+    "secondary50PaylineConsensus":true,
+    "secondaryLineBetRange":"0.01-0.40",
+    "secondaryTotalBetRange":"0.50-20",
+    "secondaryRtpAroundPct":94.99,
+    "secondaryHitFrequencyClaimsNotAcceptedAsExact":true
+  },
+  "software":[
+    "loterias-ai/edge-backend/src/streak-of-luck-state-ev-lab-v1.mjs",
+    "loterias-ai/edge-backend/src/streak-of-luck-state9-one-spin-screen-v1.mjs",
+    "loterias-ai/edge-backend/src/edge-autonomous-practice-runner-v1.mjs"
+  ],
+  "priority":{"rankBand":"VERY_HIGH_PERSISTENT_STATE_RESEARCH","reason":"Exact Spanish rules create a terminal next-spin state at streak 9, but real execution is blocked by current-state, exact transition, payline/stake binding and external-reset evidence."},
   "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
   "hardGuards":{
     "changingBetDoesNotForceWin":true,
     "stakeSequenceRitualNotSupported":true,
-    "stateInspectionMustBeZeroWager":true,
     "privateStoredStateCannotBeAssumedCrossPlayer":true,
+    "externalJackpotMayResetParkedState":true,
+    "paylineCountArbitrageBlockedByConfigurationConflict":true,
+    "secondaryHitFrequencyCannotPopulateTransitionKernel":true,
     "historicalOrForeignRtpCannotPopulateWilliamHillExecution":true,
-    "bonusDiceMeansSimpleBernoulliPerPaidSpinModelIsNotSufficient":true,
+    "bonusDiceMeansSimpleBernoulliPaidSpinModelMayBeIncomplete":true,
     "noWagerProbe":true,
     "noAutomaticBetting":true,
     "realMoneyAllowed":false
