@@ -13,8 +13,9 @@ import {evaluateQuantumAutoPhysicsEv} from './quantum-auto-physics-ev-screen-v1.
 import {evaluatePostReleaseSectorEv} from './roulette-post-release-sector-ev-screen-v1.mjs';
 import {screenStreak9NextSpin} from './streak-of-luck-state9-one-spin-screen-v1.mjs';
 import {summarizeVisibleMoonState,screenMoonCollectNextSpin,screenMoonPushNextSpin} from './full-moon-visible-state-lower-bound-screen-v1.mjs';
+import {screenSnakeProgressNextSpin} from './snakes-ladders-state-screen-v1.mjs';
 
-const VERSION='edge-practice-command-center-v1.3-persistent-state-thresholds';
+const VERSION='edge-practice-command-center-v1.4-expanded-persistent-state';
 const EXECUTION=Object.freeze({decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0});
 const execution=()=>({...EXECUTION});
 function scoreResult(result){
@@ -44,6 +45,7 @@ function dispatchScenario(s={}){
   if(s.type==='FULL_MOON_STATE_SUMMARY')return summarizeVisibleMoonState(s.input||{});
   if(s.type==='FULL_MOON_MOON_COLLECT')return screenMoonCollectNextSpin(s.input||{});
   if(s.type==='FULL_MOON_MOON_PUSH')return screenMoonPushNextSpin(s.input||{});
+  if(s.type==='SNAKES_LADDERS_PROGRESS')return screenSnakeProgressNextSpin(s.input||{});
   if(s.type==='ROULETTE_PHYSICS_WINDOW')return evaluatePhysicsWindow(s.input||{});
   if(s.type==='ROULETTE_CURRENT_SPIN_PHYSICS_PREDICT')return predictPhysicsSector(s.training||[],s.current||{},s.options||{});
   if(s.type==='ROULETTE_CURRENT_SPIN_PHYSICS_WALK_FORWARD')return walkForwardPhysicsValidation(s.records||[],s.options||{});
