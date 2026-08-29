@@ -1,0 +1,39 @@
+{
+  "version": "frank-bruno-spain-first-bet-threshold-2026-08-29-v1",
+  "scope": "ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "operatorFacts": {
+    "bet365Spain": {
+      "game": "Frank Bruno: Sporting Legends",
+      "minStakeEUR": 0.10,
+      "maxStakeEUR": 100.00,
+      "publishedTheoreticalRtpPct": 95.92,
+      "source": "https://content001.bet365.es/help/docs/es/rtptables/currentpdf/Spanishv2.pdf"
+    },
+    "williamHillSpain": {
+      "publishedSportingLegendsContributionPct": 1.99,
+      "source": "https://casino.williamhill.es/slots/frank-bruno-sporting-legends"
+    }
+  },
+  "conservativeOrdinaryReturnInference": {
+    "candidateBaseRtpPct": 93.93,
+    "calculation": "95.92 - 1.99 = 93.93",
+    "status": "CROSS_OPERATOR_CONFIG_INFERENCE_NOT_EXECUTION_BINDING",
+    "note": "The arithmetic match is strong but bet365 and William Hill operator configuration cannot be assumed identical for execution without same-operator confirmation. Use as sensitivity only."
+  },
+  "minStakeSensitivityUsingCandidateBaseRtp": {
+    "stakeEUR": 0.10,
+    "ordinaryExpectedLossEUR": 0.00607,
+    "dailyJackpotEUR30": {"breakEvenFirstBetProbability": 0.0002023333333333333, "breakEvenPct": 0.02023333333333333, "equivalentOneIn": 4942.339373970347},
+    "dailyJackpotEUR71": {"breakEvenFirstBetProbability": 0.00008549295774647884, "breakEvenPct": 0.008549295774647884, "equivalentOneIn": 11696.869851729822},
+    "dailyJackpotEUR123": {"breakEvenFirstBetProbability": 0.00004934959349593495, "breakEvenPct": 0.004934959349593495, "equivalentOneIn": 20263.591433278423}
+  },
+  "interpretation": "The first-bet race hurdle is extremely low at minimum stake, but no GREEN follows until the exact operator-bound ordinary RTP, live jackpot amount, deadline/ticker binding and lower bound on first-bet race probability are all verified prospectively.",
+  "execution": {"decision": "NO_PLAY", "realMoneyAllowed": false, "realStakeEUR": 0, "maxSpins": 0},
+  "guards": {
+    "doNotTransferWilliamHillContributionToBet365ForExecution": true,
+    "doNotTreatPublicJackpotObserverAsBet365Binding": true,
+    "doNotInferRaceProbabilityFromBreakEvenThreshold": true,
+    "noAutomaticWagering": true,
+    "noWagerProbe": true
+  }
+}
