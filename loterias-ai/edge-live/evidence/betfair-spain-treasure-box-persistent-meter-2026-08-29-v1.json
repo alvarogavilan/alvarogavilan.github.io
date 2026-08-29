@@ -1,0 +1,84 @@
+{
+  "version":"betfair-spain-treasure-box-persistent-meter-2026-08-29-v1",
+  "generatedAt":"2026-08-29T14:02:00+02:00",
+  "status":"CURRENT_BETFAIR_SPAIN_IGT_PERSISTENT_BONUS_METER_FAMILY_NO_PLAY",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "realMoneyAllowed":false,
+  "targets":[
+    {
+      "title":"Treasure Box Kingdom",
+      "exactSpainUrl":"https://casino.betfair.es/juego/treasure-box-kingdom--aig",
+      "exactLauncherGameId":"treasure-box-kingdom--aig",
+      "provider":"IGT",
+      "publishedTheoreticalRtpPct":93.99,
+      "currentCatalogPresenceVerified":true,
+      "exactRealLauncherVerified":true,
+      "jackpotPublished":true
+    },
+    {
+      "title":"Treasure Box Dynasty",
+      "exactSpainUrl":"https://casino.betfair.es/juego/treasure-box-dynasty-aig",
+      "exactLauncherGameId":"treasure-box-dynasty-aig",
+      "providerCatalogSection":"IGT",
+      "publishedTheoreticalRtpPct":93.99,
+      "currentCatalogPresenceVerified":true,
+      "exactRealLauncherVerified":true
+    }
+  ],
+  "currentSpainEvidence":{
+    "sameFamilyBothLiveInCurrentBetfairIgtCatalog":true,
+    "bothExactRealLaunchersObserved":true,
+    "betfairKingdomProviderExplicitIgt":true,
+    "betfairKingdomTheoreticalRtpExplicit":true,
+    "betfairDynastyTheoreticalRtpExplicit":true,
+    "july2026StatisticalPayoutPresence":true,
+    "julyObservedPayoutPct":{"kingdom":89.24,"dynasty":32.46},
+    "statisticalPayoutForbiddenForExecutionRtp":true
+  },
+  "absorbedMechanic":{
+    "videoSources":[
+      "https://www.youtube.com/watch?v=y6uQO9OZYn0",
+      "https://www.youtube.com/watch?v=4vgrAFwURko"
+    ],
+    "writtenCorroboration":[
+      "https://www.knowyourslots.com/treasure-box-kingdom-igt-game-offers-a-key-to-victory/",
+      "https://www.knowyourslots.com/treasure-box-dynasty-more-keys-to-the-bonus-round/",
+      "https://www.apslot.com/pages/must-hit-by-slots"
+    ],
+    "bonusMeterStartsCoinsRequired":6,
+    "keyFullyOnReel3ReducesRequiredCoinsBy":1,
+    "baseSpinCanTriggerIfCoinCountMeetsOrExceedsCurrentMeter":true,
+    "meterAtZeroTriggersBonus":true,
+    "meterResetsToSixAfterRespinFeature":true,
+    "documentedPersistentPerBetLevel":true,
+    "documentedPhysicalCrossPlayerPersistence":true,
+    "documentedBetPanelShowsStateForEachBetLevel":true,
+    "onlineBetfairSpainCrossPlayerPersistenceVerified":false,
+    "betfairSpainAccountPrivatePersistenceVerified":false
+  },
+  "whyHighPriority":{
+    "stateReadDifficulty":"VERY_LOW",
+    "stateRepresentation":"single integer coinsRequired per bet level, normally 0..6",
+    "publishedSpainRtpAvailable":true,
+    "exactSpanishProviderKnown":true,
+    "exactSpanishLaunchersKnown":true,
+    "preWagerStateShouldBeDirectlyVisibleIfSameMechanicServed":true,
+    "informationGainFromOneZeroWagerSession":"HIGH"
+  },
+  "researchQuestions":[
+    "Does current Betfair Spain expose the same persistent Bonus Meter for each total-bet level?",
+    "Is meter state account-private online or shared/abandoned across players?",
+    "What exact bet amounts correspond to each current meter state?",
+    "What is exact conditional EV at meter states 5,4,3,2,1,0 under the Spain 93.99% build and its served bonus rules?",
+    "Is any pre-wager state repeatably positive EV after conservative feature valuation?"
+  ],
+  "nextZeroWagerEvidence":[
+    "Open Kingdom and Dynasty independently and record Bonus Meter value for every selectable bet level before any spin.",
+    "Open Help/Rules and capture exact meter persistence/reset, key trigger, jackpot and stake semantics.",
+    "Switch bet levels without wagering when UI permits and record all meter values.",
+    "Reload without wagering and record whether each level returns to same meter state.",
+    "Passive HAR must fingerprint exact served config/state keys for the corresponding exact launcher."
+  ],
+  "execution":{"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{"videoCannotSetSpainState":true,"physicalCrossPlayerPersistenceCannotTransferOnline":true,"meterAtOneCannotBeDeclaredPositiveEvWithoutExactSpainConditionalEv":true,"sameFamilyDoesNotProveIdenticalReelMath":true,"julyStatisticalPayoutCannotSetTheoreticalRtp":true,"noMultiAccountStrategy":true,"noWagerProbe":true,"noAutomaticBetting":true,"realMoneyAllowed":false}
+}
