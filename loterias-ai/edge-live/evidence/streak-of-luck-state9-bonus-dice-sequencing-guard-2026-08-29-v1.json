@@ -1,0 +1,17 @@
+{
+  "version":"streak-of-luck-state9-bonus-dice-sequencing-guard-2026-08-29-v1",
+  "generatedAt":"2026-08-29T16:38:00Z",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "status":"SUPERSEDES_SIMPLE_BINARY_STATE9_INTERPRETATION_NO_PLAY",
+  "target":{"operator":"William Hill Spain","title":"Streak of Luck","provider":"Playtech","url":"https://casino.williamhill.es/slots/streak-of-luck"},
+  "exactCurrentOperatorFacts":[
+    "The streak counter is saved separately by line-bet value.",
+    "Ten qualifying winning results trigger Jackpot Lucky.",
+    "A non-winning result after four through nine consecutive winning results triggers the corresponding Lucky Free Spins award; state nine corresponds to 60 free games.",
+    "Winning results obtained during Bonus Dice also count toward streak awards and the jackpot."
+  ],
+  "correction":"Because Bonus Dice winning results count toward the streak, the previously convenient binary simplification 'next paid spin wins -> jackpot, next paid spin loses -> 60 free games' is not accepted as an execution model until the exact sequencing of a state-9 paid spin that also activates Bonus Dice is established from same-title rules/runtime evidence.",
+  "softwareEffect":"streak-of-luck-state9-one-spin-screen-v1.mjs v1.1 returns BLOCKED_BONUS_DICE_SEQUENCE_UNRESOLVED unless bonusDiceSequencingResolved=true. The formula remains available only as a sensitivity calculation.",
+  "supersedesWithinBenchmark":"Any Streak state-9 language in autonomous-practice-benchmark-2026-08-29-v1 that describes the next paid spin as an unconditional two-branch terminal event must be read subject to this correction.",
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
