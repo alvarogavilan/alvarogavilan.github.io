@@ -1,0 +1,64 @@
+{
+  "version":"jackpot-king-spain-must-drop-lane-2026-08-29-v1",
+  "generatedAt":"2026-08-29T20:37:00+02:00",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "currentSpainPresence":{
+    "betfairSpain":{
+      "diamondJackpotsCurrent":true,
+      "rtpPct":94.63,
+      "publicMainJackpotObserved":9006339.69,
+      "source":"https://casino.betfair.com/es/juego/diamond-jackpots-abp"
+    },
+    "botemaniaSpain":{
+      "superSpinnerBarXJackpotKingCurrent":true,
+      "fruitinatorJackpotKingCurrent":true,
+      "wishUponALeprechaunJackpotKingCurrent":true,
+      "irishRichesMegawaysJackpotKingCurrent":true,
+      "slotsOGoldJackpotKingCurrent":true,
+      "anyStakeJackpotKingRulePublished":true,
+      "royalRegalOptionalByOperatorConfig":true,
+      "publishedContributionExamplesVaryByTitle":true
+    },
+    "pokerstarsSpain":{
+      "jackpotKingCurrent":true,
+      "publicSharedMainJackpotFeed":true
+    }
+  },
+  "mechanic":{
+    "threePots":["Royal","Regal","Jackpot King"],
+    "royalAndRegalMustBeWonBy":true,
+    "wheelKingRequiredForJackpotAward":true,
+    "anyStakeCanQualifyWhereCurrentSpanishRulesStateSo":true,
+    "potResetsAfterWin":true,
+    "networkedProgressive":true
+  },
+  "crossMarketBlueprintReference":{
+    "royalSeed":500,
+    "royalCap":3500,
+    "regalSeed":5000,
+    "regalCap":35000,
+    "currencyContext":"GBP/EUR depending operator/reference",
+    "bindingToSpainExecution":false,
+    "reason":"Multiple current Blueprint-family sources agree on 500→3500 and 5000→35000, but exact Spanish operator instance caps must be observed or published before execution authority."
+  },
+  "remainingGates":[
+    "Exact Spain operator-instance Royal current value and Must-Be-Won-By cap",
+    "Exact Spain operator-instance Regal current value and Must-Be-Won-By cap",
+    "Exact contribution split into active Royal/Regal/current pots for selected title/network",
+    "Exact conditional award probability model as pot approaches cap, or a defensible lower-bound model",
+    "Exact minimum qualifying stake for selected Spanish title",
+    "Prospective observation validating reset/cap semantics on same operator instance",
+    "Current-state EV threshold above base-game loss with uncertainty margin"
+  ],
+  "hardGuards":{
+    "ukOrOtherMarketCapsCannotAutoBindSpain":true,
+    "mainJackpotValueCannotStandInForRoyalOrRegal":true,
+    "titleSpecificContributionCannotTransferWithoutNetworkEvidence":true,
+    "noWagerProbe":true,
+    "noAutomaticBetting":true,
+    "realMoneyAllowed":false
+  },
+  "execution":{"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "priority":"P0_NEW"
+}
