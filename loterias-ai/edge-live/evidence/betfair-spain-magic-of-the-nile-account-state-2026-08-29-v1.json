@@ -1,7 +1,7 @@
 {
-  "version":"betfair-spain-magic-of-the-nile-account-state-2026-08-29-v1",
-  "generatedAt":"2026-08-29T13:42:00+02:00",
-  "status":"CURRENT_BETFAIR_SPAIN_IGT_PERSISTENT_GEM_STATE_LANE_NO_PLAY",
+  "version":"betfair-spain-magic-of-the-nile-account-state-2026-08-29-v1.1-exact-spanish-rtp",
+  "generatedAt":"2026-08-29T13:52:00+02:00",
+  "status":"CURRENT_BETFAIR_SPAIN_IGT_PERSISTENT_GEM_STATE_LANE_EXACT_PUBLIC_RTP_NO_PLAY",
   "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
   "realMoneyAllowed":false,
   "target":{
@@ -18,12 +18,25 @@
   "currentSpainEvidence":{
     "currentBetfairSpainIgtCatalogPresenceVerified":true,
     "exactRealLauncherBindingObserved":true,
+    "exactPublicGamePageTheoreticalRtpPct":96.02,
+    "exactPublicGamePageTheoreticalRtpVerified":true,
+    "theoreticalRtpSource":"https://casino.betfair.es/juego/magic-of-nile-aig",
     "betfairMonthlyPayoutPresenceJune2026":true,
     "betfairMonthlyPayoutPresenceJuly2026":true,
     "juneObservedPayoutPct":86.72,
     "julyObservedPayoutPct":49.29,
     "observedPayoutIsStatisticalNotTheoretical":true,
     "observedPayoutForbiddenForExecutionRtp":true
+  },
+  "sameIdentifierConfigurationControl":{
+    "source":"https://casino.betfair.com/game/magic-of-the-nile-aig",
+    "sameGameIdSlug":"magic-of-the-nile-aig",
+    "provider":"IGT",
+    "publishedRtpPct":95.01,
+    "spainPublishedRtpPct":96.02,
+    "configurationDivergenceVerified":true,
+    "interpretation":"The identical Betfair game-id slug is served with different published RTP outside Spain. Exact title/provider/gameId therefore do not justify transferring reel strips, feature probabilities, thresholds or RTP across markets.",
+    "foreignConfigurationTransferAllowed":false
   },
   "exactMechanicSupport":{
     "operatorRulesSource":"https://help.danskespil.dk/en/casino-help/slots/igtmagicofthenile",
@@ -36,7 +49,7 @@
     "gemProgressRemainsBetweenPlaySessions":true,
     "manufacturerSaysMeterLevelsPersistAfterCashOut":true,
     "variableStateAdvantagePossibleInDocumentedConfigurations":true,
-    "exactBetfairSpainEquivalenceVerified":false
+    "exactBetfairSpainStateScopeVerified":false
   },
   "onlineStateScopeResearch":{
     "source":"https://wizardofvegas.com/forum/gambling/online/37997-starting-state-of-online-games/",
@@ -51,20 +64,28 @@
     "representation":"[redGems,blueGems,greenGems] where each unfinished obelisk is 0..2",
     "preTriggerCompactStates":27,
     "featureTriggerOccursAtThirdGem":true,
-    "whyUseful":"The visible pre-wager state is compact enough for exact conditional-EV enumeration once the exact Spain paytable, reel probabilities and feature returns are recovered."
+    "whyUseful":"The visible pre-wager state is compact enough for exact conditional-EV enumeration once Spain-specific reel probabilities and feature returns are recovered."
+  },
+  "strategyResearchPrior":{
+    "source":"https://wizardofodds.com/games/slots/magic-of-the-nile/",
+    "use":"DISCOVERY_AND_STATE_PRIOR_ONLY",
+    "expertConsensusGeneralization":"Very low total gem counts are generally unattractive; five or six accumulated pieces are strong candidates; four pieces is configuration/distribution dependent.",
+    "exactSpainThresholdDerived":false,
+    "creatorOrExpertHeuristicCannotAuthorizeExecution":true
   },
   "researchHypotheses":[
     {"id":"BETFAIR_ACCOUNT_PRIVATE_GEM_STATE","question":"Does magic-of-nile-aig preserve each legitimate user's gem vector separately per total bet across sessions?","status":"UNVERIFIED"},
     {"id":"BETFAIR_INITIAL_STATE_OVERLAY","question":"Does any current Betfair Spain bet level initialize to a repeatable nonzero gem vector with positive conditional EV?","status":"UNVERIFIED"},
-    {"id":"BETFAIR_OWN_SAVED_STATE_ENTRY","question":"Can a user's own existing saved gem vector become positive EV under the exact served rules and then be recognized before a wager?","status":"UNVERIFIED"}
+    {"id":"BETFAIR_OWN_SAVED_STATE_ENTRY","question":"Can a user's own existing saved gem vector become positive EV under the exact served 96.02% Spanish configuration and then be recognized before a wager?","status":"UNVERIFIED"}
   ],
   "nextZeroWagerEvidence":[
     "Open magic-of-nile-aig and capture all three obelisk gem counts before any wager.",
-    "Open Help/Rules and capture exact provider/build, theoretical RTP, total-bet choices and persistence wording.",
+    "Open Help/Rules and capture exact provider/build, served RTP confirmation, total-bet choices and persistence wording.",
     "If bet levels can be switched without a spin, record the [red,blue,green] vector for every selectable level and return to the original level.",
     "Reload/logout-login only without wagering and record whether each level returns to the identical state.",
-    "Passive HAR should recover exact config/state keys while never emitting credentials."
+    "Passive HAR should recover exact config/state keys while never emitting credentials.",
+    "Recover Spain-specific feature probabilities/paytable inputs before converting any gem-count heuristic into EV."
   ],
-  "execution":{"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
-  "hardGuards":{"otherOperatorRulesDoNotProveExactSpainBuild":true,"historicalZeroGemStartingStateCannotBeAssumedCurrent":true,"physicalCrossPlayerModelCannotTransferOnline":true,"oneAccountCannotProveCrossPlayerInheritance":true,"monthlyPayoutCannotSetTheoreticalRtp":true,"noMultiAccountStrategy":true,"noWagerProbe":true,"noAutomaticBetting":true,"realMoneyAllowed":false}
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{"otherOperatorRulesDoNotProveExactSpainBuild":true,"sameGameIdDifferentRtpProvesConfigTransferUnsafe":true,"historicalZeroGemStartingStateCannotBeAssumedCurrent":true,"physicalCrossPlayerModelCannotTransferOnline":true,"oneAccountCannotProveCrossPlayerInheritance":true,"monthlyPayoutCannotSetTheoreticalRtp":true,"expertGemThresholdCannotSelfAuthorize":true,"noMultiAccountStrategy":true,"noWagerProbe":true,"noAutomaticBetting":true,"realMoneyAllowed":false}
 }
