@@ -1,7 +1,7 @@
 {
-  "version": "betfair-spain-scarab-account-state-2026-08-29-v1",
-  "generatedAt": "2026-08-29T13:28:00+02:00",
-  "status": "CURRENT_BETFAIR_SPAIN_IGT_SCARAB_LAUNCHER_VERIFIED_ACCOUNT_STATE_MODEL_REQUIRED_NO_PLAY",
+  "version": "betfair-spain-scarab-account-state-2026-08-29-v1.1-canonical-route-config-divergence",
+  "generatedAt": "2026-08-29T14:09:00+02:00",
+  "status": "CURRENT_BETFAIR_SPAIN_IGT_SCARAB_IDENTITY_ROUTE_VERIFIED_RTP_STATE_MODEL_REQUIRED_NO_PLAY",
   "scope": "ONLINE_ONLY_NON_PROMO_RESEARCH",
   "realMoneyAllowed": false,
   "target": {
@@ -13,16 +13,29 @@
     "launcherMode": "real",
     "launcherRpBucket": "casino",
     "launcherDataChannel": "casino",
-    "observedInfoRoute": "https://casino.betfair.es/en-es/game/scarab-aig"
+    "exactCurrentSpanishInfoRoute": "https://casino.betfair.es/juego/scarab-aig"
   },
   "currentSpainEvidence": {
     "currentBetfairSpainIgtCatalogPresenceVerified": true,
+    "catalogProviderIdentityVerified": "IGT",
     "exactRealLauncherBindingObserved": true,
+    "exactSpanishInfoRouteRecoveredFromCurrentCatalog": true,
+    "exactSpanishTheoreticalRtpVerified": false,
     "betfairMonthlyPayoutPresenceJune2026": true,
     "betfairMonthlyPayoutPresenceJuly2026": true,
     "julyObservedPayoutPct": 79.70,
     "observedPayoutIsStatisticalNotTheoretical": true,
     "observedPayoutForbiddenForExecutionRtp": true
+  },
+  "sameIdentifierConfigurationControl": {
+    "sameGameIdSource": "https://casino.betfair.com/game/scarab-aig",
+    "sameGameIdSlug": "scarab-aig",
+    "sameGameIdPublishedRtpPct": 95.00,
+    "otherIgtRulesSource": "https://help.danskespil.dk/en/casino-help/slots/igtscarab",
+    "otherIgtRulesPublishedRtpPct": 96.00,
+    "configurationDivergenceRiskVerified": true,
+    "interpretation": "The same IGT title and even the same Betfair game-id slug can coexist with different published RTP values across deployments. Neither 95% nor 96% may populate Betfair Spain's theoretical RTP until the Spanish served/public configuration states it exactly.",
+    "foreignRtpTransferAllowed": false
   },
   "manufacturerAndMathMechanic": {
     "igtSource": "https://www.igtaustralia.com.au/games/scarab/",
@@ -49,24 +62,16 @@
     "physicalCrossPlayerModelTransferAllowed": false
   },
   "researchHypotheses": [
-    {
-      "id":"ACCOUNT_PRIVATE_INITIAL_STATE_OVERLAY",
-      "question":"Does the current Betfair Spain scarab-aig build expose any denomination/account starting state whose exact conditional EV exceeds its cost?",
-      "status":"UNVERIFIED"
-    },
-    {
-      "id":"ACCOUNT_PRIVATE_PARTIAL_CYCLE_STATE",
-      "question":"Can an existing user's own denomination be left in a favorable partial cycle and revisited later, and if so is the state EV calculable from visible borders/spin count?",
-      "status":"UNVERIFIED"
-    }
+    {"id":"ACCOUNT_PRIVATE_INITIAL_STATE_OVERLAY","question":"Does the current Betfair Spain scarab-aig build expose any denomination/account starting state whose exact conditional EV exceeds its cost?","status":"UNVERIFIED"},
+    {"id":"ACCOUNT_PRIVATE_PARTIAL_CYCLE_STATE","question":"Can an existing user's own denomination be left in a favorable partial cycle and revisited later, and if so is the state EV calculable from visible borders/spin count?","status":"UNVERIFIED"}
   ],
   "nextZeroWagerEvidence": [
-    "Open scarab-aig and record current spin counter plus every golden-border position before any wager.",
-    "Open Help/Rules and capture exact served RTP, total-bet choices and cycle/state wording.",
+    "Open the exact current Spanish route and record current spin counter plus every golden-border position before any wager.",
+    "Open Help/Rules and capture exact served theoretical RTP, total-bet choices and cycle/state wording.",
     "Without spinning, switch denomination/bet level only if UI allows it and record independent visible state for every level.",
     "Reload without wagering and record whether each denomination returns to the same account-private state.",
     "Passive HAR should recover exact provider/build/config and any account/denomination state keys without emitting credentials."
   ],
   "execution":{"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
-  "hardGuards":{"physicalStrategyCannotSetSpainThreshold":true,"crossPlayerPersistenceCannotBeAssumedOnline":true,"accountPrivateStateDoesNotProvePositiveEv":true,"freshDenominationCannotBeAssumedPositiveEv":true,"monthlyPayoutCannotSetTheoreticalRtp":true,"noMultiAccountStrategy":true,"noWagerProbe":true,"noAutomaticBetting":true,"realMoneyAllowed":false}
+  "hardGuards":{"physicalStrategyCannotSetSpainThreshold":true,"sameGameIdCannotTransferForeignRtp":true,"crossPlayerPersistenceCannotBeAssumedOnline":true,"accountPrivateStateDoesNotProvePositiveEv":true,"freshDenominationCannotBeAssumedPositiveEv":true,"monthlyPayoutCannotSetTheoreticalRtp":true,"noMultiAccountStrategy":true,"noWagerProbe":true,"noAutomaticBetting":true,"realMoneyAllowed":false}
 }
