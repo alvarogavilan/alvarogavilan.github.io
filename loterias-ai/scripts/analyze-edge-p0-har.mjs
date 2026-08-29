@@ -6,7 +6,7 @@ import {analyzeBet365FrankCurrentSessionHarText} from './analyze-bet365-frank-cu
 import {analyzeBotemaniaUltimateVpHarText} from './analyze-botemania-ultimate-vp-har.mjs';
 import {analyzeEnRachaIgtHarText} from './analyze-enracha-igt-har.mjs';
 
-const VERSION='analyze-edge-p0-har-v1';
+const VERSION='analyze-edge-p0-har-v1.1-lane-specific-summary';
 const LANES=Object.freeze({
   apmccoy:{label:'Betfair España — AP McCoy Sporting Legends',mode:'json-object'},
   frank:{label:'bet365 España — Frank Bruno Sporting Legends',mode:'raw-text'},
@@ -16,21 +16,23 @@ const LANES=Object.freeze({
 function execution(){return {decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0};}
 function fail(reason,extra={}){return {version:VERSION,ok:false,reason,execution:execution(),...extra};}
 function usage(){return `Usage: node loterias-ai/scripts/analyze-edge-p0-har.mjs <apmccoy|frank|ultimate-vp|ocean-magic> <capture.har>\n`;}
-function safeClosed(result){
+function safeClosed(lane,result){
   const src=result?.closed&&typeof result.closed==='object'?result.closed:null;
   if(src)return src;
   const a=result?.analysis;
   if(!a||typeof a!=='object')return {};
-  if(a.target?.title==='Ultimate Video Poker'||a.targetPageObserved===true)return {
+  if(lane==='ultimate-vp')return {
     targetSessionObserved:a.targetPageObserved===true,
     servedRuleReviewCandidatesFound:a.servedRuleCandidatesAvailable===true,
     exactJackpotTriggerVerified:a.exactJackpotTriggerVerified===true,
     exactJackpotQualifyingStakeVerified:a.exactJackpotQualifyingStakeVerified===true,
   };
-  if(a.gameId==='ocean-magic'||a.target?.id==='ocean-magic'||a.target?.gameId==='ocean-magic')return {
-    exactTargetSessionObserved:a.valid===true,
-    exactIgtProviderFingerprintVerified:a.exactIgtProviderFingerprintVerified===true,
-    persistentStateCandidateObserved:a.persistentStateCandidateObserved===true,
+  if(lane==='ocean-magic')return {
+    exactTargetSessionObserved:a.valid===true&&a.targetPageObserved===true,
+    exactIgtProviderFingerprintVerified:a.exactEnRachaIgtWrapperFingerprintVerified===true||a.exactIgtProviderFingerprintVerified===true,
+    configurationCandidateObserved:Number(a.configurationCandidateCount||0)>0,
+    persistentStateCandidateObserved:Number(a.stateCandidateCount||0)>0||a.persistentStateCandidateObserved===true,
+    providerConflictObserved:Number(a.providerConflictCandidateCount||0)>0,
     crossPlayerPersistenceVerified:false,
   };
   return {};
@@ -52,11 +54,11 @@ export function analyzeEdgeP0HarText(raw,{lane,sourceName='capture.har'}={}){
     laneLabel:LANES[lane].label,
     sourceName,
     analysisVersion:result?.version||result?.analysis?.version||null,
-    closed:safeClosed(result),
+    closed:safeClosed(lane,result),
     result,
     execution:execution(),
     scientificUse:'Unified local dispatcher for the four highest-priority passive HAR lanes. It does not fetch network data, place wagers, approve review candidates or authorize execution.',
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,passiveHarOnly:true,noNetwork:true,noWagerProbe:true,noAutomaticBetting:true,rawHarNeverEmitted:true,rawResponseBodiesNeverEmitted:true,reviewCandidatesCannotSelfApprove:true,realMoneyAllowed:false},
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,passiveHarOnly:true,noNetwork:true,noWagerProbe:true,noAutomaticBetting:true,rawHarNeverEmitted:true,rawResponseBodiesNeverEmitted:true,reviewCandidatesCannotSelfApprove:true,laneSpecificSummaryRequired:true,realMoneyAllowed:false},
   };
 }
 export function main(argv=process.argv.slice(2)){
