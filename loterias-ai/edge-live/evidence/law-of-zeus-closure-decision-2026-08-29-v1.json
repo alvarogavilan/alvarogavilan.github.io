@@ -1,0 +1,47 @@
+{
+  "version":"law-of-zeus-closure-decision-2026-08-29-v1",
+  "operator":"JOKERBET Spain",
+  "title":"Law of Zeus",
+  "decision":"DEMOTE_NOT_PROVEN_NO_PLAY",
+  "reason":"The cross-bet x10 mechanic is exact, but public sources do not disclose the operator-bound Boost arrival rate, Coin-winning-combination rate, transition matrix, reel strips or equivalent prospective probabilities needed to price the build race and exercise waiting time. Overall hit frequency 23.94% is not a Coin-win frequency and cannot substitute for it.",
+  "exactOperatorFacts":{
+    "minStakeEUR":0.20,
+    "maxStakeEUR":8.00,
+    "rtpPct":94.20,
+    "bonusMultiplierMinX":1,
+    "bonusMultiplierMaxX":10,
+    "maxOneBoostPerSpin":true,
+    "boostAbsentAtX10":true,
+    "bonusMultiplierResetsAfterWinningCoinCombination":true,
+    "bonusMultiplierSurvivesBetChange":true,
+    "coinWinRequiresAtLeastThreeConsecutiveReelsFromLeft":true,
+    "minimumCoinCashValueX":0.5,
+    "minimumGrossCoinWinAtX10X":15
+  },
+  "criticalBuildRace":{
+    "boostStepsFromX1ToX10":9,
+    "formula":"If r is the probability that the next relevant Boost-or-Coin-reset event is a Boost, P(reach x10 before reset)=r^9.",
+    "requiredBoostShareForReachProbability":{
+      "1pct":0.599484250318941,
+      "5pct":0.7168711644368865,
+      "10pct":0.7742636826811271,
+      "25pct":0.8572439828530728,
+      "50pct":0.9258747122872905
+    },
+    "warning":"These are structural sensitivity thresholds, not measured game probabilities."
+  },
+  "exerciseFloorAtX10":{
+    "grossFloorX":15,
+    "zeroBuildCostBreakEvenCoinWinProbabilityPerExerciseSpinPct":6.666666666666667,
+    "warning":"This floor alone cannot establish EV because build cost/resets, ordinary returns and actual Coin-win frequency are unknown."
+  },
+  "publicProbabilityDataFound":{
+    "overallHitFrequencyPct":23.94,
+    "usableAsCoinWinFrequency":false,
+    "maxOutcomePublishedOdds":"1 in 32998360",
+    "usableForBoostOrCoinTransition":false
+  },
+  "closure":"No defensible +EV can be established from currently public evidence. Do not keep Law of Zeus as top lane unless operator-bound transition/frequency data or a sufficiently large prospective passive sample is recovered.",
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0},
+  "hardGuards":{"noProbabilitySubstitution":true,"noCrossOperatorMathTransfer":true,"noRealMoneyProbe":true,"noAutoBetting":true}
+}
