@@ -1,11 +1,12 @@
 {
-  "version":"edge-ap-knowledge-index-2026-08-29-v2.2-addendum",
-  "generatedAt":"2026-08-29T16:21:00Z",
+  "version":"edge-ap-knowledge-index-2026-08-29-v2.2-addendum.1",
+  "generatedAt":"2026-08-29T16:40:00Z",
   "baseIndex":"loterias-ai/knowledge/edge-ap-knowledge-index-2026-08-29-v1.json",
   "previousAddendum":"loterias-ai/knowledge/edge-ap-knowledge-index-2026-08-29-v2.1-addendum.json",
   "status":"CURRENT_EXPANDED_PERSISTENT_STATE_AND_CLOSURE_INDEX_NO_PLAY",
   "newEvidence":[
-    "loterias-ai/edge-live/evidence/williamhill-spain-persistent-state-expansion-2026-08-29-v1.json"
+    "loterias-ai/edge-live/evidence/williamhill-spain-persistent-state-expansion-2026-08-29-v1.json",
+    "loterias-ai/edge-live/evidence/streak-of-luck-state9-bonus-dice-sequencing-guard-2026-08-29-v1.json"
   ],
   "newKnowledge":[
     "loterias-ai/knowledge/edge-shortest-path-closure-board-2026-08-29-v1.json"
@@ -14,6 +15,7 @@
     "loterias-ai/edge-backend/src/streak-of-luck-state9-one-spin-screen-v1.mjs",
     "loterias-ai/edge-backend/src/full-moon-visible-state-lower-bound-screen-v1.mjs",
     "loterias-ai/edge-backend/src/snakes-ladders-state-screen-v1.mjs",
+    "loterias-ai/edge-backend/src/snakes-megadice-state-threshold-v1.mjs",
     "loterias-ai/edge-backend/src/edge-practice-command-center-v1.mjs",
     "loterias-ai/edge-backend/src/edge-autonomous-practice-runner-v1.mjs"
   ],
@@ -26,13 +28,14 @@
     {"id":"WILLIAMHILL_ES_SQUEALIN_RICHES","class":"PER_BET_PERSISTENT_BONUS_PROGRESS_BAR","closureRank":5,"execution":"NO_PLAY"}
   ],
   "newHardThresholds":[
-    {"id":"SNAKES_10_OF_11","threshold":"p(completes snake next paid spin) > 5%","basis":"20x total-bet guaranteed Board Bonus floor; all ordinary reel return and bonus upside ignored"},
-    {"id":"STREAK_STATE_9","threshold":"pWin > (paidStake - freeSpinValueFloor) / (jackpotAwardFloor - freeSpinValueFloor)","basis":"state-9 next terminal branch; ordinary paid-spin payout ignored"},
-    {"id":"FULL_MOON_5_QUALIFYING","threshold":"p(new qualifying moon) > paidStake / conservative Moon Collect payout floor","basis":"visible moon cash/bonus floors plus minimum new qualifying moon value; ordinary spin return and multiplier/future upside ignored"}
+    {"id":"SNAKES_10_OF_11","threshold":"p(completes snake next paid spin) > 5%","basis":"20x total-bet guaranteed Board Bonus floor; all ordinary reel return and bonus upside ignored","status":"VALID_CONSERVATIVE_SENSITIVITY_GATE"},
+    {"id":"STREAK_STATE_9","threshold":"p(jackpot before state-9 terminal loss) > (paidStake - freeSpinValueFloor) / (jackpotAwardFloor - freeSpinValueFloor)","basis":"sensitivity formula only; ordinary paid-spin payout ignored","status":"BLOCKED_FOR_POSITIVE_VERDICT_UNTIL_BONUS_DICE_SEQUENCING_RESOLVED"},
+    {"id":"FULL_MOON_5_QUALIFYING","threshold":"p(new qualifying moon) > paidStake / conservative Moon Collect payout floor","basis":"Money Moon values, Bonus Moon values and Multiplier Moon guaranteed 0.5x/0.4x transform on Moon Collect; ordinary spin return and additional multiplier/future upside ignored","status":"VALID_CONSERVATIVE_SENSITIVITY_GATE"}
   ],
   "testTruth":{
     "snakesStateScreenLocalTestPassed":true,
-    "streakAndFullMoonLowerBoundCombinedLocalTestPassed":true,
+    "streakAndFullMoonLowerBoundCombinedLocalTestPassedBeforeStreakV11":true,
+    "streakBonusDiceGuardLocalFocusedTestPassed":true,
     "practiceCommandCenterFullIntegrationAfterLatestChangesExecuted":false,
     "autonomousRunnerFullIntegrationAfterLatestExpansionExecuted":false,
     "note":"Do not report the latest full integration suites as passed until executed in an environment containing the complete repository."
