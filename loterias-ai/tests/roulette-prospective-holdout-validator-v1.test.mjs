@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import {validateRouletteCandidateProspectively as validate} from '../edge-backend/src/roulette-prospective-holdout-validator-v1.mjs';
+const candidate={id:'w1-pocket17',tableId:'table-a',wheelId:'wheel-1',numbers:[17],frozenAtMs:1000,sourceVerdict:'REPRODUCIBLE_BIAS_RESEARCH_CANDIDATE'};
+const biased=[];for(let i=0;i<2500;i++){biased.push({number:i%6===0?17:(i%37),tsMs:2000+i,tableId:'table-a',wheelId:'wheel-1'});}
+let r=validate(candidate,biased,{minimumHoldoutSpins:2000});
+assert.equal(r.ok,true);
+assert.equal(r.practiceVerdict,'PROSPECTIVE_99PCT_CONSERVATIVE_POSITIVE_EDGE_RESEARCH_CANDIDATE');
+assert.ok(r.metrics.conservativeRtp99Pct>100);
+assert.equal(r.execution.realMoneyAllowed,false);
+const fair=[];for(let i=0;i<3700;i++)fair.push({number:i%37,tsMs:5000+i,tableId:'table-a',wheelId:'wheel-1'});
+r=validate(candidate,fair,{minimumHoldoutSpins:2000});
+assert.equal(r.ok,true);
+assert.equal(r.practiceVerdict,'NO_PROSPECTIVE_CONSERVATIVE_POSITIVE_EDGE');
+r=validate(candidate,fair.map((x,i)=>i===10?{...x,wheelId:'wheel-2'}:x),{minimumHoldoutSpins:2000});
+assert.equal(r.ok,false);assert.equal(r.reason,'TABLE_OR_WHEEL_IDENTITY_DRIFT');
+r=validate(candidate,fair.slice(0,500),{minimumHoldoutSpins:2000});
+assert.equal(r.ok,false);assert.equal(r.reason,'INSUFFICIENT_PROSPECTIVE_HOLDOUT');
+r=validate({...candidate,frozenAtMs:999999},fair,{minimumHoldoutSpins:2000});
+assert.equal(r.ok,false);assert.equal(r.reason,'HOLDOUT_MUST_START_AFTER_CANDIDATE_FREEZE');
+console.log('roulette-prospective-holdout-validator-v1.test.mjs: PASS');
