@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {analyzeEdgeP0HarText} from '../scripts/analyze-edge-p0-har.mjs';
 
 const raw=JSON.stringify({log:{entries:[]}});
-const lanes=['apmccoy','frank','ultimate-vp','betfair-regal-riches','magic-nile','scarab','hexbreak3r','ocean-magic'];
+const lanes=['apmccoy','frank','ultimate-vp','betfair-regal-riches','magic-nile','scarab','hexbreak3r','golden-egypt','ocean-magic'];
 for(const lane of lanes){
   const out=analyzeEdgeP0HarText(raw,{lane,sourceName:`${lane}.har`});
   assert.equal(out.ok,true,`${lane} should route through the unified offline dispatcher`);
@@ -24,61 +24,24 @@ assert.deepEqual(bad.supportedLanes,lanes);
 const entry=(url,text,mimeType='text/plain')=>({request:{url,headers:[]},response:{status:200,content:{mimeType,text}}});
 const betfairLauncher=gameId=>`https://launcher.betfair.es/?RPBucket=casino&dataChannel=casino&gameId=${gameId}&launchProduct=casino&mode=real`;
 
-const regalRaw=JSON.stringify({log:{entries:[
-  entry(betfairLauncher('regal-riches-aig'),'launcher'),
-  entry('https://game.example/help','Regal Riches IGT Progressive Wild purple meter green meter yellow meter persistent bet level RTP')
-]}});
-const regal=analyzeEdgeP0HarText(regalRaw,{lane:'betfair-regal-riches',sourceName:'regal.har'});
-assert.equal(regal.closed.exactTargetLauncherObserved,true);
-assert.equal(regal.closed.providerIgtReviewCandidateObserved,true);
-assert.equal(regal.closed.configurationReviewCandidateObserved,true);
-assert.equal(regal.closed.persistentStateReviewCandidateObserved,true);
-assert.equal(regal.closed.stateSpecificEvVerified,false);
+const regal=analyzeEdgeP0HarText(JSON.stringify({log:{entries:[entry(betfairLauncher('regal-riches-aig'),'launcher'),entry('https://game.example/help','Regal Riches IGT Progressive Wild purple meter green meter yellow meter persistent bet level RTP')]}}),{lane:'betfair-regal-riches',sourceName:'regal.har'});
+assert.equal(regal.closed.exactTargetLauncherObserved,true);assert.equal(regal.closed.providerIgtReviewCandidateObserved,true);assert.equal(regal.closed.persistentStateReviewCandidateObserved,true);assert.equal(regal.closed.stateSpecificEvVerified,false);
 
-const magicRaw=JSON.stringify({log:{entries:[
-  entry(betfairLauncher('magic-of-nile-aig'),'launcher'),
-  entry('https://game.example/help','Magic of the Nile IGT obelisks gems red blue green persistent per bet level RTP 96.02')
-]}});
-const magic=analyzeEdgeP0HarText(magicRaw,{lane:'magic-nile',sourceName:'magic.har'});
-assert.equal(magic.closed.exactTargetLauncherObserved,true);
-assert.equal(magic.closed.providerIgtReviewCandidateObserved,true);
-assert.equal(magic.closed.gemStateReviewCandidateObserved,true);
-assert.equal(magic.closed.stateSpecificEvVerified,false);
+const magic=analyzeEdgeP0HarText(JSON.stringify({log:{entries:[entry(betfairLauncher('magic-of-nile-aig'),'launcher'),entry('https://game.example/help','Magic of the Nile IGT obelisks gems red blue green persistent per bet level RTP 96.02')]}}),{lane:'magic-nile',sourceName:'magic.har'});
+assert.equal(magic.closed.exactTargetLauncherObserved,true);assert.equal(magic.closed.gemStateReviewCandidateObserved,true);assert.equal(magic.closed.stateSpecificEvVerified,false);
 
-const scarabRaw=JSON.stringify({log:{entries:[
-  entry(betfairLauncher('scarab-aig'),'launcher'),
-  entry('https://game.example/help','Scarab IGT 10-spin cycle gold border persistent state denomination bet level')
-]}});
-const scarab=analyzeEdgeP0HarText(scarabRaw,{lane:'scarab',sourceName:'scarab.har'});
-assert.equal(scarab.closed.exactTargetLauncherObserved,true);
-assert.equal(scarab.closed.providerIgtReviewCandidateObserved,true);
-assert.equal(scarab.closed.cycleStateReviewCandidateObserved,true);
-assert.equal(scarab.closed.currentStatePositiveEvVerified,false);
+const scarab=analyzeEdgeP0HarText(JSON.stringify({log:{entries:[entry(betfairLauncher('scarab-aig'),'launcher'),entry('https://game.example/help','Scarab IGT 10-spin cycle gold border persistent state denomination bet level')]}}),{lane:'scarab',sourceName:'scarab.har'});
+assert.equal(scarab.closed.exactTargetLauncherObserved,true);assert.equal(scarab.closed.cycleStateReviewCandidateObserved,true);assert.equal(scarab.closed.currentStatePositiveEvVerified,false);
 
-const hexRaw=JSON.stringify({log:{entries:[
-  entry(betfairLauncher('hexbreak3r-aig'),'launcher'),
-  entry('https://game.example/help','Hexbreak3r IGT expanding reel horseshoe Luck Zone progressive reel 3 persistent per bet level RTP')
-]}});
-const hex=analyzeEdgeP0HarText(hexRaw,{lane:'hexbreak3r',sourceName:'hex.har'});
-assert.equal(hex.closed.exactTargetLauncherObserved,true);
-assert.equal(hex.closed.exactSpainGameIdPubliclyVerified,true);
-assert.equal(hex.closed.reelStateReviewCandidateObserved,true);
-assert.equal(hex.closed.stateSpecificEvVerified,false);
+const hex=analyzeEdgeP0HarText(JSON.stringify({log:{entries:[entry(betfairLauncher('hexbreak3r-aig'),'launcher'),entry('https://game.example/help','Hexbreak3r IGT expanding reel horseshoe Luck Zone progressive reel 3 persistent per bet level RTP')]}}),{lane:'hexbreak3r',sourceName:'hex.har'});
+assert.equal(hex.closed.exactTargetLauncherObserved,true);assert.equal(hex.closed.exactSpainGameIdPubliclyVerified,true);assert.equal(hex.closed.reelStateReviewCandidateObserved,true);assert.equal(hex.closed.stateSpecificEvVerified,false);
 
-const oceanRaw=JSON.stringify({log:{entries:[
-  entry('https://www.enracha.es/juegos/ocean-magic','Ocean Magic'),
-  entry('https://games.example/config','Ocean Magic IGT RTP 92.18 minimum 0.50 maximum 250'),
-  entry('https://games.example/help','Ocean Magic IGT bubble positions remain persistent per bet level')
-]}});
-const ocean=analyzeEdgeP0HarText(oceanRaw,{lane:'ocean-magic',sourceName:'ocean.har'});
-assert.equal(ocean.closed.exactTargetSessionObserved,true);
-assert.equal(ocean.closed.configurationCandidateObserved,true);
-assert.equal(ocean.closed.persistentStateCandidateObserved,true);
-assert.equal(ocean.closed.crossPlayerPersistenceVerified,false);
+const goldenLauncher='https://launcher.betfair.es/?RPBucket=arcade&dataChannel=arcade&gameId=golden-egypt-aem&launchProduct=arcade&mode=real';
+const golden=analyzeEdgeP0HarText(JSON.stringify({log:{entries:[entry(goldenLauncher,'launcher'),entry('https://game.example/help','Golden Egypt IGT Wild Stays 2 Plays two Coins same reel Wild next two spins RTP')]}}),{lane:'golden-egypt',sourceName:'golden.har'});
+assert.equal(golden.closed.exactTargetLauncherObserved,true);assert.equal(golden.closed.providerIgtReviewCandidateObserved,true);assert.equal(golden.closed.igtWildStaysMechanicReviewCandidateObserved,true);assert.equal(golden.closed.exactSpainProviderVerified,false);assert.equal(golden.closed.stateSpecificEvVerified,false);
 
-for(const out of [regal,magic,scarab,hex,ocean]){
-  assert.equal(out.execution.decision,'NO_PLAY');
-  assert.equal(out.execution.realMoneyAllowed,false);
-}
+const ocean=analyzeEdgeP0HarText(JSON.stringify({log:{entries:[entry('https://www.enracha.es/juegos/ocean-magic','Ocean Magic'),entry('https://games.example/config','Ocean Magic IGT RTP 92.18 minimum 0.50 maximum 250'),entry('https://games.example/help','Ocean Magic IGT bubble positions remain persistent per bet level')]}}),{lane:'ocean-magic',sourceName:'ocean.har'});
+assert.equal(ocean.closed.exactTargetSessionObserved,true);assert.equal(ocean.closed.configurationCandidateObserved,true);assert.equal(ocean.closed.persistentStateCandidateObserved,true);assert.equal(ocean.closed.crossPlayerPersistenceVerified,false);
 
+for(const out of [regal,magic,scarab,hex,golden,ocean]){assert.equal(out.execution.decision,'NO_PLAY');assert.equal(out.execution.realMoneyAllowed,false);}
 console.log('analyze-edge-p0-har-v1.test.mjs PASS');
