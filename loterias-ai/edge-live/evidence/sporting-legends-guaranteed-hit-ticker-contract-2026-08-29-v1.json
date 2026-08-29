@@ -1,0 +1,43 @@
+{
+  "version":"sporting-legends-guaranteed-hit-ticker-contract-2026-08-29-v1",
+  "scope":"ONLINE_ONLY_NON_PROMO_ONLY",
+  "provider":"Playtech",
+  "network":"Sporting Legends",
+  "status":"STRUCTURAL_BREAKTHROUGH_NOT_YET_EXECUTION_READY",
+  "exactPublicContract":{
+    "dailyGameCode":"sljp-1",
+    "weeklyGameCode":"sljp-2",
+    "megaGameCode":"sljp-3",
+    "tickerFields":["timestamp","winc","amount","guaranteedHitTime","execInterval","casino","currency"],
+    "dailyAndWeeklyExposeGuaranteedHitTime":true,
+    "megaHasNoGuaranteedHitTime":true,
+    "anyBetAnySizeCanWinDailyWeeklyMega":true,
+    "largerBetIncreasesOrdinaryTriggerChance":true,
+    "firstBetFollowingDayForcedAwardWhenNoGameplayAtDeadline":true,
+    "operatorContributionPct":2.0,
+    "jackpotsDoNotAffectBaseGameRtp":true
+  },
+  "criticalImplication":"Unlike RNG-state lanes, a stale-unawarded Daily/Weekly state is directly represented by provider timing/win-count fields. The economic problem becomes a first-bet race after guaranteedHitTime, not estimation of reel strips or hidden feature probabilities.",
+  "currentSpainPresence":{
+    "bet365SpainSportingLegendsCategorySeen":true,
+    "bet365SpainTitlesSeen":["Ronnie Sullivan Sporting Legends","Frankie Dettori Sporting Legends","Frank Bruno: Sporting Legends"],
+    "williamHillSpainTitlesSeen":["Frank Bruno: Sporting Legends","Ronnie O'Sullivan: Sporting Legends","Frankie Dettori: Sporting Legends","Brian Lara: Sporting Legends","Roberto Carlos: Sporting Legends"]
+  },
+  "executionGap":[
+    "exact operator/IMS ticker URL or equivalent live in-game feed",
+    "fresh before/after guaranteedHitTime snapshots for same instance",
+    "prospective passive race ledger measuring how long stale-unawarded states remain uncontested",
+    "operator-bound minimum stake at decision time",
+    "current jackpot amount at decision time"
+  ],
+  "decision":"NO_PLAY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "hardGuards":{
+    "thirdPartyTrackerCannotAuthorize":true,
+    "historicalTickerExampleCannotAuthorize":true,
+    "noRaceProbabilityGuess":true,
+    "noRealMoneyProbe":true,
+    "noAutoBetting":true
+  }
+}
