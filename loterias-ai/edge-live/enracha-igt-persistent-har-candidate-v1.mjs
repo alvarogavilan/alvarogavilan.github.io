@@ -1,10 +1,10 @@
 import {createHash} from 'node:crypto';
 
-const VERSION='enracha-igt-persistent-har-candidate-v1';
+const VERSION='enracha-igt-persistent-har-candidate-v1.1-provider-collision-guard';
 const MAX_BODY_BYTES=5_000_000;
 const TARGETS=Object.freeze({
-  'ocean-magic':{title:'Ocean Magic',path:'/juegos/ocean-magic',rtpPct:92.18,minBetEUR:0.50,maxBetEUR:250.00,stateTerms:['bubble','bubbles','burbuja','burbujas','wild bubble','bubble boost'],family:'OCEAN_MAGIC_VARIABLE_STATE'},
-  'regal-riches':{title:'Regal Riches',path:'/juegos/regal-riches',rtpPct:94.00,minBetEUR:0.10,maxBetEUR:10.00,stateTerms:['guaranteed wild','guaranteed wilds','progressive wild','banked wild','wild meter','gem','gems','blue meter','purple meter','green meter','yellow meter'],family:'REGAL_RICHES_PERSISTENT_STATE'}
+  'ocean-magic':{title:'Ocean Magic',path:'/juegos/ocean-magic',rtpPct:92.18,minBetEUR:0.50,maxBetEUR:250.00,stateTerms:['bubble','bubbles','burbuja','burbujas','wild bubble','bubble boost'],family:'OCEAN_MAGIC_VARIABLE_STATE',providerCollisionKnown:false,familyCandidateRequiresIgtProvider:true},
+  'regal-riches':{title:'Regal Riches',path:'/juegos/regal-riches',rtpPct:94.00,minBetEUR:0.10,maxBetEUR:10.00,stateTerms:['guaranteed wild','guaranteed wilds','progressive wild','banked wild','wild meter','gem','gems','blue meter','purple meter','green meter','yellow meter'],family:'REGAL_RICHES_PERSISTENT_STATE_IF_IGT_ONLY',providerCollisionKnown:true,knownTitleProviders:['IGT','REALTIME_GAMING_RTG'],familyCandidateRequiresIgtProvider:true}
 });
 const text=v=>typeof v==='string'&&v.trim()?v.trim():null;
 function execution(){return {decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0};}
@@ -15,10 +15,7 @@ function sha256(value){return createHash('sha256').update(value).digest('hex');}
 function norm(value){return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
 function hasAny(s,terms){return terms.some(t=>s.includes(norm(t)));}
 function exactTargetRequest(url,target){try{const u=new URL(String(url||''));return /(^|\.)enracha\.es$/i.test(u.hostname)&&u.pathname.replace(/\/$/,'')===target.path;}catch{return false;}}
-function rtpSignals(s,target){
-  const r=String(target.rtpPct.toFixed(2));
-  return s.includes(r)||s.includes(r.replace('.',','))||s.includes(String(target.rtpPct));
-}
+function rtpSignals(s,target){const r=String(target.rtpPct.toFixed(2));return s.includes(r)||s.includes(r.replace('.',','))||s.includes(String(target.rtpPct));}
 function numericBetSignals(s,target){
   const minForms=[target.minBetEUR.toFixed(2),String(target.minBetEUR),target.minBetEUR.toFixed(2).replace('.',',')];
   const maxForms=[target.maxBetEUR.toFixed(2),String(target.maxBetEUR),target.maxBetEUR.toFixed(2).replace('.',',')];
@@ -28,6 +25,7 @@ function concepts(body,url,target){
   const s=norm(`${url||''}\n${body||''}`),bets=numericBetSignals(s,target);
   const title=s.includes(norm(target.title));
   const providerIgt=/(^|[^a-z0-9])igt([^a-z0-9]|$)/i.test(s)||s.includes('international game technology');
+  const providerRtg=hasAny(s,['realtime gaming','real time gaming','provider:rtg','provider":"rtg','provider=rtg']);
   const rtp=rtpSignals(s,target);
   const stateMechanic=hasAny(s,target.stateTerms);
   const persistence=hasAny(s,['persistent','persistence','persistente','persiste','stored','banked','guardado','acumulado','retained','retains','remains','remain']);
@@ -36,9 +34,10 @@ function concepts(body,url,target){
   const meter=hasAny(s,['meter','meters','medidor','contador','bank','banked','banco']);
   const preWager=hasAny(s,['before spin','before wager','antes de girar','antes de apostar','visible before','visible antes']);
   const accountScope=hasAny(s,['account','player id','playerid','session','cuenta','jugador','usuario']);
+  const providerConflict=target.providerCollisionKnown===true&&title&&providerRtg&&!providerIgt;
   const configCandidate=title&&providerIgt&&(rtp||bets.minimumBet||bets.maximumBet);
-  const stateCandidate=title&&stateMechanic&&(persistence||betLevel||meter||reset);
-  return {title,providerIgt,rtp,bets,stateMechanic,persistence,betLevel,reset,meter,preWager,accountScope,configCandidate,stateCandidate};
+  const stateCandidate=title&&providerIgt&&stateMechanic&&(persistence||betLevel||meter||reset);
+  return {title,providerIgt,providerRtg,providerConflict,rtp,bets,stateMechanic,persistence,betLevel,reset,meter,preWager,accountScope,configCandidate,stateCandidate};
 }
 
 export function extractEnRachaIgtPersistentHarCandidate(har,{gameId,sourceName='enracha-igt.har'}={}){
@@ -54,28 +53,30 @@ export function extractEnRachaIgtPersistentHarCandidate(har,{gameId,sourceName='
   for(let i=firstTargetIndex;i<entries.length;i++){
     const e=entries[i]||{},status=Number(e?.response?.status),body=bodyText(e),url=e?.request?.url||'';
     if(!body||!(status>=200&&status<400))continue;
-    const c=concepts(body,url,target);if(!(c.configCandidate||c.stateCandidate||c.title&&c.providerIgt))continue;
-    candidates.push({entryIndex:i,endpoint:endpointShape(url),responseMimeType:text(e?.response?.content?.mimeType),bodySha256:sha256(body),bodyBytes:Buffer.byteLength(body,'utf8'),concepts:c,reviewUse:c.configCandidate&&c.stateCandidate?'CONFIG_AND_STATE_REVIEW_CANDIDATE':c.configCandidate?'CONFIG_REVIEW_CANDIDATE':c.stateCandidate?'STATE_REVIEW_CANDIDATE':'PROVIDER_TITLE_LINEAGE_CANDIDATE'});
+    const c=concepts(body,url,target);if(!(c.configCandidate||c.stateCandidate||c.providerConflict||c.title&&c.providerIgt))continue;
+    const reviewUse=c.providerConflict?'TITLE_COLLISION_PROVIDER_CONFLICT_CANDIDATE':c.configCandidate&&c.stateCandidate?'CONFIG_AND_STATE_REVIEW_CANDIDATE':c.configCandidate?'CONFIG_REVIEW_CANDIDATE':c.stateCandidate?'STATE_REVIEW_CANDIDATE':'PROVIDER_TITLE_LINEAGE_CANDIDATE';
+    candidates.push({entryIndex:i,endpoint:endpointShape(url),responseMimeType:text(e?.response?.content?.mimeType),bodySha256:sha256(body),bodyBytes:Buffer.byteLength(body,'utf8'),concepts:c,reviewUse});
   }
   const providerCandidates=candidates.filter(x=>x.concepts.providerIgt&&x.concepts.title);
   const configCandidates=candidates.filter(x=>x.concepts.configCandidate);
   const stateCandidates=candidates.filter(x=>x.concepts.stateCandidate);
+  const providerConflictCandidates=candidates.filter(x=>x.concepts.providerConflict);
   return {
     version:VERSION,mode:'OFFLINE_PASSIVE_ENRACHA_IGT_CONFIGURATION_AND_STATE_REVIEW_CANDIDATE_NO_PLAY',valid:true,
-    reason:candidates.length?'SERVED_ENRACHA_IGT_REVIEW_CANDIDATES_FOUND':'TARGET_SESSION_FOUND_BUT_NO_IGT_CONFIG_OR_STATE_CANDIDATE_RECOVERED',
-    sourceName,target:{gameId,title:target.title,path:target.path,expectedPublicRtpPct:target.rtpPct,expectedPublicMinimumBetEUR:target.minBetEUR,expectedPublicMaximumBetEUR:target.maxBetEUR,mechanismFamily:target.family},
+    reason:providerConflictCandidates.length?'KNOWN_TITLE_COLLISION_REQUIRES_EXACT_PROVIDER_REVIEW':candidates.length?'SERVED_ENRACHA_IGT_REVIEW_CANDIDATES_FOUND':'TARGET_SESSION_FOUND_BUT_NO_IGT_CONFIG_OR_STATE_CANDIDATE_RECOVERED',
+    sourceName,target:{gameId,title:target.title,path:target.path,expectedPublicRtpPct:target.rtpPct,expectedPublicMinimumBetEUR:target.minBetEUR,expectedPublicMaximumBetEUR:target.maxBetEUR,mechanismFamily:target.family,providerCollisionKnown:target.providerCollisionKnown===true,knownTitleProviders:target.knownTitleProviders||null,familyCandidateRequiresIgtProvider:true},
     targetPageObserved:true,firstTargetEntryIndex:firstTargetIndex,targetMarkers,
-    candidateCount:candidates.length,providerTitleCandidateCount:providerCandidates.length,configurationCandidateCount:configCandidates.length,stateCandidateCount:stateCandidates.length,candidates,
+    candidateCount:candidates.length,providerTitleCandidateCount:providerCandidates.length,configurationCandidateCount:configCandidates.length,stateCandidateCount:stateCandidates.length,providerConflictCandidateCount:providerConflictCandidates.length,candidates,
     exactEnRachaIgtWrapperFingerprintVerified:false,persistentStateSemanticsVerified:false,persistentAcrossSessionReloadVerified:false,crossPlayerPersistenceVerified:false,abandonedStateVisibleBeforeWagerVerified:false,
     independentReviewRequired:true,
     reviewRequirements:{
-      configuration:'Independent review must bind the exact EnRacha served title to IGT and the current EnRacha RTP/bet configuration. Same-title IGT evidence from another operator cannot close this gate.',
-      state:'Independent review must inspect the exact served state/help/config evidence and determine whether the known persistent-state mechanic exists in this EnRacha build and at what bet-level/account scope.',
+      configuration:'Independent review must bind the exact EnRacha served title to IGT and the current EnRacha RTP/bet configuration. Regal Riches has a known same-title RTG collision, so title or RTP alone cannot identify the provider.',
+      state:'A persistent-state review candidate requires an IGT provider marker in the exact served EnRacha evidence plus the relevant state/help/config semantics. State-like words under an RTG or unknown-provider title cannot close this gate.',
       crossPlayer:'Cross-player inheritance requires separate prospective passive observations from distinct players/accounts or equivalent exact provider/operator documentation. One account or one reload can never close this gate.'
     },
     usableForExecution:false,execution:execution(),
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,passiveHarOnly:true,noNetwork:true,noWagerProbe:true,rawResponseBodiesNeverEmitted:true,requestQueriesNeverEmitted:true,authorizationAndCookieValuesNeverEmitted:true,sameTitleCannotSelfProveIgtWrapper:true,otherOperatorConfigCannotTransfer:true,oneAccountCannotProveCrossPlayerPersistence:true,reloadPersistenceCannotProveCrossPlayerPersistence:true,publicRtpCannotBecomeStateSpecificRtp:true,candidatesRequireIndependentReview:true,noAutomaticBetting:true,realMoneyAllowed:false}
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,passiveHarOnly:true,noNetwork:true,noWagerProbe:true,rawResponseBodiesNeverEmitted:true,requestQueriesNeverEmitted:true,authorizationAndCookieValuesNeverEmitted:true,sameTitleCannotSelfProveIgtWrapper:true,knownTitleCollisionCannotPromoteIgtStateCandidate:true,stateCandidateRequiresExactServedIgtMarker:true,otherOperatorConfigCannotTransfer:true,oneAccountCannotProveCrossPlayerPersistence:true,reloadPersistenceCannotProveCrossPlayerPersistence:true,publicRtpCannotBecomeStateSpecificRtp:true,candidatesRequireIndependentReview:true,noAutomaticBetting:true,realMoneyAllowed:false}
   };
 }
 
-export function supportedEnRachaIgtTargets(){return Object.fromEntries(Object.entries(TARGETS).map(([id,t])=>[id,{title:t.title,path:t.path,rtpPct:t.rtpPct,minBetEUR:t.minBetEUR,maxBetEUR:t.maxBetEUR}]));}
+export function supportedEnRachaIgtTargets(){return Object.fromEntries(Object.entries(TARGETS).map(([id,t])=>[id,{title:t.title,path:t.path,rtpPct:t.rtpPct,minBetEUR:t.minBetEUR,maxBetEUR:t.maxBetEUR,providerCollisionKnown:t.providerCollisionKnown===true}]));}
