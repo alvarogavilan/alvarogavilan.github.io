@@ -1,0 +1,66 @@
+{
+  "version":"axa5-static-audit-and-fair-rng-falsification-2026-08-29-v1",
+  "generatedAt":"2026-08-29T16:55:00+02:00",
+  "scope":"OFFLINE_STATIC_AUDIT_PLUS_PRACTICE_ONLY",
+  "status":"AXA_RNG_KILLER_CLAIM_NOT_VALIDATED_LOCAL_RANDOMNESS_CONFIRMED_NO_PLAY",
+  "realMoneyAllowed":false,
+  "uploadedArtifact":{
+    "archiveName":"Axa update.rar",
+    "archiveSha256":"4aaee53f0c0dd7eeea27d1d6bd2fb681a6f9ff677ab4dc7e0c040ec3b7389dd4",
+    "archiveFormat":"RAR v4 Win32",
+    "containedFile":"Axa update.exe",
+    "containedSizeBytes":820736,
+    "containedSha256":"b6132601dea0eb0d98faea4590c0a0a478d69728190abb10176eb3cc84b3f045",
+    "executionPerformed":false,
+    "analysisMode":"LOCAL_STATIC_ONLY"
+  },
+  "binaryFacts":{
+    "format":"PE32 Windows GUI Intel i386 Mono/.NET assembly",
+    "targetFramework":".NET Framework 4.6.1",
+    "methodCount":639,
+    "nativeImportObserved":"mscoree.dll",
+    "uiProviderSelectorsObserved":["NetEnt","Other","Playtech","RTG"],
+    "rouletteInputButtonsObserved":"0 through 36",
+    "repeatedNumberMessagesObserved":"One explicit '<number> is repeated number' message for every roulette number 0 through 36"
+  },
+  "criticalIlFinding":{
+    "allResultButtonHandlersChecked":"button0_Click through button36_Click",
+    "callsObservedInEach":["Microsoft.VisualBasic.VBMath.Randomize","Microsoft.VisualBasic.VBMath.Rnd","Microsoft.VisualBasic.Conversion.Int","Microsoft.VisualBasic.Math.Round"],
+    "localRandomFormulaReconstructed":"Round(Int(Rnd() * 46.0) + 1.0)",
+    "outputRange":"1..46",
+    "destination":"Form1.TextBox15",
+    "downstreamUse":"Form2_Load reads Form1.TextBox15 and converts it to a number while constructing the output form",
+    "interpretation":"The software injects its own local pseudorandom value every time a roulette result button is entered. Therefore its recommendations are not a deterministic extraction of information from the casino RNG history; at least one recommendation input is independent local randomness. This cannot create information about a certified independent casino RNG."
+  },
+  "publicVendorClaims":{
+    "url":"https://axawinner5.wixsite.com/axaeng",
+    "claims":["RNG KILLER","managed to beat a random number generators RNG system used by casinos","profit money guaranteed","100% guaranteed"],
+    "vendorAlsoStates":["each single-zero number has probability 1/37","RNG outcomes do not produce predictable patterns or repeating sequences","noticed repeating sequences are coincidence"],
+    "internalContradiction":true
+  },
+  "secondaryDescription":{
+    "url":"https://www.suffolkgazette.com/casino-and-science-maths-and-statistics-at-the-gaming-tables/",
+    "claim":"Axa 5.0 is described as an analyser for online roulette variants whose algorithm picks numbers to play over three spins based on entered history.",
+    "independentPerformanceValidation":false
+  },
+  "practiceFalsification":{
+    "module":"loterias-ai/edge-backend/src/roulette-axa-proxy-practice-v1.mjs",
+    "proxyBasis":"Repeated-number UI plus vendor three-spin set claim; explicitly not claimed to be exact reverse-engineered AXA logic.",
+    "fairSingleZeroSimulation":{"totalGeneratedSpins":20000000,"combinedStakeUnits":9378804,"combinedNetUnits":-254424,"combinedRoiPct":-2.7127552724,"theoreticalFairStraightSetRoiPct":-2.7027027027},
+    "interpretation":"A past-results repeated-number/three-spin proxy converges to ordinary European roulette house edge under a fair independent RNG."
+  },
+  "securityNotes":{
+    "noExecutionPerformed":true,
+    "noObviousNativeNetworkImportObserved":true,
+    "dotNetMetadataIncludesSoapHttpClientProtocol":true,
+    "malwareSafetyCertification":false,
+    "reason":"Static inspection is not a substitute for sandboxed dynamic malware analysis; the file was deliberately not executed."
+  },
+  "scientificConclusion":{
+    "axaAsRngPredictorValidated":false,
+    "usefulIdeasRetained":["manual spin-history capture UI","provider-specific experiment tagging","repeat-frequency diagnostics as descriptive statistics only"],
+    "ideasRejectedForExecution":["past-number repetition predicts a fair RNG","vendor proof videos establish edge","local Rnd can reveal casino RNG state"],
+    "nextUsefulResearch":"If an exact live physical wheel is the target, collect wheel/dealer-specific outcomes and timing data and test prospective physical bias separately; do not use AXA RNG claims as evidence."
+  },
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
