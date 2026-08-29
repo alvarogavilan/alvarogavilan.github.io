@@ -1,0 +1,126 @@
+{
+  "version":"shadow-casino-lab-readiness-2026-08-29-v1",
+  "generatedAt":"2026-08-29T14:05:00+02:00",
+  "status":"OFFLINE_SIMULATION_LAB_ACTIVE_NO_PLAY",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "realMoneyAllowed":false,
+  "engine":{
+    "source":"loterias-ai/edge-backend/src/shadow-casino-lab-v1.mjs",
+    "policyLibrary":"loterias-ai/edge-backend/src/shadow-policy-library-v1.mjs",
+    "capabilities":["seeded fictitious episodes","Monte Carlo","finite-state exact enumeration","automated threshold/policy generation","discovery/validation/holdout policy selection"],
+    "simulationModes":["HYPOTHESIS","VERIFIED"]
+  },
+  "controls":[
+    {
+      "id":"EUROPEAN_ROULETTE_FAIR_CONTROL",
+      "status":"VERIFIED_MODEL_CONTROL",
+      "purpose":"Any strategy search that manufactures durable positive EV on fair single-zero roulette is overfitting or a simulator bug.",
+      "theoreticalHouseEdgePct":2.7027027027,
+      "allowedUse":"NEGATIVE_CONTROL_ONLY"
+    }
+  ],
+  "currentLanes":[
+    {
+      "rank":1,
+      "game":"Betfair Spain — AP McCoy Sporting Legends Daily/Weekly",
+      "shadowModeNow":"HYPOTHESIS",
+      "modelType":"TIMED_JACKPOT_RACE",
+      "known":["operator first-bet-following-day semantics","Daily/Weekly tier identity","conservative base RTP floor","public launcher identity"],
+      "missingForVerifiedTwin":["current exact sljp-1/sljp-2 served state","exact GHT","exact served total stake menu","same-binding cross-GHT survival","reviewed action latency","prospective race probability"],
+      "searchSpace":"jackpot amount × overdue duration × race probability × stake",
+      "executionEligible":false
+    },
+    {
+      "rank":2,
+      "game":"bet365 Spain — Frank Bruno Sporting Legends",
+      "shadowModeNow":"HYPOTHESIS",
+      "modelType":"TIMED_JACKPOT_RACE",
+      "known":["current route","Spanish published theoretical RTP","published minimum stake","Sporting Legends family timed semantics cross-operator"],
+      "missingForVerifiedTwin":["exact bet365 served provider/ticker binding","current timed-tier state","same-binding GHT survival","exact Spain semantics independent approval","race probability"],
+      "executionEligible":false
+    },
+    {
+      "rank":3,
+      "game":"Botemania — Ultimate Video Poker Jacks or Better Progressive",
+      "shadowModeNow":"PARTIAL_EXACT_ENUMERATION",
+      "modelType":"PROGRESSIVE_VIDEO_POKER",
+      "known":["7/5 Jacks or Better paytable","Royal base payout x800","live progressive meter identity","base strategy solver infrastructure"],
+      "missingForVerifiedTwin":["exact jackpot-triggering Royal rule","exact jackpot-qualifying stake/configuration"],
+      "searchSpace":"jackpot amount × exact hand strategy",
+      "executionEligible":false
+    },
+    {
+      "rank":4,
+      "game":"Betfair Spain — Regal Riches",
+      "shadowModeNow":"HYPOTHESIS_FINITE_STATE",
+      "modelType":"PERSISTENT_METERS",
+      "known":["current Spain real launcher gameId regal-riches-aig","strong IGT persistent-state lineage","Progressive Wild meter family","family boundary candidates 75/100/125 require Spain confirmation"],
+      "missingForVerifiedTwin":["exact Spain served provider/build","exact Spain theoretical RTP","exact stake menu","served persistent rules/boundaries","pre-wager meter state","state scope/reload behavior","state-specific EV model"],
+      "searchSpace":"multi-meter state × bet level × entry/exit thresholds",
+      "executionEligible":false
+    },
+    {
+      "rank":5,
+      "game":"Betfair Spain — Scarab",
+      "shadowModeNow":"HYPOTHESIS_FINITE_STATE",
+      "modelType":"TEN_SPIN_PERSISTENT_STATE",
+      "known":["current exact real launcher gameId scarab-aig","IGT catalog identity","10-spin/gold-border state family"],
+      "missingForVerifiedTwin":["exact Spain theoretical RTP/paytable","exact state transition probabilities","current cycle/gold-border state per denomination","online state scope","state-specific EV"],
+      "searchSpace":"spin-in-cycle × gold-border pattern × denomination",
+      "executionEligible":false
+    },
+    {
+      "rank":6,
+      "game":"Betfair Spain — Magic of the Nile",
+      "shadowModeNow":"HYPOTHESIS_27_STATE",
+      "modelType":"THREE_OBELISK_GEM_STATE",
+      "known":["current exact real launcher magic-of-nile-aig","IGT catalog identity","exact Spain public theoretical RTP 96.02%","three obelisks","27 compact pre-trigger gem states","state persists per bet level in documented family deployments"],
+      "missingForVerifiedTwin":["Spain-specific reel/gem probabilities","Spain-specific feature payout distributions","exact served bet menu","exact account/state scope","current pre-wager vector per level"],
+      "searchSpace":"[red 0..2, blue 0..2, green 0..2] × bet level × entry policy",
+      "externalHeuristicUse":"Discovery only: expert consensus says <=3 total pieces unattractive, 5-6 attractive, four configuration dependent; not transferable as Spain execution threshold.",
+      "executionEligible":false
+    },
+    {
+      "rank":7,
+      "game":"EnRacha Spain — Ocean Magic",
+      "shadowModeNow":"HYPOTHESIS_STATE_COORDINATES",
+      "modelType":"VARIABLE_STATE_WILD_BUBBLES",
+      "known":["Ocean Magic IGT AP mechanic strongly documented","historical online positive-initial-state incident","EnRacha title/minimum/RTP public presence"],
+      "missingForVerifiedTwin":["exact EnRacha served IGT/build identity","exact bubble transition/paytable configuration","pre-wager state","account/cross-player scope","state-specific EV"],
+      "searchSpace":"bubble coordinates × bet level × initial/abandoned-state policy",
+      "executionEligible":false
+    },
+    {
+      "game":"Betfair Spain — Magic/Wolf/Scarab/Regal and further IGT persistent families",
+      "shadowModeNow":"DISCOVERY_EXPANSION",
+      "modelType":"PERSISTENT_STATE_PORTFOLIO",
+      "goal":"Systematically discover exact Spanish online deployments whose visible initial or saved state can be scored before any wager.",
+      "executionEligible":false
+    },
+    {
+      "game":"Spanish lotteries",
+      "shadowModeNow":"RULE_OVERLAY_ONLY",
+      "modelType":"LOTTERY_PAYOUT_STRUCTURE",
+      "searchSpace":"rolldown/carrydown/guaranteed pool/ticket-volume payout discontinuity",
+      "forbiddenSearch":"past-number patterns or future-information leakage",
+      "executionEligible":false
+    }
+  ],
+  "scientificProtocol":{
+    "discovery":"Generate large policy families and search only on discovery seeds/data.",
+    "validation":"Evaluate selected policies on unseen seeds/data without retuning.",
+    "holdout":"Open final holdout only after policy and parameters are frozen.",
+    "prospective":"A positive simulated holdout still requires real prospective passive-state validation before execution review.",
+    "negativeControls":"Fair roulette and fixed-RTP games must remain negative regardless of progression systems."
+  },
+  "hardGuards":{
+    "simulationCannotMakeUnknownRulesKnown":true,
+    "simulationCannotProveOperatorStateWithoutObservation":true,
+    "bettingProgressionsCannotOverrideNegativeBaseEv":true,
+    "noMultiAccountStrategy":true,
+    "noWagerProbe":true,
+    "noAutomaticBetting":true,
+    "realMoneyAllowed":false
+  },
+  "execution":{"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
