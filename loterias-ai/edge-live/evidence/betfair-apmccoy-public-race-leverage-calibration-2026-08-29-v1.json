@@ -1,0 +1,98 @@
+{
+  "version": "betfair-apmccoy-public-race-leverage-calibration-2026-08-29-v1",
+  "generatedAt": "2026-08-29T12:30:00+02:00",
+  "status": "RESEARCH_ONLY_PUBLIC_CALIBRATION_NO_PLAY",
+  "realMoneyAllowed": false,
+  "purpose": "Quantify why the AP McCoy overdue-first-bet lane has unusually high economic leverage while explicitly refusing to treat public cross-operator jackpot values or generic minimum stakes as Betfair Spain execution evidence.",
+  "authoritativeBetfairKnown": {
+    "game": "AP McCoy Sporting Legends",
+    "conservativeMainGameRtpFloorPct": 93.03,
+    "dailyWeeklyTimedGuaranteesVerified": true,
+    "anyBetAnySizeCanWinVerified": true,
+    "firstBetFollowingDayIfNoGameplayAtMustWinTimeVerified": true,
+    "operatorFundedJackpotsDoNotReduceGameRtpVerified": true,
+    "exactBetfairSpainServedStakeVerified": false,
+    "exactBetfairSpainCurrentJackpotBindingVerified": false,
+    "exactBetfairSpainOverdueStateVerified": false,
+    "raceProbabilityVerified": false
+  },
+  "publicCrossNetworkObservations": {
+    "use": "SCALE_AND_MATHEMATICAL_SENSITIVITY_ONLY",
+    "sameBindingAsBetfairSpain": false,
+    "casinoListingsPlaytechTracker": {
+      "source": "https://www.casinolistings.com/jackpots/playtech",
+      "observedOn": "2026-08-29",
+      "sportingLegendsDailyEUR": 123,
+      "sportingLegendsWeeklyEUR": 1138,
+      "sportingLegendsMegaEUR": 220292,
+      "dailyHistoricalAverageWinEUR": 2272,
+      "dailyHistoricalBiggestWinEUR": 38095,
+      "dailyWinsRecorded": 3637,
+      "dailyAverageHitTime": "20h34m",
+      "weeklyHistoricalAverageWinEUR": 17690,
+      "weeklyHistoricalBiggestWinEUR": 73336,
+      "weeklyWinsRecorded": 416,
+      "weeklyAverageHitTime": "7d11h"
+    },
+    "genericExactTitleStakeReference": {
+      "source": "https://games.paddypower.com/game/ap-mccoy-sporting-legends-cptn",
+      "provider": "Playtech",
+      "minimumStakeGBP": 0.25,
+      "sameBetfairSpainServedStake": false,
+      "use": "SCENARIO_REFERENCE_ONLY"
+    }
+  },
+  "math": {
+    "expectedBaseLossFormula": "stake*(1-conservativeRtp)",
+    "raceBreakEvenProbabilityFormula": "expectedBaseLoss/currentTimedJackpotAward",
+    "interpretation": "If the exact served Betfair Spain state is independently proven overdue and the next eligible bet deterministically receives the timed jackpot, p is the probability our wager is first among eligible post-GHT wagers. Positive EV requires conservativeLowerBound(p) > breakEvenProbability. Public jackpot values below are not allowed to populate execution state."
+  },
+  "scenarioGrid": [
+    {
+      "stakeEUR": 0.10,
+      "expectedBaseLossEUR": 0.00697,
+      "usingPublicDaily123": {"breakEvenRaceProbability": 0.0000566666666667, "breakEvenRaceProbabilityPct": 0.00566666666667, "approximatelyOneIn": 17647.06},
+      "usingPublicWeekly1138": {"breakEvenRaceProbability": 0.00000612478031634, "breakEvenRaceProbabilityPct": 0.000612478031634, "approximatelyOneIn": 163271.16}
+    },
+    {
+      "stakeEUR": 0.25,
+      "expectedBaseLossEUR": 0.017425,
+      "usingPublicDaily123": {"breakEvenRaceProbability": 0.000141666666667, "breakEvenRaceProbabilityPct": 0.0141666666667, "approximatelyOneIn": 7058.82},
+      "usingPublicWeekly1138": {"breakEvenRaceProbability": 0.0000153119507909, "breakEvenRaceProbabilityPct": 0.00153119507909, "approximatelyOneIn": 65308.46},
+      "usingHistoricalAverageDaily2272": {"breakEvenRaceProbability": 0.00000766945422535, "breakEvenRaceProbabilityPct": 0.000766945422535, "approximatelyOneIn": 130387.37},
+      "usingHistoricalAverageWeekly17690": {"breakEvenRaceProbability": 0.000000985019785189, "breakEvenRaceProbabilityPct": 0.0000985019785189, "approximatelyOneIn": 1015208.03}
+    },
+    {
+      "stakeEUR": 1.00,
+      "expectedBaseLossEUR": 0.0697,
+      "usingPublicDaily123": {"breakEvenRaceProbability": 0.000566666666667, "breakEvenRaceProbabilityPct": 0.0566666666667, "approximatelyOneIn": 1764.71},
+      "usingPublicWeekly1138": {"breakEvenRaceProbability": 0.0000612478031634, "breakEvenRaceProbabilityPct": 0.00612478031634, "approximatelyOneIn": 16327.12}
+    }
+  ],
+  "scientificFinding": {
+    "highLeverageConfirmedAsMathematicalProperty": true,
+    "profitOpportunityConfirmedForBetfairSpainNow": false,
+    "whyPromising": "Because the jackpot award can dominate the base-game expected loss by orders of magnitude, the race probability required for positive EV can be very small once an exact overdue state and exact served stake/jackpot binding are proven.",
+    "whyNotExecutable": "The public tracker is not proven to be the exact Betfair Spain pool, the EUR0.25 stake is not a served Betfair Spain stake, no current overdue state is proven, and no prospective race lower bound exists.",
+    "decisiveNextEvidence": "One real passive Betfair Spain AP McCoy session must bind launcher, IMS/ticker, exact EUR GLOBAL local=0 sljp-1 state and served total stake; then the frozen first-seven-GHT protocol must estimate a conservative race lower bound without excluding misses/failures."
+  },
+  "hardGuards": {
+    "crossOperatorJackpotValueCannotPopulateExecution": true,
+    "crossOperatorStakeCannotPopulateExecution": true,
+    "historicalAverageCannotPopulateCurrentJackpot": true,
+    "pointRaceEstimateCannotEnableExecution": true,
+    "sameTitleDoesNotProveSamePool": true,
+    "noWagerProbe": true,
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "realMoneyAllowed": false
+  },
+  "execution": {
+    "decision": "NO_PLAY",
+    "exactStakeEUR": null,
+    "currentJackpotEUR": null,
+    "raceProbabilityLowerBound": null,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  }
+}
