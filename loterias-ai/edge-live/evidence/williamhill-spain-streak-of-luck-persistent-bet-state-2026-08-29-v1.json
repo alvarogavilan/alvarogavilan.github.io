@@ -1,0 +1,63 @@
+{
+  "version":"williamhill-spain-streak-of-luck-persistent-bet-state-2026-08-29-v1",
+  "generatedAt":"2026-08-29T16:55:00+02:00",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "status":"EXACT_SPAIN_PER_BET_PERSISTENT_STREAK_AND_PROGRESSIVE_RULES_NO_PLAY",
+  "realMoneyAllowed":false,
+  "target":{"operator":"William Hill Spain","title":"Streak of Luck","provider":"Playtech","url":"https://casino.williamhill.es/slots/streak-of-luck"},
+  "exactCurrentOperatorFacts":{
+    "fixedLineBetLevels":6,
+    "separateProgressivePerLineBet":true,
+    "progressiveValueDirectlyProportionalToLineBet":true,
+    "streakCounterStoredSeparatelyPerLineBet":true,
+    "counterRestoredWhenReturningToLineBet":true,
+    "counterAlsoRestoredAfterLeavingAndReturningToGame":true,
+    "counterVisibleFromThreeConsecutiveWinningResults":true,
+    "lossResetsWinningStreakCounter":true,
+    "fourThroughNineWinsThenLossAwardsGuaranteedFreeSpinFeature":true,
+    "freeSpinAwards":{"4":5,"5":10,"6":15,"7":20,"8":45,"9":60},
+    "freeSpinWinMultiplier":2,
+    "tenConsecutiveWinningResultsTriggersLuckyJackpot":true,
+    "jackpotSeedFormula":"8750 * coin_value",
+    "jackpotContributionPct":1.40,
+    "jackpotQualifyingRequirement":"Play Streak of Luck",
+    "mainGameAndBonusDiceWinningResultsCount":true,
+    "freeSpinWinningResultsDoNotCountTowardStreakOrJackpot":true,
+    "simultaneousWinnerRule":"first activator receives seed plus accumulated amount; other simultaneous activators receive seed amount",
+    "sourceClass":"CURRENT_WILLIAM_HILL_SPAIN_EXACT_TITLE_RULE_BODY"
+  },
+  "whyThisMatters":{
+    "userStakeLadderExceptionClassVerified":true,
+    "reason":"Changing stake is not magic here, but each line-bet level genuinely selects a different persistent streak state and a different progressive. Zero-wager switching can therefore be used to inspect state rather than to force an RNG hit.",
+    "zeroWagerSixStateScanCandidate":true,
+    "privateAccountStateCanHaveConditionalContinuationValue":true,
+    "crossPlayerInheritanceProven":false
+  },
+  "whatRemainsOpen":{
+    "exactCurrentSixLineBetValues":true,
+    "exactCurrentCoinValues":true,
+    "exactCurrentCounterValueForEachBetLevel":true,
+    "whetherAllSixCounterStatesCanBeReadBeforeAnyWager":true,
+    "exactQualifyingWinningResultTransitionKernel":true,
+    "baseGameExpectedReturnExcludingStreakFeatures":true,
+    "expectedValueOfFreeSpinAwardsAtEachBetLevel":true,
+    "currentProgressiveAmountForEachBetLevel":true,
+    "jackpotAccountingRelativeToPublishedRtp":true,
+    "bonusDiceMultiOutcomeContributionToStreakKernel":true,
+    "conditionalStateEv":true,
+    "executionAuthorization":true
+  },
+  "priority":{"rankBand":"HIGH_PERSISTENT_STATE_DISCOVERY","reason":"Exact regulated-Spain operator rules explicitly preserve separate streak state per bet level and publish guaranteed state-dependent features plus a progressive jackpot."},
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{
+    "changingBetDoesNotForceWin":true,
+    "stakeSequenceRitualNotSupported":true,
+    "stateInspectionMustBeZeroWager":true,
+    "privateStoredStateCannotBeAssumedCrossPlayer":true,
+    "historicalOrForeignRtpCannotPopulateWilliamHillExecution":true,
+    "bonusDiceMeansSimpleBernoulliPerPaidSpinModelIsNotSufficient":true,
+    "noWagerProbe":true,
+    "noAutomaticBetting":true,
+    "realMoneyAllowed":false
+  }
+}
