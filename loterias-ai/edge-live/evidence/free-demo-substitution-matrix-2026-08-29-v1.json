@@ -1,0 +1,126 @@
+{
+  "version": "free-demo-substitution-matrix-2026-08-29-v1",
+  "generatedAt": "2026-08-29T12:26:00+02:00",
+  "scope": "ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "realMoneyAllowed": false,
+  "purpose": "Determine which remaining EDGE evidence gates can be closed with free/demo/public game access and which still require the exact Spanish operator deployment or an authenticated passive session.",
+  "lanes": [
+    {
+      "lane": "betfair-apmccoy-sporting-legends",
+      "freeOrPublicSourcesFound": [
+        "Playtech official AP McCoy product release and Sporting Legends mechanics",
+        "Third-party AP McCoy free-play/demo listings",
+        "Betfair Spain exact current game/rules page"
+      ],
+      "canCloseWithoutPrivateBetfairSession": [
+        "provider/title lineage",
+        "Daily/Weekly/Mega product semantics",
+        "any-stake eligibility semantics",
+        "general game RTP range and Power Play structure",
+        "sljp-1 Daily / sljp-2 Weekly / sljp-3 Mega protocol semantics from provider documentation",
+        "exact Betfair public launcher identity"
+      ],
+      "cannotBeReplacedByDemo": [
+        "Betfair Spain current jackpotsCasino/IMS identity",
+        "Betfair Spain configured ticker endpoint",
+        "current exact GLOBAL EUR sljp-1 amount and guaranteedHitTime",
+        "current exact GLOBAL EUR sljp-2 amount and guaranteedHitTime",
+        "exact served Betfair total-stake menu",
+        "same-binding cross-GHT survival",
+        "prospective race probability and final execution authorization"
+      ],
+      "reasonDemoCannotCloseOperatorState": "A free Playtech/demo instance can use a different casino/IMS, currency, local scope, jackpot network, seed/state and stake menu. It cannot prove the current Betfair Spain server state even when the title is identical.",
+      "status": "PUBLIC_AND_DEMO_RESEARCH_NEARLY_EXHAUSTED_EXACT_OPERATOR_STATE_STILL_REQUIRED"
+    },
+    {
+      "lane": "bet365-frank-bruno-sporting-legends",
+      "freeOrPublicSourcesFound": [
+        "Multiple current free/demo pages for Frank Bruno Sporting Legends",
+        "William Hill Spain current Frank Bruno rules page",
+        "bet365 Spain exact public play route and current RTP table"
+      ],
+      "canCloseWithoutPrivateBet365Session": [
+        "Playtech/provider lineage",
+        "50-line game structure and total-bet equals coin-value x10 rule from current operator rules",
+        "generic Sporting Legends mechanics",
+        "bet365 current base-game RTP and public bet range where published"
+      ],
+      "cannotBeReplacedByDemo": [
+        "bet365 Spain configured Sporting Legends ticker/IMS binding",
+        "current exact EUR sljp-1 server state",
+        "exact served EUR total stake on the bet365 deployment",
+        "same-binding cross-GHT survival",
+        "bet365-specific independent following-day/eligibility review where not publicly exposed",
+        "prospective race probability and final execution authorization"
+      ],
+      "reasonDemoCannotCloseOperatorState": "Free demos prove game mechanics, not the live bet365 Spain jackpot transport or current server state.",
+      "status": "DEMO_USEFUL_FOR_RULES_NOT_FOR_BET365_STATE"
+    },
+    {
+      "lane": "botemania-ultimate-video-poker",
+      "freeOrPublicSourcesFound": [
+        "Current Botemania public product page",
+        "Gamesys/Roxor lineage references and historical progressive Jacks-or-Better controls"
+      ],
+      "canCloseWithoutPrivateBotemaniaSession": [
+        "product identity",
+        "visible paytable family and public hand-count/coin-value concepts",
+        "solver calibration under explicitly unverified historical Gamesys-like assumptions"
+      ],
+      "cannotBeReplacedByGenericVideoPokerDemo": [
+        "exact current Botemania separate-jackpot trigger hand",
+        "exact current Botemania jackpot-qualifying coin/hand-count/total-wager rule",
+        "exact rules fingerprint",
+        "execution threshold"
+      ],
+      "reasonDemoCannotCloseOperatorRules": "Generic Jacks-or-Better demos only prove generic five-coin behavior. They cannot prove the special separate jackpot row and qualifying wager semantics in the current Botemania build.",
+      "status": "CURRENT_BOTEMANIA_HELP_OR_SERVED_RULE_BODY_STILL_REQUIRED"
+    },
+    {
+      "lane": "enracha-ocean-magic",
+      "freeOrPublicSourcesFound": [
+        "Multiple free Ocean Magic demos identifying IGT",
+        "Current demo/reference pages describing Bubble Boost / persistent bubble mechanics",
+        "EnRacha current Ocean Magic public page"
+      ],
+      "canCloseWithoutPrivateEnRachaSession": [
+        "strong IGT lineage",
+        "generic Ocean Magic bubble/Bubble Boost mechanics",
+        "existence of variable/persistent-state behavior in other IGT deployments"
+      ],
+      "cannotBeReplacedByDemo": [
+        "exact EnRacha served provider/build fingerprint",
+        "exact EnRacha configuration",
+        "pre-wager visible state in the EnRacha wrapper",
+        "cross-player inheritance of abandoned state",
+        "Spain state-specific EV threshold"
+      ],
+      "reasonDemoCannotCloseOperatorState": "Current public/demo deployments show materially different RTP and maximum-bet configurations, so the EnRacha wrapper cannot be inferred from title/provider alone.",
+      "status": "DEMO_STRONGLY_SUPPORTS_MECHANISM_EXACT_ENRACHA_STATE_STILL_REQUIRED"
+    }
+  ],
+  "portfolioConclusion": {
+    "canCompleteEverythingFromPublicOrFreeDemos": false,
+    "canReduceRemainingUnknownsWithFreeDemos": true,
+    "singleMostImportantNonReplaceableGate": "Exact current Spanish-operator served state/binding for timed jackpots or stateful wrappers.",
+    "bestCurrentUseOfFreeDemos": "Close generic mechanics/rules and reject false equivalence; do not use demo state, demo stake, demo RTP or demo jackpot amounts as execution evidence for Betfair Spain, bet365 Spain, Botemania or EnRacha.",
+    "pcHarStillMaterial": true
+  },
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "demoStateCannotPopulateOperatorLiveState": true,
+    "demoStakeCannotPopulateOperatorStake": true,
+    "demoRtpCannotOverrideExactOperatorRtp": true,
+    "sameTitleDoesNotProveSameCasinoInstance": true,
+    "sameProviderDoesNotProveSameConfiguration": true,
+    "noWagerProbe": true,
+    "noAutomaticBetting": true,
+    "realMoneyAllowed": false
+  }
+}
