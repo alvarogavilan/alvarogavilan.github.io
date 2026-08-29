@@ -1,0 +1,33 @@
+{
+  "version": "sporting-legends-public-ticker-execution-closure-2026-08-29-v1",
+  "generatedAt": "2026-08-29T20:14:00+02:00",
+  "scope": "ONLINE_ONLY_NON_PROMO_ONLY_RESEARCH",
+  "lane": "Playtech Sporting Legends forced first-bet after deadline",
+  "operatorTarget": "Betfair Spain",
+  "finding": {
+    "playtechPublicWebtickerRefreshCadenceSeconds": 300,
+    "sourceBasis": "Playtech Progressive Jackpot Ticker Specifications v3.1 states JavaScript ticker data is refreshed every 5 minutes; current XML examples use execInterval=300.",
+    "executionConsequence": "PUBLIC_TICKER_TOO_COARSE_FOR_FIRST_BET_RACE_EXECUTION",
+    "thirdPartyTrackersRejectedForExecution": true,
+    "observedThirdPartyNonMonotonicInconsistency": true
+  },
+  "whatRemainsPotentiallyExecutable": {
+    "directOperatorInGameFeed": true,
+    "operatorBoundImsCasinoIdentity": true,
+    "freshSljp1CrossGuaranteedHitTimePair": true,
+    "prospectivePassiveRaceLedger": true,
+    "measuredHumanActionLatency": true
+  },
+  "decision": "NO_PLAY",
+  "realMoneyAllowed": false,
+  "realStakeEUR": 0,
+  "maxSpins": 0,
+  "reason": "PUBLIC_5_MINUTE_TICKER_CANNOT_CLOSE_FIRST_BET_RACE",
+  "hardGuards": {
+    "noAutomaticBetting": true,
+    "noWagerProbe": true,
+    "noThirdPartyTrackerExecution": true,
+    "noInventedImsBinding": true,
+    "noInventedRaceProbability": true
+  }
+}
