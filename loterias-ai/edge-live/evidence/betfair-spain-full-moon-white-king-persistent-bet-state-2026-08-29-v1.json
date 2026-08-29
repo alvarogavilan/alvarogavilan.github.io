@@ -1,0 +1,42 @@
+{
+  "version":"betfair-spain-full-moon-white-king-persistent-bet-state-2026-08-29-v1",
+  "generatedAt":"2026-08-29T17:03:00+02:00",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "status":"EXACT_BETFAIR_SPAIN_PER_BET_PERSISTENT_MOON_STATE_NO_PLAY",
+  "realMoneyAllowed":false,
+  "target":{"operator":"Betfair Spain","title":"Full Moon: White King","provider":"Playtech","gameId":"full-moon-wk-cptn","url":"https://casino.betfair.es/juego/full-moon-wk-cptn"},
+  "exactCurrentOperatorFacts":{
+    "reels":5,
+    "ways":1024,
+    "gameStateSavedByBetAmount":true,
+    "switchingTotalBetRestoresAllPositionsSavedForThatBet":true,
+    "moonTypes":["MONEY","MULTIPLIER","BONUS","BLOOD"],
+    "moonPersistsIntoNextSpin":true,
+    "ifNoNewMoonExistingMoonsDescendOnePositionNextSpin":true,
+    "moonCollectTrigger":"6 or more Money/Multiplier/Bonus Moon symbols",
+    "moonPushTrigger":"5 or more Moon symbols plus Blood Moon per exact operator wording",
+    "extraBetMode":{"increasesTotalBet":true,"doublesMoonPushActivationChance":true,"increasesBloodMoonChance":true,"changesPays":false},
+    "rtpPct":{"standard":94.74,"extraBet":94.86},
+    "rtpSimulationRoundsPublished":1000000000,
+    "rulesUpdated":"2024-09-18",
+    "sourceClass":"CURRENT_BETFAIR_SPAIN_EXACT_TITLE_RULE_BODY"
+  },
+  "stateValueResearch":{
+    "zeroWagerBetSwitchScanCandidate":true,
+    "reason":"Exact operator rules state that each total bet restores its own saved reel positions, so switching bet without spinning can expose distinct persistent states if the current client allows passive viewing.",
+    "stateFeaturesToCapture":["selected total bet","extra-bet mode","moon count","moon type","moon reel/row position","visible money-moon multiplier","visible multiplier-moon value","visible bonus-moon value","blood-moon presence"],
+    "noAutomaticEvFromCountAlone":true
+  },
+  "whatRemainsOpen":{
+    "exactCurrentBetMenu":true,
+    "passiveStateVisibilityAcrossAllBetLevelsBeforeSpin":true,
+    "exactAccountPersistenceAfterReload":true,
+    "exactTransitionProbabilitiesByState":true,
+    "exactConditionalEvForEachSavedState":true,
+    "whetherCurrentRtpIncludesAllStateFeaturesExactlyAsDisplayed":true,
+    "executionAuthorization":true
+  },
+  "priority":{"rankBand":"HIGH_PERSISTENT_STATE_P0","reason":"Exact current Betfair Spain rules bind persistent reel positions to bet amount and expose state-dependent Moon features with separate published RTP for Standard and Extra Bet modes."},
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{"betSwitchingDoesNotForceOutcome":true,"spinCountLadderNotSupported":true,"stateMustBeObservedBeforeWager":true,"moonCountAloneDoesNotProvePositiveEv":true,"transitionProbabilitiesCannotBeInvented":true,"noWagerProbe":true,"noAutomaticBetting":true,"realMoneyAllowed":false}
+}
