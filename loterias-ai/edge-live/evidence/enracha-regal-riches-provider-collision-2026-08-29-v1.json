@@ -1,0 +1,57 @@
+{
+  "version": "enracha-regal-riches-provider-collision-2026-08-29-v1",
+  "generatedAt": "2026-08-29T12:00:00+02:00",
+  "status": "RESEARCH_ONLY_NO_PLAY",
+  "realMoneyAllowed": false,
+  "operator": "EnRacha Spain",
+  "title": "Regal Riches",
+  "operatorCurrentPage": {
+    "url": "https://www.enracha.es/juegos/regal-riches",
+    "minimumBetEUR": 0.10,
+    "maximumBetEUR": 10.00,
+    "theoreticalRtpPct": 94.00,
+    "providerNamedOnPublicPage": false
+  },
+  "collision": {
+    "sameExactTitleUsedByMultipleProviders": true,
+    "igtVariant": {
+      "currentSpainComparator": "https://casino.betfair.com/es/juego/regal-riches-aig",
+      "currentSpainComparatorRtpPct": 94.21,
+      "currentProviderExplicitComparator": "https://games.paddypower.com/game/regal-riches-gig",
+      "provider": "IGT",
+      "paylines": 30,
+      "mechanic": "Guaranteed/Progressive Wild meters"
+    },
+    "rtgVariant": {
+      "reference": "https://www.slotjava.es/slot/regal-riches/",
+      "provider": "Realtime Gaming",
+      "reportedRtpPct": 94.00,
+      "layout": "5x3",
+      "paylines": 25,
+      "mechanic": "two progressive jackpots"
+    }
+  },
+  "scientificInterpretation": {
+    "enrachaTitleAloneIdentifiesIgt": false,
+    "enrachaRtp94AloneIdentifiesIgt": false,
+    "rtp94IsConsistentWithRtgReference": true,
+    "exactEnrachaProviderStillUnknown": true,
+    "igtPersistentStateMechanicTransferAllowed": false,
+    "nextDecisiveEvidence": "Exact passive EnRacha served provider/config fingerprint. If IGT is not explicitly bound to the served game, the IGT persistent-state lane remains invalid."
+  },
+  "impact": {
+    "regalRichesIgtLaneStatus": "FROZEN_PROVIDER_IDENTITY_REQUIRED",
+    "preferredIgtStatefulCandidate": "Ocean Magic",
+    "reason": "Ocean Magic has EnRacha title/RTP/min-bet coherence with current IGT references, while Regal Riches has a demonstrated cross-provider exact-title collision."
+  },
+  "hardGuards": {
+    "sameTitleNeverProvesProvider": true,
+    "sameRtpNeverProvesProvider": true,
+    "crossProviderMechanicsNeverTransfer": true,
+    "noThresholdTransfer": true,
+    "noWagerProbe": true,
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "realMoneyAllowed": false
+  }
+}
