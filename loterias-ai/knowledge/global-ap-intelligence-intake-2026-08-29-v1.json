@@ -1,0 +1,57 @@
+{
+  "version":"global-ap-intelligence-intake-2026-08-29-v1",
+  "generatedAt":"2026-08-29T16:35:00Z",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "status":"ABSORBED_WORLD_RESEARCH_NO_PLAY",
+  "realMoneyAllowed":false,
+  "method":{
+    "translationPolicy":"Normalize useful foreign-language findings into Spanish summaries while preserving source language and jurisdiction.",
+    "executionPolicy":"No foreign operator, creator video, forum or generic family rule may populate a Spanish execution field without exact current target binding.",
+    "conflictPolicy":"Configuration conflicts are retained as evidence of divergence, never averaged or silently reconciled."
+  },
+  "findings":[
+    {
+      "id":"GLOBAL_MHB_TRIGGER_DISTRIBUTION_IS_NOT_UNIVERSAL",
+      "normalizedSpanishFinding":"Un jackpot Must-Hit-By puede tener un límite obligatorio y aun así una distribución de activación no uniforme. La proximidad al techo por sí sola no demuestra EV positivo; el modelo debe soportar distribuciones sesgadas y, cuando sea posible, un coste conservador hasta el límite.",
+      "sources":[
+        {"url":"https://wizardofodds.com/games/slots/mystery-jackpot/","class":"INDEPENDENT_MATHEMATICAL_ANALYSIS","finding":"Wizard of Odds explicitly separates makers/configurations and notes AGS examples concentrated near the must-hit-by point rather than assuming a universal uniform trigger."},
+        {"url":"https://www.casinoreports.com/news/slot-machine-advantage-play-pitfalls/","class":"JOURNALISM_WITH_AP_EXPERT","finding":"Captain Jack Andrews explains that RTP, progressive contribution and current meter must be combined; meter proximity alone is insufficient."},
+        {"url":"https://www.youtube.com/watch?v=IocwBDWLBHM","class":"CREATOR_VIDEO","finding":"American Casino Guide explains the MHB category and why explicit guaranteed boundaries differ from ordinary progressives; discovery/education only."},
+        {"url":"https://www.youtube.com/watch?v=TSupCudo_MI","class":"CREATOR_VIDEO","finding":"Slot-tech educational video on MHB mechanics; discovery/education only."}
+      ],
+      "edgeUse":{"uniformTriggerAssumptionAllowedByDefault":false,"worstCaseBoundaryStressRequired":true}
+    },
+    {
+      "id":"SPORTING_LEGENDS_CURRENT_CONFIGURATION_DIVERGENCE",
+      "normalizedSpanishFinding":"El mismo título Frank Bruno: Sporting Legends presenta arquitecturas públicas distintas según operador. Betfred publica Daily/Weekly/Mega y contribución del 2%; William Hill España publica Mini/Midi/Mega y contribución del 1,99%. Esto demuestra que ni nombres de tiers, contribución ni semántica operativa pueden transferirse a bet365 por identidad de título.",
+      "sources":[
+        {"url":"https://www.betfred.com/casino/frankbrunosportinglegends","class":"CURRENT_OPERATOR_EXACT_TITLE","jurisdiction":"UK","finding":"Daily, Weekly and Mega; any bet size can win; 2% contribution; Daily/Weekly timed semantics and extra jackpots after early hits."},
+        {"url":"https://casino.williamhill.es/slots/frank-bruno-sporting-legends","class":"CURRENT_OPERATOR_EXACT_TITLE","jurisdiction":"ES","finding":"Mini, Midi and Mega taxonomy; 1.99% contribution; random jackpot-game trigger."}
+      ],
+      "edgeUse":{"bet365TierTransferAllowed":false,"bet365ContributionTransferAllowed":false,"bet365FollowingPeriodTransferAllowed":false}
+    },
+    {
+      "id":"KINGDOMS_RISE_POWER_STRIKE_CROSS_OPERATOR_CORROBORATION",
+      "normalizedSpanishFinding":"La familia Kingdoms Rise publica de forma consistente un Power Strike asociado a un límite de importe y un Epic progresivo. Sin embargo, un límite numérico extranjero como 2.000 GBP no puede convertirse en límite EUR de Betfair España.",
+      "sources":[
+        {"url":"https://casino.williamhill.es/slots/kingdoms-rise-captains-treasure","class":"CURRENT_OPERATOR_EXACT_TITLE","jurisdiction":"ES","finding":"Power Strike ticker amount semantics; any spin/amount can activate; higher wager increases jackpot chance; 0.55% contribution in this operator configuration."},
+        {"url":"https://www.bestnewbingosites.co.uk/slot-articles/kingdoms-rise-slots/","class":"SPECIALIST_REVIEW","jurisdiction":"UK","finding":"Describes Power Strike guaranteed before GBP 2,000 and Daily Strike before midnight; numeric values are UK discovery only."}
+      ],
+      "edgeUse":{"semanticCorroborationAllowed":true,"numericCapTransferAllowed":false,"contributionTransferAllowed":false}
+    },
+    {
+      "id":"OCEAN_MAGIC_ONLINE_PERSISTENT_STATE_EXISTS_BUT_IS_DEPLOYMENT_SPECIFIC",
+      "normalizedSpanishFinding":"Existe al menos una implementación online actual de Ocean Magic donde las posiciones de burbujas persisten por nivel de apuesta. Esto valida la mecánica como objetivo AP real, pero no demuestra que EnRacha sirva esa misma variante.",
+      "sources":[
+        {"url":"https://help.danskespil.dk/en/casino-help/slots/igtoceanmagic1","class":"CURRENT_OPERATOR_RULES","jurisdiction":"DK","finding":"Rules state bubble positions are persistent per bet level."},
+        {"url":"https://wizardofodds.com/games/slots/ocean-magic/","class":"INDEPENDENT_MATHEMATICAL_ANALYSIS","finding":"Classifies Ocean Magic as variable-state and explains player advantage from favorable abandoned bubble positions in suitable deployments."}
+      ],
+      "edgeUse":{"enrachaPersistenceTransferAllowed":false,"enrachaExactWrapperAndStateScopeRequired":true}
+    }
+  ],
+  "softwareBindings":[
+    {"path":"loterias-ai/edge-backend/src/evidence-fusion-engine-v1.mjs","use":"Feed observations into conflict-aware exact-target vs cross-deployment fusion."},
+    {"path":"loterias-ai/edge-backend/src/edge-practice-lab-v1.mjs","use":"Stress MHB/timed-race hypotheses without converting synthetic assumptions into operator facts."}
+  ],
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
