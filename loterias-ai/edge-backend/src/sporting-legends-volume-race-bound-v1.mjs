@@ -3,24 +3,25 @@ const finite=(v)=>{const n=Number(v);return Number.isFinite(n)?n:null;};
 /**
  * Research-only bound for the Sporting Legends first-bet race.
  *
- * Playtech rule facts used externally:
- * - each bet contributes 2% to the jackpot fund;
- * - 84.5% of that contribution funds CURRENT jackpots;
- * therefore, absent awards/manual fund movements/config changes, the increase
- * in the SUM of current Sporting Legends jackpot pools equals 0.0169 times
- * eligible network wagering volume.
+ * No contribution rate is assumed. Playtech product documentation and current
+ * operator help can differ (e.g. generic 2.00% vs operator-published 1.99%).
+ * The exact rate used for execution must therefore be bound to the same live
+ * operator/network/configuration as the observed pools.
  *
- * This module does NOT convert that volume into a GREEN probability by itself.
  * A deterministic zero-competitor conclusion is possible only when an exact,
- * same-network, high-frequency observation bounds the TOTAL wager volume in the
- * full exposure window below the minimum possible competing bet. Otherwise an
- * arrival/order model or prospective race ledger remains necessary.
+ * same-network, high-frequency observation bounds TOTAL eligible wagering in
+ * the full exposure window below the minimum possible competing bet. Any
+ * non-zero competitor count still requires an independently validated arrival/
+ * ordering model or prospective race ledger; exchangeability is never assumed.
  */
 export function sportingLegendsVolumeRaceBound({
   combinedCurrentPoolIncreaseEUR,
   exposureSeconds,
   minimumEligibleNetworkStakeEUR,
-  currentPoolFundingFractionOfStake=0.02*0.845,
+  operatorContributionFractionOfStake,
+  fractionOfContributionFundingCurrentPools,
+  exactOperatorContributionRateVerified=false,
+  exactCurrentPoolFundingShareVerified=false,
   exactSameNetworkCombinedPoolVerified=false,
   noAwardOrResetInsideWindowVerified=false,
   noManualFundMovementInsideWindowVerified=false,
@@ -30,28 +31,33 @@ export function sportingLegendsVolumeRaceBound({
   const growth=finite(combinedCurrentPoolIncreaseEUR);
   const seconds=finite(exposureSeconds);
   const minStake=finite(minimumEligibleNetworkStakeEUR);
-  const f=finite(currentPoolFundingFractionOfStake);
+  const contribution=finite(operatorContributionFractionOfStake);
+  const currentShare=finite(fractionOfContributionFundingCurrentPools);
+  const f=contribution!==null&&currentShare!==null?contribution*currentShare:null;
   const hardEvidence=[
+    exactOperatorContributionRateVerified,
+    exactCurrentPoolFundingShareVerified,
     exactSameNetworkCombinedPoolVerified,
     noAwardOrResetInsideWindowVerified,
     noManualFundMovementInsideWindowVerified,
     minStakeAcrossAllParticipatingGamesVerified,
     observationCoversFullExposureWindow,
   ].every(v=>v===true);
-  if(growth===null||growth<0||seconds===null||seconds<=0||minStake===null||minStake<=0||f===null||f<=0||f>=1){
-    return {valid:false,decision:'NO_PLAY',realMoneyAllowed:false,reason:'INVALID_INPUT'};
+  if(growth===null||growth<0||seconds===null||seconds<=0||minStake===null||minStake<=0||contribution===null||contribution<=0||contribution>=1||currentShare===null||currentShare<=0||currentShare>1||f===null||f<=0||f>=1){
+    return {valid:false,decision:'NO_PLAY',realMoneyAllowed:false,reason:'INVALID_OR_UNBOUND_FUNDING_INPUT'};
   }
   const impliedEligibleWagerVolumeEUR=growth/f;
-  // Every competing bet is >= verified network minimum, hence count <= floor(V/minStake).
   const maxCompetingBetsByVolume=Math.floor((impliedEligibleWagerVolumeEUR+1e-12)/minStake);
   const deterministicZeroCompetitorBound=hardEvidence&&impliedEligibleWagerVolumeEUR<minStake;
   return {
-    version:'sporting-legends-volume-race-bound-v1',
+    version:'sporting-legends-volume-race-bound-v1.1-operator-bound-rate',
     valid:true,
     decision:'NO_PLAY',
     realMoneyAllowed:false,
     combinedCurrentPoolIncreaseEUR:growth,
     exposureSeconds:seconds,
+    operatorContributionFractionOfStake:contribution,
+    fractionOfContributionFundingCurrentPools:currentShare,
     currentPoolFundingFractionOfStake:f,
     impliedEligibleWagerVolumeEUR,
     impliedEligibleWagerVolumePerSecondEUR:impliedEligibleWagerVolumeEUR/seconds,
@@ -62,6 +68,8 @@ export function sportingLegendsVolumeRaceBound({
     probabilityLowerBound:deterministicZeroCompetitorBound?1:null,
     reason:deterministicZeroCompetitorBound?'ZERO_COMPETITOR_VOLUME_BOUND_RESEARCH_ONLY':'RACE_ORDER_NOT_CLOSED',
     guards:{
+      noGenericContributionRateTransfer:true,
+      operatorRateMustMatchObservedNetwork:true,
       sumOfDailyWeeklyMegaRequired:true,
       sameNetworkBindingRequired:true,
       noAwardResetOrManualFundMovementRequired:true,
