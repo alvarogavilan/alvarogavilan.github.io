@@ -1,0 +1,65 @@
+{
+  "version":"shadow-public-prior-policies-2026-08-29-v1",
+  "generatedAt":"2026-08-29T14:15:00+02:00",
+  "status":"DISCOVERY_PRIORS_ONLY_NO_PLAY",
+  "realMoneyAllowed":false,
+  "sourceClass":"INDEPENDENT_AP_MATHEMATICAL_AND_EXPERT_ANALYSIS",
+  "priors":[
+    {
+      "gameFamily":"Magic of the Nile",
+      "source":"https://wizardofodds.com/games/slots/magic-of-the-nile/",
+      "sourceLastUpdated":"2026-08-03",
+      "observedAdvice":{
+        "threeOrFewerTotalGems":"GENERALLY_DO_NOT_PLAY",
+        "fiveOrSixTotalGems":"STRONG_DISCOVERY_ENTRY_CANDIDATE",
+        "fourTotalGems":"BORDERLINE_CONFIGURATION_DEPENDENT",
+        "twoOfOneColorPreferredToOneEachOfTwoColors":true,
+        "greenOftenConsideredLessValuableThanRedBlue":true
+      },
+      "shadowUse":"Generate total-gem, pattern and color-weight policies in discovery only.",
+      "betfairSpainThresholdVerified":false
+    },
+    {
+      "gameFamily":"Scarab",
+      "source":"https://wizardofodds.com/games/slots/scarab/",
+      "sourceLastUpdated":"2026-08-03",
+      "observedAdvice":{
+        "afterGame1To4":"Require at least two accumulated useful positions in first three reels.",
+        "afterGame5To9":"Require at least three accumulated useful positions in first three reels.",
+        "reels4And5":"Secondary adjustment only in the published simple heuristic."
+      },
+      "shadowUse":"Seed cycle-position/gold-border discovery policies; exact Spain EV must decide.",
+      "betfairSpainThresholdVerified":false
+    },
+    {
+      "gameFamily":"Regal Riches / Prosperity Pearl",
+      "source":"https://wizardofodds.com/games/slots/regal-riches-prosperity-pearl/",
+      "sourceLastUpdated":"2026-08-03",
+      "observedAdvice":{
+        "blueMeterEntryPrior":8,
+        "purpleMeterEntryPrior":56,
+        "greenMeterEntryPrior":81,
+        "yellowMeterEntryPrior":106,
+        "sourceExplicitlySaysBreakEvenUnknown":true,
+        "checkAllBetLevels":true
+      },
+      "shadowUse":"Center discovery grids around these values, never treat them as exact Betfair Spain break-even thresholds.",
+      "betfairSpainThresholdVerified":false
+    }
+  ],
+  "scientificUse":{
+    "discoveryCanUse":true,
+    "validationCanEvaluateFrozenPrior":true,
+    "holdoutCanEvaluateFrozenPrior":true,
+    "maySetOperatorExecutionThreshold":false,
+    "exactSpainModelMustOverridePrior":true
+  },
+  "hardGuards":{
+    "expertOpinionIsNotExactEv":true,
+    "physicalOrOtherDeploymentThresholdCannotTransfer":true,
+    "differentRtpCanChangeThreshold":true,
+    "noAutomaticBetting":true,
+    "realMoneyAllowed":false
+  },
+  "execution":{"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
