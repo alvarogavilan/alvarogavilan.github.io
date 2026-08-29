@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {screenRhinoFiveRegularCoins} from '../edge-backend/src/rhino-coins-five-sticky-screen-v1.mjs';
+let r=screenRhinoFiveRegularCoins({totalStakeEUR:1,visibleRegularBonusCoinValuesX:[1,1,1,1,1]});
+assert.equal(r.ok,true);
+assert.equal(r.metrics.visibleCoinFloorX,5);
+assert.equal(r.metrics.completionPayoutFloorX,6);
+assert.equal(r.metrics.breakEvenCompletionProbabilityPct,16.66666667);
+assert.equal(r.practiceVerdict,'WAIT_FOR_EXACT_CURRENT_SAVED_STATE');
+r=screenRhinoFiveRegularCoins({totalStakeEUR:1,visibleRegularBonusCoinValuesX:[1,2,3,4,5],exactCurrentStateObserved:true});
+assert.equal(r.metrics.completionPayoutFloorX,16);
+assert.equal(r.practiceVerdict,'WAIT_FOR_PROSPECTIVE_REGULAR_COIN_PROBABILITY');
+r=screenRhinoFiveRegularCoins({totalStakeEUR:1,visibleRegularBonusCoinValuesX:[1,2,3,4,5],exactCurrentStateObserved:true,probabilityAtLeastOneNewRegularBonusCoinNextSpin:.07});
+assert.equal(r.practiceVerdict,'CONSERVATIVE_POSITIVE_RHINO_FIVE_COIN_CANDIDATE');
+assert.equal(r.execution.realMoneyAllowed,false);
+r=screenRhinoFiveRegularCoins({totalStakeEUR:1,visibleRegularBonusCoinValuesX:[1,2,3,4,5],exactCurrentStateObserved:true,probabilityAtLeastOneNewRegularBonusCoinNextSpin:.05});
+assert.equal(r.practiceVerdict,'NON_POSITIVE_RHINO_LOWER_BOUND');
+console.log('rhino-coins-five-sticky-screen-v1.test.mjs: PASS');
