@@ -1,0 +1,63 @@
+{
+  "version":"practice-lab-execution-results-2026-08-29-v1",
+  "generatedAt":"2026-08-29T16:41:00+02:00",
+  "scope":"LOCAL_COUNTERFACTUAL_PRACTICE_ONLY",
+  "status":"EXECUTED_LOCAL_PRACTICE_RESULTS_NO_PLAY",
+  "realMoneyAllowed":false,
+  "runtime":{"node":"v22.16.0","githubActionsUsed":false},
+  "rouletteFairControl":{
+    "enginePath":"loterias-ai/edge-backend/src/roulette-practice-engine-v1.mjs",
+    "runsPerStrategy":30,
+    "spinsPerRun":250000,
+    "totalSpinsPerStrategy":7500000,
+    "baseUnit":1,
+    "maxBet":1024,
+    "seedRange":"1..30",
+    "results":[
+      {"strategy":"flat-red","weightedNetPerEuro":-0.0271696,"totalStakeUnits":7500000,"netUnits":-203772},
+      {"strategy":"martingale-red","weightedNetPerEuro":-0.0274645077915797,"totalStakeUnits":51100934,"netUnits":-1403462},
+      {"strategy":"fibonacci-red","weightedNetPerEuro":-0.02651995619893189,"totalStakeUnits":49039900,"netUnits":-1300536},
+      {"strategy":"straight-17","weightedNetPerEuro":-0.0309664,"totalStakeUnits":7500000,"netUnits":-232248},
+      {"strategy":"neighbors5-around-17","weightedNetPerEuro":-0.02706208,"totalStakeUnits":37500000,"netUnits":-1014828},
+      {"strategy":"axa-like-random-set-18-three-spins","weightedNetPerEuro":-0.027831466666666665,"totalStakeUnits":135000000,"netUnits":-3757248}
+    ],
+    "exactEuropeanSingleZeroHouseEdgePerEuro":-0.02702702702702703,
+    "interpretation":"Across independent seeds, progression and recent-history/random-set style betting do not manufacture positive expectation on a fair European single-zero generator. High-variance single-number estimates converge more slowly, but no strategy produced a reproducible positive weighted ROI."
+  },
+  "rouletteControlledBiasPositiveControl":{
+    "enginePath":"loterias-ai/edge-backend/src/roulette-practice-engine-v1.mjs",
+    "spins":1000000,
+    "seed":29,
+    "syntheticBias":{"pocket":17,"relativeWeight":1.10,"operatorFact":false},
+    "results":[
+      {"strategy":"straight-17","netPerEuro":0.06938,"profitUnits":69380,"totalStakeUnits":1000000},
+      {"strategy":"neighbors5-around-17","netPerEuro":-0.007552,"profitUnits":-37760,"totalStakeUnits":5000000},
+      {"strategy":"axa-like-random-set-18-three-spins","netPerEuro":-0.027138,"profitUnits":-488484,"totalStakeUnits":18000000}
+    ],
+    "interpretation":"The simulator produces positive EV when a real structural probability defect is deliberately injected and the strategy targets that defect. This validates the lab as a falsification/control environment; the synthetic bias is not evidence about any casino table."
+  },
+  "axaRecentHistoryProxy":{
+    "enginePath":"loterias-ai/edge-backend/src/axa-history-strategy-lab-v1.mjs",
+    "parameters":{"lookback":6,"minRepeats":2,"neighborRadius":0,"maxNumbers":12,"horizon":3,"resetAfterHit":true},
+    "runs":30,
+    "spinsPerRun":250000,
+    "fairGenerator":{"weightedNetPerEuro":-0.02225079759164148,"totalStakeUnits":3571063,"netUnits":-79459},
+    "syntheticBias17Weight1_10":{"weightedNetPerEuro":-0.02176339270093425,"totalStakeUnits":3572375,"netUnits":-77747},
+    "syntheticBias17Weight1_50":{"weightedNetPerEuro":-0.013455176095405069,"totalStakeUnits":3585386,"netUnits":-48242},
+    "interpretation":"A generic repeated-number/history strategy still failed to become positive even when one pocket was deliberately biased, because it did not reliably target the actual defect. This reinforces the need for exact wheel-specific anomaly detection rather than recent-number folklore."
+  },
+  "slotStakeLadderExample":{
+    "enginePath":"loterias-ai/edge-backend/src/slot-bet-ladder-practice-v1.mjs",
+    "userPattern":[{"stakeEUR":0.40,"spins":15},{"stakeEUR":0.60,"spins":10},{"stakeEUR":1.00,"spins":5}],
+    "totalSpins":30,
+    "totalCoinInEUR":17.00,
+    "constantRtpResultFormula":"expectedLossEUR = 17 * (1 - RTP)",
+    "syntheticExampleOnly":{"rtpPct":96,"expectedLossEUR":0.68,"operatorFact":false},
+    "orderInvariantWhen":{"sameOutcomeDistributionAcrossStakes":true,"payoutsScaleProportionallyWithStake":true,"noVerifiedStakeDependentMechanic":true},
+    "realExceptionClasses":["stake-specific RTP","jackpot eligibility changes with stake","jackpot trigger probability changes with stake","persistent state separated by denomination/bet level","feature mode or side bet changes the math","non-proportional jackpot award/cap"],
+    "interpretation":"The 0.40x15 -> 0.60x10 -> 1.00x5 ritual has no independent EV term. It only becomes mathematically relevant on an exact game where one of the exception classes is verified."
+  },
+  "axaStaticAuditBinding":"loterias-ai/edge-live/evidence/axa-roulette-software-audit-2026-08-29-v1.json",
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{"syntheticBiasIsNotCasinoEvidence":true,"singleRunProfitIsNotEdge":true,"marketingVideoWinsAreNotHoldoutEvidence":true,"unknownExecutableWasNeverRun":true,"noAutomaticBetting":true}
+}
