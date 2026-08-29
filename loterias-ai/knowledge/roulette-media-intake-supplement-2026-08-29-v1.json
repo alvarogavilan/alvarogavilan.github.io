@@ -1,0 +1,60 @@
+{
+  "version":"roulette-media-intake-supplement-2026-08-29-v1",
+  "generatedAt":"2026-08-29T16:55:00+02:00",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "status":"MEDIA_ABSORBED_DISCOVERY_ONLY_NO_PLAY",
+  "realMoneyAllowed":false,
+  "policy":{"videoCanSuggestVariables":true,"videoCanProveExecutionEdge":false,"sponsoredOrOutcomeVideoCannotSetThreshold":true,"creatorClaimsMustSurviveIndependentProspectiveHoldout":true},
+  "observations":[
+    {
+      "id":"ROULETTE_CALCULATORS_DEALER_TRACKING_COURSE",
+      "url":"https://www.youtube.com/watch?v=Fj6m8J-vCvY",
+      "channel":"Roulette Calculators",
+      "published":"2024-04-18",
+      "claimClass":"CREATOR_DEALER_SIGNATURE_CLAIM",
+      "absorbedDiscoveryVariables":["ball release point","dealer rotation speed","spin direction","dealer identity","wheel sector","dealer change","short-session stability"],
+      "rejectedAsExecutionEvidence":["claims of proven consistent winning","use of progression systems as an edge source","selection of a dealer from the same data later used to claim performance"],
+      "requiredEDGEValidation":["exact table and wheel identity","candidate frozen before holdout","prospective independent spins","multiple-testing control","conservative RTP lower bound above 100 percent"]
+    },
+    {
+      "id":"ROULETTE_CALCULATORS_DEALER_TRACKER_TUTORIAL",
+      "url":"https://www.youtube.com/watch?v=Vi2ClfHE2YU",
+      "channel":"Roulette Calculators",
+      "published":"2021-10-22",
+      "claimClass":"CREATOR_TRACKING_SOFTWARE_CLAIM",
+      "absorbedDiscoveryVariables":["dealer identity","historical landing sector","dealer-change reset","flat-vs-progression separation"],
+      "negativeEvidence":"The description itself acknowledges no roulette system wins every time and mixes the claimed dealer signature with Martingale/Fibonacci/reverse-Martingale systems, so profitability claims are not scientifically isolatable from the underlying hypothesis.",
+      "executionUseAllowed":false
+    },
+    {
+      "id":"MEGA_FIRE_BLAZE_CREATOR_SESSION",
+      "url":"https://www.youtube.com/watch?v=BBm9A6O1VJE",
+      "channel":"Roulette Calculators",
+      "published":"2022-07-27",
+      "claimClass":"CREATOR_SESSION_OUTCOME",
+      "absorbedDiscoveryVariables":["live dealer identity","bonus roulette product identity","dealer tracker claim"],
+      "negativeEvidence":"One session and a reported win do not estimate out-of-sample EV; creator explicitly warns results vary and gambling can lose money.",
+      "executionUseAllowed":false
+    },
+    {
+      "id":"MEGA_FIRE_BLAZE_SPANISH_SYSTEM_VIDEO",
+      "url":"https://www.youtube.com/watch?v=ULU7_IwMQiI",
+      "channel":"PKM - Casinos y juegos con cartas",
+      "published":"2023-11-13",
+      "claimClass":"ENTERTAINMENT_SYSTEM_CLAIM",
+      "negativeEvidence":"The creator explicitly frames casino play as entertainment rather than a business. No independent EV proof is provided.",
+      "executionUseAllowed":false
+    }
+  ],
+  "independentCorroboration":[
+    {"url":"https://pubmed.ncbi.nlm.nih.gov/23020489/","class":"PEER_REVIEWED_PHYSICS","finding":"Physical roulette has deterministic information in initial wheel/ball state under experimental conditions; this supports measuring physical variables but does not validate creator dealer-signature claims."},
+    {"url":"https://arxiv.org/abs/1609.09601","class":"ACADEMIC_PREPRINT_REAL_ONLINE_WHEEL_DATA","finding":"10,980 spins from a real online European wheel were analyzed with backtesting/walk-forward methods, supporting large-sample out-of-sample methodology."},
+    {"url":"https://games.evolution.com/es/casino-en-vivo/ruleta-en-vivo/lightning-roulette/","class":"PROVIDER_OFFICIAL","finding":"Lightning Lucky Numbers are generated after betting time ends, so reactive multiplier chasing is structurally impossible from the public mechanic."}
+  ],
+  "softwareBindings":[
+    "loterias-ai/edge-backend/src/roulette-edge-lab-v1.mjs",
+    "loterias-ai/edge-backend/src/roulette-prospective-holdout-validator-v1.mjs",
+    "loterias-ai/edge-backend/src/evidence-fusion-engine-v1.mjs"
+  ],
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
