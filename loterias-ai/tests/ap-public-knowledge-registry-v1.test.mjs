@@ -1,11 +1,14 @@
 import assert from 'node:assert/strict';
-import {getApPublicKnowledgeRegistry,evaluateMustHitByCandidate,evaluateOceanMagicDeployment,evaluateRegalRichesDeployment,getLotteryRuleOverlaySearchTargets} from '../edge-backend/src/ap-public-knowledge-registry-v1.mjs';
+import {getApPublicKnowledgeRegistry,evaluateMustHitByCandidate,evaluateOceanMagicDeployment,evaluateOnlineInitialStateCandidate,evaluateRegalRichesDeployment,getLotteryRuleOverlaySearchTargets} from '../edge-backend/src/ap-public-knowledge-registry-v1.mjs';
 
 const registry=getApPublicKnowledgeRegistry();
 assert.equal(registry.execution.decision,'NO_PLAY');
 assert.equal(registry.execution.realMoneyAllowed,false);
 assert.equal(registry.hardGuards.youtubeIsDiscoveryNotExecutionAuthority,true);
+assert.equal(registry.hardGuards.multiAccountCyclingForbidden,true);
 assert.equal(registry.categories.TRUE_MUST_HIT_BY.ordinaryProgressiveClosenessIsSufficient,false);
+assert.equal(registry.categories.ONLINE_PERSISTENT_INITIAL_STATE.crossPlayerInheritanceRequired,false);
+assert.equal(registry.categories.ONLINE_PERSISTENT_INITIAL_STATE.multiAccountCyclingAllowed,false);
 assert.equal(registry.categories.REGAL_RICHES_PERSISTENT_MHB.creatorEntryThresholdsAreExecutionAuthority,false);
 assert.equal(registry.categories.REGAL_RICHES_PERSISTENT_MHB.familyRuleCandidates.purpleMinorMustHitBy,75);
 assert.equal(registry.categories.REGAL_RICHES_PERSISTENT_MHB.familyRuleCandidates.greenMajorMustHitBy,100);
@@ -16,52 +19,33 @@ assert.equal(fakeNearMax.admittedForExactEvResearch,false);
 assert.ok(fakeNearMax.warnings.includes('NEAR_MAXIMUM_IS_NOT_MHB_EVIDENCE'));
 assert.equal(fakeNearMax.execution.realMoneyAllowed,false);
 
-const researchReady=evaluateMustHitByCandidate({
-  explicitMustHitByRuleVerified:true,
-  exactBoundaryVerified:true,
-  currentMeterVerified:true,
-  qualifyingStakeVerified:true,
-  exactServedConfigurationVerified:true,
-  baseCostModelVerified:true
-});
+const researchReady=evaluateMustHitByCandidate({explicitMustHitByRuleVerified:true,exactBoundaryVerified:true,currentMeterVerified:true,qualifyingStakeVerified:true,exactServedConfigurationVerified:true,baseCostModelVerified:true});
 assert.equal(researchReady.admittedForExactEvResearch,true);
-assert.equal(researchReady.execution.decision,'NO_PLAY');
 assert.equal(researchReady.execution.realMoneyAllowed,false);
 
-const oceanCrossDeployment=evaluateOceanMagicDeployment({
-  exactIgtProviderFingerprintVerified:true,
-  persistentRuleVerified:true,
-  preWagerStateVisible:true,
-  crossPlayerPersistenceVerified:false,
-  stateSpecificEvVerified:false
-});
+const oceanCrossDeployment=evaluateOceanMagicDeployment({exactIgtProviderFingerprintVerified:true,persistentRuleVerified:true,preWagerStateVisible:true,crossPlayerPersistenceVerified:false,stateSpecificEvVerified:false});
 assert.equal(oceanCrossDeployment.researchStage,'EXACT_DEPLOYMENT_INHERITANCE_REQUIRED');
 assert.equal(oceanCrossDeployment.currentObservationCanUsePhysicalOrForeignVideoAsSpanishState,false);
 assert.equal(oceanCrossDeployment.execution.realMoneyAllowed,false);
 
-const regalHeuristicOnly=evaluateRegalRichesDeployment({
-  gameId:'regal-riches-aig',
-  creatorSuggestedEntryThresholdUsed:true,
-  servedBoundaries:{purpleMinorMustHitBy:75,greenMajorMustHitBy:100,yellowMegaMustHitBy:125}
-});
+const initialStateBlocked=evaluateOnlineInitialStateCandidate({multiAccountCyclingProposed:true,historicalOceanMagicEdgeTransferred:true});
+assert.equal(initialStateBlocked.admittedForExactEvResearch,false);
+assert.ok(initialStateBlocked.warnings.includes('MULTI_ACCOUNT_CYCLING_FORBIDDEN'));
+assert.ok(initialStateBlocked.warnings.includes('HISTORICAL_OCEAN_MAGIC_EDGE_CANNOT_TRANSFER'));
+assert.equal(initialStateBlocked.execution.realMoneyAllowed,false);
+
+const initialStateResearchReady=evaluateOnlineInitialStateCandidate({exactServedConfigurationVerified:true,preWagerInitialStateVerified:true,initialStateScopeVerified:true,exactTheoreticalRtpVerified:true,stateSpecificEvVerified:true,repeatabilityVerified:true});
+assert.equal(initialStateResearchReady.admittedForExactEvResearch,true);
+assert.equal(initialStateResearchReady.doesNotRequireCrossPlayerInheritance,true);
+assert.equal(initialStateResearchReady.execution.decision,'NO_PLAY');
+
+const regalHeuristicOnly=evaluateRegalRichesDeployment({gameId:'regal-riches-aig',creatorSuggestedEntryThresholdUsed:true,servedBoundaries:{purpleMinorMustHitBy:75,greenMajorMustHitBy:100,yellowMegaMustHitBy:125}});
 assert.equal(regalHeuristicOnly.admittedForStateSpecificEvResearch,false);
 assert.equal(regalHeuristicOnly.exactBoundariesVerified,false);
 assert.ok(regalHeuristicOnly.warnings.includes('CREATOR_ENTRY_THRESHOLD_IS_DISCOVERY_ONLY'));
 assert.equal(regalHeuristicOnly.execution.realMoneyAllowed,false);
 
-const regalReloadOnly=evaluateRegalRichesDeployment({
-  gameId:'regal-riches-aig',
-  exactIgtProviderFingerprintVerified:true,
-  exactServedRulesFingerprintVerified:true,
-  persistentMeterRuleVerified:true,
-  preWagerMeterStateVisible:true,
-  reloadPersistenceVerified:true,
-  crossPlayerPersistenceVerified:false,
-  exactTheoreticalRtpVerified:true,
-  exactStakeConfigurationVerified:true,
-  stateSpecificEvVerified:true,
-  servedBoundaries:{purpleMinorMustHitBy:75,greenMajorMustHitBy:100,yellowMegaMustHitBy:125}
-});
+const regalReloadOnly=evaluateRegalRichesDeployment({gameId:'regal-riches-aig',exactIgtProviderFingerprintVerified:true,exactServedRulesFingerprintVerified:true,persistentMeterRuleVerified:true,preWagerMeterStateVisible:true,reloadPersistenceVerified:true,crossPlayerPersistenceVerified:false,exactTheoreticalRtpVerified:true,exactStakeConfigurationVerified:true,stateSpecificEvVerified:true,servedBoundaries:{purpleMinorMustHitBy:75,greenMajorMustHitBy:100,yellowMegaMustHitBy:125}});
 assert.equal(regalReloadOnly.exactBoundariesVerified,true);
 assert.equal(regalReloadOnly.admittedForStateSpecificEvResearch,false);
 assert.ok(regalReloadOnly.warnings.includes('RELOAD_DOES_NOT_PROVE_CROSS_PLAYER_INHERITANCE'));
