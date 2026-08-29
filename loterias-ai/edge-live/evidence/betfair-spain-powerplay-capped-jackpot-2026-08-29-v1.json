@@ -1,0 +1,49 @@
+{
+  "version":"betfair-spain-powerplay-capped-jackpot-2026-08-29-v1",
+  "generatedAt":"2026-08-29T21:00:00+02:00",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "operator":"Betfair España",
+  "selectedTitle":"Hit Bar Gold PowerPlay Jackpot",
+  "operatorRules":{
+    "source":"https://casino.betfair.es/juego/hitbargold-ppjkp-cptn",
+    "helpUpdated":"2024-04-22",
+    "jackpots":["Mega Powerplay","Peak Powerplay","Mini Powerplay"],
+    "megaProgressive":true,
+    "peakTickerShowsValue":true,
+    "peakCanTriggerBeforeTickerReachesShownAmount":true,
+    "miniTickerShowsValue":true,
+    "miniCanTriggerBeforeTickerReachesShownAmount":true,
+    "anyMainGameSpinAnyAmountCanTrigger":true,
+    "higherBetHigherJackpotProbability":true,
+    "contributionPctOfBet":2.99,
+    "networkedAcrossParticipatingPowerplayGamesCasinos":true,
+    "rtpIncludingJackpotContributionPct":94.99,
+    "progressivePrizesExcludedFromRtpCalculationWording":true
+  },
+  "crossNetworkCapReferences":{
+    "miniCap":200,
+    "peakCap":3000,
+    "currency":"GBP in external current operator reference",
+    "bindingToBetfairSpain":false,
+    "note":"Current external Powerplay operator rules explicitly call Mini upper limit 200 and Peak upper limit 3000; recent public Playtech-family winner tracking clusters Peak awards around 3000-3400 in USD. Neither can populate Betfair Spain EUR caps until operator/session ticker rules bind exact shown amount."
+  },
+  "remainingGates":[
+    "Exact current Betfair Spain Mini Powerplay amount and displayed cap",
+    "Exact current Betfair Spain Peak Powerplay amount and displayed cap",
+    "Exact conditional trigger/hazard function versus meter or a defensible lower bound",
+    "Exact minimum total stake for a selected low-loss Powerplay title",
+    "Clarify base-game loss accounting versus jackpot contribution for EV calculation",
+    "Prospective meter/reset observations on same Betfair Spain network"
+  ],
+  "priority":"P0_CAPPED_JACKPOT",
+  "hardGuards":{
+    "externalGBP3000And200CannotBindSpain":true,
+    "shownTickerAmountMustBeObservedInSpain":true,
+    "higherChanceDoesNotDefineHazard":true,
+    "noWagerProbe":true,
+    "noAutomaticBetting":true,
+    "realMoneyAllowed":false
+  },
+  "execution":{"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
