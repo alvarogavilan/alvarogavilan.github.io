@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {evaluateState9ParkingOption,sweepState9ParkingSensitivity} from '../edge-backend/src/streak-of-luck-state9-parking-option-v1.mjs';
+let r=evaluateState9ParkingOption({observedStreakState:9,totalStakeEUR:1,jackpotAwardFloorEUR:175,sixtyFreeSpinsValueFloorEUR:0,probabilityNextResultWinning:.2,externalJackpotResetHazardPerPeriod:.05,jackpotGrowthEURPerPeriod:5,waitPeriods:1});
+assert.equal(r.ok,true);
+assert.equal(r.execution.realMoneyAllowed,false);
+assert.equal(r.metrics.exerciseNowNetEvEUR,34);
+assert.equal(r.metrics.survivalProbability,.95);
+assert.ok(r.metrics.waitOptionExpectedValueEUR>0);
+r=evaluateState9ParkingOption({observedStreakState:8,totalStakeEUR:1,jackpotAwardFloorEUR:175,probabilityNextResultWinning:.2,externalJackpotResetHazardPerPeriod:.05,jackpotGrowthEURPerPeriod:5,waitPeriods:1});
+assert.equal(r.ok,false);
+const s=sweepState9ParkingSensitivity({totalStakeEUR:1,jackpotAwardFloorEUR:175,sixtyFreeSpinsValueFloorEUR:0,waitPeriods:1});
+assert.equal(s.rows.length,150);
+assert.equal(s.execution.decision,'NO_PLAY');
+console.log('streak-of-luck-state9-parking-option-v1.test.mjs: PASS');
