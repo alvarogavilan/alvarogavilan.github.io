@@ -1,0 +1,51 @@
+{
+  "version": "p0-zero-wager-pc-capture-manifest-2026-08-29-v2-regal-addendum",
+  "generatedAt": "2026-08-29T13:12:00+02:00",
+  "status": "FROZEN_PASSIVE_CAPTURE_ADDENDUM_NO_PLAY",
+  "extends": "loterias-ai/edge-live/evidence/p0-zero-wager-pc-capture-manifest-2026-08-29-v1.json",
+  "realMoneyAllowed": false,
+  "newLane": {
+    "researchRank": 4,
+    "lane": "betfair-regal-riches",
+    "target": "Betfair España — Regal Riches",
+    "expectedExactProductUrl": "https://casino.betfair.es/juego/regal-riches-aig",
+    "exactObservedLauncherGameId": "regal-riches-aig",
+    "captureMode": "ZERO_WAGER_PASSIVE_ONLY",
+    "firstCaptureGoal": [
+      "Exact real launcher regal-riches-aig followed by exact served provider/build/config responses",
+      "In-game Help/Info/Rules text naming provider/version/RTP/stake configuration if served",
+      "All response structures that expose Progressive Wild / Guaranteed Wild / colored meter state",
+      "Pre-wager visible meter state before any spin",
+      "Any zero-wager denomination/bet-level state separation visible in UI",
+      "Reload state comparison without wagering"
+    ],
+    "cannotBeClosedByOneCapture": [
+      "Cross-player inheritance",
+      "State-specific positive EV",
+      "Prospective profitability validation",
+      "Execution authorization"
+    ],
+    "analysisCommand": "node loterias-ai/scripts/analyze-betfair-regal-riches-har.mjs betfair-regal-riches.har"
+  },
+  "captureSafety": {
+    "openDevToolsBeforeGame": true,
+    "preserveLog": true,
+    "disableCacheWhileDevToolsOpen": true,
+    "clearNetworkBeforeTargetLaunch": true,
+    "openHelpRulesWithoutSpin": true,
+    "doNotPressSpin": true,
+    "doNotUseFreeSpinsOrPromotions": true,
+    "exportHarWithContent": true,
+    "rawHarMustRemainPrivate": true
+  },
+  "hardGuards": {
+    "oneAccountCannotProveCrossPlayerPersistence": true,
+    "reloadPersistenceCannotProveCrossPlayerPersistence": true,
+    "visibleMeterDoesNotProvePositiveEv": true,
+    "captureDoesNotAuthorizeExecution": true,
+    "noWagerProbe": true,
+    "noAutomaticBetting": true,
+    "realMoneyAllowed": false
+  },
+  "execution": {"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
