@@ -1,0 +1,70 @@
+{
+  "version": "botemania-ultimate-vp-iphone-zero-wager-capture-protocol-2026-08-29-v1",
+  "generatedAt": "2026-08-29T12:00:00+02:00",
+  "status": "FROZEN_MANUAL_EVIDENCE_PROTOCOL_NO_PLAY",
+  "target": {
+    "operator": "Botemania Spain",
+    "game": "Ultimate Video Poker",
+    "variant": "Jotas o Mejor Progresivo",
+    "url": "https://www.botemania.es/juegos/casino-online/ultimate-video-poker"
+  },
+  "purpose": "Use an iPhone-only, zero-wager manual evidence package to try to close the two remaining decisive rule bundles: exact progressive jackpot trigger and exact jackpot-qualifying wager structure.",
+  "captureOrder": [
+    {
+      "id": "A_SELECTED_VARIANT_AND_METER",
+      "required": true,
+      "instruction": "Open Ultimate Video Poker, select Jotas o Mejor Progresivo without pressing Jugar, and capture the full game screen showing the selected variant, current jackpot amount, coin value, hand count, total wager if displayed, and the play button area.",
+      "canClose": ["current variant identity", "current visible jackpot amount", "visible control state"],
+      "cannotAloneClose": ["jackpot qualifying stake", "positive EV"]
+    },
+    {
+      "id": "B_FULL_PAYTABLE",
+      "required": true,
+      "instruction": "Open the paytable and capture every visible row, especially ordinary Royal Flush and the separate Bote/Jackpot row, including any footnote, icon, suit marker or qualification text.",
+      "canClose": ["exact current paytable text", "possible exact jackpot trigger if explicitly stated"],
+      "cannotAloneClose": ["qualifying wager unless explicitly stated"]
+    },
+    {
+      "id": "C_HELP_RULES_PROGRESSIVE",
+      "required": true,
+      "instruction": "Open Help/Rules/Info and capture every page or scroll section containing any of these concepts: Bote, Jackpot, Progresivo, Royal Flush, Escalera Real, Picas, Spades, moneda, créditos, manos, apuesta máxima, elegible, optar, premio progresivo.",
+      "canClose": ["exact jackpot trigger if explicit", "exact qualifying coin/credit/hand/total-wager rule if explicit", "rules fingerprint"],
+      "highestValue": true
+    },
+    {
+      "id": "D_ZERO_WAGER_CONTROL_STATES",
+      "required": false,
+      "instruction": "Without pressing Jugar, change only the number of hands and/or coin value through available UI controls and capture the screen if the jackpot row, jackpot amount, eligibility badge, total wager or Bote display changes/enables/disables. Do not place any wager.",
+      "canClose": ["UI-state relationship candidate"],
+      "cannotAloneClose": ["jackpot eligibility unless the UI explicitly states eligibility"]
+    }
+  ],
+  "acceptance": {
+    "jackpotTriggerVerifiedOnlyIf": "Current Botemania in-game paytable/help/rules explicitly identifies the winning hand/suit or an equally exact current-game rule.",
+    "jackpotQualifyingStakeVerifiedOnlyIf": "Current Botemania in-game help/rules or an explicit eligibility indicator identifies the exact coin value, credits per hand, hand count, total wager or max-bet condition required for the jackpot.",
+    "historicalGamesysRoyalOfSpadesCannotSelfPromote": true,
+    "visibleEUR2_50MinimumCannotSelfPromoteToJackpotStake": true,
+    "jackpotVisibilityAloneDoesNotProveEligibility": true
+  },
+  "privacy": {
+    "cropOrHide": ["username", "balance if desired", "email", "account id", "notifications"],
+    "doNotShare": ["password", "one-time codes", "payment details"],
+    "gameRulesAndGameUISafeToShareForReview": true
+  },
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "manualObservationOnly": true,
+    "zeroWager": true,
+    "noSpinRequired": true,
+    "noDepositRequired": true,
+    "noAutomaticBetting": true
+  }
+}
