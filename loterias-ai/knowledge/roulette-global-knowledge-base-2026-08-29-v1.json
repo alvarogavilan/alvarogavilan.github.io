@@ -1,0 +1,93 @@
+{
+  "version":"roulette-global-knowledge-base-2026-08-29-v1",
+  "generatedAt":"2026-08-29T18:00:00Z",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "status":"ABSORBED_GLOBAL_ROULETTE_RESEARCH_NO_PLAY",
+  "realMoneyAllowed":false,
+  "families":[
+    {
+      "id":"FAIR_RNG_ROULETTE",
+      "classification":"NO_HISTORY_PREDICTION_EDGE",
+      "absorbedFacts":["Past numbers, streaks, hot/cold numbers and Martingale-style progressions do not create positive expectation on an independently generated fair wheel."],
+      "researchUse":"Use spin history only for testing reproducible implementation bias, never pattern-chasing."
+    },
+    {
+      "id":"PHYSICAL_WHEEL_PREDICTION",
+      "classification":"PHYSICALLY_POSSIBLE_BUT_ONLINE_TIMING_DEPENDENT",
+      "sources":[
+        {"url":"https://pubmed.ncbi.nlm.nih.gov/23020489/","class":"PEER_REVIEWED_ACADEMIC","finding":"Small and Tse demonstrate that initial wheel/ball position, velocity and acceleration can make a casino-grade physical roulette outcome predictively exploitable in experimental conditions; reported expected return at least 18% in one implemented system."},
+        {"url":"https://research.polyu.edu.hk/en/publications/feasible-implementation-of-a-prediction-algorithm-for-the-game-of/","class":"PEER_REVIEWED_CONFERENCE","finding":"Earlier implemented image-processing/data-analysis system on a casino-grade wheel reported expected return above 40% in the experiment."}
+      ],
+      "onlineGuard":"A physical result model is useless if the operator closes bets before enough post-release motion is observable and actionable after stream/action latency.",
+      "software":"loterias-ai/edge-backend/src/roulette-edge-lab-v1.mjs"
+    },
+    {
+      "id":"STATISTICAL_WHEEL_BIAS",
+      "classification":"RESEARCHABLE_ONLY_WITH_HOLDOUT_AND_MULTIPLE_TESTING_CONTROL",
+      "sources":[
+        {"url":"https://academic.oup.com/jrssig/article/15/6/26/7037774","class":"STATISTICAL_EDUCATION","finding":"Long random sequences naturally contain streaks; roulette systems can look compelling in-sample even when the wheel is fair. True mechanical bias is a distinct empirical question."},
+        {"url":"https://arxiv.org/abs/1609.09601","class":"ACADEMIC_PREPRINT","finding":"A study recorded 10,980 spins from a real online live European roulette wheel and used backtesting/walk-forward methods to investigate bias/profitability; useful as methodology, not proof for any current table."}
+      ],
+      "edgePolicy":{"discoveryValidationSeparated":true,"bonferroniOrEquivalentRequired":true,"prospectiveHoldoutRequired":true,"wheelDealerSegmentationRequiredWhenAvailable":true}
+    },
+    {
+      "id":"LIGHTNING_ROULETTE",
+      "classification":"NO_MULTIPLIER_REACTION_EDGE_FROM_PUBLIC_MECHANIC",
+      "sources":[
+        {"url":"https://games.evolution.com/es/casino-en-vivo/ruleta-en-vivo/lightning-roulette/","class":"PROVIDER_OFFICIAL","finding":"Evolution selects one to five Lucky Numbers and 50x-500x payouts after betting time has ended; ordinary non-multiplied Straight Up wins pay 29:1, other standard bets keep standard roulette payouts."},
+        {"url":"https://casino.betfair.es/juego/live-light-roulette-cev","class":"CURRENT_SPAIN_OPERATOR","finding":"Betfair Spain currently lists Evolution Lightning Roulette with 97.30% page headline; operator-page RTP presentation must be reconciled with bet-type-specific rules before economics."},
+        {"url":"https://casino.williamhill.es/ruleta/first-person-lightning-roulette","class":"CURRENT_SPAIN_OPERATOR_RULES","finding":"William Hill Spain publishes 97.10% optimal theoretical RTP for Straight Up and 97.30% for other wagers in First Person Lightning Roulette."},
+        {"url":"https://www.youtube.com/watch?v=_uDLGQxCwug","class":"CREATOR_VIDEO_SPONSORED","finding":"A creator markets a 'best strategy' around a big multiplier win. Outcome/sponsorship content is not evidence of positive EV."}
+      ],
+      "hardGuards":{"luckyNumbersRevealedAfterBetCloseCannotBeChased":true,"bigWinVideoCannotProveEdge":true,"betTypeSpecificRtpMustNotBeCollapsed":true}
+    },
+    {
+      "id":"QUANTUM_ROULETTE",
+      "classification":"RANDOM_MULTIPLIER_VARIANT_NO_PUBLIC_EDGE",
+      "sources":[
+        {"url":"https://www.playtech.com/playtech-live-launches-first-to-market-quantum-roulette-in-spain/","class":"PROVIDER_OFFICIAL_SPAIN_LAUNCH","finding":"Playtech Quantum Roulette launched in Spain on Single Zero rules with up to five 50x-500x multipliers plus random Quantum Boost/Leap events."},
+        {"url":"https://casino.betfair.es/juego/live-quantum-roulette-cptl","class":"CURRENT_SPAIN_OPERATOR","finding":"Betfair Spain currently lists Quantum Roulette at 97.30% RTP and states multipliers apply only to Straight Up positions."},
+        {"url":"https://www.youtube.com/watch?v=cKyCQf48WAQ","class":"CREATOR_REVIEW_VIDEO","finding":"Public review/strategy video retained for interface/mechanic discovery only."}
+      ]
+    },
+    {
+      "id":"RED_DOOR_ROULETTE_SPAIN",
+      "classification":"CURRENT_SPAIN_BONUS_ROULETTE_NO_EDGE_FOUND",
+      "sources":[
+        {"url":"https://www.evolution.com/news/evolution-launches-red-door-roulette-in-spain","class":"PROVIDER_OFFICIAL","finding":"Evolution launched localized Ruleta Puerta Roja in Spain in November 2025; 3-15 bonus numbers are randomly selected and can lead to the Crazy Time bonus if covered and hit."},
+        {"url":"https://casino.betfair.es/juego/ruleta-puerta-roja-aev","class":"CURRENT_SPAIN_OPERATOR","finding":"Betfair Spain lists a 97.09%-97.30% RTP range."}
+      ]
+    },
+    {
+      "id":"MEGA_FIRE_BLAZE_ROULETTE",
+      "classification":"BONUS_MULTIPLIER_ROULETTE_NO_PERSISTENT_EDGE_FOUND",
+      "sources":[
+        {"url":"https://casino.betfair.es/juego/mega-fb-roulete-cptl","class":"CURRENT_SPAIN_OPERATOR","finding":"Betfair Spain lists Playtech Mega Fire Blaze Roulette Live at 97.30% RTP; bonus-eligible inside bets can trigger a random Fire Blaze feature with multipliers and fixed jackpot multipliers."},
+        {"url":"https://www.youtube.com/watch?v=OMH5uyIUBYE","class":"CREATOR_VIDEO","finding":"Video shows a jackpot outcome; retained as visual feature discovery only, never positive-EV evidence."},
+        {"url":"https://www.youtube.com/watch?v=5sMnhdZIk2M","class":"CREATOR_VIDEO","finding":"Video shows multiple jackpot outcomes; outcome clustering is not evidence of a predictive state."}
+      ]
+    },
+    {
+      "id":"AGE_OF_THE_GODS_LIVE_ROULETTE_PROGRESSIVE",
+      "classification":"STRUCTURAL_PROGRESSIVE_NETWORK_RESEARCH_CANDIDATE",
+      "sources":[
+        {"url":"https://casino.betfair.es/juego/live-roulette-cev","class":"CURRENT_SPAIN_OPERATOR_PAGE","finding":"Betfair Spain's current Live Roulette page states the title has the multi-level Age of Gods jackpot with Power, Extra Power, Super Power and Ultimate Power."},
+        {"url":"https://www.playtech.com/playtech-launches-age-of-the-gods-live-roulette/","class":"PROVIDER_OFFICIAL","finding":"Playtech states Age of the Gods Live Roulette shares casino liquidity with the progressive jackpot network; every spin contributes a small percentage and players can win one of four progressive tiers."},
+        {"url":"https://casino.betfair.es/juego/age-of-the-gods-furious-4-cptn","class":"CURRENT_SAME_OPERATOR_NETWORK_GAME","finding":"Betfair Spain publishes Age of the Gods network mechanics on a linked slot: 0.99% contribution, random trigger after any main-game spin, chance proportional to wager size, and guaranteed one-of-four-tier award after entry. This is network-mechanic corroboration, not exact Live Roulette accounting."},
+        {"url":"https://casino.betfair.es/juego/age-of-the-gods-cptn","class":"CURRENT_SAME_OPERATOR_NETWORK_GAME","finding":"Betfair Spain publicly displays a current Age of the Gods jackpot amount on the original network slot; public page values are snapshot candidates and must be exact-time/network-bound before analysis."}
+      ],
+      "software":"loterias-ai/edge-backend/src/progressive-network-observer-v1.mjs",
+      "requiredForPromotion":["exact current Live Roulette runtime/provider binding","exact live eligibility and contribution accounting","synchronized four-tier ticker snapshots","reset/win event history","stake-proportional trigger rule bound to the exact live product","base-game RTP excluding jackpot contribution","prospective hazard stability holdout"]
+    },
+    {
+      "id":"REALIZED_MONTHLY_PAYOUT_GUARD",
+      "classification":"NOT_AN_EDGE_SIGNAL",
+      "sources":[
+        {"url":"https://casino.betfair.es/en-es/info/rtp-info-en","class":"CURRENT_OPERATOR_REALIZED_PAYOUT_REPORT","finding":"Betfair describes the table as average payout calculated over the previous month; entries can exceed 100% because they are realized historical outcomes, not a guaranteed theoretical future return."}
+      ],
+      "hardGuard":"Never promote a game because a previous-month payout report is above 100%."
+    }
+  ],
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{"rouletteSystemsDoNotOverrideHouseEdge":true,"creatorVideosDiscoveryOnly":true,"physicalWheelResearchRequiresExactOnlineBetWindow":true,"monthlyRealizedPayoutNotForecast":true,"crossOperatorRulesCannotPopulateExecution":true,"noAutomaticBetting":true}
+}
