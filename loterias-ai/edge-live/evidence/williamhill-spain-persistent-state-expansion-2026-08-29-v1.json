@@ -1,0 +1,78 @@
+{
+  "version":"williamhill-spain-persistent-state-expansion-2026-08-29-v1",
+  "generatedAt":"2026-08-29T16:08:00Z",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "status":"THREE_EXACT_CURRENT_SPANISH_PER_BET_STATE_TARGETS_NO_PLAY",
+  "realMoneyAllowed":false,
+  "targets":[
+    {
+      "id":"WILLIAMHILL_ES_SNAKES_LADDERS_MEGADICE",
+      "operator":"William Hill Spain",
+      "title":"Snakes & Ladders Megadice",
+      "provider":"Pragmatic",
+      "url":"https://casino.williamhill.es/es-es/slots/snakes-and-ladders-megadice",
+      "exactCurrentOperatorFacts":{
+        "progressSegments":11,
+        "progressDriver":"Wild Dice activates a number of sections according to dice points",
+        "fullProgressTriggersBonusImmediately":true,
+        "progressSavedForEachPossibleBet":true,
+        "switchingBetLoadsZeroOrPreviouslySavedProgress":true,
+        "boardBonusMinimumGuaranteedMultipleOfTotalBet":20,
+        "publishedMinimumRtpPct":94.57,
+        "volatility":"HIGH"
+      },
+      "stateResearch":{"highValueVisibleState":"10_OF_11_SEGMENTS","conservativeOneSpinBreakEvenCompletionProbability":0.05,"reason":"At exactly 10/11, completion awards a bonus with at least 20x total bet. Ignoring every ordinary reel payout and all bonus value above the floor, -1 + 20*p > 0 iff p > 5%."},
+      "unknowns":["exact current bet menu","whether all saved states can be viewed by bet switching before wager","exact probability of at least one qualifying Wild Dice event from 10/11","whether multiple Wild Dice points/line conditions alter completion probability","current exact served build identity"],
+      "execution":"NO_PLAY"
+    },
+    {
+      "id":"WILLIAMHILL_ES_AOTGN_WAYS_OF_THUNDER",
+      "operator":"William Hill Spain",
+      "title":"Age of the Gods Norse: Ways of Thunder",
+      "provider":"Playtech",
+      "url":"https://casino.williamhill.es/slots/aotgn-ways-of-thunder",
+      "exactCurrentOperatorFacts":{
+        "initialWays":45,
+        "levels":[{"level":1,"ways":45},{"level":2,"ways":135},{"level":3,"ways":405},{"level":4,"ways":675},{"level":5,"ways":1125},{"level":6,"ways":3125}],
+        "winningSpinOrTwoScatterAdvancesOneLevel":true,
+        "losingSpinDropsOneLevel":true,
+        "waysLevelSavedByBetAmount":true,
+        "switchingBetLoadsSavedWaysLevel":true,
+        "aotgnJackpotTiers":["Ultimate Power Jackpot","Extra Jackpot"],
+        "jackpotContributionPct":0.55,
+        "anyStakeCanTriggerJackpot":true,
+        "higherStakeIncreasesJackpotChance":true
+      },
+      "stateResearch":{"highValueCandidate":"LEVEL_6_3125_WAYS","reason":"A saved higher-reel level changes the exact current reel configuration seen before the next paid spin. State-specific conditional EV must be measured/modelled; higher ways alone is not assumed positive."},
+      "unknowns":["exact current RTP/base accounting for this title","conditional return distribution by saved level","passive state visibility across bet amounts","served bet menu","current Extra amount boundary/ticker binding for this title"],
+      "execution":"NO_PLAY"
+    },
+    {
+      "id":"WILLIAMHILL_ES_SQUEALIN_RICHES",
+      "operator":"William Hill Spain",
+      "title":"Squealin Riches",
+      "provider":"Games Global",
+      "url":"https://casino.williamhill.es/slots/squealin-riches",
+      "exactCurrentOperatorFacts":{
+        "rtpPct":96.01,
+        "volatility":"HIGH",
+        "bonusProgressBar":true,
+        "eachBonusSymbolAdvancesBar":true,
+        "bonusRouletteTriggeredWhenBarFull":true,
+        "bonusRouletteCanAward":["JACKPOT","PRIZE","FREE_SPINS_ROULETTE"],
+        "progressSavedByEachBetLevel":true
+      },
+      "stateResearch":{"highValueCandidate":"NEAR_FULL_SAVED_PROGRESS_BAR","reason":"Changing bet can select a different saved bonus-bar state. Exact segment count, completion rule and minimum value on completion are still needed before a one-spin threshold can be calculated."},
+      "unknowns":["exact number/scale of progress units","passive visibility across bet levels","minimum guaranteed value of completing bonus roulette","probability distribution of bonus symbols by state and bet","whether current RTP already fully prices persistent bar state"],
+      "execution":"NO_PLAY"
+    }
+  ],
+  "crossTargetConclusion":"The creator-video idea that changing stake may matter is false as a generic spin-count ritual, but exact current Spanish operator rules now prove multiple titles where changing the bet selects a genuinely different persistent state. EDGE therefore scans state, not arbitrary spin counts.",
+  "sources":[
+    "https://casino.williamhill.es/es-es/slots/snakes-and-ladders-megadice",
+    "https://casino.williamhill.es/slots/aotgn-ways-of-thunder",
+    "https://casino.williamhill.es/slots/squealin-riches"
+  ],
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{"creatorSpinLaddersDoNotSelfValidate":true,"perBetPersistenceMustBeExactCurrentOperatorRule":true,"savedStateMustBeVisibleBeforeWager":true,"stateClosenessDoesNotEqualPositiveEv":true,"unknownTriggerProbabilityCannotBeInvented":true,"noWagerProbe":true,"noAutomaticBetting":true}
+}
