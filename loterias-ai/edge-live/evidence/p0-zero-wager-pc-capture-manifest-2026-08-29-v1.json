@@ -1,0 +1,141 @@
+{
+  "version": "p0-zero-wager-pc-capture-manifest-2026-08-29-v1",
+  "generatedAtDate": "2026-08-29",
+  "status": "FROZEN_PASSIVE_CAPTURE_PLAN_NO_PLAY",
+  "realMoneyAllowed": false,
+  "jurisdiction": "Spain",
+  "scope": {
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "passiveObservationOnly": true,
+    "wagersAllowed": false,
+    "automaticBettingAllowed": false,
+    "githubActionsRequired": false
+  },
+  "purpose": "Use the first available desktop browser session to recover the exact served evidence that most efficiently closes the remaining evidence gates on the four highest-priority EDGE lanes. The capture itself never authorizes a wager.",
+  "commonCaptureProtocol": {
+    "browser": "Desktop Chromium-family browser with DevTools Network export available",
+    "beforeOpeningTarget": [
+      "Open DevTools Network before launching the target game.",
+      "Enable Preserve log.",
+      "Disable cache while DevTools is open.",
+      "Clear the Network log immediately before the target launch so the HAR is attributable to one target session."
+    ],
+    "duringCapture": [
+      "Launch only the exact target game/page listed for the lane.",
+      "Allow the game and jackpot/state UI to finish loading without placing a wager.",
+      "Open the exact in-game Help/Rules/Paytable screens when available so served rule bodies can enter the passive capture.",
+      "Do not use any wager/spin/draw/deal button.",
+      "Do not use promotional/free-spin flows."
+    ],
+    "export": [
+      "Export one HAR with content after the target session has fully loaded.",
+      "Keep the original HAR private; EDGE analyzers emit only redacted structural evidence.",
+      "Do not edit timestamps, response bodies, URLs or ordering before analysis."
+    ],
+    "analysisCommand": "node loterias-ai/scripts/analyze-edge-p0-har.mjs <lane> <capture.har>"
+  },
+  "lanes": [
+    {
+      "rank": 1,
+      "lane": "apmccoy",
+      "target": "Betfair España — AP McCoy Sporting Legends™",
+      "exactUrl": "https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn",
+      "firstCaptureGoal": [
+        "Exact launcher -> latest post-launch configuration -> configured ticker binding",
+        "Exact private IMS/jackpotsCasino identity",
+        "Fresh EUR GLOBAL local=0 Daily sljp-1 state if served",
+        "Current amount, guaranteed-hit time, win count and request cadence",
+        "Explicit total-stake menu candidate if served"
+      ],
+      "cannotBeClosedByOneInitialCapture": [
+        "Same-binding cross-GHT survival",
+        "Frozen first-seven scheduled Daily GHT race ledger",
+        "Independent action-latency review",
+        "Final positive-EV execution authorization"
+      ],
+      "laneCommandExample": "node loterias-ai/scripts/analyze-edge-p0-har.mjs apmccoy apmccoy-current.har"
+    },
+    {
+      "rank": 2,
+      "lane": "frank",
+      "target": "bet365 España — Frank Bruno: Sporting Legends",
+      "exactUrl": "https://casino.bet365.es/play/FrankBrunoSL",
+      "firstCaptureGoal": [
+        "Exact public play route -> gpas_slfbruno_pop provenance",
+        "bet365-owned configured sljp-1 transport binding if served",
+        "Fresh exact EUR GLOBAL Daily state candidate",
+        "Explicit served EUR 0.10 total stake",
+        "Served following-day/eligibility rule-review bodies if the operator exposes them",
+        "Modern structured webticker row and legacy/modern calibration candidates if both are present"
+      ],
+      "cannotBeClosedByOneInitialCapture": [
+        "Independent semantic approval",
+        "Same-binding cross-GHT survival",
+        "Prospective race/latency bound",
+        "Final positive-EV execution authorization"
+      ],
+      "laneCommandExample": "node loterias-ai/scripts/analyze-edge-p0-har.mjs frank frank-current.har"
+    },
+    {
+      "rank": 3,
+      "lane": "ultimate-vp",
+      "target": "Botemania — Ultimate Video Poker · Jotas o Mejor Progresivo",
+      "exactUrl": "https://www.botemania.es/juegos/casino-online/ultimate-video-poker",
+      "firstCaptureGoal": [
+        "Current exact target-session marker",
+        "Served in-game rule body defining the separate jackpot-trigger hand",
+        "Served wager/coin/hand-count rule defining exact jackpot qualification",
+        "Body digests suitable for independent review without emitting raw bodies"
+      ],
+      "cannotBeClosedByOneInitialCapture": [
+        "Jackpot-aware exact optimal strategy until trigger and qualifying wager are independently reviewed",
+        "Prospective threshold validation",
+        "Final positive-EV execution authorization"
+      ],
+      "laneCommandExample": "node loterias-ai/scripts/analyze-edge-p0-har.mjs ultimate-vp ultimate-video-poker.har"
+    },
+    {
+      "rank": 4,
+      "lane": "ocean-magic",
+      "target": "EnRacha — Ocean Magic",
+      "exactUrl": "https://www.enracha.es/juegos/ocean-magic",
+      "firstCaptureGoal": [
+        "Exact served provider/build fingerprint",
+        "IGT identity marker rather than title-only inference",
+        "Served rule/config bodies describing persistent bubble-state mechanics if present",
+        "Passive state/config candidates at the exact EnRacha wrapper"
+      ],
+      "additionalZeroWagerVisualGoal": [
+        "Record the visible bubble state before any wager.",
+        "If the UI permits changing displayed bet level without wagering, record each visible state and return to the original level without spinning.",
+        "Reload once without wagering and record whether the same visible state survives."
+      ],
+      "cannotBeClosedByOneAccountCapture": [
+        "Cross-player inheritance of abandoned state",
+        "Exact Spain state-specific EV uplift",
+        "Positive entry threshold",
+        "Final positive-EV execution authorization"
+      ],
+      "laneCommandExample": "node loterias-ai/scripts/analyze-edge-p0-har.mjs ocean-magic ocean-magic.har"
+    }
+  ],
+  "explicitlyFrozenOut": [
+    {
+      "target": "EnRacha — Regal Riches",
+      "reason": "Exact title collides across IGT and Realtime Gaming/RTG lineages. It remains excluded from the unified P0 capture command until the served EnRacha provider identity is established; title and RTP alone cannot promote it into the IGT persistent-state model."
+    }
+  ],
+  "successDefinitionForFirstPcSession": "Success means recovering reviewable exact served evidence that closes one or more current gates. It does not mean a GREEN signal, guaranteed profit or permission to wager.",
+  "hardGuards": {
+    "captureDoesNotAuthorizeExecution": true,
+    "reviewCandidateDoesNotEqualVerifiedRule": true,
+    "sameTitleDoesNotProveSameProvider": true,
+    "sameTitleDoesNotProveSameConfiguration": true,
+    "oneAccountCannotProveCrossPlayerPersistence": true,
+    "visibleMinimumBetDoesNotProveJackpotEligibility": true,
+    "noWagerProbe": true,
+    "noAutomaticBetting": true,
+    "realMoneyAllowed": false
+  }
+}
