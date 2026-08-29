@@ -1,10 +1,10 @@
 {
-  "version": "spain-igt-persistent-state-candidates-v1.1-current-online-lineage",
-  "generatedAt": "2026-08-29T11:55:00+02:00",
+  "version": "spain-igt-persistent-state-candidates-v1.2-ocean-p0-regal-collision",
+  "generatedAt": "2026-08-29T12:10:00+02:00",
   "jurisdiction": "Spain",
   "status": "DISCOVERY_HIGH_PRIORITY_NO_PLAY",
   "realMoneyAllowed": false,
-  "purpose": "Register current Spain-regulated deployments of exact titles belonging to independently documented IGT variable/persistent-state families, while refusing to transfer foreign or other-operator state semantics, thresholds, RTPs or paytables into EnRacha without an exact served configuration fingerprint.",
+  "purpose": "Track current Spain-regulated online titles with documented variable/persistent-state lineage while refusing all configuration, state-scope and threshold transfer until the exact EnRacha served wrapper is fingerprinted passively.",
   "operator": {
     "name": "EnRacha",
     "legalEntity": "Rank Digital Ceuta S.A.U.",
@@ -13,27 +13,36 @@
     "spainLicensedClaimOnCurrentSite": true,
     "gameSpecificRulesDeclaredAvailableInsideEachSlot": true
   },
+  "portfolioPriority": {
+    "preferredStatefulCandidate": "enracha-ocean-magic",
+    "preferredReason": "Ocean Magic has exact-title, exact-92.18%-RTP and EUR0.50-minimum coherence with current IGT references and a documented IGT variable-state mechanism, with no known same-title cross-provider collision discovered. Exact EnRacha provider/wrapper and state scope still require passive served evidence.",
+    "frozenCandidate": "enracha-regal-riches",
+    "frozenReason": "Regal Riches is an exact-title collision across at least IGT and Realtime Gaming/RTG families. EnRacha publishes the title and 94.00% RTP but does not name the provider on its public page, so IGT persistent-state mechanics cannot be transferred until the served provider is explicitly bound.",
+    "collisionEvidenceFile": "loterias-ai/edge-live/evidence/enracha-regal-riches-provider-collision-2026-08-29-v1.json"
+  },
   "candidates": [
     {
       "id": "enracha-ocean-magic",
       "game": "Ocean Magic",
+      "lifecycle": "P0_PASSIVE_WRAPPER_AND_STATE_DISCOVERY",
       "currentSpainOperatorPage": "https://www.enracha.es/juegos/ocean-magic",
       "currentSpainEconomics": {
         "minimumBetEUR": 0.50,
         "maximumBetEUR": 250.00,
         "theoreticalRtpPct": 92.18,
-        "operatorPageRevalidated": true
+        "operatorPageRevalidated": true,
+        "economicUseNow": "PUBLIC_CONFIGURATION_FINGERPRINT_COMPONENT_ONLY",
+        "usableAsStateSpecificRtp": false
       },
       "identityEvidence": {
-        "exactIgtIdentityVerifiedOnEnRachaPage": false,
         "currentEnRachaExactTitleVerified": true,
+        "exactIgtIdentityVerifiedOnEnRachaPage": false,
         "currentEnRachaPageNamesProvider": false,
-        "sameTitleAndExactRtpIgtComparator": {
+        "sameTitleExactRtpIgtComparator": {
           "source": "https://slotcatalog.com/es/slots/Ocean-Magic",
           "provider": "IGT",
           "rtpPct": 92.18,
-          "minimumBet": 0.50,
-          "releaseDate": "2017-04-26",
+          "minimumBetEUR": 0.50,
           "exactWrapperEquivalenceVerified": false
         },
         "currentSpainOnlineIgtCorroboration": {
@@ -41,53 +50,54 @@
           "market": "Spain",
           "exactTitle": "Ocean Magic",
           "provider": "IGT",
-          "minimumBetEURShown": 0.50,
+          "minimumBetEUR": 0.50,
           "exactConfigurationEquivalentToEnRacha": false,
           "use": "CURRENT_SPAIN_ONLINE_TITLE_PROVIDER_LINEAGE_ONLY"
         },
-        "identityConfidence": "HIGH_TITLE_PROVIDER_LINEAGE_NOT_EXACT_ENRACHA_WRAPPER_FINGERPRINT"
+        "identityConfidence": "HIGH_LINEAGE_NOT_EXACT_ENRACHA_WRAPPER"
       },
       "persistentMechanismEvidence": {
-        "onlineRulesSource": "https://help.danskespil.dk/en/casino-help/slots/igtoceanmagic1",
-        "onlineRulesCopyright": "2017 IGT",
-        "onlineRulesFact": "bubble positions on the reels are persistent per bet level",
-        "onlineRulesConfigurationRtpPct": 94.14,
+        "igtOnlineRulesSource": "https://help.danskespil.dk/en/casino-help/slots/igtoceanmagic1",
+        "igtOnlineRulesFact": "bubble positions on the reels are persistent per bet level",
+        "igtOnlineRulesConfigurationRtpPct": 94.14,
         "configurationEquivalentToEnRacha": false,
         "mechanismFamilyTransferOnly": true,
-        "igtOmnichannelSource": "https://www.brightstarlottery.com/news-and-insights/news-releases/2017/igt-and-william-hill-announce-uk-omni-channel-deployment-of-ocean-magic-video-slots",
-        "igtOmnichannelConfirmed": true
-      },
-      "advantagePlayEvidence": {
-        "source": "https://wizardofodds.com/games/slots/ocean-magic/",
-        "classification": "VARIABLE_STATE",
-        "documentedPrinciple": "A player advantage can exist when a prior player leaves wild bubbles in favorable positions; play/pass depends on the visible next-spin bubble state.",
-        "exactSpainStrategyTransferAllowed": false,
-        "historicalOnlineExploitSource": "https://wizardofodds.com/newsletter/march-07-2019/",
-        "historicalOnlineExploitFact": "New Jersey online casinos were reportedly beaten for about USD900k when Ocean Magic launched in a favorable repeated initial bubble state.",
-        "historicalExploitEquivalentToSpain": false
+        "currentIndependentAnalysis": {
+          "source": "https://wizardofodds.com/games/slots/ocean-magic/",
+          "classification": "VARIABLE_STATE",
+          "principle": "A prior player can leave bubbles in favorable positions; selective entry can create player advantage in that documented configuration.",
+          "exactSpainStrategyTransferAllowed": false
+        }
       },
       "spainStateSemantics": {
+        "exactServedIgtProviderVerified": false,
         "persistentAcrossSpinsVerified": false,
         "persistentPerBetLevelVerified": false,
         "persistentAcrossSessionReloadVerified": false,
         "persistentAcrossPlayersVerified": false,
         "abandonedStateVisibleBeforeWagerVerified": false,
-        "favorableDefaultStateVerified": false,
-        "note": "Current Spain online evidence strengthens title/provider lineage only. It does not prove EnRacha serves the same IGT build or preserves the same account/player/state scope."
+        "favorableCurrentStateVerified": false,
+        "note": "The decisive question is whether EnRacha serves the IGT variable-state wrapper with inheritable visible state. Same title/RTP/minimum is strong lineage evidence, not state-scope proof."
       },
       "evModel": {
-        "formula": "EV(state,bet)=E[payout|state,bet]-bet",
-        "returnFormula": "RTP(state,bet)=E[payout|state,bet]/bet",
+        "formula": "EV(state,bet)=E[payout|exactEnRachaState,bet]-bet",
         "positiveStateCriterion": "conservativeLowerBound(EV(state,bet)) > 0",
         "baselineRtpCanBeUsedAsStateSpecificRtp": false,
         "exactStateUpliftKnownForSpain": false,
-        "exactPositiveEntrySetVerifiedForSpain": false
+        "exactPositiveEntrySetVerifiedForSpain": false,
+        "thresholdNow": null
       },
+      "nextDecisiveEvidence": [
+        "passive served EnRacha HAR binds exact Ocean Magic wrapper to IGT",
+        "served help/config proves bubble state semantics for this exact 92.18% EnRacha build",
+        "zero-wager reload observation determines whether state survives reload/account session",
+        "separate passive observation or exact documentation determines whether state is cross-player rather than account-private",
+        "only after state scope is closed, build exact configuration-specific state EV and freeze prospective validation"
+      ],
       "decision": {
         "researchPriority": "P0_STATEFUL_SLOT_DISCOVERY",
         "zeroBetPassiveVerificationUseful": true,
         "loginRequiredForCurrentGameView": true,
-        "thresholdNow": null,
         "exactStakeEUR": null,
         "maxSpins": 0,
         "maxTotalStakeEUR": 0,
@@ -97,68 +107,56 @@
     {
       "id": "enracha-regal-riches",
       "game": "Regal Riches",
+      "lifecycle": "FROZEN_PROVIDER_IDENTITY_REQUIRED",
       "currentSpainOperatorPage": "https://www.enracha.es/juegos/regal-riches",
       "currentSpainEconomics": {
         "minimumBetEUR": 0.10,
         "maximumBetEUR": 10.00,
         "theoreticalRtpPct": 94.00,
-        "operatorPageRevalidated": true
+        "operatorPageRevalidated": true,
+        "usableAsIgtConfigurationFingerprint": false
+      },
+      "providerCollision": {
+        "verified": true,
+        "sameExactTitleAcrossProviders": true,
+        "knownProviderFamilies": ["IGT", "REALTIME_GAMING_RTG"],
+        "evidenceFile": "loterias-ai/edge-live/evidence/enracha-regal-riches-provider-collision-2026-08-29-v1.json",
+        "enrachaPublicProviderKnown": false
       },
       "identityEvidence": {
         "currentEnRachaExactTitleVerified": true,
         "exactIgtIdentityVerifiedOnEnRachaPage": false,
         "currentEnRachaPageNamesProvider": false,
-        "primaryIgtPersistentStateSource": "https://www.igt.com/promotions/peak",
-        "primaryIgtFact": "IGT describes Regal Riches as persistent state gaming.",
-        "currentOnlineExactTitleIgtCorroboration": {
-          "source": "https://playstar.com/games/regal-riches",
-          "exactTitle": "Regal Riches",
-          "provider": "IGT",
-          "rtpPct": 96.27,
-          "progressiveGuaranteedWildMeterMechanicDescribed": true,
-          "exactConfigurationEquivalentToEnRacha": false,
-          "configurationMismatchObserved": "PlayStar publishes 96.27% while EnRacha publishes 94.00%.",
-          "use": "CURRENT_ONLINE_TITLE_PROVIDER_AND_MECHANISM_LINEAGE_ONLY"
-        },
-        "wizardProviderFact": "Wizard of Odds identifies Regal Riches/Prosperity Pearl as Unity, a division/subsidiary of IGT.",
-        "identityConfidence": "HIGH_TITLE_MANUFACTURER_AND_CURRENT_ONLINE_LINEAGE_NOT_EXACT_ENRACHA_WRAPPER_FINGERPRINT"
+        "igtPersistentStateFamilyExists": true,
+        "rtgDifferentMechanicSameTitleExists": true,
+        "identityConfidence": "PROVIDER_UNRESOLVED_TITLE_COLLISION"
       },
       "persistentMechanismEvidence": {
-        "primaryIgtPersistentStateConfirmed": true,
-        "primaryIgtCurrentRevalidation": true,
-        "wizardSource": "https://wizardofodds.com/games/slots/regal-riches-prosperity-pearl/",
-        "wizardFact": "banked wilds can make a left-behind visible state favorable; each bet level has separate banks",
-        "wizardLastUpdated": "2026-08-03",
-        "currentGenericEntryGuidance": {
-          "blueMeter": 8,
-          "purpleMeter": 56,
-          "greenMeter": 81,
-          "yellowMeter": 106
-        },
-        "genericThresholdsTransferToSpain": false,
-        "reasonThresholdsNotTransferred": "IGT confirms the persistent-state family and current online operators confirm exact title/provider lineage, but EnRacha's 94.00% configuration differs from at least one current online IGT deployment and its exact state scope is not fingerprinted."
+        "igtPersistentStateMechanicKnown": true,
+        "igtMechanicTransferToEnRachaAllowed": false,
+        "genericIgtEntryThresholdsTransferToEnRachaAllowed": false,
+        "reason": "Until exact served EnRacha evidence names/binds IGT, the title can be RTG or another provider variant and no IGT stored-wild state semantics are admissible."
       },
       "spainStateSemantics": {
         "metersExistInEnRachaBuildVerified": false,
-        "meterResetValuesVerified": false,
-        "mustHitByCapsVerified": false,
         "persistentAcrossSessionReloadVerified": false,
         "persistentAcrossPlayersVerified": false,
         "abandonedStateVisibleBeforeWagerVerified": false,
-        "favorableCurrentMeterStateVerified": false,
-        "note": "Current IGT and current online exact-title evidence prove the family is genuinely persistent-state, but the RTP mismatch proves configuration transfer would be unsafe. EnRacha-specific served rules/state remain decisive."
+        "favorableCurrentMeterStateVerified": false
       },
       "evModel": {
-        "formula": "EV(state,bet)=baseGameEV(config,bet)+storedWildFeatureValue(state,config,bet)",
-        "positiveStateCriterion": "conservativeLowerBound(EV(state,bet)) > 0",
-        "exactStoredWildValueKnownForSpain": false,
-        "exactPositiveEntrySetVerifiedForSpain": false
+        "exactProviderRequiredBeforeModelSelection": true,
+        "exactPositiveEntrySetVerifiedForSpain": false,
+        "thresholdNow": null
       },
+      "nextDecisiveEvidence": [
+        "passive served EnRacha provider/config fingerprint",
+        "if provider=IGT, only then recover exact meter/state semantics for the 94.00% build",
+        "if provider=RTG or another provider, reject the IGT persistent-state thesis and route to the correct mechanism family"
+      ],
       "decision": {
-        "researchPriority": "P0_STATEFUL_SLOT_DISCOVERY",
+        "researchPriority": "FROZEN_UNTIL_PROVIDER_IDENTITY",
         "zeroBetPassiveVerificationUseful": true,
-        "loginRequiredForCurrentGameView": true,
-        "thresholdNow": null,
         "exactStakeEUR": null,
         "maxSpins": 0,
         "maxTotalStakeEUR": 0,
@@ -167,26 +165,20 @@
     }
   ],
   "portfolioFinding": {
-    "currentSpainRegulatedOperatorHasAtLeastTwoExactTitlesFromDocumentedIgtApFamilies": true,
-    "titles": ["Ocean Magic", "Regal Riches"],
-    "currentSpainOnlineProviderLineageIndependentlyCorroboratedForOceanMagic": true,
-    "currentIgtPersistentStateLineageIndependentlyCorroboratedForRegalRiches": true,
-    "exactEnRachaIgtWrapperFingerprintVerified": false,
-    "whatThisProves": "The Spain-regulated EnRacha lobby currently contains exact titles whose IGT provider/persistent-state lineage is independently documented by current online and primary IGT sources.",
-    "whatThisDoesNotProve": "It does not prove EnRacha serves an equivalent configuration, preserves cross-player state, exposes abandoned state before betting, or that any currently visible state is positive EV."
+    "currentSpainRegulatedOperatorHasOceanMagicWithStrongIgtLineage": true,
+    "oceanMagicExactEnRachaIgtWrapperVerified": false,
+    "regalRichesCrossProviderTitleCollisionDiscovered": true,
+    "regalRichesIgtThesisFrozen": true,
+    "whatThisProves": "Ocean Magic is currently the cleanest EnRacha stateful discovery target because exact title, 92.18% RTP and EUR0.50 minimum cohere with current IGT references and the IGT title has a documented variable-state mechanism.",
+    "whatThisDoesNotProve": "It does not prove the exact EnRacha wrapper is IGT, that state is inherited across players, that abandoned favorable state is observable before a wager, or that any current state is positive EV."
   },
-  "nextEvidenceTargets": [
-    "Recover EnRacha served in-game rules/config/provider fingerprint for Ocean Magic without placing a wager and compare it to the known IGT online persistent-per-bet-level family.",
-    "Recover EnRacha served in-game rules/config/provider fingerprint for Regal Riches without placing a wager and verify meter names, reset values, caps, payout semantics and its 94.00% configuration.",
-    "Determine by zero-bet passive observation whether state persists across reload/logout and, critically, whether it can be inherited across different players rather than being account-private.",
-    "If and only if exact Spain configuration/state scope is proven, build a configuration-specific state EV solver and freeze a prospective validation protocol before any economic promotion."
-  ],
   "hardGuards": {
+    "sameTitleDoesNotProveProvider": true,
     "sameTitleDoesNotProveSameConfiguration": true,
-    "sameProviderDoesNotProveSameConfiguration": true,
-    "sameRtpDoesNotProveSameStateScope": true,
-    "differentRtpIsPositiveEvidenceAgainstBlindConfigurationTransfer": true,
+    "sameRtpDoesNotProveProviderOrStateScope": true,
+    "crossProviderTitleCollisionForcesProviderReview": true,
     "foreignOrOtherOperatorPersistentRuleDoesNotProveEnRachaCrossPlayerPersistence": true,
+    "oneAccountCannotProveCrossPlayerPersistence": true,
     "foreignEntryThresholdsNeverTransferWithoutExactConfiguration": true,
     "historicalOnlineExploitDoesNotProveCurrentSpainExploit": true,
     "monthlyActualRtpIsNotAnEntrySignal": true,
@@ -194,6 +186,8 @@
     "noRealMoneyLaunch": true,
     "noWagerProbe": true,
     "executionContractRemainsSoleGreenAuthority": true,
+    "onlineOnly": true,
+    "nonPromoOnly": true,
     "realMoneyAllowed": false
   }
 }
