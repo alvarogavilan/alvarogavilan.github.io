@@ -13,6 +13,7 @@ const out=runPracticeExperiment({target:'SYNTHETIC LAB',scenarios:[
  {id:'st9',type:'STREAK_OF_LUCK_STATE9_ONE_SPIN',input:{observedStreakState:9,totalStakeEUR:1,jackpotAwardFloorEUR:175,sixtyFreeSpinsValueFloorEUR:0,probabilityNextSpinWinning:.01}},
  {id:'fmc',type:'FULL_MOON_MOON_COLLECT',input:{totalStakeEUR:1,probabilityAtLeastOneNewQualifyingMoonNextSpin:.05,moons:fullMoon}},
  {id:'fmp',type:'FULL_MOON_MOON_PUSH',input:{totalStakeEUR:1,probabilityNextMoonCompletesMoonPush:.03,moons:fullMoon}},
+ {id:'sn',type:'SNAKES_LADDERS_PROGRESS',input:{totalStakeEUR:1,observedActiveSegments:10,probabilityCompletesSnakeNextSpin:.06,exactCurrentOperatorProgressRuleVerified:true,exactCurrentOperatorBonusFloorVerified:true}},
  {id:'p',type:'ROULETTE_PHYSICS_WINDOW',input:{ballReleaseMs:1000,betCloseMs:900}},
  {id:'r',type:'ROULETTE_SPIN_SERIES',records:fair,options:{minSpins:1000}},
  {id:'pc',type:'ROULETTE_PRODUCT_CLASSIFICATION',input:{mode:'RNG',rngOutcome:true}},
@@ -25,7 +26,7 @@ const out=runPracticeExperiment({target:'SYNTHETIC LAB',scenarios:[
  {id:'n',type:'PROGRESSIVE_NETWORK',snapshots:snaps,options:{contributionRatePct:1,contributionRateScope:'ALL_VISIBLE_TIERS_COMBINED',baseRtpExcludingJackpotPct:95,baseRtpExcludingJackpotVerified:false}},
  {id:'h',type:'ROULETTE_PROSPECTIVE_HOLDOUT',candidate:{id:'c1',tableId:'t1',wheelId:'w1',numbers:[17],frozenAtMs:1000,sourceVerdict:'REPRODUCIBLE_BIAS_RESEARCH_CANDIDATE'},holdout,options:{minimumHoldoutSpins:500}}
 ]});
-assert.equal(out.scenarioCount,18);
+assert.equal(out.scenarioCount,19);
 assert.equal(out.execution.realMoneyAllowed,false);
 assert.equal(out.ranked.every(x=>x.result.execution.realMoneyAllowed===false),true);
 assert.ok(out.ranked.some(x=>x.id==='s'&&x.result.expectedRoiPct===-5));
@@ -33,5 +34,6 @@ assert.ok(out.ranked.some(x=>x.id==='sc'&&x.result.status==='DISCOVERY_ONLY_UNVE
 assert.ok(out.ranked.some(x=>x.id==='rep'&&x.result.practiceVerdict==='BLOCKED_UNVERIFIED_EXECUTION_INPUTS'));
 assert.ok(out.ranked.some(x=>x.id==='st9'&&x.result.practiceVerdict==='CONSERVATIVE_POSITIVE_STATE9_ONE_SPIN_CANDIDATE'));
 assert.ok(out.ranked.some(x=>x.id==='fmc'&&x.result.practiceVerdict==='CONSERVATIVE_POSITIVE_MOON_COLLECT_ONE_SPIN_CANDIDATE'));
-assert.ok(out.researchCandidateCount>=3);
+assert.ok(out.ranked.some(x=>x.id==='sn'&&x.result.practiceVerdict==='CONSERVATIVE_POSITIVE_SNAKE_COMPLETION_ONE_SPIN_CANDIDATE'));
+assert.ok(out.researchCandidateCount>=4);
 console.log('edge-practice-command-center-v1.test.mjs: PASS');
