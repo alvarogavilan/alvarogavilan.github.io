@@ -1,0 +1,87 @@
+{
+  "version":"williamhill-spain-speed-roulette-post-release-window-2026-08-29-v1",
+  "generatedAt":"2026-08-29T15:42:00Z",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "status":"EXACT_SPAIN_POST_RELEASE_BETTING_WINDOW_CAMERA_VISIBILITY_UNVERIFIED_NO_PLAY",
+  "realMoneyAllowed":false,
+  "target":{
+    "operator":"William Hill Spain",
+    "title":"Ruleta Bola Rápida en Vivo",
+    "provider":"Evolution",
+    "operatorUrl":"https://casino.williamhill.es/ruleta/ruleta-bola-rapida-en-vivo",
+    "providerUrl":"https://games.evolution.com/live-casino/live-roulette/speed-roulette/"
+  },
+  "exactCurrentOperatorFacts":{
+    "wheelPockets":37,
+    "singleZero":true,
+    "ballReleasedBeforeBettingCloses":true,
+    "bettingTrafficLightStates":["GREEN_BETTING_OPEN","AMBER_ENDING","RED_CLOSED"],
+    "straightProfitOdds":35,
+    "splitProfitOdds":17,
+    "streetProfitOdds":11,
+    "cornerProfitOdds":8,
+    "sixLineProfitOdds":5,
+    "sourceClass":"CURRENT_WILLIAM_HILL_SPAIN_EXACT_TITLE_RULE_BODY"
+  },
+  "providerCorroboration":{
+    "bettingOccursOnlyDuringSpin":true,
+    "roundDurationApproxSeconds":25,
+    "customPhysicalWheel":"TCSJOHNHUXLEY",
+    "dedicatedStudio":"Evolution Riga",
+    "multipleCameras":true,
+    "sourceClass":"EVOLUTION_OFFICIAL_PRODUCT_AND_LAUNCH_MATERIAL"
+  },
+  "conservativeSectorMath":{
+    "equalUnitStakeAcrossKPredictedPockets":true,
+    "grossReturnUnitsOnStraightHit":36,
+    "fairHitRateFormula":"k/37",
+    "breakEvenHitRateFormula":"k/36",
+    "exampleK5":{"fairHitRatePct":13.5135135,"breakEvenHitRatePct":13.8888889,"requiredAbsoluteLiftPctPoints":0.3753754},
+    "screen":"loterias-ai/edge-backend/src/roulette-post-release-sector-ev-screen-v1.mjs",
+    "promotionRule":"Prospective same-table holdout Wilson lower confidence bound must exceed k/36 after a separately verified usable post-release betting window."
+  },
+  "cameraVisibilityConflict":{
+    "primaryOperatorOrProviderProofOfUsableWheelAndBallViewBeforeBetClose":false,
+    "negativeDiscoverySource":"https://www.roulettenest.com/live-speed-roulette",
+    "negativeDiscoveryClaim":"A specialist current review states that although the dealer launches the ball with betting time remaining, the full wheel-and-ball view is deliberately hidden until the betting period ends to prevent wheel clocking.",
+    "negativeSourceClass":"SPECIALIST_SECONDARY_DISCOVERY_ONLY",
+    "targetWilliamHillVisualBindingVerified":false,
+    "conclusion":"Treat pre-close physical observability as UNKNOWN. The rule-level post-release betting window is insufficient for physics advantage research until exact player-view visibility is observed directly without wagering."
+  },
+  "whatRemainsOpen":{
+    "exactCurrentWilliamHillPlayerViewObserved":true,
+    "ballAndWheelSimultaneouslyVisibleBeforeBetClose":true,
+    "usableReleaseToBetCloseWindowAfterStreamLatency":true,
+    "serverBetAcceptanceCloseVsVisibleTrafficLight":true,
+    "stableWheelIdentity":true,
+    "stableCameraGeometry":true,
+    "prospectiveSectorPredictionAccuracy":true,
+    "exactCurrentStakeLimits":true,
+    "wilsonLowerHoldoutAboveKOver36":true,
+    "executionAuthorization":true
+  },
+  "software":{
+    "practiceClone":"loterias-ai/edge-backend/src/roulette-practice-clone-v1.mjs",
+    "physicsAndBiasLab":"loterias-ai/edge-backend/src/roulette-edge-lab-v1.mjs",
+    "timingAggregator":"loterias-ai/edge-backend/src/analyze-roulette-physics-observations-v1.mjs",
+    "prospectiveFalsification":"loterias-ai/edge-backend/src/roulette-predictor-falsification-lab-v1.mjs",
+    "conservativeEvScreen":"loterias-ai/edge-backend/src/roulette-post-release-sector-ev-screen-v1.mjs"
+  },
+  "zeroWagerDecisionProtocol":[
+    "Observe the exact William Hill Spain Speed Roulette player view without placing any wager.",
+    "During GREEN/AMBER betting states, verify whether the complete physical wheel and the ball are visible enough to estimate angular position/velocity.",
+    "If the wheel or ball is obscured until RED/no-more-bets, classify PHYSICS_BLOCKED and stop this lane.",
+    "If visible, timestamp ball release, betting close, first deflector contact and estimate stream/action latency across multiple rounds.",
+    "Only after timing stability, freeze predictions before outcomes and create an independent prospective holdout."
+  ],
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{
+    "postReleaseBettingDoesNotEqualPostReleaseObservability":true,
+    "secondaryCameraClaimCannotSelfBindWilliamHill":true,
+    "cameraVisibilityMustBeVerifiedExactCurrentPlayerView":true,
+    "historicalHotColdStatsCannotCreateEdge":true,
+    "noWagerProbe":true,
+    "noAutomaticBetting":true,
+    "realMoneyAllowed":false
+  }
+}
