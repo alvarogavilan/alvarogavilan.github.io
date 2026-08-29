@@ -1,0 +1,63 @@
+{
+  "version":"betfair-spain-apmccoy-simultaneous-jackpot-race-semantics-2026-08-29-v1",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "status":"CURRENT_EXACT_OPERATOR_RACE_PAYOUT_RULE_VERIFIED_NO_PLAY",
+  "realMoneyAllowed":false,
+  "target":{
+    "operator":"Betfair Spain",
+    "title":"AP McCoy Sporting Legends™",
+    "gameId":"ap-mccoy-sporting-legends-cptn",
+    "source":"https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn"
+  },
+  "exactCurrentOperatorRule":{
+    "twoPlayersWinAtSameTimeCovered":true,
+    "firstWinnerReceives":"SEED_PLUS_CURRENT_PROGRESSIVE_AMOUNT",
+    "secondWinnerReceives":"SEED_PLUS_PROGRESSIVE_ACCRUED_BETWEEN_FIRST_AND_SECOND_WIN",
+    "secondSimultaneousWinnerPayoutIsNecessarilyZero":false,
+    "sameRuleTextAlsoCorroboratedByPlaytechSportingLegendsProductMaterial":true
+  },
+  "providerCorroboration":{
+    "source":"https://clientzone.betconstruct.com/media/download/801cbj/Bobby%20George%E2%84%A2%20Sporting%20Legends%E2%84%A2.pdf",
+    "title":"Bobby George Sporting Legends - Playtech product material",
+    "use":"FAMILY_RULE_CORROBORATION_ONLY",
+    "betfairExactOperatorTextRemainsAuthority":true,
+    "foreignOrSampleTickerValuesTransferAllowed":false
+  },
+  "raceModelImplication":{
+    "firstPostGhtWinnerStillPrimaryTarget":true,
+    "ordinaryLostRaceCanBeAssignedZeroForJackpotTerm":true,
+    "simultaneousSecondWinnerMustNotBeCollapsedToOrdinaryZeroPayoutLoss":true,
+    "simultaneousSecondOutcomeNeedsSeparateLedgerClass":true,
+    "exactTierSeedRequiredBeforeAssigningEuroFloor":true,
+    "postFirstAccruedProgressiveCanOnlyBeUsedIfObservedAndSameBinding":true,
+    "raceProbabilityStillRequired":true,
+    "latencyStillRequired":true
+  },
+  "closedGate":{
+    "operatorSimultaneousPayoutSemanticsKnown":true,
+    "secondSimultaneousWinnerHasSeedComponentByRule":true
+  },
+  "stillOpen":{
+    "exactDailySeedEUR":true,
+    "exactWeeklySeedEUR":true,
+    "currentDailyJackpotEUR":true,
+    "currentWeeklyJackpotEUR":true,
+    "currentDailyGht":true,
+    "currentWeeklyGht":true,
+    "exactBetfairImsCasino":true,
+    "exactBetfairTickerEndpoint":true,
+    "sameBindingRaceLedger":true,
+    "prospectiveRaceProbabilityLowerBound":true,
+    "executionAuthorization":true
+  },
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{
+    "simultaneousRuleCannotCreateRaceProbability":true,
+    "seedAmountCannotBeInferredFromHistoricalOrOtherOperatorData":true,
+    "publicUnlabelledJackpotCannotPopulateTier":true,
+    "providerSampleAmountsCannotPopulateBetfair":true,
+    "noWagerProbe":true,
+    "noAutomaticBetting":true,
+    "realMoneyAllowed":false
+  }
+}
