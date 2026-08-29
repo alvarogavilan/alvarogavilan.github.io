@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {evaluateBetSequence,compareSequenceToFlat,auditPatternClaim} from '../edge-backend/src/slot-bet-pattern-lab-v1.mjs';
+const seq=[{stakeEUR:0.4,spins:15},{stakeEUR:0.6,spins:10},{stakeEUR:1,spins:5}];
+const same=[0.4,0.6,1].map(stakeEUR=>({stakeEUR,rtpPct:95,jackpotEligible:false}));
+let r=evaluateBetSequence(seq,same);
+assert.equal(r.ok,true);assert.equal(r.sequenceHasIndependentMagicEffect,false);assert.equal(r.weightedBaseRtpPct,95);assert.equal(r.expectedNetEUR,-0.85);assert.equal(r.coinInEUR,17);
+let c=compareSequenceToFlat(seq,same,0.4);assert.equal(c.ok,true);assert.equal(c.sequence.expectedNetEUR,-0.85);assert.equal(c.flat.expectedNetEUR,-0.6);assert.equal(c.deltaExpectedNetEUR,-0.25);
+const diff=[{stakeEUR:0.4,rtpPct:95,jackpotEligible:false},{stakeEUR:0.6,rtpPct:95,jackpotEligible:false},{stakeEUR:1,rtpPct:95,jackpotEligible:true,jackpotEvPerSpinEUR:0.2}];
+r=evaluateBetSequence(seq,diff);assert.equal(r.jackpotExpectedValueEUR,1);assert.equal(r.expectedNetEUR,0.15);assert.equal(r.mechanismDependentEffectPossible,true);
+let a=auditPatternClaim({sequence:seq,mechanism:'NONE',exactRuleEvidence:false});assert.equal(a.classification,'RITUAL_OR_UNVERIFIED_CLAIM');
+a=auditPatternClaim({sequence:seq,mechanism:'JACKPOT_ELIGIBILITY',exactRuleEvidence:true});assert.equal(a.classification,'MECHANISM_TESTABLE');
+assert.equal(a.execution.realMoneyAllowed,false);
+console.log('slot-bet-pattern-lab-v1.test.mjs: PASS');
