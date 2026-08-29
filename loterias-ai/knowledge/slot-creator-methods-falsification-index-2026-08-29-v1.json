@@ -1,0 +1,74 @@
+{
+  "version":"slot-creator-methods-falsification-index-2026-08-29-v1",
+  "generatedAt":"2026-08-29T17:05:00+02:00",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "status":"CREATOR_METHODS_ABSORBED_AND_CLASSIFIED_NO_PLAY",
+  "realMoneyAllowed":false,
+  "purpose":"Turn recurring YouTube/forum slot methods into machine-testable hypotheses without allowing creator anecdotes to become execution rules.",
+  "methods":[
+    {
+      "id":"FIVE_SPIN_METHOD",
+      "claim":"Play only a small fixed number of spins on a machine and move on if no quick win/taste appears.",
+      "sources":[
+        {"url":"https://music.amazon.com/podcasts/78c25dec-b4c3-4092-86af-213574d89bfa/episodes/1ff3bcfd-dae3-4a79-aa20-9e1b33aaefda/professor-slots---play-slots-smarter-and-win-ps-195-the-key-to-slots-winning-is-knowing-your-casino-well-minnesota-slots","class":"CREATOR_PODCAST","finding":"Professor Slots links the 5-Spin Method as a recurring strategy."},
+        {"url":"https://www.virgingames.com/uk/blog/slots/five-spin-slot-method","class":"OPERATOR_EXPLAINER","finding":"Describes the method as a YouTube-born tactic: play up to five spins then move on if no win."},
+        {"url":"https://gmbl.pw/articles/professor-slots-five-spin-method","class":"INDEPENDENT_CRITIQUE","finding":"Documents the taste hypothesis but finds no demonstrated secret winning mechanism."}
+      ],
+      "classification":"RITUAL_OR_STOP_LOSS_UNLESS_EXACT_CURRENT_RULE_EXPOSES_INITIAL_STATE",
+      "math":"Stopping after five spins limits exposure but cannot improve per-euro expectation on an IID fixed-math game."
+    },
+    {
+      "id":"DENOMINATION_STAKE_LADDER",
+      "claim":"Use a prescribed number of spins at one stake/denomination, then raise or change denomination to induce a hit/bonus.",
+      "examples":["0.40 EUR x 15 -> 0.60 EUR x 10 -> 1.00 EUR x 5","15 spins for a win, 10 more after a win, then raise stake if no bonus"],
+      "sources":[
+        {"url":"https://groundiskey.co.uk/rps-games.html","class":"CREATOR_STRATEGY_DISCOVERY","finding":"Search-indexed Eye of Horus Megaways method described 15 spins, 10 further after a win, then increased stake if no bonus."},
+        {"url":"https://www.researchgate.net/publication/369738756_Interpassive_Gambling_The_Case_of_Slot_Machine_Vlogs_on_YouTube","class":"ACADEMIC_BEHAVIORAL_STUDY","finding":"Progressive betting appeared in five of 21 sampled slot-vlog videos; one creator changed denominations repeatedly while trying to make a game hit."}
+      ],
+      "classification":"RITUAL_UNDER_IID_NULL",
+      "exceptionGate":["verified stake-specific RTP/paytable","verified jackpot eligibility by stake","verified feature probability by stake","verified persistent state separated by stake level","verified ante/enhanced feature mode"],
+      "software":"loterias-ai/edge-backend/src/slot-bet-pattern-lab-v1.mjs"
+    },
+    {
+      "id":"BACKUP_SPIN_AFTER_BIG_WIN",
+      "claim":"Always take another spin after a big hit so a second win is not missed.",
+      "source":"https://www.researchgate.net/publication/369738756_Interpassive_Gambling_The_Case_of_Slot_Machine_Vlogs_on_YouTube",
+      "classification":"RITUAL_UNDER_IID_NULL",
+      "exceptionGate":"Only retain if exact current rules document post-award persistent state or chained guaranteed feature."
+    },
+    {
+      "id":"SWITCH_MACHINE_AFTER_DRY_RUN",
+      "claim":"Move to another machine/game after N losing spins because the current game is cold.",
+      "source":"https://www.researchgate.net/publication/369738756_Interpassive_Gambling_The_Case_of_Slot_Machine_Vlogs_on_YouTube",
+      "classification":"RITUAL_UNDER_IID_NULL",
+      "salvage":"Scanning other machines can be valid only when searching observable positive initial state such as MHB meters or persistent accumulators."
+    },
+    {
+      "id":"MUST_HIT_BY_METER",
+      "claim":"A guaranteed jackpot ceiling can create a calculable opportunity when current state is sufficiently favorable.",
+      "sources":[
+        {"url":"https://www.youtube.com/watch?v=TSupCudo_MI","class":"CREATOR_VIDEO_EDUCATION","finding":"Current educational video explains MHB category and explicit guaranteed boundaries."},
+        {"url":"https://wizardofodds.com/games/slots/mystery-jackpot-ainsworth/","class":"INDEPENDENT_MATHEMATICAL_ANALYSIS","finding":"Analyzes target points using reset, ceiling, meter rise and trigger distribution."}
+      ],
+      "classification":"REAL_MECHANIC_RESEARCH_FAMILY",
+      "hardGuard":"Do not assume uniform trigger distribution or creator thresholds for a Spanish title."
+    },
+    {
+      "id":"PERSISTENT_STATE_SCOUTING",
+      "claim":"Visible state left by prior play may carry value into the next spin/session.",
+      "sources":[
+        {"url":"https://wizardofodds.com/games/slots/ocean-magic/","class":"INDEPENDENT_MATHEMATICAL_ANALYSIS","finding":"Ocean Magic is a variable-state game where favorable bubbles can create player advantage on suitable deployments."},
+        {"url":"https://www.apslot.com/pages/persistent-state-slots","class":"SPECIALIST_AP_REFERENCE","finding":"Catalogs persistent-state mechanics such as bubbles/meters and separate bet-level states."}
+      ],
+      "classification":"REAL_MECHANIC_RESEARCH_FAMILY",
+      "hardGuard":"Exact current Spanish online persistence and state scope must be independently proven."
+    }
+  ],
+  "automaticClassificationRule":{
+    "historyOnlyOrSpinCountOnly":"RITUAL_OR_BANKROLL_POLICY",
+    "explicitCurrentStateOrMandatoryBoundary":"MECHANIC_RESEARCH_CANDIDATE",
+    "creatorWinVideoAlone":"DISCOVERY_ONLY",
+    "exactOperatorRulePlusRuntimeState":"CAN_ENTER_EV_MODEL_BUT_STILL_NO_PLAY_UNTIL_POSITIVE_CONSERVATIVE_GATE"
+  },
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
