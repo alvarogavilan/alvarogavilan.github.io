@@ -1,6 +1,6 @@
 {
-  "version":"betfair-spain-kingdoms-rise-daily-strike-reopen-2026-08-29-v1",
-  "generatedAt":"2026-08-29T20:52:00+02:00",
+  "version":"betfair-spain-kingdoms-rise-daily-strike-reopen-2026-08-29-v1.1-code-bound",
+  "generatedAt":"2026-08-29T21:20:00+02:00",
   "mode":"RESEARCH_ONLY",
   "realMoneyAllowed":false,
   "operator":"Betfair España",
@@ -12,13 +12,24 @@
     "sandsOfFuryCurrentSpanishPage":true,
     "sandsOfFuryPageStatesNetworkJackpots":["Daily Strike","Power Strike","Epic"]
   },
+  "playtechTechnicalBinding":{
+    "source":"Playtech Game Codes for the Jackpot Ticker System",
+    "epicCode":"krjp-1",
+    "powerStrikeCode":"krjp-2",
+    "dailyStrikeCode":"krjp-3",
+    "forbiddenForestGameCode":"gpas_krfforest_pop",
+    "sandsOfFuryGameCode":"gpas_krsofury_pop",
+    "note":"A secondary review swaps krjp-2/krjp-3; it is rejected for identifier binding because the Playtech technical table explicitly maps krjp-2 to Power Strike and krjp-3 to Daily Strike."
+  },
   "providerEvidence":{
     "playtechOfficialLaunchStatesConfigurableThreeTierJackpot":true,
     "tiers":["Daily","Capped","Progressive"],
     "canBeNetworkedOrLocalised":true,
     "exactCommonHelpRecoveredFromPublicDemos":true,
     "commonHelpDailyRule":"Daily Strike guaranteed to be won at least once during the time shown; if not triggered while bets contribute, first bet/contribution in following timed period is guaranteed to win.",
-    "commonHelpPowerRule":"Spinning before the Power Strike ticker reaches the shown amount can trigger it; it is a capped/must-hit-before threshold jackpot."
+    "commonHelpPowerRule":"Spinning before the Power Strike ticker reaches the amount shown can trigger the Power Strike Jackpot.",
+    "sameRuleRecoveredOnMultipleKingdomsRiseTitles":true,
+    "tickerContractSupportsFields":["timestamp","winc","step","currency","instancecode","guaranteedHitTime where configured"]
   },
   "bindingStatus":{
     "betfairSpainDailyStrikePresence":true,
@@ -27,19 +38,22 @@
     "betfairSpainExactCurrentDailyAmount":null,
     "betfairSpainExactCurrentPowerAmount":null,
     "betfairSpainExactPowerCap":null,
-    "betfairSpainContributionRate":null
+    "betfairSpainContributionRate":null,
+    "betfairSpainIMSName":null
   },
-  "importance":"P0_REOPENED",
-  "reason":"Unlike William Hill Spain current Kingdoms Rise pages, which expose only Epic and Power Strike, Betfair Spain currently identifies Daily Strike as active on exact Kingdoms Rise titles. Common Playtech help contains a forced first-contribution rule for the next timed period, so this is structurally analogous to Sporting Legends and may offer a second forced-award lane if the operator-served rule/timer is bound.",
+  "importance":"P0_REOPENED_CODE_BOUND",
+  "reason":"Betfair Spain currently identifies Daily Strike as active on exact Kingdoms Rise titles. Playtech technical documentation now fixes the exact tier codes, and common help on multiple Kingdoms Rise games contains a forced first-contribution rule for the next timed period. The remaining execution blocker is operator-instance binding/current state, not jackpot identity.",
   "remainingGates":[
     "Recover Betfair-Spain-served exact Kingdoms Rise help/rules and verify the first-following-period clause",
-    "Recover exact current Daily Strike timer/amount or provider ticker binding",
-    "Recover exact current Power Strike amount/cap and semantics",
+    "Recover exact Betfair IMS/casino name",
+    "Recover exact current krjp-3 Daily timer/amount or provider ticker binding",
+    "Recover exact current krjp-2 Power amount/cap and semantics",
     "Recover operator/network contribution rate and minimum qualifying total stake",
     "Prospective passive race/refresh evidence before any execution authority"
   ],
   "hardGuards":{
     "publicDemoRuleCannotAloneBindBetfairSpain":true,
+    "secondarySwappedTierCodesRejected":true,
     "williamHillCurrentConfigCannotTransferToBetfairSpain":true,
     "historicalGBPThresholdCannotTransferToSpain":true,
     "noWagerProbe":true,
