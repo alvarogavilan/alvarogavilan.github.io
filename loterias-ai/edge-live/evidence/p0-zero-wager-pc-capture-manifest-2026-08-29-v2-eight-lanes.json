@@ -1,0 +1,38 @@
+{
+  "version":"p0-zero-wager-pc-capture-manifest-2026-08-29-v2-eight-lanes",
+  "generatedAt":"2026-08-29T14:31:00+02:00",
+  "status":"FROZEN_PASSIVE_CAPTURE_PLAN_V2_NO_PLAY",
+  "supersedes":"loterias-ai/edge-live/evidence/p0-zero-wager-pc-capture-manifest-2026-08-29-v1.json",
+  "realMoneyAllowed":false,
+  "jurisdiction":"Spain",
+  "scope":{"onlineOnly":true,"nonPromoOnly":true,"passiveObservationOnly":true,"wagersAllowed":false,"automaticBettingAllowed":false,"githubActionsRequired":false},
+  "commonCaptureProtocol":{
+    "browser":"Desktop Chromium-family browser with DevTools Network export available",
+    "beforeOpeningTarget":["Open DevTools Network before launch.","Enable Preserve log.","Disable cache while DevTools is open.","Clear Network immediately before each target so each HAR belongs to one game session."],
+    "duringCapture":["Launch only the exact target listed.","Let game/state/jackpot UI finish loading without wagering.","Open in-game Help/Rules/Paytable/Info where available.","If bet level can be changed without a wager, passive state inspection is allowed; never press Spin/Deal/Draw/Play.","Do not use promotional/free-spin flows."],
+    "export":["Export one HAR with content per target.","Keep original HAR private.","Do not edit timestamps, bodies, URLs or ordering before local analysis."],
+    "analysisCommand":"node loterias-ai/scripts/analyze-edge-p0-har.mjs <lane> <capture.har>",
+    "supportedLanes":["apmccoy","frank","ultimate-vp","betfair-regal-riches","magic-nile","scarab","hexbreak3r","ocean-magic"]
+  },
+  "lanes":[
+    {"rank":1,"lane":"apmccoy","target":"Betfair España — AP McCoy Sporting Legends™","exactUrl":"https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn","captureGoal":["launcher/latest initialResources/configured IMS+ticker","fresh GLOBAL EUR local=0 sljp-1 Daily and sljp-2 Weekly when served","amount/GHT/winCount/cadence","served total-stake menu candidate"],"cannotAloneClose":["cross-GHT survival","prospective race bound","execution authorization"]},
+    {"rank":2,"lane":"frank","target":"bet365 España — Frank Bruno Sporting Legends","exactUrl":"https://casino.bet365.es/play/FrankBrunoSL","captureGoal":["exact route/provider-code provenance","bet365 configured Sporting ticker binding","fresh Daily state","served EUR 0.10 stake evidence","served eligibility/rule bodies if exposed"],"cannotAloneClose":["independent semantic approval","cross-GHT survival","race/latency bound","execution authorization"]},
+    {"rank":3,"lane":"ultimate-vp","target":"Botemania — Ultimate Video Poker · Jotas o Mejor Progresivo","exactUrl":"https://www.botemania.es/juegos/casino-online/ultimate-video-poker","captureGoal":["served jackpot-trigger rule","served coin/hand-count/total-wager qualification rule","current exact target/build markers"],"cannotAloneClose":["independent rule review","prospective threshold validation","execution authorization"]},
+    {"rank":4,"lane":"betfair-regal-riches","target":"Betfair España — Regal Riches","exactUrl":"https://casino.betfair.es/juego/regal-riches-aig","captureGoal":["exact IGT/provider/build fingerprint","served theoretical RTP and bet menu","Progressive Wild meter rules","visible pre-wager meter state","reload persistence candidate"],"cannotAloneClose":["cross-player inheritance","exact state EV","execution authorization"]},
+    {"rank":5,"lane":"magic-nile","target":"Betfair España — Magic of the Nile","exactUrl":"https://casino.betfair.es/juego/magic-of-nile-aig","captureGoal":["exact IGT/build and 96.02% served/public configuration binding","bet menu","visible [red,blue,green] gem vector per selectable bet level","persistence/state keys and Help bodies","Spain-specific probability/config clues if served"],"cannotAloneClose":["exact conditional EV unless transition probabilities/feature returns are recoverable","execution authorization"]},
+    {"rank":6,"lane":"scarab","target":"Betfair España — Scarab","exactUrl":"https://casino.betfair.es/juego/scarab-aig","captureGoal":["exact IGT/build and Spanish theoretical RTP","bet/denomination menu","current spin-in-10-cycle","all gold-border positions per bet level","account/denomination state scope clues"],"cannotAloneClose":["cross-player scope","exact conditional EV without Spain math","execution authorization"]},
+    {"rank":7,"lane":"hexbreak3r","target":"Betfair España — Hexbreak3r","exactUrl":"https://casino.betfair.es/juego/hexbreak3r-aig","captureGoal":["exact IGT/build and Spanish theoretical RTP","bet menu","visible reel-height vector [r1,r2,r3,r4,r5]","Luck/Jinx Zone state","middle-reel progressive state","per-bet persistence clues"],"cannotAloneClose":["exact state EV without Spain transition math","execution authorization"]},
+    {"rank":8,"lane":"ocean-magic","target":"EnRacha España — Ocean Magic","exactUrl":"https://www.enracha.es/juegos/ocean-magic","captureGoal":["exact served provider/build fingerprint","current persistence rule","visible bubble coordinates before wager","state across zero-wager bet-level changes/reload"],"cannotAloneClose":["cross-player inheritance","exact state EV","execution authorization"]}
+  ],
+  "optionalIdentityCapture":{
+    "target":"Betfair España Arcade — Golden Egypt",
+    "exactUrl":"https://arcade.betfair.es/juego/golden-egypt-aem",
+    "exactGameId":"golden-egypt-aem",
+    "reason":"Current real-money Spanish deployment is verified, but provider and equivalence to the documented IGT persistent-coin Golden Egypt family are unresolved.",
+    "captureGoal":["provider/copyright/build","theoretical RTP","bet menu","coin/meter persistence wording","pre-wager visible coin state"],
+    "unifiedDispatcherLaneAvailable":false
+  },
+  "successDefinition":"Success is reviewable exact served evidence closing one or more gates. No capture, candidate, demo or video authorizes a wager by itself.",
+  "hardGuards":{"captureDoesNotAuthorizeExecution":true,"reviewCandidateDoesNotEqualVerifiedRule":true,"sameTitleDoesNotProveProvider":true,"sameTitleDoesNotProveConfiguration":true,"oneAccountCannotProveCrossPlayerPersistence":true,"visibleMinimumBetDoesNotProveJackpotEligibility":true,"regionalPersistenceCannotTransfer":true,"rawHarMustRemainPrivate":true,"noWagerProbe":true,"noAutomaticBetting":true,"realMoneyAllowed":false},
+  "execution":{"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
