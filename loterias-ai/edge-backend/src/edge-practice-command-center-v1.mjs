@@ -11,8 +11,10 @@ import {evaluateRepetitionJackpot} from './roulette-repetition-jackpot-screen-v1
 import {screenAotgLiveRoulette} from './aotg-live-roulette-ev-screen-v1.mjs';
 import {evaluateQuantumAutoPhysicsEv} from './quantum-auto-physics-ev-screen-v1.mjs';
 import {evaluatePostReleaseSectorEv} from './roulette-post-release-sector-ev-screen-v1.mjs';
+import {screenStreak9NextSpin} from './streak-of-luck-state9-one-spin-screen-v1.mjs';
+import {summarizeVisibleMoonState,screenMoonCollectNextSpin,screenMoonPushNextSpin} from './full-moon-visible-state-lower-bound-screen-v1.mjs';
 
-const VERSION='edge-practice-command-center-v1.2-current-spin-physics';
+const VERSION='edge-practice-command-center-v1.3-persistent-state-thresholds';
 const EXECUTION=Object.freeze({decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0});
 const execution=()=>({...EXECUTION});
 function scoreResult(result){
@@ -38,6 +40,10 @@ function dispatchScenario(s={}){
   if(s.type==='TIMED_FIRST_CONTRIBUTION')return evaluateTimedFirstContributionPractice(s.input||{});
   if(s.type==='SLOT_STAKE_LADDER')return evaluateFixedStakeLadder(s.input||{});
   if(s.type==='SLOT_STAKE_CHANGE_CLAIM')return classifyStakeChangeClaim(s.input||{});
+  if(s.type==='STREAK_OF_LUCK_STATE9_ONE_SPIN')return screenStreak9NextSpin(s.input||{});
+  if(s.type==='FULL_MOON_STATE_SUMMARY')return summarizeVisibleMoonState(s.input||{});
+  if(s.type==='FULL_MOON_MOON_COLLECT')return screenMoonCollectNextSpin(s.input||{});
+  if(s.type==='FULL_MOON_MOON_PUSH')return screenMoonPushNextSpin(s.input||{});
   if(s.type==='ROULETTE_PHYSICS_WINDOW')return evaluatePhysicsWindow(s.input||{});
   if(s.type==='ROULETTE_CURRENT_SPIN_PHYSICS_PREDICT')return predictPhysicsSector(s.training||[],s.current||{},s.options||{});
   if(s.type==='ROULETTE_CURRENT_SPIN_PHYSICS_WALK_FORWARD')return walkForwardPhysicsValidation(s.records||[],s.options||{});
@@ -62,7 +68,7 @@ export function runPracticeExperiment(bundle={}){
   });
   results.sort((a,b)=>b.score-a.score||a.index-b.index);
   const executableResearchCandidates=results.filter(x=>x.score>=70);
-  return {version:VERSION,target:bundle.target||null,scenarioCount:results.length,ranked:results,highestPriority:results[0]||null,researchCandidateCount:executableResearchCandidates.length,researchCandidates:executableResearchCandidates.map(x=>({id:x.id,type:x.type,score:x.score,verdict:x.result?.practiceVerdict||x.result?.physics||x.result?.classification||x.result?.status||x.result?.reason||null})),execution:execution(),hardGuards:{practiceCannotAuthorizeRealMoney:true,syntheticInputsCannotBecomeFacts:true,rankingIsResearchPriorityNotBetRecommendation:true,creatorOrHistoryMethodsCannotSelfPromote:true,currentSpinPhysicsNeedsIndependentProspectiveHoldout:true,exactCurrentTargetEvidenceRequired:true,noAutomaticBetting:true,noWagerProbe:true}};
+  return {version:VERSION,target:bundle.target||null,scenarioCount:results.length,ranked:results,highestPriority:results[0]||null,researchCandidateCount:executableResearchCandidates.length,researchCandidates:executableResearchCandidates.map(x=>({id:x.id,type:x.type,score:x.score,verdict:x.result?.practiceVerdict||x.result?.physics||x.result?.classification||x.result?.status||x.result?.reason||null})),execution:execution(),hardGuards:{practiceCannotAuthorizeRealMoney:true,syntheticInputsCannotBecomeFacts:true,rankingIsResearchPriorityNotBetRecommendation:true,creatorOrHistoryMethodsCannotSelfPromote:true,currentSpinPhysicsNeedsIndependentProspectiveHoldout:true,persistentStateMustBeObservedBeforeWager:true,exactCurrentTargetEvidenceRequired:true,noAutomaticBetting:true,noWagerProbe:true}};
 }
 export function runPracticeExperimentText(raw){let bundle;try{bundle=JSON.parse(raw);}catch(error){return {version:VERSION,ok:false,reason:'JSON_PARSE_FAILED',message:String(error?.message||error),execution:execution()};}return runPracticeExperiment(bundle);}
 if(import.meta.url===`file://${process.argv[1]}`){const file=process.argv[2];if(!file){process.stdout.write('Usage: node edge-practice-command-center-v1.mjs <experiment.json>\n');process.exitCode=2;}else{const out=runPracticeExperimentText(fs.readFileSync(file,'utf8'));process.stdout.write(`${JSON.stringify(out,null,2)}\n`);}}
