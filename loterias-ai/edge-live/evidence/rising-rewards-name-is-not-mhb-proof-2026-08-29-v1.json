@@ -1,0 +1,112 @@
+{
+  "version": "rising-rewards-name-is-not-mhb-proof-2026-08-29-v1",
+  "generatedAt": "2026-08-29T15:58:00+02:00",
+  "scope": "ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "status": "FALSE_POSITIVE_GUARD_NO_PLAY",
+  "realMoneyAllowed": false,
+  "question": "Does the Rising Rewards family/name, a published maximum jackpot value, or increasing trigger probability prove Must-Hit-By semantics?",
+  "answer": "NO. Explicit mandatory-award-at-boundary wording is required for each exact title/operator build.",
+  "evidence": [
+    {
+      "title": "Give Me Gold Rising Rewards",
+      "operator": "Betfair Spain",
+      "source": "https://casino.betfair.com/es/juego/gmg-rising-rewards-alw",
+      "sourceClass": "CURRENT_SPANISH_OPERATOR_PAGE",
+      "facts": {
+        "risingRewardsNamed": true,
+        "fiveJackpotLevels": true,
+        "publishedRangesBetX": {
+          "Mini": [5, 75],
+          "Minor": [10, 100],
+          "Major": [50, 250],
+          "Mega": [200, 1000],
+          "Ultra": [1000, 5000]
+        },
+        "jackpotTriggerSymbolsGiveChanceToUnlockWheel": true,
+        "explicitMustHitByWordingOnIndexedOperatorPage": false,
+        "explicitMandatoryAwardAtPublishedMaximumOnIndexedOperatorPage": false
+      },
+      "use": "NEGATIVE_CLASSIFICATION_GUARD_ONLY"
+    },
+    {
+      "title": "Give Me Gold Rising Rewards",
+      "operator": "PokerStars Spain",
+      "source": "https://www.pokerstars.es/casino/game/give-me-gold-rising-rewards/1031/728/",
+      "sourceClass": "CURRENT_SPANISH_OPERATOR_EXPLAINER",
+      "facts": {
+        "risingRewardsNamed": true,
+        "fiveJackpotLevels": true,
+        "jackpotValuesIncreaseByBetMultiplePerTrigger": 0.5,
+        "publishedMaximumsExist": true,
+        "triggerProbabilityIncreasesAsJackpotValuesGrow": true,
+        "awardedJackpotResetsToStartingValue": true,
+        "explicitMustHitByWordingOnIndexedOperatorPage": false,
+        "explicitMandatoryAwardAtPublishedMaximumOnIndexedOperatorPage": false
+      },
+      "use": "NEGATIVE_CLASSIFICATION_GUARD_ONLY"
+    },
+    {
+      "title": "Give Me Gold Rising Rewards",
+      "operator": "PokerStars Italy",
+      "source": "https://www.pokerstars.it/content/dam/new-dam/italy/website/documenti/slot/Give%20Me%20Gold%20Rising%20Rewards.pdf",
+      "sourceClass": "EXACT_TITLE_OFFICIAL_RULES_OTHER_JURISDICTION",
+      "transferAllowedToSpain": false,
+      "facts": {
+        "fiveDisplayedJackpots": true,
+        "baseValuesBetX": [1000, 200, 50, 10, 5],
+        "maximumValuesBetX": [5000, 1000, 250, 100, 75],
+        "eachAssociatedTokenIncrementsJackpotBetX": 0.5,
+        "wheelActivationIsProbabilisticOnJackpotTriggerToken": true,
+        "wheelActivationProbabilityInfluencedByCurrentJackpotValues": true,
+        "awardedJackpotResetsToBase": true,
+        "rulesDoNotStateMandatoryAwardAtMaximumInRecoveredText": true
+      },
+      "use": "EXACT_TITLE_MECHANIC_CORROBORATION_NOT_SPANISH_EXECUTION_RULE"
+    },
+    {
+      "title": "Ancient Fortunes Minotaur Rising",
+      "operator": "GoldenPark Spain",
+      "source": "https://www.goldenpark.es/tragaperras-online/ancient-fortunes-minotaur-rising",
+      "sourceClass": "CURRENT_SPANISH_OPERATOR_PAGE",
+      "facts": {
+        "risingRewardsNamed": true,
+        "mustHitByExplicitlyNamed": true,
+        "fiveJackpotLevels": true,
+        "valuesAdjustWithBet": true,
+        "guaranteedToTriggerAtPredeterminedValuePublished": true
+      },
+      "use": "POSITIVE_EXPLICIT_MHB_RULE_CANDIDATE"
+    }
+  ],
+  "closedGate": {
+    "risingRewardsNameAloneCanClassifyMhb": false,
+    "publishedMaximumAloneCanClassifyMhb": false,
+    "probabilityIncreasingWithMeterAloneCanClassifyMhb": false,
+    "explicitMandatoryBoundaryRuleRequired": true,
+    "exactOperatorBuildStillRequiredForEv": true
+  },
+  "classificationRule": {
+    "MHB_EXPLICIT_RULE_CANDIDATE": "Require exact title/operator evidence that the jackpot MUST/IS GUARANTEED to be awarded by or when a stated boundary is reached.",
+    "BOUNDED_OR_RISING_RANDOM_JACKPOT": "A maximum/range plus increasing trigger probability without explicit mandatory-boundary wording must remain outside the MHB lane.",
+    "UNVERIFIED": "Family name, creator wording, screenshots or cross-title analogy cannot promote the candidate."
+  },
+  "implication": "Ancient Fortunes Minotaur Rising remains a valid explicit-MHB research candidate because a current Spanish operator publishes mandatory-boundary semantics. Give Me Gold Rising Rewards is useful as a counterexample/guard and must not be promoted to MHB from the family name or published maxima alone.",
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "familyNameCannotSetMhbTrue": true,
+    "maxValueCannotSetMhbTrue": true,
+    "increasingTriggerProbabilityCannotSetMhbTrue": true,
+    "crossTitleTransferForbidden": true,
+    "crossJurisdictionTransferForbidden": true,
+    "explicitMandatoryBoundaryRuleRequired": true,
+    "noWagerProbe": true,
+    "noAutomaticBetting": true,
+    "realMoneyAllowed": false
+  }
+}
