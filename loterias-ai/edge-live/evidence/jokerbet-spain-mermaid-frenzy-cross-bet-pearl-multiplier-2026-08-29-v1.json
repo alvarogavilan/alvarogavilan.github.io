@@ -1,0 +1,66 @@
+{
+  "version":"jokerbet-spain-mermaid-frenzy-cross-bet-pearl-multiplier-2026-08-29-v1",
+  "generatedAt":"2026-08-29T16:42:00Z",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "status":"EXACT_SPAIN_CROSS_BET_PERSISTENT_MULTIPLIER_STRUCTURAL_LEVERAGE_NO_PLAY",
+  "realMoneyAllowed":false,
+  "target":{"operator":"JOKERBET Spain","title":"Mermaid Frenzy","displayProvider":"Games Global","rulesUrl":"https://www.jokerbet.es/img/logos/pdf/mermaid-frenzy.pdf","pageUrl":"https://www.jokerbet.es/tragaperras-slots/mermaid-frenzy.html"},
+  "exactCurrentOperatorPageFacts":{"minStakeEUR":0.20,"maxStakeEUR":7.50,"stakeRatioMaxToMin":37.5,"rtpPct":94.15,"volatility":"MEDIUM","reels":5,"rows":4,"ways":1024,"displayedMaxPrizeEUR":44000},
+  "exactCurrentRulesFacts":{
+    "wildCollectionSavedPerBet":true,
+    "changingBetRestoresWildCollectionStateForThatBet":true,
+    "pearlSymbolsCanLandAnywhere":true,
+    "pearlWinRequiresThreeOrMoreConsecutiveReelsStartingAtReel1":true,
+    "pearlCashValuesX":[0.5,1,1.5,2,2.5,3,4,5,6,7,8],
+    "pearlJackpotBaseValuesX":{"MINI":10,"MINOR":20,"MAJOR":50,"MEGA":500},
+    "allPearlCashAndJackpotPrizesMultipliedByPearlMultiplier":true,
+    "displayedJackpotPrizesAlreadyIncludeCurrentPearlMultiplier":true,
+    "pearlMultiplierIncrementRule":"Pearls on reels 1 and 2 without a winning Pearl combination increase multiplier by 1x",
+    "pearlMultiplierMin":1,
+    "pearlMultiplierMax":10,
+    "pearlMultiplierResetRule":"resets to 1x when Pearl symbols create a winning combination, except during Mermaid Bonus",
+    "pearlMultiplierUnchangedWhenBetChanges":true,
+    "mermaidBonusDoesNotResetPearlMultiplier":true,
+    "mermaidBonusCanTriggerRandomlyAndCreatesWinningPearlCombination":true,
+    "mermaidBonusProbabilityIncreasesWithCollectedPearls":true,
+    "rulesRtpPct":94.15,
+    "rulesGeneratedDate":"2025-11-28",
+    "rulesCopyrightYear":2025,
+    "productHelpCopyrightYear":2026
+  },
+  "structuralEdgeHypothesis":{
+    "id":"LOW_STAKE_BUILD_HIGH_STAKE_EXERCISE",
+    "description":"Because the Pearl Multiplier is explicitly invariant to bet changes while Pearl cash/jackpot awards scale with current bet, a multiplier state accumulated while wagering at a lower stake may have greater monetary option value after switching to a higher stake.",
+    "exactStateLeverageFactorFromCurrentStakeRange":37.5,
+    "notYetPositiveEv":true,
+    "whyNotYet":"The exact transition probabilities into multiplier increments, Pearl wins/resets and Mermaid Bonus, plus the cost/return distribution while building state, are not published in the recovered exact rules."
+  },
+  "exactPayoutScalingExamplesNotEvClaims":{
+    "atPearlMultiplier10AndMaxStakeEUR7_50":{"MINI_EUR":750,"MINOR_EUR":1500,"MAJOR_EUR":3750,"MEGA_EUR":37500},
+    "atPearlMultiplier10AndMinStakeEUR0_20":{"MINI_EUR":20,"MINOR_EUR":40,"MAJOR_EUR":100,"MEGA_EUR":1000},
+    "note":"These follow directly from exact X-bet jackpot factors and the current Pearl Multiplier; they are contingent payout values, not probabilities or expected values."
+  },
+  "conservativeJackpotEventThresholds":{
+    "model":"For a single high-stake exercise spin, ignoring every ordinary return and every non-jackpot Pearl/cash value, if p is the probability that the spin yields a winning Pearl combination containing at least a given jackpot tier, lower-bound net EV is -S + p*tierX*M*S. Break-even p=1/(tierX*M).",
+    "atMultiplier10":{"MINI_breakEvenPct":1,"MINOR_breakEvenPct":0.5,"MAJOR_breakEvenPct":0.2,"MEGA_breakEvenPct":0.02},
+    "guard":"No such jackpot-event probability has been verified for the current served game; these are algebraic thresholds only."
+  },
+  "whatRemainsOpen":{
+    "runtimePearlMultiplierVisibleBeforeWager":true,
+    "runtimePearlMultiplierSurvives0_20To7_50BetChange":true,
+    "exactBetMenuAndWhetherAllListedEndpointStakesServed":true,
+    "probabilityPearlIncrementPerSpin":true,
+    "probabilityPearlWinningCombinationPerSpinByState":true,
+    "probabilityEachPearlJackpotTierWithinWinningCombination":true,
+    "MermaidBonusTransitionProbabilityByCollectedPearls":true,
+    "expectedBuildCostToReachEachMultiplier":true,
+    "nonPearlBaseReturnDuringBuildAndExercise":true,
+    "whetherTransitionProbabilitiesAreStakeInvariant":true,
+    "prospectiveOutOfSampleValidation":true,
+    "executionAuthorization":true
+  },
+  "software":"loterias-ai/edge-backend/src/mermaid-frenzy-cross-bet-pearl-option-v1.mjs",
+  "priority":{"rankBand":"VERY_HIGH_CROSS_BET_STATE_ARBITRAGE_RESEARCH","reason":"Unlike ordinary per-bet persistence, exact Spanish rules explicitly preserve the Pearl Multiplier across bet changes while its payouts scale with the current bet. This creates genuine cross-bet monetary leverage, but transition probabilities and build economics remain unresolved."},
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{"rulesPersistenceDoesNotByItselfProvePositiveEv":true,"currentRuntimeSurvivalMustBeVerified":true,"overallHitFrequencyCannotStandInForPearlProbability":true,"pearlCombinationCashFloorNotInvented":true,"jackpotTierProbabilityCannotBeInvented":true,"buildCostCannotBeIgnoredForCycleEv":true,"noWagerProbe":true,"noAutomaticBetting":true,"realMoneyAllowed":false}
+}
