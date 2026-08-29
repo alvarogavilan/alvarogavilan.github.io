@@ -1,0 +1,45 @@
+{
+  "version":"slot-stake-ladder-methods-review-2026-08-29-v1",
+  "generatedAt":"2026-08-29T17:00:00+02:00",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "status":"STAKE_LADDER_RITUAL_REJECTED_UNDER_IID_NULL_EXACT_STAKE_MECHANIC_EXCEPTIONS_RETAINED_NO_PLAY",
+  "realMoneyAllowed":false,
+  "exampleRequested":{"stages":[{"stakeEUR":0.40,"spins":15},{"stakeEUR":0.60,"spins":10},{"stakeEUR":1.00,"spins":5}],"totalSpins":30,"totalStakeEUR":17.00},
+  "observedStrategyFamily":{
+    "source":"https://groundiskey.co.uk/rps-games.html",
+    "example":"Eye of Horus Megaways strategy snippet: start smallest denomination; give game 15 spins to get a win; on a win give 10 more spins for bonus; if no bonus increase stake and repeat.",
+    "classification":"CREATOR_STRATEGY_DISCOVERY_ONLY",
+    "executionAuthority":false
+  },
+  "academicContext":{
+    "source":"https://www.researchgate.net/publication/369738756_Interpassive_Gambling_The_Case_of_Slot_Machine_Vlogs_on_YouTube",
+    "finding":"A study of slot-machine vlogs reported progressive betting in 5 of 21 sampled videos and documented creators changing denominations in an attempt to make a machine hit; the paper presents this as a belief that odds can be manipulated, not validated advantage play.",
+    "use":"BEHAVIORAL_EVIDENCE_THAT_THE_METHOD_FAMILY_IS_REAL_AND_WIDESPREAD"
+  },
+  "currentSpanishRegulatoryNull":{
+    "source":"https://boe.es/buscar/act.php?id=BOE-A-2014-10302&p=20240622&tn=1",
+    "finding":"Spanish technical rules require chance events to be governed exclusively by the RNG and state that there must be no correlation between plays except where explicitly contemplated in game rules.",
+    "implication":"A history-only stake ladder cannot be assumed to alter next-spin probability on a compliant ordinary RNG slot."
+  },
+  "operatorCorroboration":{
+    "source":"https://help.bet365.es/s/en-es/fair-payouts",
+    "finding":"bet365 states RNGs have no memory; each spin is a fresh event with identical odds, and the amount staked has no influence on the number the RNG arrives at.",
+    "implication":"Stake changes alone are not a generic RNG-control mechanism on bet365."
+  },
+  "mathNullModel":{
+    "module":"loterias-ai/edge-backend/src/slot-stake-ladder-lab-v1.mjs",
+    "theorem":"If each next spin has the same conditional expected return per euro and payout probabilities scale with stake, any predictable stake schedule based only on past outcomes has expected profit (RTP - 1) times expected total stake.",
+    "exampleAt95PctRtp":{"totalStakeEUR":17,"expectedReturnEUR":16.15,"expectedNetEUR":-0.85,"expectedRoiPct":-5},
+    "sameTurnoverFlatBetComparison":"Exactly the same expected net result under the IID scale-invariant null."
+  },
+  "realExceptionsWorthResearching":{
+    "stakeDependentJackpotEligibility":true,
+    "stakeDependentFeatureProbability":true,
+    "differentPaytableOrRtpByBetOption":true,
+    "persistentStateTrackedSeparatelyByBetLevel":true,
+    "anteBetOrEnhancedFeatureMode":true,
+    "rule":"These are not evidence that a ladder ritual works. They are explicit game mechanics and must be verified on the exact current operator/title/configuration before entering an EV model."
+  },
+  "decision":{"generic040060100Method":"REJECT_AS_EDGE_WITHOUT_EXACT_STAKE_DEPENDENT_MECHANIC","creatorVideosRole":"DISCOVERY_ONLY","exactMechanicExceptions":"KEEP_AND_TEST_PER_GAME"},
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
