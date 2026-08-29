@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {runAutonomousPracticeV2} from '../edge-backend/src/edge-autonomous-practice-runner-v2.mjs';
+
+const r=runAutonomousPracticeV2({rouletteSpinsPerSeed:100,rouletteSeeds:2,biasSpins:1000});
+assert.equal(r.mode,'AUTONOMOUS_NO_USER_INPUT');
+assert.equal(r.priorityUpgrade.topStructuralLane,'JOKERBET_ES_MERMAID_FRENZY_PEARL_MULTIPLIER');
+assert.equal(r.priorityUpgrade.structuralRank[0].classification,'REAL_CROSS_BET_STATE_LEVERAGE');
+assert.equal(r.priorityUpgrade.structuralRank[0].stakeLeverageRatio,37.5);
+assert.equal(r.mermaidResearchFrontier.publishedOverallHitFrequencyPct,20.94);
+assert.equal(r.mermaidResearchFrontier.publishedOverallHitFrequencyGuard,'CONTEXT_ONLY_NOT_PEARL_OR_JACKPOT_PROBABILITY');
+assert.equal(r.mermaidResearchFrontier.thresholds.find(x=>x.tier==='MINI').breakEvenOneSpinEventProbabilityPct,1);
+assert.equal(r.mermaidResearchFrontier.thresholds.find(x=>x.tier==='MEGA').breakEvenOneSpinEventProbabilityPct,.02);
+assert.equal(r.rhinoResearchFrontier.classification,'CONDITIONAL_STATE_ONLY_NO_CROSS_BET_LEVERAGE');
+assert.equal(r.execution.realMoneyAllowed,false);
+console.log('edge-autonomous-practice-runner-v2.test.mjs: PASS');
