@@ -1,0 +1,49 @@
+{
+  "version":"roulette-practice-fair-vs-controlled-bias-benchmark-2026-08-29-v1",
+  "generatedAt":"2026-08-29T16:59:00+02:00",
+  "scope":"PRACTICE_ONLY_SYNTHETIC_CONTROL",
+  "status":"PROGRESSION_NULL_CONFIRMED_CONTROLLED_BIAS_DETECTABLE_NO_PLAY",
+  "realMoneyAllowed":false,
+  "method":{
+    "wheel":"European single-zero 0..36",
+    "selection":"RED",
+    "spinsPerStrategy":2000000,
+    "baseUnit":1,
+    "tableMaxUnits":128,
+    "startingBankrollUnits":10000000,
+    "strategies":["FLAT","MARTINGALE","FIBONACCI","DALEMBERT"],
+    "implementation":"Independent local reproduction of the current roulette-practice-simulator-v1.mjs sampling/settlement logic because the execution container could not DNS-resolve raw.githubusercontent.com. No GitHub Actions used."
+  },
+  "fairControl":{
+    "theoreticalEvenMoneyHouseEdgePct":2.7027027027,
+    "results":[
+      {"strategy":"FLAT","spins":2000000,"netUnits":-53524,"totalWageredUnits":2000000,"roiPct":-2.6762,"maxStakeUnits":1,"maxDrawdownUnits":53547},
+      {"strategy":"MARTINGALE","spins":2000000,"netUnits":-305734,"totalWageredUnits":9827114,"roiPct":-3.1111270308,"maxStakeUnits":128,"maxDrawdownUnits":306194},
+      {"strategy":"FIBONACCI","spins":2000000,"netUnits":-168855,"totalWageredUnits":5889217,"roiPct":-2.8671893055,"maxStakeUnits":128,"maxDrawdownUnits":169332},
+      {"strategy":"DALEMBERT","spins":2000000,"netUnits":-5827916,"totalWageredUnits":218693652,"roiPct":-2.6648766193,"maxStakeUnits":128,"maxDrawdownUnits":5830234}
+    ],
+    "conclusion":"All progression systems remain negative per euro wagered and converge around the European roulette house edge. Progressions mainly change turnover, drawdown and tail risk."
+  },
+  "controlledBias":{
+    "syntheticOnly":true,
+    "construction":"Each of the 18 red pockets receives weight 1.10 while each black pocket and zero receive weight 1.00.",
+    "impliedRedProbability":0.5103092784,
+    "impliedEvenMoneyEdgePctApprox":2.06185567,
+    "results":[
+      {"strategy":"FLAT","spins":2000000,"netUnits":41278,"totalWageredUnits":2000000,"roiPct":2.0639,"maxStakeUnits":1,"maxDrawdownUnits":155},
+      {"strategy":"MARTINGALE","spins":2000000,"netUnits":159873,"totalWageredUnits":8477945,"roiPct":1.8857517948,"maxStakeUnits":128,"maxDrawdownUnits":6800},
+      {"strategy":"FIBONACCI","spins":2000000,"netUnits":106125,"totalWageredUnits":5269487,"roiPct":2.0139531609,"maxStakeUnits":128,"maxDrawdownUnits":2672},
+      {"strategy":"DALEMBERT","spins":2000000,"netUnits":993404,"totalWageredUnits":48888384,"roiPct":2.0319837121,"maxStakeUnits":128,"maxDrawdownUnits":13424}
+    ],
+    "conclusion":"When a genuine probability distortion is deliberately inserted, positive expectation appears across staking systems. The source of edge is the biased outcome distribution, not the staking progression."
+  },
+  "scientificUse":{
+    "martingaleAsEdge":false,
+    "fibonacciAsEdge":false,
+    "dalembertAsEdge":false,
+    "flatBetAsEdge":false,
+    "validatedBiasOrCurrentSpinPhysicsCanCreateEdgeInPrinciple":true,
+    "requiredRealWorldPromotion":"Exact same online physical table identity plus prospective out-of-sample evidence whose conservative confidence lower bound beats the relevant break-even probability."
+  },
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
