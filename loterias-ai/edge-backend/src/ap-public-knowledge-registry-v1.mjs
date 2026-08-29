@@ -1,6 +1,7 @@
-const VERSION='ap-public-knowledge-registry-v1.2-initial-state';
+const VERSION='ap-public-knowledge-registry-v1.3-regional-trigger-guards';
 const KNOWLEDGE_BASE='loterias-ai/knowledge/ap-video-knowledge-base-2026-08-29-v1.json';
 const INITIAL_STATE_KNOWLEDGE='loterias-ai/knowledge/online-persistent-initial-state-advantage-2026-08-29-v1.json';
+const REGIONAL_TRIGGER_GUARDS='loterias-ai/knowledge/ap-regional-variant-and-trigger-distribution-guards-2026-08-29-v1.json';
 const execution=()=>({decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0});
 const b=v=>v===true;
 
@@ -9,29 +10,32 @@ export function getApPublicKnowledgeRegistry(){
     version:VERSION,
     knowledgeBase:KNOWLEDGE_BASE,
     initialStateKnowledge:INITIAL_STATE_KNOWLEDGE,
+    regionalTriggerGuards:REGIONAL_TRIGGER_GUARDS,
     categories:Object.freeze({
-      OCEAN_MAGIC_VARIABLE_STATE:Object.freeze({requiredObservedFields:Object.freeze(['exactIgtProviderFingerprintVerified','persistentRuleVerified','preWagerStateVisible','crossPlayerPersistenceVerified','stateSpecificEvVerified']),videoOrForeignEvidenceCanSetSpanishExecutionState:false}),
+      OCEAN_MAGIC_VARIABLE_STATE:Object.freeze({requiredObservedFields:Object.freeze(['exactIgtProviderFingerprintVerified','persistentRuleVerified','preWagerStateVisible','crossPlayerPersistenceVerified','stateSpecificEvVerified']),videoOrForeignEvidenceCanSetSpanishExecutionState:false,regionalVariantCanRemovePersistence:true}),
       ONLINE_PERSISTENT_INITIAL_STATE:Object.freeze({requiredObservedFields:Object.freeze(['exactServedConfigurationVerified','preWagerInitialStateVerified','initialStateScopeVerified','exactTheoreticalRtpVerified','stateSpecificEvVerified','repeatabilityVerified']),crossPlayerInheritanceRequired:false,multiAccountCyclingAllowed:false,identityBorrowingAllowed:false}),
       REGAL_RICHES_PERSISTENT_MHB:Object.freeze({exactSpanishTarget:Object.freeze({operator:'Betfair Spain',gameId:'regal-riches-aig'}),familyRuleCandidates:Object.freeze({purpleMinorMustHitBy:75,greenMajorMustHitBy:100,yellowMegaMustHitBy:125}),familyRuleCandidatesRequireExactServedConfirmation:true,creatorEntryThresholdsAreExecutionAuthority:false,requiredObservedFields:Object.freeze(['exactIgtProviderFingerprintVerified','exactServedRulesFingerprintVerified','persistentMeterRuleVerified','preWagerMeterStateVisible','reloadPersistenceVerified','crossPlayerPersistenceVerified','exactTheoreticalRtpVerified','exactStakeConfigurationVerified','stateSpecificEvVerified'])}),
-      TRUE_MUST_HIT_BY:Object.freeze({requiredObservedFields:Object.freeze(['explicitMustHitByRuleVerified','exactBoundaryVerified','currentMeterVerified','qualifyingStakeVerified','exactServedConfigurationVerified','baseCostModelVerified']),ordinaryProgressiveClosenessIsSufficient:false,maxBetAssumedRequired:false}),
+      TRUE_MUST_HIT_BY:Object.freeze({requiredObservedFields:Object.freeze(['explicitMustHitByRuleVerified','exactBoundaryVerified','currentMeterVerified','qualifyingStakeVerified','exactServedConfigurationVerified','baseCostModelVerified','triggerCostModelVerified']),ordinaryProgressiveClosenessIsSufficient:false,maxBetAssumedRequired:false,uniformTriggerMayBeAssumed:false,triggerCostModelSatisfiedBy:Object.freeze(['exactTriggerDistributionVerified','conservativeWorstCaseCostBoundVerified'])}),
       LOTTERY_RULE_OVERLAY:Object.freeze({searchTargets:Object.freeze(['ROLLDOWN_OR_FORCED_REDISTRIBUTION','GUARANTEED_POOL_OVERLAY','CARRYDOWN_RULE','TICKET_VOLUME_PAYOUT_DISCONTINUITY','RULE_CHANGE_ALTERING_EXPECTED_PRIZE_PER_TICKET']),numberPatternPredictionIsTarget:false})
     }),
-    hardGuards:Object.freeze({youtubeIsDiscoveryNotExecutionAuthority:true,physicalOrForeignStateCannotPopulateSpanishOnlineState:true,crossOperatorTransferForbidden:true,creatorThresholdCannotSelfAuthorize:true,multiAccountCyclingForbidden:true,identityBorrowingForbidden:true,noAutomaticBetting:true,realMoneyAllowed:false}),
+    hardGuards:Object.freeze({youtubeIsDiscoveryNotExecutionAuthority:true,physicalOrForeignStateCannotPopulateSpanishOnlineState:true,crossOperatorTransferForbidden:true,regionalVariantCanRemovePersistentFeature:true,uniformMhbTriggerCannotBeAssumed:true,creatorThresholdCannotSelfAuthorize:true,multiAccountCyclingForbidden:true,identityBorrowingForbidden:true,noAutomaticBetting:true,realMoneyAllowed:false}),
     execution:execution()
   });
 }
 
 export function evaluateMustHitByCandidate(input={}){
-  const gates={explicitMustHitByRuleVerified:b(input.explicitMustHitByRuleVerified),exactBoundaryVerified:b(input.exactBoundaryVerified),currentMeterVerified:b(input.currentMeterVerified),qualifyingStakeVerified:b(input.qualifyingStakeVerified),exactServedConfigurationVerified:b(input.exactServedConfigurationVerified),baseCostModelVerified:b(input.baseCostModelVerified)};
+  const triggerCostModelVerified=b(input.exactTriggerDistributionVerified)||b(input.conservativeWorstCaseCostBoundVerified);
+  const gates={explicitMustHitByRuleVerified:b(input.explicitMustHitByRuleVerified),exactBoundaryVerified:b(input.exactBoundaryVerified),currentMeterVerified:b(input.currentMeterVerified),qualifyingStakeVerified:b(input.qualifyingStakeVerified),exactServedConfigurationVerified:b(input.exactServedConfigurationVerified),baseCostModelVerified:b(input.baseCostModelVerified),triggerCostModelVerified};
   const missing=Object.entries(gates).filter(([,v])=>!v).map(([k])=>k);
-  return {version:VERSION,family:'TRUE_MUST_HIT_BY',admittedForExactEvResearch:missing.length===0,missing,warnings:[...(input.progressiveNearAdvertisedMaximum===true&&!gates.explicitMustHitByRuleVerified?['NEAR_MAXIMUM_IS_NOT_MHB_EVIDENCE']:[]),...(input.maxBetAssumedRequired===true&&!b(input.qualifyingStakeVerified)?['MAX_BET_CANNOT_BE_ASSUMED_TO_QUALIFY']:[])],execution:execution(),hardGuards:{candidateAdmissionCannotAuthorizeExecution:true,realMoneyAllowed:false}};
+  return {version:VERSION,family:'TRUE_MUST_HIT_BY',admittedForExactEvResearch:missing.length===0,missing,triggerCostModel:{exactTriggerDistributionVerified:b(input.exactTriggerDistributionVerified),conservativeWorstCaseCostBoundVerified:b(input.conservativeWorstCaseCostBoundVerified),verified:triggerCostModelVerified},warnings:[...(input.progressiveNearAdvertisedMaximum===true&&!gates.explicitMustHitByRuleVerified?['NEAR_MAXIMUM_IS_NOT_MHB_EVIDENCE']:[]),...(input.maxBetAssumedRequired===true&&!b(input.qualifyingStakeVerified)?['MAX_BET_CANNOT_BE_ASSUMED_TO_QUALIFY']:[]),...(input.uniformTriggerAssumed===true&&!b(input.exactTriggerDistributionVerified)?['UNIFORM_TRIGGER_CANNOT_BE_ASSUMED']:[])],execution:execution(),hardGuards:{candidateAdmissionCannotAuthorizeExecution:true,exactTriggerDistributionOrConservativeWorstCaseCostBoundRequired:true,realMoneyAllowed:false}};
 }
 
 export function evaluateOceanMagicDeployment(input={}){
   const gates={exactIgtProviderFingerprintVerified:b(input.exactIgtProviderFingerprintVerified),persistentRuleVerified:b(input.persistentRuleVerified),preWagerStateVisible:b(input.preWagerStateVisible),crossPlayerPersistenceVerified:b(input.crossPlayerPersistenceVerified),stateSpecificEvVerified:b(input.stateSpecificEvVerified)};
   const firstMissing=Object.entries(gates).find(([,v])=>!v)?.[0]||null;
   const researchStage=firstMissing===null?'STATE_SPECIFIC_EV_RESEARCH_COMPLETE_REVIEW_REQUIRED':firstMissing==='exactIgtProviderFingerprintVerified'?'PROVIDER_IDENTITY_REQUIRED':firstMissing==='persistentRuleVerified'?'EXACT_PERSISTENCE_RULE_REQUIRED':firstMissing==='preWagerStateVisible'?'PRE_WAGER_STATE_VISIBILITY_REQUIRED':firstMissing==='crossPlayerPersistenceVerified'?'EXACT_DEPLOYMENT_INHERITANCE_REQUIRED':'STATE_SPECIFIC_EV_REQUIRED';
-  return {version:VERSION,family:'OCEAN_MAGIC_VARIABLE_STATE',researchStage,gates,allMechanicAndEvGatesObserved:firstMissing===null,currentObservationCanUsePhysicalOrForeignVideoAsSpanishState:false,execution:execution(),hardGuards:{exactSpanishDeploymentRequired:true,videoCannotSetGateTrue:true,realMoneyAllowed:false}};
+  const warnings=[...(input.foreignPersistentVariantObserved===true&&!gates.persistentRuleVerified?['FOREIGN_PERSISTENT_VARIANT_CANNOT_PROVE_SPANISH_PERSISTENCE']:[]),...(input.sameTitleProviderRtpMatched===true&&!gates.persistentRuleVerified?['SAME_TITLE_PROVIDER_RTP_DO_NOT_PROVE_PERSISTENCE']:[])];
+  return {version:VERSION,family:'OCEAN_MAGIC_VARIABLE_STATE',researchStage,gates,warnings,allMechanicAndEvGatesObserved:firstMissing===null,currentObservationCanUsePhysicalOrForeignVideoAsSpanishState:false,execution:execution(),hardGuards:{exactSpanishDeploymentRequired:true,regionalVariantCanRemovePersistence:true,videoCannotSetGateTrue:true,realMoneyAllowed:false}};
 }
 
 export function evaluateOnlineInitialStateCandidate(input={}){
