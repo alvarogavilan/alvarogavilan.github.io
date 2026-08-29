@@ -1,0 +1,87 @@
+{
+  "version":"betfair-spain-aotg-norse-king-asgard-extra-boundary-2026-08-29-v1",
+  "generatedAt":"2026-08-29T17:15:00Z",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "status":"EXACT_BETFAIR_TITLE_EXTRA_AMOUNT_BOUNDARY_RUNTIME_CANDIDATE_NO_PLAY",
+  "realMoneyAllowed":false,
+  "target":{
+    "operator":"Betfair Spain",
+    "title":"Age of the Gods Norse: King of Asgard",
+    "provider":"Playtech",
+    "gameId":"age-of-the-gods-norse-king-of-asgard-cptn",
+    "url":"https://casino.betfair.es/juego/age-of-the-gods-norse-king-of-asgard-cptn"
+  },
+  "exactBetfairPublicEvidence":{
+    "source":"https://casino.betfair.es/juego/age-of-the-gods-norse-king-of-asgard-cptn",
+    "indexedSnapshotFinding":{
+      "activeJackpotsListed":["Ultimate Power Jackpot","Extra Jackpot"],
+      "extraTickerShowsExtraJackpotValue":true,
+      "spinningBeforeExtraTickerReachesDisplayedAmountMayTriggerExtra":true,
+      "anySpinOfAnyAmountCanTriggerJackpot":true,
+      "higherStakeIncreasesJackpotChance":true,
+      "jackpotContributionPct":0.55,
+      "baseRtpExcludingJackpotPct":94.56,
+      "totalRtpIncludingJackpotPct":95.11
+    },
+    "accountingArithmeticCheck":{"basePlusContributionPct":95.11,"matchesPublishedTotal":true},
+    "sourceClass":"BETFAIR_SPAIN_EXACT_TITLE_PUBLIC_RULE_SNAPSHOT"
+  },
+  "crossOperatorExactTitleCorroboration":{
+    "casino777Spain":{
+      "source":"https://www.casino777.es/age-of-the-gods-norse-king-of-asgard",
+      "finding":"Current exact-title Spanish rules explicitly state Extra is guaranteed to be won before its amount boundary, but Casino777 may activate a different subset of optional tiers.",
+      "transferToBetfairExecutionAllowed":false
+    },
+    "williamHillSpain":{
+      "source":"https://casino.williamhill.es/es-es/slots/aotgn-king-of-asgard",
+      "finding":"Current exact-title Spanish page lists Ultimate+Extra, 0.55% contribution, any bet amount can trigger and higher stake raises jackpot chance; operator-specific execution values still cannot transfer.",
+      "transferToBetfairExecutionAllowed":false
+    }
+  },
+  "classification":{
+    "betfairPageAloneProvesExplicitMandatoryAwardAtBoundary":false,
+    "reason":"Betfair public wording says spins before the displayed amount may activate Extra; it does not by itself explicitly say the award is mandatory before/at the boundary.",
+    "runtimeGuaranteedHitAmountCanCloseMandatoryBoundary":true,
+    "runtimeBindingLogic":"In an exact Betfair target session, a GLOBAL EUR aognjp row carrying guranteedHitAmount/guaranteedHitAmount is a guaranteed-amount semantic row. Because the exact Betfair title configuration lists only Ultimate Power (unbounded progressive) and Extra as active tiers, an unambiguous guaranteed-amount row becomes an Extra semantic binding candidate without trusting aognjp numeric suffix mappings.",
+    "numericAognjpSuffixRequired":false
+  },
+  "whatThisCloses":{
+    "exactBetfairTitleRoute":true,
+    "providerIdentity":true,
+    "publicActiveTierSetUltimatePlusExtra":true,
+    "exactBaseRtpExcludingJackpot":true,
+    "exactTotalRtpIncludingJackpot":true,
+    "exactJackpotContributionPct":true,
+    "anyBetAmountCanTriggerAtPublicRuleLevel":true,
+    "higherStakeIncreasesChance":true
+  },
+  "whatRemainsOpen":{
+    "freshExactBetfairRuntimeSession":true,
+    "freshGlobalEurAognjpGuaranteedAmountRow":true,
+    "currentExtraAmountAndGuaranteedHitAmount":true,
+    "servedMinimumEligibleStakeValue":true,
+    "exactAwardOrSeedFloor":true,
+    "networkRaceAndCaptureProbability":true,
+    "latency":true,
+    "positiveEvThreshold":true,
+    "executionAuthorization":true
+  },
+  "software":{
+    "passiveHarAnalyzer":"loterias-ai/scripts/analyze-betfair-aotgn-har.mjs",
+    "practiceLab":"loterias-ai/edge-backend/src/edge-practice-lab-v1.mjs",
+    "evidenceFusion":"loterias-ai/edge-backend/src/evidence-fusion-engine-v1.mjs"
+  },
+  "priority":{"rankBand":"TOP_TIER_BETFAIR_AMOUNT_BOUNDARY","reason":"Exact Betfair title already publishes base RTP excluding jackpot and the exact 0.55% jackpot contribution, removing a major accounting unknown. A passive served guaranteedHitAmount row can potentially bind Extra without numeric tier-code transfer."},
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{
+    "betfairPublicMayTriggerWordingIsNotMandatoryBoundaryProof":true,
+    "casino777GuaranteeCannotPopulateBetfairExecution":true,
+    "williamHillConfigurationCannotPopulateBetfairExecution":true,
+    "numericAognjpMappingsCannotPopulateExecution":true,
+    "publicAnyAmountEligibilityDoesNotProveCurrentMinimumStakeValue":true,
+    "runtimeGuaranteedAmountCandidateStillRequiresExactSessionReview":true,
+    "noWagerProbe":true,
+    "noAutomaticBetting":true,
+    "realMoneyAllowed":false
+  }
+}
