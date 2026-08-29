@@ -1,0 +1,111 @@
+{
+  "version":"virtual-casino-experiment-manifest-2026-08-29-v1",
+  "generatedAt":"2026-08-29T14:22:00+02:00",
+  "status":"RESEARCH_ONLY_ZERO_MONEY_EXPERIMENT_QUEUE",
+  "realMoneyAllowed":false,
+  "labKernel":"loterias-ai/edge-lab/edge-virtual-casino-lab-v1.mjs",
+  "scientistKernel":"loterias-ai/edge-lab/edge-virtual-scientist-v1.mjs",
+  "digitalTwinRegistry":"loterias-ai/edge-lab/edge-digital-twin-registry-v1.mjs",
+  "experiments":[
+    {
+      "rank":1,
+      "lane":"BOTEMANIA_ULTIMATE_VP",
+      "mode":"EXACT_EXHAUSTIVE",
+      "goal":"Enumerate every initial five-card hand and every hold choice under the exact current Spain progressive trigger/wager rules; solve jackpot-aware optimal strategy at a grid of jackpot values.",
+      "alreadyDemonstrated":"2598960 initial hands were previously solved under an explicitly unverified historical trigger assumption.",
+      "blockedBy":["exact Spain jackpot trigger","exact jackpot-qualifying wager/hand count"],
+      "afterUnblock":"Exact strategy surface and exact break-even jackpot; no Monte Carlo required for the core hand decision."
+    },
+    {
+      "rank":2,
+      "lane":"BETFAIR_MAGIC_OF_NILE",
+      "mode":"EXACT_27_STATE_MDP_PLUS_MONTE_CARLO_STRESS",
+      "goal":"Enumerate every [red,blue,green] pre-trigger gem vector and calculate optimal play/skip policy for each served bet level.",
+      "known":"Spain RTP 96.02%, exact real launcher, compact 27-state visible pre-trigger representation.",
+      "blockedBy":["Spain-specific gem transition probabilities","feature return distributions","exact served bet levels/state scope"],
+      "afterUnblock":"Exact conditional EV table for all 27 states, then Monte Carlo bankroll/risk stress tests."
+    },
+    {
+      "rank":3,
+      "lane":"BETFAIR_TREASURE_BOX",
+      "mode":"EXACT_METER_MDP_PLUS_THRESHOLD_SEARCH",
+      "goal":"Solve meter states 6..0 independently for every served bet level and both Kingdom/Dynasty; test play/skip thresholds without using creator thresholds.",
+      "known":"Spain IGT identity, exact launchers, published theoretical RTP 93.99% for both tracked titles.",
+      "blockedBy":["exact Spain key/coin probabilities","bonus return distribution","exact online persistence/reset/state scope"],
+      "afterUnblock":"Exact meter-state EV and optimal threshold per bet level."
+    },
+    {
+      "rank":4,
+      "lane":"BETFAIR_SCARAB",
+      "mode":"EXACT_TEN_SPIN_STATE_MDP_PLUS_INITIAL_STATE_SEARCH",
+      "goal":"Enumerate spin-in-cycle plus gold-border configurations and search for positive account-private initial or saved states.",
+      "blockedBy":["exact Spain theoretical RTP","reel/transition probabilities","feature return by border configuration","served starting-state rules"],
+      "afterUnblock":"Exact conditional EV by visible state and an independently frozen state-entry rule."
+    },
+    {
+      "rank":5,
+      "lane":"BETFAIR_REGAL_RICHES",
+      "mode":"EXACT_VARIANT_METER_MDP_PLUS_MONTE_CARLO",
+      "goal":"Identify exact Spain meter structure, then solve meter combinations and bet levels rather than importing physical-cabinet thresholds.",
+      "blockedBy":["exact Spain meter variant","reset/caps","transition/reel math","feature returns","state scope"],
+      "afterUnblock":"Exact configuration-specific play/skip region and risk distribution."
+    },
+    {
+      "rank":6,
+      "lane":"BETFAIR_AP_MCCOY",
+      "mode":"MONTE_CARLO_RACE_PLUS_EMPIRICAL_BOOTSTRAP",
+      "goal":"Replay millions of hypothetical post-GHT races using only prospectively measured own latency and competitor/award timing; estimate probability our first eligible bet wins the race and profit distribution.",
+      "blockedBy":["live same-binding GHT/state","prospective race observations","reviewed own latency distribution"],
+      "afterUnblock":"Conservative race probability bound compared to exact break-even probability."
+    },
+    {
+      "rank":7,
+      "lane":"BET365_FRANK_BRUNO",
+      "mode":"MONTE_CARLO_RACE_PLUS_EMPIRICAL_BOOTSTRAP",
+      "goal":"Same race framework as AP McCoy but with exact bet365 served stake/runtime semantics.",
+      "blockedBy":["exact served timed state","cross-GHT survival","stake eligibility","prospective race observations"]
+    },
+    {
+      "rank":8,
+      "lane":"ROULETTE",
+      "mode":"NULL_SIMULATION_PLUS_STRICT_WALK_FORWARD_BIAS_TEST",
+      "goal":"Generate fair-wheel controls, test candidate bias rules against prospective exact-source outcomes, correct for thousands of attempted patterns and reject systems that only fit history.",
+      "hardTruth":"No staking progression can turn an exactly fair roulette process positive EV. Only a verified physical/source-specific distributional deviation or rule/payoff error can create an edge.",
+      "blockedBy":["prospective exact wheel/source stream if a real bias hypothesis exists"]
+    },
+    {
+      "rank":9,
+      "lane":"LOTTERY",
+      "mode":"EXACT_COMBINATORICS_PLUS_RULE_OVERLAY_SEARCH",
+      "goal":"Exhaustively evaluate current prize rules, rollovers, rolldowns, carrydowns and participation-dependent overlays; simulate ticket portfolios only after a rule discontinuity is identified.",
+      "hardTruth":"Historical number patterns do not predict independent future draws; the lab searches payoff-rule edge, not magic numbers."
+    },
+    {
+      "rank":10,
+      "lane":"GENERIC_MHB_JACKPOT_KING_AND_OTHERS",
+      "mode":"BOUNDED_HAZARD_MDP_MONTE_CARLO",
+      "goal":"For every exact MHB/MWB game, solve current-meter state against reset/increment/hazard/stake economics and stress-test bankroll before any prospective promotion.",
+      "blockedBy":["game-specific hazard/trigger","funding/reset","qualifying wager","exact live binding"]
+    }
+  ],
+  "globalProtocol":{
+    "discovery":"Large strategy/parameter search allowed only on synthetic/discovery data.",
+    "freeze":"Chosen strategy and parameters are cryptographically/version frozen before validation.",
+    "validation":"Fresh seeds or independent data; no retuning after results are seen.",
+    "holdout":"Untouched historical/prospective set where available.",
+    "prospectiveShadow":"Run the frozen policy against real observed states without wagering.",
+    "executionReview":"Separate execution contract only after exact current rules/state plus prospective evidence; simulator itself never authorizes a wager."
+  },
+  "hardGuards":{
+    "infiniteBruteForceDoesNotGuaranteeDiscovery":true,
+    "multipleTestingCreatesFalseEdgesUnlessControlled":true,
+    "unknownRngCannotBeReverseEngineeredFromInventedData":true,
+    "simulationCannotReplaceCurrentOperatorState":true,
+    "noFutureLeakage":true,
+    "noMultiAccountStrategy":true,
+    "noWagerProbe":true,
+    "noAutomaticBetting":true,
+    "realMoneyAllowed":false
+  },
+  "execution":{"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
