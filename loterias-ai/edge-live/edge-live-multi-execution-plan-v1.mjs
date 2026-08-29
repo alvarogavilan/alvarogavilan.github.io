@@ -11,6 +11,19 @@ export function laneExecutionReadyWithLifecycle(lifecycleStatus, edgePass, exact
   return edgePass === true && exactStakeKnown === true && strategyVerified === true;
 }
 
+export function qualifyingStakeStatus(mapping={}) {
+  const configuredStake=finiteNumberOrNull(mapping?.execution?.stakePerDecisionEUR);
+  const configuredExact=mapping?.execution?.exactStakeKnown===true&&configuredStake!==null&&configuredStake>0;
+  // Progressive video poker has a separate jackpot-eligibility semantic gate.
+  // A visible hand wager (for example the observed EUR 2.50 minimum in
+  // Ultimate Video Poker) is not execution-grade stake until current rules
+  // prove that exact wager qualifies for the progressive jackpot.
+  const requiresJackpotQualification=mapping?.type==='PROGRESSIVE_VIDEO_POKER';
+  const jackpotQualifyingStakeVerified=mapping?.economic?.qualifyingStakeVerified===true||mapping?.execution?.jackpotQualifyingStakeVerified===true;
+  const exactStakeKnown=configuredExact&&(!requiresJackpotQualification||jackpotQualifyingStakeVerified);
+  return {configuredStake,configuredExact,requiresJackpotQualification,jackpotQualifyingStakeVerified,exactStakeKnown};
+}
+
 export function sanitizeLegacySingleLane(single={}, nowMs=Date.now(), maxAgeSeconds=180) {
   const rawEvidence=single?.evidence||{};
   const observedAt=rawEvidence?.observedAt||single?.generatedAt||null;
@@ -88,8 +101,9 @@ for(const m of mappings){
   const thresholdKnown=threshold!==null&&threshold>0;
   const currentStateFresh=sourceFresh&&dynamicFreshness.verified===true;
   const edgePass=exactIdentity&&currentStateFresh&&jackpotEUR!==null&&thresholdKnown&&jackpotEUR>=threshold;
-  const stakeConfigured=finiteNumberOrNull(m?.execution?.stakePerDecisionEUR);
-  const exactStakeKnown=m?.execution?.exactStakeKnown===true&&stakeConfigured!==null&&stakeConfigured>0;
+  const stakeStatus=qualifyingStakeStatus(m);
+  const stakeConfigured=stakeStatus.configuredStake;
+  const exactStakeKnown=stakeStatus.exactStakeKnown;
   const strategyVerified=m?.execution?.strategyVerified===true;
   const lifecycleStatus=typeof m?.lifecycle?.status==='string'?m.lifecycle.status:null;
   const killed=lifecycleStatus==='KILLED_NOT_CURRENTLY_ACTIONABLE';
@@ -102,7 +116,8 @@ for(const m of mappings){
   if(!dynamicFreshness.verified)blockers.push('DYNAMIC_METER_FRESHNESS_NOT_VERIFIED');
   if(!thresholdKnown)blockers.push('BREAK_EVEN_THRESHOLD_EUR_NOT_VERIFIED');
   if(jackpotEUR!==null&&thresholdKnown&&jackpotEUR<threshold)blockers.push('CURRENT_STATE_BELOW_BREAK_EVEN');
-  if(edgePass&&!exactStakeKnown)blockers.push('EXACT_STAKE_NOT_VERIFIED');
+  if(stakeStatus.requiresJackpotQualification&&!stakeStatus.jackpotQualifyingStakeVerified)blockers.push('JACKPOT_QUALIFYING_STAKE_NOT_VERIFIED');
+  if(edgePass&&!exactStakeKnown&&!blockers.includes('EXACT_STAKE_NOT_VERIFIED'))blockers.push('EXACT_STAKE_NOT_VERIFIED');
   if(edgePass&&!strategyVerified)blockers.push('EXECUTION_STRATEGY_NOT_VERIFIED');
   const stake=executionReady?stakeConfigured:0;
   const configuredMax=finiteNumberOrNull(m?.execution?.maxTotalStakeEUR);
@@ -114,9 +129,9 @@ for(const m of mappings){
     current:{observedAt:network?.observedAt||null,jackpotEUR,sourceAgeSeconds,sourceFresh,currentStateFresh,dynamicFreshnessVerified:dynamicFreshness.verified,dynamicFreshnessReason:dynamicFreshness.reason,stasisSeconds:dynamicFreshness.stasisSeconds??meter?.stasisSeconds??null,lastChangedAt:meter?.lastChangedAt||null,observationCount:meter?.observationCount||0,changeCount:meter?.changeCount||0},
     economic:{breakEvenJackpotEUR:thresholdKnown?+threshold.toFixed(6):null,breakEvenRoyalCredits:breakEvenCredits,creditValueEUR:creditValueVerified?creditValueEUR:null,creditValueVerified,aboveBreakEven:edgePass,distanceToBreakEvenEUR:jackpotEUR!==null&&thresholdKnown?+(threshold-jackpotEUR).toFixed(6):null},
     order:{action:executionReady?'PLAY':'DO_NOT_PLAY',stakePerSpinEUR:stake,maxSpins,maxTotalStakeEUR:maxTotal,validFrom:executionReady?network?.observedAt:null,validUntil:executionReady?new Date(Date.now()+180000).toISOString():null,maxSignalAgeSeconds:180,requiresFinalGreenRecheckBeforeFirstSpin:true},
-    evidence:{identityVerified:exactIdentity,identityEvidence:m.identity||{},thresholdKnown,exactStakeKnown,strategyVerified,sourceFresh,dynamicFreshnessVerified:dynamicFreshness.verified,currentStateFresh,withinFreshExecutionWindow:currentStateFresh,structurePass:exactIdentity,economicPass:edgePass},
+    evidence:{identityVerified:exactIdentity,identityEvidence:m.identity||{},thresholdKnown,exactStakeKnown,configuredVisibleStakeKnown:stakeStatus.configuredExact,jackpotQualifyingStakeVerified:stakeStatus.jackpotQualifyingStakeVerified,strategyVerified,sourceFresh,dynamicFreshnessVerified:dynamicFreshness.verified,currentStateFresh,withinFreshExecutionWindow:currentStateFresh,structurePass:exactIdentity,economicPass:edgePass},
     blockers,
-    guards:{noAutomaticBetting:true,manualExecutionOnly:true,noThresholdUnitAssumption:true,noUnverifiedCounterMapping:true,httpFreshnessDoesNotEqualDynamicFreshness:true,dynamicFreshnessRequiredForExecution:true}
+    guards:{noAutomaticBetting:true,manualExecutionOnly:true,noThresholdUnitAssumption:true,noUnverifiedCounterMapping:true,httpFreshnessDoesNotEqualDynamicFreshness:true,dynamicFreshnessRequiredForExecution:true,visibleStakeDoesNotImplyJackpotQualification:true}
   });
 }
 
@@ -124,7 +139,7 @@ const green=lanes.filter(x=>x.executionReady===true);
 const yellow=lanes.filter(x=>x.prepareOnly===true);
 const selected=green[0]||yellow[0]||lanes[0];
 const state=green.length?'READY_TO_EXECUTE_MANUALLY':yellow.length?'PREPARE_OPEN_GAME_NO_BET':'NO_EXECUTION';
-const out={version:'edge-live-multi-execution-plan-v1.3-jpk-freshness',generatedAt:now,operator:'botemania-es',state,game:selected?.game||{id:'none',name:'Sin oportunidad validada',url:'https://www.botemania.es/'},order:selected?.order||{action:'DO_NOT_PLAY',stakePerSpinEUR:0,maxSpins:0,maxTotalStakeEUR:0},evidence:selected?.evidence||{structurePass:false,economicPass:false,exactStakeKnown:false,sourceFresh:false,dynamicFreshnessVerified:false,currentStateFresh:false,withinFreshExecutionWindow:false},blockers:selected?.blockers||['NO_TRACKED_LANE_READY'],selectedLaneId:selected?.id||null,coverage:{trackedLanes:lanes.length,greenLanes:green.length,yellowLanes:yellow.length,liveFeedRows:finiteNumberOrNull(network?.coverage?.totalRows)??0,uniqueLiveRows:finiteNumberOrNull(network?.coverage?.uniqueIdentityRows)??0,ambiguousLiveRows:finiteNumberOrNull(network?.coverage?.ambiguousIdentityRows)??0,sourceObservedAt:network?.observedAt||null,sourceAgeSeconds,stasisMeters:Object.keys(stasis?.meters||{}).length},lanes,interpretation:green.length?'At least one lane passed all currently encoded execution gates including dynamic current-state freshness. Final live recheck remains mandatory before any wager.':yellow.length?'At least one lane is in preparation-only state; no wager is authorized.':'No tracked lane currently passes the full economic, state-freshness and execution gate.',guards:{nullNeverCoercedToZero:true,httpFreshnessDoesNotEqualDynamicFreshness:true,dynamicFreshnessRequiredForExecution:true,jpkLegacyPlanFreshnessRecomputed:true,noAutomaticBetting:true,manualExecutionOnly:true,finalGreenRecheckMandatory:true,noPromotionsRequired:true,noUnverifiedIdentityPromotion:true,noUnverifiedThresholdPromotion:true,realMoneyAllowed:green.length>0}};
+const out={version:'edge-live-multi-execution-plan-v1.4-jackpot-qualifying-stake-gate',generatedAt:now,operator:'botemania-es',state,game:selected?.game||{id:'none',name:'Sin oportunidad validada',url:'https://www.botemania.es/'},order:selected?.order||{action:'DO_NOT_PLAY',stakePerSpinEUR:0,maxSpins:0,maxTotalStakeEUR:0},evidence:selected?.evidence||{structurePass:false,economicPass:false,exactStakeKnown:false,sourceFresh:false,dynamicFreshnessVerified:false,currentStateFresh:false,withinFreshExecutionWindow:false},blockers:selected?.blockers||['NO_TRACKED_LANE_READY'],selectedLaneId:selected?.id||null,coverage:{trackedLanes:lanes.length,greenLanes:green.length,yellowLanes:yellow.length,liveFeedRows:finiteNumberOrNull(network?.coverage?.totalRows)??0,uniqueLiveRows:finiteNumberOrNull(network?.coverage?.uniqueIdentityRows)??0,ambiguousLiveRows:finiteNumberOrNull(network?.coverage?.ambiguousIdentityRows)??0,sourceObservedAt:network?.observedAt||null,sourceAgeSeconds,stasisMeters:Object.keys(stasis?.meters||{}).length},lanes,interpretation:green.length?'At least one lane passed all currently encoded execution gates including dynamic current-state freshness and jackpot-qualifying stake semantics where required. Final live recheck remains mandatory before any wager.':yellow.length?'At least one lane is in preparation-only state; no wager is authorized.':'No tracked lane currently passes the full economic, state-freshness and execution gate.',guards:{nullNeverCoercedToZero:true,httpFreshnessDoesNotEqualDynamicFreshness:true,dynamicFreshnessRequiredForExecution:true,jpkLegacyPlanFreshnessRecomputed:true,progressiveVpVisibleStakeCannotSelfQualifyForJackpot:true,noAutomaticBetting:true,manualExecutionOnly:true,finalGreenRecheckMandatory:true,noPromotionsRequired:true,noUnverifiedIdentityPromotion:true,noUnverifiedThresholdPromotion:true,realMoneyAllowed:green.length>0}};
 fs.mkdirSync('loterias-ai/edge-live/evidence',{recursive:true});
 fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
 console.log(JSON.stringify({state:out.state,selectedLaneId:out.selectedLaneId,coverage:out.coverage,jpk:lanes[0],wagerBet:lanes.find(x=>x.monitor?.key==='generic:WAGER_BET')||null},null,2));
