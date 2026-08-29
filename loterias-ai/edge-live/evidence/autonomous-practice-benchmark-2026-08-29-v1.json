@@ -1,0 +1,113 @@
+{
+  "version":"autonomous-practice-benchmark-2026-08-29-v1",
+  "generatedAt":"2026-08-29T16:10:00Z",
+  "scope":"AUTONOMOUS_PRACTICE_ONLY_NO_USER_INPUT",
+  "status":"EXECUTED_NULL_VS_SYNTHETIC_SIGNAL_BENCHMARK_NO_PLAY",
+  "realMoneyAllowed":false,
+  "executionMethod":{
+    "manualUserInputRequired":false,
+    "githubActionsUsed":false,
+    "rouletteBenchmark":"Independent local Python implementation of the same European-roulette settlement equations and seeded Monte Carlo controls used to validate practice behavior.",
+    "theoryVsSimulation":"Exact mathematical expectations are kept separate from finite-sample Monte Carlo observations.",
+    "syntheticBiasRule":"Artificially biased generators are positive controls only; they are never evidence that a real casino table is biased."
+  },
+  "slotStakeLadder040060100":{
+    "schedule":[{"stakeEUR":0.40,"spins":15},{"stakeEUR":0.60,"spins":10},{"stakeEUR":1.00,"spins":5}],
+    "totalSpins":30,
+    "totalCoinInEUR":17,
+    "nullModel":"IID_SCALE_INVARIANT",
+    "expectedLossByRtp":[
+      {"rtpPct":90,"expectedLossEUR":1.70},
+      {"rtpPct":93,"expectedLossEUR":1.19},
+      {"rtpPct":94,"expectedLossEUR":1.02},
+      {"rtpPct":94.56,"expectedLossEUR":0.9248},
+      {"rtpPct":94.74,"expectedLossEUR":0.8942},
+      {"rtpPct":94.86,"expectedLossEUR":0.8738},
+      {"rtpPct":94.99,"expectedLossEUR":0.8517},
+      {"rtpPct":95,"expectedLossEUR":0.85},
+      {"rtpPct":96,"expectedLossEUR":0.68},
+      {"rtpPct":97,"expectedLossEUR":0.51},
+      {"rtpPct":98,"expectedLossEUR":0.34},
+      {"rtpPct":99,"expectedLossEUR":0.17}
+    ],
+    "conclusion":"The 15/10/5 stake-order ritual has no independent EV term under scale-invariant independent-spin math. Bet switching remains research-worthy only when exact current rules prove stake-dependent RTP, jackpot eligibility/probability, or persistent state."
+  },
+  "rouletteFairControl":{
+    "wheel":"EUROPEAN_SINGLE_ZERO_37_POCKETS",
+    "exactTheoreticalNetPerEuro":-0.02702702702702703,
+    "exactTheoreticalRtpPct":97.2972972972973,
+    "simulation":{"seedsPerStrategy":12,"spinsPerSeed":100000,"totalSpinsPerStrategy":1200000,"results":[
+      {"strategy":"AXA_LIKE_RANDOM_SET_THREE_SPIN","weightedObservedRoiPct":-2.7375,"totalWagerUnits":21600000},
+      {"strategy":"FIBONACCI_RED","weightedObservedRoiPct":-2.21159,"totalWagerUnits":7696000},
+      {"strategy":"FLAT_RED","weightedObservedRoiPct":-2.65833,"totalWagerUnits":1200000},
+      {"strategy":"MARTINGALE_RED","weightedObservedRoiPct":-2.12259,"totalWagerUnits":8087800},
+      {"strategy":"NEIGHBORS5_AROUND_17","weightedObservedRoiPct":-2.653,"totalWagerUnits":6000000},
+      {"strategy":"STRAIGHT_17","weightedObservedRoiPct":-1.537,"totalWagerUnits":1200000}
+    ]},
+    "interpretation":"Finite samples vary, especially high-variance straight bets and progressions, but none changes the exact fair expected ROI of -1/37 per euro."
+  },
+  "rouletteArtificialBiasPositiveControl":{
+    "targetPocket":17,
+    "spinsPerWeight":1000000,
+    "rows":[
+      {"relativeWeight":1.00,"theoreticalNetPerEuroPct":-2.7027,"simulatedNetPerEuroPct":-2.7316},
+      {"relativeWeight":1.01,"theoreticalNetPerEuroPct":-1.75628,"simulatedNetPerEuroPct":-1.7956},
+      {"relativeWeight":1.02,"theoreticalNetPerEuroPct":-0.81037,"simulatedNetPerEuroPct":-0.4708},
+      {"relativeWeight":1.05,"theoreticalNetPerEuroPct":2.02429,"simulatedNetPerEuroPct":1.8692},
+      {"relativeWeight":1.10,"theoreticalNetPerEuroPct":6.73854,"simulatedNetPerEuroPct":7.136},
+      {"relativeWeight":1.20,"theoreticalNetPerEuroPct":16.1290,"simulatedNetPerEuroPct":16.1792}
+    ],
+    "conclusion":"The lab becomes positive when a real probability defect is deliberately injected. This validates sensitivity to genuine outcome-probability changes while rejecting betting-progression rituals as a source of edge."
+  },
+  "axaRecoveredSelector":{
+    "exactTheorem":"For any k-number set chosen independently of the next fair European roulette outcome, equal unit straight bets have expected ROI -1/37 per euro, regardless of k or a three-spin horizon.",
+    "binaryAuditBinding":"loterias-ai/edge-live/evidence/axa-roulette-software-audit-2026-08-29-v1.json",
+    "testPreviouslyExecuted":"axa-recovered-selector-theorem-v1.test.mjs: PASS",
+    "conclusion":"Recovered internal VB Randomize/Rnd set selection does not demonstrate dependence on the casino's next RNG result."
+  },
+  "betfairAotgAmountBoundaryDimensionlessFrontier":{
+    "exactPublicAccounting":{"baseRtpPct":94.56,"jackpotContributionPct":0.55,"totalTheoreticalRtpPct":95.11},
+    "expectedBaseLossPerOneEuroRemainingMeterGrowthEUR":9.890909090909092,
+    "maximumRemainingGapAsPctOfExactAwardFloorForWorstCasePositiveModel":[
+      {"captureProbability":1.00,"maxGapPctOfAwardFloor":10.1103},
+      {"captureProbability":0.75,"maxGapPctOfAwardFloor":7.5827},
+      {"captureProbability":0.50,"maxGapPctOfAwardFloor":5.0551},
+      {"captureProbability":0.25,"maxGapPctOfAwardFloor":2.5276},
+      {"captureProbability":0.10,"maxGapPctOfAwardFloor":1.0110},
+      {"captureProbability":0.05,"maxGapPctOfAwardFloor":0.5055}
+    ],
+    "hardBlockers":["fresh exact same-session meter and guaranteed amount","exact same-tier award/seed floor","exact served qualifying stake","defensible race/capture lower bound"]
+  },
+  "streakOfLuckState9Normalized":{
+    "exactStructuralRule":"At saved streak state 9, the next paid spin terminates the streak branch: a winning result reaches 10 and triggers the corresponding progressive jackpot; a non-winning result triggers the published 60 free games branch.",
+    "conservativeModel":"Ignore ordinary paid-spin return and assign zero value to the 60-free-spin losing branch. If jackpot floor = M times paid-spin stake, break-even p(win next spin)=1/M.",
+    "rows":[
+      {"jackpotToPaidSpinStakeMultiple":25,"breakEvenWinProbabilityPct":4},
+      {"jackpotToPaidSpinStakeMultiple":50,"breakEvenWinProbabilityPct":2},
+      {"jackpotToPaidSpinStakeMultiple":100,"breakEvenWinProbabilityPct":1},
+      {"jackpotToPaidSpinStakeMultiple":175,"breakEvenWinProbabilityPct":0.57142857},
+      {"jackpotToPaidSpinStakeMultiple":250,"breakEvenWinProbabilityPct":0.4},
+      {"jackpotToPaidSpinStakeMultiple":500,"breakEvenWinProbabilityPct":0.2},
+      {"jackpotToPaidSpinStakeMultiple":650,"breakEvenWinProbabilityPct":0.15384615},
+      {"jackpotToPaidSpinStakeMultiple":1000,"breakEvenWinProbabilityPct":0.1}
+    ],
+    "guard":"The 175x interpretation depends on an exact current 50-line total-stake/coin-value binding; secondary 50-payline descriptions cannot authorize execution. The exact current next-spin win probability is also unresolved."
+  },
+  "fullMoonNormalizedVisibleState":{
+    "syntheticSensitivityOnly":true,
+    "rows":[
+      {"state":"five minimum 0.5x qualifying money moons","visibleFloorX":2.5,"collectTriggerFloorX":3.0,"collectBreakEvenTriggerPct":33.333333,"moonPushBreakEvenTriggerPct":40},
+      {"state":"four 0.5x qualifying money moons plus minimum 10x bonus moon","visibleFloorX":12,"collectTriggerFloorX":12.5,"collectBreakEvenTriggerPct":8,"moonPushBreakEvenTriggerPct":8.333333},
+      {"state":"7.5x + 5x + 2.5x + minimum multiplier floor + 10x bonus","visibleFloorX":25.5,"collectTriggerFloorX":26,"collectBreakEvenTriggerPct":3.846154,"moonPushBreakEvenTriggerPct":3.921569}
+    ],
+    "guard":"Exact current next-moon probabilities and served state remain required."
+  },
+  "priorityConclusion":[
+    "Reject generic spin-count/stake-ladder rituals as independent edge.",
+    "Reject AXA internal random-table selection as fair-RNG predictive edge absent prospective generator dependence.",
+    "Promote exact Spanish per-bet persistent-state games because changing stake selects documented state, not because of arbitrary spin counts.",
+    "Prioritize one-step-before-terminal states with guaranteed payout floors: Streak of Luck state 9, Snakes & Ladders Megadice 10/11, and high-value Full Moon five-moon pre-trigger states.",
+    "Keep amount-bound jackpot lanes active when exact meter/award/race evidence can support a conservative EV floor."
+  ],
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
