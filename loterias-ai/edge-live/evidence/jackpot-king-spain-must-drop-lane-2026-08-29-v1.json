@@ -1,23 +1,24 @@
 {
-  "version":"jackpot-king-spain-must-drop-lane-2026-08-30-v1.2-live-botemania-caps-bound",
-  "generatedAt":"2026-08-30T00:39:00+02:00",
+  "version":"jackpot-king-spain-must-drop-lane-2026-08-30-v1.3-live-min-total-bet-bound",
+  "generatedAt":"2026-08-30T00:43:30+02:00",
   "mode":"RESEARCH_ONLY",
   "realMoneyAllowed":false,
   "operator":"Botemania España",
   "selectedTitle":"The Goonies Return: Jackpot King",
   "liveSessionEvidence":{
     "source":"user-provided live Botemania game screenshots, zero balance, zero wagers",
-    "jackpotKingEUR":129999.32,
-    "regalMajestuosoCurrentEUR":16066.86,
+    "jackpotKingEUR":129999.64,
+    "regalMajestuosoCurrentEUR":16066.96,
     "regalMajestuosoMustDropBeforeEUR":40887.38,
-    "regalFractionOfCap":0.3929540117,
-    "regalDistanceToCapEUR":24820.52,
-    "royalRealCurrentEUR":2221.09,
+    "royalRealCurrentEUR":2221.20,
     "royalRealMustDropBeforeEUR":4088.73,
-    "royalFractionOfCap":0.5432224676,
-    "royalDistanceToCapEUR":1867.64,
     "liveDisplayShowsAnySpinActive":true,
-    "sameSessionObservedNoWager":true
+    "sameSessionObservedNoWager":true,
+    "totalBetSelectorValuesEUR":[0.10,0.20,0.30,0.40,0.50,0.60,0.80,1.00,1.20,1.40,1.60,1.80,2.00,3.00,4.00,5.00,10.00],
+    "minimumTotalBetEUR":0.10,
+    "minimumTotalBetVerifiedDirectly":true,
+    "auxiliaryDisplayedInternalValueEUR":0.06,
+    "auxiliaryInternalValueNotTreatedAsTotalBet":true
   },
   "currentSpainPresence":{
     "network":"Blueprint Jackpot King shared across Botemania and Canal Bingo where active",
@@ -48,20 +49,21 @@
   "currentDecision":{
     "royalNearCap":false,
     "regalNearCap":false,
-    "reason":"Royal is only 54.32% of its Spanish cap and Regal only 39.30%. Without the exact hazard function versus pot value, no positive-EV claim is defensible at these levels.",
+    "minimumTotalBetEUR":0.10,
+    "minimumExpectedLossPerSpinAtPublishedTotalRtpEUR":0.00645,
+    "reason":"The exact Spanish caps and minimum total bet are now directly observed, but Royal/Regal are still far from their caps and the exact jackpot hazard versus pot value remains unpublished. No positive-EV claim is defensible at the current state.",
     "decision":"NO_PLAY_CURRENT_STATE"
   },
   "remainingGates":[
     "Recover exact conditional award/hazard function versus Royal/Regal pot value; 'chance increases' alone is insufficient",
-    "Recover exact minimum TOTAL BET qualifying stake for Botemania instance, not merely coin-value range",
     "Prospective same-network observations validating reset/cap semantics and display latency",
-    "Compute exact EV threshold above 6.45% total game loss rate using verified hazard function and stake"
+    "Compute exact EV threshold above published total-game loss using verified hazard function"
   ],
   "hardGuards":{
     "ukOrOtherMarketCapsNoLongerNeededForBotemania":true,
     "spanishCapsNowDirectlyObserved":true,
+    "minimumTotalBetNowDirectlyObserved":true,
     "mainJackpotValueCannotStandInForRoyalOrRegal":true,
-    "coinValueCannotAutomaticallyStandInForTotalStake":true,
     "chanceIncreasesDoesNotDefineHazardFunction":true,
     "grossFundingRateCannotBeAddedDirectlyToPublishedRtp":true,
     "noWagerProbe":true,
@@ -69,5 +71,5 @@
     "realMoneyAllowed":false
   },
   "execution":{"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
-  "priority":"P0_RESEARCH_BOTEMANIA_BOUND_CAPS_VERIFIED"
+  "priority":"P0_RESEARCH_BOTEMANIA_BOUND_CAPS_AND_MIN_STAKE_VERIFIED"
 }
