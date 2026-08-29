@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import {evaluateBetLadder,simulateBetLadder,compareSchedules} from '../edge-backend/src/slot-bet-ladder-practice-v1.mjs';
+const schedule=[{stakeEUR:.40,spins:15},{stakeEUR:.60,spins:10},{stakeEUR:1,spins:5}];
+let r=evaluateBetLadder({schedule,rtpPct:96,sameOutcomeDistributionAcrossStakes:true,payoutsScaleProportionallyWithStake:true});
+assert.equal(r.ok,true);
+assert.equal(r.totalSpins,30);
+assert.equal(r.totalStakeEUR,17);
+assert.equal(r.expectedLossEUR,.68);
+assert.equal(r.practiceVerdict,'BET_LADDER_DOES_NOT_CREATE_EDGE');
+assert.equal(r.execution.realMoneyAllowed,false);
+r=evaluateBetLadder({schedule,rtpPct:96,sameOutcomeDistributionAcrossStakes:false,payoutsScaleProportionallyWithStake:false,exactStakeDependentRuleVerified:true});
+assert.equal(r.practiceVerdict,'STAKE_DEPENDENT_MECHANIC_REQUIRES_EXACT_RULE_MODEL');
+r=simulateBetLadder({schedule,rtpPct:96,sameOutcomeDistributionAcrossStakes:true,payoutsScaleProportionallyWithStake:true,trials:5000,hitProbability:.1,payoutMultiplierOnHit:9.6,seed:42});
+assert.equal(r.simulation.impliedModelRtpPct,96);
+assert.equal(r.execution.decision,'NO_PLAY');
+const c=compareSchedules({rtpPct:96,sameOutcomeDistributionAcrossStakes:true,payoutsScaleProportionallyWithStake:true,schedules:[schedule,[{stakeEUR:17/30,spins:30}]]});
+assert.equal(c.rows[0].expectedLossEUR,c.rows[1].expectedLossEUR);
+console.log('slot-bet-ladder-practice-v1.test.mjs: PASS');
