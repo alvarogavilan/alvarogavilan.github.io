@@ -1,0 +1,71 @@
+{
+  "version":"betfair-spain-hexbreak3r-state-lane-2026-08-29-v1",
+  "generatedAt":"2026-08-29T14:16:00+02:00",
+  "status":"CURRENT_BETFAIR_SPAIN_EXACT_LAUNCHER_POSITIVE_STATE_MECHANIC_RTP_CONFIG_OPEN_NO_PLAY",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "realMoneyAllowed":false,
+  "target":{
+    "operator":"Betfair Spain",
+    "title":"Hexbreak3r",
+    "provider":"IGT",
+    "exactGameId":"hexbreak3r-aig",
+    "exactSpanishInfoRoute":"https://casino.betfair.es/juego/hexbreak3r-aig",
+    "launcherHost":"https://launcher.betfair.es/",
+    "launcherMode":"real",
+    "launcherRpBucket":"casino",
+    "launcherDataChannel":"casino"
+  },
+  "currentSpainEvidence":{
+    "currentCatalogPresenceVerified":true,
+    "exactRealLauncherBindingVerified":true,
+    "recentJune2026RealizedPayoutPresenceVerified":true,
+    "june2026RealizedPayoutPct":63.03,
+    "recentJuly2026RealizedPayoutPresenceVerified":true,
+    "july2026RealizedPayoutPct":83.75,
+    "realizedPayoutIsNotTheoreticalRtp":true,
+    "exactSpanishTheoreticalRtpVerified":false,
+    "exactSpanishBetMenuVerified":false
+  },
+  "mechanicSupport":{
+    "mathSource":"https://wizardofodds.com/games/slots/hexbreak3r/",
+    "demoSource":"https://slotcatalog.com/es/slots/HexBreaker-3",
+    "provider":"IGT",
+    "visibleReelHeightsRange":{"min":3,"max":8},
+    "horseshoeExpandsReel":true,
+    "fullReelThenLuckZoneAwardAndReset":true,
+    "middleReelProgressiveMechanicDocumented":true,
+    "separateProgressivePerBetLevelDocumentedInAnalyzedConfiguration":true,
+    "persistentStateAdvantagePossibleInDocumentedConfiguration":true,
+    "publicHeuristicsDiscoveryOnly":{
+      "combinationsAtLeast":3500,
+      "reel3HeightAtLeast":6,
+      "reel3Height5":"BORDERLINE",
+      "anyReelHeight8UnderBonus":"DISCOVERY_PRIOR",
+      "reel2Or4Height8UnderAtLeast20x":"DISCOVERY_PRIOR"
+    }
+  },
+  "configurationRisk":{
+    "externalPublishedRtpRangePct":[92.86,96.50],
+    "externalRangeCanPopulateBetfairSpainRtp":false,
+    "wizardHeuristicAssumedApproxTotalRtpPct":90,
+    "wizardHeuristicCanPopulateSpainThreshold":false,
+    "interpretation":"The exact current Spanish launcher is closed, but public versions advertise materially different RTP configurations. Reel-height heuristics are therefore discovery priors only until the served Betfair Spain RTP, bet menu and state transition model are reviewed."
+  },
+  "stateObservationModel":{
+    "requiredPreWagerVector":"[reel1Height,reel2Height,reel3Height,reel4Height,reel5Height]",
+    "requiredAdditionalState":["selected bet level","Luck/Jinx Zone awards","middle-reel progressive amount/state","current ways/combinations if displayed"],
+    "reloadPersistenceRequired":true,
+    "perBetLevelPersistenceRequired":true,
+    "stateSpecificEvRequired":true
+  },
+  "analyzer":"loterias-ai/edge-live/betfair-hexbreak3r-har-candidate-v1.mjs",
+  "nextZeroWagerEvidence":[
+    "Open exact hexbreak3r-aig and record all five reel heights before any wager.",
+    "Capture Help/Rules with exact served RTP, bet menu, persistence and Luck/Jinx Zone rules.",
+    "If bet levels can be switched without spinning, record reel-height/Luck-Zone state for every level.",
+    "Reload without wagering and record whether the exact state returns.",
+    "Use passive HAR to bind served build/config/state fields without exposing credentials."
+  ],
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{"externalRtpCannotPopulateSpainRtp":true,"public3500CombinationHeuristicCannotAuthorizeExecution":true,"physicalOrForeignStateCannotPopulateSpainState":true,"exactSpainServedRtpRequired":true,"exactSpainStateTransitionModelRequired":true,"noWagerProbe":true,"noAutomaticBetting":true,"realMoneyAllowed":false}
+}
