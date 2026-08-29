@@ -1,0 +1,55 @@
+{
+  "version":"interwetten-spain-rhino-coins-persistent-sticky-state-2026-08-29-v1",
+  "generatedAt":"2026-08-29T16:30:00Z",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "status":"EXACT_SPAIN_PER_BET_PERSISTENT_STICKY_STATE_CONSERVATIVE_THRESHOLD_NO_PLAY",
+  "realMoneyAllowed":false,
+  "target":{"operator":"Interwetten Spain","title":"Rhino Coins: Hit the Bonus","provider":"Playson","url":"https://www.interwetten.es/es/blog/playson-rhino-coins-hit-the-bonus"},
+  "exactCurrentOperatorFacts":{
+    "layout":"5x3 base / 5x5 superbonus",
+    "paylines":10,
+    "rtpPct":95.50,
+    "volatility":"HIGH",
+    "minBetEUR":0.10,
+    "maxBetEUR":100,
+    "standardBonusCoinsAndRhinosCanRemainStickyUntilBonus":true,
+    "collectMysteryStickyCountdownSpins":"4-9 random plays",
+    "stickyLocationSavedSeparatelyPerBetLevel":true,
+    "coinBonusTrigger":"6 or more Bonus Coins or qualifying combination with Prize/Collect/Mystery/Mystery Prize Coins",
+    "coinSuperbonusTrigger":"qualifying six-symbol combination including Superbonus Coin",
+    "regularBonusCoinValuesX":[1,2,3,4,5,6,7,8,9],
+    "coinBonusSettlement":"when feature ends, symbol values are summed into total win",
+    "rhinoPowerCanRandomlyAddEnoughSymbolsToTriggerFeature":true,
+    "sourceClass":"CURRENT_INTERWETTEN_SPAIN_EXACT_TITLE_RULE_PAGE"
+  },
+  "conservativeFiveCoinState":{
+    "requiredObservedState":"exactly five or more visible regular Bonus Coins on the saved bet-level board, with their displayed X values captured before wager",
+    "nextEventModeled":"at least one additional regular Bonus Coin appears and completes the six-symbol Coin Bonus condition",
+    "minimumNewRegularCoinValueX":1,
+    "payoutFloorFormulaX":"sum(visible regular Bonus Coin X values) + 1",
+    "oneSpinNetEvLowerBoundFormula":"-stake + pSixthRegularBonusCoin * payoutFloorX * stake",
+    "breakEvenProbabilityFormula":"1 / payoutFloorX",
+    "minimumFiveCoinExample":{"visibleFloorX":5,"completionPayoutFloorX":6,"breakEvenProbabilityPct":16.6666667},
+    "importantExclusions":["ordinary or other same-spin value","additional symbols beyond the first completing coin","multipliers","Collect value","Mystery upside","Prize/Jackpot symbols","Rhino Power","bonus respin upside"]
+  },
+  "whyThisMatters":{
+    "creatorStakeLadderExceptionClassVerified":true,
+    "reason":"Changing stake selects a documented saved board state. The research signal is the stored symbols and displayed values, not a fixed number of spins at each stake.",
+    "zeroWagerBetLevelStateScanCandidate":true,
+    "visiblePayoutFloorCanReduceProbabilityThreshold":true
+  },
+  "whatRemainsOpen":{
+    "exactCurrentBetMenu":true,
+    "whetherEverySavedBetLevelCanBeViewedWithoutPaidSpin":true,
+    "exactCurrentSavedStickyStatePerBetLevel":true,
+    "probabilityOfAtLeastOneRegularBonusCoinOnNextSpinByServedState":true,
+    "whetherStickyOccupancyChangesSymbolLandingProbabilities":true,
+    "exactConditionalEvIncludingOtherQualifyingSixthSymbols":true,
+    "independentProspectiveValidation":true,
+    "executionAuthorization":true
+  },
+  "software":"loterias-ai/edge-backend/src/rhino-coins-five-sticky-screen-v1.mjs",
+  "priority":{"rankBand":"HIGH_PERSISTENT_VISIBLE_VALUE_STATE","reason":"Exact current Spanish operator rules provide per-bet saved sticky state, visible 1x-9x coin values and a six-symbol feature threshold, enabling a conservative one-spin probability threshold from five visible regular Bonus Coins."},
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{"stateMustBeObservedBeforeWager":true,"regularBonusCoinProbabilityCannotBeInvented":true,"crossOperatorRtpOrFrequencyTransferForbidden":true,"bonusBuyNotUsedForEdgeInference":true,"spinCountRitualNotSupported":true,"noWagerProbe":true,"noAutomaticBetting":true,"realMoneyAllowed":false}
+}
