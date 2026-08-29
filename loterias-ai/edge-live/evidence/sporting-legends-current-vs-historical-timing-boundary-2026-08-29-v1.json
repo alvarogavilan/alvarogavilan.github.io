@@ -1,0 +1,64 @@
+{
+  "version": "sporting-legends-current-vs-historical-timing-boundary-2026-08-29-v1",
+  "generatedAtDate": "2026-08-29",
+  "status": "TIMING_CONFLICT_QUARANTINED_CURRENT_SERVED_GHT_REQUIRED_NO_PLAY",
+  "realMoneyAllowed": false,
+  "subject": "Sporting Legends Daily/Weekly timed jackpot schedule",
+  "historicalPrimaryProviderEvidence": {
+    "source": "https://www.playtech.com/playtech-launches-spectacular-sporting-legends-games-suite/",
+    "published": "2018-02-06",
+    "dailyTextMeaning": "Jackpots won before 9pm restart; after 9pm the next day's jackpot begins.",
+    "weeklyTextMeaning": "Weekly jackpot runs until midnight every Friday and restarts after that time.",
+    "usableAsCurrentBetfairExecutionClock": false
+  },
+  "historicalApMcCoyProviderEvidence": {
+    "source": "https://www.playtech.com/ap-mccoy-brings-playtech-power-play-to-sporting-legends-series/",
+    "published": "2019-03-06",
+    "dailyTextMeaning": "If Daily is won before 9pm it retriggers.",
+    "weeklyTextMeaning": "Weekly runs until midnight every Friday.",
+    "usableAsCurrentBetfairExecutionClock": false
+  },
+  "currentBetfairSpainEvidence": {
+    "source": "https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn",
+    "currentPageObserved": true,
+    "dailyRule": "If the current Daily is won before 9:00 p.m. GMT/BST, one or more additional jackpots may activate within remaining Daily ticker time.",
+    "weeklyRule": "If the current Weekly is won before 12:00 p.m. GMT/BST on Saturday, one or more additional jackpots may become available during remaining Weekly ticker time.",
+    "noGameplayRule": "If no game is played at the moment a Daily or Weekly should be won, that jackpot is triggered by the first bet placed the following day.",
+    "currentPagePublishesExactNextGhtEpoch": false,
+    "currentPagePublishesCurrentTickerCountdownValueInIndexedText": false
+  },
+  "interpretation": {
+    "historicalAndCurrentScheduleWordingDiffer": true,
+    "scheduleChangeProven": false,
+    "historicalClockTransferForbidden": true,
+    "currentStaticPageClockInferenceForbidden": true,
+    "onlyExecutionTimingAuthority": "Exact current served ticker/GHT from the same authenticated Betfair Spain AP McCoy runtime binding.",
+    "reason": "The current operator page establishes semantics but not an exact next GHT epoch. Historical provider launch copy cannot override a current served ticker."
+  },
+  "impact": {
+    "dailyWeeklyFirstBetFollowingDayMechanismStillVerified": true,
+    "exactCurrentGhtKnown": false,
+    "todaySaturdayDoesNotAuthorizeWeeklyAction": true,
+    "prospectiveActivationMustUseServedGht": true,
+    "frozenSevenAttemptProtocolUnaffected": true
+  },
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "scheduledGhtEpochSeconds": null,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "historicalProviderClockCannotBecomeCurrentGht": true,
+    "currentStaticRuleTextCannotInventCountdown": true,
+    "timezoneConversionCannotCreateMissingGht": true,
+    "sameNetworkHistoricalScheduleDoesNotProveCurrentLicenseeSchedule": true,
+    "servedSameBindingTickerRequired": true,
+    "noWagerProbe": true,
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "realMoneyAllowed": false
+  }
+}
