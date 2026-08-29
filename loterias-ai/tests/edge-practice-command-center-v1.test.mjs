@@ -10,7 +10,7 @@ const out=runPracticeExperiment({target:'SYNTHETIC LAB',scenarios:[
  {id:'t',type:'TIMED_FIRST_CONTRIBUTION',input:{provenance:'SYNTHETIC',qualifyingStakeEUR:1,baseRtpPct:95,jackpotAwardFloorEUR:50,probabilityOurContributionIsFirst:.01,firstContributionGuaranteeVerified:true,rtpAccountingVerifiedBaseExcludingJackpot:true}},
  {id:'s',type:'SLOT_STAKE_LADDER',input:{rtpPct:95,stages:[{stakeEUR:.4,spins:15},{stakeEUR:.6,spins:10},{stakeEUR:1,spins:5}]}},
  {id:'sc',type:'SLOT_STAKE_CHANGE_CLAIM',input:{creatorOrForumOnly:true}},
- {id:'st9',type:'STREAK_OF_LUCK_STATE9_ONE_SPIN',input:{observedStreakState:9,totalStakeEUR:1,jackpotAwardFloorEUR:175,sixtyFreeSpinsValueFloorEUR:0,probabilityNextSpinWinning:.01}},
+ {id:'st9',type:'STREAK_OF_LUCK_STATE9_ONE_SPIN',input:{observedStreakState:9,totalStakeEUR:1,jackpotAwardFloorEUR:175,sixtyFreeSpinsValueFloorEUR:0,probabilityJackpotBeforeState9TerminalLoss:.01,bonusDiceSequencingResolved:true}},
  {id:'fmc',type:'FULL_MOON_MOON_COLLECT',input:{totalStakeEUR:1,probabilityAtLeastOneNewQualifyingMoonNextSpin:.05,moons:fullMoon}},
  {id:'fmp',type:'FULL_MOON_MOON_PUSH',input:{totalStakeEUR:1,probabilityNextMoonCompletesMoonPush:.03,moons:fullMoon}},
  {id:'sn',type:'SNAKES_LADDERS_PROGRESS',input:{totalStakeEUR:1,observedActiveSegments:10,probabilityCompletesSnakeNextSpin:.06,exactCurrentOperatorProgressRuleVerified:true,exactCurrentOperatorBonusFloorVerified:true}},
