@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import {classifyRouletteProduct,evaluatePhysicsWindow,analyzeRouletteSpinSeries,analyzeByWheelDealer} from '../edge-backend/src/roulette-edge-lab-v1.mjs';
+let r=classifyRouletteProduct({mode:'LIVE',physicalWheel:true,betsCloseBeforeBallRelease:true,multiplierRevealAfterBetClose:true});
+assert.equal(r.physics,'BLOCKED_BETS_CLOSE_BEFORE_RELEASE');
+assert.ok(r.reasons.includes('REACTIVE_MULTIPLIER_CHASING_BLOCKED_AFTER_BET_CLOSE'));
+assert.equal(r.execution.realMoneyAllowed,false);
+r=evaluatePhysicsWindow({ballReleaseMs:1000,betCloseMs:900,streamLatencyMs:100,actionLatencyMs:100});
+assert.equal(r.practiceVerdict,'PHYSICS_TIMING_BLOCKED');
+r=evaluatePhysicsWindow({ballReleaseMs:1000,betCloseMs:3000,firstDeflectorMs:2600,streamLatencyMs:100,actionLatencyMs:100,minimumObservationMs:700});
+assert.equal(r.practiceVerdict,'PHYSICS_TIMING_CANDIDATE');
+const fair=[]; for(let i=0;i<3700;i++) fair.push({number:i%37,wheelId:'w1',dealerId:'d1'});
+r=analyzeRouletteSpinSeries(fair,{minSpins:1000});
+assert.equal(r.practiceVerdict,'NO_REPRODUCIBLE_BIAS_SIGNAL');
+const biased=[]; for(let i=0;i<5000;i++){let n=i%37;if(i%8===0)n=17;biased.push({number:n,wheelId:'w1',dealerId:'d1'});} 
+r=analyzeRouletteSpinSeries(biased,{minSpins:1000,alpha:0.01});
+assert.equal(r.practiceVerdict,'REPRODUCIBLE_BIAS_RESEARCH_CANDIDATE');
+assert.ok(r.robustResearchCandidates.pockets.some(x=>x.number===17)||r.robustResearchCandidates.sectors.some(x=>x.numbers.includes(17)));
+const grouped=analyzeByWheelDealer([...fair,...biased.map(x=>({...x,wheelId:'w2',dealerId:'d2'}))],{minSpins:1000});
+assert.equal(grouped.groupCount,2);
+assert.equal(grouped.execution.realMoneyAllowed,false);
+console.log('roulette-edge-lab-v1.test.mjs: PASS');
