@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const VERSION='betfair-kingdoms-rise-safe-har-analyzer-v1';
+const VERSION='betfair-kingdoms-rise-safe-har-analyzer-v1.1-semantic-boundary-binding';
 const DEFAULT_GAME_ID='kingdom-rise-sands-of-fury-cptn';
 const execution=()=>({decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0});
 const finite=v=>{if(v===null||v===undefined||v===''||typeof v==='boolean')return null;const n=Number(v);return Number.isFinite(n)?n:null;};
@@ -12,6 +12,17 @@ function attr(text,name){const m=String(text||'').match(new RegExp(`\\b${name}\\
 function decodeContent(content={}){const t=typeof content.text==='string'?content.text:'';if(!t)return '';if(content.encoding==='base64'){try{return Buffer.from(t,'base64').toString('utf8');}catch{return '';}}return t;}
 function parseUrl(raw){try{return new URL(String(raw||''));}catch{return null;}}
 function fail(reason,extra={}){return {version:VERSION,ok:false,reason,...extra,execution:execution(),hardGuards:{rawHarNeverEmitted:true,authorizationCookieAndPostDataNeverEmitted:true,queryStringNeverEmitted:true,noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false}};}
+function boundarySemantic(guaranteedHitAmount,guaranteedHitTime){
+  if(guaranteedHitAmount!==null&&guaranteedHitTime===null)return 'GUARANTEED_AMOUNT_BOUNDARY';
+  if(guaranteedHitTime!==null&&guaranteedHitAmount===null)return 'GUARANTEED_TIME_BOUNDARY';
+  if(guaranteedHitAmount!==null&&guaranteedHitTime!==null)return 'AMBIGUOUS_DUAL_BOUNDARY';
+  return 'NO_GUARANTEED_BOUNDARY';
+}
+function semanticTierCandidate(boundary){
+  if(boundary==='GUARANTEED_AMOUNT_BOUNDARY')return 'POWER_STRIKE_BY_BOUNDARY_SEMANTICS';
+  if(boundary==='GUARANTEED_TIME_BOUNDARY')return 'DAILY_STRIKE_BY_BOUNDARY_SEMANTICS';
+  return null;
+}
 
 function parseKrjpRows(xml,requestUrl){
   const rows=[];
@@ -27,6 +38,7 @@ function parseKrjpRows(xml,requestUrl){
     const aAttrs=a[1],amount=finite(a[2]);
     const guaranteedHitAmount=finite(attr(aAttrs,'guranteedHitAmount')??attr(aAttrs,'guaranteedHitAmount'));
     const guaranteedHitTime=intOrNull(attr(aAttrs,'guaranteedHitTime'));
+    const boundary=boundarySemantic(guaranteedHitAmount,guaranteedHitTime);
     const u=parseUrl(requestUrl);
     const requestCasino=u?.searchParams.get('casino')||null;
     const requestGame=u?.searchParams.get('game')||null;
@@ -39,12 +51,15 @@ function parseKrjpRows(xml,requestUrl){
       amount,
       guaranteedHitAmount,
       guaranteedHitTime,
+      boundarySemantic:boundary,
+      semanticTierCandidate:semanticTierCandidate(boundary),
       winCount:finite(attr(gAttrs,'winc')),
       gameTimestamp:intOrNull(attr(gAttrs,'timestamp')),
       instanceCode:attr(aAttrs,'instancecode')||null,
       requestCasino,
       tickerEndpoint:safeEndpoint(requestUrl),
-      providerTierIdentity:game==='krjp-1'?'KINGDOMS_RISE_EPIC_PROVIDER_EXAMPLE_CODE':'UNVERIFIED_KRJP_TIER',
+      providerTierIdentity:game==='krjp-1'?'KINGDOMS_RISE_EPIC_PROVIDER_EXAMPLE_CODE':'UNVERIFIED_KRJP_NUMERIC_TIER',
+      numericTierMappingRequiredForSemanticCandidate:false,
       exactPowerStrikeBindingVerified:false
     });
   }
@@ -66,10 +81,15 @@ export function analyzeBetfairKingdomsRiseHarObject(har,{expectedGameId=DEFAULT_
     const parsed=parseKrjpRows(text,rawUrl);for(const row of parsed){rows.push(row);if(row.tickerEndpoint)tickerEndpoints.add(row.tickerEndpoint);}
   }
   const eurGlobalRows=rows.filter(r=>r.currency==='EUR'&&r.local===0);
-  const guaranteedAmountRows=eurGlobalRows.filter(r=>r.guaranteedHitAmount!==null);
-  const guaranteedTimeRows=eurGlobalRows.filter(r=>r.guaranteedHitTime!==null);
+  const guaranteedAmountRows=eurGlobalRows.filter(r=>r.boundarySemantic==='GUARANTEED_AMOUNT_BOUNDARY');
+  const guaranteedTimeRows=eurGlobalRows.filter(r=>r.boundarySemantic==='GUARANTEED_TIME_BOUNDARY');
+  const dualBoundaryRows=eurGlobalRows.filter(r=>r.boundarySemantic==='AMBIGUOUS_DUAL_BOUNDARY');
   const exactLauncherObserved=launcherHits.length>0;
   const exactBetfairTickerBindingCandidate=exactLauncherObserved&&tickerEndpoints.size===1&&eurGlobalRows.some(r=>!!r.requestCasino);
+  const powerStrikeSemanticRows=guaranteedAmountRows.filter(r=>r.semanticTierCandidate==='POWER_STRIKE_BY_BOUNDARY_SEMANTICS');
+  const dailyStrikeSemanticRows=guaranteedTimeRows.filter(r=>r.semanticTierCandidate==='DAILY_STRIKE_BY_BOUNDARY_SEMANTICS');
+  const powerStrikeSemanticBindingCandidate=exactBetfairTickerBindingCandidate&&powerStrikeSemanticRows.length===1&&dualBoundaryRows.length===0;
+  const dailyStrikeSemanticBindingCandidate=exactBetfairTickerBindingCandidate&&dailyStrikeSemanticRows.length===1&&dualBoundaryRows.length===0;
   return {
     version:VERSION,ok:true,expectedGameId,
     exactLauncherObserved,
@@ -79,25 +99,33 @@ export function analyzeBetfairKingdomsRiseHarObject(har,{expectedGameId=DEFAULT_
     eurGlobalRowCount:eurGlobalRows.length,
     guaranteedAmountRows,
     guaranteedTimeRows,
+    dualBoundaryRows,
+    powerStrikeSemanticRows,
+    dailyStrikeSemanticRows,
     exactBetfairTickerBindingCandidate,
-    amountBoundaryCaptureCandidate:exactBetfairTickerBindingCandidate&&guaranteedAmountRows.length>0,
+    powerStrikeSemanticBindingCandidate,
+    dailyStrikeSemanticBindingCandidate,
+    numericKrjp2Krjp3MappingRequiredForSemanticBinding:false,
+    amountBoundaryCaptureCandidate:powerStrikeSemanticBindingCandidate,
     amountBoundaryPromotionAllowed:false,
-    reason:guaranteedAmountRows.length>0?'GUARANTEED_AMOUNT_ROW_CAPTURED_REQUIRES_EXACT_TIER_AND_OPERATOR_BINDING_REVIEW':'NO_GUARANTEED_AMOUNT_ROW_CAPTURED',
+    reason:powerStrikeSemanticBindingCandidate?'POWER_STRIKE_SEMANTIC_BINDING_REVIEW_CANDIDATE_FROM_SERVED_GUARANTEED_AMOUNT':'NO_UNAMBIGUOUS_POWER_STRIKE_SEMANTIC_BINDING_CANDIDATE',
     nextRequiredEvidence:[
       exactLauncherObserved?null:'exact Betfair Spain Kingdoms Rise launcher in same passive capture',
       eurGlobalRows.length?null:'fresh GLOBAL EUR Kingdoms Rise ticker row',
-      guaranteedAmountRows.length?null:'fresh provider guranteedHitAmount/guaranteedHitAmount field',
-      'independent exact Power Strike tier-code binding review',
+      powerStrikeSemanticRows.length?null:'fresh provider guranteedHitAmount/guaranteedHitAmount row',
+      powerStrikeSemanticBindingCandidate?'independent review binding the served guaranteed-amount row to the current Betfair Power Strike rule body':'unambiguous exact operator/ticker semantic binding',
       'exact served stake menu and base-cost review',
-      'trigger-distribution and network-competition/race model',
+      'jackpot trigger-distribution and network-competition/race model',
       'conservative positive-EV screen'
     ].filter(Boolean),
     execution:execution(),
     hardGuards:{
       rawHarNeverEmitted:true,authorizationCookieAndPostDataNeverEmitted:true,queryStringNeverEmitted:true,
-      krjp1OnlyProviderTierCodeHardBound:true,krjp2Krjp3LabelsNotAssumed:true,
+      krjp1OnlyProviderTierCodeHardBound:true,krjp2Krjp3NumericLabelsNotAssumed:true,
+      boundarySemanticMayIdentifyReviewCandidateWithoutNumericCode:true,
       guaranteedAmountFieldDoesNotAuthorizePlay:true,displayedAmountDoesNotClassifyMhb:true,
-      exactTierBindingReviewRequired:true,exactOperatorBindingRequired:true,triggerDistributionRequiredForEv:true,
+      exactSemanticBindingIndependentReviewRequired:true,exactOperatorBindingRequired:true,triggerDistributionRequiredForEv:true,
+      dualBoundaryRowsAreAmbiguous:true,
       noWagerProbe:true,noAutomaticBetting:true,realMoneyAllowed:false
     }
   };
