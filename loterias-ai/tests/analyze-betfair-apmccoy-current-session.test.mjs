@@ -16,7 +16,7 @@ assert.equal(r.closed.exactApMcCoyRealLauncherAndLatestConfigTickerBinding,true)
 assert.equal(r.closed.exactPrivateBetfairImsObserved,true);
 assert.equal(r.closed.freshGlobalEurDailySljp1State,true);
 assert.equal(r.closed.exactCurrentDailyAmountFromServer,true);
-assert.equal(r.closed.exactCurrentGuaranteedHitTimeFromServer,true);
+assert.equal(r.closed.exactCurrentDailyGuaranteedHitTimeFromServer,true);
 assert.equal(r.closed.strongServedTotalStakeMenuReviewCandidate,true);
 assert.equal(r.closed.captureEligibleForProspectivePostGhtLedger,true);
 assert.equal(r.servedSnapshot.expectedBetfairImsCasino,'bf_es');
