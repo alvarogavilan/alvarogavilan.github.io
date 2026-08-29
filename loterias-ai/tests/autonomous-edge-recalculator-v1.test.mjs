@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {sharedStateCycleFrontier,evaluateBoundedSharedStateCycle,rankClosureLanes} from '../edge-backend/src/autonomous-edge-recalculator-v1.mjs';
+let r=sharedStateCycleFrontier({buildStakeEUR:.20,exerciseStakeEUR:40,buildNetCostInBuildStakeUnits:[20],featureGrossValueMultiplesOfExerciseStake:[10]});
+assert.equal(r.ok,true);
+assert.equal(r.stakeLeverageRatio,200);
+assert.equal(r.rows[0].breakEvenCompletionProbabilityPct,11);
+r=evaluateBoundedSharedStateCycle({buildStakeEUR:.20,exerciseStakeEUR:40,netBuildCostUpperBoundEUR:4,completionProbabilityLowerBound:.12,featureGrossPayoutFloorEUR:400});
+assert.equal(r.practiceVerdict,'ROBUST_CONSERVATIVE_POSITIVE_SHARED_STATE_CYCLE');
+assert.equal(r.metrics.cycleNetEvLowerBoundEUR,4);
+r=evaluateBoundedSharedStateCycle({buildStakeEUR:.20,exerciseStakeEUR:40});
+assert.equal(r.practiceVerdict,'WAIT_FOR_COMPLETE_CONSERVATIVE_BOUNDS');
+const rank=rankClosureLanes([{id:'wolf',exactCurrentOperatorRuleVerified:true,stateSurvivesBetChange:true,featureUsesTriggeringOrCurrentStake:true,terminalVisibleState:true,buildStakeEUR:.2,exerciseStakeEUR:40,remainingGates:['a','b']},{id:'other',exactCurrentOperatorRuleVerified:true,stateSurvivesBetChange:false,featureUsesTriggeringOrCurrentStake:true,buildStakeEUR:.2,exerciseStakeEUR:8,remainingGates:['a']}]);
+assert.equal(rank[0].id,'wolf');
+assert.equal(rank[0].stakeLeverageRatio,200);
+console.log('autonomous-edge-recalculator-v1.test.mjs: PASS');
