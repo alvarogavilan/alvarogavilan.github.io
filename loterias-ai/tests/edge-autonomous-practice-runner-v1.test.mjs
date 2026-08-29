@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {runAutonomousPractice} from '../edge-backend/src/edge-autonomous-practice-runner-v1.mjs';
+const r=runAutonomousPractice({rouletteSpinsPerSeed:2000,rouletteSeeds:2,biasSpins:5000});
+assert.equal(r.mode,'AUTONOMOUS_NO_USER_INPUT');
+assert.equal(r.execution.decision,'NO_PLAY');
+assert.equal(r.execution.realMoneyAllowed,false);
+assert.equal(r.slotRitualNullSweep[0].totalSpins,30);
+assert.equal(r.slotRitualNullSweep[0].totalStakeEUR,17);
+assert.ok(r.stakeStateMechanics.filter(x=>x.result.status==='REAL_STAKE_DEPENDENT_MECHANIC_RESEARCH_CANDIDATE').length>=2);
+assert.equal(r.axaRecoveredSelectorProof.conclusion,'INTERNAL_RANDOM_SET_SELECTION_CANNOT_CHANGE_FAIR_ROULETTE_EXPECTATION');
+assert.ok(Math.abs(r.axaRecoveredSelectorProof.exactFairRoiIfIndependent+1/37)<1e-12);
+assert.ok(r.betfairAotgDimensionlessFrontier.lossPerMeterGapEUR>9);
+assert.ok(r.betfairAotgDimensionlessFrontier.lossPerMeterGapEUR<10);
+assert.ok(r.streakState9NormalizedSensitivity.length>=6);
+assert.ok(r.fullMoonNormalizedSensitivity.length>=3);
+assert.equal(r.hardGuards.noUserInputRequired,true);
+console.log('edge-autonomous-practice-runner-v1.test.mjs: PASS');
