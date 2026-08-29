@@ -5,15 +5,17 @@ import {analyzeBetfairApMcCoyCurrentSessionHar} from './analyze-betfair-apmccoy-
 import {analyzeBet365FrankCurrentSessionHarText} from './analyze-bet365-frank-current-session.mjs';
 import {analyzeBotemaniaUltimateVpHarText} from './analyze-botemania-ultimate-vp-har.mjs';
 import {analyzeEnRachaIgtHarText} from './analyze-enracha-igt-har.mjs';
+import {extractBetfairRegalRichesHarCandidate} from '../edge-live/betfair-regal-riches-har-candidate-v1.mjs';
 import {extractBetfairMagicOfTheNileHarCandidate} from '../edge-live/betfair-magic-of-the-nile-har-candidate-v1.mjs';
 import {extractBetfairScarabHarCandidate} from '../edge-live/betfair-scarab-har-candidate-v1.mjs';
 import {extractBetfairHexbreak3rHarCandidate} from '../edge-live/betfair-hexbreak3r-har-candidate-v1.mjs';
 
-const VERSION='analyze-edge-p0-har-v1.2-seven-lane-passive';
+const VERSION='analyze-edge-p0-har-v1.3-eight-lane-passive';
 const LANES=Object.freeze({
   apmccoy:{label:'Betfair España — AP McCoy Sporting Legends',mode:'json-object'},
   frank:{label:'bet365 España — Frank Bruno Sporting Legends',mode:'raw-text'},
   'ultimate-vp':{label:'Botemania — Ultimate Video Poker · Jotas o Mejor Progresivo',mode:'raw-text'},
+  'betfair-regal-riches':{label:'Betfair España — Regal Riches',mode:'json-object'},
   'magic-nile':{label:'Betfair España — Magic of the Nile',mode:'json-object'},
   scarab:{label:'Betfair España — Scarab',mode:'json-object'},
   hexbreak3r:{label:'Betfair España — Hexbreak3r',mode:'json-object'},
@@ -21,7 +23,7 @@ const LANES=Object.freeze({
 });
 function execution(){return {decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0};}
 function fail(reason,extra={}){return {version:VERSION,ok:false,reason,execution:execution(),...extra};}
-function usage(){return `Usage: node loterias-ai/scripts/analyze-edge-p0-har.mjs <apmccoy|frank|ultimate-vp|magic-nile|scarab|hexbreak3r|ocean-magic> <capture.har>\n`;}
+function usage(){return `Usage: node loterias-ai/scripts/analyze-edge-p0-har.mjs <apmccoy|frank|ultimate-vp|betfair-regal-riches|magic-nile|scarab|hexbreak3r|ocean-magic> <capture.har>\n`;}
 function safeClosed(lane,result){
   const src=result?.closed&&typeof result.closed==='object'?result.closed:null;
   if(src)return src;
@@ -32,6 +34,17 @@ function safeClosed(lane,result){
     servedRuleReviewCandidatesFound:a.servedRuleCandidatesAvailable===true,
     exactJackpotTriggerVerified:a.exactJackpotTriggerVerified===true,
     exactJackpotQualifyingStakeVerified:a.exactJackpotQualifyingStakeVerified===true,
+  };
+  if(lane==='betfair-regal-riches')return {
+    exactTargetLauncherObserved:a.targetLauncherObserved===true,
+    providerIgtReviewCandidateObserved:Number(a.providerIgtCandidateCount||0)>0,
+    providerConflictObserved:Number(a.providerConflictCandidateCount||0)>0,
+    configurationReviewCandidateObserved:Number(a.configurationCandidateCount||0)>0,
+    persistentStateReviewCandidateObserved:Number(a.stateCandidateCount||0)>0,
+    exactSpainServedIgtProviderFingerprintVerified:a.exactSpainServedIgtProviderFingerprintVerified===true,
+    preWagerMeterStateVerified:a.preWagerMeterStateVerified===true,
+    crossPlayerPersistenceVerified:a.crossPlayerPersistenceVerified===true,
+    stateSpecificEvVerified:a.stateSpecificEvVerified===true,
   };
   if(lane==='magic-nile')return {
     exactTargetLauncherObserved:a.targetLauncherObserved===true,
@@ -79,6 +92,7 @@ export function analyzeEdgeP0HarText(raw,{lane,sourceName='capture.har'}={}){
     if(lane==='apmccoy')result=analyzeBetfairApMcCoyCurrentSessionHar(JSON.parse(raw),{sourceName});
     else if(lane==='frank')result=analyzeBet365FrankCurrentSessionHarText(raw,{sourceName});
     else if(lane==='ultimate-vp')result=analyzeBotemaniaUltimateVpHarText(raw,{sourceName});
+    else if(lane==='betfair-regal-riches')result=extractBetfairRegalRichesHarCandidate(JSON.parse(raw),{sourceName});
     else if(lane==='magic-nile')result=extractBetfairMagicOfTheNileHarCandidate(JSON.parse(raw),{sourceName});
     else if(lane==='scarab')result=extractBetfairScarabHarCandidate(JSON.parse(raw),{sourceName});
     else if(lane==='hexbreak3r')result=extractBetfairHexbreak3rHarCandidate(JSON.parse(raw),{sourceName});
@@ -94,8 +108,8 @@ export function analyzeEdgeP0HarText(raw,{lane,sourceName='capture.har'}={}){
     closed:safeClosed(lane,result),
     result,
     execution:execution(),
-    scientificUse:'Unified local dispatcher for seven high-priority passive HAR research lanes. It does not fetch network data, place wagers, approve review candidates or authorize execution. Each lane has a distinct fail-closed summary shape.',
-    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,passiveHarOnly:true,noNetwork:true,noWagerProbe:true,noAutomaticBetting:true,rawHarNeverEmitted:true,rawResponseBodiesNeverEmitted:true,reviewCandidatesCannotSelfApprove:true,laneSpecificSummaryRequired:true,crossLaneGateTransferForbidden:true,realMoneyAllowed:false},
+    scientificUse:'Unified local dispatcher for eight high-priority passive HAR research lanes. It does not fetch network data, place wagers, approve review candidates or authorize execution. Each lane has a distinct fail-closed summary shape.',
+    hardGuards:{onlineOnly:true,nonPromoOnly:true,offlineOnly:true,passiveHarOnly:true,noNetwork:true,noWagerProbe:true,noAutomaticBetting:true,rawHarNeverEmitted:true,rawResponseBodiesNeverEmitted:true,reviewCandidatesCannotSelfApprove:true,laneSpecificSummaryRequired:true,crossLaneGateTransferForbidden:true,enrachaRegalRichesTitleCollisionCannotEnterBetfairRegalLane:true,realMoneyAllowed:false},
   };
 }
 export function main(argv=process.argv.slice(2)){
