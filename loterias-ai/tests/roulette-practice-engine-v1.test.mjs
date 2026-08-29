@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {simulateRoulettePractice,theoreticalStraightEvPerEuro,WHEEL} from '../edge-backend/src/roulette-practice-engine-v1.mjs';
+assert.equal(WHEEL.length,37);assert.equal(new Set(WHEEL).size,37);
+let r=simulateRoulettePractice({spins:100000,strategy:'flat-red',seed:123,baseUnit:1,startBankroll:10000});
+assert.equal(r.mode,'FAIR_EUROPEAN_RNG');assert.equal(r.execution.realMoneyAllowed,false);assert.ok(r.observedRtpPct>95&&r.observedRtpPct<100);
+const m=simulateRoulettePractice({spins:100000,strategy:'martingale-red',seed:123,baseUnit:1,startBankroll:10000,maxBet:1024});
+assert.equal(m.execution.realMoneyAllowed,false);assert.ok(m.totalStake>r.totalStake);
+const t=theoreticalStraightEvPerEuro({biasPocket:17,biasWeight:1.05,targetNumber:17});assert.ok(t.netEvPerEuro>0);
+const b=simulateRoulettePractice({spins:200000,strategy:'straight',targetNumber:17,biasPocket:17,biasWeight:1.05,seed:9,baseUnit:1,startBankroll:10000});assert.ok(b.observedNetPerEuro>-0.02);
+const a=simulateRoulettePractice({spins:10000,strategy:'axa-like-random-set',axaSetSize:18,seed:12});assert.equal(a.hardGuards.axaLikeModeIsAuditInformedSurrogateNotExactProprietaryClone,true);
+console.log('roulette-practice-engine-v1.test.mjs: PASS');
