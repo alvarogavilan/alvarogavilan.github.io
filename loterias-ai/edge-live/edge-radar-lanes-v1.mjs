@@ -74,6 +74,17 @@ export function laneThresholdKnown(lane) {
 
 export function laneStakeKnown(lane) {
   // creditValueVerified is a denomination/unit check, not proof of exact stake.
+  // For progressive video poker, a visible/minimum hand wager is NOT enough:
+  // EDGE must separately prove that the exact wager actually qualifies for the
+  // progressive jackpot. This protects the radar against stale artifacts that
+  // marked a visible EUR 2.50 hand stake as exact before jackpot eligibility was
+  // verified.
+  if (lane?.type === 'PROGRESSIVE_VIDEO_POKER') {
+    return lane?.evidence?.exactStakeKnown === true && lane?.evidence?.jackpotQualifyingStakeVerified === true;
+  }
+  // If any other lane explicitly declares that its observed stake is not
+  // jackpot-qualifying, fail closed even if exactStakeKnown was set upstream.
+  if (lane?.evidence?.jackpotQualifyingStakeVerified === false) return false;
   return lane?.evidence?.exactStakeKnown === true;
 }
 
