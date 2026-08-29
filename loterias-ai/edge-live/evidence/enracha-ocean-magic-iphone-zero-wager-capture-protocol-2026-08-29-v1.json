@@ -1,0 +1,61 @@
+{
+  "version": "enracha-ocean-magic-iphone-zero-wager-capture-protocol-2026-08-29-v1",
+  "generatedAt": "2026-08-29T12:05:00+02:00",
+  "status": "FROZEN_MANUAL_EVIDENCE_PROTOCOL_NO_PLAY",
+  "target": {
+    "operator": "EnRacha Spain",
+    "game": "Ocean Magic",
+    "url": "https://www.enracha.es/juegos/ocean-magic"
+  },
+  "purpose": "Prepare an iPhone-only, zero-wager manual evidence path to identify the exact served provider/wrapper and visible persistent-state semantics before any HAR or wager is considered.",
+  "captureOrder": [
+    {
+      "id": "A_GAME_AND_PROVIDER_MARKS",
+      "required": true,
+      "instruction": "Open Ocean Magic without spinning and capture the full initial screen plus any splash/loading/provider logo visible before the game becomes interactive.",
+      "canClose": ["served provider identity candidate", "exact current title wrapper candidate"]
+    },
+    {
+      "id": "B_HELP_INFO_RULES",
+      "required": true,
+      "instruction": "Open Help/Info/Rules and capture provider/copyright/version/RTP text and every section describing bubbles, wilds, bet levels, persistence, saved positions, resets or state behavior.",
+      "canClose": ["exact provider if explicit", "exact build rule candidate", "persistent mechanism candidate"]
+    },
+    {
+      "id": "C_INITIAL_VISIBLE_BUBBLE_STATE",
+      "required": true,
+      "instruction": "Before any spin, capture the complete reels and all visible bubble/wild/meter state at the currently selected bet level.",
+      "canClose": ["pre-wager state visibility candidate"],
+      "cannotAloneClose": ["cross-player persistence", "positive EV"]
+    },
+    {
+      "id": "D_ZERO_WAGER_BET_LEVEL_SWITCH",
+      "required": false,
+      "instruction": "Only if the UI allows changing bet level without a spin, switch between bet levels and capture whether bubble positions/state change. Do not press Spin.",
+      "canClose": ["per-bet-level state separation candidate"],
+      "cannotAloneClose": ["state persistence across players"]
+    }
+  ],
+  "acceptance": {
+    "providerVerifiedOnlyIf": "Current served game UI/help explicitly names IGT or exposes an exact provider/version fingerprint independently reviewable.",
+    "persistentMechanismVerifiedOnlyIf": "Current served rules explicitly describe persistence/saved bubble positions or equivalent exact state semantics for this build.",
+    "crossPlayerPersistenceRequiresSeparateEvidence": true,
+    "sameTitleRtpMinimumCannotSelfPromoteToIgt": true
+  },
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "manualObservationOnly": true,
+    "zeroWager": true,
+    "noSpinRequired": true,
+    "noDepositRequired": true,
+    "noAutomaticBetting": true
+  }
+}
