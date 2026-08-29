@@ -1,0 +1,52 @@
+{
+  "version":"axa-roulette-software-audit-2026-08-29-v1",
+  "generatedAt":"2026-08-29T17:05:00+02:00",
+  "scope":"ONLINE_ONLY_RESEARCH_STATIC_AUDIT_NO_EXECUTION",
+  "status":"PUBLIC_PRODUCT_IDENTIFIED_PREDICTOR_CLAIM_UNVERIFIED_FAIL_CLOSED",
+  "realMoneyAllowed":false,
+  "userSuppliedArchiveMetadata":{
+    "archiveName":"Axa update.rar",
+    "archiveSha256":"4aaee53f0c0dd7eeea27d1d6bd2fb681a6f9ff677ab4dc7e0c040ec3b7389dd4",
+    "archiveFormat":"RAR v4",
+    "entries":[{
+      "name":"Axa update.exe",
+      "uncompressedBytes":820736,
+      "compressedBytes":262985,
+      "crc32Hex":"b59f2119",
+      "archiveTimestamp":"2024-11-01T23:22:39",
+      "passwordProtected":false
+    }],
+    "binaryExecuted":false,
+    "binaryPayloadStaticallyExtracted":false,
+    "reasonPayloadNotExtracted":"Current sandbox lacks a working RAR decompressor. The executable was deliberately not run."
+  },
+  "publicProductIdentification":{
+    "name":"Axa 5.0 / AXA Roulette Software",
+    "officialPublicSite":"https://axawinner5.wixsite.com/axaeng",
+    "trialPage":"https://axawinner5.wixsite.com/axaeng/roulettesoftwaretrial",
+    "marketingClaims":["RNG KILLER","100% guaranteed","bet 3 times on the set","real-money proof videos"],
+    "officialSiteAlsoStates":{
+      "singleZeroPocketProbability":"1/37",
+      "historicalHotColdOrRepeatedSequencesDoNotPredictFairRng":true
+    },
+    "secondaryDescriptions":[
+      {"url":"https://www.suffolkgazette.com/casino-and-science-maths-and-statistics-at-the-gaming-tables/","claim":"Axa 5.0 is described as using recent results/last six numbers and selecting numbers to play over the next three spins."},
+      {"url":"https://ruletka-rating.com/programmy","claim":"Axa 5.0 is described as using repeated-number analysis and recommending numbers for three subsequent bets."}
+    ]
+  },
+  "scientificAssessment":{
+    "fairRngHistoryPredictionHasNoEdgeWithoutGeneratorDefect":true,
+    "marketingWinVideosAreNotProspectiveHoldoutEvidence":true,
+    "proprietaryAlgorithmRecovered":false,
+    "classification":"UNVERIFIED_PREDICTOR_CLAIM_FAIL_CLOSED",
+    "possibleLegitimateResearchPath":"A predictor could only become interesting if it demonstrates frozen predictions made before outcomes on the exact target generator and survives an independent prospective holdout with positive net return after covering all selected numbers."
+  },
+  "falsificationBinding":{
+    "path":"loterias-ai/edge-backend/src/roulette-predictor-falsification-lab-v1.mjs",
+    "fairCoverageForKPredictedNumbers":"k/37",
+    "breakEvenCoverageForEqualStakeAcrossKNumbers":"k/36",
+    "requirements":["prediction logged before outcome","exact target roulette identity","no cherry-picked sessions","discovery separated from holdout","positive holdout ROI","statistically significant excess coverage"]
+  },
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{"doNotExecuteUnknownExe":true,"doNotTreatMarketingVideosAsProof":true,"doNotInferRngWeaknessFromRecentNumbers":true,"doNotReverseEngineerByRunningBinary":true,"realMoneyAllowed":false}
+}
