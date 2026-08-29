@@ -1,11 +1,15 @@
 import assert from 'node:assert/strict';
-import {getApPublicKnowledgeRegistry,evaluateMustHitByCandidate,evaluateOceanMagicDeployment,getLotteryRuleOverlaySearchTargets} from '../edge-backend/src/ap-public-knowledge-registry-v1.mjs';
+import {getApPublicKnowledgeRegistry,evaluateMustHitByCandidate,evaluateOceanMagicDeployment,evaluateRegalRichesDeployment,getLotteryRuleOverlaySearchTargets} from '../edge-backend/src/ap-public-knowledge-registry-v1.mjs';
 
 const registry=getApPublicKnowledgeRegistry();
 assert.equal(registry.execution.decision,'NO_PLAY');
 assert.equal(registry.execution.realMoneyAllowed,false);
 assert.equal(registry.hardGuards.youtubeIsDiscoveryNotExecutionAuthority,true);
 assert.equal(registry.categories.TRUE_MUST_HIT_BY.ordinaryProgressiveClosenessIsSufficient,false);
+assert.equal(registry.categories.REGAL_RICHES_PERSISTENT_MHB.creatorEntryThresholdsAreExecutionAuthority,false);
+assert.equal(registry.categories.REGAL_RICHES_PERSISTENT_MHB.familyRuleCandidates.purpleMinorMustHitBy,75);
+assert.equal(registry.categories.REGAL_RICHES_PERSISTENT_MHB.familyRuleCandidates.greenMajorMustHitBy,100);
+assert.equal(registry.categories.REGAL_RICHES_PERSISTENT_MHB.familyRuleCandidates.yellowMegaMustHitBy,125);
 
 const fakeNearMax=evaluateMustHitByCandidate({progressiveNearAdvertisedMaximum:true});
 assert.equal(fakeNearMax.admittedForExactEvResearch,false);
@@ -34,6 +38,34 @@ const oceanCrossDeployment=evaluateOceanMagicDeployment({
 assert.equal(oceanCrossDeployment.researchStage,'EXACT_DEPLOYMENT_INHERITANCE_REQUIRED');
 assert.equal(oceanCrossDeployment.currentObservationCanUsePhysicalOrForeignVideoAsSpanishState,false);
 assert.equal(oceanCrossDeployment.execution.realMoneyAllowed,false);
+
+const regalHeuristicOnly=evaluateRegalRichesDeployment({
+  gameId:'regal-riches-aig',
+  creatorSuggestedEntryThresholdUsed:true,
+  servedBoundaries:{purpleMinorMustHitBy:75,greenMajorMustHitBy:100,yellowMegaMustHitBy:125}
+});
+assert.equal(regalHeuristicOnly.admittedForStateSpecificEvResearch,false);
+assert.equal(regalHeuristicOnly.exactBoundariesVerified,false);
+assert.ok(regalHeuristicOnly.warnings.includes('CREATOR_ENTRY_THRESHOLD_IS_DISCOVERY_ONLY'));
+assert.equal(regalHeuristicOnly.execution.realMoneyAllowed,false);
+
+const regalReloadOnly=evaluateRegalRichesDeployment({
+  gameId:'regal-riches-aig',
+  exactIgtProviderFingerprintVerified:true,
+  exactServedRulesFingerprintVerified:true,
+  persistentMeterRuleVerified:true,
+  preWagerMeterStateVisible:true,
+  reloadPersistenceVerified:true,
+  crossPlayerPersistenceVerified:false,
+  exactTheoreticalRtpVerified:true,
+  exactStakeConfigurationVerified:true,
+  stateSpecificEvVerified:true,
+  servedBoundaries:{purpleMinorMustHitBy:75,greenMajorMustHitBy:100,yellowMegaMustHitBy:125}
+});
+assert.equal(regalReloadOnly.exactBoundariesVerified,true);
+assert.equal(regalReloadOnly.admittedForStateSpecificEvResearch,false);
+assert.ok(regalReloadOnly.warnings.includes('RELOAD_DOES_NOT_PROVE_CROSS_PLAYER_INHERITANCE'));
+assert.equal(regalReloadOnly.execution.realMoneyAllowed,false);
 
 const lottery=getLotteryRuleOverlaySearchTargets();
 assert.ok(lottery.targets.includes('ROLLDOWN_OR_FORCED_REDISTRIBUTION'));
