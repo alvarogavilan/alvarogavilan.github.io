@@ -1,0 +1,91 @@
+{
+  "version":"edge-shortest-path-closure-board-2026-08-29-v1",
+  "generatedAt":"2026-08-29T16:17:00Z",
+  "scope":"ONLINE_ONLY_NON_PROMO",
+  "status":"RANKED_BY_EVIDENCE_GAP_NOT_BY_JACKPOT_SIZE_NO_PLAY",
+  "realMoneyAllowed":false,
+  "rankingPrinciple":"Prefer exact current Spanish titles whose favorable state is observable before a wager and whose next-spin payoff has a conservative floor. Ranking is research closure priority, never a bet recommendation.",
+  "lanes":[
+    {
+      "rank":1,
+      "id":"WILLIAMHILL_ES_SNAKES_LADDERS_MEGADICE",
+      "class":"PER_BET_PERSISTENT_PROGRESS_GUARANTEED_BONUS_FLOOR",
+      "knownExact":["11-section snake progress","progress saved per possible bet","completion immediately awards Board Bonus","Board Bonus minimum guaranteed 20x total bet","current operator minimum RTP 94.57%"],
+      "highValueState":"10/11 segments before wager",
+      "hardThreshold":"Completion probability on next paid spin must exceed 5% for the 20x bonus floor alone to cover stake; ordinary reel return and all bonus upside are ignored.",
+      "remainingGates":["observe exact 10/11 state before wager at a served bet level","establish exact/prospective probability of completing from 10/11 on the same served build","confirm state remains loaded while switching bet without spin","independent prospective validation"],
+      "software":["loterias-ai/edge-backend/src/snakes-ladders-state-screen-v1.mjs","loterias-ai/lab/persistent-state-radar.html"],
+      "execution":"NO_PLAY"
+    },
+    {
+      "rank":2,
+      "id":"WILLIAMHILL_ES_STREAK_OF_LUCK",
+      "class":"PER_BET_PERSISTENT_TERMINAL_STREAK_STATE",
+      "knownExact":["six independent saved streak counters by line-bet value","state 9 followed by winning result reaches Jackpot Lucky at 10","state 9 followed by non-winning result awards the state-9 free-spin feature","jackpot seed rule and contribution structure documented by current operator rules"],
+      "highValueState":"exact streak counter 9 before wager",
+      "hardThreshold":"Given same-bet jackpot floor J, paid stake S and conservative free-spin value F, pWin break-even = (S-F)/(J-F). Ordinary paid-spin payout is ignored in the lower bound.",
+      "remainingGates":["observe exact state 9 before wager","bind exact current same-bet jackpot amount/seed floor and total paid stake","obtain exact or prospective lower bound on qualifying winning-result probability including Bonus Dice semantics","value free spins conservatively if used","independent prospective validation"],
+      "software":["loterias-ai/edge-backend/src/streak-of-luck-state-ev-lab-v1.mjs","loterias-ai/edge-backend/src/streak-of-luck-state9-one-spin-screen-v1.mjs","loterias-ai/lab/persistent-state-radar.html"],
+      "execution":"NO_PLAY"
+    },
+    {
+      "rank":3,
+      "id":"BETFAIR_ES_FULL_MOON_WHITE_KING",
+      "class":"PER_BET_PERSISTENT_VISIBLE_MOON_STATE",
+      "knownExact":["reel state saved by total bet","switching total bet restores all saved positions","moon symbols persist into next spin","published Moon money/bonus values","6+ qualifying moons trigger Moon Collect","published standard/Extra Bet RTPs 94.74/94.86"],
+      "highValueState":"five qualifying non-Blood moons with high visible cash/bonus floor before wager",
+      "hardThreshold":"For five qualifying moons, conservative next-qualifying-moon break-even = paid stake / guaranteed Moon Collect payout floor. All ordinary spin return, multiplier upside and future state are ignored.",
+      "remainingGates":["observe exact five-moon state before wager","capture types/values/positions for all visible moons","establish exact/prospective probability of at least one new qualifying moon from that served state","validate state visibility across bet switch without spin","independent prospective validation"],
+      "software":["loterias-ai/edge-backend/src/full-moon-visible-state-lower-bound-screen-v1.mjs","loterias-ai/lab/persistent-state-radar.html"],
+      "execution":"NO_PLAY"
+    },
+    {
+      "rank":4,
+      "id":"WILLIAMHILL_ES_AOTGN_WAYS_OF_THUNDER",
+      "class":"PER_BET_PERSISTENT_REEL_LEVEL",
+      "knownExact":["six saved reel levels by bet amount","45/135/405/675/1125/3125 ways","win or two Scatter advances level","losing spin reduces level","AOTGN jackpot family with 0.55% contribution"],
+      "highValueState":"saved level 6 / 3125 ways",
+      "remainingGates":["passively observe saved levels across current bet menu","derive exact conditional return distribution by level","bind exact current RTP/base-vs-jackpot accounting for this title","determine whether level 6 produces positive conditional EV after stake cost"],
+      "execution":"NO_PLAY"
+    },
+    {
+      "rank":5,
+      "id":"WILLIAMHILL_ES_SQUEALIN_RICHES",
+      "class":"PER_BET_PERSISTENT_BONUS_PROGRESS_BAR",
+      "knownExact":["bonus progress bar advances on bonus symbols","progress saved by bet level","full bar activates bonus roulette","current RTP 96.01%"],
+      "highValueState":"nearly full progress bar",
+      "remainingGates":["recover exact progress scale/units","passively observe saved progress across bet levels","recover minimum value or full distribution of bonus roulette","measure exact advance probability","state-specific EV"],
+      "execution":"NO_PLAY"
+    },
+    {
+      "rank":6,
+      "id":"BETFAIR_ES_AOTG_NORSE_EXTRA",
+      "class":"AMOUNT_BOUNDARY_PROGRESSIVE",
+      "knownExact":["base RTP 94.56%","jackpot contribution 0.55%","total RTP 95.11%","active Ultimate+Extra public config","passive aognjp guaranteed-amount semantic analyzer"],
+      "remainingGates":["fresh same-session guaranteed amount row","current amount","exact served stake","award/seed floor","capture/race probability lower bound"],
+      "execution":"NO_PLAY"
+    },
+    {
+      "rank":7,
+      "id":"BETFAIR_ES_KINGDOMS_RISE_POWER_STRIKE",
+      "class":"AMOUNT_BOUNDARY_PROGRESSIVE",
+      "knownExact":["current exact operator Power Strike amount-boundary wording","provider ticker guaranteed-hit-amount semantic field","semantic binding does not need conflicted numeric krjp suffix mapping"],
+      "remainingGates":["fresh same-session amount-bound row","display/ticker cross-binding","stake","award floor","trigger distribution/race","conservative EV"],
+      "execution":"NO_PLAY"
+    },
+    {
+      "rank":8,
+      "id":"WILLIAMHILL_ES_QUANTUM_AUTO_ROULETTE",
+      "class":"CURRENT_SPIN_PHYSICAL_TIMING",
+      "knownExact":["physical single-zero family","ball released before betting ends at rule level","multipliers revealed after betting closes"],
+      "remainingGates":["exact current camera visibility before close","stream/server/action latency","stable wheel identity and camera geometry","hundreds/thousands of prospective current-spin observations","Wilson 99% lower bound above payout-specific break-even"],
+      "execution":"NO_PLAY"
+    }
+  ],
+  "rejectedOrDemoted":[
+    {"id":"GENERIC_040_060_100_SPIN_LADDER","status":"REJECTED_AS_INDEPENDENT_EDGE","reason":"Without an exact stake-dependent mechanism the sequence changes turnover, not expected RTP."},
+    {"id":"AXA_HISTORY_SELECTOR_ON_FAIR_RNG","status":"REJECTED_AS_DEMONSTRATED_EDGE","reason":"Static audit recovered an internal VB pseudo-random selector; any recommendation set independent of the next fair outcome retains European roulette house edge."},
+    {"id":"MARTINGALE_FIBONACCI_HOT_COLD","status":"CONTROL_ONLY","reason":"Practice and exact probability show progression/history do not alter a fair independent roulette expectation."}
+  ],
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
