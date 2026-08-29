@@ -1,0 +1,53 @@
+{
+  "version":"slot-video-method-falsification-queue-2026-08-29-v1",
+  "generatedAt":"2026-08-29T17:08:00+02:00",
+  "scope":"WORLDWIDE_VIDEO_AND_WEB_DISCOVERY_ONLINE_ONLY_NON_PROMO",
+  "status":"ABSORBED_METHOD_HYPOTHESES_WITH_EXACT_SPAIN_CORROBORATION_GATES_NO_PLAY",
+  "realMoneyAllowed":false,
+  "method":"Extract the mechanism implied by each creator claim, then require exact current operator/provider evidence before any operational use. Creator spin counts, bet ladders and win videos never self-promote.",
+  "items":[
+    {
+      "id":"CHANGE_DENOMINATION_TO_MAKE_SLOT_HIT",
+      "video":{"url":"https://www.youtube.com/watch?v=D6XPmGwKid4","title":"HOW SLOT MACHINE DENOMINATION CHANGE BENEFITS YOU!","channel":"Crow Slots","published":"2022-04-11"},
+      "normalizedSpanishHypothesis":"Cambiar denominación o apuesta podría ser útil si el juego mantiene matemáticas, jackpots o estados diferentes por nivel de apuesta.",
+      "genericRngClaim":"UNSUPPORTED_AS_MAGIC_TRIGGER",
+      "exactSpainCorroboration":[
+        {"operator":"William Hill Spain","title":"Streak of Luck","fact":"Six separate progressive jackpots and separately stored winning-streak counter per line-bet level."},
+        {"operator":"Betfair Spain","title":"Full Moon: White King","fact":"Reel/Moon positions are saved by bet amount and restored when switching total bet."}
+      ],
+      "promotionRule":"Use bet switching only to inspect a verified state/configuration; never because a fixed number of spins supposedly makes the next stake due."
+    },
+    {
+      "id":"FIXED_SPIN_LADDER_040x15_060x10_100x5",
+      "origin":"User-supplied example matching a broad creator class of progressive denomination/bet rituals.",
+      "normalizedSpanishHypothesis":"La secuencia de importes podría cambiar el resultado del RNG después de una cantidad concreta de tiradas.",
+      "status":"FALSIFIED_FOR_STAKE_INVARIANT_INDEPENDENT_RNG",
+      "math":"Total coin-in is EUR17. If outcome distribution and proportional payouts are identical across the three stake levels, expected loss is 17*(1-RTP), independent of order.",
+      "realExceptionClasses":["stake-specific RTP","jackpot eligibility by stake","stake-dependent trigger probability","persistent state by bet/denomination","feature/side-bet changes math","non-proportional jackpot award or cap"],
+      "software":"loterias-ai/edge-backend/src/slot-bet-ladder-practice-v1.mjs"
+    },
+    {
+      "id":"PERSISTENT_STATE_AP_VIDEO_FAMILY",
+      "videos":[
+        {"url":"https://www.youtube.com/@advantageslots","title":"Advantage Slots channel","use":"DISCOVERY_OF_PERSISTENT_STATE_AND_MHB_FAMILIES_ONLY"},
+        {"url":"https://www.youtube.com/watch?v=ez5zJ2WoX_8","title":"How to advantage play Regal Link Teaching AP slot play","use":"VISIBLE_STATE_DISCOVERY_ONLY"},
+        {"url":"https://www.youtube.com/watch?v=GocSRE00Ulw","title":"Best & Worst Advantage Play Slot Machines","use":"MHB_COST_DISCOVERY_ONLY"},
+        {"url":"https://www.youtube.com/watch?v=BM8WS8I9qdo","title":"Can You Beat SLOT Machines? Yes — With Advantage Play","use":"CATEGORY_DISCOVERY_ONLY"}
+      ],
+      "writtenCorroboration":[
+        {"url":"https://www.tangamsystems.com/post/how-should-casinos-address-slot-advantage-play","finding":"Casino analytics vendor describes persistence mechanics and entering only when accumulated state has shifted odds/value."},
+        {"url":"https://www.apslot.com/pages/persistent-state-slots","finding":"Specialist AP taxonomy for persistent counters/cycles; threshold values remain non-authoritative for Spain."}
+      ],
+      "spanishTargets":["BETFAIR_FULL_MOON_WHITE_KING","WILLIAMHILL_STREAK_OF_LUCK","BETFAIR_REGAL_RICHES","BETFAIR_SCARAB","BETFAIR_MAGIC_OF_THE_NILE","ENRACHA_OCEAN_MAGIC"],
+      "promotionRule":"Only exact current Spanish state visibility plus exact conditional EV can promote a title."
+    },
+    {
+      "id":"MUST_HIT_BY_CREATOR_THRESHOLDS",
+      "normalizedSpanishHypothesis":"Un jackpot cerca del límite puede crear ventaja.",
+      "status":"VALID_CATEGORY_INVALID_UNIVERSAL_THRESHOLD",
+      "corroboration":"True mandatory boundaries are mathematically relevant, but trigger distribution and coin-in-to-boundary differ by exact game/configuration.",
+      "hardGuard":"Never copy a creator's percentage-to-cap threshold into a Spanish game."
+    }
+  ],
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
