@@ -1,7 +1,7 @@
 {
-  "version":"jackpot-king-spain-must-drop-lane-2026-08-30-v1.3-live-min-total-bet-bound",
-  "generatedAt":"2026-08-30T00:43:30+02:00",
-  "mode":"RESEARCH_ONLY",
+  "version":"jackpot-king-spain-must-drop-lane-2026-08-30-v1.4-watch-only-closed",
+  "generatedAt":"2026-08-30T00:47:00+02:00",
+  "mode":"WATCH_ONLY",
   "realMoneyAllowed":false,
   "operator":"Botemania España",
   "selectedTitle":"The Goonies Return: Jackpot King",
@@ -10,66 +10,53 @@
     "jackpotKingEUR":129999.64,
     "regalMajestuosoCurrentEUR":16066.96,
     "regalMajestuosoMustDropBeforeEUR":40887.38,
+    "regalFractionOfCap":0.3929564579,
+    "regalDistanceToCapEUR":24820.42,
     "royalRealCurrentEUR":2221.20,
     "royalRealMustDropBeforeEUR":4088.73,
-    "liveDisplayShowsAnySpinActive":true,
-    "sameSessionObservedNoWager":true,
-    "totalBetSelectorValuesEUR":[0.10,0.20,0.30,0.40,0.50,0.60,0.80,1.00,1.20,1.40,1.60,1.80,2.00,3.00,4.00,5.00,10.00],
+    "royalFractionOfCap":0.5432493708,
+    "royalDistanceToCapEUR":1867.53,
     "minimumTotalBetEUR":0.10,
     "minimumTotalBetVerifiedDirectly":true,
-    "auxiliaryDisplayedInternalValueEUR":0.06,
-    "auxiliaryInternalValueNotTreatedAsTotalBet":true
+    "sameSessionObservedNoWager":true
   },
-  "currentSpainPresence":{
-    "network":"Blueprint Jackpot King shared across Botemania and Canal Bingo where active",
-    "anyStakeQualifies":true,
-    "winningProbabilityProportionalToTotalBet":true,
-    "royalRegalMustDropBeforePaytableSpecifiedValue":true,
-    "currentPotDisplayMayLag":true,
-    "simultaneousAwardRaceRule":"first trigger receives current pot; second receives at least reserve",
-    "coinValueRangeEUR":[0.10,20.0],
-    "fixedPaylines":20,
+  "publishedEconomics":{
     "baseRtpPct":93.06,
     "jackpotReturnPct":0.38,
     "reserveReturnPct":0.11,
     "totalRtpPct":93.55,
     "grossFundingPctToCurrentPots":2.32,
-    "grossFundingPctToReserve":0.68
+    "grossFundingPctToReserve":0.68,
+    "minimumExpectedLossPerSpinAtPublishedTotalRtpEUR":0.00645
   },
   "mechanic":{
-    "threePots":["Royal/Real","Regal/Majestuoso","Jackpot King"],
-    "royalAndRegalMustBeWonBeforeConfiguredPaytableValue":true,
-    "wheelKingRequiredForJackpotAward":true,
     "anyStakeQualifies":true,
-    "potResetsToReserveAfterWin":true,
-    "networkedProgressive":true,
+    "winningProbabilityProportionalToTotalBet":true,
     "chanceIncreasesWithPotValue":true,
-    "chanceProportionalToStake":true
+    "royalRegalMustDropBeforePaytableSpecifiedValue":true,
+    "potResetsToReserveAfterWin":true,
+    "networkedProgressive":true
   },
-  "currentDecision":{
-    "royalNearCap":false,
-    "regalNearCap":false,
-    "minimumTotalBetEUR":0.10,
-    "minimumExpectedLossPerSpinAtPublishedTotalRtpEUR":0.00645,
-    "reason":"The exact Spanish caps and minimum total bet are now directly observed, but Royal/Regal are still far from their caps and the exact jackpot hazard versus pot value remains unpublished. No positive-EV claim is defensible at the current state.",
-    "decision":"NO_PLAY_CURRENT_STATE"
+  "publicSearchClosure":{
+    "blueprintAndOperatorHelpRecovered":true,
+    "exactHazardFunctionPublished":false,
+    "uniformHiddenThresholdProvenForThisNetwork":false,
+    "constantHazardProven":false,
+    "deterministicCrossingRuleProven":false,
+    "interpretation":"Public rules disclose monotonic jackpot chance and must-be-won-by caps, but not the mathematical hazard function. Therefore no intermediate +EV threshold may be invented."
   },
-  "remainingGates":[
-    "Recover exact conditional award/hazard function versus Royal/Regal pot value; 'chance increases' alone is insufficient",
-    "Prospective same-network observations validating reset/cap semantics and display latency",
-    "Compute exact EV threshold above published total-game loss using verified hazard function"
-  ],
+  "closureDecision":{
+    "status":"CLOSED_WATCH_ONLY_NO_PLAY",
+    "reason":"Current Royal and Regal are far from their directly observed Spanish caps, and the exact hazard function is not publicly disclosed. There is no defensible positive-EV execution threshold for the current state.",
+    "reopenOnlyIf":"A fresh Botemania observation shows Royal or Regal extremely close to its directly observed cap, or authoritative documentation reveals the exact hazard/crossing algorithm.",
+    "userActionRequiredNow":false
+  },
   "hardGuards":{
-    "ukOrOtherMarketCapsNoLongerNeededForBotemania":true,
-    "spanishCapsNowDirectlyObserved":true,
-    "minimumTotalBetNowDirectlyObserved":true,
-    "mainJackpotValueCannotStandInForRoyalOrRegal":true,
-    "chanceIncreasesDoesNotDefineHazardFunction":true,
-    "grossFundingRateCannotBeAddedDirectlyToPublishedRtp":true,
+    "noInventedHazard":true,
+    "noCrossMarketCapTransfer":true,
     "noWagerProbe":true,
     "noAutomaticBetting":true,
     "realMoneyAllowed":false
   },
-  "execution":{"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
-  "priority":"P0_RESEARCH_BOTEMANIA_BOUND_CAPS_AND_MIN_STAKE_VERIFIED"
+  "execution":{"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
 }
