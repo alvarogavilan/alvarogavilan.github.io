@@ -1,0 +1,99 @@
+{
+  "version":"edge-shortest-path-closure-board-2026-08-29-v2-cross-bet-transferability",
+  "generatedAt":"2026-08-29T17:08:00Z",
+  "scope":"ONLINE_ONLY_NON_PROMO",
+  "status":"RANKED_BY_EVIDENCE_GAP_AND_STATE_TRANSFERABILITY_NO_PLAY",
+  "realMoneyAllowed":false,
+  "rankingPrinciple":"Prefer exact current Spanish mechanics with observable pre-wager state, conservative payoff floors, and especially state that survives bet changes while payouts scale with current stake. Isolated per-bet persistence can create conditional state value but is not treated as a repeatable build/exercise edge unless all build costs are closed.",
+  "lanes":[
+    {
+      "rank":1,
+      "id":"JOKERBET_ES_MERMAID_FRENZY_PEARL_MULTIPLIER",
+      "class":"REAL_CROSS_BET_SHARED_STATE_LEVERAGE_RESEARCH",
+      "knownExact":["JOKERBET Spain min/max stake 0.20/7.50 EUR","served RTP page 94.15%","Pearl Multiplier 1x to 10x","Pearl Multiplier does not change when bet changes","Pearl cash and jackpot awards scale with current bet and current multiplier","Pearl jackpots MINI/MINOR/MAJOR/MEGA = 10x/20x/50x/500x before Pearl Multiplier","Wild Collection is saved separately per bet"],
+      "structuralLeverage":"Pearl Multiplier is shared across bet changes while Pearl awards scale with the current bet; current stake endpoints imply 37.5x build/exercise stake leverage. This is structural leverage, not yet positive EV.",
+      "stateResearch":"At multiplier 10 and exercise stake 7.50 EUR, jackpot-only one-spin break-even event thresholds are MINI 1%, MINOR 0.5%, MAJOR 0.2%, MEGA 0.02%; all ordinary return and non-jackpot Pearl value are ignored in those algebraic thresholds.",
+      "remainingGates":["verify runtime multiplier survival across the exact currently served bet switch","recover or prospectively measure Pearl increment/win/reset transition kernel","recover Mermaid Bonus transition probability by collected state","recover Pearl jackpot-tier probabilities","estimate expected net build cost including resets and ordinary returns","prospective out-of-sample validation"],
+      "software":["loterias-ai/edge-backend/src/mermaid-frenzy-cross-bet-pearl-option-v1.mjs","loterias-ai/edge-backend/src/persistent-state-transferability-theorem-v1.mjs","loterias-ai/edge-backend/src/edge-autonomous-practice-runner-v2.mjs"],
+      "execution":"NO_PLAY"
+    },
+    {
+      "rank":2,
+      "id":"WILLIAMHILL_ES_SNAKES_LADDERS_MEGADICE",
+      "class":"PER_BET_PERSISTENT_PROGRESS_CONDITIONAL_STATE",
+      "knownExact":["11-section progress","progress saved for every possible bet","returning to a bet loads zero or that bet's previously saved progress","completion immediately awards Board Bonus","Board Bonus minimum guaranteed 20x total bet","current William Hill page minimum RTP 94.57%"],
+      "highValueState":"10/11 segments before wager",
+      "hardThreshold":"Completion probability on the next paid spin must exceed 5% for the 20x bonus floor alone to cover stake; ordinary reel return and bonus upside are ignored.",
+      "transferabilityGuard":"State is saved separately per bet, so low-stake construction cannot be transferred to a higher-stake exercise state.",
+      "remainingGates":["observe exact 10/11 state before wager at a served bet level","recover exact/prospective completion probability from 10/11","independent prospective validation","count build cost for any repeatable-cycle claim"],
+      "execution":"NO_PLAY"
+    },
+    {
+      "rank":3,
+      "id":"BETFAIR_ES_FULL_MOON_WHITE_KING",
+      "class":"PER_BET_PERSISTENT_VISIBLE_MOON_STATE_CONDITIONAL",
+      "knownExact":["reel/moon state saved by total bet","switching total bet restores saved positions for that bet","moon symbols persist into the next spin","6+ qualifying Money/Multiplier/Bonus moons trigger Moon Collect","exact rule body records standard/Extra Bet RTP 94.74/94.86"],
+      "highValueState":"five qualifying non-Blood moons with high conservative visible payout floor",
+      "transferabilityGuard":"State is isolated by bet amount; it is conditional-state research, not cross-bet build/exercise leverage.",
+      "freshnessGuard":"A Betfair search-indexed public game card has also exposed 93.59% RTP, so current served RTP/version binding must be reconciled before using any RTP number economically.",
+      "remainingGates":["reconcile current served RTP/version metadata against exact rule body","observe exact five-moon state before wager","recover exact/prospective probability of at least one new qualifying moon from that state","independent prospective validation"],
+      "execution":"NO_PLAY"
+    },
+    {
+      "rank":4,
+      "id":"INTERWETTEN_ES_RHINO_COINS_HIT_THE_BONUS",
+      "class":"PER_BET_PERSISTENT_STICKY_STATE_CONDITIONAL",
+      "knownExact":["Sticky symbols persist for a bounded number of plays","sticky locations are saved separately by bet level","five visible regular bonus coins create a computable payout-floor sensitivity screen"],
+      "transferabilityGuard":"Saved sticky state is separated by bet level; favorable state may have conditional value but low-stake construction cannot be assumed transferable.",
+      "remainingGates":["exact current served state observation","regular bonus-coin arrival probability conditional on occupied cells/state","sticky occupancy effect","prospective validation"],
+      "execution":"NO_PLAY"
+    },
+    {
+      "rank":5,
+      "id":"WILLIAMHILL_ES_STREAK_OF_LUCK",
+      "class":"PER_BET_PERSISTENT_STREAK_WITH_SEQUENCE_GATE",
+      "highValueState":"exact streak counter 9",
+      "remainingGates":["resolve Bonus Dice sequencing from state 9","observe exact state 9","bind same-bet jackpot floor/stake","prospective terminal-branch probability","external jackpot/reset hazard"],
+      "execution":"NO_PLAY"
+    },
+    {
+      "rank":6,
+      "id":"WILLIAMHILL_ES_AOTGN_WAYS_OF_THUNDER",
+      "class":"PER_BET_PERSISTENT_REEL_LEVEL",
+      "highValueState":"saved level 6 / 3125 ways",
+      "remainingGates":["conditional return distribution by level","exact current base/jackpot accounting","state-specific EV"],
+      "execution":"NO_PLAY"
+    },
+    {
+      "rank":7,
+      "id":"WILLIAMHILL_ES_SQUEALIN_RICHES",
+      "class":"PER_BET_PERSISTENT_BONUS_BAR",
+      "highValueState":"near-full saved progress bar",
+      "remainingGates":["exact progress scale","minimum completion value","advance probability","state-specific EV"],
+      "execution":"NO_PLAY"
+    },
+    {
+      "rank":8,
+      "id":"BETFAIR_ES_AOTG_NORSE_EXTRA",
+      "class":"AMOUNT_BOUNDARY_PROGRESSIVE",
+      "remainingGates":["fresh same-session guaranteed amount","current amount","served stake","award floor","capture/race probability lower bound"],
+      "execution":"NO_PLAY"
+    },
+    {
+      "rank":9,
+      "id":"BETFAIR_ES_KINGDOMS_RISE_POWER_STRIKE",
+      "class":"AMOUNT_BOUNDARY_PROGRESSIVE",
+      "remainingGates":["fresh same-session amount-bound row","ticker/display cross-binding","stake","award floor","trigger/race distribution"],
+      "execution":"NO_PLAY"
+    },
+    {
+      "rank":10,
+      "id":"WILLIAMHILL_ES_QUANTUM_AUTO_ROULETTE",
+      "class":"CURRENT_SPIN_PHYSICAL_TIMING",
+      "remainingGates":["pre-close ball/wheel visibility","latency","stable wheel identity","large prospective current-spin sample","Wilson 99% lower bound above payout break-even"],
+      "execution":"NO_PLAY"
+    }
+  ],
+  "methodologyUpgrade":{"theorem":"loterias-ai/edge-backend/src/persistent-state-transferability-theorem-v1.mjs","crossBetSharedStatePreferred":true,"perBetPersistenceIsConditionalNotAutomaticallyRepeatable":true,"overallHitFrequencyCannotSubstituteForFeatureProbability":true},
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
