@@ -1,6 +1,6 @@
 {
-  "version": "spain-igt-persistent-state-candidates-v1.2-ocean-p0-regal-collision",
-  "generatedAt": "2026-08-29T12:10:00+02:00",
+  "version": "spain-igt-persistent-state-candidates-v1.3-ocean-public-config-divergence",
+  "generatedAt": "2026-08-29T12:35:00+02:00",
   "jurisdiction": "Spain",
   "status": "DISCOVERY_HIGH_PRIORITY_NO_PLAY",
   "realMoneyAllowed": false,
@@ -31,6 +31,8 @@
         "maximumBetEUR": 250.00,
         "theoreticalRtpPct": 92.18,
         "operatorPageRevalidated": true,
+        "operatorPageRevalidatedDate": "2026-08-29",
+        "operatorPublicPageNamesProvider": false,
         "economicUseNow": "PUBLIC_CONFIGURATION_FINGERPRINT_COMPONENT_ONLY",
         "usableAsStateSpecificRtp": false
       },
@@ -43,7 +45,24 @@
           "provider": "IGT",
           "rtpPct": 92.18,
           "minimumBetEUR": 0.50,
+          "maximumBetEUR": 150.00,
           "exactWrapperEquivalenceVerified": false
+        },
+        "additionalCurrentIgtComparator": {
+          "source": "https://www.megacasino.com/en-IE/online-slots/ocean-magic/",
+          "provider": "IGT",
+          "rtpPct": 92.18,
+          "minimumBetEUR": 0.50,
+          "maximumBetEUR": 1500.00,
+          "exactWrapperEquivalenceVerified": false
+        },
+        "configurationDivergenceEvidence": {
+          "verified": true,
+          "sameTitleRtpAndMinimumCanCoexistWithDifferentMaximumBets": true,
+          "enrachaMaximumBetEUR": 250.00,
+          "slotCatalogIgtMaximumBetEUR": 150.00,
+          "megaCasinoIgtMaximumBetEUR": 1500.00,
+          "interpretation": "Exact title + 92.18% RTP + EUR0.50 minimum materially strengthens IGT lineage, but cannot identify the exact EnRacha configuration because current IGT deployments with those same headline values expose different maximum bets."
         },
         "currentSpainOnlineIgtCorroboration": {
           "source": "https://www.spingenie.es/slots/ocean-magic/",
@@ -77,7 +96,7 @@
         "persistentAcrossPlayersVerified": false,
         "abandonedStateVisibleBeforeWagerVerified": false,
         "favorableCurrentStateVerified": false,
-        "note": "The decisive question is whether EnRacha serves the IGT variable-state wrapper with inheritable visible state. Same title/RTP/minimum is strong lineage evidence, not state-scope proof."
+        "note": "The decisive question is whether EnRacha serves the IGT variable-state wrapper with inheritable visible state. Same title/RTP/minimum is strong lineage evidence; the observed max-bet divergence is direct evidence against assuming exact configuration equivalence."
       },
       "evModel": {
         "formula": "EV(state,bet)=E[payout|exactEnRachaState,bet]-bet",
@@ -167,15 +186,17 @@
   "portfolioFinding": {
     "currentSpainRegulatedOperatorHasOceanMagicWithStrongIgtLineage": true,
     "oceanMagicExactEnRachaIgtWrapperVerified": false,
+    "oceanMagicPublicConfigurationDivergenceObserved": true,
     "regalRichesCrossProviderTitleCollisionDiscovered": true,
     "regalRichesIgtThesisFrozen": true,
     "whatThisProves": "Ocean Magic is currently the cleanest EnRacha stateful discovery target because exact title, 92.18% RTP and EUR0.50 minimum cohere with current IGT references and the IGT title has a documented variable-state mechanism.",
-    "whatThisDoesNotProve": "It does not prove the exact EnRacha wrapper is IGT, that state is inherited across players, that abandoned favorable state is observable before a wager, or that any current state is positive EV."
+    "whatThisDoesNotProve": "It does not prove the exact EnRacha wrapper is IGT, that state is inherited across players, that abandoned favorable state is observable before a wager, or that any current state is positive EV. The public max-bet divergence specifically prevents blind configuration transfer."
   },
   "hardGuards": {
     "sameTitleDoesNotProveProvider": true,
     "sameTitleDoesNotProveSameConfiguration": true,
     "sameRtpDoesNotProveProviderOrStateScope": true,
+    "sameTitleRtpAndMinimumDoNotProveSameConfigurationWhenMaxBetDiverges": true,
     "crossProviderTitleCollisionForcesProviderReview": true,
     "foreignOrOtherOperatorPersistentRuleDoesNotProveEnRachaCrossPlayerPersistence": true,
     "oneAccountCannotProveCrossPlayerPersistence": true,
