@@ -3,8 +3,9 @@ import {simulateRoulettePractice,theoreticalStraightEvPerEuro} from './roulette-
 import {auditAxaRecoveredSelector} from './axa-recovered-selector-theorem-v1.mjs';
 import {screenStreak9NextSpin} from './streak-of-luck-state9-one-spin-screen-v1.mjs';
 import {screenMoonCollectNextSpin,screenMoonPushNextSpin} from './full-moon-visible-state-lower-bound-screen-v1.mjs';
+import {screenSnakeProgressNextSpin} from './snakes-ladders-state-screen-v1.mjs';
 
-const VERSION='edge-autonomous-practice-runner-v1';
+const VERSION='edge-autonomous-practice-runner-v1.1-expanded-persistent-state';
 const EXEC=Object.freeze({decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,maxTotalStakeEUR:0});
 const round=(v,d=8)=>Number.isFinite(v)?Number(v.toFixed(d)):null;
 const mean=xs=>xs.length?xs.reduce((a,b)=>a+b,0)/xs.length:null;
@@ -19,6 +20,9 @@ function classifyKnownStakeStateMechanics(){
   return [
     {id:'WILLIAM_HILL_ES_STREAK_OF_LUCK',evidence:'Exact current operator rules preserve a separate consecutive-win counter for each of six line-bet values.',result:classifyStakeChangeClaim({exactCurrentRulesVerified:true,explicitPersistentStateByStakeLevel:true})},
     {id:'BETFAIR_ES_FULL_MOON_WHITE_KING',evidence:'Exact current operator rules preserve reel/moon state by bet amount.',result:classifyStakeChangeClaim({exactCurrentRulesVerified:true,explicitPersistentStateByStakeLevel:true})},
+    {id:'WILLIAM_HILL_ES_SNAKES_LADDERS_MEGADICE',evidence:'Exact current operator rules preserve the 11-section snake progress for each possible bet.',result:classifyStakeChangeClaim({exactCurrentRulesVerified:true,explicitPersistentStateByStakeLevel:true})},
+    {id:'WILLIAM_HILL_ES_AOTGN_WAYS_OF_THUNDER',evidence:'Exact current operator rules preserve the current 45-to-3125 ways level by bet amount.',result:classifyStakeChangeClaim({exactCurrentRulesVerified:true,explicitPersistentStateByStakeLevel:true})},
+    {id:'WILLIAM_HILL_ES_SQUEALIN_RICHES',evidence:'Exact current operator rules preserve the bonus-roulette progress bar by bet level.',result:classifyStakeChangeClaim({exactCurrentRulesVerified:true,explicitPersistentStateByStakeLevel:true})},
     {id:'GENERIC_CREATOR_040_060_100',evidence:'Stake ladder alone; no exact target stake-dependent rule.',result:classifyStakeChangeClaim({creatorOrForumOnly:true})}
   ];
 }
@@ -46,9 +50,7 @@ function rouletteBiasSensitivity({spins=300000}={}){
   });
 }
 
-function axaRecoveredSelectorProof(){
-  return auditAxaRecoveredSelector({setSizes:[1,5,12,18,24,36],selectorIndependentOfCasinoOutcome:true,horizon:3});
-}
+function axaRecoveredSelectorProof(){return auditAxaRecoveredSelector({setSizes:[1,5,12,18,24,36],selectorIndependentOfCasinoOutcome:true,horizon:3});}
 
 function betfairAotgDimensionlessFrontier(){
   const baseRtpPct=94.56,jackpotContributionPct=0.55;
@@ -60,10 +62,7 @@ function betfairAotgDimensionlessFrontier(){
 
 function streakState9NormalizedSensitivity(){
   const jackpotToStake=[25,50,100,175,250,500,650,1000];
-  return jackpotToStake.map(mult=>{
-    const r=screenStreak9NextSpin({observedStreakState:9,totalStakeEUR:1,jackpotAwardFloorEUR:mult,sixtyFreeSpinsValueFloorEUR:0});
-    return {jackpotToPaidSpinStakeMultiple:mult,breakEvenWinProbabilityIgnoringOrdinaryPayoutsAndFreeSpinValue:r.metrics?.breakEvenWinProbabilityIgnoringOrdinarySpinPayouts??null,breakEvenWinProbabilityPct:r.metrics?.breakEvenWinProbabilityPct??null};
-  });
+  return jackpotToStake.map(mult=>{const r=screenStreak9NextSpin({observedStreakState:9,totalStakeEUR:1,jackpotAwardFloorEUR:mult,sixtyFreeSpinsValueFloorEUR:0});return {jackpotToPaidSpinStakeMultiple:mult,breakEvenWinProbabilityIgnoringOrdinaryPayoutsAndFreeSpinValue:r.metrics?.breakEvenWinProbabilityIgnoringOrdinarySpinPayouts??null,breakEvenWinProbabilityPct:r.metrics?.breakEvenWinProbabilityPct??null};});
 }
 
 function fullMoonNormalizedSensitivity(){
@@ -72,11 +71,11 @@ function fullMoonNormalizedSensitivity(){
     {id:'four-minimum-money-plus-bonus-min',moons:[{type:'MONEY',valueX:0.5},{type:'MONEY',valueX:0.5},{type:'MONEY',valueX:0.5},{type:'MONEY',valueX:0.5},{type:'BONUS',valueX:10}]},
     {id:'mixed-visible-higher-cash',moons:[{type:'MONEY',valueX:7.5},{type:'MONEY',valueX:5},{type:'MONEY',valueX:2.5},{type:'MULTIPLIER'},{type:'BONUS',valueX:10}]}
   ];
-  return states.map(s=>{
-    const collect=screenMoonCollectNextSpin({totalStakeEUR:1,extraBetMode:false,moons:s.moons});
-    const push=screenMoonPushNextSpin({totalStakeEUR:1,extraBetMode:false,moons:s.moons});
-    return {id:s.id,collectBreakEvenTriggerPct:collect.metrics?.breakEvenTriggerProbabilityPct??null,pushBreakEvenTriggerPct:push.metrics?.breakEvenTriggerProbabilityPct??null,visiblePayoutFloorX:collect.visibleMoonPayoutFloorX??push.visibleMoonPayoutFloorX??null};
-  });
+  return states.map(s=>{const collect=screenMoonCollectNextSpin({totalStakeEUR:1,extraBetMode:false,moons:s.moons});const push=screenMoonPushNextSpin({totalStakeEUR:1,extraBetMode:false,moons:s.moons});return {id:s.id,collectBreakEvenTriggerPct:collect.metrics?.breakEvenTriggerProbabilityPct??null,pushBreakEvenTriggerPct:push.metrics?.breakEvenTriggerProbabilityPct??null,visiblePayoutFloorX:collect.visibleMoonPayoutFloorX??push.visibleMoonPayoutFloorX??null};});
+}
+
+function snakesNormalizedSensitivity(){
+  return [10,9,8,7].map(observedActiveSegments=>{const r=screenSnakeProgressNextSpin({totalStakeEUR:1,observedActiveSegments,exactCurrentOperatorProgressRuleVerified:true,exactCurrentOperatorBonusFloorVerified:true});return {observedActiveSegments,additionalProgressPointsNeeded:r.minimumAdditionalProgressPointsNeeded,bonusFloorX:r.bonusMinimumGuaranteedMultiple,breakEvenCompletionProbabilityPct:r.metrics?.breakEvenCompletionProbabilityPct??null};});
 }
 
 export function runAutonomousPractice(options={}){
@@ -89,10 +88,13 @@ export function runAutonomousPractice(options={}){
     {id:'AXA_INTERNAL_SELECTOR',status:'REJECTED_AS_FAIR_RNG_EDGE',reason:'Recovered internal random set selection cannot change fair European roulette expectation if independent of next casino outcome.'},
     {id:'STREAK_OF_LUCK_PER_BET_STATE',status:'KEEP_HIGH_PRIORITY_RESEARCH',reason:'Exact operator rules document persistent streak state by line-bet level.'},
     {id:'FULL_MOON_PER_BET_STATE',status:'KEEP_HIGH_PRIORITY_RESEARCH',reason:'Exact operator rules document persistent reel/moon state by bet amount.'},
+    {id:'SNAKES_LADDERS_PER_BET_STATE',status:'KEEP_HIGH_PRIORITY_RESEARCH',reason:'Exact operator rules document 11-section progress by bet and a 20x guaranteed minimum bonus; 10/11 creates a 5% conservative completion break-even threshold.'},
+    {id:'AOTGN_WAYS_OF_THUNDER_PER_BET_STATE',status:'KEEP_HIGH_PRIORITY_RESEARCH',reason:'Exact operator rules document the 45-to-3125 ways level by bet amount; conditional level EV remains unknown.'},
+    {id:'SQUEALIN_RICHES_PER_BET_STATE',status:'KEEP_RESEARCH',reason:'Exact operator rules document bonus-roulette progress by bet level; completion floor/probability remain unknown.'},
     {id:'BETFAIR_AOTG_AMOUNT_BOUNDARY',status:'KEEP_HIGH_PRIORITY_RESEARCH',reason:'Exact base/jackpot accounting permits a dimensionless conservative boundary frontier once current meter, award floor and capture lower bound are known.'},
     {id:'ROULETTE_PHYSICAL_BIAS',status:'KEEP_ONLY_IF_EXACT_TABLE_SIGNAL',reason:'Synthetic bias becomes positive when real outcome probabilities move enough; fair controls do not.'}
   ];
-  return {version:VERSION,mode:'AUTONOMOUS_NO_USER_INPUT',generatedAt:new Date().toISOString(),slotRitualNullSweep:slotSweep,stakeStateMechanics:stateMechanics,rouletteFairBenchmark:roulette,rouletteBiasSensitivity:bias,axaRecoveredSelectorProof:axaRecoveredSelectorProof(),betfairAotgDimensionlessFrontier:betfairAotgDimensionlessFrontier(),streakState9NormalizedSensitivity:streakState9NormalizedSensitivity(),fullMoonNormalizedSensitivity:fullMoonNormalizedSensitivity(),findings,execution:{...EXEC},hardGuards:{noUserInputRequired:true,noCasinoCredentialRequired:true,noAutomaticBetting:true,noWagerProbe:true,syntheticSensitivityNeverBecomesOperatorFact:true,realMoneyRequiresSeparateExactCurrentEvidenceGate:true}};
+  return {version:VERSION,mode:'AUTONOMOUS_NO_USER_INPUT',generatedAt:new Date().toISOString(),slotRitualNullSweep:slotSweep,stakeStateMechanics:stateMechanics,rouletteFairBenchmark:roulette,rouletteBiasSensitivity:bias,axaRecoveredSelectorProof:axaRecoveredSelectorProof(),betfairAotgDimensionlessFrontier:betfairAotgDimensionlessFrontier(),streakState9NormalizedSensitivity:streakState9NormalizedSensitivity(),fullMoonNormalizedSensitivity:fullMoonNormalizedSensitivity(),snakesNormalizedSensitivity:snakesNormalizedSensitivity(),findings,execution:{...EXEC},hardGuards:{noUserInputRequired:true,noCasinoCredentialRequired:true,noAutomaticBetting:true,noWagerProbe:true,syntheticSensitivityNeverBecomesOperatorFact:true,realMoneyRequiresSeparateExactCurrentEvidenceGate:true}};
 }
 
 if(import.meta.url===`file://${process.argv[1]}`){process.stdout.write(`${JSON.stringify(runAutonomousPractice(),null,2)}\n`);}
