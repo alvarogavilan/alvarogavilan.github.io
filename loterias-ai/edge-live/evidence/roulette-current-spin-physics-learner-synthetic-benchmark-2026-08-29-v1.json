@@ -1,0 +1,25 @@
+{
+  "version":"roulette-current-spin-physics-learner-synthetic-benchmark-2026-08-29-v1",
+  "generatedAt":"2026-08-29T17:20:00+02:00",
+  "scope":"PRACTICE_ONLY_SYNTHETIC_CONTROL",
+  "status":"NULL_REJECTED_SIGNAL_DETECTED_NO_PLAY",
+  "realMoneyAllowed":false,
+  "software":"loterias-ai/edge-backend/src/roulette-current-spin-physics-learner-v1.mjs",
+  "scientificBasis":[
+    {"source":"https://arxiv.org/abs/1204.6412","finding":"Initial ball/wheel position, velocity and acceleration can contain predictive information on a physical European roulette under suitable conditions; Small and Tse reported at least 18% expected return in their experiment."},
+    {"source":"https://arxiv.org/abs/1609.09601","finding":"A quantitative roulette study used 10,980 real online-casino wheel outcomes with backtesting and walk-forward optimization, motivating strict temporal validation."}
+  ],
+  "learnerInputs":["ballPeriodMs","rotorPeriodMs","ballPeriodDeltaMs","rotorPhase01","directionRelation","observationToCloseMs"],
+  "prediction":{"sectorRadius":2,"predictedPocketCount":5,"straightProfitOdds":35,"fairHitRate":0.1351351351,"breakEvenHitRate":0.1388888889,"confidence":"Wilson lower bound using z=2.5758293035"},
+  "fairNullControl":{
+    "records":5000,"initialTraining":1000,"walkForwardPredictions":4000,"hits":585,"observedHitRate":0.14625,"wilsonLowerHitRate":0.13244448,"lowerLiftVsBreakEven":-0.00644441,"verdict":"NO_CONSERVATIVE_WALK_FORWARD_EDGE",
+    "interpretation":"A favorable point estimate on random data was correctly rejected once uncertainty and the actual break-even threshold were applied."
+  },
+  "controlledPhysicalSignal":{
+    "records":5000,"initialTraining":1000,"walkForwardPredictions":4000,"hits":2925,"observedHitRate":0.73125,"wilsonLowerHitRate":0.71282308,"lowerLiftVsBreakEven":0.57393419,"verdict":"WALK_FORWARD_PHYSICS_RESEARCH_CANDIDATE",
+    "construction":"Synthetic outcome location was deliberately made dependent on current-spin phase, ball period, rotor period, deceleration proxy and direction. It is a positive-control signal, not a claim about any casino wheel."
+  },
+  "test":{"name":"roulette-current-spin-physics-learner-v1.test.mjs","actuallyExecutedLocally":true,"result":"PASS"},
+  "realWorldPromotionRequirements":["exact same live table/wheel identity","ball and rotor visible before bet close","measured stream and action latency","predictions frozen before outcome","independent prospective holdout","confidence lower bound above exact payout break-even threshold"],
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
