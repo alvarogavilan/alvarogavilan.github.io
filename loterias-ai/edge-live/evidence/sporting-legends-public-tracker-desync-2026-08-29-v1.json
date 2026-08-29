@@ -1,0 +1,41 @@
+{
+  "version": "sporting-legends-public-tracker-desync-2026-08-29-v1",
+  "generatedAt": "2026-08-29T20:22:00+02:00",
+  "status": "PUBLIC_TRACKERS_REJECTED_FOR_EXECUTION_NO_PLAY",
+  "market": "ES",
+  "provider": "Playtech",
+  "jackpotFamily": "Sporting Legends",
+  "target": "sljp-1 Daily forced-award race",
+  "findings": {
+    "playtechTickerContractVerified": true,
+    "dailyCode": "sljp-1",
+    "weeklyCode": "sljp-2",
+    "megaCode": "sljp-3",
+    "guaranteedHitTimeFieldExistsForTimedLevels": true,
+    "publicExternalSitesReferenceSamePlaytechCodes": true,
+    "publicTrackerValuesDesynchronized": true,
+    "exampleConflict": {
+      "sameResearchWindow": true,
+      "casinoListingsSpecificDailyEUR": 30,
+      "casinoListingsProviderTableDailyEUR": 123,
+      "interpretation": "cache/crawl/desynchronization; neither value can be treated as execution-fresh"
+    },
+    "publicTickerExecIntervalExamplesSeconds": [300, 600],
+    "executionImplication": "A race whose decisive condition is first eligible bet after deadline cannot be authorized by a public tracker with multi-minute refresh/cache uncertainty."
+  },
+  "decision": "NO_PLAY",
+  "realMoneyAllowed": false,
+  "realStakeEUR": 0,
+  "greenBlockers": [
+    "exact operator/session-bound IMS casino identity",
+    "fresh same-binding sljp-1 amount/winc/timestamp/guaranteedHitTime around boundary",
+    "race evidence at resolution materially finer than public tracker cadence"
+  ],
+  "hardGuards": {
+    "publicTrackerCannotAuthorizeGreen": true,
+    "crossSiteAgreementCannotReplaceOperatorBinding": true,
+    "cachedCurrentValueCannotProveUnawardedState": true,
+    "noAutomaticBetting": true,
+    "noWagerProbe": true
+  }
+}
