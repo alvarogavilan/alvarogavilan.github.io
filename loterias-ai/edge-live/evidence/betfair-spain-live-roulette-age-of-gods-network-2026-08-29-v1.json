@@ -1,6 +1,6 @@
 {
-  "version":"betfair-spain-live-roulette-age-of-gods-network-2026-08-29-v1",
-  "generatedAt":"2026-08-29T18:10:00Z",
+  "version":"betfair-spain-live-roulette-age-of-gods-network-2026-08-29-v1.1-ev-screen",
+  "generatedAt":"2026-08-29T18:32:00+02:00",
   "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
   "status":"CURRENT_BETFAIR_LIVE_ROULETTE_PROGRESSIVE_NETWORK_CANDIDATE_NO_PLAY",
   "realMoneyAllowed":false,
@@ -9,20 +9,30 @@
     "title":"Ruleta en Vivo",
     "pageRtpPct":97.30,
     "pageClaimsProvider":"Playtech",
+    "singleZeroPocketCount":37,
     "ageOfGodsJackpotPresent":true,
     "tiersListed":{"PowerCoins":50,"ExtraPowerCoins":500,"SuperPowerCoins":5000,"UltimatePowerCoins":100000},
-    "sourceClass":"CURRENT_BETFAIR_SPAIN_PUBLIC_GAME_PAGE"
+    "exactPageWording":"El jackpot Age of Gods es multinivel progresivo y acumula dinero por cada apuesta.",
+    "sourceClass":"CURRENT_BETFAIR_SPAIN_PUBLIC_GAME_PAGE",
+    "verifiedOn":"2026-08-29"
   },
   "providerNetworkEvidence":{
     "url":"https://www.playtech.com/playtech-launches-age-of-the-gods-live-roulette/",
-    "facts":{"liveRouletteSharesCasinoJackpotLiquidity":true,"fourTierProgressive":true,"smallPercentageOfEachStakeContributes":true,"jackpotCanBeWonAlongsideRouletteOutcome":true},
+    "facts":{"liveRouletteSharesCasinoJackpotLiquidity":true,"fourTierProgressive":true,"smallPercentageOfEachStakeContributes":true,"jackpotCanBeWonAlongsideRouletteOutcome":true,"baseRouletteDescribedAsUnaltered":true},
     "sourceClass":"PLAYTECH_OFFICIAL_PRODUCT_ANNOUNCEMENT"
   },
   "sameOperatorNetworkMechanicCorroboration":{
-    "url":"https://casino.betfair.es/juego/age-of-the-gods-furious-4-cptn",
-    "facts":{"networkContributionPct":0.99,"randomTriggerAfterAnyMainGameSpin":true,"anyStakeCanTrigger":true,"chanceProportionalToStake":true,"jackpotEntryGuaranteesOneOfFourTiers":true,"simultaneousMultipleJackpotsPrevented":true},
-    "use":"AGE_OF_THE_GODS_NETWORK_MECHANIC_CORROBORATION_ONLY",
-    "exactLiveRouletteAccountingVerified":false
+    "urls":["https://casino.betfair.es/juego/aog-ko-fbx-cptn","https://casino.betfair.es/juego/age-of-the-gods-cc-cptn"],
+    "facts":{"networkContributionPctOnExactBetfairLinkedSlots":0.99,"randomTriggerAfterAnyLinkedSlotSpin":true,"jackpotEntryGuaranteesOneOfFourTiers":true,"simultaneousMultipleJackpotsPrevented":true},
+    "rtpAccountingExample":{"slot":"Age of the Gods King of Olympus Fire Blaze Xtreme","publishedRtpPct":95.41,"publishedContributionPct":0.99,"progressivePrizesExcludedFromPublishedRtpCalculation":true},
+    "use":"AGE_OF_THE_GODS_NETWORK_MECHANIC_AND_ACCOUNTING_CORROBORATION_ONLY",
+    "exactLiveRouletteContributionVerified":false,
+    "exactLiveRouletteAccountingModeVerified":false
+  },
+  "foreignAndSecondaryContributionEvidence":{
+    "providerOfficialLiveLaunch":{"contributionNumericRatePublished":false,"wording":"small percentage of each stake"},
+    "secondaryLiveRules":{"candidateContributionPct":0.99,"candidateMode":"additional surcharge or mandatory contribution depending deployment"},
+    "use":"DISCOVERY_ONLY_UNTIL_EXACT_BETFAIR_LIVE_RULE_BINDING"
   },
   "publicNetworkMeterDiscovery":{
     "originalAgeOfGodsBetfairUrl":"https://casino.betfair.es/juego/age-of-the-gods-cptn",
@@ -31,27 +41,36 @@
     "exactLiveTierIdentity":null,
     "exactSnapshotTimestamp":null
   },
+  "evResearch":{
+    "screen":"loterias-ai/edge-backend/src/aotg-live-roulette-ev-screen-v1.mjs",
+    "canSolveWithoutAssumingPHit":true,
+    "outputs":["break-even trigger probability for a synchronized weighted jackpot award","required weighted jackpot award for a verified trigger hazard","full EV only after exact accounting mode plus trigger probability plus tier probabilities"],
+    "accountingModesSupported":["JACKPOT_SURCHARGE_ADDED_TO_TABLE_STAKE","CONTRIBUTION_WITHIN_TABLE_STAKE_BASE_RTP_EXCLUDES_JACKPOT","RTP_ALREADY_INCLUDES_JACKPOT_EXPECTATION"],
+    "automaticPromotionAllowed":false
+  },
   "whyThisMatters":{
     "rouletteProgressiveNetworkExistsOnline":true,
     "sameProviderConfirmsCrossVerticalSharedLiquidity":true,
     "sameOperatorPublishesDetailedNetworkMechanicsOnLinkedTitles":true,
     "passiveHazardLearningPossibleInPrinciple":true,
-    "doesNotRequirePredictingRouletteNumber":true
+    "doesNotRequirePredictingRouletteNumber":true,
+    "breakEvenCanBeFalsifiedBeforeAnyRealStake":true
   },
   "whatRemainsOpen":{
     "exactLiveRuntimeProviderFingerprint":true,
     "exactLiveJackpotContributionPct":true,
-    "exactLiveBaseRtpExcludingJackpot":true,
+    "exactLiveAccountingMode":true,
     "exactLiveEligibilitySemantics":true,
     "synchronizedFourTierTickerEndpoint":true,
-    "exactTierAmountsAndSeeds":true,
+    "exactTierCurrencyAmountsAndSeeds":true,
+    "tierConditionalProbabilities":true,
     "sufficientResetHistory":true,
     "stakeProportionalTriggerBoundToLiveProduct":true,
     "prospectiveHazardStability":true,
     "positiveEvThreshold":true,
     "executionAuthorization":true
   },
-  "software":{"rouletteLab":"loterias-ai/edge-backend/src/roulette-edge-lab-v1.mjs","networkObserver":"loterias-ai/edge-backend/src/progressive-network-observer-v1.mjs","evidenceFusion":"loterias-ai/edge-backend/src/evidence-fusion-engine-v1.mjs"},
+  "software":{"rouletteLab":"loterias-ai/edge-backend/src/roulette-edge-lab-v1.mjs","practiceTable":"loterias-ai/lab/roulette-practice.html","networkObserver":"loterias-ai/edge-backend/src/progressive-network-observer-v1.mjs","evScreen":"loterias-ai/edge-backend/src/aotg-live-roulette-ev-screen-v1.mjs","evidenceFusion":"loterias-ai/edge-backend/src/evidence-fusion-engine-v1.mjs"},
   "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
-  "hardGuards":{"sameOperatorSlotNetworkRulesCannotAutomaticallyPopulateLiveAccounting":true,"searchSnapshotIsNotLiveTicker":true,"pageRtpMayIncludeOrExcludeJackpotUnknown":true,"pageProviderTextRequiresRuntimeFingerprint":true,"noWagerProbe":true,"noAutomaticBetting":true}
+  "hardGuards":{"sameOperatorSlotNetworkRulesCannotAutomaticallyPopulateLiveAccounting":true,"searchSnapshotIsNotLiveTicker":true,"pageRtpAccountingRelativeToJackpotUnknown":true,"coinLabelsCannotBeConvertedToEURWithoutExactLiveRules":true,"totalNetworkContributionCannotBeEquatedToVisibleMeterGrowthWithoutExactAllocation":true,"secondary099PctCannotPopulateBetfairLiveExecution":true,"noWagerProbe":true,"noAutomaticBetting":true}
 }
