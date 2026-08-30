@@ -1,0 +1,30 @@
+{
+  "version":"jokerbet-playtech-secondary-progressive-screen-2026-08-30-v1",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operator":"JOKERBET España",
+  "scope":"ONLINE_ONLY_NON_PROMO_NATIVE_PROGRESSIVES",
+  "lanes":[
+    {
+      "game":"Gold Trio Jackpot",
+      "provider":"Playtech",
+      "page":{"minStakeEUR":0.20,"maxStakeEUR":30,"publishedRtpPct":94.92},
+      "contract":{"progressive":"Gold Trio Grand","distinctFromTripleMoneyGrand":true,"grandCanTriggerOnlyInsideDiamondPrize":true,"extraBetCostMultiplier":1.25,"extraBetDiamondPrizeActivationMultiplier":2.0,"jackpotContributionPct":1.0,"standardTotalRtpPctIncludingContribution":94.92,"extraTotalRtpPctIncludingContribution":94.93,"standardSeparatedBaseRtpPct":93.92,"extraSeparatedBaseRtpPct":93.93,"progressivePrizeExcludedFromPublishedRtp":true,"buyFeatureContributesToJackpot":false},
+      "conditionalHypothesis":{"diamondAccessesPerEuroMultiplierIfGrandConditionalProbabilityUnchanged":1.6,"formula":"2 / 1.25","executionUseAllowed":false,"reason":"Contract proves doubled Diamond Prize activation chance for 25% extra cost, but does not prove P(Grand | Diamond Prize) is invariant under Extra Bet."},
+      "designBenchmark":{"sourceClass":"PLAYTECH_ASH_STUDIO_RELEASE_MATERIAL","normalCombinedFeatureFrequencyPerSpinApprox":"1/43","extraCombinedFeatureFrequencyPerSpinApprox":"1/32","jackpotVariant1000xHitRateApprox":"1/166000000 spins","executionUseAllowed":false,"reason":"Studio-level design benchmark is not an exact JOKERBET Grand hazard or paytable decomposition."},
+      "decision":"NO_PLAY_CONDITIONAL_GRAND_PROBABILITY_UNBOUND"
+    },
+    {
+      "game":"The Jokeress Jackpot",
+      "provider":"Playtech",
+      "page":{"minStakeEUR":0.05,"maxStakeEUR":50,"publishedRtpPct":93.93},
+      "contract":{"progressive":"QuickFlick","baseGameTrigger":"3 Gold Joker symbols on an active payline","freeGamesTrigger":"3 Gold Joker symbols anywhere","jackpotContributionPct":0.40,"totalRtpPctIncludingContribution":93.93,"separatedBaseRtpPct":93.53,"progressivePrizeExcludedFromPublishedRtp":true,"higherStakeIncreasesChanceUntilStakeEUR":266.67},
+      "breakEvenBenchmark":{"atJackpotEUR":50000,"requiredProgressiveEvPer1EUR":0.0647,"requiredHazardPerEUR":0.000001294,"equivalentEligibleWagerEURPerGrand":772797.53,"executionUseAllowed":false,"reason":"Requirement only; actual symbol/reel hazard and stake scaling are not operator-bound."},
+      "publicCounterDiscovery":{"sharedQuickFlickPoolAcrossTheJokeressAndTheRacaroon2Observed":true,"observedCrawlValuesEUR":[31730,44211,51557],"executionUseAllowed":false,"reason":"Public crawl values are asynchronous and not proven fresh JOKERBET runtime state."},
+      "decision":"NO_PLAY_EXACT_TRIGGER_HAZARD_UNBOUND"
+    }
+  ],
+  "priorityConclusion":{"winner":"Age of the Gods Norse: King of Asgard Extra MHB","reason":"A forced amount boundary creates stronger observable state dependence than these non-capped progressives; prioritize obtaining the JOKERBET-served Extra current amount and guaranteed-hit amount."},
+  "hardGuards":{"noGrandNetworkConflation":true,"noExtraBetLinearHazardAssumption":true,"noStudioBenchmarkAsExecutionHazard":true,"noPublicCrawlAsFreshJokerbetState":true,"noRealMoneyProbe":true,"noAutomaticBetting":true}
+}
