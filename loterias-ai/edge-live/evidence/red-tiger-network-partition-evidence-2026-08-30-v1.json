@@ -1,0 +1,35 @@
+{
+  "version":"red-tiger-network-partition-evidence-2026-08-30-v1",
+  "generatedAt":"2026-08-30T13:15:00+02:00",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "subject":"Red Tiger progressive counter partitioning",
+  "sameLegalOperatorComparison":{
+    "operator":"Interwetten Gaming Ltd.",
+    "observedSameDay":"2026-08-30",
+    "siteA":{
+      "domain":"interwetten.com/es",
+      "counterEUR":6133.15,
+      "sameCounterVisibleOn":["Case Closed","Play with the Devil","777 Diamond Strike"]
+    },
+    "siteB":{
+      "domain":"iwcasino.com",
+      "counterEUR":5473.95,
+      "sameCounterVisibleOn":["Case Closed","Play with the Devil"]
+    },
+    "legalFooterBinding":"Both pages identify Interwetten Gaming Ltd. as operator; iwcasino.com footer explicitly names Interwetten Gaming Ltd. and MGA/B2C/110/2004."
+  },
+  "finding":{
+    "poolPartitioningObserved":true,
+    "meaning":"Identical Red Tiger titles under the same legal operator can expose different simultaneous progressive states on different domains/market implementations.",
+    "consequence":"Provider identity, title identity, currency identity, or even legal-operator identity is insufficient to bind a jackpot counter across sites."
+  },
+  "jokerbetExecutionRule":{
+    "interwettenProxyAllowed":false,
+    "iwcasinoProxyAllowed":false,
+    "required":"A JOKERBET-native live state/timer or independently proven exact instance identifier/synchronized equality is required before using any external Red Tiger counter for JOKERBET EV."
+  },
+  "decision":"EVIDENCE_ONLY_NO_PLAY",
+  "execution":{"decision":"NO_PLAY","realStakeEUR":0},
+  "hardGuards":{"noCrossSiteCounterTransfer":true,"noCrossMarketCounterTransfer":true,"noSameOperatorEqualsSamePoolAssumption":true}
+}
