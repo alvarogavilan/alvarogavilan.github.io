@@ -1,6 +1,6 @@
 {
-  "version":"botemania-speed-roulette-visual-ballistics-candidate-2026-08-30-v1",
-  "generatedAt":"2026-08-30T09:42:00+02:00",
+  "version":"botemania-speed-roulette-visual-ballistics-candidate-2026-08-30-v2",
+  "generatedAt":"2026-08-30T09:56:00+02:00",
   "mode":"RESEARCH_ONLY",
   "realMoneyAllowed":false,
   "operator":"Botemania España",
@@ -19,9 +19,15 @@
     "dedicatedPhysicalWheel":true,
     "multiCameraLiveFeed":true
   },
+  "newEvidence":{
+    "providerOfficial":"Evolution confirms betting occurs only during the spin, but does not state that full ball+wheel tracking view remains visible before betting closes.",
+    "independentTimingReview":"A current Speed Roulette sequence review reports betting opens at ~0 s, ball launch ~7-8 s, bets close ~15 s, ball lands ~22-24 s, and specifically reports that the full wheel/ball view is deliberately hidden until betting has ended to prevent wheel tracking.",
+    "conflictingSecondaryDescriptions":true,
+    "exactBotemaniaPreCloseFullViewVerified":false
+  },
   "scientificPrior":{
     "reference":"Small & Tse, Chaos 22 (2012), Predicting the outcome of roulette",
-    "finding":"Initial ball/wheel position, velocity and acceleration can provide sufficient predictive information for positive expected return on a physical European roulette wheel; reported experimental expected return at least 18% in their setup.",
+    "finding":"Physical roulette can be predictively exploitable if contemporaneous ball/wheel state is observable before wagers close.",
     "transferToBotemaniaProven":false
   },
   "sectorMath":{
@@ -33,15 +39,17 @@
       {"coveredNumbers":15,"breakEvenHitProbability":0.4166666667,"fairRandomHitProbability":0.4054054054}
     ]
   },
-  "criticalUnresolvedGates":[
-    "Verify in the current Botemania-served table that the betting interface remains enabled while the current round ball is visibly circling the wheel, not merely while the previous result is settling.",
-    "Measure usable visual window before Bets Closed / No More Bets after accounting for stream and touch latency on the user's iPhone.",
-    "Build a passive labelled video dataset of ball/wheel phase and final pocket from the exact table with zero wagers.",
-    "Fit and freeze a sector predictor on training spins, then test prospectively on untouched spins.",
-    "Require lower confidence bound on covered-sector hit probability above k/36 after latency and selection effects.",
-    "No real-money play until exact-table prospective holdout passes."
+  "closureLogic":[
+    "Betting-during-spin alone is insufficient for a ballistic edge.",
+    "The required signal is contemporaneous full wheel+ball phase/velocity before betting closes.",
+    "Public evidence now suggests Evolution intentionally withholds that full view until after betting closes.",
+    "Therefore no operator-independent green can be claimed from Speed Roulette timing alone."
   ],
-  "currentDecision":"P0_VISUAL_BALLISTICS_CANDIDATE_NO_PLAY",
+  "reopenOnlyIf":[
+    "A zero-wager recording from the exact Botemania-served table shows usable full ball+wheel motion while the betting interface is still enabled.",
+    "A passive prospective dataset from that exact table demonstrates a frozen sector predictor whose lower confidence bound exceeds k/36 after latency."
+  ],
+  "currentDecision":"DEMOTED_PRE_CLOSE_VISUAL_SIGNAL_NOT_VERIFIED_NO_PLAY",
   "execution":{"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
-  "hardGuards":{"noHistoryOnlyPatternClaim":true,"noTransferOf18PctPaperReturnToOperator":true,"noWagerProbe":true,"noAutomaticBetting":true,"realMoneyAllowed":false}
+  "hardGuards":{"noHistoryOnlyPatternClaim":true,"noTransferOfPaperReturnToOperator":true,"noAssumptionBettingDuringSpinMeansVisibleTracking":true,"noWagerProbe":true,"noAutomaticBetting":true,"realMoneyAllowed":false}
 }
