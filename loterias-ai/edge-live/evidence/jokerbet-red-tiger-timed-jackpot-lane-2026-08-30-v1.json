@@ -1,6 +1,6 @@
 {
-  "version":"jokerbet-red-tiger-timed-jackpot-lane-2026-08-30-v3",
-  "generatedAt":"2026-08-30T13:05:00+02:00",
+  "version":"jokerbet-red-tiger-timed-jackpot-lane-2026-08-30-v4",
+  "generatedAt":"2026-08-30T13:22:00+02:00",
   "mode":"RESEARCH_ONLY",
   "realMoneyAllowed":false,
   "realStakeEUR":0,
@@ -121,12 +121,28 @@
       "reason":"Current JOKERBET page RTP 95.17 exactly matches the title's own WITHOUT JACKPOT configuration and does not match any listed WITH JACKPOT RTP. Do not infer a native timed jackpot from the game name or generic jackpot-temperature UI."
     },
     {
+      "game":"Reel Heist",
+      "pagePublishedRtpPct":95.15,
+      "contractWithoutJackpotRtpPct":[91.09,93.23,95.15,96.06],
+      "contractWithJackpotRtpPct":[91.21,92.21,93.21,94.21,95.21,96.21,92.25,93.25,94.25,95.25,96.25,94.00,95.00,96.00],
+      "reason":"Current JOKERBET page RTP 95.15 exactly matches the title's own WITHOUT JACKPOT configuration and matches no listed WITH JACKPOT RTP. Commercial copy saying some versions can include timed/progressive jackpots cannot override the exact current RTP binding."
+    },
+    {
       "game":"Play with the Devil Megaways",
       "reason":"Current JOKERBET page can show the generic 'Temperatura Jackpot' field, but its exact contract PDF does not contain the native Red Tiger timed-jackpot section. Do not use page temperature as proof of a native timed jackpot."
     },
     {
       "class":"JOKERBET operator promotional jackpot-temperature overlays",
       "reason":"Project is NON_PROMO_ONLY. Promotional/operator overlays are outside this lane."
+    }
+  ],
+  "ambiguousUnboundVariants":[
+    {
+      "game":"Tiki Fruits",
+      "pagePublishedRtpPct":95.13,
+      "contractWithoutJackpotRtpPct":[91.12,93.22,95.13,96.05],
+      "contractWithJackpotRtpPct":[91.22,92.22,93.22,94.22,95.22,96.22,92.00,93.00,94.00,95.00,96.00,94.13,95.13,96.13,96.01],
+      "reason":"95.13 appears in both WITH-JACKPOT and WITHOUT-JACKPOT variants. The page RTP therefore cannot bind the live JOKERBET implementation to either configuration. Keep UNBOUND until a game-client/config identifier or native jackpot display is bound."
     }
   ],
   "executionMath":{
@@ -146,9 +162,8 @@
   "nextAutonomousTargets":[
     "Find a public/current Red Tiger jackpot feed, API, websocket, lobby payload or tracker exposing current JOKERBET-compatible tier value and deadline.",
     "Find provider/regulatory technical documentation for the exact timed hazard or dynamic-allocation algorithm.",
-    "Find a second public operator with a synchronized 6133.15 EUR Red Tiger counter or another exact simultaneous value match to establish network identity.",
-    "Find more JOKERBET exact contracts with 2% contribution, EUR2 timed cap, 10k/5k/100 seeds and a higher separated base return than Case Closed.",
-    "Reject any title whose current JOKERBET page RTP maps exactly to its contract's WITHOUT JACKPOT configuration even if a generic jackpot-temperature field is visible.",
+    "Find more JOKERBET exact contracts with a uniquely identifiable WITH-JACKPOT RTP and a separated base return higher than Case Closed.",
+    "Reject any title whose current JOKERBET page RTP maps exactly to its contract's WITHOUT JACKPOT configuration; leave titles whose RTP maps to both sets UNBOUND.",
     "Passively collect repeated public progressive reset/value timestamps if an endpoint is found, without real-money play."
   ],
   "decision":"P0_NATIVE_TIMED_JACKPOT_NO_PLAY",
@@ -158,6 +173,7 @@
     "noPageTemperatureAsNativeProof":true,
     "realizedRtpDoesNotProveJackpotHit":true,
     "rejectExactWithoutJackpotRtpMatch":true,
+    "ambiguousRtpCannotBindJackpotVariant":true,
     "noNetworkEquivalenceAssumption":true,
     "noForeignConfigTransfer":true,
     "noLinearStakeHazardAssumption":true,
