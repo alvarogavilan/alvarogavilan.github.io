@@ -1,0 +1,22 @@
+{
+  "version":"quintuple-plus-contrarian-digital-twin-validation-2026-08-30-v1",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operator":"SELAE / loteriasyapuestas.es",
+  "contract":{"pricePerBetEUR":1,"totalPrizeFundPct":55,"firstPct":24,"secondPct":7,"thirdPct":7,"fourthPct":7,"nextSpecialPct":10,"minimumPaidCategoryPrizeEUR":1.50,"specialRequiresSingleFirstCategoryReceipt":true},
+  "tax":{"exemptPerBetPrizeEUR":40000,"rateOnExcess":0.20,"source":"SELAE/AEAT current guidance"},
+  "withdrawalRule":{"mechanic":"withdrawn selection transfers to immediately previous participating dorsal, continuing backwards; before dorsal 1 wraps to highest dorsal","status":"VERIFIED_OFFICIAL_RULE_MODIFICATION"},
+  "historicalRealizedCrowdBenchmarks":[
+    {"date":"2026-08-30","fieldSizes":[4,6,6,10,5],"uniformFirstCategoryCombinations":28800,"officialOutcome":[2,1,2,1,3,1],"totalBets":19983,"firstCategoryWinners":9,"observedWinningTicketPublicFrequency":0.00045038282540159135,"uniformFrequency":0.00003472222222222222,"realizedCrowdConcentrationVsUniform":12.971025371565831,"scope":"REALIZED_OUTCOME_ONLY"},
+    {"date":"2026-08-12","fieldSizes":[6,6,8,10,5],"uniformFirstCategoryCombinations":57600,"officialOutcome":[1,3,6,10,2,5],"totalBets":12393,"firstCategoryWinners":1,"observedWinningTicketPublicFrequency":0.00008069071249899137,"uniformFrequency":0.00001736111111111111,"realizedCrowdConcentrationVsUniform":4.647785039941903,"scope":"REALIZED_OUTCOME_ONLY"}
+  ],
+  "structuralResult":{"asymptoticFirstCategoryOnlyBreakEvenTrueToPublicRatio":4.166666666666667,"derivation":"first category receives 24% of sales; for a sufficiently common public ticket, expected first-category return tends to 0.24 * P_true/P_public before carryover","finiteCrowdCorrectionRequired":true,"specialAndLowerCategoriesExcludedFromConservativeScreen":true,"meaning":"A contrarian ticket can only pass the conservative first-category screen when its defendible true-probability lower bound is sufficiently larger than its public-selection upper bound. Historical winning combinations demonstrate material crowd concentration but do not identify future public ticket probabilities."},
+  "syntheticMonteCarloValidation":{"status":"SYNTHETIC_NOT_EXECUTION_EVIDENCE","totalTrials":20000000,"assumptions":{"totalBets":20000,"publicTicketProbability":0.0001,"firstCarryoverEUR":0,"firstPoolEUR":4800,"taxIrrelevantAtThisPool":true},"cases":[
+    {"name":"finite break-even","trueTicketProbabilityInput":0.00048187480882908967,"trials":10000000,"trueHits":4780,"netReturnRatio":0.9988390476190476,"approxLower99":0.9559689276616093,"approxUpper99":1.041709167576486},
+    {"name":"30 percent above finite break-even","trueTicketProbabilityInput":0.0006264372514778166,"trials":10000000,"trueHits":6226,"netReturnRatio":1.2877009523809524,"approxLower99":1.2391617754474094,"approxUpper99":1.3362401293144954}
+  ]},
+  "currentDecision":"NO_PLAY",
+  "blockingUnknowns":["future operator-bound final/current bet count lower bound before close","future ticket public-selection probability upper bound","future ticket true outcome probability lower bound from a validated racing model","fresh withdrawals and exact race card","current first-category carryover if used","receipt grouping if Special is ever included"],
+  "guards":{"todayRaceAlreadyPassed":true,"historicalCrowdConcentrationNotFutureProbability":true,"noIidCrowdClaimAsFact":true,"noSpecialValueWithoutReceiptModel":true,"noLowerCategoryValueNeededForConservativeFirstScreen":true,"noAutomaticBetting":true}
+}

@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import * as q from '../games/quintuple-plus.mjs';
+assert.equal(q.uniformFirstCategoryCombinationCount([4,6,6,10,5]),28800);
+const h=q.observedWinningTicketCrowdConcentration({totalBets:19983,firstCategoryWinners:9,fieldSizes:[4,6,6,10,5]});
+assert.ok(Math.abs(h.concentrationVsUniform-12.971025371565831)<1e-12);
+assert.equal(q.substituteWithdrawnDorsal({selectedDorsal:2,withdrawnDorsals:[2,7,10],highestDorsal:10}),1);
+assert.equal(q.substituteWithdrawnDorsal({selectedDorsal:7,withdrawnDorsals:[2,7,10],highestDorsal:10}),6);
+assert.equal(q.substituteWithdrawnDorsal({selectedDorsal:10,withdrawnDorsals:[2,7,10],highestDorsal:10}),9);
+assert.equal(q.substituteWithdrawnDorsal({selectedDorsal:2,withdrawnDorsals:[1,2],highestDorsal:10}),10);
+assert.equal(q.netPrizeAfterTaxEUR(60000),56000);
+assert.ok(Math.abs(q.asymptoticFirstCategoryBreakEvenTrueToPublicRatio()-4.166666666666667)<1e-12);
+assert.equal(q.classifyTicket({ticket:[1,2,3,4,5,6],outcome:[1,2,3,4,5,6]}),1);
+assert.equal(q.classifyTicket({ticket:[1,2,3,4,5,7],outcome:[1,2,3,4,5,6]}),2);
+assert.equal(q.classifyTicket({ticket:[1,2,3,9,5,6],outcome:[1,2,3,4,5,6]}),3);
+assert.equal(q.classifyTicket({ticket:[1,2,3,9,5,7],outcome:[1,2,3,4,5,6]}),4);
+assert.equal(q.robustFirstCategoryGate({}).decision,'NO_PLAY');
+console.log('quintuple-plus.test.mjs: PASS');
