@@ -1,0 +1,34 @@
+{
+  "version":"triple-money-jackpot-jokerbet-candidate-2026-08-30-v1",
+  "generatedAt":"2026-08-30T10:30:00+02:00",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "operator":"JOKERBET España",
+  "network":"Playtech Triple Money Grand",
+  "currentPresence":true,
+  "candidateGames":[
+    {"game":"Triple Money Jackpot","minStakeEUR":0.05,"maxStakeEUR":50,"publishedRtpPct":93.44},
+    {"game":"Triple Money Jackpot Bells","minStakeEUR":0.05,"maxStakeEUR":12,"publishedRtpPct":94.42},
+    {"game":"Triple Money Jackpot Gold","minStakeEUR":0.05,"maxStakeEUR":35,"publishedRtpPct":94.49}
+  ],
+  "verifiedMechanics":{
+    "grandProgressiveSharedAcrossParticipatingOnlineCasinos":true,
+    "contributionRatePct":1.0,
+    "grandCanTriggerOnAnyWheelOfLuck":true,
+    "higherStakeIncreasesJackpotChanceUntil1000EURThreshold":true,
+    "publishedRtpIncludesContributionButProgressivePrizeExcludedFromRtpCalculation":true
+  },
+  "publicCurrentNetworkEvidence":[
+    {"source":"Paf Spain","observedGrandEUR":54559,"note":"same Triple Money Grand shown across Triple Money Jackpot/Bells/Gold/Spicy on crawled current page; cross-operator network evidence only, not yet JOKERBET execution binding"},
+    {"source":"AdmiralBet Spain","observedExamplesEUR":[28619,41113,42822,67248],"note":"operator pages appear stale/asynchronously crawled, so do not use as a single synchronized network value"}
+  ],
+  "criticalUnknowns":[
+    "Exact JOKERBET-served live Grand counter now",
+    "Exact per-stake jackpot trigger probability / Wheel-of-Luck hazard",
+    "Seed/reset amount and network-state freshness",
+    "Whether the JOKERBET instance is exactly the same live progressive instance represented by public Paf/other Spain counters"
+  ],
+  "decision":"P0_PROGRESSIVE_THRESHOLD_CANDIDATE_NO_PLAY",
+  "execution":{"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{"noHazardInvention":true,"noCrossOperatorCounterBindingWithoutProof":true,"noRealMoneyProbe":true,"noAutomaticBetting":true}
+}
