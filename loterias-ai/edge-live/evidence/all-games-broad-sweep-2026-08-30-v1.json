@@ -1,0 +1,25 @@
+{
+  "version":"all-games-broad-sweep-2026-08-30-v1",
+  "generatedAt":"2026-08-30T09:40:00+02:00",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "scope":["slots","jackpots","crash","instant","penalty-games","mines","plinko","dice","live-wheels","live-dice","rng-table-games","lotteries","video-poker","persistent-state","skill-illusion-games"],
+  "closedNoEdgeFamilies":[
+    {"id":"chicken-road-family","reason":"Provably-fair/RNG step-crash with published RTP below 100%; cash-out choice changes variance, not expected value."},
+    {"id":"penalty-unlimited-and-nations-cup","reason":"Server/RNG determined penalty-crash outcomes; aim/nation/difficulty do not create predictive information; published RTP below 100%."},
+    {"id":"forest-arrow","reason":"Client seed + server seed + nonce precommit each arrow result before visual shot; aiming/timing is presentation, not outcome control."},
+    {"id":"first-person-hilo-refresh-rounding","reason":"Unlimited initial-card refresh is exactly offset by probability-priced offers; first decision includes 1% commission, subsequent decisions theoretical 100%; stochastic rounding is unbiased."},
+    {"id":"red-baron-standard-crash","reason":"Evolution crash mechanics and RTP below 100%; recent-results/live-cashout statistics are descriptive, not predictive."},
+    {"id":"crazy-time-progression-methods","reason":"Martingale/progression systems found in video demonstrations change bankroll path only; no evidence they alter underlying negative EV."}
+  ],
+  "highPriorityExceptionsStillOpen":[
+    {"id":"lototurf-horse-skill-jackpot","reason":"Jackpot rollover plus user-selected real horse creates a hybrid where superior horse probability estimation can change first-category probability; requires exact pool/public-selection/share model."},
+    {"id":"live-physical-wheel-bias","reason":"Physical wheels/dice/balls may admit empirical bias only if stable hardware, pre-bet observability, adequate sample and prospective holdout are demonstrated."},
+    {"id":"forced-award-jackpots","reason":"Sporting Legends and Kingdoms Rise contain forced first-bet/first-contribution semantics under specific no-play/deadline conditions; operator-bound live state/race still required."},
+    {"id":"must-be-won-by-watch","reason":"PowerPlay and Jackpot King have capped/forced-before-limit pots but no public hazard function; watch-only until near-cap or exact hazard evidence."},
+    {"id":"progressive-video-poker","reason":"Exact jackpot-aware strategy can cross 100% if current award exceeds configuration-specific threshold; Botemania trigger/wager fingerprint remains unresolved."}
+  ],
+  "youtubePolicy":"Use videos only to discover candidate mechanisms and sequences. Any claim of edge must be independently verified against exact rules, mathematics, operator configuration, and prospective evidence.",
+  "hardGuards":{"noPatternMiningOnIndependentRng":true,"noHistoricalRealizedRtpAsTheoreticalEdge":true,"noBetProgressionAsEdge":true,"noDemoToRealTransferWithoutRuleBinding":true,"noWagerProbe":true,"noAutomaticBetting":true,"realMoneyAllowed":false},
+  "execution":{"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0}
+}
