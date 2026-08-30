@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import * as gt from '../games/jokerbet-gold-trio.mjs';
+import * as jk from '../games/jokerbet-jokeress.mjs';
+assert.ok(Math.abs(gt.conditionalGrandRatioForEqualProgressiveAccessPerEuro()-0.625)<1e-12);
+assert.equal(gt.robustExtraModeDominance({conditionalGrandRatioLower:null}).decision,'NO_ROBUST_MODE_CHOICE');
+assert.equal(gt.robustExtraModeDominance({conditionalGrandRatioLower:0.625}).decision,'EXTRA_DOMINATES_PER_EURO_CONDITIONALLY');
+const cmp=gt.compareModes({baseStakeEUR:1,grandEUR:5000,standardGrandProbabilityPerSpin:1e-5,extraGrandProbabilityPerSpin:2e-5});assert.equal(cmp.better,'extra');
+assert.ok(Math.abs(jk.breakEvenHazardPerEUR(50000)-0.000001294)<1e-15);
+assert.equal(jk.robustThresholdFromHazardLower(null).decision,'NO_FINITE_ROBUST_THRESHOLD');
+const reels=[['G','X'],['G','X'],['G','X']],paylines=[[0,0,0]],windowOffsets=[0,0,0];const exact=jk.exactBaseQuickFlickProbability({reels,paylines,goldSymbol:'G',windowOffsets});assert.equal(exact.total,8);assert.equal(exact.hits,1);assert.equal(exact.probability,0.125);
+assert.equal(gt.executionGate({}).decision,'NO_PLAY');assert.equal(jk.executionGate({}).decision,'NO_PLAY');
+console.log('gold-jokeress.test.mjs: PASS');

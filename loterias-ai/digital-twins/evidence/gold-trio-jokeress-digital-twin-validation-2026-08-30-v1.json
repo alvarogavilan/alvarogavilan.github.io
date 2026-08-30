@@ -1,0 +1,21 @@
+{
+  "version":"gold-trio-jokeress-digital-twin-validation-2026-08-30-v1",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operatorChecksToday":{
+    "goldTrio":{"pagePresent":true,"minStakeEUR":0.20,"maxStakeEUR":30,"pageRtpPct":94.92,"contractObservedToday":true,"extraCostMultiplier":1.25,"extraDiamondActivationMultiplier":2,"standardRtpInclContributionPct":94.92,"extraRtpInclContributionPct":94.93,"jackpotContributionPct":1,"grandOnlyInsideDiamondPrize":true,"progressivePrizesExcludedFromRtp":true},
+    "jokeress":{"pagePresent":true,"minStakeEUR":0.05,"maxStakeEUR":50,"pageRtpPct":93.93,"contractObservedToday":true,"separatedBaseRtpPct":93.53,"jackpotContributionPct":0.40,"baseTrigger":"3 Gold Joker on an active payline","freeGamesTrigger":"3 Gold Joker anywhere"}
+  },
+  "goldTrioStructuralResult":{"conditionalGrandRatioThresholdExtraVsStandard":0.625,"derivation":"(extra cost multiplier 1.25)/(Diamond activation multiplier 2)","meaning":"If the lower bound on P(Grand|Diamond,Extra)/P(Grand|Diamond,Standard) is at least 0.625, Extra has at least equal progressive access per euro; its separated base RTP is also 0.01 percentage points higher.","currentRatioLowerBound":"UNKNOWN","decision":"NO_ROBUST_MODE_CHOICE"},
+  "jokeressStructuralResult":{"lossPerEUR":0.0647,"atJackpotEUR50000RequiredHazardPerEUR":0.000001294,"currentHazardLowerBound":"UNKNOWN_INCLUDING_ARBITRARILY_CLOSE_TO_ZERO","robustThreshold":"NO_FINITE_ROBUST_THRESHOLD","newExactMethod":"Full enumeration of all 3-reel stop combinations once certified reel strips, paylines and visible-window offsets are bound."},
+  "syntheticMonteCarloValidation":{"status":"SYNTHETIC_NOT_EXECUTION_EVIDENCE","totalTrials":40000000,"confidence":0.99,"cases":[
+    {"lane":"Gold Trio standard","baseStakeEUR":1,"grandEUR":5000,"grandProbabilityPerSpinInput":0.00001,"trials":10000000,"wins":92,"centralReturnRatio":0.9852,"lower99ReturnRatio":0.9743946491428664,"upper99ReturnRatio":0.9993227359155449},
+    {"lane":"Gold Trio Extra, synthetic unchanged P(Grand|Diamond)","baseStakeEUR":1,"extraTotalStakeEUR":1.25,"grandEUR":5000,"grandProbabilityPerSpinInput":0.00002,"trials":10000000,"wins":189,"centralReturnRatio":1.0149,"lower99ReturnRatio":1.0020003304198704,"upper99ReturnRatio":1.0304535261400953},
+    {"lane":"Jokeress","stakeEUR":1,"jackpotEUR":50000,"netProbabilityPerSpinInput":0.000001294,"trials":10000000,"wins":11,"centralReturnRatio":0.9903,"lower99ReturnRatio":0.9610644010677053,"upper99ReturnRatio":1.0527099869426748},
+    {"lane":"Jokeress","stakeEUR":1,"jackpotEUR":50000,"netProbabilityPerSpinInput":0.000004,"trials":10000000,"wins":40,"centralReturnRatio":1.1353,"lower99ReturnRatio":1.0687607032384878,"upper99ReturnRatio":1.2350134923600185}
+  ]},
+  "decision":"NO_PLAY",
+  "blockingUnknowns":{"goldTrio":["fresh JOKERBET Gold Trio Grand value/network identity","P(Grand|Diamond) standard and Extra or defendible lower ratio","operator-bound per-spin Grand lower bounds"],"jokeress":["certified exact reel strips and payline geometry or another exact trigger-hazard source","fresh JOKERBET QuickFlick value/network identity","stake-to-hazard semantics"]},
+  "guards":{"noSyntheticExecution":true,"noConditionalGrandInvarianceAssumption":true,"noStudioBenchmarkAsHazard":true,"noPublicCounterAsFreshJokerbetState":true,"noRealMoneyProbe":true,"noAutomaticBetting":true}
+}
