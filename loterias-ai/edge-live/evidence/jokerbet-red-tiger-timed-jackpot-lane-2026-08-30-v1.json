@@ -1,6 +1,6 @@
 {
-  "version":"jokerbet-red-tiger-timed-jackpot-lane-2026-08-30-v2",
-  "generatedAt":"2026-08-30T12:45:00+02:00",
+  "version":"jokerbet-red-tiger-timed-jackpot-lane-2026-08-30-v3",
+  "generatedAt":"2026-08-30T13:05:00+02:00",
   "mode":"RESEARCH_ONLY",
   "realMoneyAllowed":false,
   "realStakeEUR":0,
@@ -19,6 +19,11 @@
       "Only a capped part of each stake is eligible for the timed tiers; stake above the cap is routed to the progressive tier.",
       "Connectivity can delay displayed jackpot values, so displayed state cannot be assumed identical to effective state."
     ]
+  },
+  "jokerbetPublicUiGuard":{
+    "genericTemperatureJackpotIsOperatorPromotion":true,
+    "nonPromoLaneRejectsIt":true,
+    "reason":"JOKERBET's own current jackpot page identifies the Gold/Silver/Bronze temperature system as a JOKERBET promotion whose prizes are credited to bonus balance. It is not proof of a native Red Tiger jackpot configuration."
   },
   "candidates":[
     {
@@ -81,6 +86,25 @@
       "reasonBelowTopTwo":"The contract binds the timed mechanic but does not expose an exact numeric separated base return; do not infer it by simply subtracting 2% from the page RTP without stronger binding."
     }
   ],
+  "currentEvidence":{
+    "jokerbetOfficialRealizedRtpReport":{
+      "reportWindow":"February-July 2026 as rendered in current official PDF",
+      "provesRecentServedActivity":true,
+      "games":{
+        "Case Closed":{"desktopObserved":{"MayPct":16.7},"mobileObserved":{"FebruaryPct":28.7}},
+        "Play with the Devil":{"desktopObserved":{"MarchPct":362.4,"MayPct":33.3},"mobileObserved":{"FebruaryPct":0.0,"MarchPct":91.9,"JulyPct":98.3}},
+        "777 Diamond Strike":{"desktopObserved":{"MayPct":28.0},"mobileObserved":{"AprilPct":38.0,"MayPct":98.8,"JunePct":364.7,"JulyPct":71.4}}
+      },
+      "guard":"Realized RTP alone does not prove that a jackpot was hit or identify native-jackpot activation because wager volume and payout decomposition are absent."
+    },
+    "publicCrossGameProgressiveCounter":{
+      "operator":"Interwetten public Red Tiger lobby",
+      "observedTodayEUR":6133.15,
+      "sameValueObservedOn":["Case Closed","Play with the Devil","777 Diamond Strike"],
+      "interpretation":"Strong live evidence that those titles can share one Red Tiger progressive state within an operator implementation.",
+      "executionGuard":"Do not bind this counter to JOKERBET unless exact cross-operator instance identity or synchronized counter equality is independently proven."
+    }
+  },
   "explicitExclusions":[
     {
       "game":"Treasure Mine",
@@ -112,25 +136,27 @@
     "important":"Do not add the 2% contribution to the separated base and then add jackpot winnings again. The actual conditional progressive/timed expected value replaces the generic contribution return in state-conditional analysis."
   },
   "whyNotGreenYet":[
-    "No fresh JOKERBET in-game Daily/10 Minute Drop values and countdown are bound at execution time.",
+    "No fresh JOKERBET native in-game Daily/10 Minute Drop values and countdown are bound at execution time.",
     "Exact stake-to-hazard function is not published/bound; 'increases in correlation' does not prove linearity.",
     "Exact time-to-deadline hazard curve is not published/bound.",
     "At the terminal 100% state, network concurrency and accepted-spin ordering determine which player receives the drop; 100% does not mean a player can wait and claim it risk-free.",
     "Displayed values may lag effective values because the contract explicitly warns of connectivity delays.",
-    "Cross-operator network identity and current eligible-spin intensity are not sufficiently bound for JOKERBET execution."
+    "The current public Interwetten progressive value is not yet proven to be the same live network instance as JOKERBET."
   ],
   "nextAutonomousTargets":[
     "Find a public/current Red Tiger jackpot feed, API, websocket, lobby payload or tracker exposing current JOKERBET-compatible tier value and deadline.",
     "Find provider/regulatory technical documentation for the exact timed hazard or dynamic-allocation algorithm.",
+    "Find a second public operator with a synchronized 6133.15 EUR Red Tiger counter or another exact simultaneous value match to establish network identity.",
     "Find more JOKERBET exact contracts with 2% contribution, EUR2 timed cap, 10k/5k/100 seeds and a higher separated base return than Case Closed.",
     "Reject any title whose current JOKERBET page RTP maps exactly to its contract's WITHOUT JACKPOT configuration even if a generic jackpot-temperature field is visible.",
-    "Passively collect repeated 10-minute reset/drop timestamps if a public feed is found, without real-money play."
+    "Passively collect repeated public progressive reset/value timestamps if an endpoint is found, without real-money play."
   ],
   "decision":"P0_NATIVE_TIMED_JACKPOT_NO_PLAY",
   "execution":{"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
   "hardGuards":{
     "noPromoOverlay":true,
     "noPageTemperatureAsNativeProof":true,
+    "realizedRtpDoesNotProveJackpotHit":true,
     "rejectExactWithoutJackpotRtpMatch":true,
     "noNetworkEquivalenceAssumption":true,
     "noForeignConfigTransfer":true,
