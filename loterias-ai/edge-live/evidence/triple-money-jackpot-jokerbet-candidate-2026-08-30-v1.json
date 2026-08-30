@@ -1,34 +1,47 @@
 {
-  "version":"triple-money-jackpot-jokerbet-candidate-2026-08-30-v1",
-  "generatedAt":"2026-08-30T10:30:00+02:00",
+  "version":"triple-money-jackpot-jokerbet-candidate-2026-08-30-v2",
+  "generatedAt":"2026-08-30T10:35:00+02:00",
   "mode":"RESEARCH_ONLY",
   "realMoneyAllowed":false,
   "operator":"JOKERBET España",
   "network":"Playtech Triple Money Grand",
   "currentPresence":true,
   "candidateGames":[
-    {"game":"Triple Money Jackpot","minStakeEUR":0.05,"maxStakeEUR":50,"publishedRtpPct":93.44},
-    {"game":"Triple Money Jackpot Bells","minStakeEUR":0.05,"maxStakeEUR":12,"publishedRtpPct":94.42},
-    {"game":"Triple Money Jackpot Gold","minStakeEUR":0.05,"maxStakeEUR":35,"publishedRtpPct":94.49}
+    {"game":"Triple Money Jackpot","minStakeEUR":0.05,"maxStakeEUR":50,"pagePublishedRtpPct":93.44,"contractPdfRtpNotYetPinned":true},
+    {"game":"Triple Money Jackpot Bells","minStakeEUR":0.05,"maxStakeEUR":12,"pagePublishedRtpPct":94.42,"contractPdfRtpPctUpTo1000EUR":95.42,"preferredVehicle":true},
+    {"game":"Triple Money Jackpot Gold","minStakeEUR":0.05,"maxStakeEUR":35,"pagePublishedRtpPct":94.49,"contractPdfRtpNotYetPinned":true},
+    {"game":"Triple Money Jackpot Spicy!","minStakeEUR":0.05,"maxStakeEUR":35,"pagePublishedRtpPct":94.49,"seedFloorEUR":20000,"contractPdfRtpNotYetPinned":true}
   ],
   "verifiedMechanics":{
-    "grandProgressiveSharedAcrossParticipatingOnlineCasinos":true,
+    "grandProgressiveSharedAcrossAllParticipatingGamesAndOnlineCasinos":true,
     "contributionRatePct":1.0,
     "grandCanTriggerOnAnyWheelOfLuck":true,
     "higherStakeIncreasesJackpotChanceUntil1000EURThreshold":true,
-    "publishedRtpIncludesContributionButProgressivePrizeExcludedFromRtpCalculation":true
+    "bellsContractRtpIncludesContributionPct":1.0,
+    "bellsProgressivePrizeExcludedFromRtpCalculation":true,
+    "bellsContractRtpPctUpTo1000EUR":95.42
   },
-  "publicCurrentNetworkEvidence":[
-    {"source":"Paf Spain","observedGrandEUR":54559,"note":"same Triple Money Grand shown across Triple Money Jackpot/Bells/Gold/Spicy on crawled current page; cross-operator network evidence only, not yet JOKERBET execution binding"},
-    {"source":"AdmiralBet Spain","observedExamplesEUR":[28619,41113,42822,67248],"note":"operator pages appear stale/asynchronously crawled, so do not use as a single synchronized network value"}
+  "synchronizedPublicCounterEvidence":[
+    {"source":"Paf Spain","crawl":"today","grandEUR":54559,"games":["Triple Money Jackpot","Triple Money Jackpot Gold","Triple Money Jackpot Spicy","Triple Money Jackpot Bells"]},
+    {"source":"Paf Spain","crawl":"yesterday","grandEUR":53235,"games":["Triple Money Jackpot","Triple Money Jackpot Gold","Triple Money Jackpot Spicy","Triple Money Jackpot Bells"]}
   ],
+  "derivedPassiveObservations":{
+    "counterIncreaseEURIfNoInterveningReset":1324,
+    "impliedNetworkWagerVolumeEURIfExactly1PctContributionAndNoReset":132400,
+    "bellsBaseLossRatePct":4.58,
+    "atGrandEUR":54559,
+    "requiredGrandHazardPerEURForBreakEven":8.394582012133653e-7,
+    "equivalentOneGrandPerEURWagered":1191244.541484716,
+    "formula":"required q_per_EUR > (1 - baseRTP) / currentGrand",
+    "warning":"This is a benchmark only. Exact jackpot hazard/stake scaling remains unpublished and must not be inferred from contribution rate alone."
+  },
   "criticalUnknowns":[
-    "Exact JOKERBET-served live Grand counter now",
-    "Exact per-stake jackpot trigger probability / Wheel-of-Luck hazard",
-    "Seed/reset amount and network-state freshness",
-    "Whether the JOKERBET instance is exactly the same live progressive instance represented by public Paf/other Spain counters"
+    "Exact per-stake Grand trigger probability / Wheel-of-Luck hazard",
+    "Exact stake-to-jackpot-chance function below the 1000 EUR threshold",
+    "Fresh JOKERBET in-game counter binding at execution time",
+    "Prospective reset/cycle ledger sufficient to estimate empirical Grand hazard from public network observations"
   ],
   "decision":"P0_PROGRESSIVE_THRESHOLD_CANDIDATE_NO_PLAY",
   "execution":{"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
-  "hardGuards":{"noHazardInvention":true,"noCrossOperatorCounterBindingWithoutProof":true,"noRealMoneyProbe":true,"noAutomaticBetting":true}
+  "hardGuards":{"noHazardInvention":true,"noContributionEqualsHazardAssumption":true,"noStaleCounterExecution":true,"noRealMoneyProbe":true,"noAutomaticBetting":true}
 }
