@@ -1,0 +1,14 @@
+{
+  "version":"quintuple-plus-digital-twin-evidence-2026-08-30-v1",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operator":"SELAE",
+  "game":"Quíntuple Plus",
+  "verifiedRules":{"simpleBetEUR":1,"prizePoolSharePct":55,"firstCategory":"5 winners + second in race 5","special":"exactly one first-category winning receipt"},
+  "recentOfficialExamples":[{"date":"2026-07-30","acceptedBets":23783,"advertisedPotEUR":56000,"specialWinners":1,"specialPrizeEUR":43841.30,"firstCategoryWinners":1,"firstCategoryPrizePerWinnerEUR":5707.92},{"date":"2026-08-12","acceptedBets":12393,"advertisedPotEUR":12000,"specialWinners":1,"specialPrizeEUR":5605.50,"firstCategoryWinners":1,"firstCategoryPrizePerWinnerEUR":3841.83},{"date":"2026-08-21","acceptedBets":10060,"advertisedPotEUR":6000,"specialWinners":0,"firstCategoryWinners":0},{"date":"2026-08-23","acceptedBets":15316,"advertisedPotEUR":11000,"specialWinners":0,"firstCategoryWinners":5,"firstCategoryPrizePerWinnerEUR":1358.89}],
+  "structuralFinding":"Expected value must model both outcome probability and crowd duplication. For an exact first-category combination with public selection probability q among N-1 other tickets, conditional expected share factor is E[1/(1+K)] where K~Binomial(N-1,q), equal to (1-(1-q)^N)/(Nq). Special-prize probability conditional on our hit is (1-q)^(N-1).",
+  "decision":"NO_PLAY",
+  "blockingUnknowns":["pre-close operator-bound probabilities for each horse/order outcome","defendible upper bound on public combination probability for the exact ticket","current exact category pools rather than advertised headline pot alone","fresh accepted-ticket count near close","withdrawals/substitution effects for the specific jornada"],
+  "guards":{"noFavouriteEqualsProbability":true,"noMarketOddsEqualsPublicTicketShare":true,"noAdvertisedPotEqualsFirstCategoryPoolAssumption":true,"noHistoricalWinnerCountsAsFutureCrowdModel":true,"noSyntheticExecution":true,"noAutomaticBetting":true}
+}
