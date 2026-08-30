@@ -1,0 +1,80 @@
+{
+  "version": "jokerbet-777-diamond-strike-timed-jackpot-candidate-2026-08-30-v1",
+  "generatedAt": "2026-08-30T12:00:00+02:00",
+  "mode": "RESEARCH_ONLY",
+  "realMoneyAllowed": false,
+  "operator": "JOKERBET España",
+  "provider": "Red Tiger",
+  "game": "777 Diamond Strike",
+  "currentPresence": true,
+  "operatorPage": {
+    "minStakeEUR": 0.10,
+    "maxStakeEUR": 10.00,
+    "publishedRtpPct": 94.74,
+    "publishedMaxPrizeEUR": 41500
+  },
+  "contractRulesVerified": {
+    "jackpotContributionPct": 2.0,
+    "jackpotTriggerRandom": true,
+    "chanceIncreasesWithStake": true,
+    "relatedJackpotGamesShareEligibility": true,
+    "timedJackpotGuaranteedBeforeDeadline": true,
+    "timedChanceIncreasesAsDeadlineApproaches": true,
+    "timedChanceReaches100PctAtLastGuaranteedPaymentTime": true,
+    "maxTimedEligibleAmountPerBetEUR": 1.71,
+    "amountAboveTimedEligibilityGoesToProgressive": true,
+    "tiers": {
+      "daily": {"type": "time", "seedEUR": 8556.52},
+      "progressive": {"type": "progressive", "seedEUR": 4278.26},
+      "tenMinuteDrop": {"type": "time", "seedEUR": 85.56}
+    },
+    "rtpContractText": "RTP includes base-game RTP and jackpot contribution; exact numeric RTP is placeholder in PDF, therefore operator page 94.74% remains the current JOKERBET-bound published figure."
+  },
+  "independentProviderEvidence": {
+    "redTigerCurrentGamePageNonJackpotReferenceRtpPct": 95.73,
+    "redTigerJackpotArchitecture": "Official Red Tiger factsheets for jackpot-capable titles state that with-jackpot base RTP is paired with a jackpot contribution and that the jackpot contribution itself has 100% RTP. This architecture is supporting evidence only; do not transfer another title's exact base RTP to this JOKERBET configuration."
+  },
+  "foreignConfigurationEvidenceNotExecutionBinding": {
+    "source": "Vegas.hu Red Tiger jackpot rules",
+    "facts": [
+      "Red Tiger timed tiers can use a visible countdown.",
+      "Daily tier becomes hot during a bounded pre-deadline window in that operator configuration.",
+      "10 Minute Drop is guaranteed every 10 minutes.",
+      "Contribution allocation can be dynamic and depends on current jackpot states."
+    ],
+    "guard": "Do not transfer exact contribution percentages, stake cap, seed values, hot-window clock time, or allocation formula from Hungary to JOKERBET Spain."
+  },
+  "mathematicalOpportunity": {
+    "type": "STATE_AND_TIME_CONDITIONAL_JACKPOT_EDGE",
+    "whyDifferentFromProgression": "The rules explicitly change jackpot trigger probability as a visible external state (time-to-deadline) changes. A late-cycle spin can therefore have a different expected jackpot return from an early-cycle spin.",
+    "necessaryExecutionInputs": [
+      "JOKERBET in-game current 10 Minute Drop value",
+      "JOKERBET in-game current time remaining / guaranteed deadline",
+      "JOKERBET in-game current Daily value and deadline",
+      "Exact or defensibly bounded mapping from stake and remaining time to probability of this player's spin winning each timed tier",
+      "Network competition / eligible spin intensity near deadline"
+    ],
+    "stakeGuard": "Do not assume minimum stake is optimal and do not assume probability is linear in stake. Only EUR 1.71 per bet is Timed-eligible; amounts above that are redirected to Progressive."
+  },
+  "criticalUnknowns": [
+    "Exact JOKERBET timed jackpot live values and countdown without authenticated game client",
+    "Exact per-spin hazard function versus remaining time",
+    "Exact stake-to-hazard scaling up to EUR 1.71",
+    "How the guaranteed 100% terminal state is allocated under concurrent network play",
+    "Current network eligible stake/spin intensity near the 10-minute and Daily deadlines"
+  ],
+  "decision": "P0_TIMED_JACKPOT_CANDIDATE_NO_PLAY",
+  "execution": {
+    "decision": "NO_PLAY",
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "no100PctMisread": true,
+    "noForeignConfigTransfer": true,
+    "noStakeLinearityAssumption": true,
+    "noRealMoneyProbe": true,
+    "noAutomaticBetting": true
+  }
+}
