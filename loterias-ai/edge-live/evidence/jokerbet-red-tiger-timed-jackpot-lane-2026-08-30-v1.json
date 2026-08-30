@@ -1,0 +1,131 @@
+{
+  "version":"jokerbet-red-tiger-timed-jackpot-lane-2026-08-30-v1",
+  "generatedAt":"2026-08-30T12:24:00+02:00",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operator":"JOKERBET España",
+  "provider":"Red Tiger",
+  "scope":"NATIVE_GAME_JACKPOTS_ONLY_NON_PROMO",
+  "structuralFinding":{
+    "type":"TIME_AND_STATE_CONDITIONAL_JACKPOT",
+    "verified":true,
+    "operatorBound":true,
+    "facts":[
+      "The native Timed Jackpot guarantees payment before a displayed date/time.",
+      "Its win probability rises as the guaranteed deadline approaches and reaches 100% at the last guaranteed-payment time.",
+      "A jackpot can be triggered and won in a single spin by a single player.",
+      "The chance of a jackpot increases in correlation with stake size.",
+      "Only a capped part of each stake is eligible for the timed tiers; stake above the cap is routed to the progressive tier.",
+      "Connectivity can delay displayed jackpot values, so displayed state cannot be assumed identical to effective state."
+    ]
+  },
+  "candidates":[
+    {
+      "rank":1,
+      "game":"Case Closed",
+      "currentJokerbetPage":true,
+      "pageMinStakeEUR":0.10,
+      "pageMaxStakeEUR":15,
+      "pagePublishedRtpPct":95.18,
+      "contractPdf":"https://www.jokerbet.es/img/logos/pdf/case-closed.pdf",
+      "contractJackpotContributionPct":2.0,
+      "contractAveragePayoutPer1EUR":0.9310,
+      "contractSeparatedBaseReturnPct":93.10,
+      "timedEligibleCapPerBetEUR":2.0,
+      "tiers":{"dailySeedEUR":10000,"progressiveSeedEUR":5000,"tenMinuteDropSeedEUR":100},
+      "persistentGameStateByStake":true,
+      "persistentGameStateForever":true,
+      "rtpReconciliation":{
+        "contractBasePlusContributionPct":95.10,
+        "pagePct":95.18,
+        "differencePctPoints":0.08,
+        "decision":"USE_93_10_CONTRACT_BASE_FOR_CONSERVATIVE_JACKPOT_CONDITIONAL_EV; DO_NOT EXPLAIN OR ADD THE 0.08 WITHOUT BINDING"
+      },
+      "breakEvenExamplesUsingOnlyOneTierAndIgnoringOtherJackpotValue":{
+        "atStakeEUR2":{"baseLossEUR":0.138,"dailyAtSeedRequiredHitProbability":0.0000138,"tenMinuteAtSeedRequiredHitProbability":0.00138},
+        "warning":"Break-even probabilities are requirements, not estimates. They do not imply the actual hazard."
+      }
+    },
+    {
+      "rank":2,
+      "game":"Play with the Devil",
+      "currentJokerbetPage":true,
+      "pageMinStakeEUR":0.10,
+      "pageMaxStakeEUR":5,
+      "pagePublishedRtpPct":94.71,
+      "contractPdf":"https://www.jokerbet.es/img/logos/pdf/play-with-the-devil.pdf",
+      "contractJackpotContributionPct":2.0,
+      "contractAveragePayoutPer1EUR":0.9271,
+      "contractSeparatedBaseReturnPct":92.71,
+      "timedEligibleCapPerBetEUR":2.0,
+      "tiers":{"dailySeedEUR":10000,"progressiveSeedEUR":5000,"tenMinuteDropSeedEUR":100},
+      "rtpReconciliation":{
+        "contractBasePlusContributionPct":94.71,
+        "pagePct":94.71,
+        "exactMatch":true
+      },
+      "breakEvenExamplesUsingOnlyOneTierAndIgnoringOtherJackpotValue":{
+        "atStakeEUR2":{"baseLossEUR":0.1458,"dailyAtSeedRequiredHitProbability":0.00001458,"tenMinuteAtSeedRequiredHitProbability":0.001458},
+        "warning":"Break-even probabilities are requirements, not estimates."
+      }
+    },
+    {
+      "rank":3,
+      "game":"777 Diamond Strike",
+      "currentJokerbetPage":true,
+      "pageMinStakeEUR":0.10,
+      "pageMaxStakeEUR":10,
+      "pagePublishedRtpPct":94.74,
+      "contractPdf":"https://www.jokerbet.es/img/logos/pdf/777-diamond-strike.pdf",
+      "contractJackpotContributionPct":2.0,
+      "contractSeparatedBaseReturnPct":null,
+      "timedEligibleCapPerBetEUR":1.71,
+      "tiers":{"dailySeedEUR":8556.52,"progressiveSeedEUR":4278.26,"tenMinuteDropSeedEUR":85.56},
+      "reasonBelowTopTwo":"The contract binds the timed mechanic but does not expose an exact numeric separated base return; do not infer it by simply subtracting 2% from the page RTP without stronger binding."
+    }
+  ],
+  "explicitExclusions":[
+    {
+      "game":"Play with the Devil Megaways",
+      "reason":"Current JOKERBET page can show the generic 'Temperatura Jackpot' field, but its exact contract PDF does not contain the native Red Tiger timed-jackpot section. Do not use page temperature as proof of a native timed jackpot."
+    },
+    {
+      "class":"JOKERBET operator promotional jackpot-temperature overlays",
+      "reason":"Project is NON_PROMO_ONLY. Promotional/operator overlays are outside this lane."
+    }
+  ],
+  "executionMath":{
+    "formula":"conditionalTotalEV_EUR = stakeEUR * baseReturn + sum(pTierOnOurAcceptedSpin * tierPayoutEUR)",
+    "baseLossFormula":"stakeEUR * (1 - baseReturn)",
+    "requiredIncrementalJackpotEV":"must exceed base loss for total EV > stake",
+    "important":"Do not add the 2% contribution to the separated base and then add jackpot winnings again. The actual conditional progressive/timed expected value replaces the generic contribution return in state-conditional analysis."
+  },
+  "whyNotGreenYet":[
+    "No fresh JOKERBET in-game Daily/10 Minute Drop values and countdown are bound at execution time.",
+    "Exact stake-to-hazard function is not published/bound; 'increases in correlation' does not prove linearity.",
+    "Exact time-to-deadline hazard curve is not published/bound.",
+    "At the terminal 100% state, network concurrency and accepted-spin ordering determine which player receives the drop; 100% does not mean a player can wait and claim it risk-free.",
+    "Displayed values may lag effective values because the contract explicitly warns of connectivity delays.",
+    "Cross-operator network identity and current eligible-spin intensity are not sufficiently bound for JOKERBET execution."
+  ],
+  "nextAutonomousTargets":[
+    "Find a public/current Red Tiger jackpot feed, API, websocket, lobby payload or tracker exposing current JOKERBET-compatible tier value and deadline.",
+    "Find provider/regulatory technical documentation for the exact timed hazard or dynamic-allocation algorithm.",
+    "Find more JOKERBET exact contracts with 2% contribution, EUR2 timed cap, 10k/5k/100 seeds and a higher separated base return than Case Closed.",
+    "Passively collect repeated 10-minute reset/drop timestamps if a public feed is found, without real-money play."
+  ],
+  "decision":"P0_NATIVE_TIMED_JACKPOT_NO_PLAY",
+  "execution":{"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{
+    "noPromoOverlay":true,
+    "noPageTemperatureAsNativeProof":true,
+    "noNetworkEquivalenceAssumption":true,
+    "noForeignConfigTransfer":true,
+    "noLinearStakeHazardAssumption":true,
+    "noTerminal100PctMisread":true,
+    "noDisplayedStateFreshnessAssumption":true,
+    "noRealMoneyProbe":true,
+    "noAutomaticBetting":true
+  }
+}
