@@ -1,0 +1,86 @@
+{
+  "version":"jokerbet-aotg-norse-king-of-asgard-extra-mhb-2026-08-30-v1",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operator":"JOKERBET España",
+  "provider":"Playtech",
+  "game":"Age of the Gods Norse: King of Asgard",
+  "scope":"ONLINE_ONLY_NON_PROMO_NATIVE_JACKPOT",
+  "currentOperatorPage":{
+    "url":"https://www.jokerbet.es/tragaperras-slots/age-of-the-gods-norse-king-of-asgard.html",
+    "minStakeEUR":0.10,
+    "maxStakeEUR":60,
+    "publishedRtpPct":94.56,
+    "currentListingObserved":true
+  },
+  "exactOperatorContract":{
+    "url":"https://www.jokerbet.es/img/logos/pdf/age-of-the-gods-norse-king-of-asgard.pdf",
+    "contractUpdated":"2020-01-23",
+    "nativeTiersListed":["Ultimate Power Jackpot","Extra Jackpot"],
+    "globalAcrossParticipatingOnlineCasinos":true,
+    "extraTickerDisplaysCurrentExtraValue":true,
+    "extraCanActivateBeforeTickerReachesDisplayedAmount":true,
+    "anyStakeCanActivateJackpot":true,
+    "higherStakeIncreasesJackpotChance":true,
+    "jackpotContributionPct":0.55,
+    "baseRtpExcludingJackpotContributionPct":94.56,
+    "rtpIncludingJackpotContributionPct":95.11
+  },
+  "structuralEdgeClass":{
+    "type":"MUST_HIT_BY_AMOUNT_PROGRESSIVE",
+    "tier":"Extra Jackpot",
+    "operatorBoundRule":true,
+    "whyRelevant":"A mandatory amount boundary creates state-dependent jackpot value. Conditional EV may increase as the live Extra amount approaches its served guaranteed hit amount, unlike history-only betting systems.",
+    "baseLossPer1EURBeforeStateConditionalJackpotEUR":0.0544
+  },
+  "tickerDiscovery":{
+    "familyGroupCandidate":"aognjp",
+    "extraTierCodeCandidate":"aognjp-3",
+    "candidateSourceClass":"PUBLICLY_EXPOSED_REUPLOADED_PLAYTECH_REFERENCE_DOCUMENT; DISCOVERY_ONLY",
+    "webtickerProtocolCandidate":"new_jackpotxml.php",
+    "protocolFieldsUsefulForBinding":["casino","game","gamegroup","currency","local","amount","guranteedHitAmount","guaranteedHitTime","winc","timestamp","instancecode"],
+    "important":"Playtech ticker specifications expose guaranteed-hit amount/time semantics, but the exact JOKERBET ticker host, IMS casino identifier and served JOKERBET aognjp row are not yet bound. The numeric suffix must not populate execution by itself."
+  },
+  "crossOperatorHistory":{
+    "existingSpanishResearchFile":"loterias-ai/edge-live/evidence/spain-aotg-norse-king-of-asgard-mhb-timed-2026-08-29-v1.json",
+    "use":"corroboration and discovery only",
+    "noRuntimeTransferToJokerbet":true
+  },
+  "preferredVehicleReason":"Among currently checked JOKERBET Age of the Gods Norse titles with an Extra jackpot, King of Asgard has the highest operator-bound separated base RTP found so far at 94.56%, reducing the state-conditional jackpot EV needed to overcome base loss.",
+  "criticalUnknowns":[
+    "Fresh JOKERBET-served Extra Jackpot current amount",
+    "Fresh JOKERBET-served guaranteed hit amount / displayed MHB boundary",
+    "Exact JOKERBET IMS casino identifier and ticker endpoint/session binding",
+    "Exact stake-to-jackpot-hazard function",
+    "Current network eligible wager intensity and accepted-spin race/latency near the boundary",
+    "Prospective evidence that the boundary and amount survive/update as expected in this exact JOKERBET runtime"
+  ],
+  "executionGate":{
+    "decision":"NO_PLAY_LIVE_EXTRA_STATE_UNBOUND",
+    "realMoneyAllowed":false,
+    "realStakeEUR":0,
+    "maxSpins":0,
+    "maxTotalStakeEUR":0,
+    "greenRequires":[
+      "exactJokerbetRuntimeBound",
+      "freshExtraAmountBound",
+      "freshGuaranteedHitAmountBound",
+      "eligibleStakeBound",
+      "stakeHazardOrConservativeNearBoundaryWinShareBound",
+      "networkCompetitionAndLatencyBound",
+      "conservativeTotalEVGreaterThanStake"
+    ]
+  },
+  "hardGuards":{
+    "noForeignCapTransfer":true,
+    "noNumericTickerSuffixExecutionAssumption":true,
+    "noContributionEqualsHazardAssumption":true,
+    "noLinearStakeHazardAssumption":true,
+    "noCrossOperatorRuntimeEquivalence":true,
+    "noDisplayedPageMarketingAsRuntimeState":true,
+    "noRealMoneyProbe":true,
+    "noAutomaticBetting":true,
+    "realMoneyAllowed":false
+  }
+}
