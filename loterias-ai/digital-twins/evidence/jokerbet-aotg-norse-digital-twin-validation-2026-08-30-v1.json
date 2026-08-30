@@ -1,0 +1,35 @@
+{
+  "version": "jokerbet-aotg-norse-digital-twin-validation-2026-08-30-v1",
+  "mode": "RESEARCH_ONLY",
+  "realMoneyAllowed": false,
+  "realStakeEUR": 0,
+  "operator": "JOKERBET España",
+  "game": "Age of the Gods Norse: King of Asgard",
+  "contractBound": {
+    "baseRtpPctExcludingJackpotContribution": 94.56,
+    "jackpotContributionPct": 0.55,
+    "minStakeEUR": 0.1,
+    "maxStakeEUR": 60,
+    "extraAmountBoundary": true,
+    "anyStakeCanActivate": true,
+    "higherStakeIncreasesChance": true
+  },
+  "publicRuntimeDiscovery": {
+    "status": "NO_JOKERBET_RUNTIME_TICKER_BOUND_FROM_INDEXED_PUBLIC_WEB",
+    "exactGamePageStillListed": true,
+    "operatorRulesPdfStillAvailable": true,
+    "aognjpCodesFoundOnlyInCrossProviderReference": true,
+    "numericSuffixExecutionUseAllowed": false
+  },
+  "syntheticMonteCarloValidation": {
+    "purpose": "validate the digital-twin estimator and lower-bound gate only; these probabilities and jackpot values are NOT real JOKERBET runtime inputs",
+    "status": "SYNTHETIC_NOT_EXECUTION_EVIDENCE",
+    "totalTrials": 20000000,
+    "cases": [
+      {"stakeEUR":1,"jackpotAwardEUR":1000,"netWinProbabilityInput":0.0000544,"trials":10000000,"wins":526,"observedProbability":0.0000526,"centralReturnRatio":0.9982,"lower99ReturnRatio":0.9926149767789308,"upper99ReturnRatio":1.0044484426418872,"expectedInterpretation":"break-even input must not produce a robust green"},
+      {"stakeEUR":1,"jackpotAwardEUR":1000,"netWinProbabilityInput":0.00008,"trials":10000000,"wins":815,"observedProbability":0.0000815,"centralReturnRatio":1.0271,"lower99ReturnRatio":1.0200709852045133,"upper99ReturnRatio":1.0347923958666276,"expectedInterpretation":"engine can distinguish a sufficiently positive synthetic condition, but this cannot authorize real play"}
+    ]
+  },
+  "currentDecision": "NO_PLAY",
+  "currentBlockingUnknowns": ["fresh JOKERBET Extra amount","fresh JOKERBET guaranteed hit amount","exact JOKERBET served ticker/IMS instance","stake-to-trigger probability","network competition / accepted-spin race share","defendible lower bound on net jackpot win probability"]
+}

@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {CONTRACT,STATUS,requiredNetJackpotWinProbability,expectedReturnRatio,sensitivitySurface,monteCarloConditionalEv,executionGate} from '../games/jokerbet-aotg-norse.mjs';
+assert.equal(CONTRACT.baseRtpPctExcludingJackpotContribution.value,94.56);
+assert.equal(CONTRACT.liveExtraAmountEUR.status,STATUS.UNKNOWN);
+const req=requiredNetJackpotWinProbability({stakeEUR:1,jackpotAwardEUR:1000});
+assert.ok(Math.abs(req-0.0000544)<1e-12);
+assert.ok(Math.abs(expectedReturnRatio({stakeEUR:1,jackpotAwardEUR:1000,ownTriggerProbabilityPerSpin:req})-1)<1e-12);
+const surface=sensitivitySurface({stakesEUR:[0.1,1],jackpotAwardsEUR:[500,1000],acceptedRaceShares:[1,0.5]});
+assert.equal(surface.length,8);assert.ok(surface.every(r=>r.requiredOwnTriggerP>=r.requiredNetP));
+const mc=monteCarloConditionalEv({stakeEUR:1,jackpotAwardEUR:1000,ownTriggerProbabilityPerSpin:0.001,trials:1_000_000,seed:7});
+assert.equal(mc.trials,1_000_000);assert.equal(mc.scope,'PARAMETRIC_CONDITIONAL_ONLY');assert.equal(mc.riskOfLoss,'UNKNOWN_BASE_GAME_PAYOUT_DISTRIBUTION_NOT_BOUND');
+const gate=executionGate({});assert.equal(gate.decision,'NO_PLAY');assert.equal(gate.realMoneyAllowed,false);
+console.log('jokerbet-aotg-norse-twin.test.mjs: PASS');

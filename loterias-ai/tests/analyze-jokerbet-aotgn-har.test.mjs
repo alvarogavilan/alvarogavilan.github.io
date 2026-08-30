@@ -1,0 +1,6 @@
+import assert from 'node:assert/strict';
+import {analyzeJokerbetAotgnHarText as analyze} from '../scripts/analyze-jokerbet-aotgn-har.mjs';
+const privateToken='SECRET_SHOULD_NOT_LEAK';
+const har=JSON.stringify({log:{entries:[{request:{url:`https://www.jokerbet.es/tragaperras-slots/age-of-the-gods-norse-king-of-asgard.html?token=${privateToken}`},response:{content:{text:''}}},{request:{url:`https://ticker.example/new_jackpotxml.php?casino=jb_es&game=aognjp-3&currency=eur&ssoid=${privateToken}`},response:{content:{text:'<request><gamedata gamegroup="aognjp" game="aognjp-3" local="0"><amount currency="eur" guranteedHitAmount="2000.00" instancecode="net-x">1997.50</amount></gamedata></request>'}}}]}});
+const r=analyze(har);assert.equal(r.ok,true);assert.equal(r.exactTickerSessionCandidate,true);assert.equal(r.extraSemanticCandidate,true);assert.equal(r.practiceInputCandidate.amountEUR,1997.5);assert.equal(r.practiceInputCandidate.guaranteedHitAmountEUR,2000);assert.equal(r.practiceInputCandidate.servedGameCode,'aognjp-3');assert.equal(r.execution.realMoneyAllowed,false);assert.equal(JSON.stringify(r).includes(privateToken),false);
+console.log('analyze-jokerbet-aotgn-har.test.mjs: PASS');
