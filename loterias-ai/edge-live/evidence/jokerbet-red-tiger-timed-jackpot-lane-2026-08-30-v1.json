@@ -1,6 +1,6 @@
 {
-  "version":"jokerbet-red-tiger-timed-jackpot-lane-2026-08-30-v1",
-  "generatedAt":"2026-08-30T12:24:00+02:00",
+  "version":"jokerbet-red-tiger-timed-jackpot-lane-2026-08-30-v2",
+  "generatedAt":"2026-08-30T12:45:00+02:00",
   "mode":"RESEARCH_ONLY",
   "realMoneyAllowed":false,
   "realStakeEUR":0,
@@ -40,7 +40,7 @@
         "contractBasePlusContributionPct":95.10,
         "pagePct":95.18,
         "differencePctPoints":0.08,
-        "decision":"USE_93_10_CONTRACT_BASE_FOR_CONSERVATIVE_JACKPOT_CONDITIONAL_EV; DO_NOT EXPLAIN OR ADD THE 0.08 WITHOUT BINDING"
+        "decision":"USE_93_10_CONTRACT_BASE_FOR_CONSERVATIVE_JACKPOT_CONDITIONAL_EV; DO NOT EXPLAIN OR ADD THE 0.08 WITHOUT BINDING"
       },
       "breakEvenExamplesUsingOnlyOneTierAndIgnoringOtherJackpotValue":{
         "atStakeEUR2":{"baseLossEUR":0.138,"dailyAtSeedRequiredHitProbability":0.0000138,"tenMinuteAtSeedRequiredHitProbability":0.00138},
@@ -60,11 +60,7 @@
       "contractSeparatedBaseReturnPct":92.71,
       "timedEligibleCapPerBetEUR":2.0,
       "tiers":{"dailySeedEUR":10000,"progressiveSeedEUR":5000,"tenMinuteDropSeedEUR":100},
-      "rtpReconciliation":{
-        "contractBasePlusContributionPct":94.71,
-        "pagePct":94.71,
-        "exactMatch":true
-      },
+      "rtpReconciliation":{"contractBasePlusContributionPct":94.71,"pagePct":94.71,"exactMatch":true},
       "breakEvenExamplesUsingOnlyOneTierAndIgnoringOtherJackpotValue":{
         "atStakeEUR2":{"baseLossEUR":0.1458,"dailyAtSeedRequiredHitProbability":0.00001458,"tenMinuteAtSeedRequiredHitProbability":0.001458},
         "warning":"Break-even probabilities are requirements, not estimates."
@@ -86,6 +82,20 @@
     }
   ],
   "explicitExclusions":[
+    {
+      "game":"Treasure Mine",
+      "pagePublishedRtpPct":95.20,
+      "contractWithoutJackpotRtpPct":[91.05,93.12,95.20,96.16],
+      "contractWithJackpotRtpPct":[91.04,92.04,93.04,94.04,95.04,96.04,92.09,93.09,94.09,95.09,96.09,94.12,95.12,96.12],
+      "reason":"Current JOKERBET page RTP 95.20 exactly matches the title's own WITHOUT JACKPOT configuration and does not match any listed WITH JACKPOT RTP. Generic jackpot-temperature UI is not execution binding."
+    },
+    {
+      "game":"Rainbow Jackpots",
+      "pagePublishedRtpPct":95.17,
+      "contractWithoutJackpotRtpPct":[91.11,93.10,95.17,96.14],
+      "contractWithJackpotRtpPct":[91.10,92.10,93.10,94.10,95.10,96.10,92.13,93.13,94.13,95.13,96.13,94.14,95.14,96.14],
+      "reason":"Current JOKERBET page RTP 95.17 exactly matches the title's own WITHOUT JACKPOT configuration and does not match any listed WITH JACKPOT RTP. Do not infer a native timed jackpot from the game name or generic jackpot-temperature UI."
+    },
     {
       "game":"Play with the Devil Megaways",
       "reason":"Current JOKERBET page can show the generic 'Temperatura Jackpot' field, but its exact contract PDF does not contain the native Red Tiger timed-jackpot section. Do not use page temperature as proof of a native timed jackpot."
@@ -113,6 +123,7 @@
     "Find a public/current Red Tiger jackpot feed, API, websocket, lobby payload or tracker exposing current JOKERBET-compatible tier value and deadline.",
     "Find provider/regulatory technical documentation for the exact timed hazard or dynamic-allocation algorithm.",
     "Find more JOKERBET exact contracts with 2% contribution, EUR2 timed cap, 10k/5k/100 seeds and a higher separated base return than Case Closed.",
+    "Reject any title whose current JOKERBET page RTP maps exactly to its contract's WITHOUT JACKPOT configuration even if a generic jackpot-temperature field is visible.",
     "Passively collect repeated 10-minute reset/drop timestamps if a public feed is found, without real-money play."
   ],
   "decision":"P0_NATIVE_TIMED_JACKPOT_NO_PLAY",
@@ -120,6 +131,7 @@
   "hardGuards":{
     "noPromoOverlay":true,
     "noPageTemperatureAsNativeProof":true,
+    "rejectExactWithoutJackpotRtpMatch":true,
     "noNetworkEquivalenceAssumption":true,
     "noForeignConfigTransfer":true,
     "noLinearStakeHazardAssumption":true,
