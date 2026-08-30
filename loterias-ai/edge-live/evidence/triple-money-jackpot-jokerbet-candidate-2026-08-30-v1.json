@@ -1,47 +1,121 @@
 {
-  "version":"triple-money-jackpot-jokerbet-candidate-2026-08-30-v2",
-  "generatedAt":"2026-08-30T10:35:00+02:00",
+  "version":"triple-money-jackpot-jokerbet-candidate-2026-08-30-v3",
+  "generatedAt":"2026-08-30T11:55:00+02:00",
   "mode":"RESEARCH_ONLY",
   "realMoneyAllowed":false,
   "operator":"JOKERBET España",
   "network":"Playtech Triple Money Grand",
   "currentPresence":true,
   "candidateGames":[
-    {"game":"Triple Money Jackpot","minStakeEUR":0.05,"maxStakeEUR":50,"pagePublishedRtpPct":93.44,"contractPdfRtpNotYetPinned":true},
-    {"game":"Triple Money Jackpot Bells","minStakeEUR":0.05,"maxStakeEUR":12,"pagePublishedRtpPct":94.42,"contractPdfRtpPctUpTo1000EUR":95.42,"preferredVehicle":true},
-    {"game":"Triple Money Jackpot Gold","minStakeEUR":0.05,"maxStakeEUR":35,"pagePublishedRtpPct":94.49,"contractPdfRtpNotYetPinned":true},
-    {"game":"Triple Money Jackpot Spicy!","minStakeEUR":0.05,"maxStakeEUR":35,"pagePublishedRtpPct":94.49,"seedFloorEUR":20000,"contractPdfRtpNotYetPinned":true}
+    {
+      "game":"Triple Money Jackpot",
+      "minStakeEUR":0.05,
+      "maxStakeEUR":50,
+      "pagePublishedRtpPct":93.44,
+      "contractRtpInclJackpotContributionPct":93.44,
+      "jackpotContributionPct":1.0,
+      "separatedNonProgressiveCashRtpPctConservative":92.44,
+      "contractPdf":"https://www.jokerbet.es/img/logos/pdf/triple-money-jackpot.pdf"
+    },
+    {
+      "game":"Triple Money Jackpot Bells",
+      "minStakeEUR":0.05,
+      "maxStakeEUR":12,
+      "pagePublishedRtpPct":94.42,
+      "contractRtpInclJackpotContributionPct":95.42,
+      "jackpotContributionPct":1.0,
+      "separatedNonProgressiveCashRtpPct":94.42,
+      "contractPdf":"https://www.jokerbet.es/img/logos/pdf/triple-money-jackpot-bells.pdf"
+    },
+    {
+      "game":"Triple Money Jackpot Gold",
+      "minStakeEUR":0.05,
+      "maxStakeEUR":35,
+      "pagePublishedRtpPct":94.49,
+      "contractRtpInclJackpotContributionPct":95.49,
+      "jackpotContributionPct":1.0,
+      "separatedNonProgressiveCashRtpPct":94.49,
+      "contractPdf":"https://www.jokerbet.es/img/logos/pdf/triple-money-jackpot-gold.pdf",
+      "preferredVehicleClass":true
+    },
+    {
+      "game":"Triple Money Jackpot Spicy!",
+      "minStakeEUR":0.05,
+      "maxStakeEUR":35,
+      "pagePublishedRtpPct":94.49,
+      "contractRtpInclJackpotContributionPct":95.49,
+      "jackpotContributionPct":1.0,
+      "separatedNonProgressiveCashRtpPct":94.49,
+      "seedFloorEUR":20000,
+      "contractPdf":"https://www.jokerbet.es/img/logos/pdf/triple-money-jackpot-spicy.pdf",
+      "preferredVehicleClass":true
+    }
   ],
   "verifiedMechanics":{
     "grandProgressiveSharedAcrossAllParticipatingGamesAndOnlineCasinos":true,
+    "spainCrossOperatorNetworkCorroboratedByJuegging":true,
     "contributionRatePct":1.0,
     "grandCanTriggerOnAnyWheelOfLuck":true,
     "higherStakeIncreasesJackpotChanceUntil1000EURThreshold":true,
-    "bellsContractRtpIncludesContributionPct":1.0,
-    "bellsProgressivePrizeExcludedFromRtpCalculation":true,
-    "bellsContractRtpPctUpTo1000EUR":95.42
+    "progressivePrizesExcludedFromContractRtpCalculation":true,
+    "contractRtpIncludesJackpotContribution":true
+  },
+  "accountingCorrection":{
+    "status":"CORRECTED",
+    "reason":"The contract RTP includes the 1.00% jackpot contribution while actual progressive prizes are excluded from the RTP calculation. Adding q*Grand on top of the contract RTP would double-count the jackpot allocation. For separated conditional-EV accounting, subtract the contribution first, then add the actual progressive expected value.",
+    "formula":"totalConditionalRtp = separatedNonProgressiveCashRtp + q_per_EUR * GrandEUR",
+    "noJackpotContributionDoubleCount":true,
+    "previousV2BellsBaseLossPct":4.58,
+    "correctedBellsSeparatedBaseLossPct":5.58,
+    "correctedGoldSpicySeparatedBaseLossPct":5.51
   },
   "synchronizedPublicCounterEvidence":[
     {"source":"Paf Spain","crawl":"today","grandEUR":54559,"games":["Triple Money Jackpot","Triple Money Jackpot Gold","Triple Money Jackpot Spicy","Triple Money Jackpot Bells"]},
     {"source":"Paf Spain","crawl":"yesterday","grandEUR":53235,"games":["Triple Money Jackpot","Triple Money Jackpot Gold","Triple Money Jackpot Spicy","Triple Money Jackpot Bells"]}
   ],
+  "spainNetworkHitEvidence":[
+    {
+      "source":"Juegging España",
+      "game":"Triple Money Jackpot Spicy!",
+      "reportedJackpotEUR":161121.52,
+      "sourceStatesPlaytechProgressiveNetworkIsCrossOperatorInSpain":true,
+      "use":"HISTORICAL_NETWORK_OBSERVATION_ONLY",
+      "warning":"One reported hit is insufficient to estimate the Grand hazard or to bind the current JOKERBET live counter. Do not infer a playable threshold from this hit alone."
+    }
+  ],
   "derivedPassiveObservations":{
     "counterIncreaseEURIfNoInterveningReset":1324,
     "impliedNetworkWagerVolumeEURIfExactly1PctContributionAndNoReset":132400,
-    "bellsBaseLossRatePct":4.58,
     "atGrandEUR":54559,
-    "requiredGrandHazardPerEURForBreakEven":8.394582012133653e-7,
-    "equivalentOneGrandPerEURWagered":1191244.541484716,
-    "formula":"required q_per_EUR > (1 - baseRTP) / currentGrand",
-    "warning":"This is a benchmark only. Exact jackpot hazard/stake scaling remains unpublished and must not be inferred from contribution rate alone."
+    "goldSpicyRequiredGrandHazardPerEURForBreakEven":1.0099158708920625e-6,
+    "goldSpicyEquivalentOneGrandPerEURWagered":990181.488203266,
+    "bellsRequiredGrandHazardPerEURForBreakEven":1.022746018072178e-6,
+    "bellsEquivalentOneGrandPerEURWagered":977759.8566308251,
+    "formula":"required q_per_EUR > (1 - separatedNonProgressiveCashRtp) / currentGrand",
+    "warning":"These are break-even requirements only. Exact jackpot hazard/stake scaling remains unpublished and must not be inferred from contribution rate, historical RTP, or a single jackpot hit."
+  },
+  "vehicleRanking":{
+    "bestSeparatedCashRtpPct":94.49,
+    "coLeaders":["Triple Money Jackpot Gold","Triple Money Jackpot Spicy!"],
+    "bellsDemoted":true,
+    "condition":"Ranking assumes no proven vehicle-specific Grand hazard advantage. Do not assume identical per-euro hazard until bound."
   },
   "criticalUnknowns":[
     "Exact per-stake Grand trigger probability / Wheel-of-Luck hazard",
     "Exact stake-to-jackpot-chance function below the 1000 EUR threshold",
+    "Whether Gold and Spicy have identical Grand hazard per euro at JOKERBET",
     "Fresh JOKERBET in-game counter binding at execution time",
-    "Prospective reset/cycle ledger sufficient to estimate empirical Grand hazard from public network observations"
+    "Prospective reset/cycle ledger sufficient to estimate empirical Grand hazard from Spain-network observations"
   ],
   "decision":"P0_PROGRESSIVE_THRESHOLD_CANDIDATE_NO_PLAY",
   "execution":{"decision":"NO_PLAY","realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
-  "hardGuards":{"noHazardInvention":true,"noContributionEqualsHazardAssumption":true,"noStaleCounterExecution":true,"noRealMoneyProbe":true,"noAutomaticBetting":true}
+  "hardGuards":{
+    "noHazardInvention":true,
+    "noContributionEqualsHazardAssumption":true,
+    "noJackpotContributionDoubleCount":true,
+    "noStaleCounterExecution":true,
+    "noSingleHitHazardInference":true,
+    "noRealMoneyProbe":true,
+    "noAutomaticBetting":true
+  }
 }
