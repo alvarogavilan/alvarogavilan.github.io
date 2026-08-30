@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import * as rt from '../games/jokerbet-red-tiger-timed.mjs';
+import * as tm from '../games/jokerbet-triple-money.mjs';
+assert.ok(Math.abs(rt.requiredNetCaptureProbability({stakeEUR:2,tierPayoutEUR:100})-0.00138)<1e-12);
+assert.equal(rt.timedEligibleStakeEUR(15),2);
+assert.equal(rt.executionGate({}).decision,'NO_PLAY');
+const rtmc=rt.monteCarloConditionalEv({stakeEUR:2,tierPayoutEUR:100,ownTierTriggerProbabilityPerSpin:0.0016,trials:1_000_000,seed:4});assert.equal(rtmc.trials,1_000_000);assert.equal(rtmc.terminal100PctGlobalHazardDoesNotEqualOurCaptureProbability,true);
+assert.ok(Math.abs(tm.breakEvenHazardPerEUR(55100)-0.000001)<1e-15);
+assert.equal(tm.robustThresholdFromHazardLower(null).decision,'NO_FINITE_ROBUST_THRESHOLD');
+assert.ok(Math.abs(tm.breakEvenGrandEUR(1e-6)-55100)<1e-9);
+const s=tm.thresholdSurface([0,1e-7,1e-6]);assert.equal(s[0].grandThresholdEUR,null);assert.ok(Math.abs(s[2].grandThresholdEUR-55100)<1e-9);
+assert.equal(tm.executionGate({}).decision,'NO_PLAY');
+console.log('red-triple.test.mjs: PASS');

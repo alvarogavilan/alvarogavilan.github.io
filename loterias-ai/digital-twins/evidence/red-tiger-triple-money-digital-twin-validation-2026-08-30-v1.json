@@ -1,0 +1,42 @@
+{
+  "version":"red-tiger-triple-money-digital-twin-validation-2026-08-30-v1",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "currentOperatorChecks":{
+    "caseClosed":{"operator":"JOKERBET España","observedToday":true,"minStakeEUR":0.10,"maxStakeEUR":15,"pageRtpPct":95.18,"rulesPdfObservedToday":true,"contractSeparatedBaseRtpPct":93.10,"jackpotContributionPct":2,"timedEligibleCapEUR":2,"dailySeedEUR":10000,"tenMinuteSeedEUR":100,"displayCanLagEffectiveState":true,"timedGlobalProbabilityReaches100PctAtGuaranteedDeadline":true},
+    "tripleMoneyGold":{"operator":"JOKERBET España","observedToday":true,"minStakeEUR":0.05,"maxStakeEUR":35,"pageRtpPct":94.49,"grandLinkedOnOperatorPage":true,"separatedCashRtpPct":94.49}
+  },
+  "redTigerStructuralResult":{
+    "stakeEUR":2,"tenMinuteSeedEUR":100,"baseLossEUR":0.138,"requiredNetCaptureProbability":0.00138,
+    "adversarialExamplesDiscoveryOnly":[
+      {"acceptedRaceShare":1,"competitorRatePerSecond":0,"latencySeconds":0,"requiredOwnTriggerProbability":0.00138},
+      {"acceptedRaceShare":0.5,"competitorRatePerSecond":0,"latencySeconds":0,"requiredOwnTriggerProbability":0.00276},
+      {"acceptedRaceShare":0.5,"competitorRatePerSecond":2,"latencySeconds":0.5,"requiredOwnTriggerProbability":0.007502457846546964},
+      {"acceptedRaceShare":0.2,"competitorRatePerSecond":5,"latencySeconds":1,"requiredOwnTriggerProbability":1.0240507978077784}
+    ],
+    "conclusion":"Terminal 100% global timed probability cannot produce a robust player-specific green while accepted-spin race share and latency/competition lower bounds remain unbound."
+  },
+  "tripleMoneyStructuralResult":{
+    "cashRtpPct":94.49,"lossPerEUR":0.0551,"currentHazardLowerBound":"UNKNOWN_INCLUDING_ARBITRARILY_CLOSE_TO_ZERO",
+    "robustThreshold":"NO_FINITE_ROBUST_THRESHOLD",
+    "hypotheticalThresholdsNotExecutionEvidence":[
+      {"qLowerPerEUR":1e-7,"grandBreakEvenEUR":551000},
+      {"qLowerPerEUR":2e-7,"grandBreakEvenEUR":275500},
+      {"qLowerPerEUR":5e-7,"grandBreakEvenEUR":110200},
+      {"qLowerPerEUR":1e-6,"grandBreakEvenEUR":55100},
+      {"qLowerPerEUR":2e-6,"grandBreakEvenEUR":27550},
+      {"qLowerPerEUR":5e-6,"grandBreakEvenEUR":11020}
+    ],
+    "conclusion":"A high Grand alone can never be a robust execution signal until a strictly positive defendible operator/config-bound hazard lower bound is established."
+  },
+  "syntheticMonteCarloValidation":{"status":"SYNTHETIC_NOT_EXECUTION_EVIDENCE","totalTrials":40000000,"confidence":0.99,"cases":[
+    {"lane":"Case Closed 10 Minute","stakeEUR":2,"payoutEUR":100,"netCaptureProbabilityInput":0.00138,"trials":10000000,"wins":13753,"centralReturnRatio":0.999765,"lower99ReturnRatio":0.9982721118977507,"upper99ReturnRatio":1.0012909713135711},
+    {"lane":"Case Closed 10 Minute","stakeEUR":2,"payoutEUR":100,"netCaptureProbabilityInput":0.0016,"trials":10000000,"wins":15945,"centralReturnRatio":1.010725,"lower99ReturnRatio":1.009116452766851,"upper99ReturnRatio":1.012366615900787},
+    {"lane":"Triple Money Gold","stakeEUR":1,"grandEUR":55100,"netGrandWinProbabilityPerSpinInput":1e-6,"trials":10000000,"wins":5,"centralReturnRatio":0.97245,"lower99ReturnRatio":0.9541052745647701,"upper99ReturnRatio":1.0273529448925758},
+    {"lane":"Triple Money Gold","stakeEUR":1,"grandEUR":55100,"netGrandWinProbabilityPerSpinInput":3e-6,"trials":10000000,"wins":31,"centralReturnRatio":1.11571,"lower99ReturnRatio":1.0528803300029024,"upper99ReturnRatio":1.2150976993515124}
+  ]},
+  "decision":"NO_PLAY",
+  "blockingUnknowns":{"caseClosed":["fresh native JOKERBET timed tier values/countdown","operator-bound time hazard lower curve","accepted-spin ordering/race share lower bound","competition intensity upper bound","latency/stale-display upper bound"],"tripleMoney":["fresh JOKERBET Grand counter/network identity","strictly positive defendible Grand hazard lower bound","exact stake-to-hazard function"]},
+  "guards":{"noSyntheticExecution":true,"noTerminal100PctMisread":true,"noContributionEqualsHazard":true,"noCrossOperatorCounterTransfer":true,"noRealMoneyProbe":true,"noAutomaticBetting":true}
+}
