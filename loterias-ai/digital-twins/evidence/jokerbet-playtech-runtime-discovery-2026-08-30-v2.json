@@ -1,0 +1,14 @@
+{
+  "version":"jokerbet-playtech-runtime-discovery-2026-08-30-v2",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "target":{"operator":"JOKERBET España","legalEntity":"VERAMATIC ONLINE, S.A.","formerLegalName":"EUROBET INTERNATIONAL S.P.A.","provider":"Playtech","game":"Age of the Gods Norse: King of Asgard"},
+  "currentPublicSearch":{"indexedJokerbetNewJackpotxmlFound":false,"indexedJokerbetAognjpFeedFound":false,"indexedVeramaticAognjpFeedFound":false,"indexedEurobetInternationalAognjpFeedFound":false},
+  "tickerSpec":{"info2Meaning":"Casino Game Based","casinoParameterSource":"IMS Products > Casinos","fieldsUsefulForBinding":["casino","game","gamegroup","currency","local","amount","guaranteedHitAmount","guaranteedHitTime","winc","timestamp","instancecode"]},
+  "historicalCrossOperatorCorroboration":{"aognjp3Observed":true,"sourceClass":"PUBLIC_HISTORICAL_THIRD_PARTY_JACKPOT_JSON","currency":"GBP","executionUseAllowed":false,"meaning":"Corroborates family/code existence only; does not bind JOKERBET runtime, tier identity, amount, cap, network or hazard."},
+  "analyzerChange":{"version":"jokerbet-aotgn-safe-har-analyzer-v2","supportsInfo2CasinoWideDiscovery":true,"info2CannotSelfBindExtra":true,"why":"Playtech info=2 may expose casino-wide aognjp rows without a game query parameter; v1 would miss this discovery path."},
+  "decision":"NO_PLAY_RUNTIME_AND_HAZARD_UNBOUND",
+  "nextAutonomousTarget":"Obtain a JOKERBET-served info=2 or game-based ticker request from indexed/public integration evidence or passive runtime capture; never brute-force casino aliases and never wager to probe.",
+  "guards":{"noCasinoAliasGuessAsBinding":true,"noCrossOperatorAmountTransfer":true,"noNumericSuffixExecutionAssumption":true,"noBruteforce":true,"noRealMoneyProbe":true,"noAutomaticBetting":true}
+}
