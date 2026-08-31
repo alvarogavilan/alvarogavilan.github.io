@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {POWERPLAY_CONTRACTS,rankByBaseLoss,requiredNetCaptureProbability,executionGate,STATUS} from '../digital-twins/games/jokerbet-playtech-powerplay.mjs';
+assert.equal(POWERPLAY_CONTRACTS.djinn.separatedBasePct,93.50);
+assert.equal(POWERPLAY_CONTRACTS.mammoth.separatedBasePct,93.48);
+assert.equal(rankByBaseLoss()[0].gameId,'djinn');
+assert.ok(requiredNetCaptureProbability({gameId:'djinn',stakeEUR:1,jackpotAwardEUR:1000}) < requiredNetCaptureProbability({gameId:'jokerRush',stakeEUR:1,jackpotAwardEUR:1000}));
+assert.equal(executionGate({}).decision,'NO_PLAY');
+const stillNo=executionGate({gameId:'djinn',stakeEUR:1,liveTier:'Peak',liveAmountEUR:1000,displayedBoundaryEUR:1100,netCaptureProbabilityLowerBound:0,runtimeBinding:STATUS.VERIFIED_OPERATOR_BOUND,freshnessMs:100});
+assert.equal(stillNo.decision,'NO_PLAY');
+console.log('jokerbet-playtech-powerplay.test.mjs: PASS');
