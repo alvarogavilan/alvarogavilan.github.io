@@ -1,0 +1,18 @@
+{
+  "version":"jokerbet-777-diamond-strike-timed-validation-2026-08-31-v1",
+  "mode":"SYNTHETIC_CONDITIONAL_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operator":"JOKERBET España",
+  "game":"777 Diamond Strike",
+  "provider":"Red Tiger",
+  "operatorRules":{"jackpotContributionPct":2,"timedEligibleStakeCapEUR":1.71,"dailySeedEUR":8556.52,"progressiveSeedEUR":4278.26,"tenMinuteSeedEUR":85.56,"terminalGlobalTimedHazardReachesOne":true,"singlePlayerWins":true,"displayMayLag":true},
+  "operatorPage":{"totalRtpPct":94.74,"minStakeEUR":0.10,"maxStakeEUR":10},
+  "derivedOnly":{"separatedBaseRtpPct":92.74,"status":"DERIVED_OPERATOR_PAGE_PLUS_EXACT_RULES","warning":"Not an exact-PDF RTP binding; execution gate requires current operator-bound in-game/base RTP."},
+  "seedSensitivity":{"stakeEUR":0.10,"tenMinutePayoutEUR":85.56,"requiredNetCaptureProbability":0.00008485273492286115},
+  "simulation":{"totalTrials":20000000,"confidence":0.99,"rng":"numpy PCG64 binomial count; synthetic net-capture trials","cases":[{"netCaptureProbabilityMultiplierVsBreakEven":1,"trials":10000000,"wins":823,"observedProbability":0.0000823,"centralReturnRatio":0.99781588,"wilson99LowerReturnRatio":0.9917710854317656,"wilson99UpperReturnRatio":1.0044282625044125},{"netCaptureProbabilityMultiplierVsBreakEven":1.5,"trials":10000000,"wins":1250,"observedProbability":0.000125,"centralReturnRatio":1.03435,"wilson99LowerReturnRatio":1.0268372025804102,"wilson99UpperReturnRatio":1.0424303368757784}]},
+  "interpretation":"The twin can distinguish a synthetic robust-positive net-capture regime from break-even noise. This does not establish JOKERBET live hazard, race share or current RTP.",
+  "decision":"NO_PLAY",
+  "missing":["current in-game operator-bound RTP/base return","current 10-Minute value","current deadline/time remaining","stake-to-timed-trigger function","network/instance binding","accepted race share lower bound","competition rate upper bound","latency/display freshness bound"],
+  "hardGuards":{"globalTerminalHazardNeverEqualsOurCaptureProbability":true,"crossOperatorAllocationNeverTransferred":true,"pageRtpNotContractualRtp":true,"noRealMoneyProbe":true,"noAutomaticBetting":true}
+}
