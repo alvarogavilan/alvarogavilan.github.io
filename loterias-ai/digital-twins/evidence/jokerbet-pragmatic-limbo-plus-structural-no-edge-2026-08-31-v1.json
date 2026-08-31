@@ -1,0 +1,17 @@
+{
+  "version":"jokerbet-pragmatic-limbo-plus-structural-no-edge-2026-08-31-v1",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operator":"JOKERBET España",
+  "provider":"Pragmatic Play",
+  "game":"Limbo+",
+  "operatorPage":{"rtpPct":99,"minStakeEUR":0.01,"maxStakeEUR":5,"targetMultiplierMin":1.05,"targetMultiplierMax":10000},
+  "exactRules":{"rtpPct":99,"winChanceFormula":"P(win)=0.99/targetMultiplier","payoutOnWin":"targetMultiplier * stake","currencyPayoutRoundedDownTo2Decimals":true,"maxWinMultiple":10000},
+  "identity":{"formula":"EV gross ratio = (0.99/M)*M = 0.99 for every valid target M","targetSelectionCannotCreatePositiveEV":true,"roundingCanOnlyReducePlayerReturn":true},
+  "documentDefect":{"present":true,"detail":"The Spanish JOKERBET PDF reverses the textual win/loss inequalities versus JOKERBET's game page and Pragmatic Play's official product description. The same PDF's explicit probability formula is internally consistent with the provider/page mechanic and fixes gross EV at 99%. No execution assumption is made from the contradictory inequality text."},
+  "decision":"NO_PLAY",
+  "reason":"The exact probability/payout identity fixes pre-round gross expected return at 99% for every selectable target; payout rounding is downward. No target, staking progression, auto-play stop rule or history pattern can cross EV=1 without a separately verified implementation defect.",
+  "reopenOnlyIf":["operator-bound implementation defect changes conditional outcome distribution","pre-bet observable state demonstrably changes P(win) away from 0.99/M with lower-bound EV > 1"],
+  "hardGuards":{"noMartingale":true,"noTargetOptimizationFalseEdge":true,"downwardRoundingNeverCountedAsUpside":true,"noRealMoneyProbe":true,"noAutomaticBetting":true}
+}
