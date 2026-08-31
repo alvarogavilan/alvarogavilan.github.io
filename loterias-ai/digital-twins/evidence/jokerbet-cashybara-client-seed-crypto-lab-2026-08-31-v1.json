@@ -1,0 +1,17 @@
+{
+  "version":"jokerbet-cashybara-client-seed-crypto-lab-2026-08-31-v1",
+  "mode":"SYNTHETIC_CRYPTO_LAB_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operator":"JOKERBET España",
+  "provider":"Amusnet",
+  "game":"Cashybara Football Edition",
+  "operatorRulesFacts":{"provablyFair":true,"manualClientSeedUpTo20Chars":true,"manualSeedPersistsAcrossRounds":true,"resultUsesOperatorSeedPlusFirstThreeBettorClientSeeds":true,"resultIsHashBased":true,"verificationAfterRound":true},
+  "crossSystemMechanismEvidence":{"preRoundPublicValue":"hash commitment of server/operator seed","combinedHash":"SHA-512 in matching four-participant crash architecture","status":"REFERENCE_MECHANISM_NOT_OPERATOR_RUNTIME_BINDING"},
+  "simulation":{"rounds":2000000,"sha512Outputs":6000000,"uniformProbe":"first 64 hash bits < 0.5","policies":[{"name":"fixed_client_seed","observedFraction":0.5005915},{"name":"fresh_random_client_seed","observedFraction":0.5002915},{"name":"client_seed_deterministically_derived_from_public_server_commitment","observedFraction":0.5004055}],"interpretation":"No measurable predictive signal from client-seed choice when the server preimage remains secret. This is consistent with SHA-512/random-oracle behavior and is not game-outcome/RTP execution evidence."},
+  "cryptographicBarrier":{"publicCommitmentDoesNotRevealServerPreimage":true,"chosenClientSeedCannotComputeCombinedResultWithoutServerPreimage":true,"beingFirstThreeBettorDoesNotByItselfCreatePredictiveEdge":true},
+  "decision":"NO_PLAY",
+  "reason":"The exact JOKERBET rules permit chosen client seeds but require an operator seed in the result and verification after the round. Public reference implementations of the same four-participant architecture expose only a one-way commitment pre-round. Six million synthetic SHA-512 outputs show no client-seed selection signal, as cryptographically expected.",
+  "reopenOnlyIf":["JOKERBET runtime exposes unhashed operator/server seed before betting closes","operator/provider implementation reuses or leaks server preimages","verified hash-to-multiplier implementation flaw yields a pre-bet lower-bound EV above 1"],
+  "hardGuards":{"doNotTreatProvablyFairAsPredictable":true,"doNotBruteforceRealRounds":true,"noRealMoneyProbe":true,"noAutomaticBetting":true}
+}
