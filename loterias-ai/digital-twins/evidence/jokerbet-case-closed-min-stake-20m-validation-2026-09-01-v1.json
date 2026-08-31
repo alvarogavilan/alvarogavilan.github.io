@@ -1,0 +1,18 @@
+{
+  "version":"jokerbet-case-closed-min-stake-20m-validation-2026-09-01-v1",
+  "mode":"SYNTHETIC_CONDITIONAL_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operator":"JOKERBET España",
+  "game":"Case Closed",
+  "provider":"Red Tiger",
+  "exactRules":{"baseAverageReturnRatio":0.9310,"jackpotContributionPct":2,"timedEligibleStakeCapEUR":2,"dailySeedEUR":10000,"progressiveSeedEUR":5000,"tenMinuteSeedEUR":100,"terminalGlobalTimedHazardReachesOne":true,"singlePlayerWins":true,"displayMayLag":true,"minimumStakeEUR":0.10},
+  "currentOperatorPage":{"rtpPct":95.18,"minStakeEUR":0.10,"maxStakeEUR":15,"contractualAuthority":false},
+  "thresholdSensitivity":{"stakeEUR":0.10,"tenMinutePayoutEUR":100,"baseLossEURPerSpin":0.0069,"requiredNetCaptureProbability":0.000069},
+  "simulation":{"totalTrials":20000000,"confidence":0.99,"rng":"numpy PCG64 binomial count; synthetic net-capture trials","cases":[{"netCaptureProbabilityMultiplierVsBreakEven":1,"trials":10000000,"wins":668,"observedProbability":0.0000668,"centralReturnRatio":0.9978,"wilson99LowerReturnRatio":0.9914662562435086,"wilson99UpperReturnRatio":1.0047971443342156},{"netCaptureProbabilityMultiplierVsBreakEven":1.5,"trials":10000000,"wins":1015,"observedProbability":0.0001015,"centralReturnRatio":1.0325,"wilson99LowerReturnRatio":1.0246190449109904,"wilson99UpperReturnRatio":1.041044309620582}]},
+  "persistentState":{"savedForeverPerStakeLevel":true,"case1":"guarantees first interrogation success when feature triggers","case2":"reduces clues required from 7 to 5","case3":"unlocks fourth suspect paying 2000x on successful interrogation after first three succeed","executionValue":"UNKNOWN_WITHOUT_OPERATOR_CONFIGURATION_EVENT_PROBABILITIES_AND_ACCOUNT_STATE"},
+  "interpretation":"At the exact-rules base-return assumption, the min-stake 10-Minute seed break-even net capture probability is 6.9e-5. Twenty million synthetic trials show the break-even case is not robustly positive while 1.5x break-even is detected as robustly positive at 99% confidence. These are detector validations, not live JOKERBET probabilities.",
+  "decision":"NO_PLAY",
+  "missing":["current live 10-Minute amount","current deadline/time remaining","stake-to-timed-trigger function","JOKERBET jackpot/network instance binding","accepted race share lower bound","competition rate upper bound","latency/display freshness bound","current account persistent case/clue/evidence state","current JOKERBET configuration-specific event probabilities"],
+  "hardGuards":{"globalTerminalHazardNeverEqualsOurCaptureProbability":true,"standardProviderRtpNeverTransferredToJOKERBET":true,"persistentProgressNeverValuedFromSunkCostWithoutConditionalProbabilities":true,"noRealMoneyProbe":true,"noAutomaticBetting":true}
+}
