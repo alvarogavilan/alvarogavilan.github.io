@@ -1,0 +1,37 @@
+{
+  "version":"jokerbet-djinn-powerplay-observed-mini-win-172-2026-09-03-v1",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operator":"JOKERBET España",
+  "provider":"Playtech",
+  "game":"Djinn of Storms PowerPlay Jackpot",
+  "visualObservation":{
+    "captureLocalTimeVisible":"01:57",
+    "sessionTimerVisible":"00:40:53",
+    "popupText":"¡Un jugador acaba de ganar el Jackpot de 172,00 €!",
+    "peakVisibleEUR":2249.75,
+    "peakBoundaryEUR":3000.00,
+    "miniVisibleEUR":170.85,
+    "miniBoundaryEUR":200.00,
+    "accountBalanceVisibleEUR":20.00,
+    "selectedBetVisibleEUR":0.05,
+    "userReportedNoSpinDuringObservation":true
+  },
+  "classification":{
+    "likelyTier":"Mini",
+    "confidence":"HIGH_BUT_PENDING_RESET_CONFIRMATION",
+    "reason":"A €172 award is numerically compatible with Mini and incompatible with visible Peak/Mega scales; however the Mini display had not yet reset in the same screenshot, so display/event latency must be resolved before calling this a closed cycle."
+  },
+  "scientificImpact":{
+    "provesAwardCanOccurBelowBoundary":true,
+    "observedAwardFractionOfMiniBoundary":0.86,
+    "disprovesAnyClaimThatMiniMustWaitUntilNearEUR200":true,
+    "doesNotIdentifyTriggerDistribution":true,
+    "doesNotCreatePositiveHazardLowerBound":true,
+    "doesNotTriggerGreen":true
+  },
+  "nextRequiredPassiveObservation":"Wait for the Mini ticker to refresh/reset after the popup without spinning; record reset amount and timestamp.",
+  "decision":"NO_PLAY",
+  "hardGuards":{"noRealMoneyProbe":true,"popupAloneDoesNotBindResetSeed":true,"singleAwardDoesNotEstimateHazard":true,"noAutomaticBetting":true}
+}
