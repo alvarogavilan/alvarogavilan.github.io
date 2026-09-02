@@ -1,0 +1,38 @@
+{
+  "version": "jokerbet-case-closed-runtime-visual-2026-09-03-v1",
+  "mode": "RESEARCH_ONLY",
+  "realMoneyAllowed": false,
+  "realStakeEUR": 0,
+  "operator": "JOKERBET España",
+  "game": "Case Closed",
+  "provider": "Red Tiger",
+  "observationSource": "user-supplied iPhone screenshots of live JOKERBET game session; no spin performed",
+  "observed": {
+    "gameLoaded": true,
+    "balanceEUR": 0,
+    "stakeOptionsObservedEUR": [0.10,0.20,0.40,0.60,0.80,1.00,2.00,5.00,6.00,8.00],
+    "stake010Progress": {"clues":"0/7","evidence":"0/10","casesResolved":0},
+    "stake020Progress": {"clues":"0/7","evidence":"0/10","casesResolved":0},
+    "mainScreenNativeTimedJackpotMeterVisible": false,
+    "menuItemsObserved": ["Lobby","Pagos","Historial","Ayuda"],
+    "dedicatedJackpotMenuItemVisible": false,
+    "paytablePagesInspected": ["cover","Interrogatorio","Pruebas","Premios de símbolo","Líneas de premios 1-25","Líneas de premios 26-50"],
+    "nativeTimedJackpotMeterVisibleInPaytable": false
+  },
+  "interpretation": {
+    "operatorRuntimeBindsTimedJackpot": false,
+    "reason": "The exact rules PDF contains generic/timed jackpot language, but the live zero-balance JOKERBET runtime observed does not expose a Daily/Progressive/10 Minute Drop meter on the main screen, menu, or inspected paytable pages. Therefore the timed jackpot cannot be operator-runtime-bound from this evidence.",
+    "zeroBalanceCouldSuppressExternalJackpotUI": true,
+    "zeroBalanceSuppressionIsUnproven": true,
+    "mustNotInferJackpotDisabledAbsolutely": true
+  },
+  "decision": "NO_PLAY",
+  "priority": "DOWNGRADE_FROM_P0_UNTIL_RUNTIME_JACKPOT_STATE_IS_PUBLICLY_OBSERVABLE",
+  "hardGuards": {
+    "rulesPdfNeverEqualsLiveInstanceBinding": true,
+    "jokerbetTemperatureJackpotBadgeNeverNativeRedTigerProof": true,
+    "noDepositForResearch": true,
+    "noSpinForResearch": true,
+    "noAutomaticBetting": true
+  }
+}
