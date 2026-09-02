@@ -1,0 +1,32 @@
+{
+  "version":"jokerbet-djinn-mini-optimistic-cap-share-bound-2026-09-03-v1",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operator":"JOKERBET España",
+  "game":"Djinn of Storms PowerPlay Jackpot",
+  "inputs":{
+    "separatedBaseRtpPct":93.50,
+    "miniAmountEUR":150.30,
+    "miniBoundaryEUR":200,
+    "observedMiniGrowthEUR":39.29,
+    "observedAllCurrentJackpotGrowthEUR":70.30,
+    "jackpotContributionPctOfBet":2.99,
+    "fractionContributionFundingCurrentJackpots":0.3866
+  },
+  "derived":{
+    "observedMiniShareOfCurrentJackpotGrowth":0.5588904694,
+    "effectiveObservedMiniMeterFundingPerEURWager":0.006460404959,
+    "currentGapEUR":49.70,
+    "impliedRemainingNetworkWagerToAmountBoundaryEUR":7693.015,
+    "optimisticCapOnlyJackpotReturnPerEURWager":0.02599760547,
+    "optimisticTotalReturnRatioAtCurrentState":0.9609976055,
+    "optimisticBreakEvenGapEUR":19.87816910,
+    "optimisticBreakEvenMiniAmountEUR":180.1218309
+  },
+  "model":"OPTIMISTIC_LINEAR_WAGER_SHARE_CAP_ONLY",
+  "criticalWarning":"This is not an execution model and not a proven Playtech trigger law. It deliberately assumes a favorable linear wager-share allocation of a forced EUR200 cap payout. Playtech documentation only states that larger bets increase jackpot chance; it does not bind proportionality or threshold-spin ownership. Therefore crossing the optimistic watch threshold cannot itself trigger a green.",
+  "decisionAt150_30":"NO_PLAY",
+  "watchZone":"RECHECK_IF_MINI_AT_OR_ABOVE_180_12_WITH_FRESH_OPERATOR_VISUAL",
+  "hardGuards":{"optimisticModelCannotTriggerGreen":true,"meterGrowthIsNotHazard":true,"stakeProportionalityUnproven":true,"thresholdSpinOwnershipUnproven":true,"noRealMoneyProbe":true}
+}
