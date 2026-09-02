@@ -1,0 +1,37 @@
+{
+  "version":"powerplay-mhb-distribution-free-bound-2026-09-03-v1",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "scope":"Playtech PowerPlay Peak/Mini must-award-before displayed boundary",
+  "operatorEvidence":"JOKERBET exact PowerPlay contracts and live Djinn screenshot bind current amount and displayed boundaries, but not the trigger distribution.",
+  "claim":{
+    "statement":"For any non-terminal meter state strictly below the displayed boundary, the distribution-free lower bound on next-spin jackpot trigger probability is 0 unless an additional constraint on the trigger distribution or stake-to-hazard function is operator/provider bound.",
+    "reason":"Eligibility on every spin plus a must-award-before boundary does not specify how probability mass is distributed across eligible spins. For any epsilon > 0, an admissible trigger law can assign epsilon probability to the current spin and concentrate the remaining probability arbitrarily close to the boundary while still guaranteeing award before the boundary. Therefore the infimum of current-spin hazard is 0.",
+    "alsoAppliesIfEverySpinHasPositiveProbability":true,
+    "infimumNotNecessarilyAttained":true
+  },
+  "liveDjinnConsequence":{
+    "separatedBaseRtpPct":93.50,
+    "peakAmountEUR":2227.53,
+    "peakBoundaryEUR":3000,
+    "miniAmountEUR":111.01,
+    "miniBoundaryEUR":200,
+    "distributionFreeHazardLowerBound":0,
+    "distributionFreeConservativeReturnRatio":0.935,
+    "decision":"NO_PLAY"
+  },
+  "whatWouldInvalidateThisZeroLowerBound":[
+    "operator/provider documentation binding a minimum hazard as a function of meter state and stake",
+    "operator-bound certified trigger-threshold distribution",
+    "sufficient operator-bound empirical observations supporting a statistically defendible positive hazard lower bound under the same instance/configuration",
+    "an execution rule proving ownership of a boundary-crossing accepted spin"
+  ],
+  "hardGuards":{
+    "meterFractionIsNotProbability":true,
+    "mustHitByDoesNotImplyLinearHazard":true,
+    "jackpotContributionIsNotTriggerProbability":true,
+    "crossOperatorHistoryCannotSetExecutionHazard":true,
+    "noRealMoneyProbe":true
+  }
+}
