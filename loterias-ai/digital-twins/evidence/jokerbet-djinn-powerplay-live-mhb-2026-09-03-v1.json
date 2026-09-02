@@ -1,0 +1,52 @@
+{
+  "version":"jokerbet-djinn-powerplay-live-mhb-2026-09-03-v1",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operator":"JOKERBET España",
+  "provider":"Playtech",
+  "game":"Djinn of Storms PowerPlay Jackpot",
+  "liveVisualEvidence":{
+    "source":"user-supplied JOKERBET in-game screenshot; no spin; zero balance",
+    "captureLocalTimeVisible":"01:37",
+    "currency":"EUR",
+    "megaAmountEUR":19874.60,
+    "peak":{"amountEUR":2227.53,"displayedBoundaryEUR":3000.00,"gapEUR":772.47,"fractionOfBoundary":0.74251,"fractionRemaining":0.25749},
+    "mini":{"amountEUR":111.01,"displayedBoundaryEUR":200.00,"gapEUR":88.99,"fractionOfBoundary":0.55505,"fractionRemaining":0.44495}
+  },
+  "exactJokerbetContract":{
+    "rtpIncludingJackpotContributionPct":96.49,
+    "jackpotContributionPct":2.99,
+    "separatedBaseRtpPct":93.50,
+    "minStakeEUR":0.01,
+    "maxStakeEUR":25,
+    "anyStakeCanActivate":true,
+    "higherStakeIncreasesJackpotChance":true,
+    "mainGameOnly":true,
+    "linkedAcrossSeveralPowerPlayGamesAndCasinos":true,
+    "peakSpinBeforeDisplayedBoundaryMayActivate":true,
+    "miniSpinBeforeDisplayedBoundaryMayActivate":true
+  },
+  "breakEvenNetCaptureProbabilityAtMinimumStake":{
+    "stakeEUR":0.01,
+    "peakUsingCurrentAward":2.9187e-7,
+    "miniUsingCurrentAward":5.8553e-6,
+    "formula":"stake * (1-separatedBaseRtp) / currentJackpotAward"
+  },
+  "unresolvedCriticalInputs":[
+    "exact stake-to-jackpot-hazard function",
+    "Peak/Mini trigger distribution as a function of meter distance",
+    "defendible lower bound on next-spin net capture probability",
+    "network competition / accepted-race share",
+    "fresh acceptance ordering and latency"
+  ],
+  "decision":"NO_PLAY",
+  "reason":"LIVE_MHB_AMOUNT_AND_BOUNDARY_ARE_OPERATOR_BOUND_BUT_TRIGGER_HAZARD_LOWER_BOUND_IS_UNKNOWN",
+  "hardGuards":{
+    "displayedBoundaryDoesNotImplyTerminalSpinOwnership":true,
+    "jackpotContributionDoesNotEqualWinProbability":true,
+    "crossOperatorTrackerCannotTriggerGreen":true,
+    "noRealMoneyProbe":true,
+    "noAutomaticBetting":true
+  }
+}
