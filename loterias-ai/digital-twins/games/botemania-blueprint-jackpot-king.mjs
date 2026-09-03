@@ -8,8 +8,15 @@ export const MEGA_BARS=Object.freeze({
   jackpotCurrentPotContributionPct:0.38,
   jackpotReserveContributionPct:0.11,
   totalJackpotFundingPct:0.49,
+  // Botemanía's public page binds coin value 0.10-10 EUR, not TOTAL BET bounds.
+  // Several other Blueprint implementations expose a 0.10 total-bet floor, but
+  // that cannot be promoted to Botemanía execution evidence without an operator
+  // runtime/paytable binding.
+  operatorCoinValueRangeEUR:[0.10,10],
   minStakeEUR:0.10,
+  minStakeStatus:STATUS.CROSS_OPERATOR_ONLY,
   maxStakeEUR:10,
+  maxStakeStatus:STATUS.UNKNOWN,
   anyStakeEligible:true,
   jackpotChanceProportionalToTotalBet:true,
   networkSharedAcrossBlueprintJackpotKingGames:true,
@@ -29,6 +36,12 @@ export const NETWORK=Object.freeze({
   royalBoundaryEUR:null,
   regalBoundaryEUR:null,
   numericBoundaryStatus:STATUS.UNKNOWN,
+  // Historical direct Botemanía observations show the displayed EUR MBWB
+  // values are not invariant: 2026-08-25 ~4078.97/40789.77 and 2026-08-30
+  // ~4088.73/40887.38, always at a 1:10 Royal:Regal ratio. Treat boundaries
+  // as live display inputs (consistent with currency-equivalent conversion),
+  // never as permanent EUR constants.
+  boundaryMode:'LIVE_OPERATOR_DISPLAY_REQUIRED_DYNAMIC_CURRENCY_EQUIVALENT',
   exactPotValueToHazardLaw:null,
   exactPotValueToHazardLawStatus:STATUS.UNKNOWN,
   tierSpecificCurrentPotFundingFraction:null,
@@ -49,7 +62,7 @@ export function requiredJackpotReturnMultiplierVsTotalFunding(){return baseLossR
 export function requiredJackpotReturnMultiplierVsCurrentPotFunding(){return baseLossRatio()/currentPotFundingRatio();}
 
 export function conservativeReturnFromTier({stakeEUR,jackpotAwardEUR,hazardPerEURLowerBound}){
-  if(!(stakeEUR>=MEGA_BARS.minStakeEUR&&stakeEUR<=MEGA_BARS.maxStakeEUR)) throw new Error('STAKE_OUTSIDE_OPERATOR_BOUNDS');
+  if(!(stakeEUR>0)) throw new Error('POSITIVE_STAKE_REQUIRED');
   if(!(jackpotAwardEUR>0)) throw new Error('POSITIVE_JACKPOT_REQUIRED');
   if(!(hazardPerEURLowerBound>=0)) throw new Error('NONNEGATIVE_HAZARD_PER_EUR_REQUIRED');
   const pLower=Math.min(1,hazardPerEURLowerBound*stakeEUR);
@@ -66,19 +79,23 @@ export function stakeScalingDiagnostic({stakeEUR,hazardPerEUR}){
 
 // Model-free terminal route. This deliberately does NOT infer a trigger curve. It can
 // only become informative if provider/operator evidence binds all mechanics needed to
-// prove that OUR accepted wager necessarily owns an MHB-crossing award. At present those
-// bindings are unknown, so real execution remains blocked.
+// prove that OUR accepted wager necessarily owns an MHB-crossing award. Current Blueprint
+// rules say the first player to trigger the jackpot wins, but do not bind meter crossing
+// by our contribution as the trigger; therefore this route remains closed unless stronger
+// provider/operator evidence appears.
 export function terminalCrossingGate({
   tier,stakeEUR,liveAmountEUR,boundaryEUR,
   tierContributionPerEURLowerBound=null,
   runtimeBinding=STATUS.UNKNOWN,
+  stakeBoundsBinding=STATUS.UNKNOWN,
   tierFundingBinding=STATUS.UNKNOWN,
   boundaryCrossingOwnershipBinding=STATUS.UNKNOWN,
   acceptedWagerOwnershipVerified=false,
   displayFreshnessVerified=false
 }={}){
   if(!['Royal','Regal'].includes(tier)) return {decision:'NO_PLAY',reason:'ONLY_MHB_TIERS_SUPPORTED',realMoneyAllowed:false,realStakeEUR:0};
-  if(!(stakeEUR>=MEGA_BARS.minStakeEUR&&stakeEUR<=MEGA_BARS.maxStakeEUR)) return {decision:'NO_PLAY',reason:'STAKE_OUTSIDE_OPERATOR_BOUNDS',realMoneyAllowed:false,realStakeEUR:0};
+  if(!(stakeEUR>0)) return {decision:'NO_PLAY',reason:'POSITIVE_TOTAL_BET_REQUIRED',realMoneyAllowed:false,realStakeEUR:0};
+  if(stakeBoundsBinding!==STATUS.VERIFIED_OPERATOR_BOUND) return {decision:'NO_PLAY',reason:'BOTEMANIA_TOTAL_BET_BOUNDS_REQUIRED',realMoneyAllowed:false,realStakeEUR:0};
   if(!(liveAmountEUR>0&&boundaryEUR>liveAmountEUR)) return {decision:'NO_PLAY',reason:'LIVE_AMOUNT_AND_BOUNDARY_REQUIRED',realMoneyAllowed:false,realStakeEUR:0};
   if(runtimeBinding!==STATUS.VERIFIED_OPERATOR_BOUND) return {decision:'NO_PLAY',reason:'BOTEMANIA_RUNTIME_BINDING_REQUIRED',realMoneyAllowed:false,realStakeEUR:0};
   if(tierFundingBinding!==STATUS.VERIFIED_OPERATOR_BOUND&&tierFundingBinding!==STATUS.VERIFIED_PROVIDER_BOUND) return {decision:'NO_PLAY',reason:'TIER_SPECIFIC_FUNDING_LOWER_BOUND_REQUIRED',realMoneyAllowed:false,realStakeEUR:0};
@@ -93,10 +110,11 @@ export function terminalCrossingGate({
 }
 
 export function executionGate(state={}){
-  const required=['game','stakeEUR','royalAmountEUR','regalAmountEUR','royalBoundaryEUR','regalBoundaryEUR','hazardPerEURLowerBound','runtimeBinding','hazardLawBinding'];
+  const required=['game','stakeEUR','royalAmountEUR','regalAmountEUR','royalBoundaryEUR','regalBoundaryEUR','hazardPerEURLowerBound','runtimeBinding','hazardLawBinding','stakeBoundsBinding'];
   const missing=required.filter(k=>state[k]===null||state[k]===undefined);
   if(missing.length) return {decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,reason:'RUNTIME_OR_HAZARD_INPUTS_MISSING',missing};
   if(state.runtimeBinding!==STATUS.VERIFIED_OPERATOR_BOUND) return {decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,reason:'BOTEMANIA_RUNTIME_BINDING_REQUIRED'};
+  if(state.stakeBoundsBinding!==STATUS.VERIFIED_OPERATOR_BOUND) return {decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,reason:'BOTEMANIA_TOTAL_BET_BOUNDS_REQUIRED'};
   if(state.hazardLawBinding!==STATUS.VERIFIED_OPERATOR_BOUND&&state.hazardLawBinding!==STATUS.VERIFIED_PROVIDER_BOUND) return {decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,reason:'POT_VALUE_TO_HAZARD_LAW_NOT_BOUND'};
   if(!(Number.isFinite(state.hazardPerEURLowerBound)&&state.hazardPerEURLowerBound>0)) return {decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,reason:'POSITIVE_HAZARD_PER_EUR_LOWER_BOUND_REQUIRED'};
   const stake=Number(state.stakeEUR);
