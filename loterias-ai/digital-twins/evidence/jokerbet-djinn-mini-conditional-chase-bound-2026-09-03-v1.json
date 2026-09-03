@@ -1,0 +1,64 @@
+{
+  "version":"jokerbet-djinn-mini-conditional-chase-bound-2026-09-03-v1",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operator":"JOKERBET España",
+  "provider":"Playtech",
+  "game":"Djinn of Storms PowerPlay Jackpot",
+  "tier":"Mini",
+  "operatorBoundOrObservedInputs":{
+    "separatedBaseRtpRatio":0.935,
+    "displayedBoundaryEUR":200,
+    "jackpotContributionRatio":0.0299,
+    "currentJackpotFundingShareOfContribution":0.3866,
+    "observedMiniGrowthShares":[0.5588904694,0.5587929240],
+    "conservativeMiniGrowthShareUsed":0.5587929240,
+    "tierFundingPerNetworkEURLowerProxy":0.00645927739811016,
+    "completedJokerbetMiniCycles":1,
+    "observedHitEUR":172,
+    "observedPostResetEUR":102.48
+  },
+  "conditionalChaseModel":{
+    "formula":"lowerReturn = baseRtp + r * tierFundingPerNetworkEUR * boundary / (boundary-currentAmount)",
+    "requiredRelativeHazardWeightFormula":"r_required = (1-baseRtp)*(boundary-currentAmount)/(tierFundingPerNetworkEUR*boundary)",
+    "criticalAssumptions":[
+      "jackpot trigger exposure is proportional to eligible wager weight",
+      "our per-EUR jackpot trigger weight relative to the network has a defendible lower bound r",
+      "our wager-flow share is stable/non-adversarial across meter states during the chase",
+      "the observed meter-growth allocation is representative/lower-bounding for the same live instance",
+      "accepted wager ordering and display freshness are verified"
+    ],
+    "worstAllowedHitUnderThoseAssumptions":"the MHB boundary; earlier hits improve jackpot return per chase EUR",
+    "distributionLawRequired":false,
+    "distributionFreeWithoutWeightAssumptions":false
+  },
+  "derived":{
+    "breakEvenCurrentAmountIfRelativeWeightIs1EUR":180.1253003135072,
+    "requiredRelativeWeightByCurrentAmount":{
+      "166.41":1.690088247254588,
+      "170":1.509456189076889,
+      "172":1.408825776471763,
+      "180":1.0063041260512593,
+      "185":0.7547280945384445,
+      "190":0.5031520630256297,
+      "195":0.25157603151281485
+    }
+  },
+  "currentBindingStatus":{
+    "PowerPlayStakeToHazardProportionality":"UNKNOWN_NOT_PUBLISHED_BY_PLAYTECH_JOKERBET_RULES",
+    "crossGameRelativeHazardWeightLowerBound":"UNKNOWN",
+    "stableFlowShareGuarantee":"UNKNOWN",
+    "liveCurrentMiniAmount":"STALE_NEEDS_FRESH_OPERATOR_VISUAL_OR_TICKER",
+    "decision":"NO_PLAY"
+  },
+  "interpretation":"This result does NOT authorize entering at EUR180.13. It converts the problem into a measurable requirement: at any fresh Mini amount, a green needs a provider/operator-bound lower bound on relative jackpot weight r at least as large as r_required, plus freshness/order/risk gates.",
+  "hardGuards":{
+    "higherBetMeansHigherChanceIsNotTreatedAsProportionality":true,
+    "oneObservedCycleCannotBindHazardShape":true,
+    "meterFractionIsNotProbability":true,
+    "crossNetworkHistoriesCannotSetR":true,
+    "noRealMoneyProbe":true,
+    "noAutomaticBetting":true
+  }
+}
