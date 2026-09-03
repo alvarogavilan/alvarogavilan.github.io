@@ -1,0 +1,97 @@
+{
+  "version":"botemania-blueprint-jackpot-king-shared-system-hazard-binding-2026-09-03-v1",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operator":"Botemanía España",
+  "provider":"Blueprint Gaming",
+  "mainObservedBeforeWrite":"4752d99663006b8b48355f17c06fa8c9cbeea693",
+  "operatorBoundHighContributionCandidate":{
+    "game":"Fishin' Frenzy Megaways: Jackpot King",
+    "url":"https://www.botemania.es/juegos/slots-online/fishin-frenzy-megaways-jackpot-king",
+    "betRangeEUR":{"min":0.10,"max":20},
+    "baseRtpPct":93.32,
+    "currentPotContributionPct":2.32,
+    "reserveContributionPct":0.68,
+    "publishedTotalRtpPct":96.32,
+    "jackpotAvailableAtAnyBet":true,
+    "jackpotProbabilityProportionalToTotalBet":true,
+    "probabilityIncreasesWithJackpotValue":true,
+    "royalAndRegalMustBeWonBeforePublishedPaytableValues":true,
+    "sharedWithAllBlueprintJackpotKingTitlesAtBotemaniaAndCanalBingo":true,
+    "firstTriggerWinsRace":true,
+    "displayMayLag":true,
+    "jackpotsGrowOnlyFromPlayerBets":true,
+    "pageInternalContributionConsistency":true
+  },
+  "operatorBoundLowContributionComparator":{
+    "game":"Mega Bars Fortune Wheel: Jackpot King",
+    "url":"https://www.botemania.es/juegos/slots-online/mega-bars-fortune-wheel-jackpot-king",
+    "betRangeEUR":{"min":0.10,"max":10},
+    "baseRtpPct":95.50,
+    "currentPotContributionPct":0.38,
+    "reserveContributionPct":0.11,
+    "publishedTotalRtpPct":95.99,
+    "jackpotAvailableAtAnyBet":true,
+    "jackpotProbabilityProportionalToTotalBet":true,
+    "probabilityIncreasesWithJackpotValue":true,
+    "sharedJackpotKingNetwork":true,
+    "pageInternalContributionConsistency":true
+  },
+  "blueprintProviderFamilyEvidence":{
+    "sourceClass":"BLUEPRINT_FILE_SERVICE_GAME_HELP",
+    "exampleUrl":"https://fileservice.blueprintgaming.com/?affiliate=&customer=Betfair_Sky&fileType=help&gameEngineID=fishingfrenzyjk&language=EN&profile=jackpotkingdeluxe3",
+    "jackpotKingDeluxeSystemAvailableOnAnyStakeOnAnyGamePluggedIntoSystem":true,
+    "jackpotResetsToReserveAndGrowsAgain":true,
+    "chanceOfWinningJackpotIncreasesWithJackpotValue":true,
+    "royalAndRegalMustBeWonBy":true,
+    "simultaneousWinsResolvedByFirstTrigger":true,
+    "jackpotsFundedByPlayerStakeContributionsExceptInitialSeeds":true,
+    "absoluteCrossTitleHazardCoefficientPublished":false,
+    "explicitContributionProfileToHazardCoefficientMappingPublished":false
+  },
+  "criticalArchitectureResult":{
+    "withinTitleStakeProportionality":"VERIFIED_OPERATOR_BOUND",
+    "sharedSystemMembership":"VERIFIED_OPERATOR_AND_PROVIDER_FAMILY_BOUND",
+    "crossTitleAbsoluteHazardCoefficientEquality":"UNKNOWN_NOT_PUBLISHED",
+    "highContributionVsLowContributionRatio":6.105263157894737,
+    "highCurrentPotContributionVsLowRatio":6.105263157894737,
+    "warning":"The 2.32% versus 0.38% current-pot funding ratio is not treated as a trigger-probability ratio. Shared pots plus within-title proportionality do not logically prove identical or funding-proportional absolute hazard coefficients across different game profiles.",
+    "executionImpact":"Fishin' Frenzy Megaways remains P0 because its current operator page is internally consistent and stake proportionality is explicit, but it cannot be promoted to execution until the cross-title weight/lower-bound problem and exact live Royal/Regal state are bound."
+  },
+  "pageQualityFindings":{
+    "cleanExecutionResearchPages":[
+      "Fishin' Frenzy Megaways: Jackpot King",
+      "Fishin' Frenzy: Jackpot King",
+      "Mega Bars Fortune Wheel: Jackpot King"
+    ],
+    "quarantineExamples":[
+      {
+        "game":"Eye of Horus: Jackpot King",
+        "reason":"Jackpot body states 2.32% current + 0.68% reserve while RTP section states 0.38% + 0.11%; page is self-contradictory for configuration binding."
+      },
+      {
+        "game":"The Goonies Return: Jackpot King",
+        "reason":"Jackpot body states 2.32% current + 0.68% reserve while RTP section states 0.38% + 0.11%; page is self-contradictory for configuration binding."
+      }
+    ]
+  },
+  "executionVariablesStillRequired":[
+    "fresh Botemanía-served Royal and Regal amounts",
+    "exact current Royal and Regal Must-Be-Won-By values from same game/network binding",
+    "provider/operator-bound absolute jackpot trigger weight per EUR across the shared network, or a defendible lower bound for the selected title relative to network wager flow",
+    "freshness/display-lag bound sufficient for race execution",
+    "operator-bound exact stake accepted by the selected title",
+    "competition/race treatment preserving the lower bound"
+  ],
+  "decision":"NO_PLAY",
+  "reason":"STAKE_PROPORTIONALITY_AND_SHARED_NETWORK_ARE_STRONGER_THAN POWERPLAY, BUT CROSS_TITLE_ABSOLUTE_HAZARD_WEIGHT_AND_LIVE_MHB_STATE_REMAIN_UNBOUND.",
+  "hardGuards":{
+    "noFundingRateEqualsHazardAssumption":true,
+    "noSharedNetworkEqualsEqualCoefficientAssumption":true,
+    "noStaleOrContradictoryPageExecution":true,
+    "noDisplayValueFreshnessAssumption":true,
+    "noRealMoneyProbe":true,
+    "noAutomaticBetting":true
+  }
+}
