@@ -14,16 +14,6 @@ export const TICKER_CODES=Object.freeze({
 });
 
 export const CONTRACTS=Object.freeze({
-  norseLegends:{
-    game:'Age of the Gods Norse: Norse Legends',
-    operator:'JOKERBET España',provider:'Playtech',
-    separatedBaseRtpPct:94.20,rtpIncludingJackpotPct:94.75,jackpotContributionPct:0.55,
-    minStakeEUR:0.20,maxStakeEUR:5,
-    activeTiers:['Ultimate','Extra','Instant'],
-    extraMhb:true,instantMhb:true,hotSignal:true,
-    anyStakeCanActivate:true,higherStakeIncreasesChance:true,mainGameOnly:true,
-    linkedAcrossNorseGames:true,status:STATUS.VERIFIED_OPERATOR_BOUND
-  },
   bookOfDwarves:{
     game:'Age of the Gods Norse: Book of Dwarves',
     operator:'JOKERBET España',provider:'Playtech',
@@ -41,6 +31,36 @@ export const CONTRACTS=Object.freeze({
     minStakeEUR:0.10,maxStakeEUR:60,
     activeTiers:['Ultimate','Extra'],
     extraMhb:true,instantMhb:false,hotSignal:true,
+    anyStakeCanActivate:true,higherStakeIncreasesChance:true,mainGameOnly:true,
+    linkedAcrossNorseGames:true,status:STATUS.VERIFIED_OPERATOR_BOUND
+  },
+  waysOfThunder:{
+    game:'Age of the Gods Norse: Ways of Thunder',
+    operator:'JOKERBET España',provider:'Playtech',
+    separatedBaseRtpPct:94.50,rtpIncludingJackpotPct:95.05,jackpotContributionPct:0.55,
+    minStakeEUR:0.20,maxStakeEUR:4,
+    activeTiers:['Ultimate','Extra','Instant'],
+    extraMhb:true,instantMhb:true,hotSignal:true,
+    anyStakeCanActivate:true,higherStakeIncreasesChance:true,mainGameOnly:true,
+    linkedAcrossNorseGames:true,status:STATUS.VERIFIED_OPERATOR_BOUND
+  },
+  godsAndGiants:{
+    game:'Age of the Gods Norse: Gods and Giants',
+    operator:'JOKERBET España',provider:'Playtech',
+    separatedBaseRtpPct:94.38,rtpIncludingJackpotPct:94.93,jackpotContributionPct:0.55,
+    minStakeEUR:0.20,maxStakeEUR:50,
+    activeTiers:['Ultimate','Extra','Instant'],
+    extraMhb:true,instantMhb:true,hotSignal:true,
+    anyStakeCanActivate:true,higherStakeIncreasesChance:true,mainGameOnly:true,
+    linkedAcrossNorseGames:true,status:STATUS.VERIFIED_OPERATOR_BOUND
+  },
+  norseLegends:{
+    game:'Age of the Gods Norse: Norse Legends',
+    operator:'JOKERBET España',provider:'Playtech',
+    separatedBaseRtpPct:94.20,rtpIncludingJackpotPct:94.75,jackpotContributionPct:0.55,
+    minStakeEUR:0.20,maxStakeEUR:5,
+    activeTiers:['Ultimate','Extra','Instant'],
+    extraMhb:true,instantMhb:true,hotSignal:true,
     anyStakeCanActivate:true,higherStakeIncreasesChance:true,mainGameOnly:true,
     linkedAcrossNorseGames:true,status:STATUS.VERIFIED_OPERATOR_BOUND
   }
