@@ -31,6 +31,10 @@ export const NETWORK=Object.freeze({
   numericBoundaryStatus:STATUS.UNKNOWN,
   exactPotValueToHazardLaw:null,
   exactPotValueToHazardLawStatus:STATUS.UNKNOWN,
+  tierSpecificCurrentPotFundingFraction:null,
+  tierSpecificCurrentPotFundingStatus:STATUS.UNKNOWN,
+  boundaryCrossingAwardOwnershipRule:null,
+  boundaryCrossingAwardOwnershipStatus:STATUS.UNKNOWN,
   crossGameHazardWeightEqualityBeyondStakeProportionality:null,
   crossGameHazardWeightEqualityStatus:STATUS.UNKNOWN
 });
@@ -41,14 +45,9 @@ export function totalFundingRatio(){return MEGA_BARS.totalJackpotFundingPct/100;
 export function currentPotFundingRatio(){return MEGA_BARS.jackpotCurrentPotContributionPct/100;}
 export function reserveFundingRatio(){return MEGA_BARS.jackpotReserveContributionPct/100;}
 
-// Diagnostic only: how large the conditional jackpot-system return would need to be
-// relative to its long-run funding rate to offset the base-game loss.
 export function requiredJackpotReturnMultiplierVsTotalFunding(){return baseLossRatio()/totalFundingRatio();}
 export function requiredJackpotReturnMultiplierVsCurrentPotFunding(){return baseLossRatio()/currentPotFundingRatio();}
 
-// If a verified per-EUR hazard lower bound for ONE jackpot tier ever becomes available,
-// this gives the conservative return contribution from that tier. Other jackpot/bonus
-// returns are deliberately ignored, making this a lower-bound component.
 export function conservativeReturnFromTier({stakeEUR,jackpotAwardEUR,hazardPerEURLowerBound}){
   if(!(stakeEUR>=MEGA_BARS.minStakeEUR&&stakeEUR<=MEGA_BARS.maxStakeEUR)) throw new Error('STAKE_OUTSIDE_OPERATOR_BOUNDS');
   if(!(jackpotAwardEUR>0)) throw new Error('POSITIVE_JACKPOT_REQUIRED');
@@ -57,12 +56,40 @@ export function conservativeReturnFromTier({stakeEUR,jackpotAwardEUR,hazardPerEU
   return baseReturnRatio()+pLower*jackpotAwardEUR/stakeEUR;
 }
 
-// Because Botemanía explicitly states jackpot probability is proportional to Total Bet,
-// EV per euro is stake-invariant ONLY for the jackpot-hazard component at a fixed game/network state.
-// This does NOT prove identical proportionality constants across different Jackpot King titles.
+// Botemanía explicitly binds jackpot probability to Total Bet, so the jackpot-hazard
+// component is proportional to stake within this exact game/configuration. This does not
+// prove equal proportionality constants across different Jackpot King titles.
 export function stakeScalingDiagnostic({stakeEUR,hazardPerEUR}){
   if(!(stakeEUR>0&&hazardPerEUR>=0)) throw new Error('VALID_STAKE_AND_HAZARD_REQUIRED');
   return {stakeEUR,nextSpinProbability:Math.min(1,stakeEUR*hazardPerEUR),hazardPerEUR,scope:'WITHIN_BOUND_PROPORTIONAL_STAKE_MODEL_ONLY'};
+}
+
+// Model-free terminal route. This deliberately does NOT infer a trigger curve. It can
+// only become informative if provider/operator evidence binds all mechanics needed to
+// prove that OUR accepted wager necessarily owns an MHB-crossing award. At present those
+// bindings are unknown, so real execution remains blocked.
+export function terminalCrossingGate({
+  tier,stakeEUR,liveAmountEUR,boundaryEUR,
+  tierContributionPerEURLowerBound=null,
+  runtimeBinding=STATUS.UNKNOWN,
+  tierFundingBinding=STATUS.UNKNOWN,
+  boundaryCrossingOwnershipBinding=STATUS.UNKNOWN,
+  acceptedWagerOwnershipVerified=false,
+  displayFreshnessVerified=false
+}={}){
+  if(!['Royal','Regal'].includes(tier)) return {decision:'NO_PLAY',reason:'ONLY_MHB_TIERS_SUPPORTED',realMoneyAllowed:false,realStakeEUR:0};
+  if(!(stakeEUR>=MEGA_BARS.minStakeEUR&&stakeEUR<=MEGA_BARS.maxStakeEUR)) return {decision:'NO_PLAY',reason:'STAKE_OUTSIDE_OPERATOR_BOUNDS',realMoneyAllowed:false,realStakeEUR:0};
+  if(!(liveAmountEUR>0&&boundaryEUR>liveAmountEUR)) return {decision:'NO_PLAY',reason:'LIVE_AMOUNT_AND_BOUNDARY_REQUIRED',realMoneyAllowed:false,realStakeEUR:0};
+  if(runtimeBinding!==STATUS.VERIFIED_OPERATOR_BOUND) return {decision:'NO_PLAY',reason:'BOTEMANIA_RUNTIME_BINDING_REQUIRED',realMoneyAllowed:false,realStakeEUR:0};
+  if(tierFundingBinding!==STATUS.VERIFIED_OPERATOR_BOUND&&tierFundingBinding!==STATUS.VERIFIED_PROVIDER_BOUND) return {decision:'NO_PLAY',reason:'TIER_SPECIFIC_FUNDING_LOWER_BOUND_REQUIRED',realMoneyAllowed:false,realStakeEUR:0};
+  if(!(Number.isFinite(tierContributionPerEURLowerBound)&&tierContributionPerEURLowerBound>0)) return {decision:'NO_PLAY',reason:'POSITIVE_TIER_CONTRIBUTION_PER_EUR_REQUIRED',realMoneyAllowed:false,realStakeEUR:0};
+  const guaranteedOwnIncrement=stakeEUR*tierContributionPerEURLowerBound;
+  const gap=boundaryEUR-liveAmountEUR;
+  if(gap>guaranteedOwnIncrement) return {decision:'NO_PLAY',reason:'OWN_WAGER_CANNOT_PROVE_BOUNDARY_CROSSING',gapEUR:gap,guaranteedOwnIncrementEUR:guaranteedOwnIncrement,realMoneyAllowed:false,realStakeEUR:0};
+  if(boundaryCrossingOwnershipBinding!==STATUS.VERIFIED_OPERATOR_BOUND&&boundaryCrossingOwnershipBinding!==STATUS.VERIFIED_PROVIDER_BOUND) return {decision:'NO_PLAY',reason:'BOUNDARY_CROSSING_AWARD_OWNERSHIP_NOT_BOUND',gapEUR:gap,guaranteedOwnIncrementEUR:guaranteedOwnIncrement,realMoneyAllowed:false,realStakeEUR:0};
+  if(!acceptedWagerOwnershipVerified) return {decision:'NO_PLAY',reason:'ACCEPTED_WAGER_RACE_OWNERSHIP_NOT_VERIFIED',realMoneyAllowed:false,realStakeEUR:0};
+  if(!displayFreshnessVerified) return {decision:'NO_PLAY',reason:'LIVE_DISPLAY_FRESHNESS_NOT_VERIFIED',realMoneyAllowed:false,realStakeEUR:0};
+  return {decision:'TERMINAL_CROSSING_MATH_CANDIDATE_ONLY',reason:'STILL_REQUIRES_EXACT_AWARD_AND_BASE_EV_CHECK',gapEUR:gap,guaranteedOwnIncrementEUR:guaranteedOwnIncrement,realMoneyAllowed:false,realStakeEUR:0};
 }
 
 export function executionGate(state={}){
