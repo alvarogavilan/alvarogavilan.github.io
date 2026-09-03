@@ -1,0 +1,94 @@
+{
+  "version": "bet365-spain-sporting-current-refresh-2026-09-03-v1",
+  "generatedAtDate": "2026-09-03",
+  "mode": "RESEARCH_ONLY_NO_PLAY",
+  "realMoneyAllowed": false,
+  "realStakeEUR": 0,
+  "operator": "bet365 Spain",
+  "market": "ES",
+  "sourceType": "ONLINE",
+  "promotion": false,
+  "officialCurrentPdf": {
+    "url": "https://content001.bet365.es/help/docs/es/rtptables/currentpdf/Spanishv2.pdf",
+    "observedCurrentEndpointDate": "2026-09-03",
+    "caveat": "The endpoint is the operator currentpdf surface. Its realized-period columns shown in the document are historical and must never be treated as current prospective RTP. Only the operator-published theoretical RTP and min/max stake columns are retained here as current-table contract evidence.",
+    "rows": [
+      {
+        "title": "Bobby George: Sporting Legends",
+        "minimumBetEUR": 0.10,
+        "maximumBetEUR": 25.00,
+        "publishedTheoreticalRtpPct": 96.49,
+        "pdfPageZeroIndexed": 5,
+        "providerGameCodeFromIndependentPlaytechTickerCodeDocument": "gpas_bgeorge_pop"
+      },
+      {
+        "title": "Brian Lara: Sporting Legends",
+        "minimumBetEUR": 0.10,
+        "maximumBetEUR": 100.00,
+        "publishedTheoreticalRtpPct": 96.07,
+        "pdfPageZeroIndexed": 5,
+        "providerGameCodeFromIndependentPlaytechTickerCodeDocument": "gpas_slblara_pop"
+      },
+      {
+        "title": "Frank Bruno: Sporting Legends",
+        "minimumBetEUR": 0.10,
+        "maximumBetEUR": 100.00,
+        "publishedTheoreticalRtpPct": 95.92,
+        "pdfPageZeroIndexed": 10,
+        "providerGameCodeFromIndependentPlaytechTickerCodeDocument": "gpas_slfbruno_pop"
+      }
+    ]
+  },
+  "currentPublicFrontend": {
+    "frankBruno": {
+      "url": "https://casino.bet365.es/play/FrankBrunoSL",
+      "observedAccessibleDate": "2026-09-03",
+      "pageTitle": "Play Frank Bruno: Sporting Legends - bet365 Slots",
+      "sportingLegendsNavigationPresent": true,
+      "exactPublicPlayRouteVerified": true
+    },
+    "bobbyGeorgeExactPublicPlayRouteVerified": false,
+    "brianLaraExactPublicPlayRouteVerified": false,
+    "note": "Failure to recover an indexed public route for Bobby/Brian is not evidence that they are unavailable; it simply cannot be promoted to a current frontend binding from public search."
+  },
+  "providerFamilyEvidence": {
+    "family": "Sporting Legends Jackpot",
+    "dailyCode": "sljp-1",
+    "weeklyCode": "sljp-2",
+    "megaCode": "sljp-3",
+    "listedCodesIncludeAllThreeCandidates": true,
+    "licenseeSpecificInstanceEqualityVerified": false,
+    "firstBetFollowingDayRuleProviderDocumented": true,
+    "guaranteedHitTimeTickerAttributeDocumented": true
+  },
+  "researchRankingNow": {
+    "lowestPublishedMinimumStakeEUR": 0.10,
+    "bestTheoreticalRtpAmongCurrentTableTenCentRows": "Bobby George: Sporting Legends",
+    "bestCurrentPublicRouteBindingAmongTenCentRows": "Frank Bruno: Sporting Legends",
+    "interpretation": "Bobby is the best economics candidate if its current served binding is recovered; Frank is the strongest immediately verifiable public frontend because its exact bet365 Spain play route is current. Neither fact proves a licensee-specific sljp-1 runtime or overdue state."
+  },
+  "blockingForAnyGreen": [
+    "exact current bet365 Spain served game/provider binding",
+    "licensee-specific IMS or jackpotsCasino",
+    "licensee-specific ticker endpoint",
+    "fresh EUR local=0 sljp-1 amount / guaranteedHitTime / winc / timestamp vector",
+    "cross-guaranteedHitTime same-binding pair with no win/reset",
+    "served 0.10 EUR jackpot eligibility",
+    "manual action latency frozen prospectively",
+    "validated prospective first-eligible-bet race ledger",
+    "defendible race lower bound strictly above exact break-even probability",
+    "fresh final same-binding recheck"
+  ],
+  "decision": "NO_PLAY",
+  "hardGuards": {
+    "operatorCurrentPdfDoesNotProveServedVariant": true,
+    "publishedMinimumDoesNotProveJackpotEligibility": true,
+    "globalProviderFamilyDoesNotProveLicenseeSharedInstance": true,
+    "realizedPeriodPayoutDoesNotSetProspectiveRtp": true,
+    "publicFrontendDoesNotProveTickerBinding": true,
+    "noWagerProbe": true,
+    "noAutomaticBetting": true,
+    "onlineOnly": true,
+    "nonPromoOnly": true
+  }
+}
