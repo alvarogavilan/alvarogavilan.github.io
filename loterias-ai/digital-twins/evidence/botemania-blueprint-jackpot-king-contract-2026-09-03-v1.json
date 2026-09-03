@@ -1,0 +1,59 @@
+{
+  "version":"botemania-blueprint-jackpot-king-contract-2026-09-03-v1",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operator":"Botemanía España",
+  "provider":"Blueprint Gaming",
+  "executionVehicle":{
+    "game":"Mega Bars Fortune Wheel: Jackpot King",
+    "status":"VERIFIED_OPERATOR_BOUND",
+    "minStakeEUR":0.10,
+    "maxStakeEUR":10,
+    "baseRtpPct":95.50,
+    "currentPotContributionPct":0.38,
+    "reserveContributionPct":0.11,
+    "totalJackpotFundingPct":0.49,
+    "anyStakeEligible":true,
+    "jackpotProbabilityProportionalToTotalBet":true,
+    "jackpotsSharedAcrossBlueprintJackpotKingGames":true,
+    "jackpotProbabilityIncreasesWithPotValue":true,
+    "royalMustBeWonBy":true,
+    "regalMustBeWonBy":true
+  },
+  "derivedDiagnostics":{
+    "baseLossPct":4.50,
+    "requiredConditionalJackpotSystemReturnPctToBreakEven":4.50,
+    "requiredMultiplierVsTotalJackpotFunding":9.183673469387756,
+    "requiredMultiplierVsCurrentPotFunding":11.842105263157896,
+    "interpretation":"These are feasibility diagnostics only. Funding rate is not itself a trigger probability or conditional jackpot RTP."
+  },
+  "publicStateResearch":{
+    "liveRoyalAmountEUR":null,
+    "liveRegalAmountEUR":null,
+    "liveJackpotKingAmountEUR":null,
+    "royalBoundaryEUR":null,
+    "regalBoundaryEUR":null,
+    "botemaniaPublicIndexedLiveTickerFound":false,
+    "botemaniaPublicWinnerHistoryWithRoyalRegalHitAmountsFound":false,
+    "genericBlueprintCrossOperatorBoundaries":{"royal":3500,"regal":35000,"currency":"GBP/reference-only","status":"CROSS_OPERATOR_ONLY"}
+  },
+  "criticalUnknowns":[
+    "Botemanía live Royal/Regal/Jackpot King amounts",
+    "Botemanía numeric Royal/Regal boundaries as displayed in the current game",
+    "exact Blueprint pot-value-to-hazard function",
+    "whether the proportionality constant per EUR is identical across all linked Jackpot King titles/configuration generations",
+    "fresh display latency and race ordering"
+  ],
+  "scientificGuard":"Generic MHB literature often assumes a uniformly selected hidden threshold, but that architecture is not Blueprint-bound. It must never be used to trigger execution here.",
+  "decision":"NO_PLAY",
+  "reason":"Operator contract is unusually strong and stake scaling is bound, but live MHB state and the pot-value-to-hazard law remain unbound.",
+  "hardGuards":{
+    "uniformHiddenThresholdAssumptionCannotTriggerGreen":true,
+    "crossOperator3500And35000CannotBindBotemaniaEUR":true,
+    "fundingPercentageIsNotHazard":true,
+    "proportionalToStakeDoesNotProveCrossGameWeightEquality":true,
+    "noRealMoneyProbe":true,
+    "noAutomaticBetting":true
+  }
+}
