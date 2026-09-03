@@ -1,0 +1,51 @@
+{
+  "version":"powerplay-external-score-methodology-and-runtime-stake-2026-09-03-v1",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operator":"JOKERBET España",
+  "game":"Djinn of Storms PowerPlay Jackpot",
+  "operatorLiveEvidence":{
+    "miniResetObservedEUR":102.48,
+    "miniWinObservedEUR":172.00,
+    "miniDisplayedPreResetEUR":170.85,
+    "peakBoundaryEUR":3000,
+    "miniBoundaryEUR":200,
+    "runtimeDisplayedStakeEUR":0.05,
+    "runtimeStakeStatus":"OBSERVED_SELECTED_STAKE_NOT_PROVEN_MINIMUM",
+    "operatorPageAdvertisedMinStakeEUR":0.01,
+    "stakeGuard":"Do not use 0.01 as executable stake until session UI proves it can actually be selected."
+  },
+  "providerDocumentation":{
+    "jackpotContributionPct":2.99,
+    "currentJackpotsShareOfContributionPct":38.66,
+    "nextSeedShareOfContributionPct":61.34,
+    "anyMainGameSpinCanTrigger":true,
+    "higherBetGreaterChance":true,
+    "linkedAcrossMultipleGamesAndCasinos":true,
+    "sourceType":"Playtech product PDF mirror"
+  },
+  "externalHistoricalMethodology":{
+    "source":"WizardOfPots",
+    "scope":"CROSS_OPERATOR_ONLY",
+    "scoreDefinitionForType1":"100*(value-seed)/(averageHit-seed)",
+    "type5Methodology":"non-linear empirical jackpot-RTP score derived from observed hit distribution",
+    "warning":"External SCORE/RTP values cannot be transferred to JOKERBET execution because network/currency/configuration binding is not established.",
+    "observedExternalPowerPlayExample":{"miniValueUSD":171,"miniScore":105,"reportedEstimatedRtpPct":96.14,"peakValueUSD":2873,"peakScore":88,"reportedEstimatedRtpPct":96.14},
+    "interpretation":"A high fraction of a displayed cap is not itself a hit probability or +EV signal."
+  },
+  "distributionResearch":{
+    "uniformHiddenThreshold":"NOT_SUPPORTED",
+    "reason":"Public capped-jackpot trackers explicitly use non-linear empirical curves for capped/flat-range jackpots; generic MHB patents also allow state-dependent increasing hazard rather than a uniformly selected hidden threshold.",
+    "playtechSpecificTriggerLaw":"UNKNOWN"
+  },
+  "decision":"NO_PLAY",
+  "reason":"One operator-bound cycle is insufficient for a defendible positive hazard lower bound; external empirical curves are cross-operator and cannot trigger green.",
+  "hardGuards":{
+    "meterFractionIsNotProbability":true,
+    "externalScoreCannotTriggerExecution":true,
+    "operatorPageMinStakeCannotOverrideRuntimeWithoutUIProof":true,
+    "oneObservedCycleCannotEstimateDistribution":true,
+    "noRealMoneyProbe":true
+  }
+}
