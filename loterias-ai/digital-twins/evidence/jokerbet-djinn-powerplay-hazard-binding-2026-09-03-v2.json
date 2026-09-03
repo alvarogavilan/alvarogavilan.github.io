@@ -1,0 +1,97 @@
+{
+  "version":"jokerbet-djinn-powerplay-hazard-binding-2026-09-03-v2",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operator":"JOKERBET España",
+  "provider":"Playtech",
+  "game":"Djinn of Storms PowerPlay Jackpot",
+  "mainObservedBeforeWrite":"1572f91793343a89937a2c7fcfe7c6df910ac9ea",
+  "operatorBoundContract":{
+    "currentPage":"https://www.jokerbet.es/tragaperras-slots/djinn-of-storms-powerplay-jackpot.html",
+    "officialRulesPdf":"https://www.jokerbet.es/img/logos/pdf/djinn-of-storms-powerplay-jackpot.pdf",
+    "rtpIncludingJackpotContributionPct":96.49,
+    "jackpotContributionPct":2.99,
+    "separatedBaseRtpPct":93.50,
+    "pageMinStakeEUR":0.01,
+    "pageMaxStakeEUR":25,
+    "anySpinAnyAmountCanActivate":true,
+    "higherBetGivesMoreChances":true,
+    "exactStakeToJackpotHazardFunctionPublishedInReviewedRules":false,
+    "stakeHazardProportionalityPublishedInReviewedRules":false,
+    "mainGameOnly":true,
+    "linkedAcrossSeveralPowerPlayGamesAndCasinos":true,
+    "peakMayActivateBeforeDisplayedBoundary":true,
+    "miniMayActivateBeforeDisplayedBoundary":true
+  },
+  "observedOperatorLiveMiniCycle":{
+    "snapshotsEUR":[111.01,150.30,166.41,170.85],
+    "awardNotificationEUR":172.00,
+    "displayedBoundaryEUR":200.00,
+    "postAwardSnapshotEUR":102.48,
+    "tierIdentification":"MINI_STRONGLY_IDENTIFIED_BY_AWARD_SIZE_AND_RESET",
+    "completedCycles":1,
+    "warning":"One observed cycle proves pre-boundary awards occur but does not estimate the threshold or hazard distribution."
+  },
+  "observedMeterFundingProxy":{
+    "jackpotContributionRatio":0.0299,
+    "currentJackpotFundingShareOfContribution":0.3866,
+    "conservativeObservedMiniGrowthShare":0.5587929240,
+    "tierFundingPerNetworkEUR":0.00645927739811016,
+    "status":"CONDITIONAL_PROXY_FROM_PROVIDER_FAMILY_FUNDING_RULE_PLUS_OPERATOR_LIVE_METER_GROWTH",
+    "warning":"Meter funding is not jackpot trigger probability and is never substituted for hazard."
+  },
+  "distributionFreeConditionalChaseMath":{
+    "formulaLowerReturnRatio":"baseRtp + rLower * tierFundingPerNetworkEUR * boundary / (boundary-currentAmount)",
+    "formulaRequiredRelativeHazardWeight":"(1-baseRtp)*(boundary-currentAmount)/(tierFundingPerNetworkEUR*boundary)",
+    "meaningOfR":"Lower bound on our jackpot trigger weight per eligible wager EUR relative to the network wager-flow weight under the chase model.",
+    "requiredRelativeHazardWeightByMiniAmount":{
+      "166.41":1.6900884305098895,
+      "170":1.5094567703273796,
+      "172":1.408826318972221,
+      "180":1.0063045135515865,
+      "185":0.7547283851636898,
+      "190":0.5031522567757932,
+      "195":0.2515761283878966
+    },
+    "breakEvenMiniAmountIfRLowerWereExactly1EUR":180.1253003135072,
+    "criticalQualification":"r=1 is not known or assumed. The break-even amount is a diagnostic only and cannot trigger execution."
+  },
+  "monotonicityLowerBoundResult":{
+    "publishedFact":"Higher bet gives more chances to win a jackpot.",
+    "mathematicalConsequence":"Monotonic increase alone supplies no strictly positive quantitative lower bound for jackpot hazard at any particular allowed stake. A monotone increasing hazard function may remain arbitrarily close to zero at the chosen stake.",
+    "defendibleHazardLowerBoundFromPublishedWordingAlone":0,
+    "executionConsequence":"Current public operator wording cannot prove lowerReturnRatio > 1."
+  },
+  "implementation":{
+    "module":"loterias-ai/digital-twins/games/jokerbet-playtech-powerplay.mjs",
+    "featureCommit":"7f629cc9e6f99e3c4f80667d64ba8499d39d6597",
+    "testCommit":"1572f91793343a89937a2c7fcfe7c6df910ac9ea",
+    "newFunctions":["powerplayTierFundingPerNetworkEUR","requiredRelativeHazardWeight","conditionalChaseLowerReturn"],
+    "rankingTestCorrection":"Tip Top Totems, not Djinn, has the lowest separated base loss among the currently encoded exact contracts. This is not a jackpot-EV ranking."
+  },
+  "blockingUnknowns":[
+    "provider/operator-bound quantitative stake-to-jackpot-hazard law or defendible lower bound r",
+    "fresh operator-bound Mini amount at execution time",
+    "accepted-wager ordering and display freshness",
+    "stable/non-adversarial network flow share during a chase",
+    "competition/race effects sufficient to preserve the lower bound"
+  ],
+  "nextResearchPriority":[
+    "Search Playtech/JOKERBET technical, regulatory, certification, patent and integration material for a quantitative PowerPlay stake-weight rule.",
+    "Do not request or use real-money spins to estimate hazard.",
+    "Keep passive live cycle observations as evidence only; more cycles may falsify candidate models but cannot by themselves justify a guaranteed lower bound without a valid statistical design.",
+    "Continue the Botemania/Blueprint Jackpot King lane in parallel because operator wording there explicitly binds jackpot probability to Total Bet, while still requiring cross-title coefficient and live-state proof."
+  ],
+  "decision":"NO_PLAY",
+  "reason":"LIVE_MHB_CYCLE_AND_CONTRACT_ARE_STRONG, BUT THE QUANTITATIVE JACKPOT_HAZARD_LOWER_BOUND_REQUIRED_FOR_POSITIVE_EV_REMAINS_UNBOUND.",
+  "hardGuards":{
+    "noCapEqualsAwardAssumption":true,
+    "noUniformHiddenThresholdAssumption":true,
+    "noMeterFundingEqualsHazardAssumption":true,
+    "noHigherBetMeansProportionalHazardAssumption":true,
+    "noOneCycleDistributionInference":true,
+    "noRealMoneyProbe":true,
+    "noAutomaticBetting":true
+  }
+}
