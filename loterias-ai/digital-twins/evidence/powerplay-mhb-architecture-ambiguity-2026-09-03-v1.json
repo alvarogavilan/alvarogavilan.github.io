@@ -1,0 +1,50 @@
+{
+  "version":"powerplay-mhb-architecture-ambiguity-2026-09-03-v1",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "scope":"Playtech PowerPlay Peak/Mini execution modeling",
+  "verifiedPowerPlayFacts":{
+    "currentJackpotsFundedFromBets":true,
+    "jackpotContributionPct":2.99,
+    "currentPotFundingShareOfContributionPct":38.66,
+    "futureSeedFundingShareOfContributionPct":61.34,
+    "anyMainGameSpinCanTrigger":true,
+    "higherStakeIncreasesChance":true,
+    "peakAndMiniHaveDisplayedMustAwardBeforeBoundaries":true,
+    "multipleGamesAndCasinosShareNetwork":true
+  },
+  "publicMHBArchitecturesCompatibleWithTheseFacts":[
+    {
+      "id":"HIDDEN_THRESHOLD",
+      "description":"A secret award threshold is selected within a reset-to-boundary interval and the jackpot is awarded when meter progression reaches/crosses it."
+    },
+    {
+      "id":"STATE_DEPENDENT_HAZARD",
+      "description":"Each wager/spin is evaluated against a state-dependent trigger set whose award probability increases as the meter approaches the must-hit-by boundary."
+    }
+  ],
+  "bindingStatus":{
+    "playtechPowerPlaySpecificArchitecture":"UNKNOWN",
+    "hiddenThresholdDistribution":"UNKNOWN",
+    "stateDependentHazardFunction":"UNKNOWN",
+    "stakeScalingFunction":"UNKNOWN"
+  },
+  "operatorObservation":{
+    "jokerbetMiniCompletedCycles":1,
+    "observedMiniApproxResetEUR":100,
+    "observedMiniAwardNotificationEUR":172,
+    "displayedMiniBoundaryEUR":200,
+    "interpretation":"Compatible with several MHB architectures; one cycle does not identify the architecture or distribution."
+  },
+  "decision":"NO_PLAY",
+  "reason":"Different MHB architectures fit all currently verified PowerPlay evidence but imply different next-spin hazards and optimal entry policies.",
+  "hardGuards":{
+    "doNotAssumeUniformHiddenThreshold":true,
+    "doNotAssumeLinearHazard":true,
+    "doNotInferNextSpinProbabilityFromMeterPercent":true,
+    "doNotUseGenericPatentsAsPlaytechBinding":true,
+    "doNotUseCrossNetworkHitCurvesForExecution":true,
+    "operatorBoundOrProviderBoundHazardRequiredForGreen":true
+  }
+}
