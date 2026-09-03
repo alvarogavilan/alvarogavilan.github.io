@@ -1,52 +1,13 @@
 {
-  "version":"betfair-spain-golden-egypt-arcade-deployment-2026-08-29-v1",
-  "generatedAt":"2026-08-29T14:24:00+02:00",
-  "status":"CURRENT_SPANISH_REAL_MONEY_DEPLOYMENT_VERIFIED_PROVIDER_AND_AP_EQUIVALENCE_UNRESOLVED_NO_PLAY",
+  "version":"betfair-spain-golden-egypt-arcade-deployment-2026-09-03-v2-current-signal",
+  "generatedAt":"2026-09-03T20:45:00+02:00",
+  "status":"CURRENT_SPANISH_DEPLOYMENT_PLUS_CURRENT_REALIZED_RETURN_SIGNAL_NO_PLAY",
   "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
   "realMoneyAllowed":false,
-  "target":{
-    "operator":"Betfair Spain",
-    "product":"Arcade",
-    "title":"Golden Egypt",
-    "exactGameId":"golden-egypt-aem",
-    "exactSpanishInfoRoute":"https://arcade.betfair.es/juego/golden-egypt-aem",
-    "launcherHost":"https://launcher.betfair.es/",
-    "launcherRpBucket":"arcade",
-    "launcherDataChannel":"arcade",
-    "launcherProduct":"arcade",
-    "launcherMode":"real"
-  },
-  "currentSpainEvidence":{
-    "currentBetfairSpainArcadeCatalogPresenceVerified":true,
-    "exactRealLauncherBindingRecovered":true,
-    "regulatedSpanishOperatorContextVerified":true,
-    "exactServedProviderVerified":false,
-    "exactTheoreticalRtpVerified":false,
-    "exactBetMenuVerified":false,
-    "persistentCoinMechanicVerifiedForThisDeployment":false,
-    "preWagerPersistentStateVerified":false
-  },
-  "externalMechanicFamily":{
-    "knownIgtGoldenEgyptVariableStateMechanicExists":true,
-    "finding":"Documented IGT Golden Egypt variants collect persistent coins above reels; completing a reel's coin requirement can make that reel wild for subsequent spins, creating a variable-state AP family when the state is visible and persists.",
-    "externalRtpExamplesPct":[92.20,94.20,96.16,96.18,96.19],
-    "configurationDivergenceMaterial":true,
-    "transferToGoldenEgyptAemAllowed":false
-  },
-  "criticalIdentityWarning":{
-    "betfairGameIdSuffix":"aem",
-    "knownBetfairIgtExamplesUseAigSuffix":true,
-    "suffixAloneDoesNotProveProvider":true,
-    "interpretation":"The current Spanish Golden Egypt deployment is real and exact, but its Arcade wrapper/game-id family differs from current Betfair IGT Casino examples. Until served help/config explicitly identifies the provider and persistence semantics, it cannot be promoted into the IGT Golden Egypt AP model by title alone."
-  },
-  "nextZeroWagerEvidence":[
-    "Open exact golden-egypt-aem without playing and capture splash/provider/copyright marks.",
-    "Open Help/Info/Rules and capture exact provider, RTP, bet menu and coin/persistence wording.",
-    "Record all visible coin/meter state before any wager.",
-    "If bet levels can be changed without a spin, record whether state differs by level.",
-    "Reload without wagering and record whether visible state survives.",
-    "Only after exact provider/mechanic review decide whether the IGT Golden Egypt AP model is applicable."
-  ],
+  "target":{"operator":"Betfair Spain","product":"Arcade","title":"Golden Egypt","exactGameId":"golden-egypt-aem","exactSpanishInfoRoute":"https://arcade.betfair.es/juego/golden-egypt-aem","launcherHost":"https://launcher.betfair.es/","launcherRpBucket":"arcade","launcherDataChannel":"arcade","launcherProduct":"arcade","launcherMode":"real"},
+  "currentSpainEvidence":{"currentBetfairSpainArcadeCatalogPresenceVerified":true,"exactRealLauncherBindingRecovered":true,"regulatedSpanishOperatorContextVerified":true,"currentBetfairRealizedReturnPct":110.62,"currentBetfairRealizedReturnObservedDate":"2026-09-03","realizedReturnMayDriveProspectiveExecution":false,"exactServedProviderVerified":false,"exactTheoreticalRtpVerified":false,"exactBetMenuVerified":false,"persistentCoinMechanicVerifiedForThisDeployment":false,"preWagerPersistentStateVerified":false},
+  "externalMechanicFamily":{"knownIgtGoldenEgyptVariableStateMechanicExists":true,"finding":"Documented IGT Golden Egypt variants collect persistent coins above reels; two coins on a reel can make that reel fully wild for the next two paid spins. In cabinet implementations the visible coin/wild state can be inherited by a following player and can create variable-state advantage opportunities.","currentIndependentMechanicCorroborationDate":"2026-09-03","configurationDivergenceMaterial":true,"transferToGoldenEgyptAemAllowed":false},
+  "decisionLogic":{"whyPriorityRaised":"The exact Betfair Spain deployment is still present and Betfair currently reports a realized return above 100% for Golden Egypt. This is a triage signal only; realized return is not theoretical RTP and cannot prove future edge. The known variable-state family makes served-state verification worthwhile.","greenOnlyIf":["exact served provider/build binds current Betfair golden-egypt-aem to the documented variable-state implementation","help/rules or passive pre-wager observation confirms the coin/wild state mechanic","visible state can be read before any wager","state persistence/scope is proven for the exact online build rather than assumed from physical cabinets","configuration-specific EV for the observed state is computed and conservative lower bound exceeds 100%","fresh pre-wager state recheck passes"]},
   "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
-  "hardGuards":{"sameTitleDoesNotProveProvider":true,"gameIdSuffixDoesNotProveProvider":true,"foreignOrDemoRtpCannotPopulateSpainRtp":true,"externalIgtMechanicCannotPopulateSpainPersistence":true,"currentArcadeWrapperMustBeReviewedExactly":true,"noWagerProbe":true,"noAutomaticBetting":true,"realMoneyAllowed":false}
+  "hardGuards":{"realizedReturnIsNotProspectiveRtp":true,"realizedReturnAbove100CannotAuthorizePlay":true,"sameTitleDoesNotProveProvider":true,"externalIgtMechanicCannotPopulateSpainPersistence":true,"currentArcadeWrapperMustBeReviewedExactly":true,"noWagerProbe":true,"noAutomaticBetting":true,"realMoneyAllowed":false}
 }
