@@ -1,0 +1,62 @@
+{
+  "version":"williamhill-book-scrolls-operator-100pct-deadline-2026-09-03-v1",
+  "generatedAt":"2026-09-03T23:41:00+02:00",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operator":"William Hill Spain",
+  "target":"Book of Scrolls",
+  "operatorUrl":"https://casino.williamhill.es/slots/book-of-scrolls",
+  "currentOperatorEvidence":{
+    "provider":"Section 8 Studio",
+    "publishedMinStakeEUR":0.01,
+    "publishedMaxStakeEUR":100,
+    "publishedRtpPct":96.17,
+    "dailyProgressiveSharedAcrossGames":true,
+    "probabilityIncreasesTowardGuaranteedHitTime":true,
+    "operatorStatesProbabilityReaches100PctAtGuaranteedHitTime":true,
+    "countdownToGuaranteedHitTimeDisplayed":true,
+    "largerStakeIncreasesJackpotChance":true
+  },
+  "publicWidgetObservation":{
+    "samePageContainsAnonymousDailyWidget":true,
+    "observedSnapshotAmountEUR":27.82,
+    "observedSnapshotCountdown":"14h 11m 19s",
+    "bookSpecificBindingVerified":false,
+    "reason":"The crawler renders a shared Daily widget within the page corpus, but the extracted DOM does not prove that this exact widget instance is uniquely bound to Book of Scrolls rather than a shared site-level jackpot component."
+  },
+  "eligibility":{
+    "minimumGameStakeEUR":0.01,
+    "minimumStakeJackpotEligibilityStronglySupported":true,
+    "minimumStakeJackpotEligibilityVerified":false,
+    "reason":"The exact game page says jackpot chance depends on bet size but does not explicitly state that the published 0.01 EUR minimum contributes to and is eligible for the Daily Jackpot."
+  },
+  "deadlineSemantics":{
+    "preDeadlineHazardRises":true,
+    "atDisplayedGuaranteedHitTimeOperatorSaysPlayerWinProbability100Pct":true,
+    "firstContributionAfterMissedDeadlineVerified":false,
+    "postDeadlinePersistenceVerified":false,
+    "raceModelStillRequired":true
+  },
+  "whyThisLaneMatters":{
+    "operatorSpecificDeadlineSemantics":true,
+    "operatorSpecificVeryLowPublishedMinStake":true,
+    "operatorSpecificAnonymousCountdownSurface":true,
+    "potentiallyLowerBaseCostThanSportingLegends":true
+  },
+  "nextDecisiveEvidence":[
+    "bind the visible Daily widget amount/countdown specifically to Book of Scrolls or its Section 8 Daily network",
+    "prove the 0.01 EUR stake is jackpot-contributing/eligible in the served build",
+    "capture the deadline immediately before and at expiry without wagering",
+    "verify whether the 100% statement means the next qualifying contribution at/after the boundary or another server-side assignment rule",
+    "measure competing contribution/race conditions before any positive-EV claim"
+  ],
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{
+    "siteLevelWidgetCannotSelfBindToTarget":true,
+    "publishedGameMinimumCannotSelfProveJackpotEligibility":true,
+    "100PctAtDeadlineDoesNotAuthorizeBlindPreDeadlinePlay":true,
+    "noWagerProbe":true,
+    "noAutomaticBetting":true
+  }
+}
