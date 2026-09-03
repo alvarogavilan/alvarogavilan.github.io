@@ -1,5 +1,5 @@
 {
-  "version":"jokerbet-djinn-mini-optimistic-cap-share-bound-2026-09-03-v1",
+  "version":"jokerbet-djinn-mini-optimistic-cap-share-bound-2026-09-03-v2",
   "mode":"RESEARCH_ONLY",
   "realMoneyAllowed":false,
   "realStakeEUR":0,
@@ -7,26 +7,33 @@
   "game":"Djinn of Storms PowerPlay Jackpot",
   "inputs":{
     "separatedBaseRtpPct":93.50,
-    "miniAmountEUR":150.30,
     "miniBoundaryEUR":200,
-    "observedMiniGrowthEUR":39.29,
-    "observedAllCurrentJackpotGrowthEUR":70.30,
+    "observedMiniShareOfCurrentJackpotGrowth":0.5588621002723618,
     "jackpotContributionPctOfBet":2.99,
-    "fractionContributionFundingCurrentJackpots":0.3866
+    "fractionContributionFundingCurrentJackpots":0.3866,
+    "observedCompletedMiniAwardEUR":172.00,
+    "observedPostAwardMiniEUR":102.48
   },
   "derived":{
-    "observedMiniShareOfCurrentJackpotGrowth":0.5588904694,
-    "effectiveObservedMiniMeterFundingPerEURWager":0.006460404959,
-    "currentGapEUR":49.70,
-    "impliedRemainingNetworkWagerToAmountBoundaryEUR":7693.015,
-    "optimisticCapOnlyJackpotReturnPerEURWager":0.02599760547,
-    "optimisticTotalReturnRatioAtCurrentState":0.9609976055,
-    "optimisticBreakEvenGapEUR":19.87816910,
-    "optimisticBreakEvenMiniAmountEUR":180.1218309
+    "effectiveObservedMiniMeterFundingPerEURWager":0.006460077030162323,
+    "separatedBaseLossRatio":0.065,
+    "oldCapPayoutBenchmarkEUR":180.121,
+    "oldCapPayoutBenchmarkStatus":"SUPERSEDED_AS_TOO_OPTIMISTIC_FOR_PRE_CAP_AWARDS",
+    "uniformHiddenThresholdBreakEvenMiniAmountEUR":181.91975911966728,
+    "uniformHiddenThresholdFormula":"baseRtp + alpha*x/(boundary-x) = 1, where alpha is Mini meter funding per EUR network wager and x is current/award amount",
+    "interpretation":"If and only if a hidden threshold were uniformly distributed over the surviving interval and threshold ownership were proportional to meter contribution, break-even would be about EUR181.92. This is a sensitivity benchmark only."
   },
-  "model":"OPTIMISTIC_LINEAR_WAGER_SHARE_CAP_ONLY",
-  "criticalWarning":"This is not an execution model and not a proven Playtech trigger law. It deliberately assumes a favorable linear wager-share allocation of a forced EUR200 cap payout. Playtech documentation only states that larger bets increase jackpot chance; it does not bind proportionality or threshold-spin ownership. Therefore crossing the optimistic watch threshold cannot itself trigger a green.",
-  "decisionAt150_30":"NO_PLAY",
-  "watchZone":"RECHECK_IF_MINI_AT_OR_ABOVE_180_12_WITH_FRESH_OPERATOR_VISUAL",
-  "hardGuards":{"optimisticModelCannotTriggerGreen":true,"meterGrowthIsNotHazard":true,"stakeProportionalityUnproven":true,"thresholdSpinOwnershipUnproven":true,"noRealMoneyProbe":true}
+  "model":"HYPOTHETICAL_UNIFORM_HIDDEN_THRESHOLD_SENSITIVITY",
+  "criticalWarning":"No Playtech-specific evidence currently binds PowerPlay to a uniform hidden-threshold architecture. Public must-hit-by systems can also use state-dependent per-spin hazard. The observed EUR172 Mini award proves awards occur below the EUR200 boundary and invalidates treating EUR200 as the guaranteed payout amount for entry-EV calculations.",
+  "decision":"NO_PLAY",
+  "watchZone":"NO_EXECUTION_WATCH_THRESHOLD_FROM_THIS_MODEL",
+  "hardGuards":{
+    "uniformThresholdIsHypothesisOnly":true,
+    "capIsNotAwardAmount":true,
+    "meterGrowthIsNotHazard":true,
+    "stakeProportionalityUnproven":true,
+    "thresholdSpinOwnershipUnproven":true,
+    "genericMHBPatentsDoNotBindPowerPlay":true,
+    "noRealMoneyProbe":true
+  }
 }
