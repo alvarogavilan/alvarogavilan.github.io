@@ -1,0 +1,93 @@
+{
+  "version": "sporting-legends-terminal-current-refresh-2026-09-03-v1",
+  "generatedAt": "2026-09-03T20:31:00+02:00",
+  "mode": "RESEARCH_ONLY_NO_PLAY",
+  "market": "ES",
+  "onlineOnly": true,
+  "nonPromoOnly": true,
+  "realMoneyAllowed": false,
+  "realStakeEUR": 0,
+  "targetMechanic": "SPORTING_LEGENDS_DAILY_POST_GHT_FIRST_ELIGIBLE_BET",
+  "betfairSpain": {
+    "apMcCoy": {
+      "operatorPage": "https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn",
+      "currentPageRevalidatedDate": "2026-09-03",
+      "provider": "Playtech",
+      "dailyWeeklyMegaPresent": true,
+      "anyBetAnySizeEligible": true,
+      "largerBetHigherChance": true,
+      "linkedAcrossMultipleGamesAndCasinos": true,
+      "operatorContributionPct": 2.0,
+      "currentJackpotShareOfContributionPct": 84.5,
+      "seedShareOfContributionPct": 15.5,
+      "operatorFundedJackpotsDoNotReduceBaseRtp": true,
+      "firstBetFollowingDayIfNoGameAtDueTime": true,
+      "mainGamePublishedRtpRangePct": [93.03,95.03],
+      "publicRealLauncherVerified": true,
+      "publicGameId": "ap-mccoy-sporting-legends-cptn",
+      "servedMinimumStakeEUR": null,
+      "servedMinimumStakeVerified": false
+    },
+    "robertoCarlos": {
+      "operatorPage": "https://casino.betfair.es/juego/roberto-carlos-sl-cptn",
+      "currentPageRevalidatedDate": "2026-09-03",
+      "provider": "Playtech",
+      "dailyWeeklyMegaPresent": true,
+      "operatorPublishedMinimumBet": 0.30,
+      "operatorPublishedRtpPct": 95.60,
+      "providerSljpFamilyMembership": true,
+      "providerCodes": ["gpas_rcarloslx_pop","gpas_rcarloslxlo_pop","gpas_rcarlos_pop","gpas_rcarloslo_pop"],
+      "sameLicenseeSpecificSljp1InstanceAsApMcCoyVerified": false,
+      "terminalRuleExactTitleOperatorBound": false,
+      "executionVehicleEligible": false
+    }
+  },
+  "playtechProviderEvidence": {
+    "officialApMcCoyReleaseSource": "https://www.playtech.com/ap-mccoy-brings-playtech-power-play-to-sporting-legends-series/",
+    "allSuiteGamesDailyWeeklyMega": true,
+    "anySpinAnyStakeEligible": true,
+    "dailyRetriggersIfWonBefore2100": true,
+    "tickerSpecificationSource": "https://www.scribd.com/document/957977467/Playtech-Jackpot-Ticker-Specifications",
+    "sljp1TickerFields": ["amount","guaranteedHitTime","winc","timestamp","execInterval","local","currency","instancecode"],
+    "exampleSljp1GuaranteedHitTimeUTC": "2017-12-13T00:00:00Z",
+    "exampleMidnightMayPopulateCurrentBetfairGht": false,
+    "reason": "Protocol examples prove field semantics and a historical example only; current licensee-specific Betfair Spain GHT must still be observed."
+  },
+  "currentPublicGlobalCrossChecks": {
+    "observedDate": "2026-09-03",
+    "casinoListingsDailyEURRounded": 123,
+    "jackpotScoutDailyEURRounded": 123,
+    "roundedCrossSourceMatch": true,
+    "sameBetfairSpainInstanceVerified": false,
+    "maySetExecutionAmount": false,
+    "scientificUse": "Strong current global sljp-1 liveness/cross-check clue only until same-instance Betfair Spain binding is established."
+  },
+  "terminalRoute": {
+    "normalRandomHazardRequiredAfterVerifiedPostGhtUnawardedState": false,
+    "mustVerifyBeforeAnyGreen": [
+      "exact current Betfair Spain licensee-specific sljp-1 ticker/IMS binding",
+      "fresh exact EUR local=0 sljp-1 vector including guaranteedHitTime, winc, timestamp and execInterval",
+      "same-binding snapshot before and after guaranteedHitTime with unchanged winc and no reset",
+      "exact served eligible stake for selected execution title",
+      "prospectively frozen manual action latency",
+      "validated prospective race ledger and conservative lower bound",
+      "race lower bound strictly above exact one-bet break-even probability",
+      "fresh final state recheck"
+    ],
+    "currentDecision": "NO_PLAY"
+  },
+  "priorityConclusion": {
+    "rank": 1,
+    "reason": "Unlike ordinary progressive lanes, the verified following-day first-bet mechanic can remove the unknown normal jackpot hazard once a genuine post-GHT unawarded state is demonstrated. The remaining blockers are runtime identity, state freshness, served stake and race probability rather than jackpot trigger-curve estimation.",
+    "greenNow": false
+  },
+  "hardGuards": {
+    "providerExampleGhtCannotPopulateCurrentOperatorGht": true,
+    "thirdPartyRoundedAmountCannotPopulateExecutionState": true,
+    "sameProviderFamilyDoesNotProveSameLicenseeInstance": true,
+    "operatorPublishedMinimumDoesNotProveCrossTitleSharedRuntime": true,
+    "noWagerProbe": true,
+    "noAutomaticBetting": true,
+    "realMoneyAllowed": false
+  }
+}
