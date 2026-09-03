@@ -1,0 +1,27 @@
+{
+  "version":"jokerbet-powerplay-public-tracker-instance-mismatch-2026-09-03-v1",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operator":"JOKERBET España",
+  "network":"Playtech PowerPlay",
+  "jokerbetLiveVisualNearComparison":{
+    "megaEUR":19901.12,
+    "peakEUR":2251.11,
+    "miniEUR":102.48,
+    "miniBoundaryEUR":200,
+    "peakBoundaryEUR":3000,
+    "status":"VERIFIED_OPERATOR_LIVE_VISUAL"
+  },
+  "publicTrackerNearComparison":{
+    "source":"SmartPlayers public Playtech jackpots page",
+    "megaUSD":146259.29,
+    "miniUSD":162.83,
+    "status":"CROSS_NETWORK_PUBLIC"
+  },
+  "conclusion":"The public tracker is not displaying the same jackpot instance as the JOKERBET session. The magnitude mismatch, especially Mega, cannot be explained by ordinary EUR/USD conversion.",
+  "decision":"HARD_EXCLUDE_PUBLIC_TRACKER_FROM_JOKERBET_EXECUTION_BINDING",
+  "allowedUses":["generic architecture research","non-binding prior/sanity checks","discovering provider game/tier naming"],
+  "forbiddenUses":["next-spin hazard","JOKERBET hit CDF","JOKERBET reset distribution","JOKERBET green trigger","JOKERBET live jackpot amount"],
+  "hardGuards":{"crossNetworkHistoryCannotTriggerGreen":true,"currencyConversionCannotBindDifferentInstance":true,"operatorLiveVisualWinsOnConflict":true,"noRealMoneyProbe":true}
+}
