@@ -1,0 +1,46 @@
+{
+  "version":"online-persistent-state-triage-2026-09-03-v1",
+  "generatedAt":"2026-09-03",
+  "status":"RESEARCH_ONLY_NO_PLAY",
+  "scope":{"onlineOnly":true,"nonPromoOnly":true,"realMoneyAllowed":false,"realStakeEUR":0},
+  "findings":[
+    {
+      "game":"Scarab",
+      "provider":"IGT family",
+      "documentedApMechanic":true,
+      "onlineFinding":"Persistent state reported per user account and denomination; cannot assume inheritance from another player.",
+      "currentExecutionEligible":false,
+      "reason":"Shared abandoned-state AP is not established online."
+    },
+    {
+      "game":"Magic of the Nile",
+      "provider":"IGT family",
+      "documentedApMechanic":true,
+      "onlineFinding":"Online implementations reported to start with empty gem towers; this is an unfavorable fixed starting state rather than inherited abandoned state.",
+      "currentExecutionEligible":false,
+      "reason":"No verified favorable starting state in current Betfair deployment."
+    },
+    {
+      "game":"Hexbreak3r",
+      "provider":"IGT",
+      "currentBetfairSpainPresenceVerified":true,
+      "documentedApMechanic":true,
+      "documentedPhysicalEntryHeuristics":["ways>=3500","centerReelHeight>=6","reel under qualifying Luck Zone prize at height 8"],
+      "onlineFinding":"Reported online starting state 3150 ways with center reel height 3; likely configured as a safe state. Betfair Spain realized payout observations are not prospective RTP and cannot authorize play.",
+      "currentExecutionEligible":false,
+      "reason":"No current pre-wager state above a configuration-specific positive-EV threshold is verified."
+    }
+  ],
+  "sources":[
+    "https://wizardofodds.com/games/slots/hexbreak3r/",
+    "https://wizardofodds.com/games/slots/magic-of-the-nile/",
+    "https://wizardofodds.com/games/slots/scarab/",
+    "https://wizardofvegas.com/forum/gambling/online/37997-starting-state-of-online-games/",
+    "https://wizardofvegas.com/forum/gambling/slots/41623-does-ev-exist-online/",
+    "https://casino.betfair.es/info/rtp-info",
+    "https://arcade.betfair.es/c/all-games"
+  ],
+  "scientificConsequence":"Classic physical-machine vulture rules cannot be transferred to current online implementations without proving state scope, current starting state and configuration-specific EV. Scarab, Magic of the Nile and Hexbreak3r therefore remain NO_PLAY unless a fresh exact pre-wager state and exact served configuration independently close those gaps.",
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{"physicalApRuleDoesNotTransferOnline":true,"accountBoundStateCannotBecomeSharedState":true,"realizedReturnCannotBecomeProspectiveRtp":true,"noWagerProbe":true,"noAutomaticBetting":true}
+}
