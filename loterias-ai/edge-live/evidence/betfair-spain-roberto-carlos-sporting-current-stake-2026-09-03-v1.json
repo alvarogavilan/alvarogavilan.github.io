@@ -1,5 +1,5 @@
 {
-  "version": "betfair-spain-roberto-carlos-sporting-current-stake-2026-09-03-v1",
+  "version": "betfair-spain-roberto-carlos-sporting-current-stake-2026-09-03-v1.1-sljp-family-verified",
   "generatedAtDate": "2026-09-03",
   "status": "RESEARCH_ONLY_NO_PLAY",
   "scope": {
@@ -22,24 +22,37 @@
     "publishedMaximumBetCoins": 100,
     "publicExactStakeCurrencyBindingVerified": false
   },
+  "providerTechnicalEvidence": {
+    "class": "PLAYTECH_JACKPOT_TICKER_GAME_CODES_GUIDE_PUBLIC_MIRROR",
+    "observedAt": "2026-09-03",
+    "sportingLegendsGroupCode": "sljp",
+    "dailyTickerCode": "sljp-1",
+    "weeklyTickerCode": "sljp-2",
+    "megaTickerCode": "sljp-3",
+    "apMcCoyLinkedCode": "tonymc",
+    "robertoCarlosLinkedCodes": ["gpas_rcarloslx_pop", "gpas_rcarlos_pop"],
+    "robertoCarlosProviderFamilyMembershipVerified": true,
+    "licenseeSpecificInstanceStillRequired": true
+  },
   "relationshipToBetfairApMcCoy": {
     "sameOperator": true,
     "sameProvider": true,
     "sameSportingLegendsBrand": true,
     "sameNamedDailyWeeklyMegaTiers": true,
-    "sameSljpProviderFamilyCandidate": true,
+    "sameSljpProviderFamilyVerified": true,
     "sameExactLicenseeInstanceVerified": false,
     "sameCurrentSljp1RowVerified": false,
     "apMcCoyFollowingDayFirstBetRuleMayTransfer": false,
-    "reason": "Same operator/provider/tier names are strong discovery clues but do not prove the exact current licensee jackpot instance or terminal award semantics are identical for execution."
+    "reason": "Provider technical evidence now verifies both games are linked titles in the Sporting Legends sljp family. This still does not prove that the current Betfair Spain frontends resolve to the same concrete licensee jackpot instance, ticker row or terminal execution semantics."
   },
   "scientificUse": {
     "resolvesPublicMinimumForThisFrontend": true,
     "resolvesCurrentBetfairSpainSportingFrontendPresence": true,
+    "resolvesRobertoCarlosSljpProviderFamilyMembership": true,
     "canSetApMcCoyExecutionStake": false,
     "canAuthorizeTerminalFirstBet": false,
     "nextDecisiveEvidence": [
-      "passive served configuration binding Roberto Carlos to the same concrete Betfair Spain sljp-1 instance as AP McCoy",
+      "passive served configuration binding Roberto Carlos and AP McCoy to the same concrete Betfair Spain sljp-1 instance",
       "fresh same-binding EUR local=0 sljp-1 row with amount, guaranteedHitTime, winc, timestamp and execInterval",
       "exact served monetary total stake/eligibility semantics",
       "cross-GHT unchanged binding proof and prospective race ledger"
@@ -54,7 +67,7 @@
   },
   "hardGuards": {
     "coinsCannotBeAssumedEURWithoutServedBinding": true,
-    "sameBrandCannotProveSameInstance": true,
+    "providerFamilyDoesNotProveLicenseeInstance": true,
     "sameTierNamesCannotProveSameInstance": true,
     "sameOperatorCannotTransferTerminalRule": true,
     "noAutomaticBetting": true,
