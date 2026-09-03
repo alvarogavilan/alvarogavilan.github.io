@@ -1,0 +1,21 @@
+{
+  "version":"jokerbet-powerplay-cycle-observer-validation-2026-09-03-v1",
+  "executionEnvironment":"local node; NO_GITHUB_ACTIONS",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "inputs":"JOKERBET Djinn passive live meter snapshots captured by user; real accidental spin excluded from hazard inference",
+  "result":{
+    "ok":true,
+    "cleanFundingIntervals":2,
+    "detectedResets":1,
+    "resetTier":"mini",
+    "aggregateAllocationShares":{"mega":0.2335317260163536,"peak":0.2076061737112846,"mini":0.5588621002723618},
+    "impliedTurnoverPerMinuteEUR":499.55820200774406,
+    "completedOperatorCycles":1,
+    "empiricalShapeEligible":false,
+    "minimumCyclesForEmpiricalShape":30
+  },
+  "decision":"NO_PLAY",
+  "reason":"Observer is validated, but one operator-bound cycle cannot establish a trigger distribution or next-spin hazard lower bound.",
+  "hardGuards":{"resetIntervalsExcludedFromFundingRate":true,"hitAmountCDFIsNotNextSpinHazard":true,"crossNetworkCyclesExcluded":true,"noActionsUsed":true}
+}
