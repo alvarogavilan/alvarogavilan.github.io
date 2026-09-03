@@ -1,0 +1,33 @@
+{
+  "version":"national-lotos-extraction-order-data-gap-2026-09-03-v1",
+  "generatedAt":"2026-09-03T23:46:00+02:00",
+  "scope":"ONLINE_ONLY_RESEARCH_NO_PLAY",
+  "finding":{
+    "currentArchiveMainIsCanonicalSortedCombination":true,
+    "physicalExtractionOrderPreservedInArchive":false,
+    "selaeCurrentResultPagesPublishOrderOfAppearance":true,
+    "thereforePastMassSearchesDidNotTestPhysicalPositionBias":true
+  },
+  "scientificImportance":"Position-of-extraction is a different observable from set membership. A mechanical asymmetry could affect first/second/etc. extraction positions while disappearing after sorting the six-number set.",
+  "requiredDataModel":{
+    "main":"canonical sorted combination for compatibility",
+    "extractionOrder":"six values exactly in official order of appearance",
+    "source":"official SELAE page/API evidence only",
+    "neverReconstructExtractionOrderFromSortedMain":true
+  },
+  "nextTestsAfterDataBackfill":[
+    "position-by-number frequency versus exact hypergeometric/uniform null",
+    "position transition and adjacency diagnostics",
+    "rolling-window stability without selecting windows from outcomes",
+    "externally-defined mechanical-era interaction tests",
+    "forward holdout on future official draws"
+  ],
+  "hardGuards":{
+    "noSyntheticOrderImputation":true,
+    "noOutcomeSelectedChangePoints":true,
+    "noRealMoney":true,
+    "realMoneyAllowed":false,
+    "realStakeEUR":0
+  },
+  "status":"DATA_BACKFILL_REQUIRED_NO_EDGE_YET"
+}
