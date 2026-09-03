@@ -1,0 +1,71 @@
+{
+  "version": "betfair-sporting-current-inline-jackpot-and-generation-divergence-2026-09-03-v1",
+  "generatedAt": "2026-09-03T22:10:00+02:00",
+  "scope": "ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "realMoneyAllowed": false,
+  "realStakeEUR": 0,
+  "betfairSpainCurrentApMcCoy": {
+    "url": "https://casino.betfair.es/juego/ap-mccoy-sporting-legends-cptn",
+    "observedDate": "2026-09-03",
+    "provider": "Playtech",
+    "publishedRtpRangePct": [93.03,97.17],
+    "inlineJackpotDisplayEUR": 9546.21,
+    "inlineJackpotTierLabelPresent": false,
+    "inlineJackpotMayPopulateDaily": false,
+    "dailyWeeklyMegaRulesPresent": true,
+    "contributionPct": 2.0,
+    "currentJackpotSharePct": 84.5,
+    "seedSharePct": 15.5,
+    "firstBetFollowingDayRulePresent": true,
+    "currentDailyAmountExactVerified": false,
+    "currentWeeklyAmountExactVerified": false,
+    "currentMegaAmountExactVerified": false,
+    "scientificUse": "The Betfair Spain AP McCoy page currently renders a EUR jackpot amount, but the page does not label that top-level figure as Daily, Weekly or Mega. It must remain quarantined from execution state until tier identity and served runtime binding are proven."
+  },
+  "currentGenerationDivergence": {
+    "betfairSpain": {
+      "tiers": ["Daily", "Weekly", "Mega"],
+      "contributionPct": 2.0,
+      "terminalFollowingDayRulePublished": true
+    },
+    "williamHillSpainCurrentRobertoCarlos": {
+      "url": "https://casino.williamhill.es/slots/roberto-carlos-sporting-legends",
+      "tiers": ["Mini", "Midi", "Mega"],
+      "contributionPct": 1.99,
+      "terminalFollowingDayRuleObserved": false
+    },
+    "pokerStarsItalyCurrentApMcCoy": {
+      "url": "https://www.pokerstars.it/content/dam/new-dam/italy/website/documenti/slot/AP-McCoy-Sporting-Legends.pdf",
+      "tiers": ["Mini", "Midi", "Mega"],
+      "contributionPct": 1.99,
+      "terminalFollowingDayRuleObserved": false
+    },
+    "conclusion": "Sporting Legends currently exists in materially different rule generations across operators. Same-title/provider/family evidence cannot populate Betfair Spain runtime or terminal execution state. Betfair Spain's current operator-specific Daily/Weekly/Mega rules remain the controlling public rules for the AP McCoy lane."
+  },
+  "runtimeBlockers": [
+    "exact Betfair Spain jackpotsCasino/IMS binding",
+    "exact configured ticker endpoint",
+    "fresh EUR local=0 sljp-1 row",
+    "guaranteedHitTime",
+    "winc",
+    "timestamp",
+    "execInterval",
+    "cross-GHT unchanged-binding unawarded state",
+    "exact served monetary stake",
+    "prospective race lower bound"
+  ],
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "unlabeledInlineJackpotCannotPopulateDaily": true,
+    "crossOperatorRuleGenerationTransferForbidden": true,
+    "foreignTickerValuesCannotPopulateBetfairSpain": true,
+    "noWagerProbe": true,
+    "noAutomaticBetting": true
+  }
+}
