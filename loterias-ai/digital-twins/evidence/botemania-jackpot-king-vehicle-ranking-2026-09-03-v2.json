@@ -1,0 +1,67 @@
+{
+  "version":"botemania-jackpot-king-vehicle-ranking-2026-09-03-v2",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operator":"Botemanía España",
+  "provider":"Blueprint Gaming",
+  "networkFacts":{
+    "royalRegalJackpotKingSharedAcrossBlueprintJackpotKingGames":true,
+    "jackpotProbabilityProportionalToTotalBetWordingRepeatedAcrossBotemaniaTitles":true,
+    "probabilityIncreasesWithPotValue":true,
+    "royalRegalMustBeWonBy":true,
+    "crossTitleAbsoluteHazardCoefficientEquality":"UNKNOWN"
+  },
+  "vehicles":[
+    {
+      "game":"Fishin' Frenzy Megaways: Jackpot King",
+      "baseRtpPct":93.32,
+      "currentPotContributionPct":2.32,
+      "reserveContributionPct":0.68,
+      "publishedTotalRtpPct":96.32,
+      "pageInternalContributionConsistency":true,
+      "stakeProbabilityProportionality":"VERIFIED_OPERATOR_BOUND",
+      "sharedNetworkAndMhb":"VERIFIED_OPERATOR_BOUND",
+      "baseLossPct":6.68,
+      "requiredJackpotComponentMultiplierVsCurrentContribution":2.8793103448275863,
+      "rank":"P0_HIGH_CONTRIBUTION_CANDIDATE_REQUIRES_CROSS_TITLE_WEIGHT_BINDING"
+    },
+    {
+      "game":"Mega Bars Fortune Wheel: Jackpot King",
+      "baseRtpPct":95.50,
+      "currentPotContributionPct":0.38,
+      "reserveContributionPct":0.11,
+      "publishedTotalRtpPct":95.99,
+      "pageInternalContributionConsistency":true,
+      "stakeProbabilityProportionality":"VERIFIED_OPERATOR_BOUND",
+      "sharedNetworkAndMhb":"VERIFIED_OPERATOR_BOUND",
+      "baseLossPct":4.50,
+      "requiredJackpotComponentMultiplierVsCurrentContribution":11.842105263157896,
+      "rank":"P0_LOW_BASE_LOSS_BOUND_ARCHITECTURE"
+    }
+  ],
+  "quarantinedContradictoryPages":[
+    {
+      "game":"The Goonies Return: Jackpot King",
+      "reason":"Same Botemania page states 2.32%+0.68% in jackpot body but 0.38%+0.11% in RTP section; contribution configuration is self-contradictory and cannot be used for execution ranking."
+    },
+    {
+      "game":"Eye of Horus: Jackpot King",
+      "reason":"Same Botemania page states 2.32%+0.68% in jackpot body but 0.38%+0.11% in RTP section; contribution configuration is self-contradictory and cannot be used for execution ranking."
+    }
+  ],
+  "criticalInterpretation":"Fishin' Frenzy Megaways is structurally much more attractive if jackpot trigger weight per EUR scales with its higher jackpot contribution. Botemania binds proportionality to Total Bet within the title but does not explicitly bind the absolute proportionality coefficient across different Jackpot King contribution profiles. Therefore the 2.88x diagnostic cannot trigger green by itself.",
+  "nextEvidenceNeeded":[
+    "live Botemania Royal/Regal amounts and live MHB values",
+    "two passive snapshots to measure Royal/Regal meter growth allocation",
+    "provider/operator evidence linking jackpot trigger weight across contribution profiles or a defendible lower bound on Fishin' Frenzy relative weight",
+    "operator-bound total-bet configuration"
+  ],
+  "decision":"NO_PLAY",
+  "hardGuards":{
+    "selfContradictoryOperatorPagesExcluded":true,
+    "fundingRateNotAutomaticallyHazardWeight":true,
+    "crossTitleHazardEqualityNotAssumed":true,
+    "noRealMoneyProbe":true
+  }
+}
