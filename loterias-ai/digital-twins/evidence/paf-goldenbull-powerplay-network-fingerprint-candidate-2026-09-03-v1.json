@@ -1,0 +1,30 @@
+{
+  "version":"paf-goldenbull-powerplay-network-fingerprint-candidate-2026-09-03-v1",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "target":{"operator":"JOKERBET España","provider":"Playtech","family":"PowerPlay Jackpot","liveMegaEUR":19901.12,"livePeakEUR":2251.11,"liveMiniEUR":102.48,"targetCapture":"2026-09-03 around 01:59 Europe/Madrid"},
+  "publicCandidates":[
+    {"operator":"Paf España","source":"public jackpot listing","crawlLabel":"today","powerplayMegaDisplayedEUR":19758,"timestampExact":false},
+    {"operator":"Paf España","source":"public jackpot listing alternate cache","crawlLabel":"today","powerplayMegaDisplayedEUR":18326,"timestampExact":false},
+    {"operator":"Goldenbull España","source":"public slots listing","crawlLabel":"today","powerplayMegaDisplayedEUR":18855,"timestampExact":false},
+    {"operator":"Goldenbull","source":"public English slots listing","crawlLabel":"2 days ago","powerplayMegaDisplayedEUR":16336,"timestampExact":false},
+    {"operator":"Goldenbull","source":"public English cached filter","crawlLabel":"2 days ago","powerplayMegaDisplayedEUR":16211,"timestampExact":false}
+  ],
+  "observations":[
+    "Paf/Goldenbull expose one common PowerPlay amount across multiple PowerPlay titles within each snapshot.",
+    "The public amounts move materially between cache snapshots, proving the field is dynamic rather than a fixed marketing number.",
+    "The closest same-day Paf snapshot (EUR19758) is EUR143.12 below the JOKERBET live Mega observed later that night; this is numerically compatible with roughly two hours of JOKERBET-observed Mega growth but exact crawl time is unavailable.",
+    "Unsynchronised cache proximity is not evidence of shared jackpot instance."
+  ],
+  "binding":"CANDIDATE_ONLY",
+  "decision":"NO_PLAY",
+  "requiredBeforeNetworkFingerprintMatch":[
+    "at least 3 timestamped overlapping Mega snapshots from JOKERBET and candidate source",
+    "near-identical absolute amounts at matched timestamps",
+    "at least 2 overlapping growth intervals with compatible rates",
+    "no intervening Mega reset",
+    "preferably corroborating Peak/Mini values or shared instance identifier"
+  ],
+  "hardGuards":{"crawlLabelTodayIsNotExactTimestamp":true,"similarMagnitudeIsNotNetworkIdentity":true,"sameProviderAndCurrencyAreNotNetworkIdentity":true,"candidateSourceCannotDriveGreen":true,"externalMegaCannotSubstituteJokerbetPeakMini":true}
+}
