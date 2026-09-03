@@ -1,0 +1,50 @@
+{
+  "version": "bet365-ocean-magic-zero-wager-capture-protocol-2026-09-03-v1",
+  "generatedAtDate": "2026-09-03",
+  "status": "FROZEN_PROSPECTIVE_PASSIVE_CAPTURE_NO_PLAY",
+  "scope": {
+    "operator": "bet365 Spain",
+    "game": "Ocean Magic",
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  },
+  "captureBeforeAnySpin": {
+    "mustShow": [
+      "game title Ocean Magic or unambiguous exact-title game chrome",
+      "complete 5-reel x 4-row visible grid",
+      "all currently visible wild bubbles and any bubble tops visible below the bottom row",
+      "current mode/control state distinguishing standard Wild Bubble from Bubble Boost/Burst if displayed",
+      "current displayed total bet or coin/bet control",
+      "operator context sufficient to bind screenshot to bet365 Spain"
+    ],
+    "preferredAdditionalEvidence": [
+      "game info overlay showing RTP/provider/reels/lines if accessible without wagering",
+      "help/paytable screen showing symbol payouts and Bubble Boost rules",
+      "bet menu showing available total stakes without changing into a wager"
+    ]
+  },
+  "forbiddenDuringCapture": [
+    "press Spin/Girar",
+    "enable autoplay",
+    "buy or activate any paid feature",
+    "change state by wagering",
+    "deposit money for the purpose of research"
+  ],
+  "analysisProtocol": {
+    "classifierPath": "loterias-ai/casino/stateful/ocean-magic-visible-state-classifier-v1.mjs",
+    "coordinatesUseNextSpinBubblePosition": true,
+    "externalPublishedStrategyMayOnlyMarkResearchCandidate": true,
+    "exactBet3659670BuildFingerprintRequiredBeforeConditionalEv": true,
+    "conditionalEvLowerBoundMustExceedOneBeforeAnyGreen": true,
+    "singleScreenshotCannotByItselfAuthorizeExecution": true
+  },
+  "captureOutcomes": {
+    "noUsefulBubbles": "DISCARD_CURRENT_STATE_NO_PLAY",
+    "publishedStrategyCandidateButBuildUnknown": "RESEARCH_CANDIDATE_NO_PLAY",
+    "buildFingerprintMismatch": "QUARANTINE_EXTERNAL_STRATEGY_NO_PLAY",
+    "buildFingerprintMatch": "PROCEED_TO_EXACT_CONDITIONAL_EV_BOUND_STILL_NO_PLAY",
+    "allExecutionGatesPass": "DEFER_TO_AUTHORITATIVE_EXECUTION_CONTRACT"
+  }
+}
