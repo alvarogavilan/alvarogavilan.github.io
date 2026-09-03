@@ -31,6 +31,41 @@ export function proportionalHazardIdentifiabilityWitness({baseRtpRatio,jackpotAw
   };
 }
 
+// Logical counterexample for must-be-won-by systems.
+// The public statements "chance increases with pot value" + "must be won by B"
+// do not force any positive numerical hazard at an earlier state x<B. For every
+// epsilon>0 small enough to be a valid probability per EUR at the candidate bet,
+// a non-decreasing hazard curve can stay at epsilon through x and rise only in the
+// final interval before B. Therefore proximity to B is not itself an EV lower bound.
+export function mhbMonotonePreCapNonIdentificationWitness({
+  currentAmountEUR,
+  boundaryEUR,
+  epsilonHazardPerWagerEUR=1e-12,
+  maxCandidateTotalBetEUR=1
+}){
+  if(!(currentAmountEUR>0&&boundaryEUR>currentAmountEUR)) throw new Error('CURRENT_AMOUNT_BELOW_BOUNDARY_REQUIRED');
+  if(!(epsilonHazardPerWagerEUR>0)) throw new Error('POSITIVE_EPSILON_REQUIRED');
+  if(!(maxCandidateTotalBetEUR>0)) throw new Error('POSITIVE_MAX_CANDIDATE_TOTAL_BET_REQUIRED');
+  const pAtCurrent=epsilonHazardPerWagerEUR*maxCandidateTotalBetEUR;
+  if(!(pAtCurrent<1)) throw new Error('EPSILON_MUST_DEFINE_VALID_PROBABILITY');
+  const gapEUR=boundaryEUR-currentAmountEUR;
+  const fractionOfBoundary=currentAmountEUR/boundaryEUR;
+  return {
+    currentAmountEUR,
+    boundaryEUR,
+    gapEUR,
+    fractionOfBoundary,
+    witnessHazardPerWagerEURAtCurrent:epsilonHazardPerWagerEUR,
+    probabilityAtMaxCandidateTotalBet:pAtCurrent,
+    construction:'NONDECREASING_CURVE_MAY_REMAIN_AT_EPSILON_THROUGH_CURRENT_STATE_AND_INCREASE_ARBITRARILY_STEEPLY_ONLY_NEAR_MHB_BOUNDARY',
+    satisfiesQualitativeIncreasingRule:true,
+    compatibleWithMustBeWonByBoundary:true,
+    conclusion:'NO_POSITIVE_PRE_CAP_HAZARD_LOWER_BOUND_FROM_MHB_PLUS_MONOTONICITY_ALONE',
+    execution:'NO_PLAY',
+    hardGuard:'SYNTHETIC_LOGICAL_WITNESS_ONLY_NOT_A_MODEL_OF_BLUEPRINT_OR_ANY_REAL_JACKPOT'
+  };
+}
+
 export function executionIdentifiabilityGate({absoluteHazardPerWagerEURLowerBound=null}={}){
   if(!(Number.isFinite(absoluteHazardPerWagerEURLowerBound)&&absoluteHazardPerWagerEURLowerBound>0)){
     return {decision:'NO_PLAY',realMoneyAllowed:false,realStakeEUR:0,maxSpins:0,reason:'ABSOLUTE_HAZARD_LOWER_BOUND_NOT_IDENTIFIED'};
