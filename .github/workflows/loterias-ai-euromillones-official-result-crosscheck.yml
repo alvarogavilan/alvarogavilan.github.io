@@ -1,15 +1,9 @@
 name: Loterias AI Euromillones Official 5plus2 Crosscheck
 
+# Automatic triggers intentionally disabled by owner policy: NO GitHub Actions costs.
+# Kept manual-only as an inert maintenance reference; EDGE must not invoke it.
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '37 1,7,13,19 * * *'
-  push:
-    paths:
-      - 'loterias-ai/scripts/crosscheck-euromillones-official-results.mjs'
-      - 'loterias-ai/scripts/build-national-archive-index.mjs'
-      - 'loterias-ai/scripts/build-archive-coverage-priorities.mjs'
-      - '.github/workflows/loterias-ai-euromillones-official-result-crosscheck.yml'
 
 permissions:
   contents: write
