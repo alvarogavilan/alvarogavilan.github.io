@@ -1,0 +1,74 @@
+{
+  "version": "jokerbet-djinn-powerplay-provider-rule-strengthening-2026-09-03-v1",
+  "mode": "RESEARCH_ONLY",
+  "realMoneyAllowed": false,
+  "realStakeEUR": 0,
+  "operator": "JOKERBET España",
+  "provider": "Playtech",
+  "targetGame": "Djinn of Storms PowerPlay Jackpot",
+  "evidence": [
+    {
+      "sourceClass": "EXACT_GAME_RULES_OTHER_REGULATED_OPERATOR",
+      "operator": "SNAI Italy",
+      "game": "Djinn of Storms PowerPlay Jackpot",
+      "facts": {
+        "tiers": ["Mega", "Peak", "Mini"],
+        "megaSharedAcrossGamesAndOnlineCasinos": true,
+        "peakCanTriggerBeforeDisplayedBoundary": true,
+        "miniCanTriggerBeforeDisplayedBoundary": true,
+        "anySpinAnyAmountCanTrigger": true,
+        "largerBetGivesGreaterChance": true,
+        "jackpotsMainGameOnly": true
+      },
+      "executionBinding": "PROVIDER_FAMILY_CORROBORATION_ONLY"
+    },
+    {
+      "sourceClass": "PLAYTECH_PRODUCT_DOCUMENT",
+      "document": "Mayan Blocks PowerPlay Jackpot, Playtech Software Limited, October 2021",
+      "facts": {
+        "tiers": ["Mega", "Peak", "Mini"],
+        "megaAccumulatedFromAllPlayersBetsAcrossParticipatingGamesAndOnlineCasinos": true,
+        "peakCanTriggerBeforeDisplayedBoundary": true,
+        "miniCanTriggerBeforeDisplayedBoundary": true,
+        "anySpinAnyAmountCanTrigger": true,
+        "largerBetGivesGreaterChance": true,
+        "jackpotContributionPct": 2.99,
+        "currentJackpotsShareOfContributionPct": 38.66,
+        "seedPotShareOfContributionPct": 61.34,
+        "linkedAcrossSeveralPowerPlayGamesAndCasinos": true,
+        "simultaneousWinOrderingRuleDocumented": true
+      },
+      "documentInternalIssue": "The same paragraph later says each contribution is 2.97% after explicitly saying 2.99%; this is treated as a document inconsistency/typo and the 2.97% figure is quarantined rather than averaged or substituted.",
+      "executionBinding": "PROVIDER_FAMILY_RULE_STRONG_CORROBORATION"
+    }
+  ],
+  "strengthenedConclusions": {
+    "fundingArchitectureCorroborated": true,
+    "higherStakeMonotonicChanceCorroborated": true,
+    "stakeToHazardProportionality": "NOT_ESTABLISHED",
+    "stakeToHazardFunctionalForm": "UNKNOWN",
+    "minimumStakeRelativeHazardLowerBound": "UNKNOWN",
+    "meterGrowthIsHazard": false,
+    "jackpotContributionIsTriggerProbability": false
+  },
+  "impactOnDjinnMiniChase": {
+    "observedCompletedMiniHitEUR": 172.0,
+    "displayedMiniBoundaryEUR": 200.0,
+    "knownConditionalBreakEvenMathAvailable": true,
+    "canAuthorizeGreenNow": false,
+    "blockingVariable": "provider/operator-bound lower bound on relative jackpot hazard weight for the selected stake"
+  },
+  "decision": "NO_PLAY",
+  "nextResearch": [
+    "Locate a Playtech mathematical specification, certification report, patent, integration manual, source-code-level public artifact, or regulator filing that states the jackpot trigger weighting function by total bet.",
+    "Search for an operator-specific rule wording stronger than 'larger bet gives greater chance', especially 'proportional to total bet', 'linear', 'weighted by bet', or an explicit ticket/weight formula.",
+    "Keep passive live ticker/state observation separate from hazard inference."
+  ],
+  "hardGuards": {
+    "monotonicDoesNotMeanProportional": true,
+    "providerFamilyEvidenceDoesNotOverrideOperatorRuntimeBinding": true,
+    "documentContradictionQuarantined": true,
+    "noRealMoneyProbe": true,
+    "noAutomaticBetting": true
+  }
+}
