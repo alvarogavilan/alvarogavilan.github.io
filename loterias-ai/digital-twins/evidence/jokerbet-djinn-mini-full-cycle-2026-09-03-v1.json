@@ -1,0 +1,33 @@
+{
+  "version":"jokerbet-djinn-mini-full-cycle-2026-09-03-v1",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "operator":"JOKERBET España",
+  "provider":"Playtech",
+  "game":"Djinn of Storms PowerPlay Jackpot",
+  "observedCycle":{
+    "preHitSnapshots":[
+      {"sessionClock":"00:20:58","megaEUR":19874.60,"peakEUR":2227.53,"miniEUR":111.01},
+      {"sessionClock":"00:32:17","megaEUR":19891.01,"peakEUR":2242.13,"miniEUR":150.30},
+      {"sessionClock":"00:38:08","megaEUR":19897.75,"peakEUR":2248.11,"miniEUR":166.41},
+      {"sessionClock":"00:40:53","peakEUR":2249.75,"miniDisplayEUR":170.85,"notification":"Un jugador acaba de ganar el Jackpot de 172,00 €"}
+    ],
+    "postHitSnapshot":{"newSessionClock":"00:01:49","megaEUR":19901.12,"peakEUR":2251.11,"miniEUR":102.48},
+    "tierIdentification":"MINI_STRONGLY_IDENTIFIED_BY_PAYOUT_SIZE_AND_SUBSEQUENT_RESET",
+    "observedAwardEUR":172.00,
+    "observedBoundaryEUR":200.00,
+    "observedResetLevelApproxEUR":100.00,
+    "displayLagAtNotificationEUR":1.15
+  },
+  "growthWindows":[
+    {"seconds":679,"megaDeltaEUR":16.41,"peakDeltaEUR":14.60,"miniDeltaEUR":39.29,"totalCurrentJackpotGrowthEUR":70.30,"growthShares":{"mega":0.2334281650,"peak":0.2076813656,"mini":0.5588904694}},
+    {"seconds":351,"megaDeltaEUR":6.74,"peakDeltaEUR":5.98,"miniDeltaEUR":16.11,"totalCurrentJackpotGrowthEUR":28.83,"growthShares":{"mega":0.2337842525,"peak":0.2074228234,"mini":0.5587929240}}
+  ],
+  "stableObservedCurrentGrowthAllocation":{"megaApprox":0.2336062088,"peakApprox":0.2075520945,"miniApprox":0.5588416967},
+  "playtechFundingContract":{"betContributionPct":2.99,"currentJackpotsShareOfContributionPct":38.66,"seedPotShareOfContributionPct":61.34,"source":"Playtech PowerPlay technical rules; cross-game provider-family evidence"},
+  "derived":{"currentJackpotFundingFractionOfNetworkBet":0.01155934,"turnoverWindow1EUR":6081.6621,"turnoverWindow1EURPerMinute":537.4075,"turnoverWindow2EUR":2494.0870,"turnoverWindow2EURPerMinute":426.3397,"approxNetworkTurnoverNeededForMiniProgressive100to172EUR":11145.7849,"formulaNote":"Uses observed Mini growth allocation and provider funding fractions; not a hazard model."},
+  "realMoneyIncident":{"observedOneUserSpinEUR":0.05,"resultEUR":0.00,"balanceChangeEUR":-0.05,"classification":"ACCIDENTAL_OR_USER_INITIATED_SINGLE_SPIN_NOT_REQUESTED_BY_MODEL","usedForHazardInference":false,"futureRealMoneyProbeAllowed":false},
+  "criticalUnknowns":["exact stake-to-hazard law","exact trigger-threshold distribution","whether reset seed is contractually exactly EUR100 for this JOKERBET configuration","net accepted-spin race share"],
+  "decision":"NO_PLAY",
+  "hardGuards":{"oneObservedHitDoesNotEstimateDistribution":true,"observedHitAt172DoesNotCreate180TriggerRule":true,"noFurtherRealMoneyProbe":true,"noAutomaticBetting":true}
+}
