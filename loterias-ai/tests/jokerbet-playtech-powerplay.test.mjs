@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
-import {POWERPLAY_CONTRACTS,rankByBaseLoss,requiredNetCaptureProbability,executionGate,providerTierForTickerCode,STATUS} from '../digital-twins/games/jokerbet-playtech-powerplay.mjs';
+import {POWERPLAY_CONTRACTS,rankByBaseLoss,requiredNetCaptureProbability,executionGate,providerTierForTickerCode,STATUS,powerplayTierFundingPerNetworkEUR,requiredRelativeHazardWeight,conditionalChaseLowerReturn,NETWORK} from '../digital-twins/games/jokerbet-playtech-powerplay.mjs';
 assert.equal(POWERPLAY_CONTRACTS.djinn.separatedBasePct,93.50);
 assert.equal(POWERPLAY_CONTRACTS.mammoth.separatedBasePct,93.48);
-assert.equal(rankByBaseLoss()[0].gameId,'djinn');
+assert.equal(rankByBaseLoss()[0].gameId,'tipTop');
 assert.equal(providerTierForTickerCode('ptjp-1').tier,'Mega');
 assert.equal(providerTierForTickerCode('ptjp-3').tier,'Peak');
 assert.equal(providerTierForTickerCode('ptjp-7').tier,'Mini');
@@ -11,4 +11,13 @@ assert.ok(requiredNetCaptureProbability({gameId:'djinn',stakeEUR:1,jackpotAwardE
 assert.equal(executionGate({}).decision,'NO_PLAY');
 const stillNo=executionGate({gameId:'djinn',stakeEUR:1,liveTickerCode:'ptjp-3',liveAmountEUR:1000,displayedBoundaryEUR:1100,netCaptureProbabilityLowerBound:0,runtimeBinding:STATUS.VERIFIED_OPERATOR_BOUND,freshnessMs:100});
 assert.equal(stillNo.decision,'NO_PLAY');assert.equal(stillNo.tier,'Peak');
+assert.equal(NETWORK.stakeToHazardProportionality,'UNKNOWN_NOT_PUBLISHED');
+const tierFunding=powerplayTierFundingPerNetworkEUR({tierGrowthShare:0.5587929240});
+assert.ok(Math.abs(tierFunding-0.00645927739811016)<1e-15);
+assert.ok(Math.abs(requiredRelativeHazardWeight({gameId:'djinn',currentAmountEUR:172,displayedBoundaryEUR:200,tierFundingPerNetworkEUR:tierFunding})-1.4088263189722197)<1e-12);
+assert.ok(Math.abs(requiredRelativeHazardWeight({gameId:'djinn',currentAmountEUR:190,displayedBoundaryEUR:200,tierFundingPerNetworkEUR:tierFunding})-0.5031522567757928)<1e-12);
+const noPlay=conditionalChaseLowerReturn({gameId:'djinn',currentAmountEUR:190,displayedBoundaryEUR:200,tierFundingPerNetworkEUR:tierFunding,relativeHazardWeightLowerBound:0.5});
+assert.equal(noPlay.decision,'NO_PLAY');
+const mathGreen=conditionalChaseLowerReturn({gameId:'djinn',currentAmountEUR:190,displayedBoundaryEUR:200,tierFundingPerNetworkEUR:tierFunding,relativeHazardWeightLowerBound:0.51});
+assert.equal(mathGreen.decision,'GREEN_MATH_ONLY_REQUIRES_RUNTIME_BINDING');
 console.log('jokerbet-playtech-powerplay.test.mjs: PASS');
