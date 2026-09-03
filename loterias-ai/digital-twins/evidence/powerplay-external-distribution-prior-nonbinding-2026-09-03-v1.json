@@ -1,0 +1,54 @@
+{
+  "version":"powerplay-external-distribution-prior-nonbinding-2026-09-03-v1",
+  "mode":"RESEARCH_ONLY",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "providerFamily":"Playtech PowerPlay Jackpot",
+  "externalEvidence":[
+    {
+      "source":"online-jackpots.biz probability chart jp=1976",
+      "tier":"Mini",
+      "hitsDisplayed":35421,
+      "averageHitDisplayed":146,
+      "currency":"USD",
+      "shapeObservation":"broad non-terminal histogram / externally classified Gaussian-like",
+      "binding":"CROSS_NETWORK_NON_BINDING"
+    },
+    {
+      "source":"online-jackpots.biz probability chart jp=1975",
+      "tier":"Peak",
+      "hitsDisplayed":7962,
+      "averageHitDisplayed":3271,
+      "currency":"USD",
+      "shapeObservation":"broad non-terminal histogram / externally classified Gaussian-like",
+      "binding":"CROSS_NETWORK_NON_BINDING"
+    }
+  ],
+  "jokerbetLiveMismatch":{
+    "operator":"JOKERBET España",
+    "liveMiniBoundaryEUR":200,
+    "livePeakBoundaryEUR":3000,
+    "liveMegaAroundEUR":19900,
+    "observedJokerbetMiniHitEUR":172,
+    "observedJokerbetMiniResetAroundEUR":100,
+    "reason":"External tracker network/currency/configuration is not proven to be the same jackpot instance and its historical support extends beyond JOKERBET displayed boundaries."
+  },
+  "allowedUses":[
+    "provider-family research prior",
+    "reject simplistic assumptions that hit probability is concentrated only at cap",
+    "candidate model generation for synthetic sensitivity tests"
+  ],
+  "forbiddenUses":[
+    "set JOKERBET next-spin trigger probability",
+    "set JOKERBET hazard lower bound",
+    "trigger a green decision",
+    "transfer external average hit or variance into JOKERBET execution model"
+  ],
+  "decision":"RESEARCH_PRIOR_ONLY_NO_PLAY",
+  "hardGuards":{
+    "crossNetworkNeverExecutionBinding":true,
+    "currencyConversionDoesNotCreateInstanceEquivalence":true,
+    "largeExternalSampleDoesNotOverrideOperatorMismatch":true,
+    "oneJokerbetCycleCannotValidateExternalCurve":true
+  }
+}
