@@ -1,5 +1,5 @@
 {
-  "version": "bet365-spain-sporting-current-refresh-2026-09-03-v1",
+  "version": "bet365-spain-sporting-current-refresh-2026-09-03-v2",
   "generatedAtDate": "2026-09-03",
   "mode": "RESEARCH_ONLY_NO_PLAY",
   "realMoneyAllowed": false,
@@ -39,6 +39,28 @@
       }
     ]
   },
+  "exactBobbyProviderManual": {
+    "url": "https://clientzone.betconstruct.com/media/download/801cbj/Bobby%20George%E2%84%A2%20Sporting%20Legends%E2%84%A2.pdf",
+    "provider": "Playtech Software Limited",
+    "providerGameCode": "gpas_bgeorge_pop",
+    "jackpotGroupCode": "sljp",
+    "statedRtpPct": 96.5,
+    "statedRtpBreakdown": {
+      "baseComponentPct": 94.5,
+      "jackpotComponentPct": 2.0
+    },
+    "anyBetAnySizeMayWin": true,
+    "largerBetMoreLikely": true,
+    "operatorContributionPctOfBet": 2.0,
+    "currentJackpotsShareOfContributionPct": 84.5,
+    "seedShareOfContributionPct": 15.5,
+    "firstBetFollowingDayRuleDocumented": true,
+    "dailyTickerCode": "sljp-1",
+    "weeklyTickerCode": "sljp-2",
+    "megaTickerCode": "sljp-3",
+    "guaranteedHitTimeUnixUtcSemanticsDocumented": true,
+    "licenseesRequireOwnInstanceNamesAndTickerUrls": true
+  },
   "currentPublicFrontend": {
     "frankBruno": {
       "url": "https://casino.bet365.es/play/FrankBrunoSL",
@@ -61,11 +83,20 @@
     "firstBetFollowingDayRuleProviderDocumented": true,
     "guaranteedHitTimeTickerAttributeDocumented": true
   },
+  "conservativeBobbyEconomics": {
+    "operatorPublishedMinimumStakeEUR": 0.10,
+    "executionBaseRtpPctUntilServedVariantReview": 94.5,
+    "expectedBaseLossPerMinimumSpinEUR": 0.0055,
+    "bet365HeadlineRtpPct": 96.49,
+    "headlineExpectedLossEURIfMisused": 0.00351,
+    "headlineMayDriveExecution": false,
+    "reason": "The exact-title Playtech manual explicitly decomposes approximately 96.5% as 94.5% base plus 2% jackpot. The current bet365 headline closely matches the combined figure and therefore cannot be silently treated as jackpot-excluded base RTP."
+  },
   "researchRankingNow": {
     "lowestPublishedMinimumStakeEUR": 0.10,
     "bestTheoreticalRtpAmongCurrentTableTenCentRows": "Bobby George: Sporting Legends",
     "bestCurrentPublicRouteBindingAmongTenCentRows": "Frank Bruno: Sporting Legends",
-    "interpretation": "Bobby is the best economics candidate if its current served binding is recovered; Frank is the strongest immediately verifiable public frontend because its exact bet365 Spain play route is current. Neither fact proves a licensee-specific sljp-1 runtime or overdue state."
+    "interpretation": "Bobby remains the strongest conservative economics candidate because an exact-title provider manual supplies a 94.5% base component at a current operator-published 0.10 EUR minimum. Frank is the strongest immediately verifiable public frontend because its exact bet365 Spain play route is current. Neither fact proves a licensee-specific sljp-1 runtime or overdue state."
   },
   "blockingForAnyGreen": [
     "exact current bet365 Spain served game/provider binding",
@@ -85,6 +116,7 @@
     "publishedMinimumDoesNotProveJackpotEligibility": true,
     "globalProviderFamilyDoesNotProveLicenseeSharedInstance": true,
     "realizedPeriodPayoutDoesNotSetProspectiveRtp": true,
+    "headlineRtpCannotSilentlyBecomeBaseRtp": true,
     "publicFrontendDoesNotProveTickerBinding": true,
     "noWagerProbe": true,
     "noAutomaticBetting": true,
