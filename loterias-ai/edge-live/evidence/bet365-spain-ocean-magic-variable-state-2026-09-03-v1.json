@@ -1,0 +1,84 @@
+{
+  "version": "bet365-spain-ocean-magic-variable-state-2026-09-03-v1",
+  "generatedAtDate": "2026-09-03",
+  "status": "P0_RESEARCH_ONLY_NO_PLAY",
+  "scope": {
+    "onlineOnly": true,
+    "nonPromoOnly": true,
+    "operator": "bet365 Spain",
+    "game": "Ocean Magic",
+    "market": "ES"
+  },
+  "currentOperatorEvidence": {
+    "officialRtpTableUrl": "https://content001.bet365.es/help/docs/es/rtptables/currentpdf/Spanishv2.pdf",
+    "titlePresent": true,
+    "publishedMinimumBetEUR": 0.50,
+    "publishedTheoreticalRtpPct": 96.70,
+    "realizedPeriodColumnsMayDriveExecution": false,
+    "publicSpainLobbyUrl": "https://casino.bet365.es/all-games/home",
+    "publicSpainLobbyExposesIgtProviderFilter": true,
+    "exactOceanMagicGameObjectRecoveredFromSpainLobby": false,
+    "exactSpainPlayRouteRecovered": false,
+    "servedProviderBindingVerified": false
+  },
+  "exactTitleMechanicEvidence": {
+    "titleProviderWidelyIdentifiedAs": "IGT",
+    "variableStateMechanicDocumented": true,
+    "wildBubblesMoveUpOneRowPerSpin": true,
+    "belowBottomBubbleCanBeVisibleForNextSpin": true,
+    "favorableBubblePositionsCanProducePlayerAdvantageInAnalyzedConfiguration": true,
+    "twoModesDocumented": ["Wild Bubble", "Bubble Burst/Bubble Boost"],
+    "bubbleBoostAddsExtraBubblesForAdditionalWager": true
+  },
+  "publishedAdvantageAnalysis": {
+    "source": "Wizard of Odds Ocean Magic analysis, updated 2026-08-03",
+    "analysisUsesDirectMath": false,
+    "analysisMethod": "random simulation calibrated to an intentionally conservative 85%-86% base return",
+    "publishedPositiveStateStrategyExists": true,
+    "strategyPrinciple": "play only when a guaranteed next-spin bubble occupies a published YES position or qualifying combination of MAYBE positions; stop when state becomes negative",
+    "mayTransferDirectlyToBet365Spain": false,
+    "reason": "The bet365 Spain build publishes 96.70% but exact served paytable, reel strips, mode semantics and state persistence have not yet been fingerprinted. A higher headline RTP does not prove identical conditional state values."
+  },
+  "onlinePrecedent": {
+    "historicalOnlineOceanMagicAdvantagePlayDocumented": true,
+    "historicalNewJerseyDeploymentHadFavorableInitialPersistentStates": true,
+    "historicalReportedCollectiveWinApproxUSD": 900000,
+    "historicalReturnFiguresMayDriveSpainExecution": false,
+    "deploymentSpecificBugOrInitializationMayTransfer": false
+  },
+  "whyPromising": {
+    "stateObservableBeforeWagerInCanonicalMechanic": true,
+    "advantageDependsOnVisibleStateRatherThanPredictingRng": true,
+    "operatorPublishedMinimumStakeIsLow": true,
+    "operatorPublishedTheoreticalRtpPct": 96.70,
+    "doesNotRequireProgressiveJackpotTicker": true,
+    "doesNotRequireHiddenPreCapHazard": true
+  },
+  "nextDecisiveEvidence": [
+    "recover exact current bet365 Spain Ocean Magic game object/play route and served provider identity",
+    "recover exact current in-game help/rules/paytable for the 96.70% build",
+    "verify 5x4/50-line Wild Bubble and Bubble Boost fingerprint and exact paytable against the analyzed IGT configuration",
+    "verify bubble state is visible before a wager and determine whether state persists by bet level/session/player as served online",
+    "derive or conservatively bound conditional EV for each visible next-spin state under the exact served build",
+    "prospectively validate state classifier without wagering",
+    "only then permit a one-spin GREEN when conservative conditional EV lower bound exceeds 100%"
+  ],
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "maxSpins": 0,
+    "maxTotalStakeEUR": 0
+  },
+  "hardGuards": {
+    "sameTitleDoesNotProveSameMathBuild": true,
+    "igtCatalogAvailabilityDoesNotProveServedOceanMagicProvider": true,
+    "higherHeadlineRtpDoesNotValidateExternalStateTable": true,
+    "historicalNjExploitCannotTransferToSpain": true,
+    "genericOceanMagicRtpCannotOverrideBet365OfficialRtp": true,
+    "realizedPeriodRtpCannotSetProspectiveEdge": true,
+    "noAutomaticBetting": true,
+    "noWagerProbe": true,
+    "executionContractRemainsSoleGreenAuthority": true
+  }
+}
