@@ -1,6 +1,6 @@
 {
-  "version":"williamhill-book-scrolls-min-stake-eligibility-support-2026-09-03-v1",
-  "generatedAt":"2026-09-03T23:34:00+02:00",
+  "version":"williamhill-book-scrolls-min-stake-eligibility-support-2026-09-04-v2",
+  "generatedAt":"2026-09-04T11:55:00+02:00",
   "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
   "realMoneyAllowed":false,
   "realStakeEUR":0,
@@ -8,29 +8,44 @@
   "target":"Book of Scrolls",
   "operatorEvidence":{
     "targetPublishedMinStakeEUR":0.01,
+    "targetPublishedMaxStakeEUR":100,
+    "targetPublishedRtpPct":96.17,
     "targetPublishedDailyJackpot":true,
-    "targetInCurrentBoteDiarioCatalog":true,
+    "targetPublishedSharedDailyProgressive":true,
+    "targetRulesSayLargerBetIncreasesChance":true,
+    "targetRulesSayChanceReaches100PctAtGuaranteedHitTime":true,
+    "targetRulesSayCountdownDisplayed":true,
+    "targetRulesStateSpecialQualifyingStake":false,
     "generalJackpotPageSaysChooseJackpotSlotAndStartGame":true,
     "generalJackpotPageSaysOpportunityExistsFromFirstSpin":true,
-    "targetRulesSayLargerBetIncreasesChance":true,
-    "targetRulesStateSpecialQualifyingStake":false,
-    "operatorElsewhereExplicitlyStatesSpecificBetWhenRequired":true
+    "generalJackpotPageSaysEachOnlineJackpotBetAddsSmallPercentageToPot":true,
+    "generalJackpotPageSaysLinkedSagaPoolsPercentagesAcrossGames":true,
+    "sameOperatorEvidenceObservedOn":"2026-09-04"
   },
   "interpretation":{
     "minStakeEligibilityStronglySupported":true,
     "minStakeEligibilityVerified":false,
-    "reasonNotVerified":"The exact Book of Scrolls rules do not explicitly say 'any bet amount' or otherwise state that the 0.01 EUR minimum contributes to and is eligible for the Daily Jackpot. William Hill's general jackpot page supports first-spin participation, but the operator also notes elsewhere that some jackpot games can require a specific qualifying bet.",
+    "sameOperatorSupportNowStrongerThanCrossOperatorSupport":true,
+    "reasonNotVerified":"William Hill Spain itself publishes 0.01 EUR as the game's minimum, says Book of Scrolls jackpot probability is determined by bet size, and its general jackpot rules say jackpot play is available from the first spin and that each online-jackpot wager adds a small percentage to the pot. However, the exact Book of Scrolls page still does not literally state that the 0.01 EUR minimum is a contributing/qualifying Daily Jackpot wager, and William Hill notes that jackpot conditions may vary by slot.",
     "noHiddenStakeRequirementMayBeAssumed":true
   },
-  "sameProductExternalCorroboration":{
-    "officialSection8SupportSaysAllContributingParticipantsEligible":true,
-    "officialSection8PagesSayRealMoneyPlayersInEligibleGamesCanWin":true,
-    "transferToWilliamHillStakeEligibilityAllowed":false
+  "crossOperatorCorroboration":{
+    "sameSection8DailyNetworkPagesPublishThreePctContributionOnOtherTitles":true,
+    "sameSection8BookOfScrollsAt888SpainPublishesDailyJackpotAndConflictingMinimumText":true,
+    "transferToWilliamHillStakeEligibilityAllowed":false,
+    "reason":"Cross-operator rules can corroborate family mechanics but cannot bind William Hill's served stake eligibility."
   },
+  "nextDecisiveEvidence":[
+    "exact Book of Scrolls served rules/help stating all real-money stake sizes or the 0.01 EUR stake contribute/qualify",
+    "or a passive served-session/network payload showing a jackpot contribution/eligibility flag at 0.01 EUR without wagering",
+    "bind the visible Daily amount/countdown to the Book of Scrolls Section8 network",
+    "observe deadline transition without wagering"
+  ],
   "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
   "hardGuards":{
     "strongSupportIsNotProof":true,
     "minGameStakeCannotSelfProveJackpotStake":true,
+    "generalJackpotRulesCannotOverrideExactGameException":true,
     "crossOperatorEligibilityCannotCloseWilliamHill":true,
     "noWagerProbe":true,
     "noAutomaticBetting":true
