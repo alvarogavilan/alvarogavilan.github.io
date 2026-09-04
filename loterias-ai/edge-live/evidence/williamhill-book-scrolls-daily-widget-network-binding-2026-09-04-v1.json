@@ -1,0 +1,52 @@
+{
+  "version":"williamhill-book-scrolls-daily-widget-network-binding-2026-09-04-v1",
+  "generatedAt":"2026-09-04T12:00:00+02:00",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operator":"William Hill Spain",
+  "target":"Book of Scrolls",
+  "operatorSources":{
+    "targetUrl":"https://casino.williamhill.es/slots/book-of-scrolls",
+    "jackpotCatalogUrl":"https://casino.williamhill.es/botes"
+  },
+  "bindingEvidence":{
+    "targetPageStatesDailyProgressiveSharedAcrossGames":true,
+    "targetPageStatesCountdownToGuaranteedHitTimeDisplayed":true,
+    "jackpotCatalogHasExplicitDailyPotBlock":true,
+    "dailyPotBlockContainsSingleVisibleCountdown":true,
+    "dailyPotBlockContainsBookOfScrollsTile":true,
+    "bookOfScrollsAssetMarker":"EC-4263_WH_ BookofScrolls_li_222x222px.jpg",
+    "bookOfScrollsLauncherAdjacentWithinSameDailyBlock":true,
+    "dailyNetworkWidgetBindingVerified":true,
+    "uniquePerTitleWidgetBindingRequired":false,
+    "reason":"Book of Scrolls itself states that its Daily progressive is shared across games. William Hill's jackpot catalog groups Book of Scrolls inside the same explicit Bote diario block under a shared countdown, so the network-level countdown is operator-bound to the Daily network in which Book of Scrolls participates."
+  },
+  "observedSnapshot":{
+    "countdownText":"1h 36m 3s",
+    "amountRawCrawlerText":"€4 2 9.2 6",
+    "amountExactEUR":null,
+    "amountReconstructionAllowed":false,
+    "reason":"Crawler tokenization separates digits; no numeric amount is asserted without an unambiguous rendered value."
+  },
+  "whatThisCloses":{
+    "previousSiteLevelWidgetAmbiguityClosed":true,
+    "dailyNetworkCountdownObservableWithoutLogin":true,
+    "bookOfScrollsMembershipInThatDailyNetworkObserved":true
+  },
+  "remainingBlockers":[
+    "literal proof that 0.01 EUR is a contributing/qualifying jackpot stake in the served build",
+    "unambiguous exact Daily amount if amount is needed for EV calculations",
+    "passive observation of countdown expiry/reset semantics",
+    "determine operational meaning of operator statement that win probability reaches 100% at guaranteed hit time",
+    "race/latency model if multiple simultaneous qualifying spins can contend"
+  ],
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{
+    "crawlerDigitSpacingCannotBeSilentlyNormalizedToMoney":true,
+    "networkCountdownDoesNotProveMinimumStakeEligibility":true,
+    "countdownAloneDoesNotAuthorizePreDeadlinePlay":true,
+    "noWagerProbe":true,
+    "noAutomaticBetting":true
+  }
+}
