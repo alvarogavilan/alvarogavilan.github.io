@@ -1,15 +1,16 @@
 {
-  "generatedAt": "2026-08-20T00:21:30.770Z",
+  "generatedAt": "2026-09-04T13:06:20.357Z",
   "gameId": "loteria-nacional",
   "schemaVersion": 2,
   "attempted": 400,
-  "updated": 0,
-  "totalNonSeasonal": 1421,
-  "officialFullExtractionDraws": 723,
-  "officialCompleteSchemaDraws": 969,
-  "coverage": 0.6819141449683321,
+  "updated": 5,
+  "totalNonSeasonal": 1426,
+  "officialFullExtractionDraws": 728,
+  "officialCompleteSchemaDraws": 974,
+  "coverage": 0.6830294530154277,
   "mismatch": 0,
   "empty": 1,
+  "exactDateMisses": 1,
   "failures": [
     {
       "date": "2016-10-22",
@@ -1165,7 +1166,8 @@
     },
     {
       "date": "2013-12-28",
-      "reason": "fechav3-empty"
+      "reason": "exact-official-date-not-returned",
+      "returnedDates": []
     },
     {
       "date": "2013-12-26",
@@ -1590,26 +1592,6 @@
     {
       "date": "2012-11-29",
       "reason": "SyntaxError: Unexpected end of JSON input"
-    },
-    {
-      "date": "2012-11-24",
-      "reason": "SyntaxError: Unexpected end of JSON input"
-    },
-    {
-      "date": "2012-11-22",
-      "reason": "SyntaxError: Unexpected end of JSON input"
-    },
-    {
-      "date": "2012-11-17",
-      "reason": "SyntaxError: Unexpected end of JSON input"
-    },
-    {
-      "date": "2012-11-15",
-      "reason": "SyntaxError: Unexpected end of JSON input"
-    },
-    {
-      "date": "2012-11-10",
-      "reason": "SyntaxError: Unexpected end of JSON input"
     }
   ],
   "remaining": 452,
@@ -1619,5 +1601,10 @@
     "normalizedPrize": "EUR"
   },
   "numberNormalization": "All exact 5-digit prize numbers are compared zero-padded so SELAE fechav3 values such as 9867 match resultados2 value 09867.",
-  "truth": "Persisted prize data comes directly from SELAE resultados2, is cross-checked against SELAE fechav3 draw id plus normalized five-digit first and second prizes, keeps exact first/second/third/fourth/fifth/special categories and all extraction arrays, and normalizes raw prize cents to EUR."
+  "guards": {
+    "exactOfficialDrawDateRequired": true,
+    "noDateShiftPromotion": true,
+    "noInference": true
+  },
+  "truth": "Persisted prize data comes directly from SELAE resultados2, is cross-checked against the exact requested SELAE fechav3 draw date plus draw id and normalized five-digit first and second prizes, keeps exact first/second/third/fourth/fifth/special categories and all extraction arrays, and normalizes raw prize cents to EUR."
 }
