@@ -1,0 +1,15 @@
+{
+  "version":"section8-daily-predeadline-boundary-model-2026-09-04-v1",
+  "generatedAt":"2026-09-04T12:08:00+02:00",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "target":{"operator":"William Hill Spain","game":"Book of Scrolls","provider":"Section 8 Studio"},
+  "operatorSpecific":{"williamHillBookOfScrollsStatesProbabilityRisesTowardGuaranteedHitTime":true,"williamHillBookOfScrollsStatesProbabilityReaches100PctAtGuaranteedHitTime":true,"williamHillBookOfScrollsShowsCountdown":true},
+  "providerNetworkCorroboration":{"official888DailyJackpotSaysMustDropBeforeTimerRunsOut":true,"official888DailyJackpotSaysSingleEligibleSpinCanWin":true,"official888Section8HistorySaysGuaranteedDropEveryDayByGivenGMTTime":true,"use":"family boundary semantics only; does not transfer William Hill stake eligibility or exact hazard"},
+  "modelCorrection":{"sportingLegendsFirstContributionAfterMissedDeadlineModelApplies":false,"postZeroFirstContributionMayBeAssumed":false,"primaryOpportunityWindow":"PRE_DEADLINE","hazardExpectedToIncreaseTowardBoundary":true,"exactHazardFunctionKnown":false,"nextSpinProbabilityAtAnyObservedRemainingTimeKnown":false,"literalNextSpinGuaranteeBeforeZeroKnown":false},
+  "scientificImplication":"A countdown close to zero is not enough for positive-EV authority. The unknown conditional jackpot probability for the selected stake and remaining time must be recovered or lower-bounded. The phrase 100% at guaranteed hit time cannot be converted into a finite pre-deadline next-spin probability without additional served rules or observations.",
+  "remainingBlockers":["prove exact 0.01 EUR stake contributes/qualifies on William Hill Book of Scrolls","recover or lower-bound p(jackpot on next qualifying spin | stake,time remaining)","obtain unambiguous Daily amount for the same network state if needed for EV","measure timing/latency and concurrent player effects","fresh pre-spin state recheck"],
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{"noPostDeadlineSportingTransfer":true,"oneHundredPctAtBoundaryIsNotFiniteTimeHazardCurve":true,"countdownNearZeroCannotAuthorizePlay":true,"crossOperatorFamilyRulesCannotBindWilliamHillStake":true,"noWagerProbe":true,"noAutomaticBetting":true}
+}
