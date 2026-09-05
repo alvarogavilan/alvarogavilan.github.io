@@ -1,0 +1,58 @@
+{
+  "version":"williamhill-section8-daily-deadline-reconstruction-2026-09-05-v1",
+  "generatedAt":"2026-09-05T10:11:00+02:00",
+  "scope":"ONLINE_ONLY_NON_PROMO_RESEARCH",
+  "realMoneyAllowed":false,
+  "realStakeEUR":0,
+  "operator":"William Hill Spain",
+  "network":"Section 8 Studio Daily Jackpot",
+  "target":"Book of Scrolls",
+  "observations":[
+    {
+      "page":"https://casino.williamhill.es/slots/book-of-scrolls",
+      "pageClockES":"11:48:35",
+      "countdown":"14h 11m 19s",
+      "reconstructedDeadlineES":"01:59:54 next day",
+      "bookOfScrollsInsideSameDailyWidgetBlock":true
+    },
+    {
+      "page":"https://casino.williamhill.es/slots/streak-of-luck",
+      "pageClockES":"02:49:34",
+      "countdown":"23h 10m 20s",
+      "reconstructedDeadlineES":"01:59:54 next day",
+      "sameWilliamHillDailyWidgetNetwork":true
+    }
+  ],
+  "interpretation":{
+    "sameReconstructedDeadlineAcrossIndependentSnapshots":true,
+    "operatorSpecificDailyDeadlineApproxES":"02:00:00",
+    "observedReconstructionOffsetSecondsFrom020000":6,
+    "deadlinePrecisionClaim":"APPROXIMATE_NOT_SERVER_BOUND",
+    "whyMaterial":"The public countdown is no longer only a relative timer; independent snapshots collapse to the same operator-specific daily wall-clock boundary, enabling passive pre-deadline observation windows."
+  },
+  "knownMechanics":{
+    "mustDropBeforeTimerEnds":true,
+    "probabilityIncreasesTowardGuaranteedTime":true,
+    "operatorSaysProbabilityReaches100PctAtGuaranteedTime":true,
+    "betSizeAffectsProbability":true,
+    "bookPublishedMinStakeEUR":0.01,
+    "bookPublishedRtpPct":96.17,
+    "minimumStakeJackpotEligibilityVerified":false,
+    "hazardFunctionKnown":false
+  },
+  "nextDecisiveEvidence":[
+    "capture multiple fresh William Hill Daily countdown snapshots around 01:55-02:00 ES and verify reset/drop timing without wagering",
+    "prove the 0.01 EUR Book of Scrolls stake is jackpot-contributing/eligible in the served William Hill build",
+    "obtain or statistically bound p(next spin | time remaining, stake) near the deadline",
+    "measure network competition before any EV claim"
+  ],
+  "execution":{"decision":"NO_PLAY","realMoneyAllowed":false,"realStakeEUR":0,"maxSpins":0,"maxTotalStakeEUR":0},
+  "hardGuards":{
+    "doNotTreat015954AsExactServerGHT":true,
+    "doNotInferAmountFromTokenizedCrawlerDigits":true,
+    "doNotAssumeFirstSpinAfterDeadlineWins":true,
+    "doNotAssume001Eligibility":true,
+    "noWagerProbe":true,
+    "noAutomaticBetting":true
+  }
+}
