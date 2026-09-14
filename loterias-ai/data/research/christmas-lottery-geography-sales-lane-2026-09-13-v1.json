@@ -1,7 +1,7 @@
 {
   "version": "christmas-lottery-geography-sales-lane-2026-09-13-v1",
   "createdAt": "2026-09-13T23:58:00+02:00",
-  "updatedAt": "2026-09-14T10:57:00+02:00",
+  "updatedAt": "2026-09-14T11:03:00+02:00",
   "scope": "SORTEO_EXTRAORDINARIO_NAVIDAD_SELAE",
   "status": "OPEN_RESEARCH_LANE",
   "execution": {
@@ -51,6 +51,19 @@
       "christmas2026Selectable": true,
       "availabilityConstraintPublished": true,
       "researchMeaning": "SELAE explicitly states that a requested number can be unavailable online because it is sold out or sold only through administrations. This supports inventory-state sampling as a legitimate pre-draw feature."
+    },
+    "physicalAllocationMechanism": {
+      "confirmedBySELAE": true,
+      "officialSource": "https://www.loteriasyapuestas.es/f/loterias/documentos/publicaciones/Boletin/Boletin95selae.pdf",
+      "published": "2025-06",
+      "mechanism": [
+        "Christmas tickets are packaged and sent to administrations across Spain.",
+        "Allocation takes account of subscribed numbers (numeros abonados).",
+        "Allocation also takes account of the outlet's previous-year sales.",
+        "Remaining numbers are distributed through a salpicado mechanism.",
+        "The first and largest consignment is prepared by mid-July when Christmas sales begin."
+      ],
+      "researchMeaning": "Prize-location clustering is structurally confounded by commercial allocation and prior sales. Historical outlet/province hit counts cannot be interpreted as predictive luck without controlling for this exposure mechanism. The same mechanism provides a legitimate pre-draw allocation variable if observed prospectively."
     },
     "2025PrizePointOfSalePagesConfirmed": true,
     "firstPrize2025": {
@@ -113,14 +126,15 @@
     "Does pre-draw number availability differ systematically across points of sale or channels?",
     "Can consignment/sales concentration be reconstructed before the draw without leaking outcome information?",
     "Does geography change only the probability that a prize is reported in an area, or does it affect ticket-level expected value?",
-    "Are repeated famous outlets explained entirely by much larger sales volume?",
+    "Are repeated famous outlets explained entirely by much larger sales volume and the SELAE allocation mechanism?",
     "Can official web distribution be separated from physical location attribution to avoid false geographic signals?",
     "Are there constrained inventory or series-allocation effects that alter accessibility of a specific number without altering draw probability?",
-    "Can any strategy survive a prospective, pre-registered test after controlling for sales volume and multiple comparisons?"
+    "Can any strategy survive a prospective, pre-registered test after controlling for sales volume, allocation mechanism and multiple comparisons?"
   ],
   "hardGuards": {
     "pastWinningLocationsDoNotIncreaseFutureDrawProbabilityByThemselves": true,
     "predrawAvailabilityDoesNotIncreaseDrawProbabilityByItself": true,
+    "commercialAllocationCanCreateApparentLuckyOutletClustering": true,
     "postDrawPointOfSaleDataCannotBeUsedAsPreDrawFeatureUnlessEquivalentDataWasPublicBeforeDraw": true,
     "salesVolumeMustBeControlledBeforeClaimingLuckyOutletEffect": true,
     "officialWebAttributionMustNotBeMisclassifiedAsPhysicalOutletSignal": true,
@@ -133,7 +147,7 @@
   "promotionGate": {
     "requires": [
       "at least one genuinely pre-draw observable feature",
-      "volume-adjusted null model",
+      "volume-and-allocation-adjusted null model",
       "temporal holdout",
       "independent prospective replication",
       "positive expected value after ticket cost and taxes/fees where applicable",
@@ -146,8 +160,8 @@
     "Measure online-versus-administration availability separately.",
     "Backfill official 2020-2025 Christmas prize point-of-sale lists by tier.",
     "Build normalized outlet/province/channel table and de-duplicate aliases/addresses.",
-    "Search official/public pre-draw consignment information for 2026.",
-    "Estimate outlet apparent luck only after exposure/sales normalization and the change to 205 series.",
+    "Search official/public pre-draw consignment information for 2026 and distinguish subscribed-number allocation from salpicado.",
+    "Estimate outlet apparent luck only after exposure/sales/allocation normalization and the change to 205 series.",
     "Compare physical outlets versus official web distribution.",
     "Create prospective 2026 snapshot before 22 December and freeze it before the draw."
   ]
