@@ -1,6 +1,7 @@
 {
   "version": "christmas-lottery-geography-sales-lane-2026-09-13-v1",
   "createdAt": "2026-09-13T23:58:00+02:00",
+  "updatedAt": "2026-09-14T10:57:00+02:00",
   "scope": "SORTEO_EXTRAORDINARIO_NAVIDAD_SELAE",
   "status": "OPEN_RESEARCH_LANE",
   "execution": {
@@ -11,6 +12,46 @@
   "goal": "Test whether any pre-draw observable involving number availability, consignment, point-of-sale geography, sales concentration, online allocation, or distribution structure changes expected value or accessibility without using future information.",
   "officialEvidence": {
     "sourcePolicy": "SELAE_FIRST",
+    "2026Program": {
+      "official": true,
+      "drawDate": "2026-12-22",
+      "system": "traditional",
+      "series": 205,
+      "numbersPerSeries": 100000,
+      "ticketEUR": 200,
+      "tenthEUR": 20,
+      "totalIssuanceEUR": 4100000000,
+      "prizePoolFraction": 0.70,
+      "totalPrizePoolEUR": 2870000000,
+      "firstPrizePerSeriesEUR": 4000000,
+      "secondPrizePerSeriesEUR": 1250000,
+      "thirdPrizePerSeriesEUR": 500000,
+      "fourthPrizesPerSeries": 2,
+      "fourthPrizeEachPerSeriesEUR": 200000,
+      "officialUrl": "https://www.loteriasyapuestas.es/f/loterias/documentos/Loter%C3%ADa%20Nacional/programas%20de%20premios/PROGRAMAS_PREMIOS_CUARTO_TRIMESTRE_2026_SABADOS.pdf",
+      "researchMeaning": "The 2026 issuance expands exposure to 205 series. Geographic prize counts must therefore be normalized by the 2026 inventory/exposure structure rather than compared naively with prior years."
+    },
+    "2026OnlineSaleState": {
+      "officiallyListedForSale": true,
+      "officialOnlineCloseDisplayed": "2026-12-21T23:45:00+01:00",
+      "firstPrizePerSeriesDisplayedEUR": 4000000,
+      "officialUrl": "https://www.loteriasyapuestas.es/es/juegos-disponibles-online",
+      "capturedBeforeDraw": true
+    },
+    "officialPredrawNumberLocator": {
+      "confirmed": true,
+      "officialUrl": "https://www.loteriasyapuestas.es/es/buscar-decimo.",
+      "capability": "Given a Loteria Nacional draw and a five-digit number, SELAE exposes points of sale associated with that number when available.",
+      "predrawObservable": true,
+      "researchMeaning": "This creates a prospective, outcome-independent way to freeze number-to-outlet availability before the 2026 Christmas draw. It measures accessibility/allocation, not draw probability."
+    },
+    "onlineNumberAvailability": {
+      "confirmed": true,
+      "officialUrl": "https://juegos.loteriasyapuestas.es/jugar/loteria-nacional/decimo",
+      "christmas2026Selectable": true,
+      "availabilityConstraintPublished": true,
+      "researchMeaning": "SELAE explicitly states that a requested number can be unavailable online because it is sold out or sold only through administrations. This supports inventory-state sampling as a legitimate pre-draw feature."
+    },
     "2025PrizePointOfSalePagesConfirmed": true,
     "firstPrize2025": {
       "officialUrl": "https://www.loteriasyapuestas.es/es/premios/primer-premio-de-loteria-nacional-del-sorteo-extraordinario-de-navidad-del-22-de-diciembre-de-2025",
@@ -79,6 +120,7 @@
   ],
   "hardGuards": {
     "pastWinningLocationsDoNotIncreaseFutureDrawProbabilityByThemselves": true,
+    "predrawAvailabilityDoesNotIncreaseDrawProbabilityByItself": true,
     "postDrawPointOfSaleDataCannotBeUsedAsPreDrawFeatureUnlessEquivalentDataWasPublicBeforeDraw": true,
     "salesVolumeMustBeControlledBeforeClaimingLuckyOutletEffect": true,
     "officialWebAttributionMustNotBeMisclassifiedAsPhysicalOutletSignal": true,
@@ -100,10 +142,12 @@
     "currentPass": false
   },
   "nextWork": [
+    "Freeze a reproducible sample of 2026 number-to-outlet availability from the official SELAE locator before 22 December.",
+    "Measure online-versus-administration availability separately.",
     "Backfill official 2020-2025 Christmas prize point-of-sale lists by tier.",
     "Build normalized outlet/province/channel table and de-duplicate aliases/addresses.",
-    "Search official/public pre-draw number-availability and consignment information for 2026.",
-    "Estimate outlet apparent luck only after exposure/sales normalization.",
+    "Search official/public pre-draw consignment information for 2026.",
+    "Estimate outlet apparent luck only after exposure/sales normalization and the change to 205 series.",
     "Compare physical outlets versus official web distribution.",
     "Create prospective 2026 snapshot before 22 December and freeze it before the draw."
   ]
