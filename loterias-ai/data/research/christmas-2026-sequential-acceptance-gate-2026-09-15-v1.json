@@ -1,0 +1,57 @@
+{
+  "version": "christmas-2026-sequential-acceptance-gate-2026-09-15-v1",
+  "scope": "SORTEO_EXTRAORDINARIO_NAVIDAD_2026",
+  "status": "DOCUMENTED_PRE_DRAW_PHYSICAL_PROCESS_RESEARCH_ONLY",
+  "contract": "25/042",
+  "supplier": "BBC PACKAGING S.L.",
+  "documentedProcess": {
+    "numberBalls": 100000,
+    "material": "madera de boj",
+    "nominalDiameterMM": 18,
+    "transverseCenteredHoleMM": 4,
+    "nominalWeightG": 3,
+    "requirements": ["perfectly spherical", "perfectly balanced", "no shape defects or fissures affecting laser engraving"],
+    "partialDeliveries": 5,
+    "ballsPerPartialDelivery": 20000,
+    "productionDeadlineWeeksPerDelivery": 10,
+    "SELAEVerificationWindowDays": 15,
+    "sequentialAcceptanceGate": true,
+    "nextDeliveryProductionAfterAcceptanceCertificate": true,
+    "maximumTotalDeliveryWeeksFromFormalization": 60
+  },
+  "researchImplication": {
+    "important": "The five deliveries are not merely logistical. Publicly described contract execution says SELAE verifies each delivery against specifications and an acceptance certificate gates production of the next delivery.",
+    "targetEvidence": [
+      "acceptance certificate for each partial delivery",
+      "inspection or laboratory measurement sheets",
+      "nonconformity/rejection/correction records",
+      "actual delivery dates and accepted number ranges",
+      "actual mass/diameter/balance measurements if recorded"
+    ],
+    "allowedInference": "This creates externally defined manufacturing/acceptance strata suitable for a pre-registered batch-era hypothesis if actual batch identity/ranges and measurements are recovered.",
+    "forbiddenInference": "No extraction advantage may be inferred from batch membership, nominal specifications or tolerances alone."
+  },
+  "crossChecks": {
+    "allNumberAndPrizeBallsNew2026": true,
+    "publicAnnouncementDate": "2026-07-09",
+    "periodicBallWeighingWithIGAE": true,
+    "semestralWeighingCalendarDocumented": true,
+    "maintenanceContract2026": "26/017",
+    "maintenanceSupplier": "Cayan, SL"
+  },
+  "hardGuards": {
+    "NO_PLAY": true,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0,
+    "doNotInventMeasurements": true,
+    "doNotConvertNominalWeightIntoObservedWeight": true,
+    "doNotTreatAcceptanceAsEvidenceOfBias": true,
+    "greenRequiresReproducibleQuantifiedAdvantage": true
+  },
+  "next": [
+    "Recover the five acceptance certificates or evidence of their dates/results.",
+    "Recover 2026 SELAE/IGAE weighing calendar and weighing results.",
+    "Recover any 25/042 laboratory sampling/measurement records.",
+    "Only after physical measurements are available, freeze hypotheses before examining draw outcomes."
+  ]
+}
