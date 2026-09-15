@@ -1,0 +1,55 @@
+{
+  "version": "selae-ball-weighing-mechanical-era-lane-2026-09-15-v1",
+  "createdAt": "2026-09-15T10:24:00+02:00",
+  "scope": ["primitiva", "bonoloto", "gordo", "euromillones", "loteria-nacional"],
+  "status": "OPEN_RESEARCH_LANE",
+  "objective": "Use externally documented physical-control events (ball weighing, ball-set replacement, machine change, incident, maintenance) to define mechanical eras, then test whether any number/position bias survives temporal holdout and matched-null simulation without outcome-defined cut points.",
+  "officialEvidence": {
+    "source": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2019-13979",
+    "facts": [
+      "IGAE officials attend preparatory/executive draw acts and ball-weighing acts.",
+      "SELAE and IGAE establish a semiannual calendar of periodic ball weighings.",
+      "Ball weighings are performed early in the morning on dates agreed by the monitoring commission.",
+      "Officials sign the corresponding documents for the acts they attend.",
+      "IGAE attendance is intended to ensure compliance and transparency."
+    ]
+  },
+  "hardGuards": {
+    "noOutcomeDefinedEraBoundaries": true,
+    "noAssumingWeightDifferencesWithoutMeasuredEvidence": true,
+    "noInferringMachineOrBallSetIdFromWinningNumbers": true,
+    "externalEvidenceRequiredForEraBoundary": true,
+    "temporalHoldoutRequired": true,
+    "matchedUniformNullRequired": true,
+    "multipleComparisonCorrectionRequired": true,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  },
+  "candidateExternalBoundaries": [
+    "documented semiannual ball-weighing date",
+    "documented ball-set replacement date",
+    "documented machine replacement or maintenance date",
+    "documented draw incident affecting equipment",
+    "documented venue/procedure change"
+  ],
+  "testsPlanned": [
+    "position-by-number frequency before/after documented boundary",
+    "main-set marginal frequency stability by era",
+    "serial dependence and adjacency structure by era",
+    "complementary/reintegro subsystem stability",
+    "cross-game replication where equipment/procedure differs",
+    "Monte Carlo matched-null with identical draw counts and calendar segmentation"
+  ],
+  "promotionGate": {
+    "requires": [
+      "externally documented mechanical boundary",
+      "effect discovered before holdout",
+      "same directional effect in holdout",
+      "survival after multiplicity correction",
+      "effect size large enough to change ticket probability materially",
+      "independent replication across another era or game"
+    ],
+    "currentPass": false
+  },
+  "verdict": "NO_PLAY"
+}
