@@ -1,0 +1,67 @@
+{
+  "version": "tulotero-christmas-2026-public-availability-2026-09-15-v1",
+  "capturedAt": "2026-09-15T10:16:00+02:00",
+  "scope": "PUBLIC_WEB_OBSERVATION_ONLY",
+  "game": "Loteria de Navidad 2026",
+  "drawDate": "2026-12-22",
+  "provider": "TuLotero",
+  "source": {
+    "searchUrl": "https://tulotero.es/comprar/loteria-navidad/buscador/",
+    "mainUrl": "https://tulotero.es/comprar/loteria-navidad/",
+    "publicClaims": {
+      "searchAnyOf100000Numbers": true,
+      "associatedAdministrationsMoreThan": 4000,
+      "availabilityDescribedAsRealTime": true,
+      "canShowAdministrationsConsigningNumber": true,
+      "onlinePurchaseWhenAvailable": true
+    }
+  },
+  "observedPublicExamples": {
+    "homepage": ["25178","31621","73992","20787","89081","72109","02983","56637"],
+    "ending00": ["57100","29600","08200","02100"],
+    "ending01": ["25901","98401","78901","40901"],
+    "ending09": ["15309","71409","74309","60309"],
+    "ending10": ["68410","71010","35310"],
+    "ending12": ["22612","76712","62512"],
+    "ending26": ["66726","24626","84526"],
+    "ending49": ["25349","34249","34549"],
+    "ending51": ["38751","32051","84551","99351"],
+    "ending81": ["38081","35681","80181"]
+  },
+  "interpretation": {
+    "whatThisProves": [
+      "TuLotero exposes a public pre-draw availability surface for Christmas 2026.",
+      "Public pages can be sampled repeatedly to build timestamped availability snapshots.",
+      "Observed availability can be compared with official SELAE allocation and post-draw prize-location data."
+    ],
+    "whatThisDoesNotProve": [
+      "Availability does not change the random draw probability of a five-digit number.",
+      "Absence from one public page does not prove global unavailability unless the exact-number search confirms it.",
+      "Popularity, scarcity or outlet count cannot be treated as predictive without prospective controls."
+    ]
+  },
+  "plannedFieldsPerSnapshot": [
+    "capturedAt","number","termination","publiclyListed","sourceUrl","administrationCountIfExposed","administrationsIfExposed","onlinePurchasableIfExposed","evidenceClass"
+  ],
+  "researchUse": [
+    "inventory survival / time-to-disappearance",
+    "termination-demand concentration",
+    "number popularity and scarcity",
+    "administration concentration",
+    "SELAE-vs-TuLotero availability overlap",
+    "post-draw exposure-normalized prize checks",
+    "prospective null-model simulations"
+  ],
+  "execution": {
+    "decision": "NO_PLAY",
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  },
+  "hardGuards": {
+    "publicPagesOnly": true,
+    "noLoginAutomation": true,
+    "noPurchaseAutomation": true,
+    "noFutureInformation": true,
+    "noAvailabilityEqualsProbabilityInference": true
+  }
+}
