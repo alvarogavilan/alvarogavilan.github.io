@@ -1,0 +1,25 @@
+name: Loterias AI MetaPleno v148 Structural Gated Rescue
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v148-structural-gated-rescue]
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v148-bonoloto-structural-gated-rescue.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v148-structural-gated-rescue.yml'
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/meta-pleno-v148-bonoloto-structural-gated-rescue.mjs
+      - name: Persist v148
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v148-bonoloto-structural-gated-rescue.json
+          git diff --cached --quiet || git commit -m 'data(loterias-ai): persist v148 structural gated rescue'
+          git push
