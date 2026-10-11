@@ -1,0 +1,1120 @@
+{
+  "generatedAt": "2026-08-16T10:11:57.052Z",
+  "version": "v228",
+  "gameId": "bonoloto",
+  "family": "COST_AWARE_POOL9_30_LINE_COVER",
+  "purpose": "Test whether 15 EUR / 30 lines over a 9-number ranked pool improves full-hit conversion versus complete Budget8 (14 EUR / 28 lines), without changing the underlying predictor.",
+  "candidatePool": {
+    "nominalConfigurations": 20,
+    "effectiveConfigurations": 20,
+    "selectionCriterion": "Top 8 by TRAIN-only delta full, then delta 5+, then average-best-hit improvement versus same-family Budget8."
+  },
+  "dataBoundary": {
+    "train": "all eligible draws before 2023-01-01",
+    "validation": "2023-01-01..2024-12-31",
+    "postFreeze": "2025-01-01 onward",
+    "minimumHistory": 250,
+    "chronological": true,
+    "targetUpdatedAfterScoring": true
+  },
+  "economics": {
+    "budget8": {
+      "poolSize": 8,
+      "lines": 28,
+      "costEUR": 14
+    },
+    "pool9": {
+      "poolSize": 9,
+      "lines": 30,
+      "costEUR": 15
+    },
+    "realStakeEUR": 0
+  },
+  "frozen": [
+    "gap-L0p15",
+    "stability-L0p08",
+    "stability-L0p15",
+    "momentum-L0p08",
+    "momentum-L0",
+    "momentum-L0p03",
+    "gap-L0p08",
+    "stability-L0"
+  ],
+  "trainRanking": [
+    {
+      "id": "gap-L0p15",
+      "config": {
+        "family": "gap",
+        "lambda": 0.15,
+        "nominalLines": 30,
+        "theoreticalCostEUR": 15
+      },
+      "train": {
+        "pool9": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 3,
+          "averageBestHits": 1.0923689619732786,
+          "fullDates": [],
+          "ge5Dates": [
+            "1998-03-04",
+            "2019-04-16",
+            "2022-12-07"
+          ]
+        },
+        "budget8": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 0.9683967112024666,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        "deltaFull": 0,
+        "delta5Plus": 3,
+        "deltaAvg": 0.12397225077081198
+      }
+    },
+    {
+      "id": "stability-L0p08",
+      "config": {
+        "family": "stability",
+        "lambda": 0.08,
+        "nominalLines": 30,
+        "theoreticalCostEUR": 15
+      },
+      "train": {
+        "pool9": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 2,
+          "averageBestHits": 1.1025179856115108,
+          "fullDates": [],
+          "ge5Dates": [
+            "2018-11-20",
+            "2022-07-13"
+          ]
+        },
+        "budget8": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 0.9804727646454265,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        "deltaFull": 0,
+        "delta5Plus": 2,
+        "deltaAvg": 0.12204522096608428
+      }
+    },
+    {
+      "id": "stability-L0p15",
+      "config": {
+        "family": "stability",
+        "lambda": 0.15,
+        "nominalLines": 30,
+        "theoreticalCostEUR": 15
+      },
+      "train": {
+        "pool9": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 2,
+          "averageBestHits": 1.1025179856115108,
+          "fullDates": [],
+          "ge5Dates": [
+            "2018-11-20",
+            "2022-07-13"
+          ]
+        },
+        "budget8": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 0.9804727646454265,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        "deltaFull": 0,
+        "delta5Plus": 2,
+        "deltaAvg": 0.12204522096608428
+      }
+    },
+    {
+      "id": "momentum-L0p08",
+      "config": {
+        "family": "momentum",
+        "lambda": 0.08,
+        "nominalLines": 30,
+        "theoreticalCostEUR": 15
+      },
+      "train": {
+        "pool9": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 4,
+          "averageBestHits": 1.1049588900308325,
+          "fullDates": [],
+          "ge5Dates": [
+            "1997-01-27",
+            "2014-04-07",
+            "2018-07-26",
+            "2018-09-06"
+          ]
+        },
+        "budget8": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 2,
+          "averageBestHits": 0.9858684480986639,
+          "fullDates": [],
+          "ge5Dates": [
+            "1997-01-27",
+            "2014-04-07"
+          ]
+        },
+        "deltaFull": 0,
+        "delta5Plus": 2,
+        "deltaAvg": 0.11909044193216856
+      }
+    },
+    {
+      "id": "momentum-L0",
+      "config": {
+        "family": "momentum",
+        "lambda": 0,
+        "nominalLines": 30,
+        "theoreticalCostEUR": 15
+      },
+      "train": {
+        "pool9": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 4,
+          "averageBestHits": 1.1025179856115108,
+          "fullDates": [],
+          "ge5Dates": [
+            "1997-01-27",
+            "2014-04-07",
+            "2018-07-26",
+            "2018-09-06"
+          ]
+        },
+        "budget8": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 2,
+          "averageBestHits": 0.9858684480986639,
+          "fullDates": [],
+          "ge5Dates": [
+            "1997-01-27",
+            "2014-04-07"
+          ]
+        },
+        "deltaFull": 0,
+        "delta5Plus": 2,
+        "deltaAvg": 0.1166495375128469
+      }
+    },
+    {
+      "id": "momentum-L0p03",
+      "config": {
+        "family": "momentum",
+        "lambda": 0.03,
+        "nominalLines": 30,
+        "theoreticalCostEUR": 15
+      },
+      "train": {
+        "pool9": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 4,
+          "averageBestHits": 1.1025179856115108,
+          "fullDates": [],
+          "ge5Dates": [
+            "1997-01-27",
+            "2014-04-07",
+            "2018-07-26",
+            "2018-09-06"
+          ]
+        },
+        "budget8": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 2,
+          "averageBestHits": 0.9858684480986639,
+          "fullDates": [],
+          "ge5Dates": [
+            "1997-01-27",
+            "2014-04-07"
+          ]
+        },
+        "deltaFull": 0,
+        "delta5Plus": 2,
+        "deltaAvg": 0.1166495375128469
+      }
+    },
+    {
+      "id": "gap-L0p08",
+      "config": {
+        "family": "gap",
+        "lambda": 0.08,
+        "nominalLines": 30,
+        "theoreticalCostEUR": 15
+      },
+      "train": {
+        "pool9": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 1,
+          "averageBestHits": 1.09224049331963,
+          "fullDates": [],
+          "ge5Dates": [
+            "2022-12-07"
+          ]
+        },
+        "budget8": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 0.9683967112024666,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        "deltaFull": 0,
+        "delta5Plus": 1,
+        "deltaAvg": 0.12384378211716329
+      }
+    },
+    {
+      "id": "stability-L0",
+      "config": {
+        "family": "stability",
+        "lambda": 0,
+        "nominalLines": 30,
+        "theoreticalCostEUR": 15
+      },
+      "train": {
+        "pool9": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 1,
+          "averageBestHits": 1.1007194244604317,
+          "fullDates": [],
+          "ge5Dates": [
+            "2022-07-13"
+          ]
+        },
+        "budget8": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 0.9804727646454265,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        "deltaFull": 0,
+        "delta5Plus": 1,
+        "deltaAvg": 0.12024665981500515
+      }
+    },
+    {
+      "id": "stability-L0p03",
+      "config": {
+        "family": "stability",
+        "lambda": 0.03,
+        "nominalLines": 30,
+        "theoreticalCostEUR": 15
+      },
+      "train": {
+        "pool9": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 1,
+          "averageBestHits": 1.1007194244604317,
+          "fullDates": [],
+          "ge5Dates": [
+            "2022-07-13"
+          ]
+        },
+        "budget8": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 0.9804727646454265,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        "deltaFull": 0,
+        "delta5Plus": 1,
+        "deltaAvg": 0.12024665981500515
+      }
+    },
+    {
+      "id": "momentum-L0p15",
+      "config": {
+        "family": "momentum",
+        "lambda": 0.15,
+        "nominalLines": 30,
+        "theoreticalCostEUR": 15
+      },
+      "train": {
+        "pool9": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 3,
+          "averageBestHits": 1.104830421377184,
+          "fullDates": [],
+          "ge5Dates": [
+            "1997-01-27",
+            "2014-04-07",
+            "2018-07-26"
+          ]
+        },
+        "budget8": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 2,
+          "averageBestHits": 0.9858684480986639,
+          "fullDates": [],
+          "ge5Dates": [
+            "1997-01-27",
+            "2014-04-07"
+          ]
+        },
+        "deltaFull": 0,
+        "delta5Plus": 1,
+        "deltaAvg": 0.1189619732785201
+      }
+    },
+    {
+      "id": "balanced-L0",
+      "config": {
+        "family": "balanced",
+        "lambda": 0,
+        "nominalLines": 30,
+        "theoreticalCostEUR": 15
+      },
+      "train": {
+        "pool9": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 4,
+          "averageBestHits": 1.0948098663926003,
+          "fullDates": [],
+          "ge5Dates": [
+            "2010-04-05",
+            "2012-11-13",
+            "2018-11-20",
+            "2022-07-13"
+          ]
+        },
+        "budget8": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 3,
+          "averageBestHits": 0.9797019527235354,
+          "fullDates": [],
+          "ge5Dates": [
+            "2012-11-13",
+            "2018-11-20",
+            "2022-07-13"
+          ]
+        },
+        "deltaFull": 0,
+        "delta5Plus": 1,
+        "deltaAvg": 0.11510791366906481
+      }
+    },
+    {
+      "id": "balanced-L0p03",
+      "config": {
+        "family": "balanced",
+        "lambda": 0.03,
+        "nominalLines": 30,
+        "theoreticalCostEUR": 15
+      },
+      "train": {
+        "pool9": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 4,
+          "averageBestHits": 1.0948098663926003,
+          "fullDates": [],
+          "ge5Dates": [
+            "2010-04-05",
+            "2012-11-13",
+            "2018-11-20",
+            "2022-07-13"
+          ]
+        },
+        "budget8": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 3,
+          "averageBestHits": 0.9797019527235354,
+          "fullDates": [],
+          "ge5Dates": [
+            "2012-11-13",
+            "2018-11-20",
+            "2022-07-13"
+          ]
+        },
+        "deltaFull": 0,
+        "delta5Plus": 1,
+        "deltaAvg": 0.11510791366906481
+      }
+    },
+    {
+      "id": "meanrev-L0p08",
+      "config": {
+        "family": "meanrev",
+        "lambda": 0.08,
+        "nominalLines": 30,
+        "theoreticalCostEUR": 15
+      },
+      "train": {
+        "pool9": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 2,
+          "averageBestHits": 1.0949383350462487,
+          "fullDates": [],
+          "ge5Dates": [
+            "2022-03-15",
+            "2022-07-13"
+          ]
+        },
+        "budget8": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 2,
+          "averageBestHits": 0.9718653648509764,
+          "fullDates": [],
+          "ge5Dates": [
+            "2022-03-15",
+            "2022-07-13"
+          ]
+        },
+        "deltaFull": 0,
+        "delta5Plus": 0,
+        "deltaAvg": 0.1230729701952723
+      }
+    },
+    {
+      "id": "meanrev-L0p15",
+      "config": {
+        "family": "meanrev",
+        "lambda": 0.15,
+        "nominalLines": 30,
+        "theoreticalCostEUR": 15
+      },
+      "train": {
+        "pool9": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 2,
+          "averageBestHits": 1.0948098663926003,
+          "fullDates": [],
+          "ge5Dates": [
+            "2022-03-15",
+            "2022-07-13"
+          ]
+        },
+        "budget8": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 2,
+          "averageBestHits": 0.9718653648509764,
+          "fullDates": [],
+          "ge5Dates": [
+            "2022-03-15",
+            "2022-07-13"
+          ]
+        },
+        "deltaFull": 0,
+        "delta5Plus": 0,
+        "deltaAvg": 0.12294450154162384
+      }
+    },
+    {
+      "id": "gap-L0",
+      "config": {
+        "family": "gap",
+        "lambda": 0,
+        "nominalLines": 30,
+        "theoreticalCostEUR": 15
+      },
+      "train": {
+        "pool9": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 1.0890287769784173,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        "budget8": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 0.9683967112024666,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        "deltaFull": 0,
+        "delta5Plus": 0,
+        "deltaAvg": 0.12063206577595065
+      }
+    },
+    {
+      "id": "gap-L0p03",
+      "config": {
+        "family": "gap",
+        "lambda": 0.03,
+        "nominalLines": 30,
+        "theoreticalCostEUR": 15
+      },
+      "train": {
+        "pool9": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 1.0890287769784173,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        "budget8": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 0.9683967112024666,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        "deltaFull": 0,
+        "delta5Plus": 0,
+        "deltaAvg": 0.12063206577595065
+      }
+    },
+    {
+      "id": "meanrev-L0",
+      "config": {
+        "family": "meanrev",
+        "lambda": 0,
+        "nominalLines": 30,
+        "theoreticalCostEUR": 15
+      },
+      "train": {
+        "pool9": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 2,
+          "averageBestHits": 1.092497430626927,
+          "fullDates": [],
+          "ge5Dates": [
+            "2022-03-15",
+            "2022-07-13"
+          ]
+        },
+        "budget8": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 2,
+          "averageBestHits": 0.9718653648509764,
+          "fullDates": [],
+          "ge5Dates": [
+            "2022-03-15",
+            "2022-07-13"
+          ]
+        },
+        "deltaFull": 0,
+        "delta5Plus": 0,
+        "deltaAvg": 0.12063206577595065
+      }
+    },
+    {
+      "id": "meanrev-L0p03",
+      "config": {
+        "family": "meanrev",
+        "lambda": 0.03,
+        "nominalLines": 30,
+        "theoreticalCostEUR": 15
+      },
+      "train": {
+        "pool9": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 2,
+          "averageBestHits": 1.092497430626927,
+          "fullDates": [],
+          "ge5Dates": [
+            "2022-03-15",
+            "2022-07-13"
+          ]
+        },
+        "budget8": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 2,
+          "averageBestHits": 0.9718653648509764,
+          "fullDates": [],
+          "ge5Dates": [
+            "2022-03-15",
+            "2022-07-13"
+          ]
+        },
+        "deltaFull": 0,
+        "delta5Plus": 0,
+        "deltaAvg": 0.12063206577595065
+      }
+    },
+    {
+      "id": "balanced-L0p15",
+      "config": {
+        "family": "balanced",
+        "lambda": 0.15,
+        "nominalLines": 30,
+        "theoreticalCostEUR": 15
+      },
+      "train": {
+        "pool9": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 3,
+          "averageBestHits": 1.0967368961973278,
+          "fullDates": [],
+          "ge5Dates": [
+            "2010-04-05",
+            "2018-11-20",
+            "2022-07-13"
+          ]
+        },
+        "budget8": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 3,
+          "averageBestHits": 0.9797019527235354,
+          "fullDates": [],
+          "ge5Dates": [
+            "2012-11-13",
+            "2018-11-20",
+            "2022-07-13"
+          ]
+        },
+        "deltaFull": 0,
+        "delta5Plus": 0,
+        "deltaAvg": 0.1170349434737924
+      }
+    },
+    {
+      "id": "balanced-L0p08",
+      "config": {
+        "family": "balanced",
+        "lambda": 0.08,
+        "nominalLines": 30,
+        "theoreticalCostEUR": 15
+      },
+      "train": {
+        "pool9": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 2,
+          "averageBestHits": 1.096479958890031,
+          "fullDates": [],
+          "ge5Dates": [
+            "2018-11-20",
+            "2022-07-13"
+          ]
+        },
+        "budget8": {
+          "draws": 7784,
+          "full": 0,
+          "ge5": 3,
+          "averageBestHits": 0.9797019527235354,
+          "fullDates": [],
+          "ge5Dates": [
+            "2012-11-13",
+            "2018-11-20",
+            "2022-07-13"
+          ]
+        },
+        "deltaFull": 0,
+        "delta5Plus": -1,
+        "deltaAvg": 0.11677800616649547
+      }
+    }
+  ],
+  "validation": {
+    "models": [
+      {
+        "id": "gap-L0p15",
+        "pool9": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 1,
+          "averageBestHits": 1.1299589603283173,
+          "fullDates": [],
+          "ge5Dates": [
+            "2023-10-11"
+          ]
+        },
+        "budget8": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 1.0013679890560876,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "stability-L0p08",
+        "pool9": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 1.0998632010943912,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        "budget8": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 0.9849521203830369,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "stability-L0p15",
+        "pool9": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 1.1012311901504788,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        "budget8": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 0.9849521203830369,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "momentum-L0p08",
+        "pool9": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 1,
+          "averageBestHits": 1.0807113543091655,
+          "fullDates": [],
+          "ge5Dates": [
+            "2023-09-17"
+          ]
+        },
+        "budget8": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 1,
+          "averageBestHits": 0.9685362517099864,
+          "fullDates": [],
+          "ge5Dates": [
+            "2023-09-17"
+          ]
+        }
+      },
+      {
+        "id": "momentum-L0",
+        "pool9": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 1,
+          "averageBestHits": 1.079343365253078,
+          "fullDates": [],
+          "ge5Dates": [
+            "2023-09-17"
+          ]
+        },
+        "budget8": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 1,
+          "averageBestHits": 0.9685362517099864,
+          "fullDates": [],
+          "ge5Dates": [
+            "2023-09-17"
+          ]
+        }
+      },
+      {
+        "id": "momentum-L0p03",
+        "pool9": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 1,
+          "averageBestHits": 1.079343365253078,
+          "fullDates": [],
+          "ge5Dates": [
+            "2023-09-17"
+          ]
+        },
+        "budget8": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 1,
+          "averageBestHits": 0.9685362517099864,
+          "fullDates": [],
+          "ge5Dates": [
+            "2023-09-17"
+          ]
+        }
+      },
+      {
+        "id": "gap-L0p08",
+        "pool9": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 1,
+          "averageBestHits": 1.1299589603283173,
+          "fullDates": [],
+          "ge5Dates": [
+            "2023-10-11"
+          ]
+        },
+        "budget8": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 1.0013679890560876,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "stability-L0",
+        "pool9": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 1.0998632010943912,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        "budget8": {
+          "draws": 731,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 0.9849521203830369,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      }
+    ],
+    "uniquePool9_5PlusDates": [
+      "2023-09-17",
+      "2023-10-11"
+    ],
+    "uniquePool9FullDates": [],
+    "uniqueBudget8_5PlusDates": [
+      "2023-09-17"
+    ],
+    "uniqueBudget8FullDates": []
+  },
+  "postFreeze": {
+    "models": [
+      {
+        "id": "gap-L0p15",
+        "pool9": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 1.0846023688663282,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        "budget8": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 1,
+          "averageBestHits": 0.9695431472081218,
+          "fullDates": [],
+          "ge5Dates": [
+            "2025-05-10"
+          ]
+        }
+      },
+      {
+        "id": "stability-L0p08",
+        "pool9": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 1.0964467005076142,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        "budget8": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 0.9796954314720813,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "stability-L0p15",
+        "pool9": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 1.0964467005076142,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        "budget8": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 0.9796954314720813,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "momentum-L0p08",
+        "pool9": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 1.104906937394247,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        "budget8": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 0.9763113367174281,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "momentum-L0",
+        "pool9": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 1.104906937394247,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        "budget8": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 0.9763113367174281,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "momentum-L0p03",
+        "pool9": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 1.104906937394247,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        "budget8": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 0.9763113367174281,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      },
+      {
+        "id": "gap-L0p08",
+        "pool9": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 1,
+          "averageBestHits": 1.0862944162436547,
+          "fullDates": [],
+          "ge5Dates": [
+            "2025-05-10"
+          ]
+        },
+        "budget8": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 1,
+          "averageBestHits": 0.9695431472081218,
+          "fullDates": [],
+          "ge5Dates": [
+            "2025-05-10"
+          ]
+        }
+      },
+      {
+        "id": "stability-L0",
+        "pool9": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 1.0964467005076142,
+          "fullDates": [],
+          "ge5Dates": []
+        },
+        "budget8": {
+          "draws": 591,
+          "full": 0,
+          "ge5": 0,
+          "averageBestHits": 0.9796954314720813,
+          "fullDates": [],
+          "ge5Dates": []
+        }
+      }
+    ],
+    "uniquePool9_5PlusDates": [
+      "2025-05-10"
+    ],
+    "uniquePool9FullDates": [],
+    "uniqueBudget8_5PlusDates": [
+      "2025-05-10"
+    ],
+    "uniqueBudget8FullDates": []
+  },
+  "signals": {
+    "repeat5PlusAcrossEras": true,
+    "repeatFullAcrossEras": false,
+    "validationFullDates": [],
+    "postFreezeFullDates": [],
+    "validation5PlusDates": [
+      "2023-09-17",
+      "2023-10-11"
+    ],
+    "postFreeze5PlusDates": [
+      "2025-05-10"
+    ]
+  },
+  "decision": "AUDIT_REPEAT5_SIGNAL",
+  "multipleTesting": {
+    "status": "REQUIRED_BEFORE_PROMOTION",
+    "candidateCount": 20
+  },
+  "realMoneyPass": false,
+  "realStakeEUR": 0
+}
