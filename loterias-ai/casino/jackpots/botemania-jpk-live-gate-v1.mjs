@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import { selectJpkLiveSource, modelMatchesJpkState } from './jpk-live-source-core-v1.mjs';
+import { resolveTierHazardReadiness } from './jpk-reset-classifier-core-v2.mjs';
 
 const read=p=>{try{return JSON.parse(fs.readFileSync(p,'utf8'));}catch{return null}};
 const OBS='loterias-ai/casino/jackpots/evidence/botemania-jackpot-king-observer-v1.json';
@@ -24,7 +25,21 @@ const currentRoyalOnlyScreenPass=modelStateCompatible&&ev.decision?.currentRoyal
 const currentRegalOnlyScreenPass=modelStateCompatible&&ev.decision?.currentRegalOnlyScreenPass===true;
 const exactMbwb=ev.decision?.exactSpainMbwbKnown===true||cap.decision?.exactSpainMbwbRecovered===true;
 const qualitativeHazardDirectionKnown=ev.decision?.qualitativeHazardDirectionKnown===true||ev.inputs?.qualitativeMonotonicHazardKnown===true;
-const hazardFitReady=flow.hazard?.ready===true||Number(reset.summary?.cleanSingleTierCandidates||0)>=10;
+
+// Hazard samples are tier-specific. Never allow an aggregate/past pooled count
+// (including legacy flow.hazard.ready) to satisfy readiness for both Royal and Regal.
+const tierReadiness=resolveTierHazardReadiness(reset.summary||{});
+const {
+  minimumCleanResetsPerTier:minimumResetsPerTier,
+  royalCleanResets,
+  regalCleanResets,
+  royalHazardFitReady,
+  regalHazardFitReady,
+  anyTierHazardFitReady,
+  hazardFitReady,
+}=tierReadiness;
+const legacyFlowHazardReadyIgnored=flow.hazard?.ready===true;
+
 const exactHazard=ev.decision?.exactHazardKnown===true;
 const sourceFresh=liveSource.sourceFresh===true;
 const inJointBand=Number.isFinite(jointBand)&&Number.isFinite(qRoyal)&&Number.isFinite(qRegal)&&qRoyal>=jointBand&&qRegal>=jointBand;
@@ -54,9 +69,9 @@ else if(!modelStateCompatible)reason='CURRENT_JPK_MODEL_SCREEN_NOT_REFRESHED_FOR
 else if(!inResearchBand)reason='BELOW_CONSERVATIVE_RESEARCH_BAND';
 else if(!currentScreenPass)reason='IN_RESEARCH_BAND_BUT_NOT_ROBUST_MODEL_PASS';
 else if(!exactMbwb)reason='EXACT_SPAIN_MBWB_NOT_VERIFIED';
-else if(!exactHazard)reason=qualitativeHazardDirectionKnown?(hazardFitReady?'HAZARD_DIRECTION_VERIFIED_FIT_READY_EXACT_MAGNITUDE_NOT_INDEPENDENTLY_VALIDATED':'HAZARD_DIRECTION_VERIFIED_EXACT_MAGNITUDE_NOT_YET_FIT'):(hazardFitReady?'HAZARD_FIT_READY_BUT_NOT_INDEPENDENTLY_VALIDATED':'HAZARD_NOT_VERIFIED');
+else if(!exactHazard)reason=qualitativeHazardDirectionKnown?(hazardFitReady?'HAZARD_DIRECTION_VERIFIED_BOTH_TIERS_FIT_READY_EXACT_MAGNITUDE_NOT_INDEPENDENTLY_VALIDATED':(anyTierHazardFitReady?'HAZARD_DIRECTION_VERIFIED_ONLY_ONE_TIER_FIT_READY_NO_CROSS_TIER_POOLING':'HAZARD_DIRECTION_VERIFIED_EXACT_MAGNITUDE_NOT_YET_FIT')):(hazardFitReady?'BOTH_TIER_HAZARDS_FIT_READY_BUT_NOT_INDEPENDENTLY_VALIDATED':(anyTierHazardFitReady?'ONLY_ONE_TIER_HAZARD_FIT_READY_NO_CROSS_TIER_POOLING':'HAZARD_NOT_VERIFIED'));
 const out={
-  version:'botemania-jpk-live-gate-v1.6-all-network-live-source',generatedAt:new Date().toISOString(),operator:'botemania-es',state,
+  version:'botemania-jpk-live-gate-v1.7-tier-separated-hazard-readiness',generatedAt:new Date().toISOString(),operator:'botemania-es',state,
   current:{
     observedAt:liveSource.observedAt||null,sourceClass:liveSource.sourceClass,sourceAgeSeconds:liveSource.ageSeconds,sourceFresh,
     potsEUR:{JACKPOT_KING:Number.isFinite(Number(pots.JACKPOT_KING))?Number(pots.JACKPOT_KING):null,REGAL:Number.isFinite(Number(pots.REGAL))?Number(pots.REGAL):null,ROYAL:Number.isFinite(Number(pots.ROYAL))?Number(pots.ROYAL):null},
@@ -65,9 +80,9 @@ const out={
     modelScreen:{stateCompatible:modelStateCompatible,pass:currentScreenPass,royalOnlyPass:currentRoyalOnlyScreenPass,regalOnlyPass:currentRegalOnlyScreenPass,worstConservativeRtp:modelStateCompatible?(ev.current?.worstConservativeRtp??null):null,bestConservativeRtp:modelStateCompatible?(ev.current?.bestConservativeRtp??null):null}
   },
   researchBand:{hypothesisOnly:!exactMbwb,etaMethod:'LINEAR_RECENT_DIRECT_METER_GROWTH_NO_RESET_EXTRAPOLATION_ONLY',etaWarning:'Not a prediction. Any reset, traffic change, stale rate input or sampling delay invalidates the ETA.',routes:{BOTH_HIGH:{thresholdNormalized:Number.isFinite(jointBand)?jointBand:null,thresholdPotsHypothesisEUR:{ROYAL:jointRoyalTarget,REGAL:jointRegalTarget},active:inJointBand,creditPolicy:'ROYAL_PLUS_REGAL_ONLY_KING_ZERO',etaNoReset:etaObj(etaJoint)},ROYAL_ONLY:{thresholdNormalized:Number.isFinite(royalSoloBand)?royalSoloBand:null,thresholdPotHypothesisEUR:royalOnlyTarget,active:inRoyalSoloBand,creditPolicy:'ROYAL_ONLY_ZERO_CREDIT_TO_REGAL_AND_KING',etaNoReset:etaObj(etaRoyalOnly)},REGAL_ONLY:{thresholdNormalized:Number.isFinite(regalSoloBand)?regalSoloBand:null,thresholdPotHypothesisEUR:regalOnlyTarget,active:inRegalSoloBand,creditPolicy:'REGAL_ONLY_ZERO_CREDIT_TO_ROYAL_AND_KING',etaNoReset:etaObj(etaRegalOnly)}},inBand:inResearchBand},
-  evidence:{exactSpainMbwbKnown:exactMbwb,qualitativeHazardDirectionKnown,hazardDirection:'INCREASES_WITH_JACKPOT_VALUE',hazardFitReady,exactHazardKnown:exactHazard,cleanResets:Number(reset.summary?.cleanSingleTierCandidates??flow.hazard?.cleanResets??0),minimumResetsForFit:10,modelStateCompatible,canalBingoSharedPotCorroborated:canalDecision.canalBingoSharedPotCorroborated===true||canalDecision.sharedPotCorroborated===true,canalBingoResolvedVenture:canalDecision.resolvedCanalBingoVenture||canalDecision.resolvedVenture||null,monopolyCasinoVentureResolved:canalDecision.monopolyCasinoVentureResolved===true,monopolyCasinoSameAsBotemania:canalDecision.monopolyCasinoSameAsBotemania===true,monopolyCasinoIndependentSpanishNetwork:canalDecision.monopolyCasinoIndependentSpanishNetwork===true,currentScreenPass},
+  evidence:{exactSpainMbwbKnown:exactMbwb,qualitativeHazardDirectionKnown,hazardDirection:'INCREASES_WITH_JACKPOT_VALUE',hazardFitReady,anyTierHazardFitReady,royalHazardFitReady,regalHazardFitReady,royalCleanResets,regalCleanResets,minimumResetsPerTier,legacyFlowHazardReadyIgnored,exactHazardKnown:exactHazard,cleanResets:Number(reset.summary?.cleanSingleTierCandidates??0),modelStateCompatible,canalBingoSharedPotCorroborated:canalDecision.canalBingoSharedPotCorroborated===true||canalDecision.sharedPotCorroborated===true,canalBingoResolvedVenture:canalDecision.resolvedCanalBingoVenture||canalDecision.resolvedVenture||null,monopolyCasinoVentureResolved:canalDecision.monopolyCasinoVentureResolved===true,monopolyCasinoSameAsBotemania:canalDecision.monopolyCasinoSameAsBotemania===true,monopolyCasinoIndependentSpanishNetwork:canalDecision.monopolyCasinoIndependentSpanishNetwork===true,currentScreenPass},
   decision:{economicPromotionCandidate:actionable,realMoneyAllowed:false,automaticBettingAllowed:false,reason},
-  guards:{allNetworkExactBlueprintIdsPreferred:true,sourceAgeRecomputed:true,staleEconomicModelNeverPromotes:true,hypothesisNeverPromotes:true,noCrossMarketCapAsFact:true,qualitativeHazardNeverEqualsExactHazard:true,fitReadyNeverEqualsExactHazard:true,individualHighPotRoutesGiveZeroOtherJackpotCredit:true,etaNeverPromotesGate:true,noBetting:true,realMoneyAllowed:false,automaticBettingAllowed:false}
+  guards:{allNetworkExactBlueprintIdsPreferred:true,sourceAgeRecomputed:true,staleEconomicModelNeverPromotes:true,hypothesisNeverPromotes:true,noCrossMarketCapAsFact:true,qualitativeHazardNeverEqualsExactHazard:true,fitReadyNeverEqualsExactHazard:true,noCrossTierResetPooling:true,legacyPooledFlowHazardReadinessIgnored:true,individualHighPotRoutesGiveZeroOtherJackpotCredit:true,etaNeverPromotesGate:true,noBetting:true,realMoneyAllowed:false,automaticBettingAllowed:false}
 };
 fs.mkdirSync('loterias-ai/casino/jackpots/evidence',{recursive:true});
 fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');
