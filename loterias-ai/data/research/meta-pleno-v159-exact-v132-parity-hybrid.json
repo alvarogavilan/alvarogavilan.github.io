@@ -1,0 +1,481 @@
+{
+  "generatedAt": "2026-08-15T20:33:00.090Z",
+  "version": "v159",
+  "gameId": "bonoloto",
+  "family": "EXACT_V132_PARITY_PRE2023_HYBRID_SELECTOR",
+  "methodology": "Exact-parity strict pre-draw Budget8 hybrid. c12 z-scores and structural dispersion use the same population-standard-deviation convention as the original v132 implementation. Route A is the v132 structural one-swap candidate computed and frozen before each historical draw, with no future structural distribution leakage. Route B is rank9 frontier ADD plus a false-positive DROP discriminant trained only on 2018-2020. A single graph-advantage threshold deciding A versus B is selected only on 2021-2022, then frozen before 2023. 2023-2024 and 2025-latest are opened only after route policy selection. Because the rank9 route was conceived after 2025 anatomy, any historical full hit remains exploratory; this test asks whether a pre-2023 gate can independently choose the complementary routes across later eras.",
+  "training": {
+    "dropStart": "2018-01-01",
+    "dropEnd": "2020-12-31",
+    "dropPositiveFalse": 6149,
+    "dropNegativeWinner": 891
+  },
+  "selection": {
+    "start": "2021-01-01",
+    "end": "2022-12-31",
+    "thresholds": [
+      -999,
+      0,
+      4,
+      8,
+      12,
+      16,
+      20,
+      24,
+      28,
+      32,
+      36,
+      40,
+      999
+    ],
+    "frozen": 6
+  },
+  "validation": {
+    "mid": "2023-2024",
+    "late": "2025-latest"
+  },
+  "leaders": [
+    {
+      "threshold": -999,
+      "select": {
+        "n": 640,
+        "h4": 6,
+        "h5": 0,
+        "h6": 0,
+        "frontier": 640,
+        "structural": 0,
+        "sum": 634
+      },
+      "mid": {
+        "n": 731,
+        "h4": 1,
+        "h5": 0,
+        "h6": 0,
+        "frontier": 731,
+        "structural": 0,
+        "sum": 710,
+        "events": []
+      },
+      "late": {
+        "n": 590,
+        "h4": 2,
+        "h5": 1,
+        "h6": 1,
+        "frontier": 590,
+        "structural": 0,
+        "sum": 561,
+        "events": [
+          {
+            "date": "2025-06-21",
+            "winning": [
+              32,
+              34,
+              36,
+              37,
+              39,
+              48
+            ],
+            "basePool": [
+              10,
+              31,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "baseHits": 5,
+            "route": "FRONTIER_RANK9",
+            "pool": [
+              10,
+              32,
+              34,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "hits": 6,
+            "graphAdvantage": 16,
+            "frontierAdd": 34,
+            "frontierDrop": 31,
+            "structuralGain": 0.021461325093475536
+          }
+        ]
+      }
+    },
+    {
+      "threshold": 0,
+      "select": {
+        "n": 640,
+        "h4": 6,
+        "h5": 0,
+        "h6": 0,
+        "frontier": 505,
+        "structural": 135,
+        "sum": 631
+      },
+      "mid": {
+        "n": 731,
+        "h4": 1,
+        "h5": 0,
+        "h6": 0,
+        "frontier": 589,
+        "structural": 142,
+        "sum": 713,
+        "events": []
+      },
+      "late": {
+        "n": 590,
+        "h4": 2,
+        "h5": 1,
+        "h6": 1,
+        "frontier": 506,
+        "structural": 84,
+        "sum": 562,
+        "events": [
+          {
+            "date": "2025-06-21",
+            "winning": [
+              32,
+              34,
+              36,
+              37,
+              39,
+              48
+            ],
+            "basePool": [
+              10,
+              31,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "baseHits": 5,
+            "route": "FRONTIER_RANK9",
+            "pool": [
+              10,
+              32,
+              34,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "hits": 6,
+            "graphAdvantage": 16,
+            "frontierAdd": 34,
+            "frontierDrop": 31,
+            "structuralGain": 0.021461325093475536
+          }
+        ]
+      }
+    },
+    {
+      "threshold": 8,
+      "select": {
+        "n": 640,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "frontier": 408,
+        "structural": 232,
+        "sum": 630
+      },
+      "mid": {
+        "n": 731,
+        "h4": 1,
+        "h5": 0,
+        "h6": 0,
+        "frontier": 473,
+        "structural": 258,
+        "sum": 709,
+        "events": []
+      },
+      "late": {
+        "n": 590,
+        "h4": 2,
+        "h5": 1,
+        "h6": 1,
+        "frontier": 392,
+        "structural": 198,
+        "sum": 565,
+        "events": [
+          {
+            "date": "2025-06-21",
+            "winning": [
+              32,
+              34,
+              36,
+              37,
+              39,
+              48
+            ],
+            "basePool": [
+              10,
+              31,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "baseHits": 5,
+            "route": "FRONTIER_RANK9",
+            "pool": [
+              10,
+              32,
+              34,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "hits": 6,
+            "graphAdvantage": 16,
+            "frontierAdd": 34,
+            "frontierDrop": 31,
+            "structuralGain": 0.021461325093475536
+          }
+        ]
+      }
+    },
+    {
+      "threshold": 12,
+      "select": {
+        "n": 640,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "frontier": 333,
+        "structural": 307,
+        "sum": 628
+      },
+      "mid": {
+        "n": 731,
+        "h4": 1,
+        "h5": 0,
+        "h6": 0,
+        "frontier": 387,
+        "structural": 344,
+        "sum": 711,
+        "events": []
+      },
+      "late": {
+        "n": 590,
+        "h4": 2,
+        "h5": 1,
+        "h6": 1,
+        "frontier": 318,
+        "structural": 272,
+        "sum": 550,
+        "events": [
+          {
+            "date": "2025-06-21",
+            "winning": [
+              32,
+              34,
+              36,
+              37,
+              39,
+              48
+            ],
+            "basePool": [
+              10,
+              31,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "baseHits": 5,
+            "route": "FRONTIER_RANK9",
+            "pool": [
+              10,
+              32,
+              34,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "hits": 6,
+            "graphAdvantage": 16,
+            "frontierAdd": 34,
+            "frontierDrop": 31,
+            "structuralGain": 0.021461325093475536
+          }
+        ]
+      }
+    },
+    {
+      "threshold": 4,
+      "select": {
+        "n": 640,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "frontier": 467,
+        "structural": 173,
+        "sum": 626
+      },
+      "mid": {
+        "n": 731,
+        "h4": 1,
+        "h5": 0,
+        "h6": 0,
+        "frontier": 535,
+        "structural": 196,
+        "sum": 710,
+        "events": []
+      },
+      "late": {
+        "n": 590,
+        "h4": 2,
+        "h5": 1,
+        "h6": 1,
+        "frontier": 467,
+        "structural": 123,
+        "sum": 565,
+        "events": [
+          {
+            "date": "2025-06-21",
+            "winning": [
+              32,
+              34,
+              36,
+              37,
+              39,
+              48
+            ],
+            "basePool": [
+              10,
+              31,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "baseHits": 5,
+            "route": "FRONTIER_RANK9",
+            "pool": [
+              10,
+              32,
+              34,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "hits": 6,
+            "graphAdvantage": 16,
+            "frontierAdd": 34,
+            "frontierDrop": 31,
+            "structuralGain": 0.021461325093475536
+          }
+        ]
+      }
+    },
+    {
+      "threshold": 16,
+      "select": {
+        "n": 640,
+        "h4": 5,
+        "h5": 0,
+        "h6": 0,
+        "frontier": 268,
+        "structural": 372,
+        "sum": 618
+      },
+      "mid": {
+        "n": 731,
+        "h4": 2,
+        "h5": 0,
+        "h6": 0,
+        "frontier": 295,
+        "structural": 436,
+        "sum": 721,
+        "events": []
+      },
+      "late": {
+        "n": 590,
+        "h4": 2,
+        "h5": 1,
+        "h6": 1,
+        "frontier": 241,
+        "structural": 349,
+        "sum": 552,
+        "events": [
+          {
+            "date": "2025-06-21",
+            "winning": [
+              32,
+              34,
+              36,
+              37,
+              39,
+              48
+            ],
+            "basePool": [
+              10,
+              31,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "baseHits": 5,
+            "route": "FRONTIER_RANK9",
+            "pool": [
+              10,
+              32,
+              34,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "hits": 6,
+            "graphAdvantage": 16,
+            "frontierAdd": 34,
+            "frontierDrop": 31,
+            "structuralGain": 0.021461325093475536
+          }
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "midFullModels": 0,
+    "lateFullModels": 6,
+    "bothEraFullModels": 0,
+    "mid5PlusModels": 0,
+    "late5PlusModels": 6,
+    "repeat5PlusModels": 0
+  },
+  "budget": {
+    "poolSize": 8,
+    "playableCombinations": 28,
+    "theoreticalStakeEUR": 14,
+    "realStakeEUR": 0
+  },
+  "realMoneyPass": false,
+  "decision": "EXACT_V132_PARITY_EXPLORATORY_HYBRID_REQUIRES_FRESH_PROSPECTIVE_REPLICATION"
+}

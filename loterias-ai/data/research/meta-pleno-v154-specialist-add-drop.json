@@ -1,0 +1,561 @@
+{
+  "generatedAt": "2026-08-15T20:26:45.389Z",
+  "version": "v154",
+  "gameId": "bonoloto",
+  "family": "SPECIALIST_GRAPH_ADD_FALSEPOS_DROP",
+  "methodology": "Specialist decomposition. ADD is chosen among c12 ranks 9..maxRank by the independently frozen v138 graph ranking. DROP is chosen among c12 top8 by a false-positive discriminant trained only on 2018-2020, using pre-draw c12/graph features. maxRank and graph-advantage gate are selected only on 2021-2022 and frozen before 2023+. This directly tests the complementary error observed in 2025: v147 identified add=34 while v153 identified drop=31.",
+  "training": {
+    "start": "2018-01-01",
+    "end": "2020-12-31",
+    "days": 880,
+    "dropPositiveFalse": 6149,
+    "dropNegativeWinner": 891,
+    "featureNames": [
+      "rankNorm",
+      "c12Score",
+      "graphRankNorm",
+      "longFrequency",
+      "shortMomentum",
+      "gap",
+      "stability",
+      "pairAffinity",
+      "entropy",
+      "meanReversion"
+    ],
+    "dropCoefficients": {
+      "rankNorm": 0.012617185304600584,
+      "c12Score": 0.024905895691450068,
+      "graphRankNorm": -0.0020748672996751118,
+      "longFrequency": -0.0013252170395164197,
+      "shortMomentum": 0.021868341078296466,
+      "gap": -0.0040488322808437905,
+      "stability": 0.0075421559181401655,
+      "pairAffinity": -0.0019551835909365455,
+      "entropy": -0.0005459913612828989,
+      "meanReversion": 0.002429548102236049
+    }
+  },
+  "candidatePool": {
+    "nominal": 24,
+    "effective": 24
+  },
+  "selection": {
+    "start": "2021-01-01",
+    "end": "2022-12-31",
+    "frozen": 6
+  },
+  "validation": {
+    "mid": "2023-2024",
+    "late": "2025-latest"
+  },
+  "leaders": [
+    {
+      "config": {
+        "id": "r12-a12",
+        "maxRank": 12,
+        "adv": 12
+      },
+      "select": {
+        "n": 640,
+        "h4": 7,
+        "h5": 0,
+        "h6": 0,
+        "improved": 56,
+        "harmed": 61,
+        "swaps": 600,
+        "sum": 630
+      },
+      "mid": {
+        "n": 731,
+        "h4": 1,
+        "h5": 0,
+        "h6": 0,
+        "improved": 90,
+        "harmed": 78,
+        "swaps": 679,
+        "sum": 705,
+        "events": []
+      },
+      "late": {
+        "n": 590,
+        "h4": 2,
+        "h5": 1,
+        "h6": 0,
+        "improved": 65,
+        "harmed": 52,
+        "swaps": 549,
+        "sum": 551,
+        "events": [
+          {
+            "date": "2025-06-21",
+            "winning": [
+              32,
+              34,
+              36,
+              37,
+              39,
+              48
+            ],
+            "basePool": [
+              10,
+              31,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "baseHits": 5,
+            "pool": [
+              10,
+              16,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "hits": 5,
+            "delta": 0,
+            "swapped": true,
+            "add": 16,
+            "addRank": 10,
+            "addGraphRank": 4,
+            "drop": 31,
+            "dropRank": 1,
+            "dropFalsePositiveScore": 0.08199560583918881,
+            "graphAdvantage": 34
+          }
+        ]
+      }
+    },
+    {
+      "config": {
+        "id": "r12-a0",
+        "maxRank": 12,
+        "adv": 0
+      },
+      "select": {
+        "n": 640,
+        "h4": 7,
+        "h5": 0,
+        "h6": 0,
+        "improved": 58,
+        "harmed": 64,
+        "swaps": 636,
+        "sum": 629
+      },
+      "mid": {
+        "n": 731,
+        "h4": 1,
+        "h5": 0,
+        "h6": 0,
+        "improved": 94,
+        "harmed": 82,
+        "swaps": 725,
+        "sum": 705,
+        "events": []
+      },
+      "late": {
+        "n": 590,
+        "h4": 2,
+        "h5": 1,
+        "h6": 0,
+        "improved": 68,
+        "harmed": 54,
+        "swaps": 586,
+        "sum": 552,
+        "events": [
+          {
+            "date": "2025-06-21",
+            "winning": [
+              32,
+              34,
+              36,
+              37,
+              39,
+              48
+            ],
+            "basePool": [
+              10,
+              31,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "baseHits": 5,
+            "pool": [
+              10,
+              16,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "hits": 5,
+            "delta": 0,
+            "swapped": true,
+            "add": 16,
+            "addRank": 10,
+            "addGraphRank": 4,
+            "drop": 31,
+            "dropRank": 1,
+            "dropFalsePositiveScore": 0.08199560583918881,
+            "graphAdvantage": 34
+          }
+        ]
+      }
+    },
+    {
+      "config": {
+        "id": "r12-a20",
+        "maxRank": 12,
+        "adv": 20
+      },
+      "select": {
+        "n": 640,
+        "h4": 7,
+        "h5": 0,
+        "h6": 0,
+        "improved": 45,
+        "harmed": 51,
+        "swaps": 507,
+        "sum": 629
+      },
+      "mid": {
+        "n": 731,
+        "h4": 1,
+        "h5": 0,
+        "h6": 0,
+        "improved": 78,
+        "harmed": 64,
+        "swaps": 540,
+        "sum": 707,
+        "events": []
+      },
+      "late": {
+        "n": 590,
+        "h4": 2,
+        "h5": 1,
+        "h6": 0,
+        "improved": 51,
+        "harmed": 39,
+        "swaps": 454,
+        "sum": 550,
+        "events": [
+          {
+            "date": "2025-06-21",
+            "winning": [
+              32,
+              34,
+              36,
+              37,
+              39,
+              48
+            ],
+            "basePool": [
+              10,
+              31,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "baseHits": 5,
+            "pool": [
+              10,
+              16,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "hits": 5,
+            "delta": 0,
+            "swapped": true,
+            "add": 16,
+            "addRank": 10,
+            "addGraphRank": 4,
+            "drop": 31,
+            "dropRank": 1,
+            "dropFalsePositiveScore": 0.08199560583918881,
+            "graphAdvantage": 34
+          }
+        ]
+      }
+    },
+    {
+      "config": {
+        "id": "r12-a8",
+        "maxRank": 12,
+        "adv": 8
+      },
+      "select": {
+        "n": 640,
+        "h4": 7,
+        "h5": 0,
+        "h6": 0,
+        "improved": 57,
+        "harmed": 63,
+        "swaps": 621,
+        "sum": 629
+      },
+      "mid": {
+        "n": 731,
+        "h4": 1,
+        "h5": 0,
+        "h6": 0,
+        "improved": 91,
+        "harmed": 80,
+        "swaps": 701,
+        "sum": 704,
+        "events": []
+      },
+      "late": {
+        "n": 590,
+        "h4": 2,
+        "h5": 1,
+        "h6": 0,
+        "improved": 65,
+        "harmed": 53,
+        "swaps": 567,
+        "sum": 550,
+        "events": [
+          {
+            "date": "2025-06-21",
+            "winning": [
+              32,
+              34,
+              36,
+              37,
+              39,
+              48
+            ],
+            "basePool": [
+              10,
+              31,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "baseHits": 5,
+            "pool": [
+              10,
+              16,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "hits": 5,
+            "delta": 0,
+            "swapped": true,
+            "add": 16,
+            "addRank": 10,
+            "addGraphRank": 4,
+            "drop": 31,
+            "dropRank": 1,
+            "dropFalsePositiveScore": 0.08199560583918881,
+            "graphAdvantage": 34
+          }
+        ]
+      }
+    },
+    {
+      "config": {
+        "id": "r12-a16",
+        "maxRank": 12,
+        "adv": 16
+      },
+      "select": {
+        "n": 640,
+        "h4": 7,
+        "h5": 0,
+        "h6": 0,
+        "improved": 50,
+        "harmed": 57,
+        "swaps": 562,
+        "sum": 628
+      },
+      "mid": {
+        "n": 731,
+        "h4": 1,
+        "h5": 0,
+        "h6": 0,
+        "improved": 88,
+        "harmed": 73,
+        "swaps": 628,
+        "sum": 708,
+        "events": []
+      },
+      "late": {
+        "n": 590,
+        "h4": 2,
+        "h5": 1,
+        "h6": 0,
+        "improved": 62,
+        "harmed": 48,
+        "swaps": 511,
+        "sum": 552,
+        "events": [
+          {
+            "date": "2025-06-21",
+            "winning": [
+              32,
+              34,
+              36,
+              37,
+              39,
+              48
+            ],
+            "basePool": [
+              10,
+              31,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "baseHits": 5,
+            "pool": [
+              10,
+              16,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "hits": 5,
+            "delta": 0,
+            "swapped": true,
+            "add": 16,
+            "addRank": 10,
+            "addGraphRank": 4,
+            "drop": 31,
+            "dropRank": 1,
+            "dropFalsePositiveScore": 0.08199560583918881,
+            "graphAdvantage": 34
+          }
+        ]
+      }
+    },
+    {
+      "config": {
+        "id": "r12-a4",
+        "maxRank": 12,
+        "adv": 4
+      },
+      "select": {
+        "n": 640,
+        "h4": 7,
+        "h5": 0,
+        "h6": 0,
+        "improved": 57,
+        "harmed": 64,
+        "swaps": 632,
+        "sum": 628
+      },
+      "mid": {
+        "n": 731,
+        "h4": 1,
+        "h5": 0,
+        "h6": 0,
+        "improved": 92,
+        "harmed": 80,
+        "swaps": 716,
+        "sum": 705,
+        "events": []
+      },
+      "late": {
+        "n": 590,
+        "h4": 2,
+        "h5": 1,
+        "h6": 0,
+        "improved": 68,
+        "harmed": 53,
+        "swaps": 582,
+        "sum": 553,
+        "events": [
+          {
+            "date": "2025-06-21",
+            "winning": [
+              32,
+              34,
+              36,
+              37,
+              39,
+              48
+            ],
+            "basePool": [
+              10,
+              31,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "baseHits": 5,
+            "pool": [
+              10,
+              16,
+              32,
+              36,
+              37,
+              39,
+              45,
+              48
+            ],
+            "hits": 5,
+            "delta": 0,
+            "swapped": true,
+            "add": 16,
+            "addRank": 10,
+            "addGraphRank": 4,
+            "drop": 31,
+            "dropRank": 1,
+            "dropFalsePositiveScore": 0.08199560583918881,
+            "graphAdvantage": 34
+          }
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "midFullModels": 0,
+    "lateFullModels": 0,
+    "mid5PlusModels": 0,
+    "late5PlusModels": 6,
+    "repeat5PlusModels": 0,
+    "lateImprovementModels": 6
+  },
+  "budget": {
+    "poolSize": 8,
+    "playableCombinations": 28,
+    "theoreticalStakeEUR": 14,
+    "realStakeEUR": 0
+  },
+  "realMoneyPass": false,
+  "decision": "EXPLORATORY_REQUIRE_MATCHED_NULL_AND_FRESH_PROSPECTIVE"
+}

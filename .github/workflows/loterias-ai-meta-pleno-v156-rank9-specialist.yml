@@ -1,0 +1,24 @@
+name: Loterias AI MetaPleno v156 Rank9 Specialist
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v156-rank9-specialist]
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v156-rank9-specialist.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v156-rank9-specialist.yml'
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    permissions: {contents: write}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/meta-pleno-v156-rank9-specialist.mjs
+      - name: Persist v156
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v156-rank9-specialist.json
+          git diff --cached --quiet || git commit -m 'data(loterias-ai): persist v156 rank9 specialist'
+          git push

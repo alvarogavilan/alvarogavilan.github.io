@@ -1,0 +1,24 @@
+name: Loterias AI MetaPleno v161 Route Anatomy
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v161-route-anatomy]
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v161-route-anatomy.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v161-route-anatomy.yml'
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    permissions: {contents: write}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/meta-pleno-v161-route-anatomy.mjs
+      - name: Persist v161
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v161-route-anatomy.json
+          git diff --cached --quiet || git commit -m 'data(loterias-ai): persist v161 route anatomy'
+          git push

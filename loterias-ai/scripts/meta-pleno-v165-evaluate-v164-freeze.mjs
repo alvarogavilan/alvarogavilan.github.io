@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+const FREEZE='loterias-ai/data/prospective/bonoloto-v164-v162-threshold40-freeze.json';
+const DIR='loterias-ai/data/archive/bonoloto';
+const OUT='loterias-ai/data/prospective/bonoloto-v165-v164-evaluation.json';
+const f=JSON.parse(fs.readFileSync(FREEZE,'utf8'));
+if(f.status!=='FROZEN_BEFORE_TARGET_RESULT') throw new Error('Invalid freeze state');
+const expected=crypto.createHash('sha256').update(JSON.stringify({config:f.config,pool:f.prediction.pool,tickets:f.prediction.tickets})).digest('hex');
+if(expected!==f.prediction.fingerprintSha256) throw new Error('Freeze fingerprint mismatch: evaluation refused');
+let rows=[];for(const name of fs.readdirSync(DIR).filter(x=>/^\d{4}\.json$/.test(x)).sort())rows.push(...(JSON.parse(fs.readFileSync(`${DIR}/${name}`,'utf8')).records||[]));
+rows=[...new Map(rows.map(r=>[r.drawId,r])).values()].filter(r=>r.result?.main?.length===6).sort((a,b)=>a.drawDate.localeCompare(b.drawDate));
+const target=rows.find(r=>r.drawDate===f.config.targetDrawDate);
+if(!target) throw new Error(`WAITING_OFFICIAL_TARGET:${f.config.targetDrawDate}`);
+const winning=target.result.main.map(Number).sort((a,b)=>a-b),pool=f.prediction.pool.map(Number).sort((a,b)=>a-b),hits=winning.filter(n=>pool.includes(n)).length;
+const tickets=f.prediction.tickets.map(t=>t.map(Number).sort((a,b)=>a-b));const ticketHits=tickets.map(t=>winning.filter(n=>t.includes(n)).length),bestPlayableHits=Math.max(...ticketHits),fullTicketIndexes=ticketHits.map((h,i)=>h===6?i:null).filter(x=>x!==null);
+const out={generatedAt:new Date().toISOString(),version:'v165',gameId:'bonoloto',sourceFreeze:'v164',freezeFingerprintVerified:true,targetDrawDate:f.config.targetDrawDate,winning,prediction:{route:f.prediction.route,pool,poolHits:hits,playableCombinations:tickets.length,bestPlayableHits,fullTicketCount:fullTicketIndexes.length,fullTicketIndexes},result:{full6:hits===6&&fullTicketIndexes.length>0,ge5:hits>=5,classification:hits===6?'FULL6':hits===5?'FIVE_OF_SIX':`${hits}_OF_6`},immutability:{fingerprint:f.prediction.fingerprintSha256,noPostResultMutation:true},realMoneyPass:false,realStakeEUR:0};
+fs.writeFileSync(OUT,JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify(out,null,2));
