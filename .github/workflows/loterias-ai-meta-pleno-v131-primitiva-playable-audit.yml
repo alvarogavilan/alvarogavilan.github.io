@@ -1,0 +1,23 @@
+name: Loterias AI MetaPleno v131 Primitiva Playable Audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v131-primitiva-playable-audit]
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v131-primitiva-playable-audit.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v131-primitiva-playable-audit.yml'
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    permissions: {contents: write}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - run: node loterias-ai/scripts/meta-pleno-v131-primitiva-playable-audit.mjs
+      - run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v131-primitiva-playable-audit.json
+          git diff --cached --quiet || git commit -m 'data(loterias-ai): persist v131 Primitiva playable audit'
+          git push
