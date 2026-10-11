@@ -1,0 +1,27 @@
+name: loterias-ai meta-pleno v226 v225 correlated null
+on:
+  push:
+    branches:
+      - research/metapleno-v226-v225-correlated-null
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: research/metapleno-v226-v225-correlated-null
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run v226
+        run: node loterias-ai/scripts/meta-pleno-v226-v225-correlated-null.mjs
+      - name: Persist result
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add loterias-ai/data/research/meta-pleno-v226-v225-correlated-null.json
+          git diff --cached --quiet || git commit -m 'research(loterias-ai): persist v226 correlated null result'
+          git push
