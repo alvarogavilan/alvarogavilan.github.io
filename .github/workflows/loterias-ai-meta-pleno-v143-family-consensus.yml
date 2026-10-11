@@ -1,0 +1,25 @@
+name: Loterias AI MetaPleno v143 Family Consensus
+on:
+  workflow_dispatch:
+  push:
+    branches: [research/metapleno-v143-family-consensus]
+    paths:
+      - 'loterias-ai/scripts/meta-pleno-v143-bonoloto-family-consensus.mjs'
+      - '.github/workflows/loterias-ai-meta-pleno-v143-family-consensus.yml'
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: node loterias-ai/scripts/meta-pleno-v143-bonoloto-family-consensus.mjs
+      - name: Persist v143
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add loterias-ai/data/research/meta-pleno-v143-bonoloto-family-consensus.json
+          git diff --cached --quiet || git commit -m 'data(loterias-ai): persist v143 family consensus'
+          git push
