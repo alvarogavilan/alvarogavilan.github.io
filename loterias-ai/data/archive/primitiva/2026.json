@@ -11996,7 +11996,43 @@
         "validation": {
           "status": "SOURCE_PARSED_PENDING_CROSS_CHECK"
         }
-      }
+      },
+      "verification": {
+        "status": "OFFICIAL_SELAE_VALIDATED",
+        "checks": [
+          "official-fechav3-exact-date",
+          "official-main-cross-check",
+          "official-complementary-cross-check",
+          "official-reintegro-cross-check"
+        ],
+        "officialCrossCheck": {
+          "provider": "SELAE",
+          "sourceUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LAPR&fecha_sorteo=20261012",
+          "checkedAt": "2026-10-13T19:53:18.268Z",
+          "officialDrawId": "1325304123",
+          "exactDate": true,
+          "status": "MATCH",
+          "fields": {
+            "main": true,
+            "complementary": true,
+            "reintegro": true
+          },
+          "complete": true,
+          "officialResult": {
+            "main": [
+              2,
+              5,
+              26,
+              40,
+              42,
+              45
+            ],
+            "complementary": 23,
+            "reintegro": 9
+          }
+        }
+      },
+      "trainingEligible": true
     }
   ]
 }
