@@ -1,39 +1,32 @@
 {
-  "generatedAt": "2026-10-19T14:15:21.112Z",
+  "generatedAt": "2026-10-26T13:48:20.864Z",
   "gameId": "lototurf",
   "batchLimit": 500,
   "attempted": 3,
   "updated": 0,
-  "empty": 2,
-  "exactDateMisses": 2,
-  "mismatch": 1,
+  "empty": 0,
+  "exactDateMisses": 0,
+  "mismatch": 0,
   "deadHeatRows": 0,
   "failures": [
     {
       "date": "2016-07-16",
-      "reason": "EXACT_DATE_NOT_RETURNED",
-      "officialUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LOTU&fecha_sorteo=20160716"
+      "reason": "Error: HTTP 503"
     },
     {
       "date": "2011-07-17",
-      "reason": "EXACT_DATE_NOT_RETURNED",
-      "officialUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LOTU&fecha_sorteo=20110717"
+      "reason": "Error: HTTP 503"
     },
     {
       "date": "2010-12-26",
-      "reason": "horse-mismatch",
-      "internal": 3,
-      "official": [
-        11
-      ],
-      "officialUrl": "https://www.loteriasyapuestas.es/servicios/fechav3?game_id=LOTU&fecha_sorteo=20101226"
+      "reason": "Error: HTTP 503"
     }
   ],
   "totalRecords": 1154,
   "officialEconomicsRecords": 1151,
   "remaining": 3,
-  "qualityPass": false,
-  "quarantinedMismatchCount": 1,
+  "qualityPass": true,
+  "quarantinedMismatchCount": 0,
   "guards": {
     "exactOfficialDrawDateRequired": true,
     "noDateShiftPromotion": true,
@@ -42,5 +35,5 @@
     "deadHeatNotPromotedToSingleHorseTraining": true,
     "noInference": true
   },
-  "next": "review-quarantined-mismatches-while-continuing-nonconflicting-official-enrichment"
+  "next": "continue-official-enrichment"
 }
