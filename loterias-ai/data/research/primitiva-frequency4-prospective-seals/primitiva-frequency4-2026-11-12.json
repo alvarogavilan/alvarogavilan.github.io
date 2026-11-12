@@ -1,0 +1,91 @@
+{
+  "version": "primitiva-frequency4-prospective-seal-v1",
+  "gameId": "primitiva",
+  "targetDrawDate": "2026-11-12",
+  "freeze": {
+    "path": "loterias-ai/data/research/primitiva-frequency4-prospective-freeze-v1.json",
+    "sha256": "2b108e544e43c9f872da837ee2281d5020513dc908f5385be55c7d1bb7c1c6ca"
+  },
+  "engine": {
+    "path": "loterias-ai/js/mega-numeric-engine.js",
+    "gitBlobSha": "ac9db191426618a5b3738251d84c422e728ecd2b"
+  },
+  "strategy": {
+    "id": "frequency",
+    "ticketsPerDraw": 4,
+    "ticketCostEUR": 1,
+    "diversificationPenalty": 0.1,
+    "weights": {
+      "longFrequency": 0.45,
+      "shortMomentum": 0.25,
+      "gap": 0.05,
+      "stability": 0.1,
+      "pairAffinity": 0.05,
+      "entropy": 0.05,
+      "meanReversion": 0.05
+    }
+  },
+  "historyBoundary": {
+    "rule": "strictly before targetDrawDate",
+    "drawsUsed": 4213,
+    "firstDrawDate": "1985-10-17",
+    "lastDrawDate": "2026-11-09"
+  },
+  "tickets": [
+    {
+      "ticket": 1,
+      "numbers": [
+        6,
+        10,
+        30,
+        39,
+        40,
+        45
+      ]
+    },
+    {
+      "ticket": 2,
+      "numbers": [
+        3,
+        14,
+        22,
+        38,
+        45,
+        47
+      ]
+    },
+    {
+      "ticket": 3,
+      "numbers": [
+        1,
+        5,
+        12,
+        23,
+        29,
+        41
+      ]
+    },
+    {
+      "ticket": 4,
+      "numbers": [
+        7,
+        9,
+        30,
+        37,
+        39,
+        40
+      ]
+    }
+  ],
+  "guards": {
+    "targetResultPresentAtSeal": false,
+    "targetOutcomeUsedForSelection": false,
+    "retuningPerformed": false,
+    "noFutureInformation": true,
+    "realMoneyAllowed": false,
+    "realStakeEUR": 0
+  },
+  "sealedAt": "2026-11-12T15:16:34.830Z",
+  "sealHashAlgorithm": "sha256",
+  "sealHash": "c87e59c94bfa1f20517fc3317fa88b2ac34c9123611d85cc08beb690360acf56"
+}
